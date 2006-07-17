@@ -93,7 +93,7 @@ namespace Utility
          psi.CreateNoWindow = true;
          psi.Arguments = String.Format(CultureInfo.InvariantCulture,
             " \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" \"{5}\"",
-            "Dapple Abort Log Report", "", "beta@geosoft.com",
+            "Dapple Abort Log Report", "", "dapple@geosoft.com",
             tempAbortFile, "abort.log", tempBodyFile);
          using (Process p = Process.Start(psi))
          {
