@@ -1,0 +1,113 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{72433D56-D256-AA42-AC3B-A607B3CE4F60}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>capabilities_1_1_1</RootNamespace>
+    <AssemblyName>capabilities_1_1_1</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="capabilities_1_1_1Doc.cs" />
+    <Compile Include="AbstractType.cs" />
+    <Compile Include="AccessConstraintsType.cs" />
+    <Compile Include="AddressType.cs" />
+    <Compile Include="AddressTypeType.cs" />
+    <Compile Include="AttributionType.cs" />
+    <Compile Include="AuthorityURLType.cs" />
+    <Compile Include="BoundingBoxType.cs" />
+    <Compile Include="CapabilityType.cs" />
+    <Compile Include="CityType.cs" />
+    <Compile Include="ContactAddressType.cs" />
+    <Compile Include="ContactElectronicMailAddressType.cs" />
+    <Compile Include="ContactFacsimileTelephoneType.cs" />
+    <Compile Include="ContactInformationType.cs" />
+    <Compile Include="ContactOrganizationType.cs" />
+    <Compile Include="ContactPersonType.cs" />
+    <Compile Include="ContactPersonPrimaryType.cs" />
+    <Compile Include="ContactPositionType.cs" />
+    <Compile Include="ContactVoiceTelephoneType.cs" />
+    <Compile Include="CountryType.cs" />
+    <Compile Include="DCPTypeType.cs" />
+    <Compile Include="DataURLType.cs" />
+    <Compile Include="DescribeLayerType.cs" />
+    <Compile Include="DimensionType.cs" />
+    <Compile Include="ExceptionType.cs" />
+    <Compile Include="EnumerationType.cs" />
+    <Compile Include="EnumerationType2.cs" />
+    <Compile Include="EnumerationType3.cs" />
+    <Compile Include="ExtentType.cs" />
+    <Compile Include="FeatureListURLType.cs" />
+    <Compile Include="FeesType.cs" />
+    <Compile Include="FormatType.cs" />
+    <Compile Include="GetType.cs" />
+    <Compile Include="GetCapabilitiesType.cs" />
+    <Compile Include="GetFeatureInfoType.cs" />
+    <Compile Include="GetLegendGraphicType.cs" />
+    <Compile Include="GetMapType.cs" />
+    <Compile Include="GetStylesType.cs" />
+    <Compile Include="HTTPType.cs" />
+    <Compile Include="IdentifierType.cs" />
+    <Compile Include="KeywordType.cs" />
+    <Compile Include="KeywordListType.cs" />
+    <Compile Include="LatLonBoundingBoxType.cs" />
+    <Compile Include="EnumerationType4.cs" />
+    <Compile Include="EnumerationType5.cs" />
+    <Compile Include="EnumerationType6.cs" />
+    <Compile Include="LayerType.cs" />
+    <Compile Include="LegendURLType.cs" />
+    <Compile Include="LogoURLType.cs" />
+    <Compile Include="EnumerationType7.cs" />
+    <Compile Include="MetadataURLType.cs" />
+    <Compile Include="NameType.cs" />
+    <Compile Include="OnlineResourceType.cs" />
+    <Compile Include="PostType.cs" />
+    <Compile Include="PostCodeType.cs" />
+    <Compile Include="PutStylesType.cs" />
+    <Compile Include="RequestType.cs" />
+    <Compile Include="SRSType.cs" />
+    <Compile Include="ScaleHintType.cs" />
+    <Compile Include="ServiceType.cs" />
+    <Compile Include="StateOrProvinceType.cs" />
+    <Compile Include="StyleType.cs" />
+    <Compile Include="StyleSheetURLType.cs" />
+    <Compile Include="StyleURLType.cs" />
+    <Compile Include="TitleType.cs" />
+    <Compile Include="EnumerationType8.cs" />
+    <Compile Include="EnumerationType9.cs" />
+    <Compile Include="EnumerationType10.cs" />
+    <Compile Include="EnumerationType11.cs" />
+    <Compile Include="UserDefinedSymbolizationType.cs" />
+    <Compile Include="WMT_MS_CapabilitiesType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AltovaXML\AltovaXML.csproj">
+      <Project>{03AAA791-EC2D-4A90-ABBF-45337E52DFD6}</Project>
+      <Name>AltovaXML</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Altova\Altova.csproj">
+      <Project>{D43E6C54-2DF5-454E-9566-DFFE2F3A6946}</Project>
+      <Name>Altova</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,153 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}</ProjectGuid>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>dapxmlclient</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Geosoft.Xml.Common</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SccAuxPath>
+    </SccAuxPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DAPPLE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>dapxmlclientd.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;DAPPLE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>dapxmlclient.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Version.Assembly.cs">
+      <Link>Version.Assembly.cs</Link>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Command.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Communication\Communication.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Configuration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Constant.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decode\parse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Encode\EncodeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Events\AOISelect.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Events\DataSetArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Events\DataSetSelect.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\communicationerror.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exceptions\daperror.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\boundingbox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\capabilities.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\coordinatesystem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\dataset.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\extract_dataset.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\format.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\point.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Structs\resolution.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="GeosoftXml.xsd" />
+    <Content Include="GeosoftXML_Capabilities.xml" />
+    <None Include="GeosoftXml.xsx">
+      <DependentUpon>GeosoftXml.xsd</DependentUpon>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

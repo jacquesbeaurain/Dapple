@@ -1,0 +1,10 @@
+.trigger
+{
+   cursor: pointer;
+   display: block;
+}
+
+.branch{
+   display: none;
+   margin-left: 16px;
+}

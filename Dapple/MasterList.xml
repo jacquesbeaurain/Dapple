@@ -1,0 +1,2177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ROOT>
+<LayerSet Name="Placenames" ShowOnlyOneLayer="false" ShowAtStartup="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Countries</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>100000</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>6000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\Countries\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>White</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>GeoNet World Capitals</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>3000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\GEONET_p_pplc\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Trenches &amp; Ridges</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>100000</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>6000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\TrenchesRidges\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsBold>true</IsBold>
+				<IsItalic>true</IsItalic>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Cyan</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Deserts &amp; Plains</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>100000</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>6000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\DesertsPlains\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsBold>true</IsBold>
+				<IsItalic>true</IsItalic>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Brown</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Lakes &amp; Rivers</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>3000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\LakesRivers\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsItalic>true</IsItalic>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Cyan</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Mountains &amp; Valleys</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>100000</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>6000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\MountainsValleys\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsBold>true</IsBold>
+				<IsItalic>true</IsItalic>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Brown</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Oceans</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>10000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\Oceans\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>12</Size>
+			<Style>
+				<IsBold>true</IsBold>
+				<IsItalic>true</IsItalic>
+			</Style>
+		</DisplayFont>
+		<RGBColor>
+			<Red>200</Red>
+			<Green>200</Green>
+			<Blue>200</Blue>
+		</RGBColor>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Continents</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>400000</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>10000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\Continents\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>12</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Ivory</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>Water Bodies</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>100000</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>6000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\WaterBodies\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsItalic>true</IsItalic>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Cyan</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (Population Over 500k)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>4000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscitiesover500k\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (Population Over 100k)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>2000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscitiesover100k\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (Population Over 50k)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>1000000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscitiesover50k\\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>GeoNET Administrative 1st Order</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>600000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\GEONET_a_adm1\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>GeoNET Administrative 2nd Order</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>400000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\GEONET_a_adm2\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>10</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>GeoNET Populated Place Administrative</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>200000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\GEONET_p_ppla\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+			<Style>
+				<IsBold>true</IsBold>
+			</Style>
+		</DisplayFont>
+		<WinColorName>Pink</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (Population Over 10k)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>250000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscitiesover10k\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (Population Over 1k)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>100000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscitiesover1k\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (Population Over 0)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>75000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscitiesover0\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Cities (No Population)</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>25000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\uscities0\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Water Features</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>20000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\us_water\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Cyan</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Terrain Features</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>20000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\us_terrain\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Orange</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>US Anthropogenic Features</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>10000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\us_anthropogenic\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Yellow</WinColorName>
+	</TiledPlacenameSet>
+	<TiledPlacenameSet ShowAtStartup="true">
+		<Name>GeoNET Populated Place</Name>
+		<DistanceAboveSurface>0</DistanceAboveSurface>
+		<MinimumDisplayAltitude>0</MinimumDisplayAltitude>
+		<MaximumDisplayAltitude>100000</MaximumDisplayAltitude>
+		<PlacenameListFilePath>Data\Earth\Placenames\GEONET_p_ppl\ww.wpl</PlacenameListFilePath>
+		<DisplayFont>
+			<Family>Arial</Family>
+			<Size>8</Size>
+		</DisplayFont>
+		<WinColorName>Pink</WinColorName>
+	</TiledPlacenameSet>
+	<ExtendedInformation>
+		<ToolBarImage>Data\Icons\Interface\places2.png</ToolBarImage>
+	</ExtendedInformation>
+</LayerSet>
+<!-- edited with XMLSPY v2004 rel. 4 U (http://www.xmlspy.com) by Patrick Hogan (private) -->
+<LayerSet Name="Boundaries" ShowOnlyOneLayer="false" ShowAtStartup="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<PathList ShowAtStartup="true">
+		<Name>Countries</Name>
+		<DistanceAboveSurface>3000</DistanceAboveSurface>
+		<MinDisplayAltitude>0</MinDisplayAltitude>
+		<MaxDisplayAltitude>10000000</MaxDisplayAltitude>
+		<PathsDirectory>Data\Earth\Boundaries</PathsDirectory>
+		<WinColorName>Yellow</WinColorName>
+	</PathList>
+	<PathList ShowAtStartup="true">
+		<Name>US States</Name>
+		<DistanceAboveSurface>3000</DistanceAboveSurface>
+		<MinDisplayAltitude>0</MinDisplayAltitude>
+		<MaxDisplayAltitude>8000000</MaxDisplayAltitude>
+		<PathsDirectory>Data\Earth\Boundaries\US_State_Boundaries</PathsDirectory>
+		<WinColorName>Cyan</WinColorName>
+	</PathList>
+	<ExtendedInformation>
+		<ToolBarImage>Data\Icons\Interface\borders.png</ToolBarImage>
+	</ExtendedInformation>
+</LayerSet>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Patrick Hogan (private) -->
+<LayerSet Name="Images" ShowOnlyOneLayer="false" ShowAtStartup="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ChildLayerSet Name="NASA Landsat Imagery" ShowOnlyOneLayer="false" ShowAtStartup="true">
+		<QuadTileSet ShowAtStartup="true">
+			<Name>NLT Landsat7 (Visible Color)</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>2.25</LevelZeroTileSizeDegrees>
+				<NumberLevels>5</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<!-- <ServerUrl>http://data.worldwind.arc.nasa.gov/t</ServerUrl> -->
+					<ServerUrl>http://worldwind25.arc.nasa.gov/tile/tile.aspx</ServerUrl>
+					<DataSetName>105</DataSetName>
+					<CacheExpirationTime>
+						<Days>7</Days>
+						<Hours>0</Hours>
+						<Mins>0</Mins>
+						<Seconds>0</Seconds>
+					</CacheExpirationTime>
+					<ServerLogoFilePath>Data\Icons\Interface\meatball.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\nlt-landsat-visible.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>NLT Landsat7 (Pseudo Color)</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>2.25</LevelZeroTileSizeDegrees>
+				<NumberLevels>5</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://worldwind28.arc.nasa.gov/TestWebApp/WebForm1.aspx</ServerUrl>
+					<DataSetName>nlt_pseudo</DataSetName>
+					<CacheExpirationTime>
+						<Days>7</Days>
+						<Hours>0</Hours>
+						<Mins>0</Mins>
+						<Seconds>0</Seconds>
+					</CacheExpirationTime>
+					<ServerLogoFilePath>Data\Icons\Interface\meatball.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\nlt-landsat-pseudo.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Geocover 2000</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>2.25</LevelZeroTileSizeDegrees>
+				<NumberLevels>6</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://worldwind25.arc.nasa.gov/tile/tile.aspx</ServerUrl>
+					<DataSetName>geocover2000</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\meatball.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\geocover-landsat-pseudo-2000.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Geocover 1990</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>2.25</LevelZeroTileSizeDegrees>
+				<NumberLevels>5</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://worldwind28.arc.nasa.gov/TestWebApp/WebForm1.aspx</ServerUrl>
+					<DataSetName>es_1990jpg</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\meatball.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\geocover-landsat-pseudo-1990.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Community Landsat7 (Visible Color)</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>2.0</LevelZeroTileSizeDegrees>
+				<NumberLevels>7</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://tileservice.worldwindcentral.org/</ServerUrl>
+					<DataSetName>OnEarthLandsat7Vis</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\wwc.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\wwc_landsat7_visible.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Community Landsat7 (Pseudo Color)</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>2.0</LevelZeroTileSizeDegrees>
+				<NumberLevels>7</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://tileservice.worldwindcentral.org/</ServerUrl>
+					<DataSetName>OnEarthLandsat7Pseudo</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\wwc.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\wwc_landsat7_pseudo.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+	</ChildLayerSet>
+	<ChildLayerSet Name="USGS Imagery" ShowOnlyOneLayer="false" ShowAtStartup="true">
+		<QuadTileSet ShowAtStartup="false">
+			<Name>USGS Digital Ortho</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>71.55</Value>
+				</North>
+				<South>
+					<Value>17.84</Value>
+				</South>
+				<West>
+					<Value>-168.67</Value>
+				</West>
+				<East>
+					<Value>-65.15</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>0.8</LevelZeroTileSizeDegrees>
+				<NumberLevels>8</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://worldwind25.arc.nasa.gov/tile/tile.aspx</ServerUrl>
+					<DataSetName>101</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\usgs.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\usgs-1m-ortho.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>USGS Topo Maps</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>71.55</Value>
+				</North>
+				<South>
+					<Value>17.84</Value>
+				</South>
+				<West>
+					<Value>-168.67</Value>
+				</West>
+				<East>
+					<Value>-65.15</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>0.8</LevelZeroTileSizeDegrees>
+				<NumberLevels>7</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://worldwind25.arc.nasa.gov/tile/tile.aspx</ServerUrl>
+					<DataSetName>102</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\usgs.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\usgs-topo-map.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>USGS Urban Area Ortho</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>71.55</Value>
+				</North>
+				<South>
+					<Value>17.84</Value>
+				</South>
+				<West>
+					<Value>-168.67</Value>
+				</West>
+				<East>
+					<Value>-65.15</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>0.8</LevelZeroTileSizeDegrees>
+				<NumberLevels>10</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://worldwind25.arc.nasa.gov/tile/tile.aspx</ServerUrl>
+					<DataSetName>104</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\usgs.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\usgs-urban-area.png</ToolBarImage>
+			</ExtendedInformation>
+		</QuadTileSet>
+	</ChildLayerSet>
+	<ChildLayerSet Name="APOGEE Imagery" ShowOnlyOneLayer="false" ShowAtStartup="true">
+		<QuadTileSet ShowAtStartup="true">
+			<Name>Apogee Australia</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>-34</Value>
+				</North>
+				<South>
+					<Value>-36</Value>
+				</South>
+				<West>
+					<Value>136</Value>
+				</West>
+				<East>
+					<Value>139.2</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>1</LevelZeroTileSizeDegrees>
+				<NumberLevels>10</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://192.168.0.55:8000/kamap/wwtile.php</ServerUrl>
+					<DataSetName>106</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\World_australia.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Apogee Mauritania</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>18</Value>
+				</North>
+				<South>
+					<Value>17</Value>
+				</South>
+				<West>
+					<Value>-16</Value>
+				</West>
+				<East>
+					<Value>-15</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>1</LevelZeroTileSizeDegrees>
+				<NumberLevels>15</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://192.168.0.55:8000/kamap/wwtile.php</ServerUrl>
+					<DataSetName>106</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\World_australia.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Apogee PNG</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>-5.5</Value>
+				</North>
+				<South>
+					<Value>-6</Value>
+				</South>
+				<West>
+					<Value>142.5</Value>
+				</West>
+				<East>
+					<Value>143</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>1</LevelZeroTileSizeDegrees>
+				<NumberLevels>15</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://192.168.0.55:8000/kamap/wwtile.php</ServerUrl>
+					<DataSetName>108</DataSetName>
+					<ServerLogoFilePath>Data\Icons\Interface\World_australia.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<TransparentColor>
+				<Red>0</Red>
+				<Green>0</Green>
+				<Blue>0</Blue>
+			</TransparentColor>
+		</QuadTileSet>
+		<QuadTileSet ShowAtStartup="false">
+			<Name>Apogee Orbview Archive</Name>
+			<DistanceAboveSurface>0</DistanceAboveSurface>
+			<BoundingBox>
+				<North>
+					<Value>90.0</Value>
+				</North>
+				<South>
+					<Value>-90.0</Value>
+				</South>
+				<West>
+					<Value>-180.0</Value>
+				</West>
+				<East>
+					<Value>180.0</Value>
+				</East>
+			</BoundingBox>
+			<TerrainMapped>true</TerrainMapped>
+			<ImageAccessor>
+				<LevelZeroTileSizeDegrees>1</LevelZeroTileSizeDegrees>
+				<NumberLevels>3</NumberLevels>
+				<TextureSizePixels>512</TextureSizePixels>
+				<ImageFileExtension>jpg</ImageFileExtension>
+				<ImageTileService>
+					<ServerUrl>http://192.168.0.55:8000/kamap/wwtile.php</ServerUrl>
+					<DataSetName>110</DataSetName>
+					<CacheExpirationTime>
+						<Days>90</Days>
+						<Hours>0</Hours>
+						<Mins>0</Mins>
+						<Seconds>0</Seconds>
+					</CacheExpirationTime>
+					<ServerLogoFilePath>Data\Icons\Interface\World_australia.png</ServerLogoFilePath>
+				</ImageTileService>
+			</ImageAccessor>
+			<TransparentColor>
+				<Red>0</Red>
+				<Green>0</Green>
+				<Blue>0</Blue>
+			</TransparentColor>
+		</QuadTileSet>
+		<ExtendedInformation>
+				<ToolBarImage>Data\Icons\Interface\Apogee_logo.png</ToolBarImage>
+		</ExtendedInformation>
+	</ChildLayerSet>	
+</LayerSet>
+<!--Generated by WWmud's WWxmlconverter-->
+<IconSet Name="Landmark Catalog" ShowOnlyOneLayer="false" ShowAtStartup="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Icon ShowAtStartup="true">
+    <Name>Great Pyramids</Name>
+    <Latitude>
+      <Value>29.979320000000001</Value>
+    </Latitude>
+    <Longitude>
+      <Value>31.132549999999998</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\18.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Great_Pyramid_of_Giza</ClickableUrl>
+    <Description>The Pyramids of Giza are surrounded by many myths.  Even though the 3 smaller pyramids surround the great pyramid it is only the Great Pyramid of Khufu, with a height of 450 ft, which is considered to be a part of the Seven Wonders of the World.  The Great Pyramid was built by the Egyptian Pharaoh Khufu of the Fourth Dynasty around 2560 B.C as a tomb for his death.  Many say that over 100,000 slaves worked to build the pyramid in 20 years.  The slaves were paid with food rations instead of money since there was a great flooding of the Nile River.  Scientists of today believe that the story we are told today based on the travels of the Greek explorer Herodotus of Helicanassus is inaccurate.  He visited the Pyramids in 450 B.C., over 20 centuries after the Pyramids had been built and the true story had been lost while being handed down from generation to generation. </Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Stonehenge</Name>
+    <Latitude>
+      <Value>51.179995295868899</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-1.8274808641648299</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\44.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Stonehenge</ClickableUrl>
+    <Description>Stonehenge is a Neolithic and Bronze Age monument of standing stones arranged in a circle, located about 8 miles northwest of Salisbury.  Most archaeologists think that it was mainly constructed between 2500 BC and 2000 BC. The name Stonehenge is derived from the Old English words Stanhen gist meaning the 'hanging stones'.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Eiffel Tower</Name>
+    <Latitude>
+      <Value>48.857900257749101</Value>
+    </Latitude>
+    <Longitude>
+      <Value>2.2950167674155399</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\13.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Eiffel_Tower</ClickableUrl>
+    <Description>The Eiffel Tower was built from 1887 to 1889 for the Paris Exposition to celebrate the centenary of the French Revolution.  Over 700 proposals were submitted for the competition to build the monument and at random the design of French structural engineer Gustave Eiffel's was chosen.   After the structure was completed in 1889 it stood 1,063 ft and many people in Paris did not like the final outcome.  They thought it was not suitable for a city such as Paris and a petition of 300 names was submitted in protest.  In 1909 the twenty-year lease for the tower was going to expire and it was almost torn down, but its antenna saved the tower from demolition.  The antenna on the tower was used for telegraphy, which was the way in which people communicated with one another in Paris.  By 1910 the Eiffel Tower had become one of the most recognizable symbols in the world and a landmark for the people of Paris.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Arc de Triomphe</Name>
+    <Latitude>
+      <Value>48.873818246768501</Value>
+    </Latitude>
+    <Longitude>
+      <Value>2.29502305169374</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\03.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Arc_de_Triomphe</ClickableUrl>
+    <Description>The Arc de Triomphe was a Triumphal Arch that was built to honor Napoleon's French Grand Army.   Construction began in 1806 for the Arc and was completed in 1836, 15 years after the death of Napoleon.   The Arc de Triomphe is 164 ft high and 147 feet wide making it very recognizable in the city of Paris.  Jean Francois Chalgrin designed the Arc based on the Roman Arch of Titus.  The Arc is placed at the center of the Place de L'Etoile with 12 different avenues emerging from it.  Georges Baron Haussman was the  civil engineer responsible for the layout of Paris and its appearance today.  The Arc consists of 4 relief structures.  La Marseillaise, 'The departure of the volunteers' by Francois Rude; The Triumph of 1810 by Alfred Cortot; Resistance and Peace by Antoine Etex.  At the base of the Arc is the tomb of the Unknown Soldier from World War I.  The tomb is adorned with an eternal flame that burns to honor the fallen soldier.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Coliseum</Name>
+    <Latitude>
+      <Value>41.890150903993202</Value>
+    </Latitude>
+    <Longitude>
+      <Value>12.4933608868908</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\09.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Roman_Colosseum</ClickableUrl>
+    <Description>The Roman Coliseum is known internationally as one of the greatest displays of architecture and design in the history of the world.  The Coliseum was completed in 80 A.D. during the reign on Emperor Vespassano.  Its main purpose was for public entertainment, which consisted of gladiator combats.  The Coliseum could hold 50,000 people in its 160 ft (49 m) frame.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Disney World</Name>
+    <Latitude>
+      <Value>28.410066580971598</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-81.583698560056305</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\11.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Walt_Disney_World_Resort</ClickableUrl>
+    <Description>Owned and operated by The Walt Disney Company, the Walt Disney World Resort in Orange and Osceola Counties, Florida, USA is home to four theme parks, two water parks, over 20 resort hotels and golf courses, and various shopping and entertainment areas.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Golden Gate Bridge</Name>
+    <Latitude>
+      <Value>37.8183333333333</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-122.47527777777699</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\17.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Golden_Gate_Bridge</ClickableUrl>
+    <Description>In 1928, the planning for the Golden Gate Bridge began, by 1930 a budget was set and by 1933 construction began.  Some people called it 'The bridge that couldn't be built', but engineer Joseph B. Strauss proved everyone wrong by building one of the longest bridges in the world.  The bridge has a sway of 27 ft (8 m), making it able to withstand up 100 mile per hour winds.  The 2 towers of the Golden Gate Bridge stand at 746 ft (227 m) and the cables that support the bridge and the bridge floor are 4,200 ft long (1280 m).  Today many people visit this historic landmark in San Francisco and spend up to an hour walking across the bridge from San Francisco to Marin County.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Gateway Arch</Name>
+    <Latitude>
+      <Value>38.6247712874532</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-90.184639973702104</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\04.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Gateway_Arch</ClickableUrl>
+    <Description>The Gateway Arch in St. Louis, Missouri was designed by Eero Saarinen in 1941 and completed in 1947.  The arch is the tallest National Memorial in the U.S.A. standing at 630 ft on a 60 ft. base.  In honor of the westward expansion of the U.S., from 1803 to 1890, with the efforts of Lewis and Clark the Gateway arch was constructed.  As you drive through St. Louis today the arch stands within the Jefferson National Expansion Memorial Park which opened December 21, 1935.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>White House</Name>
+    <Latitude>
+      <Value>38.897227611921899</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-77.036519599372596</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\51.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <Description>The White House is the official residence and principal workplace of the President of the United States.  The White House was built after the creation of the District of Columbia by an Act of Congress in December, 1790. The architect, James Hoban, was chosen in a competition, and construction began with the laying of the cornerstone on October 13, 1792. The building was originally referred to as the Presidential Palace or Presidential Mansion, however by 1811, the first evidence of the public calling it the "White House" emerged.</Description> 
+    <ClickableUrl>http://en.wikipedia.org/wiki/White_House</ClickableUrl>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Big Ben</Name>
+    <Latitude>
+      <Value>51.500699655903702</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-0.124261108856317</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\05.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Big_Ben</ClickableUrl>
+    <Description>The Palace of Westminster served the kings of England from the 11th century to about 1512.  In 1834, a lot of the Palace of Westminster burned down in a disastrous fire and Westminster Hall was the only part of the Palace that was not destroyed.  Soon after the fire a competition was put into effect allowing the people to submit new plans for the Palace.  Charles Berry's design won the competition and featured a new and improved Palace with the traditional design and clock tower.  By 1859 the new Palace was complete along with the clock tower which is known worldwide as Big Ben.  The name Big Ben is named after Sir Benjamin Hall, the Parliamentary Commissioner of Works.  Big Ben actually refers to the 13 ton bell that chimes every hour and not the clock tower itself.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Empire State Building</Name>
+    <Latitude>
+      <Value>40.748268751509301</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-73.985521505126499</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\15.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Empire_State_Building</ClickableUrl>
+    <Description>In the midst of the Great Depression in the United States construction began on the Empire State Building in New York City.  The construction of this building was a result of a competition between Walter Chrysler of the Chrysler Corporation and John Jakob Raskob the creator of General Motors.  On March 17, 1930 construction began on the Empire State Building creating over 3,000 jobs for local laborers and during construction about 4  floors were being completed each week.  The Empire State Building was designed by architect William Lamb of Shreve, Lamb and Harmon, has a height of 1,252 ft (381 m) and beat out the Chrysler Building with a 200 ft (61 m) tower to make the Empire State Building the tallest building of its time.  Ever since its completion in May of 1931 the Empire State Building has been used to house some of the worlds most distinguished political figures such as Prince Charles, Queen Elizabeth, The Duchess of York, Fidel Castro, Nikita Krushchev and many more.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Great Wall of China</Name>
+    <Latitude>
+      <Value>30</Value>
+    </Latitude>
+    <Longitude>
+      <Value>118</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\19.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Great_Wall_of_China</ClickableUrl>
+    <Description>The title for the longest structure in the world belongs to the Great Wall of China.  The wall is 4,536 mi long (7,300 km) and stretches across northern China from the east coast to the central part of China traveling over grasslands, deserts, and mountains.  Historians believe that as early as 600 B.C construction of the lower parts of the wall had begun.  Emperor Qin Shihuang wanted construction of the wall to continue during his dynasty from 221 to 202 B.C to keep out his enemies, the Mongols.  Over the next three dynasties, the Qin, Hang and Ming, the wall was under construction.  Over 1 million people helped to build the wall over the next thousand years with added 2 story watch towers every 100 yards.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Great Wall of China</Name>
+    <Latitude>
+      <Value>40</Value>
+    </Latitude>
+    <Longitude>
+      <Value>116</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\19.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Great_Wall_of_China</ClickableUrl>
+    <Description>The title for the longest structure in the world belongs to the Great Wall of China.  The wall is 4,536 mi long (7,300 km) and stretches across northern China from the east coast to the central part of China traveling over grasslands, deserts, and mountains.  Historians believe that as early as 600 B.C construction of the lower parts of the wall had begun.  Emperor Qin Shihuang wanted construction of the wall to continue during his dynasty from 221 to 202 B.C to keep out his enemies, the Mongols.  Over the next three dynasties, the Qin, Hang and Ming, the wall was under construction.  Over 1 million people helped to build the wall over the next thousand years with added 2 story watch towers every 100 yards.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Hollywood Sign</Name>
+    <Latitude>
+      <Value>34.133904143822399</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-118.321980351017</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\21.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Hollywood%2C_California</ClickableUrl>
+    <Description>The Hollywood Sign was erected in 1923 as an advertisement for a real estate developer, it originally had four extra letters spelling out Hollywoodland, and was covered in light bulbs.  The sign measures 450 feet long, and its letters are 45 feet high, it sits perched high atop Mount Lee, the tallest peak in L.A.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Forbidden City/Palace</Name>
+    <Latitude>
+      <Value>36.933333333333302</Value>
+    </Latitude>
+    <Longitude>
+      <Value>116.333333333333</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\16.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Forbidden_City</ClickableUrl>
+    <Description>Also known as the Forbidden Palace, The Forbidden City was only allowed to be used by royalty.  Built in the early 15th century (1417-1420), the Palace consists of 800 buildings, 9,000 rooms and covers over 720,000 sq. mi.  The Palace served 24 emperors between the Ming and Qing dynasties from 1368 to 1911.  In 1911 the last emperor of the Qing Dynasty resigned after the republican revolution, but was allowed to stay at the Palace.  Finally, in 1924 the republican army kicked the former emperor out of the Palace and in 1950 the Palace opened its doors to the public as a museum.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Mt. Kilimanjaro</Name>
+    <Latitude>
+      <Value>-3.0666666666666602</Value>
+    </Latitude>
+    <Longitude>
+      <Value>37.35</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\23.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Mount_Kilimanjaro</ClickableUrl>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Easter Island</Name>
+    <Latitude>
+      <Value>-27.1166666666666</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-109.36666666666601</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\12.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Easter_Island</ClickableUrl>
+    <Description>Easter Island is 2,680 mi (4313 km) off the coast of Chile in the Pacific Ocean.  It is considered the most isolated inhabited island on Earth with the closest inhabited island being 1,200 mi (1931 km) away.  The island was discovered in 1722 by Admiral Jacob Roggeveen on Easter Sunday, which is where the name came from.  The island is most famous for its prehistoric Maoi statues that cover the island.  The statues are believed to have been constructed from hardened volcanic ash between 1400 and 1600 A.D.  The average height for a Maoi statue is 13 ft (4 m) and they weigh about 14 tons (12.5 metric tons).  For 15 years archeologist Jo Anne Van Tilburg studied the Moai and discovered that there are 887 statues situated mostly on the southeast coast of the island.  The tallest Moai is 72 ft (22 m) and weighs between 145 to 165 tons (160-182 metric tons) and is found in the Rano Raraku Quarry on Easter Island.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Hanging Gardens of Babylon</Name>
+    <Latitude>
+      <Value>32.5</Value>
+    </Latitude>
+    <Longitude>
+      <Value>44.5</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\20.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Hanging_Gardens_of_Babylon</ClickableUrl>
+    <Description>The Hanging Gardens of Babylon were one of the seven wonders of the ancient world, they were built around 600 B.C.  by King Nebuchadnezzar II, for his wife, Amyitis,. Although many Greek historians have written about them current historians are undecided as to whether or not they actually exsisted.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Colossus of Rhodes</Name>
+    <Latitude>
+      <Value>36.42424</Value>
+    </Latitude>
+    <Longitude>
+      <Value>28.18834</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\10.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Colossus_of_Rhodes</ClickableUrl>
+    <Description>The Colossus of Rhodes stood 110 ft (33 m) and was a huge statue of Helios, the Greek Sun god.  Rhodes was the capital city of three small islands (Ialysos, Kamiros, and Lindos) after they became united to become one to help fight their enemies.  After 12 years of construction the Colossus was finished in 282 B.C. and stood at the entrance of one of the harbors of Rhodes, Mandraki Harbor.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Las Vegas</Name>
+    <Latitude>
+      <Value>36.169879617463202</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-115.157031140684</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\25.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Las_Vegas%2C_Nevada</ClickableUrl>
+    <Description>In the 1700's Spanish explorers and traders passed through the Las Vegas Valley which, at the time, was also known as the 'journey of death'.  Raphael Rivera was the first person of European ancestry to look upon the valley.  When Rivera came upon the Valley he chose the name Las Vegas because the land had plentiful water and a lot of wild grass growing.  When translated Las Vegas means 'The Meadows'.  In 1855 Brigham Young decided to settle in Las Vegas to begin teaching Mormonism to local Indians, but by 1858 the settlement was abandoned.  In 1905 the railway was put down, making Las Vegas a recognizable city.  Then in 1931 gambling became legalized and by the early 1960's the phenomena of casinos and hotels swept through Las Vegas.  With all the wealthy business men purchasing land and building hotels and casinos, Las Vegas became a tourist attraction in no time.  Because of its rapid growth the census suspects that by 2005 over 2 million people will live in the Las Vegas area.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Leaning Tower of Pisa</Name>
+    <Latitude>
+      <Value>43.722794728957801</Value>
+    </Latitude>
+    <Longitude>
+      <Value>10.3943712008174</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\26.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Leaning_Tower_of_Pisa</ClickableUrl>
+    <Description>The Leaning Tower of Pisa is the bell tower of the Cathedral of Pisa.  Construction for the tower began in 1173 by an architect who is unknown to this day.  Over the next 200 years the tower would be under construction, and finally in 1360 the tower was complete.  One belief about the bell tower is that it was always supposed to lean from the time construction began, while others believe that it is the soil under the Cathedral that is making the tower lean.  As of 2001 studies showed the tower was leaning at an angle of 5.5 degrees with the top edge of the tower hanging about 17 ft over its base.  The Leaning Tower of Pisa has 6 stories and stands at a height of 58 m, which includes the base.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Statue of Zeus</Name>
+    <Latitude>
+      <Value>41</Value>
+    </Latitude>
+    <Longitude>
+      <Value>29</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\43.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Statue_of_Zeus_at_Olympia</ClickableUrl>
+    <Description>The Statue of Zeus at Olympia, one of the seven wonders of the ancient world  was built around 450 B.C. by the Athenian sculptor Pheidias.  The statue was carved from ivory and sat on a throne inlaid with gold, ebony, ivory and precious stones, its right hand held a figure of victory, and its left it held a sceptre inlaid with every kind of metal, with an eagle perched on the top.  The statue was destroyed by fire in A.D. 462.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Temple of Artemis</Name>
+    <Latitude>
+      <Value>38</Value>
+    </Latitude>
+    <Longitude>
+      <Value>27</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\48.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Temple_of_Artemis</ClickableUrl>
+    <Description>The Temple of Artemis was built around 550 B.C in Ephesus and was used as a marketplace and a place of religious instruction.  Recent findings showed that offerings of jewelry and statues of Artemis made of gold and ivory were left behind for the goddess.  On July 21 356 B.C, a man named Herostratus burned the temple down with hopes of having his name immortalized.  Also on that night Alexander the Great was born and it has been said by the historian Plutarch, a Priest of the Oracle of Delphi, that Artemis was occupied with the birth of Alexander to save her temple.  Later, during Alexander's conquest of Asia Minor, Alexander offered to rebuild the temple and by 323 B.C the temple was rebuilt.  In 262 A.D the temple was destroyed by the Goths and the Ephesians wanted the rebuild, but Christianity began spreading in Ephesus, making the temple no longer important for religious offerings.  By 401 A.D the temple was completely destroyed and today the temple is being excavated with hopes of being rebuilt.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Mausoleum at Halicarnassus</Name>
+    <Latitude>
+      <Value>37.038</Value>
+    </Latitude>
+    <Longitude>
+      <Value>27.429</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\29.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Mausoleum_of_Maussollos</ClickableUrl>
+    <Description>The Mausoleum at Halicarnassus was one of the seven wonders of the ancient world, the tomb was built by Artemisia as a tribute for her dead husband king Mausolus of Caria around 350 BC.  The Mausoleum was erected on a hill overlooking the city, the structure sat in an enclosed courtyard, at the center of the courtyard was a stone platform on which the tomb, made mostly from marble, sat.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Motown (Detroit, MI)</Name>
+    <Latitude>
+      <Value>42.3333333333333</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-83.05</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\30.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Detroit%2C_Michigan</ClickableUrl>
+    <Description>In January 1960 a record company called Motown established its headquarters in Detroit, Michigan.  The face of music was changing and Motown creator Berry Gordy knew he found something special.  For many generations music had separated the country and the musical vision Gordy projected was going to help bring the American people closer.  Detroit became the central hub for many African Americans and a musical haven for many young artists.  Motown has produced such artists as The Supremes, The Temptations, Marvin Gaye and the Jackson 5 to name a few.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Niagara Falls (CAN)</Name>
+    <Latitude>
+      <Value>43.077110070528498</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-79.075259988745501</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Niagara_Falls</ClickableUrl>
+    <Description>Niagara Falls consists of 3 parts, the American Falls, Bridal Veil Falls and the Canadian 'Horseshoe' Falls.  The American and Bridal Veil Falls combined produce over 50,000 gallons of water per second, while the Horseshoe Falls produce 600,000 gallons of water per second.  More than 12 million tourists visit the falls each year whether they visit Buffalo, NY or Ontario, Canada.  Niagara Falls is the second largest waterfall in the world next to the Victoria Falls in Southern Africa.  Some of the overflow water from the Great Lakes dumps into Niagara Falls and from Niagara Falls water goes through pipes and is used by hydroelectric power stations.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Niagara Falls (US)</Name>
+    <Latitude>
+      <Value>43.085096014229599</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-79.068796039345102</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Niagara_Falls</ClickableUrl>
+    <Description>Niagara Falls consists of 3 parts, the American Falls, Bridal Veil Falls and the Canadian 'Horseshoe' Falls.  The American and Bridal Veil Falls combined produce over 50,000 gallons of water per second, while the Horseshoe Falls produce 600,000 gallons of water per second.  More than 12 million tourists visit the falls each year whether they visit Buffalo, NY or Ontario, Canada.  Niagara Falls is the second largest waterfall in the world next to the Victoria Falls in Southern Africa.  Some of the overflow water from the Great Lakes dumps into Niagara Falls and from Niagara Falls water goes through pipes and is used by hydroelectric power stations.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Panama Canal</Name>
+    <Latitude>
+      <Value>9.0816214649710201</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-79.676704835418505</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\54.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Panama_Canal</ClickableUrl>
+    <Description>The Panama Canal connects the Atlantic and Pacific oceans, the canal was constructed in two stages. The first between 1881 and 1888, was carried out by the French company headed by de Lessop and the second by the Americans which eventually completed the canals construction between 1904 and 1914.  The canal is approximately 51 miles long, there are 3 sets of locks along its course, the Gatun, Pedro Miguel and the Miraflores.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Pantheon (S. Maria della Rotonda)</Name>
+    <Latitude>
+      <Value>41.899062103263603</Value>
+    </Latitude>
+    <Longitude>
+      <Value>12.476778126295001</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\36.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Pantheon%2C_Rome</ClickableUrl>
+    <Description>The Pantheon, now called the S. Maria della Rotonda, was first built in 27 B.C by Marcus Vipsanius Agrippa, the advisor to Emperor Augustus.  The word Pantheon means 'to honor all Gods' because when it was first built it was a place to leave offerings to all the Roman gods.  From 118 to 128 Hadrian, the adopted son of Emperor Trajan, rebuilt the Pantheon and is the same one we see today.  The S. Maria della Rotunda is capped with a perfect dome the is 142 ft (43.3 m) in diameter and on either side of the Rotunda stands statues of Augustus and Agrippa.  The porch has 3 rows of 8 columns, each 46 ft (14 m) high.  The dome is composed of 140 coffers, or waffle like depressions, which help to reduce the weight of the dome.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Parthenon</Name>
+    <Latitude>
+      <Value>37.966666666666598</Value>
+    </Latitude>
+    <Longitude>
+      <Value>23.716666666666601</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\37.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <Description>The Parthenon is a Doric peripteral temple which sits atop the Acropolis of Athens.  The temple was constructed between 447 BC and 432 BC as a tribute to the goddess Athena, the temple is a testament to the skills of the Greek architects who constructed it, as it still survives today nearly 2500 years later.</Description>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Parthenon</ClickableUrl>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Petronas Towers</Name>
+    <Latitude>
+      <Value>3.1583333333333301</Value>
+    </Latitude>
+    <Longitude>
+      <Value>101.713333333333</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\38.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Petronas_Twin_Towers</ClickableUrl>
+    <Description>By October 2004, the Petronas Towers, in Malaysia, will no longer be the tallest buildings in the world at 1,483 ft (452 m).  In 1998, the skyline of Kuala Lumpur was introduced to the 2 towers which have a crosswalk on the 42nd floor.  The towers are comprised of 8 million square feet of shopping and entertainment, parking for 4,500 cars, a symphony hall, mosque and much more.  The building was also featured in the movie Entrapment with Catherine Zeta-Jones and Sean Conery.  Petronas Towers became the largest buildings in the world when they beat out the Sears Tower by 29 ft (8.8 m) due to the 33 ft (10 m) spires at the top of each tower.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Sydney Opera House</Name>
+    <Latitude>
+      <Value>-33.85665</Value>
+    </Latitude>
+    <Longitude>
+      <Value>151.21567</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\45.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Sydney_Opera_House</ClickableUrl>
+    <Description>One of the most recognizable opera houses in the world is the Sydney Opera House in Australia.  The distinguished egg shell like configuration of the exterior of the Opera House makes the backdrop of Sydney Harbor very unique.  In 1957 the conductor of the Sydney Symphony Orchestra wanted a new opera theater and concert hall so a competition was held and the winner was architect Jrn Utzon.  The original plans for the opera house were for 2 theatres, but in 1959 2 more theatres were requested.  It took roughly 5 years to come up with the roof design of the opera house and finally in 1962 Utzon figured that he had to use spheres to create the proper angles and shapes and roof construction began in 1963 and ended in 1967.  From 1967 to 1973 the interior of the Opera House was completed and on October 20, 1973 the Opera House opened to the public.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Taj Mahal</Name>
+    <Latitude>
+      <Value>27.169444444444402</Value>
+    </Latitude>
+    <Longitude>
+      <Value>78.041944444444397</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\47.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Taj_Mahal</ClickableUrl>
+    <Description>The Taj Mahal was built from 1630 to 1653 as an Islamic tomb at the request of Emperor Shah Jahan as a tribute to his wife, Mumatz Mahal (also known as Arjumand Banu).  Jahan had the temple built in Agra because that was where he and his wife lived for 18 years and where they had 14 children.  During the birth of their last child Mumatz died and Jahan wanted to build a mausoleum to honor her memory.  The Taj Mahal consists of 5 main elements the Darwaza (main gateway), the Bageecha (garden), the Masjid (mosque), the Naqqar Khana (rest house), and the Rauza (Taj Mahal mausoleum).</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Taipei 101</Name>
+    <Latitude>
+      <Value>25.033333333333299</Value>
+    </Latitude>
+    <Longitude>
+      <Value>121.516666666666</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\46.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Taipei_101</ClickableUrl>
+    <Description>In October 2004 the tallest building in the world will be completely finished.  The Taipei Financial Center or Taipei 101 will stand at 1,671 ft (509 m) and consist of 101 floors.  Taipei Financial is one of the fastest growing financial institutions in Asia and is situated in a booming area of Taipei called the Hsinyi District.  C.Y. Lee &amp; Partners designed the building based on the number '8' which is a lucky number in Chinese culture because in Chinese '8' sounds like the word 'prosper'.  In October 2003 Taipei 101 opened its shopping center and by its opening in fall 2004 the building will house various restaurants, an observatory and an executive club.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>The Louvre</Name>
+    <Latitude>
+      <Value>48.860873651860501</Value>
+    </Latitude>
+    <Longitude>
+      <Value>2.3365579437657802</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\49.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Louvre</ClickableUrl>
+    <Description>The Louvre was built by King Philippe Auguste at the end of the twelfth century as a medieval fortress from which the present day palace originates.  The Louvre Museum was  established in 1793 by the French Republic following the French revolution, it is home to many works of art including the Mona Lisa.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>UN Headquarters</Name>
+    <Latitude>
+      <Value>40.749283837716597</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-73.967811918985205</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\50.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/United_Nations_headquarters</ClickableUrl>
+    <Description>The UN Headquarters was built on an 18 acre plot donated by John D. Rockefeller Jr. and was completed in 1952.  The whole area was converted into international territory and officially does not belong to the United States.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Notre Dame de Paris</Name>
+    <Latitude>
+      <Value>48.853678217772099</Value>
+    </Latitude>
+    <Longitude>
+      <Value>2.3484697102811301</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\33.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Notre-Dame_de_Paris</ClickableUrl>
+    <Description>Notre Dame de Paris or Our Lady of Paris in French is a Gothic cathedral, construction began in 1163 during the reign of Louis VII, and was completed roughly 200 years later around 1345.  It is believed that Pope Alexander III laid the foundation stone.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>El Castillo</Name>
+    <Latitude>
+      <Value>20.666674585071</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-88.583329197105797</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\14.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/El_Castillo</ClickableUrl>
+    <Description>El Castillo also known as the Pyramid of Quetzalcoatl, a masterpiece of Toltec-Mayan architectural genius was built around the 9th century and represents Snake mountain , the mystic place where creation first occurred in Mayan folklore.  The pyramid was re-discovered by John L. Stephens  in a decaying condition in 1841, and has since been partially restored to its former state.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Angkor Wat</Name>
+    <Latitude>
+      <Value>13.4256</Value>
+    </Latitude>
+    <Longitude>
+      <Value>103.86</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\02.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Angkor_Wat</ClickableUrl>
+    <Description>Angkor includes several temples that extend over 40 miles near the village of Siem Reap in Cambodia.  The temple of Angkor Wat was built by Suryavarman II from 1113 to 1150.  All the temples of Angkor were built by different architects between the eighth and thirteenth centuries.  In all, there are nine temples with Angkor Wat being recognized as the largest religious monument in the world.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Galeria dell'Academia </Name>
+    <Latitude>
+      <Value>43.7770165019381</Value>
+    </Latitude>
+    <Longitude>
+      <Value>11.258849316942401</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\01.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Accademia_dell%27_Arte_del_Disegno</ClickableUrl>
+    <Description>In 1501 Michelangelo began sculpting the Statue of David.  Michelangelo used a block of marble from a Cathedral court yard that had been there for 35 years.  By 1504 the Statue of David was complete and unlike any other David people had ever seen.  This sculpture depicted David just before he was going to fight Goliath.  Today, the Statue of David can be seen in the Galeria dell'Academia in Firenze (Florence).</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>CN Tower</Name>
+    <Latitude>
+      <Value>43.643600038667103</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-79.386192560752704</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\08.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/CN_Tower</ClickableUrl>
+    <Description>Toronto's most recognizable feature is the CN Tower.  The tower stands at 1,815 ft (533.33 m) and adorns the skyline of Toronto.  Canadian National (CN) built the tower in 1976 during a construction boom.  Because of the height of the building CN was able to put a receptor and an antenna on top of the building which solved a huge communication problem in Toronto.  Today, becaseue of the CN Tower Toronto experiences some of the best reception in North America.  The tower also features a rotating restaurant, outdoor observation deck, glass floor at 1,122 ft (342 m), movie theater and an arcade.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Borobudur</Name>
+    <Latitude>
+      <Value>-7.60978</Value>
+    </Latitude>
+    <Longitude>
+      <Value>110.20412</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\06.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Borobudur</ClickableUrl>
+    <Description>Borobudur was built in a volcanic area of Java in Indonesia.  This Buddhist monument was built in the late eighth century possibly by the king of Java.  The building is well known because of its very unique architectural design that had never been seen before.  The design of the building consists of figured reliefs, decorative panels and detailed sculptures.  There are 1,460 narrative panels covering 1,900 sq. m and 1,212 decorative panels covering 600 sq. m.  The stupa, or dome shaped structure used as a Buddhist shrine, stands at 130 ft (31.5 m).</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Lighthouse of Alexandria</Name>
+    <Latitude>
+      <Value>31.216666666666601</Value>
+    </Latitude>
+    <Longitude>
+      <Value>29.9166666666666</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\27.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Lighthouse_of_Alexandria</ClickableUrl>
+    <Description>The Lighthouse of Alexandria was one of the seven wonders of the ancient world and was built during the third century BC by Ptolemy Soter and completed by his son Ptolemy Philadelphus.  The lighthouse was about 117 m (384 ft) tall and covered in white marble, at the top of the lighthouse was housed a large mirror, which during the day reflected sunlight, and at night reflected the light from a fire to guide sailors safely into harbour.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Mt. Fuji</Name>
+    <Latitude>
+      <Value>35.366666666666603</Value>
+    </Latitude>
+    <Longitude>
+      <Value>138.73333333333301</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\59.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Mount_Fuji</ClickableUrl>
+    <Description>Mt. Fuji also known as Fujisan, is a dormant stratovolcano and at 3776 meters high, is the highest mountain in Japan.  The most recent recorded eruption was in 1707, which fortunately caused no fatalities, it is now an extremely popular tourist attraction with more than 200,000 people climbing to the summit each year.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Death Valley</Name>
+    <Latitude>
+      <Value>36.850364664978898</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-117.29013138483199</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Death_Valley</ClickableUrl>
+    <Description>Death Valley is one of the hottest and driest places on Earth with summer temperatures averaging over 100 degrees Fahrenheit (37.8 Celsius), and an average rainfall of 1.96 inches (4.98 cm) a year.  It encompasses the lowest point in the Western Hemisphere at 282 feet (85.95 m) below sea level, and is home to many important fossil dig sites.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Ayers Rock</Name>
+    <Latitude>
+      <Value>-25.34676</Value>
+    </Latitude>
+    <Longitude>
+      <Value>131.03529</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\55.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Uluru</ClickableUrl>
+    <Description>Ayers Rock, also known by its Aboriginal name Uluru, is the world's largest monolith rising 318m (986 ft) above the desert floor with a circumference of 8 km (5 mi) and also extends over 3 and a half miles beneath the surface.  Ayers Rock was named after the Premier of South Australia, Sir Henry Ayers, and is one of the most popular Australian tourist attractions.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Independence Hall</Name>
+    <Latitude>
+      <Value>39.948749125835597</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-75.149747995594097</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Independence_Hall</ClickableUrl>
+    <Description>Independence Hall was  constructed between 1732 and 1756 as the State House of the Province of Pennsylvania.  The building was the site of many important American historical events, such as the adoption of the Declaration of Independence on July 4, 1776 and the drafting of the U. S. Constitution in 1787.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Mt. Rushmore</Name>
+    <Latitude>
+      <Value>43.8804025829902</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-103.458243892452</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+  <ClickableUrl>http://en.wikipedia.org/wiki/Mount_Rushmore_National_Memorial</ClickableUrl>
+    <Description>Sculptor Gutzon Borglum began drilling into the 5,725-foot (1745 m) mountain in 1927. Creation of the Shrine of Democracy took 14 years and cost 1 million dollars.  This sculpture features the faces of four exalted American presidents, George Washington, Thomas Jefferson, Theodore Roosevelt, and Abraham Lincoln, each 60 feet (18.3 m) high and 500 feet (152.4 m) up in the Black Hills of South Dakota.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Alamo</Name>
+    <Latitude>
+      <Value>29.42569</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-98.48503</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Battle_of_the_Alamo</ClickableUrl>
+    <Description>Mission San Antonio de Valero, which later became famous as the Alamo, was established in 1718. The church structure that stands today was begun about 1755, thier mission role completed, the old buildings were abandoned by 1836 when the site became the "cradle of Texas Liberty." Rebelling against repressions of Mexico's self-proclaimed dictator, Santa Anna, a band of 189 Texas volunteers defied a Mexican army of thousands for 13 days of siege (from Feb. 23 to Mar. 6). The Alamo defenders died to the last man, among them William Travis, Davy Crockett, and Jim Bowie.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Space Needle</Name>
+    <Latitude>
+      <Value>47.620564069531497</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-122.349577260096</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\53.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Space_Needle</ClickableUrl>
+    <Description>The 605 foot (184 meter) Space Needle was designed by Edward E. Carlson and was completed in December 1961, it was officially opened four months later on the first day of the World's Fair, April 21, 1962. The futuristic structure has since become a symbol for the city, and is home to festive events such as the annual New Year's Eve fireworks display.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Washington Monument</Name>
+    <Latitude>
+      <Value>38.889151837583</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-77.035309701608895</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Washington_Monument</ClickableUrl>
+    <Description>The 550 feet (167.6 m) high Egyptian obelisk, stands opposite the White House in the National Mall, the largest masonry structure in the world, it was built as a memorial to George Washington, the first President of the United States.  The monument was designed by Robert Mills, its cornerstone was laid on July 4, 1848, the capstone was set on December 6, 1884, and was opened to the public on October 9, 1888.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Capitol Building</Name>
+    <Latitude>
+      <Value>38.8896818383461</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-77.009362101656606</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/United_States_Capitol</ClickableUrl>
+    <Description>The United States Capitol was designed by Dr. William Thornton, the cornerstone was laid by President Washington on September 18, 1793, James Hoban, was placed in charge of construction of the north wing which was completed for the first session of Congress on November 17, 1800.  Today, the Capitol covers a ground area of 175,170 square feet (53392 square meters) and has a floor area of about 16.5 acres. In addition to its use by Congress, the Capitol is a museum of American art and history.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Mt. Everest </Name>
+    <Latitude>
+      <Value>27.983333333333299</Value>
+    </Latitude>
+    <Longitude>
+      <Value>86.933333333333294</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\61.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Mount_Everest</ClickableUrl>
+    <Description>The mountain named in honour of Sir George Everest, Surveyor-General of India from 1830 to 1843, is 29,035 ft (8850m) high, and is officially the highest mountain in the world.  The mountain was first conquered by Sir Edmund Hillary and Tenzig Norgay in 1953.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Galapagos Islands</Name>
+    <Latitude>
+      <Value>-0.82314059188509203</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-91.096726873017403</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Galapagos_Islands</ClickableUrl>
+    <Description>The Galapagos Islands officially named Archipielago de Colon, are an archipelago of 13 volcanic islands located in the Pacific Ocean about 1,000 kilometers west of the coast of South America, and are politically part of Ecuador. They are home to many unique species of animal and were made famous by Charles Darwin, who was partly inspired by the islands wildlife to write his 'Origin of the species'.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Palace of Versailles</Name>
+    <Latitude>
+      <Value>48.803426958982897</Value>
+    </Latitude>
+    <Longitude>
+      <Value>2.1254171812027902</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Palace_of_Versailles</ClickableUrl>
+    <Description>The Palace of Versailles began life in 1624 as Louis XIV's hunting lodge, and later, by around 1688, was turned into a royal palace.  World war I was officially ended at the palace, with the signing of the Treaty of Versailles in 1919.  Today the Palace is a  Well known tourist attraction covering 18,000 square meters.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Buildings of Petra</Name>
+    <Latitude>
+      <Value>30.322499999999899</Value>
+    </Latitude>
+    <Longitude>
+      <Value>35.480277777777701</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Petra</ClickableUrl>
+    <Description>Petra (from the Greek, meaning 'rock'), was first established sometime around the 6th century BC, by a nomadic tribe called the Nabataeans.  Located in a great rift valley, the city was half-built, half-carved into the rock, and was center for a spice trade that extended from Arabia to Aqaba.  The city is also famous for its advanced hydraulic engineering systems, which included water conservation systems and dams that were constructed to divert the rush of swollen winter waters that created flash floods.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Grand Canyon</Name>
+    <Latitude>
+      <Value>36.114525978446501</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-113.240013773548</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Grand_Canyon</ClickableUrl>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Marshall Space Flight Center (Huntsville, AL)</Name>
+    <Latitude>
+      <Value>34.677514248511599</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-86.679061368934001</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/marshall/home/index.html</ClickableUrl>
+    <Description>Marshall manages the key propulsion hardware and technologies of the Space Shuttle, develops the next generation of space transportation and propulsion systems, oversees science and hardware development for the International Space Station, and handles a variety of associated scientific endeavors to benefit space exploration and improve life here on Earth.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Jet Propulsion Laboratory (Pasedena, CA</Name>
+    <Latitude>
+      <Value>34.197612032155199</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-118.17533661378999</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.jpl.nasa.gov/</ClickableUrl>
+    <Description>The Jet Propulsion Laboratory (JPL) builds and operates unmanned spacecraft for NASA. JPL-run projects include the Galileo Jupiter mission and the Mars rovers.  JPL also manages the world-wide Deep Space Network, with facilities located in California's Mojave Desert, near Canberra, Australia, and near Madrid, Spain.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Kennedy Space Center (KSC, FL)</Name>
+    <Latitude>
+      <Value>28.590302772667599</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-80.659333421763094</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.ksc.nasa.gov/</ClickableUrl>
+    <Description>John F. Kennedy Space Center is America's premier gateway to the universe. As the world's only launch site for the Space Shuttle, Kennedy prepares the vehicles for each mission, operates each countdown and manages end-of-mission landing recovery activities. The Center also coordinates all expendable vehicle launches carrying a NASA payload, whether the launches take place at Cape Canaveral Air Force Station in Florida, Vandenberg Air Force Base in California, or elsewhere. Finally, as the last Earthly stop for International Space Station hardware, Kennedy prepares these elements for their missions in space.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Johnson Space Center (Houston, TX)</Name>
+    <Latitude>
+      <Value>29.556736706450501</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-95.093620895070302</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/johnson/home/index.html</ClickableUrl>
+    <Description>From the early Gemini, Apollo and Skylab projects to today's International Space Station and Space Shuttle Programs, JSC continues to lead NASA's efforts in human space exploration.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Space Telescope Science Institute (Baltimore, MD)</Name>
+    <Latitude>
+      <Value>39.331406033634501</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-76.624263794732002</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.stsci.edu/resources/</ClickableUrl>
+    <Description>The Space Telescope Science Institute (STScI) is home to planning, scheduling, and public outreach activities for the Hubble Space Telescope (HST). Data archive and distribution services for the HST and other missions are also provided by STScI. Additionally, STScI has been selected to develop and manage the science and operations center for the James Webb Space Telescope (JWST).</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Glenn Research Center (Cleveland, OH)</Name>
+    <Latitude>
+      <Value>41.418207682146502</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-81.8545666618448</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/glenn/home/index.html</ClickableUrl>
+    <Description>The Glenn Research Center mission is to work as a diverse team in partnership with government, industry, and academia to increase national wealth, safety, and security, protect the environment, and explore the universe. Glenn develops and transfers critical technologies that address national priorities through research, technology development, and systems development for safe and reliable aeronautics, aerospace, and space applications.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>NASA Headquarters (Washington, D.C.)</Name>
+    <Latitude>
+      <Value>38.882854709872703</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-77.016016058101499</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/hq/home/index.html</ClickableUrl>
+    <Description>NASA Headquarters, located in Washington, D.C., exercises management over the space flight centers, research centers, and other installations that constitute NASA. Responsibilities of Headquarters cover the determination of programs and projects, establishment of management policies, procedures, and performance criteria, evaluation of progress and the review and analysis of all phases of the aerospace program.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Wallops Flight Facility (Wallops Island, VA)</Name>
+    <Latitude>
+      <Value>37.940809794254399</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-75.462590908962696</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.wff.nasa.gov/</ClickableUrl>
+    <Description>NASA Goddard Space Flight Center`s Wallops Flight Facility, located on Virginia`s Eastern Shore, was established in 1945 by the National Advisory Committee for Aeronautics, as a center for aeronautic research.  Wallops is now NASA`s principal facility for management and implementation of suborbital research programs.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>White Sands Test Facitily (White Sands, NM)</Name>
+    <Latitude>
+      <Value>32.386069424011403</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-106.478101354234</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.wstf.nasa.gov/</ClickableUrl>
+    <Description>White Sands Test Facility (WSTF) is a preeminent resource for testing and evaluating potentially hazardous materials, space flight components, and rocket propulsion systems. These services are available to NASA, the Department of Defense, other federal agencies, universities, and commercial industry.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Ames Research Center (Moffet Field, CA)</Name>
+    <Latitude>
+      <Value>37.409362757924299</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-122.06454014727601</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/ames/home/index.html</ClickableUrl>
+    <Description>Founded in 1939, NASA Ames has evolved into one of the nation's premiere research labs in support of NASA missions and the nation's Vision for Space Exploration. Located in California's Silicon Valley, NASA Ames has created partnerships with leading universities and high-technology industry leaders, bringing the scientific and corporate communities together in efforts to advance human knowledge and explore the unknown.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Dryden Flight Research Center (Edwards, CA)</Name>
+    <Latitude>
+      <Value>34.919005952128202</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-117.932712835857</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/dryden/home/index.html</ClickableUrl>
+    <Description>The Dryden Flight Research Center, located at Edwards, California, is NASA's primary installation for flight research.  Projects at Dryden over the past 50 years have lead to major advancements in the design and capabilities of many civilian and military aircraft.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Goddard Institute for Space Studies (New York, New York)</Name>
+    <Latitude>
+      <Value>40.805419003282204</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-73.965553491848098</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.giss.nasa.gov/</ClickableUrl>
+    <Description>The NASA Goddard Institute for Space Studies (GISS), at Columbia University in New York City, is a laboratory of the Earth-Sun Exploration Division of NASA's Goddard Space Flight Center and a unit of the Columbia University Earth Institute. Research at GISS emphasizes a broad study of global climate change.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Goddard Space Flight Center (Greenbelt, MD)</Name>
+    <Latitude>
+      <Value>38.993912327393502</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-76.845589643555101</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/goddard/home/index.html</ClickableUrl>
+    <Description>Goddard Space Flight Center, is home to the Nation's largest organization of combined scientists and engineers dedicated to learning and sharing their knowledge of the Earth, solar system, and Universe.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Independent Verification and Validation Facility (Fairmont, WV)</Name>
+    <Latitude>
+      <Value>39.4353041493221</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-80.192580155349702</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.ivv.nasa.gov/index.php</ClickableUrl>
+    <Description>The Independent Verification and Validation Facility is the NASA agent for the development and application of independent verification and validation processes and technology to improve reliability and reduce risk of software systems.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Langley Research Center (Hampton, VA)</Name>
+    <Latitude>
+      <Value>37.1023755362827</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-76.382444849717899</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/langley/home/index.html</ClickableUrl>
+    <Description>Langley continues to forge new frontiers in aviation and space research as it has since 1917, when it was established as the nation's first civilian aeronautics laboratory. Langley's mission and contributions to aerospace, atmospheric sciences and technology commercialization are improving the way the world lives.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Stennis Space Center (SSC, MS)</Name>
+    <Latitude>
+      <Value>30.300570319747699</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-89.595457694678998</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Data\Icons\31.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://www.nasa.gov/centers/stennis/home/index.html</ClickableUrl>
+    <Description>Stennis Space Center is NASA's primary center for Rocket Propulsion Testing and home to NASA's Applied Science Directorate. It is a multi-agency center with more than 30 resident agencies.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Sphinx</Name>
+    <Latitude>
+      <Value>29.97586</Value>
+    </Latitude>
+    <Longitude>
+      <Value>31.13675</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\39.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Sphinx</ClickableUrl>
+    <Description>The Sphinx is also associated with the Great Pyramids and is a symbol of strength among the Ancient Egyptians and was the idea of the son of Khufu, Kaphre around 2540 B.C.  An Egyptian headpiece adorns the head of the Sphinx, and other noticeable features include a beard and a nose.  The primary make up of the Sphinx is that of the head of a man and the body of a lion measuring a total of 150 ft.  The Sphinx has also been buried by sand and dug out of the sand numerous times and this is represented in the story of Dream Stella.  The Dream Stella tells the story of Thutmosis IV who fell asleep under the Sphinx and dreamed that it told him to dig the monument out of the sand.  The Sphinx later promised Thutmosis IV he would become King of Egypt. </Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Itaipu Dam   Foz do Iguacu, Brazil</Name>
+    <Latitude>
+      <Value>-25.6</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-54.483333000000002</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\22.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Itaipu_Dam</ClickableUrl>
+    <Description>The hydroelectric power plant of the Itaipu is located between the border of Brazil and Paraguay.  The Itaipu Dam was built from 1975 to 1991 and is 25,407 ft (7744 m) high.  The dam produces over 7.5 million megawatts of power per hour from 18 generators.  In 1995 alone the dam produced 25% of Brazil's power and 78% of Paraguay's energy.  The volume of iron and steel used to build the dam would make 380 Eiffel Towers.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Itaipu Dam   Ciudad del Este, Paraguay</Name>
+    <Latitude>
+      <Value>-25.516667000000002</Value>
+    </Latitude>
+    <Longitude>
+      <Value>-54.516666999999998</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\22.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Itaipu_Dam</ClickableUrl>
+    <Description>The hydroelectric power plant of the Itaipu is located between the border of Brazil and Paraguay.  The Itaipu Dam was built from 1975 to 1991 and is 25,407 ft (7744 m) high.  The dam produces over 7.5 million megawatts of power per hour from 18 generators.  In 1995 alone the dam produced 25% of Brazil's power and 78% of Paraguay's energy.  The volume of iron and steel used to build the dam would make 380 Eiffel Towers.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Channel Tunnel (Chunnel) Sangatte, France</Name>
+    <Latitude>
+      <Value>50.916468136798301</Value>
+    </Latitude>
+    <Longitude>
+      <Value>1.7958228568697401</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\07.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Channel_Tunnel</ClickableUrl>
+    <Description>The Channel Tunnel, also called the Euro Tunnel or Chunnel, consists of three tunnels, two of the tubes are full sized and used rail traffic, In between the two train tunnels is a smaller service tunnel that serves as an emergency escape route.  The tunnel was completed in 1994, cost 21 billion dollars, is 163,680 feet (49.89 km) long and travels beneath the English channel from Folkestone in England, to Sangatte in France.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>Channel Tunnel (Chunnel) Folkestone, England</Name>
+    <Latitude>
+      <Value>51.093712968255304</Value>
+    </Latitude>
+    <Longitude>
+      <Value>1.12273571112112</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\07.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Channel_Tunnel</ClickableUrl>
+    <Description>The Channel Tunnel, also called the Euro Tunnel or Chunnel, consists of three tunnels, two of the tubes are full sized and used rail traffic, In between the two train tunnels is a smaller service tunnel that serves as an emergency escape route.  The tunnel was completed in 1994, cost 21 billion dollars, is 163,680 feet (49.89 km) long and travels beneath the English channel from Folkestone in England, to Sangatte in France.</Description>
+  </Icon>
+  <Icon ShowAtStartup="true">
+    <Name>The Kremlin</Name>
+    <Latitude>
+      <Value>55.75</Value>
+    </Latitude>
+    <Longitude>
+      <Value>37.616667</Value>
+    </Longitude>
+    <DistanceAboveSurface>100</DistanceAboveSurface>
+    <TextureFilePath>Add-ons\Earth\Landmark\Icons\24.png</TextureFilePath>
+    <TextureWidthPixels>128</TextureWidthPixels>
+    <TextureHeightPixels>128</TextureHeightPixels>
+    <IconWidthPixels>24</IconWidthPixels>
+    <IconHeightPixels>24</IconHeightPixels>
+    <ClickableUrl>http://en.wikipedia.org/wiki/Moscow_Kremlin</ClickableUrl>
+    <Description>The Moscow Kremlin is situated in the very center of the capital of Russia.  Its walls and towers, golden-domed cathedrals and ancient palaces stand high on the Borovitskiy Hill above the Moskva River.  It was first developed in the 11th century as a fortified town, or Kremlin.  Since 1991,  the Kremlin has been the official residence of the President of the Russian Federation.</Description>
+  </Icon>
+  <ExtendedInformation>
+    <ToolBarImage>Add-ons\Earth\Landmark\Icons\landmarks.png</ToolBarImage>
+  </ExtendedInformation>
+</IconSet>
+<!-- edited with XMLSPY v2004 rel. 4 U (http://www.xmlspy.com) by Patrick Hogan (private) -->
+<WMS_SERVER_LIST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Server>
+		<Name>Animated Earth</Name>
+		<ServerUrl>http://aes.gsfc.nasa.gov/cgi-bin/wms</ServerUrl>
+		<Version>1.3.0</Version>
+		<Abstract>Animated Earth Visualization Server</Abstract>
+	</Server>
+	<Server>
+		<Name>GLOBE</Name>
+		<ServerUrl>http://viz.globe.gov/viz-bin/wmt.cgi</ServerUrl>
+		<Version>1.1.1</Version>
+		<Abstract>GLOBE Visualization Server</Abstract>
+	</Server>
+</WMS_SERVER_LIST>
+<DAPServers>
+  <server name="Geosoft DAP Data Server" url="http://dap.geosoft.com" status="OnLine" major_version="6" minor_version="2" cache_version="6" />
+  <server name="Ryan Dap Server" url="http://tec-rp" status="OnLine" major_version="6" minor_version="3" cache_version="91" />
+</DAPServers>
+</ROOT>

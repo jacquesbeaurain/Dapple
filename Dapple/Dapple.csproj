@@ -1,0 +1,564 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{585D62EE-A32B-48CF-9677-2ECA07B298FE}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dapple</RootNamespace>
+    <AssemblyName>Dapple</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DAPPLE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;DAPPLE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2910.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Version.Assembly.cs">
+      <Link>Version.Assembly.cs</Link>
+    </Compile>
+    <Compile Include="Arguments.cs">
+    </Compile>
+    <Compile Include="LayerGeneration\GeorefImageLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TriStateTreeView\TriStateTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <EmbeddedResource Include="TriStateTreeView\StateChecked16.ico" />
+    <EmbeddedResource Include="TriStateTreeView\StateIndeterminate16.ico" />
+    <EmbeddedResource Include="TriStateTreeView\StateNone16.ico" />
+    <EmbeddedResource Include="TriStateTreeView\StateUnchecked16.ico" />
+    <EmbeddedResource Include="TriStateTreeView\TriStateTreeView.resx">
+      <DependentUpon>TriStateTreeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="ConfigurationWizard\Framework\Wizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigurationWizard\Framework\WizardPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConfigurationWizard\Pages\CachePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConfigurationWizard\Pages\FinalPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConfigurationWizard\Pages\ProxyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConfigurationWizard\Pages\WelcomePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <EmbeddedResource Include="ConfigurationWizard\Framework\Wizard.resx">
+      <DependentUpon>Wizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigurationWizard\Framework\WizardPage.resx">
+      <DependentUpon>WizardPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigurationWizard\Pages\CachePage.resx">
+      <DependentUpon>CachePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigurationWizard\Pages\FinalPage.resx">
+      <DependentUpon>FinalPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigurationWizard\Pages\ProxyPage.resx">
+      <DependentUpon>ProxyPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfigurationWizard\Pages\WelcomePage.resx">
+      <DependentUpon>WelcomePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="AboutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DAP\Common\Queue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DAP\Common\Semaphore.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DAP\DAPGetData\AddServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DAP\DAPGetData\Catalog.cs" />
+    <Compile Include="DAP\DAPGetData\CatalogCollection.cs" />
+    <Compile Include="DAP\DAPGetData\Constant.cs" />
+    <Compile Include="DAP\DAPGetData\GetDapError.cs" />
+    <Compile Include="DAP\DAPGetData\Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DAP\DAPGetData\MetaDataViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DAP\DAPGetData\MetaDataViewer.Designer.cs">
+      <DependentUpon>MetaDataViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DAP\DAPGetData\RowChanged.cs" />
+    <Compile Include="DAP\DAPQuadLayer Impl\DapDownload.cs" />
+    <Compile Include="DAP\DAPQuadLayer Impl\DAPImageAccessor.cs" />
+    <Compile Include="DAP\DAPGetData\DataSetList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DAPGetData\Server.cs" />
+    <Compile Include="DAP\DAPGetData\ServerList.cs" />
+    <Compile Include="DAP\DAPGetData\ServerSelect.cs" />
+    <Compile Include="DAP\DAPGetData\ViewMeta.cs" />
+    <Compile Include="DAP\DataGridButtonColumn\DataGridButtonColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DataGridButtonColumn\DataGridCheckBoxColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DataGridButtonColumn\DataGridColorButtonColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DataGridButtonColumn\DataGridComboboxColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DataGridButtonColumn\DataGridImageColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DataGridButtonColumn\DataGridTextButtonColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\DataGridButtonColumn\DataGridTypeColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DAP\ErrorLogger\ErrorLogger.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="DAP\DAPGetData\AddServer.resx">
+      <DependentUpon>AddServer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DAP\DAPGetData\DataSetList.resx">
+      <DependentUpon>DataSetList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DAP\DAPGetData\images\down.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\enserver.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\fullview.ICO" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\getdatadap.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\large_map.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\listviewselected.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\meta.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\offline.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\removealldap.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\removeseldatasetdap.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\results.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\resultsdap.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\searchdap.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\selectaoi.ICO" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\selectedrowdap.ico" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\small_map.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\trash.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\treeviewselected.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\images\up.gif" />
+    <EmbeddedResource Include="DAP\DAPGetData\Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DAP\DAPGetData\MetaDataViewer.resx">
+      <DependentUpon>MetaDataViewer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DAP\DAPGetData\ServerList.resx">
+      <DependentUpon>ServerList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\database.gif" />
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\document.gif" />
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\grid.gif" />
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\map.gif" />
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\picture.gif" />
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\point.gif" />
+    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\spf.gif" />
+    <Compile Include="DappleToolStripRenderer.cs" />
+    <Compile Include="DappleView.cs" />
+    <Compile Include="ExportView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportView.Designer.cs">
+      <DependentUpon>ExportView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FixedCollapseSplitContainer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="frmProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmProperties.designer.cs">
+      <DependentUpon>frmProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LayerGeneration\LayerBuilderContainer.cs" />
+    <Compile Include="LayerGeneration\TileSetBuilder.cs" />
+    <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
+    <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\DAPCatalogBuilder.cs" />
+    <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\LayerBuilderProvider.cs" />
+    <Compile Include="LayerGeneration\QuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\WMSCatalogBuilder.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Content Include="Config\World.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MetaDataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MetaDataForm.Designer.cs">
+      <DependentUpon>MetaDataForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins\VirtualEarth\VEPluginLayer.cs">
+    </Compile>
+    <Compile Include="PropertyBag.cs" />
+    <Compile Include="SaveViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SaveViewForm.Designer.cs">
+      <DependentUpon>SaveViewForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AboutDialog.resx">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ExportView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmProperties.resx">
+      <DependentUpon>frmProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MetaDataForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MetaDataForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SaveViewForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SaveViewForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Servers\AddDAP.resx">
+      <DependentUpon>AddDAP.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Servers\AddWMS.resx">
+      <DependentUpon>AddWMS.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Servers\AddImageTile.resx">
+      <DependentUpon>AddImageTile.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewOpenDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ViewOpenDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <Content Include="Plugins\Compass\Compass.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="System\7za.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="System\geotifcp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\dappleview.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\default.dapple">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Servers\AddDAP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Servers\AddDAP.designer.cs">
+      <DependentUpon>AddDAP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Servers\AddWMS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Servers\AddWMS.designer.cs">
+      <DependentUpon>AddWMS.cs</DependentUpon>
+    </Compile>
+    <None Include="Servers\AddImageTile.cs">
+      <SubType>Form</SubType>
+    </None>
+    <None Include="Servers\AddImageTile.designer.cs">
+      <DependentUpon>AddImageTile.cs</DependentUpon>
+    </None>
+    <Compile Include="TrackBarWithPaint.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TreeUtils.cs" />
+    <Compile Include="ViewOpenDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewOpenDialog.Designer.cs">
+      <DependentUpon>ViewOpenDialog.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="app.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\WorldWind.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200401.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200402.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200403.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200404.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200405.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200406.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200407.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200408.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200409.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200410.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200411.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200412.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\MetaViewer\collapsed.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\MetaViewer\dap_dataset.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\MetaViewer\expanded.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\MetaViewer\geometatree.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\MetaViewer\geosoft.meta.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\MetaViewer\wms_cap_meta.xslt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Atmosphere\Atmosphere.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Atmosphere\Earth_Light.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Atmosphere\Earth_Thick.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\BlueMarble\settings.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\compass circle 128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\compass rose 128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Arrow_North.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Big.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Big_White.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Cross_Minimal.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Rose_Classic.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Simple.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Simple_Soft.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Simple_White.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Vector_Arrow.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\Compass_Vector_Arrow_Circle.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Compass\tbcompass.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Stars3D\Flare.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Stars3D\Hipparcos_Stars_Mag6x5044.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Stars3D\Hipparcos_Stars_Mag7.7x31399.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Stars3D\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Stars3D\Stars3D.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\VirtualEarth\nodata.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\VirtualEarth\proj.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\VirtualEarth\VirtualEarthPlugin.png" />
+    <Content Include="Plugins\VirtualEarth\VirtualEarthPushPin.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\import.png" />
+    <None Include="Resources\georef_image.ico" />
+    <Content Include="Scripts\AroundTheEquator.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DisplayMessageTest01.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\SetOpacity.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="System\listgeo.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="System\mailer.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="System\mailerd.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="version.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AltovaGen\AltovaGen.csproj">
+      <Project>{02816A2C-2B27-4782-A163-6AD58B5BF6F5}</Project>
+      <Name>AltovaGen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\dapxmlclient\dapxmlclient.csproj">
+      <Project>{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}</Project>
+      <Name>dapxmlclient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PluginSDK\PluginSDK.csproj">
+      <Project>{30178337-6BBE-45A0-B7DF-73B2A46F06EE}</Project>
+      <Name>PluginSDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{19E069AA-4993-4CA3-8F80-CCB76E96E3ED}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebDownload\WebDownload.csproj">
+      <Project>{3B2110D8-D29C-4057-8192-2BFB39A56D54}</Project>
+      <Name>WebDownload</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WorldWind\WorldWind.csproj">
+      <Project>{394E6BC1-62F8-4776-9FC5-25633A239433}</Project>
+      <Name>WorldWind</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

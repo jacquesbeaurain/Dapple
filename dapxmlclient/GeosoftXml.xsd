@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="GeosoftXml" targetNamespace="http://tempuri.org/GeosoftXml.xsd" elementFormDefault="qualified"
+	xmlns="http://tempuri.org/GeosoftXml.xsd" xmlns:mstns="http://tempuri.org/GeosoftXml.xsd"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="GEOSOFT_XML">
+		<xs:complexType>
+			<xs:attribute name="version" type="xs:string" />
+			<xs:choice>
+				<xs:element name="REQUEST" type="REQUEST" />
+				<xs:element name="RESPONSE" type="RESPONSE" />
+				<xs:element name="ERROR" type="ERROR"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="REQUEST">
+		<xs:complexType>
+			<xs:choice minOccurs="1" maxOccurs="1">
+				<xs:element name="GET_CATALOG" type="GET_CATALOG_REQUEST" />
+				<xs:element name="GET_METADATA" type="GET_METADATA_REQUEST" />
+				<xs:element name="GET_IMAGE" type="GET_IMAGE_REQUEST" />
+				<xs:element name="EXTRACT" type="EXTRACT_REQUEST" />
+				<xs:element name="EXTRACT_STATUS" type="EXTRACT_STATUS_REQUEST" />
+				<xs:element name="EXTRACT_CANCEL" type="EXTRACT_CANCEL_REQUEST" />
+				<xs:element name="TRANSLATE_COORDINATES" type="TRANSLATE_COORDINATES_REQUEST" />
+				<xs:element name="TRANSLATE_BOUNDING_BOX" type="TRANSLATE_BOUNDING_BOX_REQUEST" />
+				<xs:element name="GET_DEFAULT_RESOLUTION" type="GET_DEFAULT_RESOLUTION_REQUEST" />
+				<xs:element name="GET_COORDINATE_SYSTEM_LIST" type="GET_COORDINATE_SYSTEM_LIST_REQUEST" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="RESPONSE">
+		<xs:complexType>
+			<xs:choice minOccurs="1" maxOccurs="1">
+				<xs:element name="CATALOG" type="CATALOG_RESPONSE" />
+				<xs:element name="METADATA" type="METADATA_RESPONSE" />
+				<xs:element name="IMAGE" type="IMAGE_RESPONSE" />
+				<xs:element name="EXTRACT" type="EXTRACT_RESPONSE" />
+				<xs:element name="EXTRACT_STATUS" type="EXTRACT_STATUS_RESPONSE" />
+				<xs:element name="TRANSLATE_COORDINATES" type="TRANSLATE_COORDINATES_RESPONSE" />
+				<xs:element name="TRANSLATE_BOUNDING_BOX" type="TRANSLATE_BOUNDING_BOX_RESPONSE" />
+				<xs:element name="DEFAULT_RESOLUTION" type="DEFAULT_RESOLUTION_RESPONSE" />
+				<xs:element name="COORDINATE_SYSTEM_LIST" type="COORDINATE_SYSTEM_LIST_RESPONSE" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ERROR" type="xs:string">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional"/>
+			<xs:attribute name="code" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GET_CATALOG_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="max_depth" type="xs:integer" use="optional" />
+			<xs:attribute name="max_results" type="xs:integer" use="optional" />
+			<xs:all>
+				<xs:element name="CATALOG" minOccurs="0">
+					<xs:complexType>
+						<xs:attribute name="path" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GET_METADATA_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="name" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GET_IMAGE_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>
+				<xs:element name="FORMAT">
+					<xs:complexType>
+						<xs:attribute name="type" type="xs:string" />
+						<xs:attribute name="transparent" type="xs:bool" use="optional" />
+						<xs:attribute name="background" type="xs:string" use="optional" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX" />
+				<xs:element name="RESOLUTION">
+					<xs:complexType>
+						<xs:attribute name="height" type="xs:integer" />
+						<xs:attribute name="width" type="xs:integer" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+				<xs:element name="LAYERS">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="DATASET" type="DATASET" maxOccurs="unbounded" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EXTRACT_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>
+				<xs:element name="FORMAT">
+					<xs:complexType>
+						<xs:attribute name="type" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX" />
+				<xs:element name="RESOLUTION">
+					<xs:complexType>
+						<xs:attribute name="value" type="xs:float" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+				<xs:element name="DATASET" type="DATASET"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EXTRACT_STATUS_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="key" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EXTRACT_CANCEL_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="key" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EXTRACT_GET_DATA_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="key" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TRANSLATE_COORDINATES_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>
+				<xs:element name="INPUT">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OUTPUT">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="POINT" type="POINT" maxOccurs="unbounded" />
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TRANSLATE_BOUNDING_BOX_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>
+				<xs:element name="INPUT">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OUTPUT">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX" />
+				<xs:element name="RESOLUTION">
+					<xs:complexType>
+						<xs:attribute name="value" type="xs:float" />
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GET_DEFAULT_RESOLUTION_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="type" type="xs:string" />
+			<xs:all>
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX" />
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GET_COORDINATE_SYSTEM_LIST_REQUEST">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="list_type" type="xs:string" />
+			<xs:attribute name="datum" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CATALOG_RESPONSE">
+		<xs:complexType>
+			<xs:all maxOccurs="unbounded">
+				<xs:element name="COLLECTION" type="COLLECTION"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="COLLECTION">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:all>
+				<xs:element name="NODE">
+					<xs:complexType>
+						<xs:choice maxOccurs="unbounded">
+							<xs:element name="ITEM" type="ITEM"/>
+							<xs:element name="COLLECTION" type="COLLECTION"/>
+						</xs:choice>						
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ITEM">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="title" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:all>
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="METADATA_RESPONSE">
+		<xs:complexType>
+			<xs:all maxOccurs="unbounded">
+				<xs:element name="CLASS" type="CLASS"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CLASS">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:all>
+				<xs:element name="NODE">
+					<xs:complexType>
+						<xs:choice maxOccurs="unbounded">
+							<xs:element name="ATTRIBUTE" type="ATTRIBUTE"/>
+							<xs:element name="TABLE" type="TABLE"/>
+							<xs:element name="CLASS" type="CLASS"/>
+						</xs:choice>						
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ATTRIBUTE">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="value" type="xs:string"/>			
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TABLE">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="ITEM">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string"/>
+						<xs:all maxOccurs="unbounded">
+							<xs:element name="ATTRIBUTE" type="ATTRIBUTE"/>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IMAGE_RESPONSE">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="PICTURE" type="xs:string"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+		<xs:element name="EXTRACT_RESPONSE">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>
+				<xs:element name="KEY">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string"/>						
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="FORMAT">
+					<xs:complexType>
+						<xs:attribute name="type" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX" />
+				<xs:element name="RESOLUTION">
+					<xs:complexType>
+						<xs:attribute name="value" type="xs:float" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="COORDINATE_SYSTEM" type="COORDINATE_SYSTEM" />
+				<xs:element name="DATASET" type="DATASET"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EXTRACT_STATUS_RESPONSE">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="key" type="xs:string" />
+			<xs:all>
+				<xs:element name="STATUS">
+					<xs:complexType>
+						<xs:attribute name="value" type="xs:string"/>
+						<xs:attribute name="progress" type="xs:string" use="optional"/>
+						<xs:attribute name="task" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EXTRACT_DATA_RESPONSE" type="xs:string">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:attribute name="key" type="xs:string" />			
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TRANSLATE_COORDINATES_RESPONSE">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>				
+				<xs:element name="POINT" type="POINT" maxOccurs="unbounded" />
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TRANSLATE_BOUNDING_BOX_RESPONSE">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>				
+				<xs:element name="BOUNDING_BOX" type="BOUNDING_BOX" />
+				<xs:element name="RESOLUTION" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:attribute name="value" type="xs:float" />
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DEFAULT_RESOLUTION_RESPONSE">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all>
+				<xs:element name="RESOLUTION">
+					<xs:complexType>
+						<xs:attribute name="value" type="xs:float"/>						
+					</xs:complexType>
+				</xs:element>				
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="COORDINATE_SYSTEM_LIST_RESPONSE">
+		<xs:complexType>
+			<xs:attribute name="handle" type="xs:string" use="optional" />
+			<xs:all minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="ITEM">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="BOUNDING_BOX">
+		<xs:complexType>
+			<xs:attribute name="maxX" type="xs:float" />
+			<xs:attribute name="maxY" type="xs:float" />
+			<xs:attribute name="minX" type="xs:float" />
+			<xs:attribute name="minY" type="xs:float" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="COORDINATE_SYSTEM">
+		<xs:complexType>
+			<xs:attribute name="datum" type="xs:string" />
+			<xs:attribute name="projection" type="xs:string" use="optional" />
+			<xs:attribute name="units" type="xs:string" use="optional" />
+			<xs:attribute name="local_datum" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DATASET">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="POINT">
+		<xs:complexType>
+			<xs:attribute name="x" type="xs:float" />
+			<xs:attribute name="y" type="xs:float" />
+			<xs:attribute name="z" type="xs:float" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

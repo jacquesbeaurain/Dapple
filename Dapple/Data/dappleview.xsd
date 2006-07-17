@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 rel. 3 U (http://www.altova.com) by Jacques Beaurain (private) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="dappleview">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="servers" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="builderentry" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="activelayers" minOccurs="0"/>
+				<xs:element ref="cameraorientation" minOccurs="0"/>
+				<xs:element name="notes" type="xs:string" minOccurs="0"/>
+				<xs:element name="preview" type="xs:base64Binary" minOccurs="0"/>
+			</xs:all>
+			<xs:attribute name="showbluemarble" type="xs:boolean" use="optional" default="true"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="builderdirectoryBaseType"/>
+	<xs:element name="builderdirectory">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="builderdirectoryBaseType">
+					<xs:sequence>
+						<xs:element ref="builderentry" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="specialcontainer" type="SpecialDirectoryType" use="optional"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="boundingbox">
+		<xs:complexType>
+			<xs:attribute name="minlat" type="xs:double" use="required"/>
+			<xs:attribute name="maxlat" type="xs:double" use="required"/>
+			<xs:attribute name="minlon" type="xs:double" use="required"/>
+			<xs:attribute name="maxlon" type="xs:double" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cameraorientation">
+		<xs:complexType>
+			<xs:attribute name="lat" type="xs:double" use="required"/>
+			<xs:attribute name="lon" type="xs:double" use="required"/>
+			<xs:attribute name="heading" type="xs:double" use="required"/>
+			<xs:attribute name="tilt" type="xs:double" use="required"/>
+			<xs:attribute name="altitude" type="xs:double" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="activelayers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="dataset" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="uri" type="xs:string" use="required"/>
+						<xs:attribute name="opacity" use="optional" default="255">
+							<xs:simpleType>
+								<xs:restriction base="xs:unsignedShort">
+									<xs:minInclusive value="0"/>
+									<xs:maxInclusive value="255"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="hierarchy" type="xs:string" use="optional"/>
+						<xs:attribute name="invisible" type="xs:boolean" default="false"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="SpecialDirectoryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DAPServers"/>
+			<xs:enumeration value="ImageServers"/>
+			<xs:enumeration value="WMSServers"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="builderentry">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="builderdirectory"/>
+				<xs:element name="dapcatalog">
+					<xs:complexType>
+						<xs:attribute name="url" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="wmscatalog">
+					<xs:complexType>
+						<xs:attribute name="capabilitiesurl" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="localfilesystem">
+					<xs:complexType>
+						<xs:attribute name="path" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="tileserverset">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="tilelayers" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="tilelayer" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:all>
+													<xs:element ref="boundingbox"/>
+												</xs:all>
+												<xs:attribute name="name" type="xs:string" use="required"/>
+												<xs:attribute name="url" type="xs:string" use="required"/>
+												<xs:attribute name="dataset" type="xs:string" use="required"/>
+												<xs:attribute name="levelzerotilesize" type="xs:double" use="required"/>
+												<xs:attribute name="tilepixelsize" type="xs:unsignedShort" use="optional" default="512"/>
+												<xs:attribute name="levels" type="xs:unsignedShort" use="required"/>
+												<xs:attribute name="imageextension" type="xs:string" use="required"/>
+												<xs:attribute name="distanceabovesurface" type="xs:int" use="optional" default="0"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="virtualearth">
+					<xs:complexType>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

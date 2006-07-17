@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WorldWindSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FormatVersion>1.0.0.0</FormatVersion>
+  <UseWindowsDefaultProxy>true</UseWindowsDefaultProxy>
+  <ProxyUrl />
+  <UseDynamicProxy>false</UseDynamicProxy>
+  <ProxyUsername />
+  <ProxyPassword />
+  <CacheSizeMegaBytes>10</CacheSizeMegaBytes>
+  <CacheCleanupInterval>PT1H</CacheCleanupInterval>
+  <DefaultWorld>Earth</DefaultWorld>
+  <ConfigurationWizardAtStartup>true</ConfigurationWizardAtStartup>
+</WorldWindSettings>

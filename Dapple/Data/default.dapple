@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dappleview xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="M:\w\worldwind\dev\WW Control\GeosoftWWApp\Config\dappleview.xsd">
+   <servers>
+      <builderentry>
+         <builderdirectory name="DAP Servers" specialcontainer="DAPServers">
+            <builderentry>
+               <dapcatalog url="http://dap.geosoft.com"/>
+            </builderentry>
+         </builderdirectory>
+      </builderentry>
+      <builderentry>
+         <builderdirectory name="Image Tile Servers" specialcontainer="ImageServers">
+            <builderentry>
+               <tileserverset name="NASA Landsat Imagery">
+                  <tilelayers>
+                     <tilelayer name="NLT Landsat7 (Visible Color)" url="http://worldwind25.arc.nasa.gov/tile/tile.aspx" imageextension="jpg" levelzerotilesize="2.25" dataset="105" levels="5">
+                        <boundingbox minlon="-180" maxlon="180" minlat="-90" maxlat="90"/>
+                     </tilelayer>
+                     <tilelayer name="NLT Landsat7 (Pseudo Color)" url="http://worldwind28.arc.nasa.gov/TestWebApp/WebForm1.aspx" levelzerotilesize="2.25" levels="5" imageextension="jpg" dataset="nlt_pseudo">
+                        <boundingbox minlon="-180" maxlon="180" minlat="-90" maxlat="90"/>
+                     </tilelayer>
+                     <tilelayer name="Geocover 2000" url="http://worldwind25.arc.nasa.gov/tile/tile.aspx" levelzerotilesize="2.25" levels="6" imageextension="jpg" dataset="geocover2000">
+                        <boundingbox minlon="-180" maxlon="180" minlat="-90" maxlat="90"/>
+                     </tilelayer>
+                     <tilelayer name="Geocover 1990" url="http://worldwind28.arc.nasa.gov/TestWebApp/WebForm1.aspx" levelzerotilesize="2.25" levels="5" imageextension="jpg" dataset="es_1990jpg">
+                        <boundingbox minlon="-180" maxlon="180" minlat="-90" maxlat="90"/>
+                     </tilelayer>
+                     <tilelayer name="Community Landsat7 (Visible Color)" url="http://tileservice.worldwindcentral.org/" levelzerotilesize="2" levels="7" imageextension="jpg" dataset="OnEarthLandsat7Vis">
+                        <boundingbox minlon="-180" maxlon="180" minlat="-90" maxlat="90"/>
+                     </tilelayer>
+                     <tilelayer name="Community Landsat7 (Pseudo Color)" url="http://tileservice.worldwindcentral.org/" levelzerotilesize="2" levels="7" imageextension="jpg" dataset="OnEarthLandsat7Pseudo">
+                        <boundingbox minlon="-180" maxlon="180" minlat="-90" maxlat="90"/>
+                     </tilelayer>
+                  </tilelayers>
+               </tileserverset>
+            </builderentry>
+            <builderentry>
+               <tileserverset name="USGS Imagery">
+                  <tilelayers>
+                     <tilelayer name="USGS Digital Ortho" url="http://worldwind25.arc.nasa.gov/tile/tile.aspx" imageextension="jpg" levelzerotilesize="0.8" dataset="101" levels="8">
+                        <boundingbox minlon="-168.67" maxlon="-65.15" minlat="17.84" maxlat="71.55"/>
+                     </tilelayer>
+                     <tilelayer name="USGS Topo Maps" url="http://worldwind25.arc.nasa.gov/tile/tile.aspx" imageextension="jpg" levelzerotilesize="0.8" dataset="102" levels="7">
+                        <boundingbox minlon="-168.67" maxlon="-65.15" minlat="17.84" maxlat="71.55"/>
+                     </tilelayer>
+                     <tilelayer name="USGS Urban Area Ortho" url="http://worldwind25.arc.nasa.gov/tile/tile.aspx" imageextension="jpg" levelzerotilesize="0.8" dataset="104" levels="10">
+                        <boundingbox minlon="-168.67" maxlon="-65.15" minlat="17.84" maxlat="71.55"/>
+                     </tilelayer>
+                  </tilelayers>
+               </tileserverset>
+            </builderentry>
+            <builderentry>
+               <virtualearth name="Virtual Earth"/>
+            </builderentry>
+         </builderdirectory>
+      </builderentry>
+      <builderentry>
+         <builderdirectory name="WMS Servers" specialcontainer="WMSServers">
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://gdr.ess.nrcan.gc.ca/wmsconnector/com.esri.wms.Esrimap/gdr_e"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://atlas.gc.ca/cgi-bin/atlaswms_en?VERSION=1.1.1"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://apps1.gdr.nrcan.gc.ca/cgi-bin/canmin_en-ca_ows"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://www.ga.gov.au/bin/getmap.pl"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://apps1.gdr.nrcan.gc.ca/cgi-bin/worldmin_en-ca_ows"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://maps.customweather.com/image"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://cgkn.net/cgi-bin/cgkn_wms"/>
+            </builderentry>
+            <builderentry>
+               <wmscatalog capabilitiesurl="http://wms.jpl.nasa.gov/wms.cgi"/>
+            </builderentry>
+         </builderdirectory>
+      </builderentry>
+   </servers>
+   <cameraorientation lat="0" lon="0" altitude="12756273" heading="0" tilt="0" />
+   <notes>The default Dapple view.</notes>
+</dappleview>
