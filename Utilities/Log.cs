@@ -24,7 +24,7 @@ namespace Utility
 		{
 			try
 			{
-				logPath = DefaultSettingsDirectory();
+				logPath = DefaultLogDirectory();
 				Directory.CreateDirectory(logPath);
 
 				// TODO: do not hardcode logfile name?
@@ -39,22 +39,10 @@ namespace Utility
 			}
 		}
 
-		// Return the full default directory path to be used for storing settings files,
-		// which is also where logfiles will be stored.
-		public static string DefaultSettingsDirectory() 
+		// Return the full default directory path to be used for storing log files
+		public static string DefaultLogDirectory() 
 		{
-			// Example for Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData):
-			// @"C:\Documents and Settings\<user>\Application Data"
-			return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + DefaultSettingsDirectorySuffix();
-		}
-
-		// Return the program-specifc part of the full default directory path to be used
-		// for storing settings files, which is also where logfiles will be stored.
-		public static string DefaultSettingsDirectorySuffix() 
-		{
-			// Application.ProductName is set by AssemblyProduct in \WorldWind\AssembyInfo.cs
-			Version ver = new Version(Application.ProductVersion);
-			return string.Format(@"\{0}\{1}\{2}.{3}.{4}", Application.CompanyName, Application.ProductName, ver.Major, ver.Minor, ver.Build);
+         return Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData"), "Log");
 		}
 
 		/// <summary>

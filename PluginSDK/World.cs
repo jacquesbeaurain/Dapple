@@ -129,21 +129,6 @@ namespace WorldWind
 		}
 
 		/// <summary>
-		/// Deserializes settings from default location
-		/// </summary>
-		public static void LoadSettings()
-		{
-			try
-			{
-				Settings = (WorldSettings) SettingsBase.Load(Settings);
-			}
-			catch(Exception caught)
-			{
-				Utility.Log.Write(caught);
-			}
-		}
-
-		/// <summary>
 		/// Deserializes settings from specified location
 		/// </summary>
 		public static void LoadSettings(string directory)

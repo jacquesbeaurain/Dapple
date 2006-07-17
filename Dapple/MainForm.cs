@@ -37,8 +37,6 @@ namespace Dapple
       #region Statics
 
       public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
-      public const string AppCompanyName = "Dapple";
-      public const string ViewFolder = "DappleViews";
       public const string ViewExt = ".dapple";
       public const string LastView = "lastview" + ViewExt;
       public const string HomeView = "home" + ViewExt;
