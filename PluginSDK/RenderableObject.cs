@@ -111,6 +111,28 @@ namespace WorldWind.Renderable
 			if(obj == null)
 				return 1;
 
+         // This is a bit of a weak system for maintaining render order (but it currently works)
+         // Names are of form "#1 - #2" Or '#1 - Name'. #1 is the first level render order and
+         // #2 indicates the second. There are just 5 possible first levels and they will always
+         // be between 1-10 so it is safe to use string sort. The second level however should be 
+         // properly converted to numbers and then used otherwise 10 may compare less than 9 
+         // etc.
+
+         if (String.Compare(robj.Name, 0, this.name, 0, 3) == 0)
+         {
+            try
+            {
+               int iObj, iThis;
+
+               iThis = Convert.ToInt32(this.name.Substring(3));
+               iObj = Convert.ToInt32(robj.Name.Substring(3));
+
+               return iObj.CompareTo(iThis);
+            }
+            catch
+            {
+            }
+         }
          return String.Compare(robj.Name, this.name);
 		}
 
