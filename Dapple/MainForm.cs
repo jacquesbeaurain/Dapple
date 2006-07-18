@@ -1545,7 +1545,7 @@ namespace Dapple
       {
          m_bSizing = false;
          m_worldWindow.Visible = true;
-         m_worldWindow.Render();
+         m_worldWindow.SafeRender();
       }
 
       private void MainForm_Resize(object sender, EventArgs e)
@@ -1558,7 +1558,7 @@ namespace Dapple
          if (!m_bSizing)
          {
             m_worldWindow.Visible = true;
-            m_worldWindow.Render();
+            m_worldWindow.SafeRender();
          }
       }
 
@@ -1572,7 +1572,7 @@ namespace Dapple
          if (!m_bSizing)
          {
             m_worldWindow.Visible = true;
-            m_worldWindow.Render();
+            m_worldWindow.SafeRender();
          }
       }
 

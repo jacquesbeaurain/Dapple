@@ -762,6 +762,23 @@ namespace WorldWind
          }
       }
 
+      public void SafeRender()
+      {
+         try
+         {
+            Render();
+            drawArgs.Present();
+         }
+         catch (DeviceLostException)
+         {
+            AttemptRecovery();
+         }
+         catch (Exception caught)
+         {
+            Utility.Log.Write(caught);
+         }
+      }
+
       /// <summary>
       /// Load a plugin from a path
       /// </summary>
