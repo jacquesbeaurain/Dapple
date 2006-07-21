@@ -46,6 +46,8 @@ namespace Dapple
       public const string VersionFile = "version.txt";
       public const string LicenseWebsiteUrl = "http://dapple.geosoft.com/license.asp";
       public const string CreditsWebsiteUrl = "http://dapple.geosoft.com/credits.asp";
+      public const string WebsiteHelpUrl = "http://dapple.geosoft.com/help/";
+      public const string WebsiteForumsHelpUrl = "https://dappleforums.geosoft.com/";
       public const string WMSWebsiteHelpUrl = "http://dapple.geosoft.com/help/wms.asp";
       public const string DAPWebsiteHelpUrl = "http://dapple.geosoft.com/help/dap.asp";
       public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
@@ -320,7 +322,8 @@ namespace Dapple
 
          if (WWSettingsCtl.NewCachePath.Length > 0)
          {
-            Utility.FileSystem.DeleteFolderGUI(this, WWSettingsCtl.CachePath);
+            if (Directory.Exists(WWSettingsCtl.CachePath))
+               Utility.FileSystem.DeleteFolderGUI(this, WWSettingsCtl.CachePath);
             WWSettingsCtl.CachePath = WWSettingsCtl.NewCachePath;
             WWSettingsCtl.NewCachePath = "";
          }
@@ -2749,6 +2752,7 @@ namespace Dapple
          this.toolStripButtonFilterText.Enabled = false;
          this.toolStripButtonClearFilter.Enabled = false;
 
+         this.iconImageList.ColorDepth = ColorDepth.Depth32Bit;
          this.iconImageList.Images.Add("dap", global::Dapple.Properties.Resources.dap);
          this.iconImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
          this.iconImageList.Images.Add("dap_database", global::Dapple.Properties.Resources.dap_database);
@@ -3523,11 +3527,24 @@ namespace Dapple
 
       #endregion
 
-      private void toolStripNavButton_MouseRemoveCapture(object sender, MouseEventArgs e)
-      {
+      #region Help
 
+      private void toolStripMenuItemWeb_Click(object sender, EventArgs e)
+      {
+         MainForm.BrowseTo(MainForm.WebsiteUrl);
       }
 
+      private void toolStripMenuItemWebForums_Click(object sender, EventArgs e)
+      {
+         MainForm.BrowseTo(MainForm.WebsiteForumsHelpUrl);
+      }
+
+      private void toolStripMenuItemWebDoc_Click(object sender, EventArgs e)
+      {
+         MainForm.BrowseTo(MainForm.WebsiteHelpUrl);
+      }
+
+      #endregion
 #if !DEBUG
       public void OnThreadException(object o, ThreadExceptionEventArgs e)
       {
