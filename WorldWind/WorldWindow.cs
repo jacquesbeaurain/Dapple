@@ -1830,9 +1830,9 @@ namespace WorldWind
          GC.SuppressFinalize(this);
       }
 
-      private void m_Device3d_DeviceResizing(object sender, CancelEventArgs e)
+      private void OnDeviceResizing(object sender, CancelEventArgs e)
       {
-         if (this.Size.Width == 0 || this.Size.Height == 0)
+         if (!m_Device3d.CheckCooperativeLevel() || !this.Visible || this.Size.Width == 0 || this.Size.Height == 0)
          {
             e.Cancel = true;
             return;
@@ -1918,7 +1918,7 @@ namespace WorldWind
 
          // Hook the m_Device3d reset event
          m_Device3d.DeviceReset += new EventHandler(OnDeviceReset);
-         m_Device3d.DeviceResizing += new CancelEventHandler(m_Device3d_DeviceResizing);
+         m_Device3d.DeviceResizing += new CancelEventHandler(OnDeviceResizing);
          OnDeviceReset(m_Device3d, null);
       }
 
