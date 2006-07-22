@@ -38,52 +38,15 @@ namespace WorldWind
       private WMSLayer[] _childLayers;
       private WMSLayerStyle[] _styles;
 
-      private static List<string> wgs84Equivalents = new List<string>(new string[] {
-         "EPSG:4019",
-         "EPSG:4176",
-         "EPSG:4151",
-         "EPSG:4133",
-         "EPSG:4180",
-         "EPSG:4258",
-         "EPSG:4283",
-         "EPSG:4121",
-         "EPSG:4173",
-         "EPSG:4659",
-         "EPSG:4141",
-         "EPSG:4612",
-         "EPSG:4319",
-         "EPSG:4661",
-         "EPSG:4126",
-         "EPSG:4669",
-         "EPSG:4269",
-         "EPSG:4140",
-         "EPSG:4167",
-         "EPSG:4172",
-         "EPSG:4190",
-         "EPSG:4189",
-         "EPSG:4171",
-         "EPSG:4624",
-         "EPSG:4627",
-         "EPSG:4170",
-         "EPSG:4619",
-         "EPSG:4148",
-         "EPSG:4670",
-         "EPSG:4667",
-         "EPSG:4166",
-         "EPSG:4130",
-         "EPSG:4318",
-         "EPSG:4640",
-         "EPSG:4326",
-         "EPSG:4163",
-         "CRS:83"
-      });
       #endregion
 
-      #region Public Methods
+      #region Constructor
       public WMSLayer()
       {
       }
+      #endregion
 
+      #region Public Methods
       public bool HasLegend
       {
          get
@@ -95,153 +58,6 @@ namespace WorldWind
                   return true;
             return false;
          }
-      }
-
-      public string GetWMSDownloadFile(string date,
-         WMSLayerStyle style,
-         decimal north,
-         decimal south,
-         decimal west,
-         decimal east,
-            uint size)
-      {
-         // WMS Download paths are unique to the server and the URL used to download the image by using hashcode
-         
-         string url = GetWMSRequestUrl(date, (style != null ? style.name : null), north, south, west, east, size);
-#if DEBUG
-         System.Diagnostics.Debug.WriteLine("WMS Image request for filename : " + url);
-#endif
-         string strPath = Utility.StringHash.GetBase64HashForPath(url);
-
-         foreach (string curFormat in this._imageFormats)
-         {
-            if (string.Compare(curFormat, "image/png", true, CultureInfo.InvariantCulture) == 0)
-            {
-               strPath += ".png";
-               break;
-            }
-            if (string.Compare(curFormat, "image/jpeg", true, CultureInfo.InvariantCulture) == 0 ||
-               String.Compare(curFormat, "image/jpg", true, CultureInfo.InvariantCulture) == 0)
-            {
-               strPath += ".jpg";
-               break;
-            }
-         }
-         return strPath;
-      }
-
-      public WMSDownload GetWmsRequest(string dateString,
-         WMSLayerStyle curStyle,
-         decimal north,
-         decimal south,
-         decimal west,
-         decimal east,
-            uint size,
-         string cacheDirectory)
-      {
-         string url = GetWMSRequestUrl(dateString,
-            (curStyle != null ? curStyle.name : null),
-            north,
-            south,
-            west,
-            east,
-                size);
-         WMSDownload wmsDownload = new WMSDownload(url);
-
-         wmsDownload.North = north;
-         wmsDownload.South = south;
-         wmsDownload.West = west;
-         wmsDownload.East = east;
-
-         wmsDownload.Title = this._title;
-         if (curStyle != null)
-            wmsDownload.Title += " (" + curStyle.title + ")";
-
-         wmsDownload.SavedFilePath = Path.Combine(cacheDirectory, GetWMSDownloadFile(dateString, curStyle, north, south, west, east, size));
-         if (dateString != null && dateString.Length > 0)
-            wmsDownload.Title += "\n" + dateString;
-         return wmsDownload;
-      }
-
-      public string GetWMSRequestUrl(string date, string style, decimal north, decimal south, decimal west, decimal east, uint size)
-      {
-         if (this._name == null)
-         {
-            //Utility.Log.Write("WMSB", "No Name");
-            return null;
-         }
-         string projectionRequest = "";
-
-
-         if (this.ParentWMSList.Version == "1.1.1")
-         {
-            if (wgs84Equivalents.Contains(_srs))
-               projectionRequest = "srs=" + _srs;
-            else
-               projectionRequest = "srs=EPSG:4326";
-         }
-         else
-         {
-            if (wgs84Equivalents.Contains(_crs))
-               projectionRequest = "crs=" + _crs;
-            else
-               projectionRequest = "crs=CRS:84";
-         }
-         string imageFormat = null;
-
-         if (this._imageFormats == null)
-         {
-            //Utility.Log.Write("WMSB", "No formats");
-            return null;
-         }
-
-         foreach (string curFormat in this._imageFormats)
-         {
-            if (string.Compare(curFormat, "image/png", true, CultureInfo.InvariantCulture) == 0)
-            {
-               imageFormat = curFormat;
-               break;
-            }
-            if (string.Compare(curFormat, "image/jpeg", true, CultureInfo.InvariantCulture) == 0 ||
-               String.Compare(curFormat, "image/jpg", true, CultureInfo.InvariantCulture) == 0)
-            {
-               imageFormat = curFormat;
-               break;
-            }
-         }
-
-         if (imageFormat == null)
-            return null;
-
-         uint rWidth = size;
-         uint rHeight = size;
-         if (east - west > 0 && north - south > 0)
-         {
-            if (east - west > north - south)
-               rWidth = (uint)Math.Round((east - west) * (decimal)rWidth / (north - south));
-            else
-               rHeight = (uint)Math.Round((north - south) * (decimal)rHeight / (east - west));
-         }
-         string wmsQuery = string.Format(
-            CultureInfo.InvariantCulture,
-            "{0}" + (this.ParentWMSList.ServerGetMapUrl.IndexOf("?") == -1 ? "?" : "") + 
-            "service=WMS&version={1}&request=GetMap&layers={2}&format={3}&width={4}&height={5}&time={6}&{7}&bbox={8},{9},{10},{11}&styles={12}&transparent=TRUE",
-            this.ParentWMSList.ServerGetMapUrl,
-            this.ParentWMSList.Version,
-            this._name,
-            imageFormat,
-            (this._width != 0 ? this._width : rWidth),
-            (this._height != 0 ? this._height : rHeight),
-            (date != null ? date : ""),
-            projectionRequest,
-            west, south, east, north,
-            (style != null ? style : ""));
-
-         // Cleanup
-         wmsQuery = wmsQuery.Replace("??", "?");
-         wmsQuery = wmsQuery.Replace("time=&", "");
-
-         return wmsQuery;
       }
       #endregion
 

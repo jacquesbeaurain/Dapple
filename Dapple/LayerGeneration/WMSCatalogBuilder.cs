@@ -47,7 +47,8 @@ namespace Dapple.LayerGeneration
          if (iIndex != -1)
             serverUrl = serverUrl.Substring(0, iIndex) + serverUrl.Substring(iIndex + "service=wms".Length);
 
-         serverUrl = serverUrl.Replace("&&", "");
+         while (serverUrl.IndexOf("&&") != -1)
+            serverUrl = serverUrl.Replace("&&", "&");
          serverUrl = serverUrl.TrimEnd(new char[] { '?' });
          serverUrl = serverUrl.TrimEnd(new char[] { '&' });
          serverUrl = serverUrl.Trim();

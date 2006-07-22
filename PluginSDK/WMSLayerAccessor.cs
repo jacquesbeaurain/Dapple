@@ -117,7 +117,8 @@ namespace WorldWind.Net.Wms
             m_isTransparent.ToString().ToUpper());
 
          // Cleanup
-         wmsQuery = wmsQuery.Replace("??", "?");
+         while (wmsQuery.IndexOf("??") != -1)
+            wmsQuery = wmsQuery.Replace("??", "?");
 
          return wmsQuery;
       }
