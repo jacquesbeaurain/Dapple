@@ -1832,7 +1832,7 @@ namespace WorldWind
 
       private void OnDeviceResizing(object sender, CancelEventArgs e)
       {
-         if (!m_Device3d.CheckCooperativeLevel() || !this.Visible || this.Size.Width == 0 || this.Size.Height == 0)
+         if (!m_Device3d.CheckCooperativeLevel() || this.Size.Width == 0 || this.Size.Height == 0)
          {
             e.Cancel = true;
             return;
