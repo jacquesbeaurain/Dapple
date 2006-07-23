@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.DirectX;
 
 namespace WorldWind
 {
@@ -26,18 +25,61 @@ namespace WorldWind
          }
       }
 
+      public void MultiplyMatrix(Matrix4d m, ref double w)
+      {
+         double wprev = w;
+         w = this.X * m[0, 3] + this.Y * m[1, 3] + this.Z * m[2, 3] + wprev * m[3, 3];
+         this = new Vector3d(this.X * m[0, 0] + this.Y * m[1, 0] + this.Z * m[2, 0] + wprev * m[3, 0],
+            this.X * m[0, 1] + this.Y * m[1, 1] + this.Z * m[2, 1] + wprev * m[3, 1],
+            this.X * m[0, 2] + this.Y * m[1, 2] + this.Z * m[2, 2] + wprev * m[3, 2]);
+      }
+      
       public void Unproject(object viewport, Matrix4d projection, Matrix4d view, Matrix4d world)
       {
-         Vector3 v = ConvertDX.FromVector3d(this);
-         v.Unproject(viewport, ConvertDX.FromMatrix4d(projection), ConvertDX.FromMatrix4d(view), ConvertDX.FromMatrix4d(world));
-         this = ConvertDX.ToVector3d(v);
+         //Microsoft.DirectX.Vector3 test = ConvertDX.FromVector3d(this);
+         //test.Unproject(viewport, ConvertDX.FromMatrix4d(projection), ConvertDX.FromMatrix4d(view), ConvertDX.FromMatrix4d(world));
+
+         Viewport2d vp = ConvertDX.ToViewport2d((Microsoft.DirectX.Direct3D.Viewport)viewport);
+
+         // Convert from viewport coordinates 
+         this.X = (this.X - vp.X) / vp.Width;
+         this.Y = (vp.Height + vp.Y - this.Y) / vp.Height;
+
+         // Make x/y range from -1 to 1 
+         this.X = this.X * 2.0 - 1.0;
+         this.Y = this.Y * 2.0 - 1.0;
+
+         Matrix4d m = Matrix4d.Invert(world * view * projection);
+         double w = 1.0;
+         MultiplyMatrix(m, ref w);
+
+         this.X /= w;
+         this.Y /= w;
+         this.Z /= w;
       }
 
       public void Project(object viewport, Matrix4d projection, Matrix4d view, Matrix4d world)
       {
-         Vector3 v = ConvertDX.FromVector3d(this);
-         v.Project(viewport, ConvertDX.FromMatrix4d(projection), ConvertDX.FromMatrix4d(view), ConvertDX.FromMatrix4d(world));
-         this = ConvertDX.ToVector3d(v);
+         //Microsoft.DirectX.Vector3 test = ConvertDX.FromVector3d(this);
+         //test.Project(viewport, ConvertDX.FromMatrix4d(projection), ConvertDX.FromMatrix4d(view), ConvertDX.FromMatrix4d(world));
+
+         Viewport2d vp = ConvertDX.ToViewport2d((Microsoft.DirectX.Direct3D.Viewport)viewport);
+
+         Matrix4d m = world * view * projection;
+         double w = 1.0;
+         MultiplyMatrix(m, ref w);
+   
+         this.X /= w;
+         this.Y /= w;
+         this.Z /= w;
+    
+         // Make x/y range from 0 to 1 
+         this.X = this.X * 0.5 + 0.5;
+         this.Y = this.Y * 0.5 + 0.5;
+         
+         // Convert to to viewport coordinates (Y is inverted)
+         this.X = this.X * vp.Width + vp.X;
+         this.Y = vp.Height - this.Y * vp.Height + vp.Y;
       }
 
       // Override the Object.GetHashCode() method:
@@ -126,7 +168,6 @@ namespace WorldWind
       {
          return new Vector3d(P.X / k, P.Y / k, P.Z / k);
       }
-
 
       public static Vector3d operator -(Vector3d P)	// negation
       {

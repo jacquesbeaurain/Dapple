@@ -37,5 +37,22 @@ namespace WorldWind
             m.M41, m.M42, m.M43, m.M44
          );
       }
+
+      public static Viewport FromViewport2d(Viewport2d v)
+      {
+         Viewport ret = new Viewport();
+         ret.Height = v.Height;
+         ret.MaxZ = (float)v.MaxZ;
+         ret.MinZ = (float)v.MinZ;
+         ret.Width = v.Width;
+         ret.X = v.X;
+         ret.Y = v.Y;
+         return ret;
+      }
+
+      public static Viewport2d ToViewport2d(Viewport v) 
+      {
+         return new Viewport2d(v.Height, v.MaxZ, v.MinZ, v.Width, v.X, v.Y);
+      }
    }
 }

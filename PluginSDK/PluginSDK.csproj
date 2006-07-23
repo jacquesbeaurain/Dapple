@@ -207,6 +207,7 @@
     <Compile Include="ViewFrustum.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Viewport2d.cs" />
     <Compile Include="VisualControl\PropertyBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
