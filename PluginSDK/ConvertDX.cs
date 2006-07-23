@@ -21,22 +21,21 @@ namespace WorldWind
       public static Matrix FromMatrix4d(Matrix4d m)
       {
          Matrix ret = new Matrix();
-         ret.M11 = (float)m.M11; ret.M12 = (float)m.M12; ret.M13 = (float)m.M13; ret.M14 = (float)m.M14;
-         ret.M21 = (float)m.M21; ret.M22 = (float)m.M22; ret.M23 = (float)m.M23; ret.M24 = (float)m.M24;
-         ret.M31 = (float)m.M31; ret.M32 = (float)m.M32; ret.M33 = (float)m.M33; ret.M34 = (float)m.M34;
-         ret.M41 = (float)m.M41; ret.M42 = (float)m.M42; ret.M43 = (float)m.M43; ret.M44 = (float)m.M44;
+         ret.M11 = (float)m[0, 0]; ret.M12 = (float)m[0, 1]; ret.M13 = (float)m[0, 2]; ret.M14 = (float)m[0, 3];
+         ret.M21 = (float)m[1, 0]; ret.M22 = (float)m[1, 1]; ret.M23 = (float)m[1, 2]; ret.M24 = (float)m[1, 3];
+         ret.M31 = (float)m[2, 0]; ret.M32 = (float)m[2, 1]; ret.M33 = (float)m[2, 2]; ret.M34 = (float)m[2, 3];
+         ret.M41 = (float)m[3, 0]; ret.M42 = (float)m[3, 1]; ret.M43 = (float)m[3, 2]; ret.M44 = (float)m[3, 3];
          return ret;
       }
 
       public static Matrix4d ToMatrix4d(Matrix m)
       {
-         Matrix4d ret = new Matrix4d();
-         ret.M11 = m.M11; ret.M12 = m.M12; ret.M13 = m.M13; ret.M14 = m.M14;
-         ret.M21 = m.M21; ret.M22 = m.M22; ret.M23 = m.M23; ret.M24 = m.M24;
-         ret.M31 = m.M31; ret.M32 = m.M32; ret.M33 = m.M33; ret.M34 = m.M34;
-         ret.M41 = m.M41; ret.M42 = m.M42; ret.M43 = m.M43; ret.M44 = m.M44;
-         return ret;
+         return new Matrix4d(
+            m.M11, m.M12, m.M13, m.M14,
+            m.M21, m.M22, m.M23, m.M24,
+            m.M31, m.M32, m.M33, m.M34,
+            m.M41, m.M42, m.M43, m.M44
+         );
       }
-
    }
 }

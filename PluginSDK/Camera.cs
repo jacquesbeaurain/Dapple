@@ -267,7 +267,7 @@ namespace WorldWind.Camera
 			
 			// Extract camera position
 			Matrix4d cam = Matrix4d.Invert(m_ViewMatrix);
-			_position = new Vector3d(cam.M41, cam.M42, cam.M43);
+			_position = new Vector3d(cam[3, 0], cam[3, 1], cam[3, 2]);
 		}
 
 		/// <summary>
@@ -497,6 +497,13 @@ namespace WorldWind.Camera
 			out Angle latitude,
 			out Angle longitude)
 		{
+         if (m_ProjectionMatrix == null || m_ViewMatrix == null)
+         {
+            latitude = Angle.FromDegrees(0);
+            longitude = Angle.FromDegrees(0);
+            return;
+         }
+
 			Vector3d v1 = Vector3d.Empty;
 			v1.X = screenX;
 			v1.Y = screenY;

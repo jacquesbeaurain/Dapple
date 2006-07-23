@@ -247,6 +247,10 @@
       <Project>{02816A2C-2B27-4782-A163-6AD58B5BF6F5}</Project>
       <Name>AltovaGen</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Mapack\Mapack.csproj">
+      <Project>{A5E82574-F090-4A9A-ABAB-A77B296DF530}</Project>
+      <Name>Mapack</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{19E069AA-4993-4CA3-8F80-CCB76E96E3ED}</Project>
       <Name>Utilities</Name>

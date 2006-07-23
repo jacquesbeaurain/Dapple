@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.DirectX;
 
 namespace WorldWind
 {
@@ -19,9 +18,13 @@ namespace WorldWind
 
       public void Normalize()
       {
-         Plane p = new Plane((float)this.A, (float)this.B, (float)this.C, (float)this.D);
-         p.Normalize();
-         this.A = p.A; this.B = p.B; this.C = p.C; this.D = p.D; 
+         //Microsoft.DirectX.Plane test = new Microsoft.DirectX.Plane((float)this.A, (float)this.B, (float)this.C, (float)this.D);
+         //test.Normalize();
+
+         double dNormSize = (new Vector3d(A, B, C)).Length;
+         double dInverseLength = dNormSize != 0.0 ? 1.0 / dNormSize : 1.0;
+
+         this.A *= dInverseLength; this.B *= dInverseLength; this.C *= dInverseLength; this.D *= dInverseLength; 
       }
 
       public double DistanceToPoint(Vector3d p)

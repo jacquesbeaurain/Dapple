@@ -1,6 +1,4 @@
 using System;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 
 namespace WorldWind
 {
@@ -17,49 +15,49 @@ namespace WorldWind
 		{
 			//bottom (down) plane
 			this.planes[0] = new Plane2d(
-				m.M14 + m.M12, //a
-				m.M24 + m.M22, //b
-				m.M34 + m.M32, //c
-				m.M44 + m.M42 //d
+				m[0, 3] + m[0, 1],
+				m[1, 3] + m[1, 1],
+				m[2, 3] + m[2, 1],
+				m[3, 3] + m[3, 1]
 				);
 			
 			//far plane
 			this.planes[1] = new Plane2d(
-				m.M14 - m.M13,
-				m.M24 - m.M23,
-				m.M34 - m.M33,
-				m.M44 - m.M43
+				m[0, 3] - m[0, 2],
+				m[1, 3] - m[1, 2],
+				m[2, 3] - m[2, 2],
+				m[3, 3] - m[3, 2]
 				);
 
 			//right side plane
 			this.planes[2] = new Plane2d(
-				m.M14 - m.M11, //a
-				m.M24 - m.M21, //b
-				m.M34 - m.M31, //c
-				m.M44 - m.M41 //d
+				m[0, 3] - m[0, 0],
+				m[1, 3] - m[1, 0],
+				m[2, 3] - m[2, 0],
+				m[3, 3] - m[3, 0]
 				);
 
 			//left side plane
 			this.planes[3] = new Plane2d(
-				m.M14 + m.M11,	//a
-				m.M24 + m.M21,	//b
-				m.M34 + m.M31,	//c
-				m.M44 + m.M41	//d
+				m[0, 3] + m[0, 0],
+				m[1, 3] + m[1, 0],
+				m[2, 3] + m[2, 0],
+				m[3, 3] + m[3, 0]
 				);
 
 			//near plane
 			this.planes[4] = new Plane2d(
-				m.M13,
-				m.M23,
-				m.M33,
-				m.M43);
+				m[0, 2],
+				m[1, 2],
+				m[2, 2],
+				m[3, 2]);
 
 			//top (up) plane
 			this.planes[5] = new Plane2d(
-				m.M14 - m.M12, //a
-				m.M24 - m.M22, //b
-				m.M34 - m.M32, //c
-				m.M44 - m.M42 //d
+				m[0, 3] - m[0, 1],
+				m[1, 3] - m[1, 1],
+				m[2, 3] - m[2, 1],
+				m[3, 3] - m[3, 1]
 				);
 
 			foreach(Plane2d p in this.planes)
