@@ -118,9 +118,14 @@ namespace Dapple.LayerGeneration
       {
          XmlDocument responseDoc = m_oServer.Command.GetMetaData(m_hDataSet, null);
          XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
-         XmlNode newNode = oDoc.CreateElement(oNode.Name);
-         newNode.InnerXml = oNode.InnerXml;
-         return newNode;
+         XmlNode metaNode = oDoc.CreateElement("dapmeta");
+         XmlNode nameNode = oDoc.CreateElement("name");
+         nameNode.InnerText = Name;
+         metaNode.AppendChild(nameNode);
+         XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
+         geoMetaNode.InnerXml = oNode.InnerXml;
+         metaNode.AppendChild(geoMetaNode);
+         return metaNode;
       }
 
       public override string StyleSheetPath
