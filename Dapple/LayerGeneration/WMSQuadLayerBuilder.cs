@@ -428,8 +428,10 @@ namespace Dapple.LayerGeneration
 
       protected override void CleanUpLayer(bool bFinal)
       {
-         m_oQuadTileSet.Dispose();
-         m_oImageAccessor.Dispose();
+         if (m_oQuadTileSet != null)
+            m_oQuadTileSet.Dispose();
+         if (m_oImageAccessor != null)
+            m_oImageAccessor.Dispose();
          m_oImageAccessor = null;
          m_oQuadTileSet = null;
          m_blnIsChanged = true;
