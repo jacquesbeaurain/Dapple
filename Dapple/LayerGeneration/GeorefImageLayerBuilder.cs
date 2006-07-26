@@ -20,6 +20,7 @@ namespace Dapple.LayerGeneration
       string m_strCacheRoot;
       string m_strFileName;
       string m_strCacheFileName;
+      bool m_bIsTmp;
       bool m_blnIsChanged = true;
 
       /// <summary>
@@ -159,11 +160,12 @@ namespace Dapple.LayerGeneration
          return strReturn;
       }
 
-      public GeorefImageLayerBuilder(string strCacheRoot, string strFileName, World World, IBuilder parent)
+      public GeorefImageLayerBuilder(string strCacheRoot, string strFileName, bool bTmp, World World, IBuilder parent)
       {
          m_strCacheRoot = strCacheRoot;
          m_strName = Path.GetFileName(strFileName);
          m_strFileName = strFileName;
+         m_bIsTmp = bTmp;
          m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
          m_oWorld = World;
          m_Parent = parent;
@@ -323,7 +325,7 @@ namespace Dapple.LayerGeneration
             GeographicBoundingBox extents = GeorefImageLayerBuilder.GetExtentsFromGeotif(strFile);
 
             if (extents != null)
-               return new GeorefImageLayerBuilder(strCacheRoot, strFile, world, parent);
+               return new GeorefImageLayerBuilder(strCacheRoot, strFile, false, world, parent);
          }
          catch
          {
@@ -333,15 +335,17 @@ namespace Dapple.LayerGeneration
 
       public override object Clone()
       {
-         return new GeorefImageLayerBuilder(m_strCacheRoot, m_strFileName, m_oWorld, m_Parent);
+         return new GeorefImageLayerBuilder(m_strCacheRoot, m_strFileName, false, m_oWorld, m_Parent);
       }
 
-      protected override void CleanUpLayer()
+      protected override void CleanUpLayer(bool bFinal)
       {
          if (m_Layer != null)
             m_Layer.Dispose();
          if (File.Exists(m_strCacheFileName))
             File.Delete(m_strCacheFileName);
+         if (bFinal && m_bIsTmp && File.Exists(m_strFileName))
+            File.Delete(m_strFileName);
          m_Layer = null;
          m_blnIsChanged = true;
       }

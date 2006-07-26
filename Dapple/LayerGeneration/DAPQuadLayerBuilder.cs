@@ -379,7 +379,7 @@ namespace Dapple.LayerGeneration
          return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_strCacheRoot, m_strAppDir, m_oServer, m_Parent);
       }
 
-      protected override void CleanUpLayer()
+      protected override void CleanUpLayer(bool bFinal)
       {
          if (m_layer != null)
             m_layer.Dispose();

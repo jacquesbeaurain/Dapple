@@ -16,6 +16,7 @@ namespace Dapple.LayerGeneration
       private string m_name;
       private string m_uri;
       private bool m_visible;
+      private bool m_temporary;
       private byte m_opacity;
 
       public LayerBuilderContainer(string strName, string strUri, bool visible, byte opacity)
@@ -72,6 +73,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
+
       public byte Opacity
       {
          get
@@ -89,6 +91,17 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      public bool Temporary
+      {
+         get
+         {
+            return m_temporary;
+         }
+         set
+         {
+            m_temporary = value;
+         }
+      }
 
       public LayerBuilder Builder
       {
@@ -188,6 +201,11 @@ namespace Dapple.LayerGeneration
 
       public void Add(string strName, LayerBuilder builder, bool front, byte opacity, bool visible)
       {
+         Add(strName, builder, front, opacity, visible, false);
+      }
+
+      public void Add(string strName, LayerBuilder builder, bool front, byte opacity, bool visible, bool temporary)
+      {
          int iImageIndex;
 
          if (ContainsSource(builder))
@@ -196,6 +214,7 @@ namespace Dapple.LayerGeneration
          LayerBuilderContainer container = new LayerBuilderContainer(builder);
          container.Visible = visible;
          container.Opacity = opacity;
+         container.Temporary = temporary;
          if (front)
             Insert(0, container);
          else

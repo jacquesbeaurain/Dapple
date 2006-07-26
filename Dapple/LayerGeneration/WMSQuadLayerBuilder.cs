@@ -426,7 +426,7 @@ namespace Dapple.LayerGeneration
             m_oWMSLayerAccessor, IsOn, m_oWorld, m_strCacheRoot, m_Parent);
       }
 
-      protected override void CleanUpLayer()
+      protected override void CleanUpLayer(bool bFinal)
       {
          m_oQuadTileSet.Dispose();
          m_oImageAccessor.Dispose();

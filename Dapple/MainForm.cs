@@ -88,6 +88,8 @@ namespace Dapple
       private WorldWind.OverviewControl m_overviewCtl;
       private string openView = "";
       private string openGeoTiff = "";
+      private string openGeoTiffName = "";
+      private bool openGeoTiffTmp = false;
       private string lastView = "";
 
       private bool rightmouse_context = false;
@@ -268,11 +270,13 @@ namespace Dapple
 
       #region Constructor
 
-      public MainForm(string strView, string strGeoTiff, string strLastView)
+      public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView)
       {
          if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
             this.openView = strView;
          this.openGeoTiff = strGeoTiff;
+         this.openGeoTiffName = strGeotiffName;
+         this.openGeoTiffTmp = bGeotiffTmp;
          this.lastView = strLastView;
 
          m_executablePath = Path.GetDirectoryName(Application.ExecutablePath);
@@ -875,7 +879,7 @@ namespace Dapple
 
          if (this.openFileDialog.ShowDialog() == DialogResult.OK)
          {
-            AddGeoTiff(this.openFileDialog.FileName, true);
+            AddGeoTiff(this.openFileDialog.FileName, "", false, true);
             try
             {
                using (StreamWriter sw = new StreamWriter(strLastFolderCfg))
@@ -889,22 +893,25 @@ namespace Dapple
          }
       }
 
-      void AddGeoTiff(string strGeoTiff, bool bGoto)
+      void AddGeoTiff(string strGeoTiff, string strGeoTiffName, bool bTmp, bool bGoto)
       {
-         LayerBuilder builder = new GeorefImageLayerBuilder(WWSettingsCtl.CachePath, strGeoTiff, m_worldWindow.CurrentWorld, null);
-
+         LayerBuilder builder = new GeorefImageLayerBuilder(WWSettingsCtl.CachePath, strGeoTiff, bTmp, m_worldWindow.CurrentWorld, null);
+         
          Cursor = Cursors.WaitCursor;
          if (builder.GetLayer() != null)
          {
             Cursor = Cursors.Default;
-            m_ActiveLayers.Add(builder.Name, builder, true, 255, true);
+            if (strGeoTiffName.Length > 0)
+               m_ActiveLayers.Add(strGeoTiffName, builder, true, 255, true, bTmp);
+            else
+               m_ActiveLayers.Add(builder.Name, builder, true, 255, true, bTmp);
             if (bGoto)
                GoTo(builder as ImageBuilder);
          }
          else
          {
             Cursor = Cursors.Default;
-            string strMessage = "Error adding the file: '" + strGeoTiff + "'.\nOnly WGS 84 geographic images can be displayed.";
+            string strMessage = "Error adding the file: '" + strGeoTiff + "'.\nOnly WGS 84 geographic images can be displayed at this time.";
             string strGeoInfo = GeorefImageLayerBuilder.GetGeorefInfoFromGeotif(strGeoTiff);
             if (strGeoInfo.Length > 0)
                strMessage += "\nThis image is:\n\n" + strGeoInfo;
@@ -1528,7 +1535,7 @@ namespace Dapple
             OpenView(Path.Combine(m_worldWindow.WorldWindSettings.DataPath, DefaultView), this.openGeoTiff.Length == 0);
 
          if (this.openGeoTiff.Length > 0)
-            AddGeoTiff(this.openGeoTiff, true);
+            AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
 
 
          // Check for updates daily
@@ -2381,14 +2388,17 @@ namespace Dapple
             activelayersType lyrs = view.View.Newactivelayers();
             foreach (LayerBuilderContainer container in m_ActiveLayers)
             {
-               datasetType dataset = lyrs.Newdataset();
-               dataset.Addname(new SchemaString(container.Name));
-               opacityType op = dataset.Newopacity();
-               op.Value = container.Opacity;
-               dataset.Addopacity(op);
-               dataset.Adduri(new SchemaString(container.Uri));
-               dataset.Addinvisible(new SchemaBoolean(!container.Visible));
-               lyrs.Adddataset(dataset);
+               if (!container.Temporary)
+               {
+                  datasetType dataset = lyrs.Newdataset();
+                  dataset.Addname(new SchemaString(container.Name));
+                  opacityType op = dataset.Newopacity();
+                  op.Value = container.Opacity;
+                  dataset.Addopacity(op);
+                  dataset.Adduri(new SchemaString(container.Uri));
+                  dataset.Addinvisible(new SchemaBoolean(!container.Visible));
+                  lyrs.Adddataset(dataset);
+               }
             }
             view.View.Addactivelayers(lyrs);
          }
@@ -2805,6 +2815,7 @@ namespace Dapple
          this.toolStripStatusSpin5.Visible = false;
          this.toolStripStatusSpin5.Alignment = ToolStripItemAlignment.Right; 
          this.toolStripStatusSpin6.Visible = false;
+         this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right; 
          this.m_worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
       }
 
@@ -2815,6 +2826,7 @@ namespace Dapple
          SaveLastView();
          
          // Ensure cleanup
+         m_ActiveLayers.RemoveAll();
          for (int i = 0; i < m_worldWindow.CurrentWorld.RenderableObjects.Count; i++)
          {
             RenderableObject oRO = (RenderableObject)m_worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i];
@@ -2996,11 +3008,13 @@ namespace Dapple
 
                string strView = strData[0];
                string strGeoTiff = strData[1];
-               this.lastView = strData[2];
+               string strGeoTiffName = strData[2];
+               bool bGeotiffTmp = strData[3] == "YES";
+               this.lastView = strData[4];
 
                OpenView(strView, strGeoTiff.Length == 0);
                if (strGeoTiff.Length > 0)
-                  AddGeoTiff(strGeoTiff, true);
+                  AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
             }
             catch
             {

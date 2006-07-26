@@ -230,7 +230,7 @@ namespace Dapple.LayerGeneration
          return new VEQuadLayerBuilder(m_strName, m_mapType, m_oWW, m_IsOn, m_oWorld, m_strCacheRoot, m_Parent);
       }
 
-      protected override void CleanUpLayer()
+      protected override void CleanUpLayer(bool bFinal)
       {
          if (m_oVELayer != null)
             m_oVELayer.Dispose();

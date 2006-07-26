@@ -285,7 +285,7 @@ namespace Dapple.LayerGeneration
                m_oWorld.RenderableObjects.Remove(oRO);
                m_blnIsLoading = false;
             }
-            CleanUpLayer();
+            CleanUpLayer(false);
             m_blnIsAdded = false;
          }
          AsyncAddLayer();
@@ -321,7 +321,7 @@ namespace Dapple.LayerGeneration
                bRemoved = true;
                bReturn = true;
             }
-            CleanUpLayer();
+            CleanUpLayer(true);
             m_blnIsAdded = false;
          }
          if (bRemoved)
@@ -400,7 +400,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      protected abstract void CleanUpLayer();
+      protected abstract void CleanUpLayer(bool bFinal);
       
       #region ICloneable Members
 

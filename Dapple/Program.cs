@@ -25,7 +25,8 @@ namespace Dapple
 #endif
          {
             bool bAbort = false;
-            string strView = "", strGeoTiff = "", strLastView = "";
+            string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "";
+            bool bGeotiffTmp = false;
 
             // Command line parsing
             CommandLineArguments cmdl = new CommandLineArguments(args);
@@ -55,6 +56,26 @@ namespace Dapple
             {
                strGeoTiff = Path.GetFullPath(cmdl["geotiff"]);
                if (!(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
+               {
+                  PrintUsage();
+                  return;
+               }
+            }
+
+            if (cmdl["geotifftmp"] != null)
+            {
+               string strGeoTiffTmpVar = cmdl["geotifftmp"];
+               int iIndex = strGeoTiffTmpVar.IndexOf(":");
+               if (iIndex == -1)
+               {
+                  PrintUsage();
+                  return;
+               }
+
+               strGeoTiff = Path.GetFullPath(strGeoTiffTmpVar.Substring(iIndex + 1));
+               strGeoTiffName = strGeoTiffTmpVar.Substring(0, iIndex - 1);
+               bGeotiffTmp = true;
+               if (strGeoTiffName.Length == 0 || !(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
                {
                   PrintUsage();
                   return;
@@ -96,7 +117,7 @@ namespace Dapple
 
                if (RunningInstance() == null)
                {
-                  Application.Run(new MainForm(strView, strGeoTiff, strLastView));
+                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView));
                }
                else
                {
@@ -110,7 +131,9 @@ namespace Dapple
                            string[] strData = new string[3];
                            strData[0] = strView;
                            strData[1] = strGeoTiff;
-                           strData[2] = strLastView;
+                           strData[2] = strGeoTiffName;
+                           strData[3] = bGeotiffTmp ? "YES" : "NO";
+                           strData[4] = strLastView;
 
                            s.SetData(strData);
                            SendMessage(instance.MainWindowHandle, MainForm.OpenViewMessage, IntPtr.Zero, IntPtr.Zero);
@@ -139,9 +162,12 @@ namespace Dapple
                         "Dapple -h -geotiff=file -exitview=view view\n" +
                         "\n" +
                         "-h\t\tthis help\n" +
-                        "-geotiff=file\tpath to a geotiff in WGS84 to be loaded in the start-up view\n" +
-                        "-exitview=view\tpath to a dapple view file in which to place the last view\n" +
-                        "view\t\tpath to a daple view file to load as start-up view\n" +
+                        "-geotiff=file\tpath to a geotiff in WGS84 to be loaded in the current or start-up view\n" +
+                        "–geotifftmp=name:tmpfilename Layer name and path to a temporary geotiff filename\n" +
+                        "                             (will be deleted on Dapple exit) in WGS84 to be loaded\n" +
+                        "                             in current or start-up view.\n" + 
+                        "-exitview=view\tpath to a Dapple view file in which to place the last view\n" +
+                        "view\t\tpath to a Dapple view file to load as start-up view\n" +
                         "\n", "Dapple", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
 

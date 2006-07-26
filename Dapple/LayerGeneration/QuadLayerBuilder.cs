@@ -362,7 +362,7 @@ namespace Dapple.LayerGeneration
             m_strCacheRoot, m_Parent);
       }
 
-      protected override void CleanUpLayer()
+      protected override void CleanUpLayer(bool bFinal)
       {
          if (m_oQuadTileSet != null)
             m_oQuadTileSet.Dispose();
