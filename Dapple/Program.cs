@@ -73,7 +73,7 @@ namespace Dapple
                }
 
                strGeoTiff = Path.GetFullPath(strGeoTiffTmpVar.Substring(iIndex + 1));
-               strGeoTiffName = strGeoTiffTmpVar.Substring(0, iIndex - 1);
+               strGeoTiffName = strGeoTiffTmpVar.Substring(0, iIndex);
                bGeotiffTmp = true;
                if (strGeoTiffName.Length == 0 || !(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
                {
@@ -128,7 +128,7 @@ namespace Dapple
                      {
                         using (Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Create, 10000))
                         {
-                           string[] strData = new string[3];
+                           string[] strData = new string[5];
                            strData[0] = strView;
                            strData[1] = strGeoTiff;
                            strData[2] = strGeoTiffName;

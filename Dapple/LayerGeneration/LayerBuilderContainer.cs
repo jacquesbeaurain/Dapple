@@ -27,10 +27,17 @@ namespace Dapple.LayerGeneration
          m_opacity = opacity;
       }
 
-      public LayerBuilderContainer(LayerBuilder buildersource)
+      public LayerBuilderContainer(LayerBuilder builder) : this(builder, true)
       {
-         m_buildersource = buildersource;
-         m_builder = buildersource.Clone() as LayerBuilder;
+      }
+
+      public LayerBuilderContainer(LayerBuilder builder, bool bClone)
+      {
+         m_buildersource = builder;
+         if (bClone)
+            m_builder = builder.Clone() as LayerBuilder;
+         else
+            m_builder = builder;
          m_uri = m_builder.GetURI();
          m_visible = m_builder.Visible;
          m_opacity = m_builder.Opacity;
@@ -42,6 +49,10 @@ namespace Dapple.LayerGeneration
          get
          {
             return m_name;
+         }
+         set
+         {
+            m_name = value;
          }
       }
 
@@ -215,6 +226,8 @@ namespace Dapple.LayerGeneration
          container.Visible = visible;
          container.Opacity = opacity;
          container.Temporary = temporary;
+         container.Name = strName;
+
          if (front)
             Insert(0, container);
          else
@@ -252,6 +265,7 @@ namespace Dapple.LayerGeneration
             else
                container.Builder.SyncAddLayer(true);
             treeNode.ToolTipText = (container.Builder as GeorefImageLayerBuilder).FileName;
+            RefreshLayersAndOrder();
          }
          else
             container.Builder.AsyncAddLayer();

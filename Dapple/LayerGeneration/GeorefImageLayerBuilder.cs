@@ -335,7 +335,7 @@ namespace Dapple.LayerGeneration
 
       public override object Clone()
       {
-         return new GeorefImageLayerBuilder(m_strCacheRoot, m_strFileName, false, m_oWorld, m_Parent);
+         return new GeorefImageLayerBuilder(m_strCacheRoot, m_strFileName, m_bIsTmp, m_oWorld, m_Parent);
       }
 
       protected override void CleanUpLayer(bool bFinal)

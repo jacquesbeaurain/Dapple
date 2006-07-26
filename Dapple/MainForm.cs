@@ -901,6 +901,47 @@ namespace Dapple
          if (builder.GetLayer() != null)
          {
             Cursor = Cursors.Default;
+
+            // If the file is already there remove it 
+            foreach (LayerBuilderContainer container in m_ActiveLayers)
+            {
+               if (container.Builder != null && container.Builder is GeorefImageLayerBuilder)
+               {
+                  if (String.Compare((container.Builder as GeorefImageLayerBuilder).FileName, strGeoTiff, true) == 0)
+                  {
+                     m_ActiveLayers.RemoveContainer(container);
+                     break;
+                  }
+               }
+            }
+
+            // If there is already a layer by that name find unique name
+            if (strGeoTiffName.Length > 0)
+            {
+               int iCount = 0;
+               string strNewName = strGeoTiffName;
+               bool bExist = true;
+               while (bExist)
+               {
+                  bExist = false;
+                  foreach (LayerBuilderContainer container in m_ActiveLayers)
+                  {
+                     if (container.Name == strNewName)
+                     {
+                        bExist = true;
+                        break;
+                     }
+                  }
+
+                  if (bExist)
+                  {
+                     iCount++;
+                     strNewName = strGeoTiffName + "_" + iCount.ToString();
+                  }
+               }
+               strGeoTiffName = strNewName;
+            }
+
             if (strGeoTiffName.Length > 0)
                m_ActiveLayers.Add(strGeoTiffName, builder, true, 255, true, bTmp);
             else
@@ -3012,7 +3053,8 @@ namespace Dapple
                bool bGeotiffTmp = strData[3] == "YES";
                this.lastView = strData[4];
 
-               OpenView(strView, strGeoTiff.Length == 0);
+               if (strView.Length > 0)
+                  OpenView(strView, strGeoTiff.Length == 0);
                if (strGeoTiff.Length > 0)
                   AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
             }
