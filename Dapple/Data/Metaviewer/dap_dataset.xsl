@@ -17,7 +17,7 @@
 						</xsl:for-each>
 					</xsl:for-each>
 				</xsl:for-each>
-			</h3>
+			Metadata</h3>
 			<div>
 				<xsl:for-each select="/">
 					<xsl:for-each select="dapmeta">

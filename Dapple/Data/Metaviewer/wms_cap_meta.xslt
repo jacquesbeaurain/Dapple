@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xdt="http://www.w3.org/2005/xpath-datatypes" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xsl:output version="1.0" method="html" indent="no" encoding="UTF-8"/>
-	<xsl:template match="/">
-		<html>
+   <xsl:template match="/">
+      <html>
 			<head>
             <script type="text/javascript" src="geometatree.js"/>
             <link href="geosoft.meta.css" type="text/css" rel="stylesheet"/>
          </head>
 			<body>
-				<xsl:for-each select="/">
+               <xsl:for-each select="/">
 					<xsl:for-each select="WMT_MS_Capabilities">
 						<xsl:for-each select="Service">
 							<xsl:for-each select="Title">
@@ -207,12 +207,34 @@
             <h3>
                <xsl:text>Layers</xsl:text>
             </h3>
-            <xsl:for-each select="Capabily">
-               <xsl:for-each select="Layer">
+            <xsl:for-each select="WMT_MS_Capabilities">
+               <xsl:for-each select="Capability">
+                  <xsl:apply-templates select="Layer">
+                     <xsl:with-param name="pstrIndent" select="''"/>
+                  </xsl:apply-templates>
                </xsl:for-each>
             </xsl:for-each>
-			</body>
-		</html>
-	</xsl:template>
+         </body>
+      </html>
+   </xsl:template>
+   <xsl:template match="Layer">
+	<xsl:param name="pstrIndent"/>
+	<xsl:variable name="vthisIndent" select="concat($pstrIndent, '-')"/>
+	<span class="trigger">
+		<xsl:attribute name="onClick">showBranch('<xsl:number count="*[Title]" level="any"/>');</xsl:attribute>
+		<img src="collapsed.gif">
+			<xsl:attribute name="id">I<xsl:number count="*[Title]" level="any"/></xsl:attribute>
+		</img>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="Title"/>
+		<br/>
+	</span>
+	<span class="branch">
+		<xsl:attribute name="id"><xsl:number count="*[Title]" level="any"/></xsl:attribute>
+		<xsl:apply-templates select="Layer">
+			<xsl:with-param name="pstrIndent" select="$vthisIndent"/>
+		</xsl:apply-templates>
+	</span>
+   </xsl:template>
 </xsl:stylesheet>
 
