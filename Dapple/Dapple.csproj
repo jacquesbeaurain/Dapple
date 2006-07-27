@@ -431,6 +431,9 @@
     <Content Include="Data\MetaViewer\wms_cap_meta.xslt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\MetaViewer\wms_layer_meta.xslt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Plugins\Atmosphere\Atmosphere.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

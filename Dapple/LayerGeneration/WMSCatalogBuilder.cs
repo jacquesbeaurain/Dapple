@@ -206,10 +206,14 @@ namespace Dapple.LayerGeneration
             WMSLayerAccessor accessor = new WMSLayerAccessor(imageFormat, true, layer.ParentWMSList.ServerGetMapUrl,
                layer.ParentWMSList.Version, layer.Name, string.Empty, layer.SRS, layer.CRS);
 
+            IBuilder parentServer = directory;
+            while (parentServer != null && !(parentServer is WMSServerBuilder))
+               parentServer = parentServer.Parent;
+
             WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer,
                0, true, new GeographicBoundingBox(Convert.ToDouble(layer.North), Convert.ToDouble(layer.South)
                , Convert.ToDouble(layer.West), Convert.ToDouble(layer.East)), accessor, true, m_WorldWindow.CurrentWorld,
-               m_WorldWindow.WorldWindSettings.CachePath, directory);
+               m_strAppDir, m_WorldWindow.WorldWindSettings.CachePath, parentServer as WMSServerBuilder, directory);
             //WMSZoomBuilder builder = new WMSZoomBuilder(layer, m_WorldWindow.WorldWindSettings.CachePath, m_WorldWindow, directory);
             sem.WaitOne();
             directory.LayerBuilders.Add(builder);

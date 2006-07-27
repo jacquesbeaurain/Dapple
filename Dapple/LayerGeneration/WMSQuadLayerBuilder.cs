@@ -20,6 +20,7 @@ namespace Dapple.LayerGeneration
       private int m_iLevels = 15;
       private int m_intTextureSizePixels = 256;
       private string m_strCacheRoot;
+      private string m_strAppDir;
       WMSLayerAccessor m_oWMSLayerAccessor = null;
 
       //WMS Layer Accessor
@@ -34,6 +35,8 @@ namespace Dapple.LayerGeneration
       GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
       ImageAccessor m_oImageAccessor = null;
       private decimal m_decLevelZeroTileSizeDegrees = 0;
+
+      WMSServerBuilder m_Server;
 
       bool IsOn = true;
       bool m_blnIsChanged = true;
@@ -153,8 +156,10 @@ namespace Dapple.LayerGeneration
       #endregion
 
       public WMSQuadLayerBuilder(WMSLayer layer, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         WMSLayerAccessor wmsLayerAccessor, bool isOn, World world, string cacheDirectory, IBuilder parent)
+         WMSLayerAccessor wmsLayerAccessor, bool isOn, World world, string appDirectory, string cacheDirectory, WMSServerBuilder server, IBuilder parent)
       {
+         m_strAppDir = appDirectory;
+         m_Server = server;
          m_wmsLayer = layer;
          m_strName = layer.Title;
          distAboveSurface = height;
@@ -198,13 +203,31 @@ namespace Dapple.LayerGeneration
       {
          get
          {
-            return false;
+            return m_Server != null && m_Server.SupportsMetaData;
          }
       }
 
       public override XmlNode GetMetaData(XmlDocument oDoc)
       {
-         return null;
+         if (m_Server != null)
+         {
+            XmlDocument responseDoc = new XmlDocument();
+            responseDoc.Load(m_Server.CapabilitiesFilePath);
+            XmlNode oNode = responseDoc.DocumentElement;
+            XmlNode newNode = oDoc.CreateElement(oNode.Name);
+            newNode.InnerXml = oNode.InnerXml;
+            return newNode;
+         }
+         else
+            return null;
+      }
+
+      public override string StyleSheetPath
+      {
+         get
+         {
+            return System.IO.Path.Combine(m_strAppDir, "Data\\MetaViewer\\wms_layer_meta.xslt");
+         }
       }
 
       public override bool SupportsLegend
@@ -423,7 +446,7 @@ namespace Dapple.LayerGeneration
       public override object Clone()
       {
          return new WMSQuadLayerBuilder(m_wmsLayer, distAboveSurface, terrainMapped, m_hBoundary,
-            m_oWMSLayerAccessor, IsOn, m_oWorld, m_strCacheRoot, m_Parent);
+            m_oWMSLayerAccessor, IsOn, m_oWorld, m_strAppDir, m_strCacheRoot, m_Server, m_Parent);
       }
 
       protected override void CleanUpLayer(bool bFinal)
