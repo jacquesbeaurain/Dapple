@@ -46,6 +46,7 @@ namespace Dapple
       public const string VersionFile = "version.txt";
       public const string LicenseWebsiteUrl = "http://dapple.geosoft.com/license.asp";
       public const string CreditsWebsiteUrl = "http://dapple.geosoft.com/credits.asp";
+      public const string ReleaseNotesWebsiteUrl = "http://dapple.geosoft.com/releasenotes.asp";
       public const string WebsiteHelpUrl = "http://dapple.geosoft.com/help/";
       public const string WebsiteForumsHelpUrl = "https://dappleforums.geosoft.com/";
       public const string WMSWebsiteHelpUrl = "http://dapple.geosoft.com/help/wms.asp";
@@ -417,7 +418,9 @@ namespace Dapple
       delegate void InvokeNotifyUpdate(string strVersion);
       void NotifyUpdate(string strVersion)
       {
-         if (MessageBox.Show(this, "There is a new update for Dapple (Version " + strVersion + ") available.\nDo you want to visit the Dapple web site to downlad the latest version?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+         UpdateDialog dlg = new UpdateDialog(strVersion);
+
+         if (dlg.ShowDialog(this) == DialogResult.Yes)
             MainForm.BrowseTo(MainForm.WebsiteUrl);
       }
 

@@ -22,6 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDownload", "WebDownload\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EBDC1558-6CA2-49FC-BC70-723B7CD2B92B}"
 	ProjectSection(SolutionItems) = preProject
+		releasenotes.asp = releasenotes.asp
 		Version.Assembly.cs = Version.Assembly.cs
 	EndProjectSection
 EndProject
