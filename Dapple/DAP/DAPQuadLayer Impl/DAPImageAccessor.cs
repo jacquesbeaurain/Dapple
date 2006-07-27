@@ -17,7 +17,6 @@ namespace GeosoftPlugin.New
 		#region Private Members
 
       protected string m_strName;
-      protected string m_appDirectory;
       protected Geosoft.GX.DAPGetData.Server m_oServer;
 
 		#endregion
@@ -59,8 +58,7 @@ namespace GeosoftPlugin.New
          decimal levelZeroTileSizeDegrees,
          int numberLevels,
          string imageFileExtension,
-         string cacheDirectory,
-          string appDir)
+         string cacheDirectory)
          : base(permanentTextureDirectory,
          textureSizePixels, levelZeroTileSizeDegrees,
          numberLevels, imageFileExtension, cacheDirectory)
@@ -68,7 +66,6 @@ namespace GeosoftPlugin.New
          m_strName = name;
          m_oServer = server;
          m_dataDirectory = permanentTextureDirectory;
-         m_appDirectory = appDir;
       }
 		
 		/// <summary>
@@ -90,15 +87,13 @@ namespace GeosoftPlugin.New
 			int numberLevels,
 			string imageFileExtension,
 			string cacheDirectory,
-         string duplicateTextureFilePath,
-          string appDir
+         string duplicateTextureFilePath
 			):this(name, server, permanentTextureDirectory,
          textureSizePixels, levelZeroTileSizeDegrees, numberLevels ,
-         imageFileExtension, cacheDirectory, appDir)
+         imageFileExtension, cacheDirectory)
 
 		{
 			m_duplicateTexturePath = duplicateTextureFilePath;
-
 		}
 
 		public override ImageTileInfo GetImageTileInfo(int level, int row, int col)

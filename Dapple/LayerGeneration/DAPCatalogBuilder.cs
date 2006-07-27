@@ -16,7 +16,6 @@ namespace Dapple.LayerGeneration
 {
    public class DAPCatalogBuilder : BuilderDirectory
    {
-      private string m_strAppDir;
       private string m_strCacheDir;
       private World m_oWorld;
       private GetDapError m_Error;
@@ -30,13 +29,12 @@ namespace Dapple.LayerGeneration
       TriStateTreeView m_layerTree;
       LayerBuilderList m_activeList;
 
-      public DAPCatalogBuilder(string appDir, string cacheDir, World world, string strName, IBuilder parent, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
+      public DAPCatalogBuilder(string cacheDir, World world, string strName, IBuilder parent, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
          : base(strName, parent, false)
       {
          m_serverTree = serverTree;
          m_layerTree = layerTree;
          m_activeList = activeList;
-         m_strAppDir = appDir;
          m_strCacheDir = cacheDir;
          m_oWorld = world;
          
@@ -44,12 +42,12 @@ namespace Dapple.LayerGeneration
 
          m_Error = GetDapError.Instance;
          if (m_Error == null)
-            m_Error = new GetDapError(Path.Combine(m_strAppDir, "DapErrors.log"));
+            m_Error = new GetDapError(Path.Combine(m_strCacheDir, "DapErrors.log"));
       }
 
       public override object Clone()
       {
-         DAPCatalogBuilder clone = new DAPCatalogBuilder(m_strAppDir, m_strCacheDir, m_oWorld, Name, Parent, m_serverTree, m_layerTree, m_activeList);
+         DAPCatalogBuilder clone = new DAPCatalogBuilder(m_strCacheDir, m_oWorld, Name, Parent, m_serverTree, m_layerTree, m_activeList);
          clone.m_oServers.Servers = this.m_oServers.Servers;
          clone.LoadingCompleted += this.LoadingCompleted;
          clone.LoadingFailed += this.LoadingFailed;
@@ -187,7 +185,7 @@ namespace Dapple.LayerGeneration
             Geosoft.Dap.Common.DataSet hDataSet;
             oServer.Command.Parser.DataSet(xmlNode, out hDataSet);
             parentDir.LayerBuilders.Add(new DAPQuadLayerBuilder(hDataSet,
-                m_oWorld, m_strCacheDir, m_strAppDir, oServer, parentDir));
+                m_oWorld, m_strCacheDir, oServer, parentDir));
          }
       }
 

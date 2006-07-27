@@ -55,7 +55,7 @@ namespace Dapple.LayerGeneration
       }
 
       [System.ComponentModel.Browsable(false)]
-      string StyleSheetPath
+      string StyleSheetName
       {
          get;
       }
@@ -215,7 +215,7 @@ namespace Dapple.LayerGeneration
       }
 
 
-      public virtual string StyleSheetPath
+      public virtual string StyleSheetName
       {
          get
          {

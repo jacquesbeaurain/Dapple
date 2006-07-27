@@ -92,6 +92,7 @@ namespace Dapple
       private string openGeoTiffName = "";
       private bool openGeoTiffTmp = false;
       private string lastView = "";
+      private string metaviewerDir = "";
 
       private bool rightmouse_context = false;
       private bool checked_context = false;
@@ -288,17 +289,24 @@ namespace Dapple
          toolStripLayerLabel.Renderer = this.toolStripRenderer;
          toolStripOverview.Renderer = this.toolStripRenderer;
 
+         // Copy/Update any configuration files and other files if needed now
          string strConfigDir = Path.Combine(UserPath, "Config");
          Directory.CreateDirectory(strConfigDir);
          Directory.CreateDirectory(Path.Combine(UserPath, "Cache"));
-
-         // Copy/Update any configuration files if needed now
+         this.metaviewerDir = Path.Combine(UserPath, "Metadata");
+         Directory.CreateDirectory(this.metaviewerDir);
          string[] cfgFiles = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Config"), "*.xml");
          foreach (string strCfgFile in cfgFiles)
          {
             string strUserCfg = Path.Combine(strConfigDir, Path.GetFileName(strCfgFile));
             if (!File.Exists(strUserCfg))
                File.Copy(strCfgFile, strUserCfg);
+         }
+         string[] metaFiles = Directory.GetFiles(Path.Combine(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Data"), "MetaViewer"), "*.*");
+         foreach (string strMetaFile in metaFiles)
+         {
+            string strUserMeta = Path.Combine(this.metaviewerDir, Path.GetFileName(strMetaFile));
+            File.Copy(strMetaFile, strUserMeta, true);
          }
 
          WWSettingsCtl.SettingsPath = UserPath;
@@ -1438,13 +1446,13 @@ namespace Dapple
          {
             oDoc.AppendChild(oNode);
          }
-         if (builder.StyleSheetPath != null)
+         if (builder.StyleSheetName!= null)
          {
-            XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + builder.StyleSheetPath + "'");
+            XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, builder.StyleSheetName) + "'");
             oDoc.InsertBefore(oRef, oDoc.DocumentElement);
          }
 
-         string filePath = Path.Combine(Path.GetDirectoryName(builder.StyleSheetPath), Path.GetRandomFileName());
+         string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
          oDoc.Save(filePath);
          form.WindowState = FormWindowState.Maximized;
          form.ShowDialog(this, filePath);
@@ -2578,7 +2586,7 @@ namespace Dapple
             {
                if (entry.builderdirectory.specialcontainer.Value == "DAPServers")
                {
-                  DAPCatalogBuilder dapBuilder = new DAPCatalogBuilder(WWSettingsCtl.WorldWindDirectory, WWSettingsCtl.CachePath, m_worldWindow.CurrentWorld, entry.builderdirectory.name.Value, Parent, serverTree, layerTree, activeList);
+                  DAPCatalogBuilder dapBuilder = new DAPCatalogBuilder(WWSettingsCtl.CachePath, m_worldWindow.CurrentWorld, entry.builderdirectory.name.Value, Parent, serverTree, layerTree, activeList);
                   dapBuilder.LoadingCompleted += new LoadingCompletedCallbackHandler(OnCatalogLoaded);
                   dapBuilder.LoadingFailed += new LoadingFailedCallbackHandler(OnCatalogFailed);
 

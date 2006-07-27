@@ -166,7 +166,7 @@ namespace Dapple.LayerGeneration
       }
 
       [System.ComponentModel.Browsable(false)]
-      public virtual string StyleSheetPath
+      public virtual string StyleSheetName
       {
          get { return null; }
       }

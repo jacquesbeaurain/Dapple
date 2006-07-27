@@ -18,7 +18,6 @@ namespace Dapple.LayerGeneration
       protected const string CATALOG_CACHE = "WMS Catalog Cache";
       #endregion
 
-      private string m_strAppDir;
       private WorldWindow m_WorldWindow;
       private System.Collections.Hashtable m_oTable = new System.Collections.Hashtable();
       private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
@@ -57,7 +56,6 @@ namespace Dapple.LayerGeneration
       public WMSCatalogBuilder(string appDir, WorldWindow worldWindow, string strName, IBuilder parent, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
          : base(strName, parent, false)
       {
-         m_strAppDir = appDir;
          m_serverTree = serverTree;
          m_layerTree = layerTree;
          m_activeList = activeList;
@@ -89,7 +87,7 @@ namespace Dapple.LayerGeneration
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         WMSServerBuilder dir = new WMSServerBuilder(this, m_strAppDir, serverUrl, xmlPath);
+         WMSServerBuilder dir = new WMSServerBuilder(this, serverUrl, xmlPath);
          SubList.Add(dir);
          
          m_oTable.Add(download, dir);
@@ -213,7 +211,7 @@ namespace Dapple.LayerGeneration
             WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer,
                0, true, new GeographicBoundingBox(Convert.ToDouble(layer.North), Convert.ToDouble(layer.South)
                , Convert.ToDouble(layer.West), Convert.ToDouble(layer.East)), accessor, true, m_WorldWindow.CurrentWorld,
-               m_strAppDir, m_WorldWindow.WorldWindSettings.CachePath, parentServer as WMSServerBuilder, directory);
+               m_WorldWindow.WorldWindSettings.CachePath, parentServer as WMSServerBuilder, directory);
             //WMSZoomBuilder builder = new WMSZoomBuilder(layer, m_WorldWindow.WorldWindSettings.CachePath, m_WorldWindow, directory);
             sem.WaitOne();
             directory.LayerBuilders.Add(builder);
@@ -225,13 +223,11 @@ namespace Dapple.LayerGeneration
 
    public class WMSServerBuilder : ServerBuilder
    {
-      string m_strAppDir;
       string m_strCapabilitiesFilePath;
 
-      public WMSServerBuilder(IBuilder parent, string appDir, string url, string CapabilitiesFilePath)
+      public WMSServerBuilder(IBuilder parent, string url, string CapabilitiesFilePath)
          : base(url, parent, url)
       {
-         m_strAppDir = appDir;
          m_strCapabilitiesFilePath = CapabilitiesFilePath;
       }
 
@@ -265,11 +261,11 @@ namespace Dapple.LayerGeneration
          return newNode;
       }
 
-      public override string StyleSheetPath
+      public override string StyleSheetName
       {
          get
          {
-            return System.IO.Path.Combine(m_strAppDir, "Data\\MetaViewer\\wms_cap_meta.xslt");
+            return "wms_cap_meta.xslt";
          }
       }
 

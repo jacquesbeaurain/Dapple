@@ -9,11 +9,9 @@
          </head>
          <body>
             <xsl:for-each select="WMT_MS_Capabilities">
-               <xsl:for-each select="Capability">
-                  <xsl:apply-templates select="Layer">
-                     <xsl:with-param name="pstrIndent" select="''"/>
-                  </xsl:apply-templates>
-               </xsl:for-each>
+               <xsl:apply-templates select="Layer">
+                  <xsl:with-param name="pstrIndent" select="''"/>
+               </xsl:apply-templates>
             </xsl:for-each>
             <br/>
             <xsl:for-each select="/">
@@ -291,5 +289,6 @@
          </xsl:for-each>
          <br/>
       </span>
+      <br/>
    </xsl:template>
 </xsl:stylesheet>

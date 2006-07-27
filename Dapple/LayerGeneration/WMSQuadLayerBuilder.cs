@@ -20,7 +20,6 @@ namespace Dapple.LayerGeneration
       private int m_iLevels = 15;
       private int m_intTextureSizePixels = 256;
       private string m_strCacheRoot;
-      private string m_strAppDir;
       WMSLayerAccessor m_oWMSLayerAccessor = null;
 
       //WMS Layer Accessor
@@ -156,9 +155,8 @@ namespace Dapple.LayerGeneration
       #endregion
 
       public WMSQuadLayerBuilder(WMSLayer layer, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         WMSLayerAccessor wmsLayerAccessor, bool isOn, World world, string appDirectory, string cacheDirectory, WMSServerBuilder server, IBuilder parent)
+         WMSLayerAccessor wmsLayerAccessor, bool isOn, World world, string cacheDirectory, WMSServerBuilder server, IBuilder parent)
       {
-         m_strAppDir = appDirectory;
          m_Server = server;
          m_wmsLayer = layer;
          m_strName = layer.Title;
@@ -207,26 +205,81 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      private XmlNode FindLayer(XmlNode oParentNode)
+      {
+         XmlNode oRetNode = null;
+
+         foreach (XmlNode oNode in oParentNode.ChildNodes)
+         {
+            if (String.Compare(oNode.Name, "WMT_MS_Capabilities", true) == 0 || String.Compare(oNode.Name, "Capability") == 0 || String.Compare(oNode.Name, "Layer", true) == 0)
+            {
+               if (String.Compare(oNode.Name, "Layer", true) == 0)
+               {
+                  foreach (XmlNode oChildNode in oNode.ChildNodes)
+                  {
+                     if (String.Compare(oChildNode.Name, "Name", true) == 0 && oChildNode.InnerText == m_wmsLayer.Name)
+                     {
+                        oRetNode = oNode;
+                        break;
+                     }
+                  }
+               }
+               if (oRetNode == null)
+                  oRetNode = FindLayer(oNode);
+               if (oRetNode != null)
+                  break;
+            }
+         }
+         return oRetNode;
+      }
+
+      private void RemoveLayers(XmlNode oParentNode)
+      {
+         List<XmlNode> deleteList = new List<XmlNode>();
+         foreach (XmlNode oNode in oParentNode.ChildNodes)
+         {
+            if (String.Compare(oNode.Name, "WMT_MS_Capabilities", true) == 0 || String.Compare(oNode.Name, "Capability") == 0 || String.Compare(oNode.Name, "Layer", true) == 0)
+            {
+               if (String.Compare(oNode.Name, "Layer", true) == 0)
+                  deleteList.Add(oNode);
+               RemoveLayers(oNode);
+            }
+         }
+         foreach (XmlNode oNode in deleteList)
+            oParentNode.RemoveChild(oNode);
+      }
+
       public override XmlNode GetMetaData(XmlDocument oDoc)
       {
-         if (m_Server != null)
+         if (m_Server != null && m_wmsLayer != null)
          {
             XmlDocument responseDoc = new XmlDocument();
             responseDoc.Load(m_Server.CapabilitiesFilePath);
             XmlNode oNode = responseDoc.DocumentElement;
             XmlNode newNode = oDoc.CreateElement(oNode.Name);
             newNode.InnerXml = oNode.InnerXml;
+
+            // Find the layer node that matches this one and remove the rest
+            XmlNode oLayerNode = FindLayer(newNode);
+            if (oLayerNode != null)
+            {
+               string strInner = oLayerNode.InnerXml;
+               RemoveLayers(newNode);
+               XmlNode layerNode = oDoc.CreateElement("Layer");
+               layerNode.InnerXml = strInner;
+               newNode.AppendChild(layerNode);
+            }
             return newNode;
          }
          else
             return null;
       }
 
-      public override string StyleSheetPath
+      public override string StyleSheetName
       {
          get
          {
-            return System.IO.Path.Combine(m_strAppDir, "Data\\MetaViewer\\wms_layer_meta.xslt");
+            return "wms_layer_meta.xslt";
          }
       }
 
@@ -234,7 +287,7 @@ namespace Dapple.LayerGeneration
       {
          get
          {
-            return m_wmsLayer.HasLegend;
+            return m_wmsLayer != null && m_wmsLayer.HasLegend;
          }
       }
 
@@ -446,7 +499,7 @@ namespace Dapple.LayerGeneration
       public override object Clone()
       {
          return new WMSQuadLayerBuilder(m_wmsLayer, distAboveSurface, terrainMapped, m_hBoundary,
-            m_oWMSLayerAccessor, IsOn, m_oWorld, m_strAppDir, m_strCacheRoot, m_Server, m_Parent);
+            m_oWMSLayerAccessor, IsOn, m_oWorld, m_strCacheRoot, m_Server, m_Parent);
       }
 
       protected override void CleanUpLayer(bool bFinal)
