@@ -10,7 +10,7 @@ title="Release Notes"
 		<h2>1.0.6 Release Notes</h2>
 		<h3>New Features</h3>
 <ul>
-	<li>Install now supports Windows 20000</li>
+	<li>Install now supports Windows 2000</li>
 	<li>New command line flag for displaying temporary GeoTIF files</li>
 	<li>Better DAP dataset metadata stylesheet</li>
 	<li>WMS server metadata Includes dataset lists</li>
