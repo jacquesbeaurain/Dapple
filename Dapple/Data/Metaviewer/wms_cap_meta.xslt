@@ -204,9 +204,9 @@
 					</xsl:for-each>
 					<br/>
 				</xsl:for-each>
-            <h3>
+            <h2>
                <xsl:text>Layers</xsl:text>
-            </h3>
+            </h2>
             <xsl:for-each select="WMT_MS_Capabilities">
                <xsl:for-each select="Capability">
                   <xsl:apply-templates select="Layer">
@@ -217,24 +217,83 @@
          </body>
       </html>
    </xsl:template>
-   <xsl:template match="Layer">
-	<xsl:param name="pstrIndent"/>
-	<xsl:variable name="vthisIndent" select="concat($pstrIndent, '-')"/>
-	<span class="trigger">
-		<xsl:attribute name="onClick">showBranch('<xsl:number count="*[Title]" level="any"/>');</xsl:attribute>
-		<img src="collapsed.gif">
-			<xsl:attribute name="id">I<xsl:number count="*[Title]" level="any"/></xsl:attribute>
-		</img>
-		<xsl:text> </xsl:text>
-		<xsl:value-of select="Title"/>
-		<br/>
-	</span>
-	<span class="branch">
-		<xsl:attribute name="id"><xsl:number count="*[Title]" level="any"/></xsl:attribute>
-		<xsl:apply-templates select="Layer">
-			<xsl:with-param name="pstrIndent" select="$vthisIndent"/>
-		</xsl:apply-templates>
-	</span>
+   <xsl:template match="Layer">
+	   <xsl:param name="pstrIndent"/>
+	   <xsl:variable name="vthisIndent" select="concat($pstrIndent, '-')"/>
+	   <span class="trigger">
+		   <xsl:attribute name="onClick">showBranch('<xsl:number count="*[Title]" level="any"/>');</xsl:attribute>
+		   <img src="collapsed.gif">
+			   <xsl:attribute name="id">I<xsl:number count="*[Title]" level="any"/></xsl:attribute>
+		   </img>
+		   <xsl:text> </xsl:text>
+         <big><b><xsl:value-of select="Title"/></b></big>
+		   <br/>
+	   </span>
+	   <span class="branch">
+         <xsl:attribute name="id"><xsl:number count="*[Title]" level="any"/></xsl:attribute>
+         <xsl:for-each select="Abstract">
+            <br/>
+            <b>Abstract:</b>
+            <br/>
+            <xsl:apply-templates/>
+            <br/>
+         </xsl:for-each>
+         <xsl:for-each select="KeywordList">
+            <br/>
+            <b>Keywords:</b>
+            <br/>
+            <xsl:for-each select="Keyword">
+               <xsl:apply-templates/>, 
+            </xsl:for-each>
+            <xsl:apply-templates/>
+            <br/>
+         </xsl:for-each>
+         <xsl:for-each select="Style">
+            <br/>
+            <b>Legend: </b>
+            <a>
+               <xsl:attribute name="target">
+                  _blank
+               </xsl:attribute>
+               <xsl:attribute name="href">
+                  <xsl:for-each select="LegendURL">
+                     <xsl:for-each select="OnlineResource">
+                        <xsl:value-of select="@xlink:href"/>
+                     </xsl:for-each>
+                  </xsl:for-each>
+               </xsl:attribute>
+               <xsl:for-each select="Title">
+                  <xsl:apply-templates/>
+               </xsl:for-each>
+            </a>
+            <br/>
+         </xsl:for-each>
+         <xsl:for-each select="LatLonBoundingBox">
+            <br/>
+            <b>Lat/Lon Bounding Box:</b>
+            <br/>
+            minlon = <xsl:value-of select="@minx"/>
+            , maxlon = <xsl:value-of select="@maxx"/><br/>
+            minlat = <xsl:value-of select="@miny"/>
+            , maxlat = <xsl:value-of select="@maxy"/><br/>
+         </xsl:for-each>
+         <br/>
+         <b>Coordinate Systems</b>
+         <br/>
+         <xsl:for-each select="SRS">
+            <xsl:apply-templates/>
+            <br/>
+         </xsl:for-each>
+         <xsl:for-each select="CRS">
+            <xsl:apply-templates/>
+            <br/>
+         </xsl:for-each>
+         <br/>
+         <xsl:apply-templates select="Layer">
+			   <xsl:with-param name="pstrIndent" select="$vthisIndent"/>
+		   </xsl:apply-templates>
+         <br/>
+      </span>
    </xsl:template>
 </xsl:stylesheet>
 

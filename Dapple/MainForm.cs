@@ -1446,6 +1446,7 @@ namespace Dapple
 
          string filePath = Path.Combine(Path.GetDirectoryName(builder.StyleSheetPath), Path.GetRandomFileName());
          oDoc.Save(filePath);
+         form.WindowState = FormWindowState.Maximized;
          form.ShowDialog(this, filePath);
          System.IO.File.Delete(filePath);
       }
