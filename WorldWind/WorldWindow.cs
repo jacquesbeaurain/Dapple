@@ -542,6 +542,19 @@ namespace WorldWind
          double dX2,dY2; // lower right
          double dX3,dY3; // upper right
          double dX4,dY4; // upper left
+         Angle  aX1,aY1; // lower left
+         Angle  aX2,aY2; // lower right
+         Angle  aX3,aY3; // upper right
+         Angle  aX4,aY4; // upper left
+
+         // See if we can pick ray intersections on the four corners first, if any one fails fall back to an estimate method
+
+         this.drawArgs.WorldCamera.PickingRayIntersection(0, this.Height, out aY1, out aX1);
+         this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, this.Height, out aY2, out aX2);
+         this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, 0, out aY3, out aX3);
+         this.drawArgs.WorldCamera.PickingRayIntersection(0, 0, out aY4, out aX4);
+         if (!Angle.IsNaN(aX1) && !Angle.IsNaN(aY1) && !Angle.IsNaN(aX2) && !Angle.IsNaN(aY2) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aX4) && !Angle.IsNaN(aY4))
+            return new GeographicQuad(aX1.Degrees, aY1.Degrees, aX2.Degrees, aY2.Degrees, aX3.Degrees, aY3.Degrees, aX4.Degrees, aY4.Degrees);
 
          // Maximum visibility
          double dMaxAngle = Math.Acos(dRadius  / (dRadius + dAlt)) * Rad2Deg;
