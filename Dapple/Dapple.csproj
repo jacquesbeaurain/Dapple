@@ -109,15 +109,6 @@
     <Compile Include="AboutDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DAP\Common\Queue.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DAP\Common\Semaphore.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DAP\DAPGetData\AddServer.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="DAP\DAPGetData\Catalog.cs" />
     <Compile Include="DAP\DAPGetData\CatalogCollection.cs" />
     <Compile Include="DAP\DAPGetData\Constant.cs" />
@@ -125,22 +116,10 @@
     <Compile Include="DAP\DAPGetData\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DAP\DAPGetData\MetaDataViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DAP\DAPGetData\MetaDataViewer.Designer.cs">
-      <DependentUpon>MetaDataViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DAP\DAPGetData\RowChanged.cs" />
     <Compile Include="DAP\DAPQuadLayer Impl\DapDownload.cs" />
     <Compile Include="DAP\DAPQuadLayer Impl\DAPImageAccessor.cs" />
-    <Compile Include="DAP\DAPGetData\DataSetList.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="DAP\DAPGetData\Server.cs" />
     <Compile Include="DAP\DAPGetData\ServerList.cs" />
-    <Compile Include="DAP\DAPGetData\ServerSelect.cs" />
-    <Compile Include="DAP\DAPGetData\ViewMeta.cs" />
     <Compile Include="DAP\DataGridButtonColumn\DataGridButtonColumn.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -165,14 +144,6 @@
     <Compile Include="DAP\ErrorLogger\ErrorLogger.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="DAP\DAPGetData\AddServer.resx">
-      <DependentUpon>AddServer.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DAP\DAPGetData\DataSetList.resx">
-      <DependentUpon>DataSetList.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="DAP\DAPGetData\images\down.gif" />
     <EmbeddedResource Include="DAP\DAPGetData\images\enserver.ico" />
     <EmbeddedResource Include="DAP\DAPGetData\images\fullview.ICO" />
@@ -194,10 +165,6 @@
     <EmbeddedResource Include="DAP\DAPGetData\images\up.gif" />
     <EmbeddedResource Include="DAP\DAPGetData\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DAP\DAPGetData\MetaDataViewer.resx">
-      <DependentUpon>MetaDataViewer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DAP\DAPGetData\ServerList.resx">
