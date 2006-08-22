@@ -120,27 +120,6 @@
     <Compile Include="DAP\DAPQuadLayer Impl\DAPImageAccessor.cs" />
     <Compile Include="DAP\DAPGetData\Server.cs" />
     <Compile Include="DAP\DAPGetData\ServerList.cs" />
-    <Compile Include="DAP\DataGridButtonColumn\DataGridButtonColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DAP\DataGridButtonColumn\DataGridCheckBoxColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DAP\DataGridButtonColumn\DataGridColorButtonColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DAP\DataGridButtonColumn\DataGridComboboxColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DAP\DataGridButtonColumn\DataGridImageColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DAP\DataGridButtonColumn\DataGridTextButtonColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DAP\DataGridButtonColumn\DataGridTypeColumn.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="DAP\ErrorLogger\ErrorLogger.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -171,13 +150,6 @@
       <DependentUpon>ServerList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\database.gif" />
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\document.gif" />
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\grid.gif" />
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\map.gif" />
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\picture.gif" />
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\point.gif" />
-    <EmbeddedResource Include="DAP\DataGridButtonColumn\res\spf.gif" />
     <Compile Include="DappleToolStripRenderer.cs" />
     <Compile Include="DappleView.cs" />
     <Compile Include="ExportView.cs">
