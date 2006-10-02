@@ -10,6 +10,27 @@ namespace Dapple
       private TreeUtils()
       {
       }
+      
+      /// <summary>
+      /// Determines whether parent/child relationship exist
+      /// </summary>
+      /// <param name="parentNode"></param>
+      /// <param name="childNode"></param>
+      /// <returns></returns>
+      public static bool isParent(TreeNode parentNode, TreeNode childNode)
+      {
+         if (parentNode == childNode)
+            return true;
+
+         TreeNode n = childNode;
+         bool bFound = false;
+         while (!bFound && n != null)
+         {
+            n = n.Parent;
+            bFound = (n == parentNode);
+         }
+         return bFound;
+      }
 
       /// <summary>
       /// Breadth first search for first treenode tag of type

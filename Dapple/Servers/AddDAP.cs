@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -51,6 +52,7 @@ namespace Dapple
             return;
          }
          m_oServer = new Server(txtDapURL.Text, m_worldWind.WorldWindSettings.CachePath);
+
          if (m_oServer.Name == null)
          {
             MessageBox.Show(this, "The URL you entered is not a valid DAP Server", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);

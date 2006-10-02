@@ -13,12 +13,14 @@ namespace Geosoft.GX.DAPGetData
 	public class CatalogCollection
 	{
       #region Member Variables
-      protected Hashtable  m_hCatalogList;
+      protected Hashtable m_hCatalogList;
+      protected Server m_oServer;
       #endregion
       
       #region Constructor
-      public CatalogCollection()
+      public CatalogCollection(Server oServer)
       {
+         m_oServer = oServer;
          m_hCatalogList = new Hashtable();
       }      
       #endregion
@@ -30,9 +32,8 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="hBoundingBox"></param>
       /// <param name="strCatalogEdition"></param>
       /// <returns></returns>
-      public Catalog GetCatalog(Server oServer, BoundingBox hBoundingBox, string strKeywords)
+      public Catalog GetCatalog(BoundingBox hBoundingBox, string strKeywords)
       {
-//#if DAPPLE_TODO
          CatalogHash hHash = new CatalogHash(hBoundingBox, strKeywords);
          Catalog     hRetCatalog = null;
          string      strEdition = String.Empty;
@@ -44,7 +45,7 @@ namespace Geosoft.GX.DAPGetData
          {
             try
             {
-               oServer.Command.GetCatalogEdition(out strConfigEdition, out strEdition, null);
+               m_oServer.Command.GetCatalogEdition(out strConfigEdition, out strEdition, null);
             } 
             catch
             {
@@ -64,7 +65,7 @@ namespace Geosoft.GX.DAPGetData
 
             try
             {
-               oServer.Command.GetCatalogEdition(out strConfigEdition, out strEdition, null);
+               m_oServer.Command.GetCatalogEdition(out strConfigEdition, out strEdition, null);
             }
             catch
             {
@@ -73,8 +74,8 @@ namespace Geosoft.GX.DAPGetData
 
             try
             {
-               hDocument = oServer.Command.GetCatalog(String.Empty, 0, 0, strKeywords, hBoundingBox, 0, null);
-               oServer.Command.Parser.PruneCatalog(hDocument);
+               hDocument = m_oServer.Command.GetCatalog(String.Empty, -1, 0, 0, strKeywords, hBoundingBox, null);
+               m_oServer.Command.Parser.PruneCatalog(hDocument);
 
                hRetCatalog = new Catalog(hDocument, strEdition);
 
@@ -86,10 +87,6 @@ namespace Geosoft.GX.DAPGetData
             }
          }
          return hRetCatalog;
-//#else
-//         throw new ApplicationException("Not implemented");
-//         return null;
-//#endif
       }
 
       /// <summary>

@@ -23,7 +23,6 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Constants
-      protected const string CATALOG_CACHE = "DAP Catalog Cache";
       protected const string CONFIGURATION_FILE = "_configuration.xml";
       protected const string BROWSERMAP_FILE = "_browser_map.xml";
       #endregion
@@ -46,11 +45,12 @@ namespace Geosoft.GX.DAPGetData
       protected Geosoft.Dap.Command             m_oCommand;
       protected Geosoft.Dap.Common.BoundingBox  m_oServerBoundingBox = new Geosoft.Dap.Common.BoundingBox();      
       protected Geosoft.Dap.Configuration       m_oServerConfiguration = null;
-      protected CatalogCollection               m_oCatalogs = new CatalogCollection();
+      protected CatalogCollection               m_oCatalogs;
 
       protected XmlDocument                     m_oBrowserMap = null;      
 
-      protected string                    m_strCacheDir;
+      protected string m_strCacheDir;
+      protected string m_strCacheRoot;
       #endregion
 
       #region Properties
@@ -198,69 +198,41 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Constructor
-#if !DAPPLE
       /// <summary>
       /// 	<para>Initializes an instance of the <see cref="Server"/> class.</para>
       /// </summary>
       /// <param name="strDnsAddress">
       /// </param>
+#if !DAPPLE
       public Server(string strDnsAddress)
+#else
+      public Server(string strDnsAddress, string strCacheDir)
+#endif
       {
-         string strDir = "";
-
          // --- create the connection to the server ---
 
+#if !DAPPLE
          m_oCommand = new Geosoft.Dap.Command(strDnsAddress, true, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
+
+         m_strCacheRoot = string.Empty;
+         GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheRoot);
+#else
+         m_oCommand = new Geosoft.Dap.Command(strDnsAddress, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
+         m_strCacheRoot = Path.Combine(strCacheDir, "DapCache");
+#endif
+
          m_strUrl = strDnsAddress;         
 		    
+#if !DAPPLE
          // --- ensure this server is trusted ---
                      
          GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
-
-         GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref strDir);
-         
-         m_strCacheDir = Path.Combine(Path.Combine(strCache, CATALOG_CACHE), strDir);
-
-         // --- remove the http:// from the directory name ---
-
-         strDir = m_strUrl.Substring(7);
-         foreach (char c in Path.GetInvalidPathChars())
-         {
-            strDir.Replace(c, '_');
-         }
-         m_strCacheDir = Path.Combine(m_strCacheDir, strDir);
-
+#endif
+         m_oCatalogs = new CatalogCollection(this);
          ConfigureServer();
       }
-#else
-      /// <summary>
-      /// 	<para>Initializes an instance of the <see cref="Server"/> class.</para>
-      /// </summary>
-      /// <param name="strDnsAddress">
-      /// </param>
-      public Server(string strDnsAddress, string strCache)
-      {
-         string strDir = "";
 
-         // --- create the connection to the server ---
-
-         m_oCommand = new Geosoft.Dap.Command(strDnsAddress, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
-         m_strUrl = strDnsAddress;
-         m_strCacheDir = Path.Combine(strCache, CATALOG_CACHE);
-
-         // --- remove the http:// from the directory name ---
-
-         strDir = m_strUrl.Substring(7);
-         foreach (char c in Path.GetInvalidPathChars())
-         {
-            strDir.Replace(c, '_');
-         }
-         m_strCacheDir = Path.Combine(m_strCacheDir, strDir);
-
-         ConfigureServer();
-      }      
-#endif
-
+#if !DAPPLE
       /// <summary>
       /// 	<para>Initializes an instance of the <see cref="Server"/> class.</para>
       /// </summary>
@@ -272,21 +244,12 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentOutOfRangeException">
       /// 	<para>The argument <paramref name="oServerNode"/> is out of range.</para>
       /// </exception>
-#if DAPPLE
-      public Server(XmlNode oServerNode, string strCache)
-#else
       public Server(XmlNode oServerNode)
-#endif
       {
-         string strDir = "";
-         XmlNode oAttr;
+         XmlNode  oAttr;
 
          if (oServerNode == null) throw new ArgumentNullException("oServerNode");
-#if DAPPLE
-         if (oServerNode.Name != "DAPserver") throw new ArgumentOutOfRangeException("oServerNode");
-#else
          if (oServerNode.Name != Constant.Xml.Tag.Server) throw new ArgumentOutOfRangeException("oServerNode");
-#endif
 
          oAttr = oServerNode.Attributes.GetNamedItem(Constant.Xml.Attr.Name);
          if (oAttr == null) throw new ApplicationException("Missing name attribute in server node");
@@ -312,40 +275,23 @@ namespace Geosoft.GX.DAPGetData
          if (oAttr == null) throw new ApplicationException("Missing cache version attribute in server node");
          m_strCacheVersion = oAttr.Value;         
 
-#if !DAPPLE
          m_oCommand = new Geosoft.Dap.Command(m_strUrl, true, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
-#else
-         m_oCommand = new Geosoft.Dap.Command(m_strUrl, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
-#endif
+
          // --- this is a 6.2 server, get decreased configuration parameters ---
 
          if (m_iMajorVersion <= 6 && m_iMinorVersion < 3)
             m_oCommand.ChangeVersion(Command.Version.GEOSOFT_XML_1_0);
          
          
-#if !DAPPLE
          // --- ensure this server is trusted ---
                      
          GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
-         GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref strDir);
-         
-         m_strCacheDir = Path.Combine(Path.Combine(strCache, CATALOG_CACHE), strDir);
 
-#else
-         m_strCacheDir = Path.Combine(strCache, CATALOG_CACHE);
-#endif
-
-         // --- remove the http:// from the directory name ---
-
-         strDir = m_strUrl.Substring(7);
-         foreach (char c in Path.GetInvalidPathChars())
-         {
-            strDir.Replace(c, '_');
-         }
-         m_strCacheDir = Path.Combine(m_strCacheDir, strDir);
-
+         m_oCatalogs = new CatalogCollection(this);
          ConfigureServer();
       }
+#endif
+
       #endregion
 
       #region Public Methods
@@ -364,11 +310,7 @@ namespace Geosoft.GX.DAPGetData
 
          if (oNode == null) throw new ArgumentNullException("oNode");
 
-#if DAPPLE
-         oServerNode = oNode.OwnerDocument.CreateElement("DAPserver");
-#else
          oServerNode = oNode.OwnerDocument.CreateElement(Constant.Xml.Tag.Server);
-#endif
             
          oAttr = oNode.OwnerDocument.CreateAttribute(Constant.Xml.Attr.Name);
          oAttr.Value = m_strName;
@@ -416,7 +358,7 @@ namespace Geosoft.GX.DAPGetData
          m_iCount = 0;
          try
          {
-            XmlDocument oDocument = m_oCommand.GetDataSetCount(String.Empty, 0, 0, szKeywords, hBox, 0, null);
+            XmlDocument oDocument = m_oCommand.GetDataSetCount(String.Empty, -1, 0, 0, szKeywords, hBox, null);
             m_oCommand.Parser.DataSetCount(oDocument, out m_iCount);
 
             // --- check to see if we have a status node ---
@@ -468,7 +410,6 @@ namespace Geosoft.GX.DAPGetData
       /// <returns></returns>
       public bool Login()
       {
-
          Login oLogin = new Login(this);
 
          m_bLoggedIn = false;
@@ -562,12 +503,24 @@ namespace Geosoft.GX.DAPGetData
 
          if (m_eStatus == ServerStatus.Unsupported) return;         
 
-         if (m_eStatus == ServerStatus.Unsupported || m_eStatus == ServerStatus.OffLine) return;
+         m_strCacheDir = Path.Combine(m_strCacheRoot, "DapCache");
 
-         if (!Directory.Exists(m_strCacheDir))
+         // --- remove the http:// from the directory name ---
+
+         strDir = m_strUrl.Substring(7);
+         foreach (char c in System.IO.Path.GetInvalidPathChars())
          {
-            Directory.CreateDirectory(m_strCacheDir);
+            strDir.Replace(c, '_');
+         }
+
+         m_strCacheDir = System.IO.Path.Combine(m_strCacheDir, strDir);
+
+         if (!System.IO.Directory.Exists(m_strCacheDir))
+         {
+            System.IO.Directory.CreateDirectory(m_strCacheDir);
          } 
+
+         if (m_eStatus == ServerStatus.Unsupported || m_eStatus == ServerStatus.OffLine) return;
 
          LoadConfiguration();         
          LoadBrowserMap();
@@ -728,8 +681,8 @@ namespace Geosoft.GX.DAPGetData
                   // --- height is smaller than it should be ---
 
                   oResolution.Height = Convert.ToInt32(oResolution.Width * dBoxRatio);
-               }
-
+               }         
+               
                m_oBrowserMap = m_oCommand.GetImageEx(oFormat, oBoundingBox, oResolution, true, false, new ArrayList(), null);  
                m_oBrowserMap.Save(strBrowserMapFile);
             } 

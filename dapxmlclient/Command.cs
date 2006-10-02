@@ -225,6 +225,9 @@ namespace Geosoft.Dap
       /// <summary>
       /// Authenticate the user in GeosoftXML format from the dap server
       /// </summary>
+      /// <param name="strUserName">Username</param>
+      /// <param name="strPassword">Password</param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>True/False depending if the user is authenticated or not</returns>
       public bool AuthenticateUser(string strUserName, string strPassword, UpdateProgessCallback progressCallBack)
       {
@@ -416,14 +419,14 @@ namespace Geosoft.Dap
       /// Note: No hierarchy information is retained
       /// </summary>
       /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
       /// <param name="iStartIndex">The index of the first dataset to return</param>
       /// <param name="iMaxResults">The maximum number of datasets to return</param>
       /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
-      /// <param name="hBoundingBox">Filter results based on this bounding box</param>
-      /// <param name="iLevels">Number of levels to recurse down</param>
+      /// <param name="hBoundingBox">Filter results based on this bounding box</param>      
       /// <param name="hDataSets">The list of datasets</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
-      public void GetCatalog(string szPath, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, int iLevels, out System.Collections.ArrayList hDataSets, UpdateProgessCallback progressCallBack)
+      public void GetCatalog(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, out System.Collections.ArrayList hDataSets, UpdateProgessCallback progressCallBack)
       {
          string                  szUrl;
          System.Xml.XmlDocument  hRequestDocument;
@@ -434,7 +437,7 @@ namespace Geosoft.Dap
             m_oLock.AcquireReaderLock(0);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
-            hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iStartIndex, iMaxResults, szKeywords, hBoundingBox, iLevels);
+            hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox);
             hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack); 
  
             m_hParse.Catalog(hResponseDocument, out hDataSets);
@@ -450,9 +453,10 @@ namespace Geosoft.Dap
       /// Note: No hierarchy information is retained
       /// </summary>
       /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
       /// <param name="hDataSets">The list of datasets</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
-      public void GetCatalog(string szPath, out System.Collections.ArrayList hDataSets, UpdateProgessCallback progressCallBack)
+      public void GetCatalog(string szPath, int iDepth, out System.Collections.ArrayList hDataSets, UpdateProgessCallback progressCallBack)
       {
          string                  szUrl;
          System.Xml.XmlDocument  hRequestDocument;
@@ -463,7 +467,7 @@ namespace Geosoft.Dap
             m_oLock.AcquireReaderLock(0);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
-            hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, 0, 0, null, null, 0);
+            hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iDepth, 0, 0, null, null);
             hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack); 
 
             m_hParse.Catalog(hResponseDocument, out hDataSets);
@@ -495,21 +499,21 @@ namespace Geosoft.Dap
       /// <returns>The catalog response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetCatalog(UpdateProgessCallback progressCallBack) 
       {
-         return GetCatalog(null, 0, 0, null, null, 0, progressCallBack);         
+         return GetCatalog(null, -1, 0, 0, null, null, progressCallBack);         
       }
 
       /// <summary>
       /// Get the catalog in GeosoftXML format from the dap server
       /// </summary>
       /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
       /// <param name="iStartIndex">The index of the first dataset to return</param>
       /// <param name="iMaxResults">The maximum number of datasets to return</param>
       /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
       /// <param name="hBoundingBox">Filter results based on this bounding box</param>
-      /// <param name="iLevel">Number of levels to recurse down</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The catalog response in GeosoftXML</returns>
-      public System.Xml.XmlDocument GetCatalog(string szPath, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, int iLevel, UpdateProgessCallback progressCallBack) 
+      public System.Xml.XmlDocument GetCatalog(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, UpdateProgessCallback progressCallBack) 
       {
          string                  szUrl;
          System.Xml.XmlDocument  hRequestDocument;
@@ -520,7 +524,67 @@ namespace Geosoft.Dap
             m_oLock.AcquireReaderLock(0);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
-            hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iStartIndex, iMaxResults, szKeywords, hBoundingBox, iLevel);
+            hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox);
+            hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);  
+         }
+         finally
+         {
+            m_oLock.ReleaseReaderLock();
+         }
+         return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(UpdateProgessCallback progressCallBack) 
+      {
+         return GetCatalogHierarchy(null, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strQueryString"></param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(string strQueryString, UpdateProgessCallback progressCallBack) 
+      {
+         return GetCatalogHierarchy(strQueryString, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="oBox"></param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(BoundingBox oBox, UpdateProgessCallback progressCallBack) 
+      {
+         return GetCatalogHierarchy(null, oBox, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strQueryString"></param>
+      /// <param name="oBox"></param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(string strQueryString, BoundingBox oBox, UpdateProgessCallback progressCallBack) 
+      {
+         string                  szUrl;
+         System.Xml.XmlDocument  hRequestDocument;
+         System.Xml.XmlDocument  hResponseDocument;
+         
+         try 
+         {
+            m_oLock.AcquireReaderLock(0);
+            szUrl = CreateUrl(Constant.Request.CATALOG);
+
+            hRequestDocument = m_hEncodeRequest.CatalogHierarchy(null, strQueryString, oBox);
             hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);  
          }
          finally
@@ -564,19 +628,19 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
       /// <param name="iStartIndex">The index of the first dataset to return</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param> 
       /// <param name="iMaxResults">The maximum number of datasets to return</param>
       /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
       /// <param name="hBoundingBox">Filter results based on this bounding box</param>
-      /// <param name="iLevels">Number of levels to recurse down</param>
       /// <param name="iNumDataSets">The number of datasets</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
-      public void GetDataSetCount( string szPath, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, int iLevels, out Int32 iNumDataSets, UpdateProgessCallback progressCallBack)
+      public void GetDataSetCount( string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, out Int32 iNumDataSets, UpdateProgessCallback progressCallBack)
       {
          System.Xml.XmlDocument  hResponseDocument;
          
          iNumDataSets = 0;
-
-         hResponseDocument = GetDataSetCount(szPath, iStartIndex, iMaxResults, szKeywords, hBoundingBox, iLevels, progressCallBack);  
+         
+         hResponseDocument = GetDataSetCount(szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox, progressCallBack);  
          m_hParse.DataSetCount(hResponseDocument, out iNumDataSets);         
       }
 
@@ -584,14 +648,14 @@ namespace Geosoft.Dap
       /// Get the number of datasets that match this query
       /// </summary>
       /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
       /// <param name="iStartIndex">The index of the first dataset to return</param>
       /// <param name="iMaxResults">The maximum number of datasets to return</param>
       /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
       /// <param name="hBoundingBox">Filter results based on this bounding box</param>
-      /// <param name="iLevel">Number of levels to recurse down</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The catalog response in GeosoftXML</returns>
-      public System.Xml.XmlDocument GetDataSetCount(string szPath, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, int iLevel, UpdateProgessCallback progressCallBack) 
+      public System.Xml.XmlDocument GetDataSetCount(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, UpdateProgessCallback progressCallBack) 
       {
          string                  szUrl;
          System.Xml.XmlDocument  hRequestDocument;
@@ -602,7 +666,7 @@ namespace Geosoft.Dap
             m_oLock.AcquireReaderLock(0);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
-            hRequestDocument = m_hEncodeRequest.Catalog( null, true, szPath, iStartIndex, iMaxResults, szKeywords, hBoundingBox, iLevel );
+            hRequestDocument = m_hEncodeRequest.Catalog( null, true, szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox);
             hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);  
          }
          finally
@@ -1350,6 +1414,36 @@ namespace Geosoft.Dap
          }
          return hResponseDocument;
       }
+
+
+      /// <summary>
+      /// Get the extracted data
+      /// </summary>
+      /// <param name="szKey">The extraction key</param>
+      /// <param name="strTempFile">Temporary file name</param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The exact data response in GeosoftXML</returns>
+      public System.Xml.XmlReader ExtractDataEx(string szKey, string strTempFile, UpdateProgessCallback progressCallBack)
+      {
+         string szUrl;
+         System.Xml.XmlDocument hRequestDocument;
+         System.Xml.XmlReader hResponseReader;
+
+         try
+         {
+            m_oLock.AcquireReaderLock(0);
+            szUrl = CreateUrl(Constant.Request.EXTRACT);
+
+            hRequestDocument = m_hEncodeRequest.ExtractData(null, szKey);
+            hResponseReader = m_oCommunication.SendEx(szUrl, hRequestDocument, strTempFile, progressCallBack);
+         }
+         finally
+         {
+            m_oLock.ReleaseReaderLock();
+         }
+         return hResponseReader;
+      }
+
 
       /// <summary>
       /// Translate a series of coordinates into a new projection

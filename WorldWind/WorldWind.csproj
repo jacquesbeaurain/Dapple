@@ -180,6 +180,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PluginEngine\Icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="OverviewControl\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

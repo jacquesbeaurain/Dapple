@@ -200,6 +200,9 @@ namespace Geosoft.Dap.Xml.Common
          public const string CATALOG_TAG						= "catalog";
 
          /// <summary></summary>
+         public const string CATALOG_HIERARCHY_TAG       = "catalog_hierarchy";
+
+         /// <summary></summary>
          public const string ITEM_TAG						   = "item";
 
          /// <summary></summary>
@@ -327,7 +330,7 @@ namespace Geosoft.Dap.Xml.Common
          public const string MAX_RESULTS_ATTR	= "max_results";
 
          /// <summary></summary>
-         public const string LEVEL_ATTR	      = "level";
+         public const string DEPTH_ATTR 	      = "depth";
 
          /// <summary></summary>
          public const string ITEMS_RETURNED_ATTR	= "items_returned";

@@ -137,7 +137,7 @@ namespace Dapple.LayerGeneration
             Catalog oCatalog;
             try
             {
-               oDoc = oServer.Command.GetCatalog(String.Empty, 0, 0, string.Empty, oDir.FilterExtents, 0, null);
+               oDoc = oServer.Command.GetCatalog(String.Empty, -1, 0, 0, string.Empty, oDir.FilterExtents, null);
                oServer.Command.Parser.PruneCatalog(oDoc);
                oCatalog = new Catalog(oDoc, strEdition);
             }

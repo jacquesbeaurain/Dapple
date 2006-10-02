@@ -852,28 +852,56 @@ namespace Geosoft.Dap.Xml
       /// <param name="hMemStream">The extracted data in a memory stream</param>
       public void ExtractData( System.Xml.XmlDocument hDocument, out System.IO.MemoryStream hMemStream ) 
       {
-         System.Xml.XmlNode         hNode;         
-         Byte                       []bExtract;
-
          hMemStream = new System.IO.MemoryStream();
+         ExtractData(hDocument, hMemStream);
+      }
+
+      /// <summary>
+      /// Parse the extract response.
+      /// </summary>
+      /// <param name="oDocument">The GeosoftXML response</param>
+      /// <param name="oStream">The extracted data in a stream</param>
+      public void ExtractData(System.Xml.XmlDocument oDocument, System.IO.Stream oStream)
+      {
+         System.Xml.XmlNode         hNode;         
+         Byte                       []bExtract;         
 
          try 
          {
             
             // --- find the dataset edition element ---
 
-            hNode = hDocument.SelectSingleNode("/" + Constant.Tag.GEO_XML_TAG + "/" + Constant.Tag.RESPONSE_TAG + "/" + Constant.Tag.EXTRACT_DATA_TAG);
+            hNode = oDocument.SelectSingleNode("/" + Constant.Tag.GEO_XML_TAG + "/" + Constant.Tag.RESPONSE_TAG + "/" + Constant.Tag.EXTRACT_DATA_TAG);
 
             if (hNode == null) throw new DapException("No data found in extract");
 
-            String s = hNode.InnerText;
-            bExtract = Convert.FromBase64String(s);
+            bExtract = Convert.FromBase64String(hNode.InnerText);
 
-            hMemStream.Write(bExtract,0,bExtract.Length);
+            oStream.Write(bExtract,0,bExtract.Length);
          } 
          catch(Exception e)
          {
             throw new DapException("Error retrieving extract data", e);
+         }
+      }
+
+      /// <summary>
+      /// Parse the extract response.
+      /// </summary>
+      /// <param name="oReader">The GeosoftXML response</param>
+      /// <param name="oStream">The extracted data in a stream</param>
+      public void ExtractData(System.Xml.XmlReader oReader, System.IO.Stream oStream)
+      {
+         byte  []bExtract = new byte[65536];
+         if (oReader.ReadToFollowing(Constant.Tag.EXTRACT_DATA_TAG))
+         {
+            int iCount = 0;
+
+            do
+            {
+               iCount = oReader.ReadElementContentAsBase64(bExtract, 0, 65536);
+               oStream.Write(bExtract, 0, iCount);
+            } while (iCount != 0);
          }
       }
 

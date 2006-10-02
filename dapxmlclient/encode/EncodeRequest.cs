@@ -352,7 +352,7 @@ namespace Geosoft.Dap.Xml
       /// <returns>The GeosoftXML request</returns>
       public System.Xml.XmlDocument Catalog( string szHandle ) 
       {
-         return Catalog( szHandle, false, null, 0, 0, null, null, 0 );
+         return Catalog( szHandle, false, null, -1, 0, 0, null, null);
       }
 
       /// <summary>
@@ -361,13 +361,13 @@ namespace Geosoft.Dap.Xml
       /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>
       /// <param name="bCount">Wether to return the catalog or just the number of items that match this query</param>
       /// <param name="szPath">An xpath string to limit the returned catalog</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
       /// <param name="iStartIndex">The start index of the first dataset you wish returned</param>
       /// <param name="iMaxResults">The maximum number of datasets you wish returned</param>
       /// <param name="szKeywords">The keywords to filter datasets by.</param>
       /// <param name="hBoundingBox">The area that must intersect a dataset bounding box in order for it to be returned</param>
-      /// <param name="iLevel">The level to recurse down to</param>
       /// <returns>The GeosoftXML request</returns>
-      public System.Xml.XmlDocument Catalog( string szHandle, bool bCount, string szPath, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, int iLevel)
+      public System.Xml.XmlDocument Catalog( string szHandle, bool bCount, string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox)
       {
          
          // --- Create required nodes ---
@@ -393,14 +393,7 @@ namespace Geosoft.Dap.Xml
             hAttr = hGetCatalogNode.OwnerDocument.CreateAttribute( Constant.Attribute.MAX_RESULTS_ATTR );
             hAttr.Value = iMaxResults.ToString();
             hGetCatalogNode.SetAttributeNode( hAttr );
-         }
-
-         if (iLevel > 0)
-         {
-            hAttr = hGetCatalogNode.OwnerDocument.CreateAttribute( Constant.Attribute.LEVEL_ATTR );
-            hAttr.Value = iLevel.ToString();
-            hGetCatalogNode.SetAttributeNode( hAttr );
-         }
+         }         
 			
          if (szKeywords != null && szKeywords.Length > 0)
          {
@@ -416,16 +409,51 @@ namespace Geosoft.Dap.Xml
          }
 
 
-         if (szPath != null && szPath.Length > 0) 
+         if (szPath != null) 
          {
             System.Xml.XmlElement	hCatalogNode = hGetCatalogNode.OwnerDocument.CreateElement(Constant.Tag.FILTER_TAG);
             hAttr = hGetCatalogNode.OwnerDocument.CreateAttribute( Constant.Attribute.PATH_ATTR );
             hAttr.Value = szPath;
-
-            hGetCatalogNode.AppendChild( hCatalogNode );
             hCatalogNode.SetAttributeNode( hAttr );
+
+            hAttr = hGetCatalogNode.OwnerDocument.CreateAttribute( Constant.Attribute.DEPTH_ATTR );
+            hAttr.Value = iDepth.ToString();
+            hCatalogNode.SetAttributeNode( hAttr );
+
+            hGetCatalogNode.AppendChild( hCatalogNode );            
          }
 			
+         return hGetCatalogNode.OwnerDocument;			
+      }
+
+      /// <summary>
+      /// Encode the request for the catalog hierarchy from a Dap server
+      /// </summary>
+      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param> 
+      /// <param name="oBox">The bounding are to filter the hierarchy on</param>     
+      /// <param name="strQueryString">The query string to filter the hierarchy on</param>
+      /// <returns>The GeosoftXML request</returns>
+      public System.Xml.XmlDocument CatalogHierarchy(string szHandle, string strQueryString, BoundingBox oBox)
+      {
+         
+         // --- Create required nodes ---
+
+         System.Xml.XmlElement	hGetCatalogNode = CreateRequest(szHandle, Constant.Tag.CATALOG_HIERARCHY_TAG);			
+         System.Xml.XmlAttribute hAttr;
+
+         if (strQueryString != null && strQueryString.Length > 0)
+         {
+            hAttr = hGetCatalogNode.OwnerDocument.CreateAttribute( Constant.Attribute.KEYWORDS_ATTR );
+            hAttr.Value = strQueryString;
+            hGetCatalogNode.SetAttributeNode(hAttr);
+         }
+
+         if (oBox != null) 
+         {           
+            System.Xml.XmlNode   hBoundingBoxNode = AddBoundingBox(hGetCatalogNode, oBox);
+            AddCoordinateSystem(hBoundingBoxNode, oBox.CoordinateSystem);
+         }
+
          return hGetCatalogNode.OwnerDocument;			
       }
 

@@ -49,6 +49,12 @@
     </Compile>
     <Compile Include="Arguments.cs">
     </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="LayerGeneration\GeorefImageLayerBuilder.cs" />
     <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
       <SubType>Code</SubType>
@@ -59,6 +65,10 @@
     <Compile Include="TriStateTreeView\TriStateTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Form1.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UpdateDialog.resx">
       <DependentUpon>UpdateDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -123,25 +133,6 @@
     <Compile Include="DAP\ErrorLogger\ErrorLogger.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="DAP\DAPGetData\images\down.gif" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\enserver.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\fullview.ICO" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\getdatadap.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\large_map.gif" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\listviewselected.gif" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\meta.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\offline.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\removealldap.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\removeseldatasetdap.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\results.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\resultsdap.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\searchdap.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\selectaoi.ICO" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\selectedrowdap.ico" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\small_map.gif" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\trash.gif" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\treeviewselected.gif" />
-    <EmbeddedResource Include="DAP\DAPGetData\images\up.gif" />
     <EmbeddedResource Include="DAP\DAPGetData\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -454,6 +445,89 @@
     </Content>
     <None Include="Resources\import.png" />
     <None Include="Resources\georef_image.ico" />
+    <Content Include="Resources\addserver.png" />
+    <Content Include="Resources\blue-marble.png" />
+    <Content Include="Resources\blue-marble_checked.png" />
+    <Content Include="Resources\blue-marble_unchecked.png" />
+    <Content Include="Resources\collapse.png" />
+    <Content Include="Resources\dap-18x18.png" />
+    <Content Include="Resources\dap.ico" />
+    <Content Include="Resources\dap_database.ico" />
+    <Content Include="Resources\dap_document.ico" />
+    <Content Include="Resources\dap_gray.ico" />
+    <Content Include="Resources\dap_grid.ico" />
+    <Content Include="Resources\dap_map.ico" />
+    <Content Include="Resources\dap_picture.ico" />
+    <Content Include="Resources\dap_point.ico" />
+    <Content Include="Resources\dap_spf.ico" />
+    <Content Include="Resources\dap_voxel.ico" />
+    <Content Include="Resources\delete.ico" />
+    <Content Include="Resources\email-view.png" />
+    <Content Include="Resources\error.ico" />
+    <Content Include="Resources\exit.png" />
+    <Content Include="Resources\expand.png" />
+    <Content Include="Resources\export.png" />
+    <Content Include="Resources\file.png" />
+    <Content Include="Resources\folder.png" />
+    <Content Include="Resources\folder_gray.png" />
+    <Content Include="Resources\folder_open.png" />
+    <Content Include="Resources\help.png" />
+    <Content Include="Resources\home.png" />
+    <Content Include="Resources\image-server-18x18.png" />
+    <Content Include="Resources\layer.ico" />
+    <Content Include="Resources\layers-bottom.png" />
+    <Content Include="Resources\layers-down.png" />
+    <Content Include="Resources\layers-goto.png" />
+    <Content Include="Resources\layers-remove-all.png" />
+    <Content Include="Resources\layers-remove.png" />
+    <Content Include="Resources\layers-removeallothers.png" />
+    <Content Include="Resources\layers-top.png" />
+    <Content Include="Resources\layers-up.png" />
+    <Content Include="Resources\layers_add.png" />
+    <Content Include="Resources\led_off.ico" />
+    <Content Include="Resources\led_off.png" />
+    <Content Include="Resources\led_on.ico" />
+    <Content Include="Resources\led_on.png" />
+    <Content Include="Resources\legend.png" />
+    <Content Include="Resources\live.ico" />
+    <Content Include="Resources\marble_icon.ico" />
+    <Content Include="Resources\metadata.ico" />
+    <Content Include="Resources\metadata.png" />
+    <Content Include="Resources\metadata2.ico" />
+    <Content Include="Resources\nasa.ico" />
+    <Content Include="Resources\nav-earth.png" />
+    <Content Include="Resources\nav-north.png" />
+    <Content Include="Resources\nav-rotate-left.png" />
+    <Content Include="Resources\nav-rotate-right.png" />
+    <Content Include="Resources\nav-tilt-down.png" />
+    <Content Include="Resources\nav-tilt-reset.png" />
+    <Content Include="Resources\nav-tilt-up.png" />
+    <Content Include="Resources\nav-zoom-in.png" />
+    <Content Include="Resources\nav-zoom-out.png" />
+    <Content Include="Resources\open.png" />
+    <Content Include="Resources\openview.png" />
+    <Content Include="Resources\properties.ico" />
+    <Content Include="Resources\refresh.png" />
+    <Content Include="Resources\refresh_cache.png" />
+    <Content Include="Resources\removeserver.png" />
+    <Content Include="Resources\reset-dapple-defaults.png" />
+    <Content Include="Resources\saveview.png" />
+    <Content Include="Resources\search-intersecting.png" />
+    <Content Include="Resources\search-none.png" />
+    <Content Include="Resources\search-text.png" />
+    <Content Include="Resources\settings.png" />
+    <Content Include="Resources\tile.ico" />
+    <Content Include="Resources\tile_gray.ico" />
+    <Content Include="Resources\time.ico" />
+    <Content Include="Resources\time.png" />
+    <Content Include="Resources\trackbutton.png" />
+    <Content Include="Resources\trackbutton_disable.png" />
+    <Content Include="Resources\usgs.ico" />
+    <Content Include="Resources\vertical-exag.png" />
+    <Content Include="Resources\wms-18x18.png" />
+    <Content Include="Resources\wms.ico" />
+    <Content Include="Resources\wms_gray.ico" />
+    <Content Include="Resources\worldwind_central.ico" />
     <Content Include="Scripts\AroundTheEquator.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

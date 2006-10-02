@@ -13,7 +13,7 @@ title="Release Notes"
 	<li>Install now supports Windows 2000</li>
 	<li>New command line flag for displaying temporary GeoTIF files</li>
 	<li>Better DAP dataset metadata stylesheet</li>
-	<li>WMS server metadata Includes dataset lists</li>
+	<li>WMS server metadata includes dataset lists</li>
 	<li>WMS individual dataset metadata support</li>
 </ul>
 		<h3>Bugs Fixed</h3>

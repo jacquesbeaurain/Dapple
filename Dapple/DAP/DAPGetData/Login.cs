@@ -17,8 +17,8 @@ namespace Geosoft.GX.DAPGetData
       private System.Windows.Forms.Label lPassword;
       private System.Windows.Forms.Button bCancel;
       private System.Windows.Forms.Button bOK;
-
       private Server m_oServer;
+
       /// <summary>
       /// Required designer variable.
       /// </summary>
@@ -45,13 +45,12 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
 		public Login(Server oServer)
 		{
-         m_oServer = oServer;
-
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
 
+         m_oServer = oServer;
          Text = string.Format("Dap Server Login - {0}", m_oServer.Name);
 
          
@@ -70,8 +69,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUserName"></param>
       /// <param name="strPassword"></param>
-      public Login(string strUserName, string strPassword, Server oServer)
-         : this(oServer)
+      public Login(string strUserName, string strPassword, Server oServer) : this(oServer)
       {
          tbUserName.Text = strUserName;
          tbPassword.Text = strPassword;

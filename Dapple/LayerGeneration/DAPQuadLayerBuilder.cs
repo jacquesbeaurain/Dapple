@@ -45,7 +45,7 @@ namespace Dapple.LayerGeneration
             int height = Convert.ToInt32(pairs[1].Substring(pairs[1].IndexOf('=') + 1));
             int size = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
             
-            Catalog oCatalog = oServer.CatalogCollection.GetCatalog(oServer, new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), string.Empty);
+            Catalog oCatalog = oServer.CatalogCollection.GetCatalog(new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), string.Empty);
             DataSet hDataSet = oCatalog.FindDataset(datasetname, oServer);
             if (hDataSet != null)
             {

@@ -113,11 +113,13 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="dMinX"></param>
       /// <param name="dMinY"></param>
+      /// <param name="dMinZ"></param>      
       /// <param name="dMaxX"></param>
       /// <param name="dMaxY"></param>
+      /// <param name="dMaxZ"></param>
       /// <param name="hIPJ"></param>
       /// <returns></returns>
-      static public Geosoft.Dap.Common.BoundingBox SetCoordinateSystem(double dMinX, double dMinY, double dMaxX, double dMaxY, Geosoft.GXNet.CIPJ hIPJ)
+      static public Geosoft.Dap.Common.BoundingBox SetCoordinateSystem(double dMinX, double dMinY, double dMinZ, double dMaxX, double dMaxY, double dMaxZ, Geosoft.GXNet.CIPJ hIPJ)
       {
          Geosoft.Dap.Common.BoundingBox   hBoundingBox = null;
          string                           strProjectionName = string.Empty;
@@ -128,7 +130,7 @@ namespace Geosoft.GX.DAPGetData
 
          hIPJ.IGetGXF(ref strProjectionName, ref strDatum, ref strProjection, ref strUnits, ref strLocalDatum);                  
                   
-         hBoundingBox = new Geosoft.Dap.Common.BoundingBox(dMaxX, dMaxY, dMinX, dMinY);
+         hBoundingBox = new Geosoft.Dap.Common.BoundingBox(dMaxX, dMaxY, dMaxZ, dMinX, dMinY, dMinZ);
          hBoundingBox.CoordinateSystem = new Geosoft.Dap.Common.CoordinateSystem();
          hBoundingBox.CoordinateSystem.Projection = strProjectionName;
          hBoundingBox.CoordinateSystem.Datum = strDatum;
@@ -165,9 +167,21 @@ namespace Geosoft.GX.DAPGetData
 
          if (iIndex == -1 || iIndex < iDotIndex) return strPath;
 
-         string strRet = strPath.Substring(0, iIndex);
+         return strPath.Substring(0, iIndex);
+      }
 
-         return strRet;
+      /// <summary>
+      /// Strip any geosoft qualifiers
+      /// </summary>
+      /// <param name="strUrl"></param>
+      /// <returns></returns>
+      static public string StripExtension(string strPath)
+      {
+         int iDotIndex = strPath.LastIndexOf(".");
+
+         if (iDotIndex == -1) return strPath;
+
+         return strPath.Substring(0, iDotIndex);
       }
 
       /// <summary>

@@ -221,17 +221,24 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Icon folder {
+        internal static System.Drawing.Bitmap folder {
             get {
                 object obj = ResourceManager.GetObject("folder", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Icon folder_gray {
+        internal static System.Drawing.Bitmap folder_gray {
             get {
                 object obj = ResourceManager.GetObject("folder_gray", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap folder_open {
+            get {
+                object obj = ResourceManager.GetObject("folder_open", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

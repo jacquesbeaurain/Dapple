@@ -108,12 +108,7 @@ namespace Geosoft.Dap.Common
       /// </summary>
       public string UniqueName
       {
-         get { 
-            string strUniqueName = Url + "/" + Hierarchy + Name + "/" + Type;
-            if (Edition != null)
-               strUniqueName += "/" + Edition;
-            return strUniqueName;
-         }
+         get { return m_szUrl + "_" + m_szName; }
       }
       #endregion
 
@@ -158,7 +153,7 @@ namespace Geosoft.Dap.Common
       /// <returns></returns>
       public override int GetHashCode()
       {
-         return UniqueName.GetHashCode() ^ Boundary.GetHashCode();
+         return m_szName.GetHashCode() ^ m_szUrl.GetHashCode();
       }
 
       /// <summary>

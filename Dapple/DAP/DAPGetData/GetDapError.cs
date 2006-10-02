@@ -24,10 +24,8 @@ namespace Geosoft.GX.DAPGetData
       {
          get
          {
-#if !DAPPLE
             if (m_hError == null)
                throw new ApplicationException("GetDapError instance has not been constructed yet");
-#endif
             return m_hError;
          }
       }

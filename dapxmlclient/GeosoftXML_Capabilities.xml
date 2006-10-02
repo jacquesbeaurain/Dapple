@@ -9,10 +9,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
 					</command>
@@ -48,10 +45,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
 					</command>
@@ -74,10 +68,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
 					</command>
@@ -105,10 +96,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
 					</command>
@@ -122,10 +110,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
 					</command>
@@ -139,10 +124,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
                </command>
@@ -166,10 +148,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
 					</command>
@@ -182,10 +161,7 @@
 					<command name="image">
 						<parameter name="format">
 							<attribute name="type">
-								<value name="image/jpeg" />
 								<value name="image/png" />
-								<value name="image/png8" />
-								<value name="image/png24" />
 							</attribute>
 						</parameter>
                </command>
@@ -193,7 +169,31 @@
 						<parameter name="format">
 							<attribute name="type">
                         <value name="Arcview Shape File" />
-  								<value name="MapInfo TAB File" />
+                        <value name="MapInfo TAB File" />
+                        <value name="Geosoft MAP File" />
+							</attribute>
+						</parameter>
+					</command>
+					<command name="extract_status" />
+					<command name="extract_cancel" />
+					<command name="extract_data" />
+				</commands>
+         </dataset_type>
+   	   <dataset_type name="Voxel">
+				<commands>
+					<command name="dataset_edition" />
+					<command name="metadata" />
+					<command name="image">
+						<parameter name="format">
+							<attribute name="type">
+								<value name="image/png" />
+							</attribute>
+						</parameter>
+               </command>
+  					<command name="extract">
+						<parameter name="format">
+							<attribute name="type">
+                        <value name="Geosoft MAP File" />
 							</attribute>
 						</parameter>
 					</command>
