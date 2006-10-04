@@ -165,6 +165,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap dap_update {
+            get {
+                object obj = ResourceManager.GetObject("dap_update", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon dap_voxel {
             get {
                 object obj = ResourceManager.GetObject("dap_voxel", resourceCulture);
@@ -179,10 +186,24 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon disserver {
+            get {
+                object obj = ResourceManager.GetObject("disserver", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap email_view {
             get {
                 object obj = ResourceManager.GetObject("email_view", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon enserver {
+            get {
+                object obj = ResourceManager.GetObject("enserver", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -389,6 +410,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon loading {
+            get {
+                object obj = ResourceManager.GetObject("loading", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon marble_icon {
             get {
                 object obj = ResourceManager.GetObject("marble_icon", resourceCulture);
@@ -470,6 +498,13 @@ namespace Dapple.Properties {
             get {
                 object obj = ResourceManager.GetObject("nav_zoom_out", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon offline {
+            get {
+                object obj = ResourceManager.GetObject("offline", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

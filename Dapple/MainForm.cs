@@ -82,8 +82,8 @@ namespace Dapple
       private TreeView treeViewServers;
       private TreeView treeViewServerBackup;
       private TriStateTreeView triStateTreeViewLayers;
-      private List<TreeNode> triStateTreeViewLayerNodes = new List<TreeNode>();
-      private TreeNode lastLayerNode, firstLayerNode;
+      //private List<TreeNode> triStateTreeViewLayerNodes = new List<TreeNode>();
+      //private TreeNode lastLayerNode, firstLayerNode;
       private WorldWindow worldWindow = new WorldWindow();
       private NASA.Plugins.BMNG bmngPlugin;
       private WorldWind.OverviewControl overviewCtl;
@@ -614,7 +614,7 @@ namespace Dapple
          tree.Size = new System.Drawing.Size(245, 182);
          tree.TabIndex = 1;
          tree.Scrollable = true;
-         tree.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.triStateTreeViewLayers_BeforeSelect);
+         //tree.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.triStateTreeViewLayers_BeforeSelect);
          tree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.triStateTreeViewLayers_AfterSelect);
          tree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.triStateTreeViewLayers_KeyUp);
          tree.TreeNodeChecked += new Geosoft.DotNetTools.TreeNodeCheckedEventHandler(this.triStateTreeViewLayers_TreeNodeChecked);
@@ -1438,33 +1438,40 @@ namespace Dapple
 
       void ViewMetadata(IBuilder builder)
       {
-         MetaDataForm form = new MetaDataForm();
-         XmlDocument oDoc = new XmlDocument();
-         oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
-         XmlNode oNode = builder.GetMetaData(oDoc);
-
-         if (oNode == null)
-            return;
-
-         if (oNode is XmlDocument)
+         try
          {
-            oDoc = oNode as XmlDocument;
-         }
-         else
-         {
-            oDoc.AppendChild(oNode);
-         }
-         if (builder.StyleSheetName!= null)
-         {
-            XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, builder.StyleSheetName) + "'");
-            oDoc.InsertBefore(oRef, oDoc.DocumentElement);
-         }
+            MetaDataForm form = new MetaDataForm();
+            XmlDocument oDoc = new XmlDocument();
+            oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
+            XmlNode oNode = builder.GetMetaData(oDoc);
 
-         string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
-         oDoc.Save(filePath);
-         form.WindowState = FormWindowState.Maximized;
-         form.ShowDialog(this, filePath);
-         System.IO.File.Delete(filePath);
+            if (oNode == null)
+               return;
+
+            if (oNode is XmlDocument)
+            {
+               oDoc = oNode as XmlDocument;
+            }
+            else
+            {
+               oDoc.AppendChild(oNode);
+            }
+            if (builder.StyleSheetName != null)
+            {
+               XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, builder.StyleSheetName) + "'");
+               oDoc.InsertBefore(oRef, oDoc.DocumentElement);
+            }
+
+            string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
+            oDoc.Save(filePath);
+            form.WindowState = FormWindowState.Maximized;
+            form.ShowDialog(this, filePath);
+            System.IO.File.Delete(filePath);
+         }
+         catch (Exception e)
+         {
+            MessageBox.Show(this, e.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+         }
       }
 
       private void toolStripMenuItemproperties_Click(object sender, EventArgs e)
@@ -1873,7 +1880,7 @@ namespace Dapple
       }
 
       // The multiple selection code loosely based on http://www.codeproject.com/cs/miscctrl/treeviewms.asp
-
+      /*
       private void triStateTreeViewLayers_MouseDown(object sender, MouseEventArgs e)
       {
          bool bControl = (ModifierKeys == Keys.Control);
@@ -1886,6 +1893,8 @@ namespace Dapple
             this.triStateTreeViewLayerNodes.Clear();
             LayerBuilderItem = null;
          }
+
+         triStateTreeViewLayers.SelectedNode = null;
 
          if (e.Button == MouseButtons.Right)
             this.rightmouse_context = true;
@@ -1916,7 +1925,7 @@ namespace Dapple
             n.ForeColor = fore;
          }
       }
-
+      
       private void triStateTreeViewLayers_BeforeSelect(object sender, TreeViewCancelEventArgs e)
       {
          bool bControl = (ModifierKeys == Keys.Control);
@@ -1944,7 +1953,7 @@ namespace Dapple
       {
          bool bControl = (ModifierKeys == Keys.Control);
          bool bShift = (ModifierKeys == Keys.Shift);
-
+         
          if (bControl)
          {
             if (!this.triStateTreeViewLayerNodes.Contains(e.Node)) // new node ?
@@ -2055,6 +2064,23 @@ namespace Dapple
          if (e.Node != null && e.Node.Tag != null)
             LayerBuilderItem = e.Node.Tag as LayerBuilderContainer;
          else
+            LayerBuilderItem = null;
+      }
+      */
+
+      private void triStateTreeViewLayers_AfterSelect(object sender, TreeViewEventArgs e)
+      {
+         if (e.Node != null && e.Node.Tag != null)
+            LayerBuilderItem = e.Node.Tag as LayerBuilderContainer;
+         else
+            LayerBuilderItem = null;
+      }
+
+      private void triStateTreeViewLayers_MouseDown(object sender, MouseEventArgs e)
+      {
+         triStateTreeViewLayers.SelectedNode = triStateTreeViewLayers.HitTest(e.Location).Node;
+
+         if (triStateTreeViewLayers.SelectedNode == null)
             LayerBuilderItem = null;
       }
 
@@ -3346,7 +3372,7 @@ namespace Dapple
          else
             m_downloadList.Clear();
 
-         this.Invoke(new WorldWindow.UpdatedDelegate(Updated));
+         this.BeginInvoke(new WorldWindow.UpdatedDelegate(Updated));
       }
 
       private void Updated()

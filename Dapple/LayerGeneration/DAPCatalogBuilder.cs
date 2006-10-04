@@ -38,7 +38,7 @@ namespace Dapple.LayerGeneration
          m_strCacheDir = cacheDir;
          m_oWorld = world;
          
-         m_oServers = new ServerList(false, cacheDir, string.Empty);
+         m_oServers = new ServerList(cacheDir);
 
          m_Error = GetDapError.Instance;
          if (m_Error == null)

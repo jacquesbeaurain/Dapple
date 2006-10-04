@@ -129,6 +129,8 @@
     <Compile Include="Segment.cs" />
     <Compile Include="SharedMemory.cs" />
     <Compile Include="StringHash.cs" />
+    <Compile Include="Threading\Queue.cs" />
+    <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Win32Message.cs">
       <SubType>Code</SubType>
     </Compile>

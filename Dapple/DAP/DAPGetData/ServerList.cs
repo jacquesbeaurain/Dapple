@@ -68,44 +68,11 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Default constructor
       /// </summary>
-      public ServerList(bool LoadFromFile, string cacheDir, string configPath)
+      public ServerList(string cacheDir)
       {
-         string strDir = string.Empty;
-
          m_oServerList = new ArrayList();
 
          m_strCacheDir = cacheDir;
-
-         if (!LoadFromFile)
-            return;
-
-         m_strCSV = System.IO.Path.Combine(configPath, "csv\\Dap_Servers.xml");
-
-         Load();
-      }
-
-      public ServerList(XmlNode oServerNode, string cacheDir)
-      {
-         string strDir = string.Empty;
-         m_oServerList = new ArrayList();
-         m_strCacheDir = cacheDir;
-         if (oServerNode == null || oServerNode.Name != "server")
-         {
-            throw new Exception("Invalid XML Node passed to Server list");
-         }
-         try
-         {
-            XmlNode oAttr = oServerNode.Attributes.GetNamedItem(Constant.Xml.Attr.Url);
-            Server oServer = new Server(oAttr.Value, cacheDir);
-
-            // --- only add the server to the list if there was no errors in reading it from the xml ---
-
-            if (VerifyServerUnique(oServer.Url))
-               m_oServerList.Add(oServer);
-         }
-         catch
-         {
-         }
       }
 #endif
       #endregion

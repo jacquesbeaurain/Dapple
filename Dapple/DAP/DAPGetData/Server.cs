@@ -171,6 +171,14 @@ namespace Geosoft.GX.DAPGetData
                return m_strUrl + "/DAP";
          }
       }
+      
+      /// <summary>
+      /// Get the cache directory
+      /// </summary>
+      public string CacheDir
+      {
+         get { return m_strCacheDir; }
+      }      
 
       /// <summary>
       /// Get the version that we have in the cache
@@ -209,6 +217,8 @@ namespace Geosoft.GX.DAPGetData
       public Server(string strDnsAddress, string strCacheDir)
 #endif
       {
+         string strEdition, strConfigEdition;
+
          // --- create the connection to the server ---
 
 #if !DAPPLE
@@ -229,7 +239,13 @@ namespace Geosoft.GX.DAPGetData
          GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
 #endif
          m_oCatalogs = new CatalogCollection(this);
+
          ConfigureServer();
+
+         // --- If the edition change we need to reload the configuration ---
+         m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+         if (m_strCacheVersion != strConfigEdition)
+            UpdateConfiguration();
       }
 
 #if !DAPPLE
@@ -246,7 +262,11 @@ namespace Geosoft.GX.DAPGetData
       /// </exception>
       public Server(XmlNode oServerNode)
       {
-         XmlNode  oAttr;
+         string strEdition, strConfigEdition;
+         XmlNode oAttr;
+
+         m_strCacheRoot = string.Empty;
+         GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheRoot);
 
          if (oServerNode == null) throw new ArgumentNullException("oServerNode");
          if (oServerNode.Name != Constant.Xml.Tag.Server) throw new ArgumentOutOfRangeException("oServerNode");
@@ -279,16 +299,21 @@ namespace Geosoft.GX.DAPGetData
 
          // --- this is a 6.2 server, get decreased configuration parameters ---
 
-         if (m_iMajorVersion <= 6 && m_iMinorVersion < 3)
+         if (m_iMajorVersion < 6 || (m_iMajorVersion == 6 && m_iMinorVersion < 3))
             m_oCommand.ChangeVersion(Command.Version.GEOSOFT_XML_1_0);
-         
          
          // --- ensure this server is trusted ---
                      
          GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
 
          m_oCatalogs = new CatalogCollection(this);
+
          ConfigureServer();
+
+         // --- If the edition change we need to reload the configuration ---
+         m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+         if (m_strCacheVersion != strConfigEdition)
+            UpdateConfiguration();
       }
 #endif
 
@@ -397,7 +422,12 @@ namespace Geosoft.GX.DAPGetData
       {
          // --- delete the cache directory ---
 
-         Directory.Delete(m_strCacheDir, true);
+         string strBrowserMapFile = Path.Combine(m_strCacheDir, BROWSERMAP_FILE);
+         string strConfigurationFile = Path.Combine(m_strCacheDir, CONFIGURATION_FILE);
+         if (File.Exists(strBrowserMapFile))
+            File.Delete(strBrowserMapFile);
+         if (File.Exists(strConfigurationFile))
+            File.Delete(strConfigurationFile);
 
          ConfigureServer();
       }
@@ -422,10 +452,12 @@ namespace Geosoft.GX.DAPGetData
 #if !DAPPLE
             Geosoft.GXNet.CDAP.SetUserNamePassword(m_strUserName, m_strPassword);
 #endif
+            oLogin.Dispose();
             return true;
          }
 
          CatalogCollection.Clear();
+         oLogin.Dispose();
          return false;
       }
 
@@ -621,7 +653,7 @@ namespace Geosoft.GX.DAPGetData
          {
             m_oCommand.ChangeVersion(Geosoft.Dap.Command.Version.GEOSOFT_XML_1_0);
          }
-         else if (m_iMajorVersion == 6 && m_iMinorVersion >= 3)
+         else if (m_iMajorVersion > 6 || (m_iMajorVersion == 6 && m_iMinorVersion >= 3))
          {
             if (m_oServerConfiguration.bSecure())
                m_oCommand.ChangeSecureConnection(true);

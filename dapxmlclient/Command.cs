@@ -227,6 +227,17 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="strUserName">Username</param>
       /// <param name="strPassword">Password</param>
+      /// <returns>True/False depending if the user is authenticated or not</returns>
+      public bool AuthenticateUser(string strUserName, string strPassword)
+      {
+         return AuthenticateUser(strUserName, strPassword, null);
+      }
+
+      /// <summary>
+      /// Authenticate the user in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strUserName">Username</param>
+      /// <param name="strPassword">Password</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>True/False depending if the user is authenticated or not</returns>
       public bool AuthenticateUser(string strUserName, string strPassword, UpdateProgessCallback progressCallBack)
@@ -255,6 +266,15 @@ namespace Geosoft.Dap
       /// <summary>
       /// Get the configuration meta in GeosoftXML format from the dap server
       /// </summary>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetConfiguration()
+      {
+         return GetConfiguration(null);
+      }
+
+      /// <summary>
+      /// Get the configuration meta in GeosoftXML format from the dap server
+      /// </summary>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The configuration response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetConfiguration(UpdateProgessCallback progressCallBack) 
@@ -276,6 +296,16 @@ namespace Geosoft.Dap
             m_oLock.ReleaseReaderLock();
          }
          return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Get the configuration meta in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetServerConfiguration(string strPassword)
+      {
+         return GetServerConfiguration(strPassword, null);
       }
 
       /// <summary>
@@ -310,6 +340,17 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="strPassword"></param>
       /// <param name="oConfiguration">The configuration xml to append to this request</param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument UpdateServerConfiguration(string strPassword, System.Xml.XmlNode oConfiguration)
+      {
+         return UpdateServerConfiguration(strPassword, oConfiguration, null);
+      }
+
+      /// <summary>
+      /// Update the configuration meta in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <param name="oConfiguration">The configuration xml to append to this request</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The configuration response in GeosoftXML</returns>
       public System.Xml.XmlDocument UpdateServerConfiguration(string strPassword, System.Xml.XmlNode oConfiguration, UpdateProgessCallback progressCallBack) 
@@ -333,6 +374,14 @@ namespace Geosoft.Dap
          return hResponseDocument;
       }
 
+      /// <summary>
+      /// Get the capabilities structure from the dap server
+      /// </summary>
+      /// <param name="hCapabilities">The capabilities of the dap server</param>
+      public void GetCapabilities(out Capabilities hCapabilities)
+      {
+         GetCapabilities(out hCapabilities, null);
+      }
 
       /// <summary>
       /// Get the capabilities structure from the dap server
@@ -347,6 +396,15 @@ namespace Geosoft.Dap
 
          hResponse = GetCapabilities(progressCallBack);         
          hCapabilities = new Capabilities(hResponse);         
+      }
+
+      /// <summary>
+      /// Get the capabilities in GeosoftXML format from the dap server
+      /// </summary>
+      /// <returns>The capabilities response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCapabilities()
+      {
+         return GetCapabilities(null);
       }
 
       /// <summary>
@@ -373,6 +431,15 @@ namespace Geosoft.Dap
             m_oLock.ReleaseReaderLock();
          }
          return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Get the list of properties
+      /// </summary>
+      /// <returns>The list of properties in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetProperties()
+      {
+         return GetProperties(null);
       }
 
       /// <summary>
@@ -405,6 +472,15 @@ namespace Geosoft.Dap
       /// Get the list of properties
       /// </summary>
       /// <param name="hArray">The list of properties</param>
+      public void GetProperties(out System.Collections.SortedList hArray)
+      {
+         GetProperties(out hArray, null);
+      }
+
+      /// <summary>
+      /// Get the list of properties
+      /// </summary>
+      /// <param name="hArray">The list of properties</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetProperties(out System.Collections.SortedList hArray, UpdateProgessCallback progressCallBack) 
       {
@@ -412,6 +488,22 @@ namespace Geosoft.Dap
 
          hResponse = GetProperties(progressCallBack);     
          m_hParse.Properties(hResponse, out hArray);         
+      }
+
+      /// <summary>
+      /// Get a list of all the datasets stored by the dap server
+      /// Note: No hierarchy information is retained
+      /// </summary>
+      /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
+      /// <param name="iStartIndex">The index of the first dataset to return</param>
+      /// <param name="iMaxResults">The maximum number of datasets to return</param>
+      /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
+      /// <param name="hBoundingBox">Filter results based on this bounding box</param>      
+      /// <param name="hDataSets">The list of datasets</param>
+      public void GetCatalog(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, out System.Collections.ArrayList hDataSets)
+      {
+         GetCatalog(szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox, out hDataSets, null);
       }
 
       /// <summary>
@@ -455,6 +547,18 @@ namespace Geosoft.Dap
       /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
       /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
       /// <param name="hDataSets">The list of datasets</param>
+      public void GetCatalog(string szPath, int iDepth, out System.Collections.ArrayList hDataSets)
+      {
+         GetCatalog(szPath, iDepth, out hDataSets, null);
+      }
+
+      /// <summary>
+      /// Get a list of the datasets stored by the dap server
+      /// Note: No hierarchy information is retained
+      /// </summary>
+      /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
+      /// <param name="hDataSets">The list of datasets</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetCatalog(string szPath, int iDepth, out System.Collections.ArrayList hDataSets, UpdateProgessCallback progressCallBack)
       {
@@ -483,6 +587,16 @@ namespace Geosoft.Dap
       /// Note: No hierarchy information is retained
       /// </summary>
       /// <param name="hDataSets">The list of datasets</param>
+      public void GetCatalog(out System.Collections.ArrayList hDataSets)
+      {
+         GetCatalog(out hDataSets, null);
+      }
+
+      /// <summary>
+      /// Get a list of all the datasets stored by the dap server
+      /// Note: No hierarchy information is retained
+      /// </summary>
+      /// <param name="hDataSets">The list of datasets</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetCatalog(out System.Collections.ArrayList hDataSets, UpdateProgessCallback progressCallBack)
       {
@@ -495,11 +609,35 @@ namespace Geosoft.Dap
       /// <summary>
       /// Get the catalog in GeosoftXML format from the dap server
       /// </summary>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalog()
+      {
+         return GetCatalog(null);
+      }
+
+      /// <summary>
+      /// Get the catalog in GeosoftXML format from the dap server
+      /// </summary>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The catalog response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetCatalog(UpdateProgessCallback progressCallBack) 
       {
          return GetCatalog(null, -1, 0, 0, null, null, progressCallBack);         
+      }
+
+      /// <summary>
+      /// Get the catalog in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
+      /// <param name="iStartIndex">The index of the first dataset to return</param>
+      /// <param name="iMaxResults">The maximum number of datasets to return</param>
+      /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
+      /// <param name="hBoundingBox">Filter results based on this bounding box</param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalog(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox)
+      {
+         return GetCatalog(szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox, null);
       }
 
       /// <summary>
@@ -537,11 +675,30 @@ namespace Geosoft.Dap
       /// <summary>
       /// Get the catalog hierarchy in GeosoftXML format from the dap server
       /// </summary>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy()
+      {
+         return GetCatalogHierarchy((UpdateProgessCallback)null);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The catalog response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetCatalogHierarchy(UpdateProgessCallback progressCallBack) 
       {
          return GetCatalogHierarchy(null, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strQueryString"></param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(string strQueryString)
+      {
+         return GetCatalogHierarchy(strQueryString, (UpdateProgessCallback)null);
       }
 
       /// <summary>
@@ -559,11 +716,32 @@ namespace Geosoft.Dap
       /// Get the catalog hierarchy in GeosoftXML format from the dap server
       /// </summary>
       /// <param name="oBox"></param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(BoundingBox oBox)
+      {
+         return GetCatalogHierarchy(oBox, null);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="oBox"></param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The catalog response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetCatalogHierarchy(BoundingBox oBox, UpdateProgessCallback progressCallBack) 
       {
          return GetCatalogHierarchy(null, oBox, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the catalog hierarchy in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strQueryString"></param>
+      /// <param name="oBox"></param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogHierarchy(string strQueryString, BoundingBox oBox)
+      {
+         return GetCatalogHierarchy(strQueryString, oBox, null);
       }
 
       /// <summary>
@@ -592,6 +770,16 @@ namespace Geosoft.Dap
             m_oLock.ReleaseReaderLock();
          }
          return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Inform the dap server that it must refresh its catalog
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <returns>True/False</returns>
+      public bool RefreshCatalog(string strPassword)
+      {
+         return RefreshCatalog(strPassword, null);
       }
 
       /// <summary>
@@ -633,6 +821,21 @@ namespace Geosoft.Dap
       /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
       /// <param name="hBoundingBox">Filter results based on this bounding box</param>
       /// <param name="iNumDataSets">The number of datasets</param>
+      public void GetDataSetCount(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, out Int32 iNumDataSets)
+      {
+         GetDataSetCount(szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox, out iNumDataSets, null);
+      }
+
+      /// <summary>
+      /// Get the number of datasets that match this query
+      /// </summary>
+      /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iStartIndex">The index of the first dataset to return</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param> 
+      /// <param name="iMaxResults">The maximum number of datasets to return</param>
+      /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
+      /// <param name="hBoundingBox">Filter results based on this bounding box</param>
+      /// <param name="iNumDataSets">The number of datasets</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetDataSetCount( string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox, out Int32 iNumDataSets, UpdateProgessCallback progressCallBack)
       {
@@ -642,6 +845,21 @@ namespace Geosoft.Dap
          
          hResponseDocument = GetDataSetCount(szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox, progressCallBack);  
          m_hParse.DataSetCount(hResponseDocument, out iNumDataSets);         
+      }
+
+      /// <summary>
+      /// Get the number of datasets that match this query
+      /// </summary>
+      /// <param name="szPath">A path to filter the result set by. Eg. /folder1/folder2/@datasetname</param>
+      /// <param name="iDepth">Number of levels to recurse down. Only valid if szPath is used</param>
+      /// <param name="iStartIndex">The index of the first dataset to return</param>
+      /// <param name="iMaxResults">The maximum number of datasets to return</param>
+      /// <param name="szKeywords">Filter results based on these keywords. NOTE: Each keyword is seperated by a space</param>
+      /// <param name="hBoundingBox">Filter results based on this bounding box</param>
+      /// <returns>The catalog response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetDataSetCount(string szPath, int iDepth, int iStartIndex, int iMaxResults, string szKeywords, BoundingBox hBoundingBox)
+      {
+         return GetDataSetCount(szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox, null);
       }
 
       /// <summary>
@@ -680,6 +898,15 @@ namespace Geosoft.Dap
       /// Get the catalog edition in GeosoftXML format from the dap server
       /// </summary>
       /// <returns>The catalog edition response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetCatalogEdition()
+      {
+         return GetCatalogEdition(null);
+      }
+
+      /// <summary>
+      /// Get the catalog edition in GeosoftXML format from the dap server
+      /// </summary>
+      /// <returns>The catalog edition response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetCatalogEdition(UpdateProgessCallback progressCallBack) 
       {
          string                  szUrl;
@@ -706,6 +933,16 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="strConfigurationEdition">The edition of the server</param>
       /// <param name="strEdition">The edition of the catalog</param>
+      public void GetCatalogEdition(out string strConfigurationEdition, out string strEdition)
+      {
+         GetCatalogEdition(out strConfigurationEdition, out strEdition, null);
+      }
+
+      /// <summary>
+      /// Get the catalog edition from the dap server
+      /// </summary>
+      /// <param name="strConfigurationEdition">The edition of the server</param>
+      /// <param name="strEdition">The edition of the catalog</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetCatalogEdition(out string strConfigurationEdition, out string strEdition, UpdateProgessCallback progressCallBack) 
       {         
@@ -720,6 +957,15 @@ namespace Geosoft.Dap
       /// Get the catalog edition from the dap server
       /// </summary>
       /// <param name="strEdition">The edition of the catalog</param>
+      public void GetCatalogEdition(out string strEdition)
+      {
+         GetCatalogEdition(out strEdition, null);
+      }
+
+      /// <summary>
+      /// Get the catalog edition from the dap server
+      /// </summary>
+      /// <param name="strEdition">The edition of the catalog</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetCatalogEdition(out string strEdition, UpdateProgessCallback progressCallBack) 
       {         
@@ -727,44 +973,15 @@ namespace Geosoft.Dap
 
          GetCatalogEdition(out strConfigurationEdition, out strEdition, progressCallBack);
       }
-
+      
       /// <summary>
-      /// Get the list of keywords in GeosoftXML format from the dap server
+      /// Get the dataset edition in GeosoftXML format from the dap server
       /// </summary>
-      /// <returns>The keywords response in GeosoftXML</returns>
-      public System.Xml.XmlDocument GetKeywords(UpdateProgessCallback progressCallBack) 
+      /// <param name="hDataSet">The dataset to get the edition of</param>
+      /// <returns>The dataset edition response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetDataSetEdition(DataSet hDataSet)
       {
-         string                  szUrl;
-         System.Xml.XmlDocument  hRequestDocument;
-         System.Xml.XmlDocument  hResponseDocument;
-         
-         try 
-         {
-            m_oLock.AcquireReaderLock(0);
-            szUrl = CreateUrl(Constant.Request.KEYWORDS);
-
-            hRequestDocument = m_hEncodeRequest.Keywords( null );
-            hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);  
-         }
-         finally
-         {
-            m_oLock.ReleaseReaderLock();
-         }
-         return hResponseDocument;
-      }
-
-      /// <summary>
-      /// Get the list of keywords from the dap server
-      /// </summary>
-      /// <param name="hKeywords">The list of keywords</param>
-      /// <param name="progressCallBack">Progress handler (may be null)</param>
-      public void GetKeywords(out ArrayList hKeywords, UpdateProgessCallback progressCallBack) 
-      {         
-         System.Xml.XmlDocument  hResponseDocument;
-
-         hResponseDocument = GetKeywords(progressCallBack);      
- 
-         m_hParse.Keywords(hResponseDocument, out hKeywords);
+         return GetDataSetEdition(hDataSet, null);
       }
 
       /// <summary>
@@ -805,6 +1022,16 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="hDataSet">The dataset to get the edition of</param>
       /// <param name="szEdition">The edition of the dataset</param>
+      public void GetDataSetEdition(DataSet hDataSet, out String szEdition)
+      {
+         GetDataSetEdition(hDataSet, out szEdition, null);
+      }
+
+      /// <summary>
+      /// Get the dataset edition from the dap server
+      /// </summary>
+      /// <param name="hDataSet">The dataset to get the edition of</param>
+      /// <param name="szEdition">The edition of the dataset</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetDataSetEdition(DataSet hDataSet, out String szEdition, UpdateProgessCallback progressCallBack) 
       {         
@@ -813,6 +1040,16 @@ namespace Geosoft.Dap
          hResponseDocument = GetDataSetEdition(hDataSet, progressCallBack);      
  
          m_hParse.DataSetEdition( hResponseDocument, out szEdition );
+      }
+
+      /// <summary>
+      /// Get meta information for a particular dataset
+      /// </summary>
+      /// <param name="hDataSet">The dataset to retrieve meta information for</param>
+      /// <returns>The meta response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetMetaData(DataSet hDataSet)
+      {
+         return GetMetaData(hDataSet, null);
       }
 
       /// <summary>
@@ -835,6 +1072,16 @@ namespace Geosoft.Dap
       /// Get meta information for a particular dataset
       /// </summary>
       /// <param name="hItem">The item element within a catalog response</param>
+      /// <returns>The meta response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetMetaData(System.Xml.XmlNode hItem)
+      {
+         return GetMetaData(hItem, null);
+      }
+
+      /// <summary>
+      /// Get meta information for a particular dataset
+      /// </summary>
+      /// <param name="hItem">The item element within a catalog response</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The meta response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetMetaData(System.Xml.XmlNode hItem, UpdateProgessCallback progressCallBack) 
@@ -848,6 +1095,16 @@ namespace Geosoft.Dap
          if (hAttr == null) throw new DapException("Missing name attribute in item element");
 
          return GetMetaData( hAttr.Value, progressCallBack);         
+      }
+
+      /// <summary>
+      /// Get the meta information for a paricular dataset
+      /// </summary>
+      /// <param name="szDataSet">The unique name of the dataset</param>
+      /// <returns>The meta response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetMetaData(string szDataSet)
+      {
+         return GetMetaData(szDataSet, null);
       }
 
       /// <summary>
@@ -876,6 +1133,18 @@ namespace Geosoft.Dap
             m_oLock.ReleaseReaderLock();
          }
          return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Get the image for a particular dataset from the catalog item element
+      /// </summary>
+      /// <param name="hItem">The item element within a catalog response</param>
+      /// <param name="hFormat">The format to retrieve the image in</param>
+      /// <param name="hResolution">The resolution to retrieve the image at</param>
+      /// <returns>The image response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetImage(System.Xml.XmlNode hItem, Format hFormat, Resolution hResolution)
+      {
+         return GetImage(hItem, hFormat, hResolution, null);
       }
 
       /// <summary>
@@ -913,6 +1182,18 @@ namespace Geosoft.Dap
       /// <param name="hDataSet">The dataset to get an image for</param>
       /// <param name="hFormat">The format to retrieve the image in</param>
       /// <param name="hResolution">The resolution to retrieve the image at</param>
+      /// <returns>The image response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetImage(DataSet hDataSet, Format hFormat, Resolution hResolution)
+      {
+         return GetImage(hDataSet, hFormat, hResolution, null);
+      }
+
+      /// <summary>
+      /// Get an image from a dataset
+      /// </summary>
+      /// <param name="hDataSet">The dataset to get an image for</param>
+      /// <param name="hFormat">The format to retrieve the image in</param>
+      /// <param name="hResolution">The resolution to retrieve the image at</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The image response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetImage(DataSet hDataSet, Format hFormat, Resolution hResolution, UpdateProgessCallback progressCallBack) 
@@ -935,11 +1216,39 @@ namespace Geosoft.Dap
       /// <param name="hBoundingBox">The bounding box of the image</param>
       /// <param name="hResolution">The resolution to retrive the image at</param>
       /// <param name="hArrayList">The list of dataset server name</param>
+      /// <returns>The image response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetImage(Format hFormat, BoundingBox hBoundingBox, Resolution hResolution, System.Collections.ArrayList hArrayList)
+      {
+         return GetImage(hFormat, hBoundingBox, hResolution, hArrayList, null);
+      }
+
+      /// <summary>
+      /// Get an image from a list of dataset server names
+      /// </summary>
+      /// <param name="hFormat">The format to retrieve the image in</param>
+      /// <param name="hBoundingBox">The bounding box of the image</param>
+      /// <param name="hResolution">The resolution to retrive the image at</param>
+      /// <param name="hArrayList">The list of dataset server name</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The image response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetImage(Format hFormat, BoundingBox hBoundingBox, Resolution hResolution, System.Collections.ArrayList hArrayList, UpdateProgessCallback progressCallBack) 
       {
          return GetImage(hFormat, hBoundingBox, hResolution, false, false, hArrayList, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get an image from a list of dataset server names
+      /// </summary>
+      /// <param name="hFormat">The format to retrieve the image in</param>
+      /// <param name="hBoundingBox">The bounding box of the image</param>
+      /// <param name="hResolution">The resolution to retrive the image at</param>
+      /// <param name="bBaseMap">Draw the base map</param>
+      /// <param name="bIndexMap">Draw the index map</param>
+      /// <param name="hArrayList">The list of dataset server names</param>
+      /// <returns>The image response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetImage(Format hFormat, BoundingBox hBoundingBox, Resolution hResolution, bool bBaseMap, bool bIndexMap, System.Collections.ArrayList hArrayList)
+      {
+         return GetImage(hFormat, hBoundingBox, hResolution, bBaseMap, bIndexMap, hArrayList, null);
       }
 
       /// <summary>
@@ -983,6 +1292,21 @@ namespace Geosoft.Dap
       /// <param name="bBaseMap">Draw the base map</param>
       /// <param name="bIndexMap">Draw the index map</param>
       /// <param name="hArrayList">The list of Geosoft.Dap.Command.DataSet classes</param>
+      /// <returns>The image response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetImageEx(Format hFormat, BoundingBox hBoundingBox, Resolution hResolution, bool bBaseMap, bool bIndexMap, System.Collections.ArrayList hArrayList)
+      {
+         return GetImageEx(hFormat, hBoundingBox, hResolution, bBaseMap, bIndexMap, hArrayList, null);
+      }
+
+      /// <summary>
+      /// Get an image from a list of Geosoft.Dap.Command.DataSet classes
+      /// </summary>
+      /// <param name="hFormat">The format to retrieve the image in</param>
+      /// <param name="hBoundingBox">The bounding box of the image</param>
+      /// <param name="hResolution">The resolution to retrive the image at</param>
+      /// <param name="bBaseMap">Draw the base map</param>
+      /// <param name="bIndexMap">Draw the index map</param>
+      /// <param name="hArrayList">The list of Geosoft.Dap.Command.DataSet classes</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The image response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetImageEx(Format hFormat, BoundingBox hBoundingBox, Resolution hResolution, bool bBaseMap, bool bIndexMap, System.Collections.ArrayList hArrayList, UpdateProgessCallback progressCallBack) 
@@ -996,6 +1320,17 @@ namespace Geosoft.Dap
          }
 
          return GetImage(hFormat, hBoundingBox, hResolution, bBaseMap, bIndexMap, hList, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the default resolution to extract this data set at
+      /// </summary>
+      /// <param name="szType">The dataset type</param>
+      /// <param name="hBoundingBox">The bounding box</param>
+      /// <returns>The default resolution response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetDefaultResolution(string szType, BoundingBox hBoundingBox)
+      {
+         return GetDefaultResolution(szType, hBoundingBox, null);
       }
 
       /// <summary>
@@ -1032,6 +1367,17 @@ namespace Geosoft.Dap
       /// <param name="szType">The dataset type</param>
       /// <param name="hBoundingBox">The bounding box</param>
       /// <param name="szResolution">The default resolution</param>
+      public void GetDefaultResolution(string szType, BoundingBox hBoundingBox, out String szResolution)
+      {
+         GetDefaultResolution(szType, hBoundingBox, out szResolution, null);
+      }
+
+      /// <summary>
+      /// Get the default resolution to extract this data set at
+      /// </summary>
+      /// <param name="szType">The dataset type</param>
+      /// <param name="hBoundingBox">The bounding box</param>
+      /// <param name="szResolution">The default resolution</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetDefaultResolution(string szType, BoundingBox hBoundingBox, out String szResolution, UpdateProgessCallback progressCallBack) 
       {         
@@ -1040,6 +1386,16 @@ namespace Geosoft.Dap
          hResponseDocument = GetDefaultResolution(szType, hBoundingBox, progressCallBack);
 
          m_hParse.DefaultResolution( hResponseDocument, out szResolution );  
+      }
+
+      /// <summary>
+      /// Get the default resolution to extract this data set at
+      /// </summary>
+      /// <param name="hDataSet">The dataset</param>
+      /// <returns>The default resolution response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetDefaultResolution(DataSet hDataSet)
+      {
+         return GetDefaultResolution(hDataSet, null);
       }
 
       /// <summary>
@@ -1062,6 +1418,16 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="hDataSet">The dataset</param>
       /// <param name="szResolution">The default resolution</param>
+      public void GetDefaultResolution(DataSet hDataSet, out String szResolution)
+      {
+         GetDefaultResolution(hDataSet, out szResolution, null);
+      }
+
+      /// <summary>
+      /// Get the default resolution to extract this data set at
+      /// </summary>
+      /// <param name="hDataSet">The dataset</param>
+      /// <param name="szResolution">The default resolution</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetDefaultResolution(DataSet hDataSet, out String szResolution, UpdateProgessCallback progressCallBack) 
       {
@@ -1076,9 +1442,28 @@ namespace Geosoft.Dap
       /// Get the list of supported datums
       /// </summary>
       /// <returns>The list of supported datums response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedDatums()
+      {
+         return GetSupportedDatums(null);
+      }
+
+      /// <summary>
+      /// Get the list of supported datums
+      /// </summary>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The list of supported datums response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetSupportedDatums(UpdateProgessCallback progressCallBack) 
       {
          return GetSupportedCoordinateSystems(CoordinateSystem.Types.DATUM, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the list of supported datums
+      /// </summary>
+      /// <param name="hArray">The list of supported datums</param>
+      public void GetSupportedDatums(out System.Collections.ArrayList hArray)
+      {
+         GetSupportedDatums(out hArray, null);
       }
 
       /// <summary>
@@ -1097,10 +1482,30 @@ namespace Geosoft.Dap
       /// </summary>
       /// <returns>The list of supported projections response in GeosoftXML</returns>
       /// <param name="szDatum">Datum String</param>
+      public System.Xml.XmlDocument GetSupportedProjections(string szDatum)
+      {
+         return GetSupportedProjections(szDatum, null);
+      }
+
+      /// <summary>
+      /// Get the list of supported projections
+      /// </summary>
+      /// <returns>The list of supported projections response in GeosoftXML</returns>
+      /// <param name="szDatum">Datum String</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public System.Xml.XmlDocument GetSupportedProjections(string szDatum, UpdateProgessCallback progressCallBack) 
       {
          return GetSupportedCoordinateSystems(CoordinateSystem.Types.PROJECTION, szDatum, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the list of supported projections
+      /// </summary>
+      /// <param name="szDatum">The datum to filter the projections by. NOTE: can be null</param>
+      /// <param name="hArray">The list of supported projections</param>
+      public void GetSupportedProjections(string szDatum, out System.Collections.ArrayList hArray)
+      {
+         GetSupportedProjections(szDatum, out hArray, null);
       }
 
       /// <summary>
@@ -1118,11 +1523,29 @@ namespace Geosoft.Dap
       /// <summary>
       /// Get the list of supported units
       /// </summary>
+      /// <returns>The list of supported units response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedUnits()
+      {
+         return GetSupportedUnits(null);
+      }
+
+      /// <summary>
+      /// Get the list of supported units
+      /// </summary>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The list of supported units response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetSupportedUnits(UpdateProgessCallback progressCallBack) 
       {
          return GetSupportedCoordinateSystems(CoordinateSystem.Types.UNITS, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the list of supported units
+      /// </summary>
+      /// <param name="hArray">The list of supported units</param>
+      public void GetSupportedUnits(out System.Collections.ArrayList hArray)
+      {
+         GetSupportedUnits(out hArray, null);
       }
 
       /// <summary>
@@ -1140,9 +1563,29 @@ namespace Geosoft.Dap
       /// Get the list of supported local datums
       /// </summary>
       /// <returns>The list of supported local datum descriptions response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedLocalDatumDescriptions()
+      {
+         return GetSupportedLocalDatumDescriptions((UpdateProgessCallback)null);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The list of supported local datum descriptions response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetSupportedLocalDatumDescriptions(UpdateProgessCallback progressCallBack) 
       {
          return GetSupportedCoordinateSystems(CoordinateSystem.Types.LOCAL_DATUM_DESCRIPTION, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="szDatum">The datum to filter the results</param>
+      /// <returns>The list of supported local datum descriptions response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedLocalDatumDescriptions(string szDatum)
+      {
+         return GetSupportedLocalDatumDescriptions(szDatum, null);
       }
 
       /// <summary>
@@ -1154,6 +1597,15 @@ namespace Geosoft.Dap
       public System.Xml.XmlDocument GetSupportedLocalDatumDescriptions(string szDatum, UpdateProgessCallback progressCallBack) 
       {
          return GetSupportedCoordinateSystems(CoordinateSystem.Types.LOCAL_DATUM_DESCRIPTION, szDatum, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="hArray">The list of supported local datum descriptions</param>
+      public void GetSupportedLocalDatumDescriptions(out System.Collections.ArrayList hArray)
+      {
+         GetSupportedLocalDatumDescriptions(out hArray, null);
       }
 
       /// <summary>
@@ -1172,11 +1624,31 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="szDatum">The datum to filter the results</param>
       /// <param name="hArray">The list of supported local datum descriptions</param>
+      public void GetSupportedLocalDatumDescriptions(string szDatum, out System.Collections.ArrayList hArray)
+      {
+         GetSupportedLocalDatumDescriptions(szDatum, out hArray, null);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="szDatum">The datum to filter the results</param>
+      /// <param name="hArray">The list of supported local datum descriptions</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetSupportedLocalDatumDescriptions(string szDatum, out System.Collections.ArrayList hArray, UpdateProgessCallback progressCallBack) 
       {
          System.Xml.XmlDocument hDoc = GetSupportedCoordinateSystems(CoordinateSystem.Types.LOCAL_DATUM_DESCRIPTION, szDatum, progressCallBack);
          m_hParse.SupportedCoordinateSystem(hDoc, out hArray);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="szDatum">The datum to filter the results</param>
+      /// <returns>The list of supported local datum names in GesoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedLocalDatumNames(string szDatum)
+      {
+         return GetSupportedLocalDatumNames(szDatum, null);
       }
 
       /// <summary>
@@ -1193,11 +1665,29 @@ namespace Geosoft.Dap
       /// <summary>
       /// Get the list of supported local datums
       /// </summary>
+      /// <returns>The list of supported local datum names in GesoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedLocalDatumNames()
+      {
+         return GetSupportedLocalDatumNames((UpdateProgessCallback)null);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The list of supported local datum names in GesoftXML</returns>
       public System.Xml.XmlDocument GetSupportedLocalDatumNames(UpdateProgessCallback progressCallBack) 
       {
          return GetSupportedCoordinateSystems(CoordinateSystem.Types.LOCAL_DATUM_NAME, null, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="hArray">The list of supported local datum names</param>
+      public void GetSupportedLocalDatumNames(out System.Collections.ArrayList hArray)
+      {
+         GetSupportedLocalDatumNames(out hArray, null);
       }
 
       /// <summary>
@@ -1216,11 +1706,32 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="szDatum">The datum to filter the results</param>
       /// <param name="hArray">The list of supported local datum names</param>
+      public void GetSupportedLocalDatumNames(string szDatum, out System.Collections.ArrayList hArray)
+      {
+         GetSupportedLocalDatumNames(szDatum, out hArray, null);
+      }
+
+      /// <summary>
+      /// Get the list of supported local datums
+      /// </summary>
+      /// <param name="szDatum">The datum to filter the results</param>
+      /// <param name="hArray">The list of supported local datum names</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void GetSupportedLocalDatumNames(string szDatum, out System.Collections.ArrayList hArray, UpdateProgessCallback progressCallBack) 
       {
          System.Xml.XmlDocument hDoc = GetSupportedCoordinateSystems(CoordinateSystem.Types.LOCAL_DATUM_NAME, szDatum, progressCallBack);
          m_hParse.SupportedCoordinateSystem(hDoc, out hArray);
+      }
+
+      /// <summary>
+      /// Get the list of supported coordinate systems
+      /// </summary>
+      /// <param name="eType">The list type. Must be one of DATUM, PROJECTION, UNITS, LOCAL_DATUM_NAME or LOCAL_DATUM_DESCRIPTION</param>
+      /// <param name="szDatum">The datum to filter the results</param>
+      /// <returns>The list response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetSupportedCoordinateSystems(CoordinateSystem.Types eType, string szDatum)
+      {
+         return GetSupportedCoordinateSystems(eType, szDatum, null);
       }
 
       /// <summary>
@@ -1258,6 +1769,18 @@ namespace Geosoft.Dap
       /// <param name="hBox">The region to extract</param>
       /// <param name="bNative">Download in native coordinate system or that of bounding box</param>
       /// <param name="szKey">The extraction key</param>
+      public void Extract(ExtractDataSet hDataSet, BoundingBox hBox, bool bNative, out string szKey)
+      {
+         Extract(hDataSet, hBox, bNative, out szKey, null);
+      }
+
+      /// <summary>
+      /// Begin the extraction process for a particular dataset
+      /// </summary>
+      /// <param name="hDataSet">The dataset to extract</param>
+      /// <param name="hBox">The region to extract</param>
+      /// <param name="bNative">Download in native coordinate system or that of bounding box</param>
+      /// <param name="szKey">The extraction key</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void Extract(ExtractDataSet hDataSet, BoundingBox hBox, bool bNative, out string szKey, UpdateProgessCallback progressCallBack) 
       {                  
@@ -1265,6 +1788,18 @@ namespace Geosoft.Dap
          
          hResponseDocument = Extract(hDataSet, hBox, bNative, progressCallBack);
          m_hParse.ExtractKey(hResponseDocument, out szKey);         
+      }
+
+      /// <summary>
+      /// Begin the extraction process for a particular dataset
+      /// </summary>
+      /// <param name="hDataSet">The dataset to extract</param>
+      /// <param name="hBox">The region to extract</param>
+      /// <param name="bNative">Download in native coordinate system or that of bounding box</param>
+      /// <returns>The extract response in GeosoftXML</returns>
+      public System.Xml.XmlDocument Extract(ExtractDataSet hDataSet, BoundingBox hBox, bool bNative)
+      {
+         return Extract(hDataSet, hBox, bNative, null);
       }
 
       /// <summary>
@@ -1290,6 +1825,18 @@ namespace Geosoft.Dap
       /// <param name="hBox">The projection to extract the datasets to</param>
       /// <param name="bNative">Save datasets in native coordinate system or that of the bounding box</param>
       /// <param name="szKey">The extraction key</param>
+      public void Extract(ArrayList hDataSetList, BoundingBox hBox, bool bNative, out string szKey)
+      {
+         Extract(hDataSetList, hBox, bNative, out szKey, null);
+      }
+
+      /// <summary>
+      /// Begin the extraction process for a collection of datasets
+      /// </summary>
+      /// <param name="hDataSetList">The list of datasets to extract</param>
+      /// <param name="hBox">The projection to extract the datasets to</param>
+      /// <param name="bNative">Save datasets in native coordinate system or that of the bounding box</param>
+      /// <param name="szKey">The extraction key</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void Extract(ArrayList hDataSetList, BoundingBox hBox, bool bNative, out string szKey, UpdateProgessCallback progressCallBack) 
       {                  
@@ -1297,6 +1844,18 @@ namespace Geosoft.Dap
 
          hResponseDocument = Extract(hDataSetList, hBox, bNative, progressCallBack);
          m_hParse.ExtractKey(hResponseDocument, out szKey);         
+      }
+
+      /// <summary>
+      /// Begin the extraction process for a particular dataset
+      /// </summary>
+      /// <param name="hDataSetList">The list of datasets to extract</param>
+      /// <param name="hBox">The projection to extract the datasets to</param>
+      /// <param name="bNative">Save datasets in native coordinate system or that of the bounding box</param>
+      /// <returns>The extract response in GeosoftXML</returns>
+      public System.Xml.XmlDocument Extract(ArrayList hDataSetList, BoundingBox hBox, bool bNative)
+      {
+         return Extract(hDataSetList, hBox, bNative, null);
       }
 
       /// <summary>
@@ -1335,6 +1894,18 @@ namespace Geosoft.Dap
       /// <param name="eStatus">The status of the extraction</param>
       /// <param name="iProgress">The percent complete</param>
       /// <param name="szStatus">The current task</param>
+      public void ExtractProgress(string szKey, out Constant.ExtractStatus eStatus, out Int32 iProgress, out string szStatus)
+      {
+         ExtractProgress(szKey, out eStatus, out iProgress, out szStatus, null);
+      }
+
+      /// <summary>
+      /// Get the extract progress from the dap server
+      /// </summary>
+      /// <param name="szKey">The extraction key</param>
+      /// <param name="eStatus">The status of the extraction</param>
+      /// <param name="iProgress">The percent complete</param>
+      /// <param name="szStatus">The current task</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void ExtractProgress(string szKey, out Constant.ExtractStatus eStatus, out Int32 iProgress, out string szStatus, UpdateProgessCallback progressCallBack) 
       {                  
@@ -1342,6 +1913,17 @@ namespace Geosoft.Dap
 
          hResponseDocument = ExtractProgress(szKey, progressCallBack);
          m_hParse.ExtractProgress(hResponseDocument, out eStatus, out iProgress, out szStatus);
+      }
+
+      /// <summary>
+      /// Get the extract progress from the dap server
+      /// </summary>
+      /// <param name="szKey">The extraction key</param>
+      /// <param name="eStatus">The status of the extraction</param>
+      /// <returns></returns>
+      public void ExtractProgress(string szKey, out Constant.ExtractStatus eStatus)
+      {
+         ExtractProgress(szKey, out eStatus, null);
       }
 
       /// <summary>
@@ -1360,6 +1942,16 @@ namespace Geosoft.Dap
          hResponseDocument = ExtractProgress(szKey, progressCallBack);
          m_hParse.ExtractProgress(hResponseDocument, out eStatus, out iProgress, out szStatus);
       }         
+
+      /// <summary>
+      /// Get the extract progress from the dap server
+      /// </summary>
+      /// <param name="szKey">The extraction key</param>
+      /// <returns>The extract progress response in GeosoftXML</returns>
+      public System.Xml.XmlDocument ExtractProgress(string szKey)
+      {
+         return ExtractProgress(szKey, null);
+      }
 
       /// <summary>
       /// Get the extract progress from the dap server
@@ -1392,6 +1984,16 @@ namespace Geosoft.Dap
       /// Get the extracted data
       /// </summary>
       /// <param name="szKey">The extraction key</param>
+      /// <returns>The extact data response in GeosoftXML</returns>
+      public System.Xml.XmlDocument ExtractData(string szKey)
+      {
+         return ExtractData(szKey, null);
+      }
+
+      /// <summary>
+      /// Get the extracted data
+      /// </summary>
+      /// <param name="szKey">The extraction key</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The extact data response in GeosoftXML</returns>
       public System.Xml.XmlDocument ExtractData(string szKey, UpdateProgessCallback progressCallBack) 
@@ -1415,6 +2017,17 @@ namespace Geosoft.Dap
          return hResponseDocument;
       }
 
+
+      /// <summary>
+      /// Get the extracted data
+      /// </summary>
+      /// <param name="szKey">The extraction key</param>
+      /// <param name="strTempFile">Temporary file name</param>
+      /// <returns>The exact data response in GeosoftXML</returns>
+      public System.Xml.XmlReader ExtractDataEx(string szKey, string strTempFile)
+      {
+         return ExtractDataEx(szKey, strTempFile, null);
+      }
 
       /// <summary>
       /// Get the extracted data
@@ -1452,11 +2065,27 @@ namespace Geosoft.Dap
       /// <param name="hOCS">The output coordinate system</param>
       /// <param name="hItems">The list of points to translate</param>
       /// <param name="hOutItems">The translate points</param>
+      public void TranslateCoordinates(CoordinateSystem hICS,
+                                       CoordinateSystem hOCS,
+                                       System.Collections.ArrayList hItems,
+                                       out System.Collections.ArrayList hOutItems)
+      {
+         TranslateCoordinates(hICS, hOCS, hItems, out hOutItems, null);
+      }
+
+      /// <summary>
+      /// Translate a series of coordinates into a new projection
+      /// </summary>
+      /// <param name="hICS">The input coordinate system</param>
+      /// <param name="hOCS">The output coordinate system</param>
+      /// <param name="hItems">The list of points to translate</param>
+      /// <param name="hOutItems">The translate points</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void TranslateCoordinates(CoordinateSystem hICS,
                                        CoordinateSystem hOCS,
                                        System.Collections.ArrayList hItems,
-                                       out System.Collections.ArrayList hOutItems, UpdateProgessCallback progressCallBack) 
+                                       out System.Collections.ArrayList hOutItems, 
+                                       UpdateProgessCallback progressCallBack) 
       {                  
          System.Xml.XmlDocument        hResponseDocument;
          
@@ -1470,11 +2099,26 @@ namespace Geosoft.Dap
       /// <param name="hInputCoordinateSystem">The input coordinate system</param>
       /// <param name="hOutputCoordinateSystem">The output coordinate system</param>
       /// <param name="hItems">The list of points to translate</param>
+      /// <returns>The translated coordinates response in GeosoftXML</returns>
+      public System.Xml.XmlDocument TranslateCoordinates(CoordinateSystem hInputCoordinateSystem,
+                                                         CoordinateSystem hOutputCoordinateSystem,
+                                                         System.Collections.ArrayList hItems)
+      {
+         return TranslateCoordinates(hInputCoordinateSystem, hOutputCoordinateSystem, hItems, (UpdateProgessCallback)null);
+      }
+
+      /// <summary>
+      /// Translate a series of coordinates to the new projection
+      /// </summary>      
+      /// <param name="hInputCoordinateSystem">The input coordinate system</param>
+      /// <param name="hOutputCoordinateSystem">The output coordinate system</param>
+      /// <param name="hItems">The list of points to translate</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The translated coordinates response in GeosoftXML</returns>
       public System.Xml.XmlDocument TranslateCoordinates(CoordinateSystem hInputCoordinateSystem,
                                                          CoordinateSystem hOutputCoordinateSystem,
-                                                         System.Collections.ArrayList hItems, UpdateProgessCallback progressCallBack)
+                                                         System.Collections.ArrayList hItems, 
+                                                         UpdateProgessCallback progressCallBack)
       {
          string                        szUrl;
          System.Xml.XmlDocument        hRequestDocument;
@@ -1502,6 +2146,18 @@ namespace Geosoft.Dap
       /// <param name="hOCS">The output coordinate system</param>
       /// <param name="dResolution">The extraction resolution</param>
       /// <param name="hOutBoundingBox">The translated bounding box</param>
+      public void TranslateBoundingBox(BoundingBox hBoundingBox, CoordinateSystem hOCS, ref Double dResolution, out BoundingBox hOutBoundingBox)
+      {
+         TranslateBoundingBox(hBoundingBox, hOCS, ref dResolution, out hOutBoundingBox, (UpdateProgessCallback)null);
+      }
+
+      /// <summary>
+      /// Translate a bounding box into a new projection
+      /// </summary>
+      /// <param name="hBoundingBox">The bounding box to translate</param>
+      /// <param name="hOCS">The output coordinate system</param>
+      /// <param name="dResolution">The extraction resolution</param>
+      /// <param name="hOutBoundingBox">The translated bounding box</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       public void TranslateBoundingBox(BoundingBox hBoundingBox, CoordinateSystem hOCS, ref Double dResolution, out BoundingBox hOutBoundingBox, UpdateProgessCallback progressCallBack)         
       {                  
@@ -1510,6 +2166,18 @@ namespace Geosoft.Dap
          hResponseDocument = TranslateBoundingBox(hBoundingBox, dResolution, hOCS, progressCallBack);
          m_hParse.TranslateBoundingBox(hResponseDocument, out hOutBoundingBox, out dResolution);
       }  
+
+      /// <summary>
+      /// Translate a bounding box into a new projection
+      /// </summary>
+      /// <param name="hBoundingBox">The bounding box to translate</param>
+      /// <param name="hOCS">The output coordinate system</param>
+      /// <param name="hOutBoundingBox">The translated bounding box</param>
+      /// <returns>The translated bounding box response in GeosoftXML</returns>
+      public void TranslateBoundingBox(BoundingBox hBoundingBox, CoordinateSystem hOCS, out BoundingBox hOutBoundingBox)
+      {
+         TranslateBoundingBox(hBoundingBox, hOCS, out hOutBoundingBox, null);
+      }
 
       /// <summary>
       /// Translate a bounding box into a new projection
@@ -1533,6 +2201,17 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="hBoundingBox">The bounding box to translate</param>
       /// <param name="hOCS">The output coordinate system</param>
+      /// <returns>The translated bounding box response in GeosoftXML</returns>
+      public System.Xml.XmlDocument TranslateBoundingBox(BoundingBox hBoundingBox, CoordinateSystem hOCS)
+      {
+         return TranslateBoundingBox(hBoundingBox, hOCS, null);
+      }
+
+      /// <summary>
+      /// Translate a bounding box into a new projection
+      /// </summary>
+      /// <param name="hBoundingBox">The bounding box to translate</param>
+      /// <param name="hOCS">The output coordinate system</param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The translated bounding box response in GeosoftXML</returns>
       public System.Xml.XmlDocument TranslateBoundingBox(BoundingBox hBoundingBox, CoordinateSystem hOCS, UpdateProgessCallback progressCallBack)
@@ -1541,6 +2220,18 @@ namespace Geosoft.Dap
 
          hResponseDocument = TranslateBoundingBox(hBoundingBox, 0, hOCS, progressCallBack);
          return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Translate a bounding box into a new projection
+      /// </summary>
+      /// <param name="hBoundingBox">The bounding box to translate</param>      
+      /// <param name="dResolution">The extraction resolution</param>
+      /// <param name="hOCS">The output coordinate system</param>
+      /// <returns>The translated bounding box in GeosoftXML</returns>
+      public System.Xml.XmlDocument TranslateBoundingBox(BoundingBox hBoundingBox, Double dResolution, CoordinateSystem hOCS)
+      {
+         return TranslateBoundingBox(hBoundingBox, dResolution, hOCS, null);
       }
 
       /// <summary>
@@ -1576,11 +2267,32 @@ namespace Geosoft.Dap
       /// Get the log in GeosoftXML format from the dap server
       /// </summary>
       /// <param name="strPassword"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetLog(string strPassword)
+      {
+         return GetLog(strPassword, null);
+      }
+
+      /// <summary>
+      /// Get the log in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The configuration response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetLog(string strPassword, UpdateProgessCallback progressCallBack) 
       {
          return GetLog(strPassword, DateTime.Today, progressCallBack);
+      }
+
+      /// <summary>
+      /// Get the log in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <param name="oDate"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetLog(string strPassword, DateTime oDate)
+      {
+         return GetLog(strPassword, oDate, null);
       }
 
       /// <summary>
@@ -1615,11 +2327,32 @@ namespace Geosoft.Dap
       /// clear the log in GeosoftXML format from the dap server
       /// </summary>
       /// <param name="strPassword"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument ClearLog(string strPassword)
+      {
+         return ClearLog(strPassword, null);
+      }
+
+      /// <summary>
+      /// clear the log in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The configuration response in GeosoftXML</returns>
       public System.Xml.XmlDocument ClearLog(string strPassword, UpdateProgessCallback progressCallBack) 
       {
          return ClearLog(strPassword, DateTime.Today, progressCallBack);
+      }
+
+      /// <summary>
+      /// clear the log in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <param name="oDate"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument ClearLog(string strPassword, DateTime oDate)
+      {
+         return ClearLog(strPassword, oDate, null);
       }
 
       /// <summary>
@@ -1655,6 +2388,17 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="strPassword"></param>
       /// <param name="oLogs"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public void ListLogs(string strPassword, out ArrayList oLogs)
+      {
+         ListLogs(strPassword, out oLogs, null);
+      }
+
+      /// <summary>
+      /// list the logs in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <param name="oLogs"></param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>The configuration response in GeosoftXML</returns>
       public void ListLogs(string strPassword, out ArrayList oLogs, UpdateProgessCallback progressCallBack) 
@@ -1663,6 +2407,16 @@ namespace Geosoft.Dap
 
          oDoc = ListLogs(strPassword, progressCallBack);
          m_hParse.ListLogs(oDoc, out oLogs);
+      }
+
+      /// <summary>
+      /// list the logs in GeosoftXML format from the dap server
+      /// </summary>
+      /// <param name="strPassword"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument ListLogs(string strPassword)
+      {
+         return ListLogs(strPassword, null);
       }
 
       /// <summary>
@@ -1727,6 +2481,16 @@ namespace Geosoft.Dap
       /// Open up a client state object on the server
       /// </summary>
       /// <param name="strKey"></param>
+      /// <returns>True/False</returns>
+      public bool CreateClientState(out string strKey)
+      {
+         return CreateClientState(out strKey, null);
+      }
+
+      /// <summary>
+      /// Open up a client state object on the server
+      /// </summary>
+      /// <param name="strKey"></param>
       /// <param name="progressCallBack">Progress handler (may be null)</param>
       /// <returns>True/False</returns>
       public bool CreateClientState(out string strKey, UpdateProgessCallback progressCallBack) 
@@ -1749,6 +2513,16 @@ namespace Geosoft.Dap
             m_oLock.ReleaseReaderLock();
          }
          return true;
+      }
+
+      /// <summary>
+      /// Destroy a client state object on the server
+      /// </summary>
+      /// <param name="strKey"></param>
+      /// <returns>True/False</returns>
+      public bool DestroyClientState(string strKey)
+      {
+         return DestroyClientState(strKey, null);
       }
 
       /// <summary>

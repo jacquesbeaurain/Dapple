@@ -170,7 +170,7 @@ namespace Dapple.LayerGeneration
       {
          if (m_treeList.InvokeRequired)
          {
-            m_treeList.Invoke(new BuilderChangedHandler(BuilderChanged), new object[] { builder, changeType });
+            m_treeList.BeginInvoke(new BuilderChangedHandler(BuilderChanged), new object[] { builder, changeType });
             return;
          }
 

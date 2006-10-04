@@ -346,10 +346,9 @@ namespace Dapple.LayerGeneration
                return Math.Min((m_hDataSet.Boundary.MaxX - m_hDataSet.Boundary.MinX) / dX, (m_hDataSet.Boundary.MaxY - m_hDataSet.Boundary.MinY) / dY);
             }
          }
-         catch (Exception e)
+         catch
          {
-            throw e;
-
+            return 0.0;
          }
          return 0.0;
       }
