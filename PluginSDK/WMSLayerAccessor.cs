@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Utility;
 
 namespace WorldWind.Net.Wms
 {
@@ -23,46 +24,6 @@ namespace WorldWind.Net.Wms
 		bool m_isTransparent;
 		double m_boundingBoxOverlap;
 		TimeSpan m_cacheExpirationTime = TimeSpan.MaxValue;
-
-      private static List<string> wgs84Equivalents = new List<string>(new string[] {
-         "EPSG:4019",
-         "EPSG:4176",
-         "EPSG:4151",
-         "EPSG:4133",
-         "EPSG:4180",
-         "EPSG:4258",
-         "EPSG:4283",
-         "EPSG:4121",
-         "EPSG:4173",
-         "EPSG:4659",
-         "EPSG:4141",
-         "EPSG:4612",
-         "EPSG:4319",
-         "EPSG:4661",
-         "EPSG:4126",
-         "EPSG:4669",
-         "EPSG:4269",
-         "EPSG:4140",
-         "EPSG:4167",
-         "EPSG:4172",
-         "EPSG:4190",
-         "EPSG:4189",
-         "EPSG:4171",
-         "EPSG:4624",
-         "EPSG:4627",
-         "EPSG:4170",
-         "EPSG:4619",
-         "EPSG:4148",
-         "EPSG:4670",
-         "EPSG:4667",
-         "EPSG:4166",
-         "EPSG:4130",
-         "EPSG:4318",
-         "EPSG:4640",
-         "EPSG:4326",
-         "EPSG:4163",
-         "CRS:83"
-      });
 
 		#endregion	
 
@@ -88,14 +49,14 @@ namespace WorldWind.Net.Wms
 
          if (m_version == "1.1.1")
          {
-            if (wgs84Equivalents.Contains(m_srs))
+            if (GCSMappings.WMSWGS84Equivalents.Contains(m_srs))
                projectionRequest = "srs=" + m_srs;
             else
                projectionRequest = "srs=EPSG:4326";
          }
          else
          {
-            if (wgs84Equivalents.Contains(m_crs))
+            if (GCSMappings.WMSWGS84Equivalents.Contains(m_crs))
                projectionRequest = "crs=" + m_crs;
             else
                projectionRequest = "crs=CRS:84";

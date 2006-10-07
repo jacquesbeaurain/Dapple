@@ -61,10 +61,20 @@ namespace Dapple.LayerGeneration
                   string strLine;
                   while ((strLine = sr.ReadLine()) != null)
                   {
-                     if (strLine.Contains("GTModelTypeGeoKey (Short,1): ModelTypeGeographic") ||
-                        strLine.Contains("GeographicTypeGeoKey (Short,1): GCS_WGS_84"))
+                     if (strLine.Contains("GTModelTypeGeoKey (Short,1): ModelTypeGeographic"))
                         iWGS84Check++;
 
+                     if (strLine.Contains("GeographicTypeGeoKey (Short,1): "))
+                     {
+                        foreach (string strGCS in Utility.GCSMappings.GeoTiffWGS84Equivalents)
+                        {
+                           if (strLine.Contains(strGCS))
+                           {
+                              iWGS84Check++;
+                              break;
+                           }
+                        }
+                     }
                      if (strLine.Contains("Upper Left"))
                         strUL = strLine;
                      if (strLine.Contains("Upper Right"))

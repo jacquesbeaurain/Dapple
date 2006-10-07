@@ -92,15 +92,6 @@ namespace WorldWind
 
          return new Vector3d(rho, latitude, longitude);
 		}
-
-		public static Vector3d CartesianToSphericalD(double x, double y, double z)
-		{
-			double rho = Math.Sqrt((double)(x * x + y * y + z * z));
-			double longitude = Math.Atan2(y,x);
-			double latitude = (Math.Asin(z / rho));
-
-         return new Vector3d(rho, latitude, longitude);
-		}
 		
 		/// <summary>
 		/// Converts an angle in decimal degrees to angle in radians
