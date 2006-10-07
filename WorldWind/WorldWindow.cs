@@ -542,20 +542,7 @@ namespace WorldWind
          double dX2,dY2; // lower right
          double dX3,dY3; // upper right
          double dX4,dY4; // upper left
-         Angle  aX1,aY1; // lower left
-         Angle  aX2,aY2; // lower right
-         Angle  aX3,aY3; // upper right
-         Angle  aX4,aY4; // upper left
-
-         // See if we can pick ray intersections on the four corners first, if any one fails fall back to an estimate method
-
-         this.drawArgs.WorldCamera.PickingRayIntersection(0, this.Height, out aY1, out aX1);
-         this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, this.Height, out aY2, out aX2);
-         this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, 0, out aY3, out aX3);
-         this.drawArgs.WorldCamera.PickingRayIntersection(0, 0, out aY4, out aX4);
-         if (!Angle.IsNaN(aX1) && !Angle.IsNaN(aY1) && !Angle.IsNaN(aX2) && !Angle.IsNaN(aY2) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aX4) && !Angle.IsNaN(aY4))
-            return new GeographicQuad(aX1.Degrees, aY1.Degrees, aX2.Degrees, aY2.Degrees, aX3.Degrees, aY3.Degrees, aX4.Degrees, aY4.Degrees);
-
+         
          // Maximum visibility
          double dMaxAngle = Math.Acos(dRadius  / (dRadius + dAlt)) * Rad2Deg;
 
@@ -605,16 +592,82 @@ namespace WorldWind
             Rotate(ref dX4, ref dY4, dCos, dSin);
          }
 
-         dX1 += dX; dX1 = Math.Max(-180.0, Math.Min(dX1, 180.0));
-         dX2 += dX; dX2 = Math.Max(-180.0, Math.Min(dX2, 180.0));
-         dX3 += dX; dX3 = Math.Max(-180.0, Math.Min(dX3, 180.0));
-         dX4 += dX; dX4 = Math.Max(-180.0, Math.Min(dX4, 180.0));
-         dY1 += dY; dY1 = Math.Max(-90.0, Math.Min(dY1, 90.0));
-         dY2 += dY; dY2 = Math.Max(-90.0, Math.Min(dY2, 90.0));
-         dY3 += dY; dY3 = Math.Max(-90.0, Math.Min(dY3, 90.0));
-         dY4 += dY; dY4 = Math.Max(-90.0, Math.Min(dY4, 90.0));
+         dX1 += dX;
+         dX2 += dX;
+         dX3 += dX;
+         dX4 += dX;
+         dY1 += dY;
+         dY2 += dY;
+         dY3 += dY;
+         dY4 += dY;
 
+         // See if we can pick ray intersections on the four corners first
+         // If tilted or too close to poles or if any one fails fall back 
+         // to an estimate method
 
+         if (this.drawArgs.WorldCamera.Tilt.Degrees < 5.0 && 
+             this.drawArgs.WorldCamera.Latitude.Degrees < 72 &&
+             this.drawArgs.WorldCamera.Latitude.Degrees > -72)
+         {
+            Angle aX1, aY1; // lower left
+            Angle aX2, aY2; // lower right
+            Angle aX3, aY3; // upper right
+            Angle aX4, aY4; // upper left
+
+            this.drawArgs.WorldCamera.PickingRayIntersection(0, this.Height, out aY1, out aX1);
+            this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, this.Height, out aY2, out aX2);
+            this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, 0, out aY3, out aX3);
+            this.drawArgs.WorldCamera.PickingRayIntersection(0, 0, out aY4, out aX4);
+
+            if (!(aX1.Radians == 0.0 && aX2.Radians == 0.0 && aX3.Radians == 0.0 && aX4.Radians == 0.0 && aY1.Radians == 0.0 && aY2.Radians == 0.0 && aY3.Radians == 0.0 && aY4.Radians == 0.0) &&
+                (!Angle.IsNaN(aX1) && !Angle.IsNaN(aY1) && !Angle.IsNaN(aX2) && !Angle.IsNaN(aY2) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aX4) && !Angle.IsNaN(aY4)))
+            {
+               double dPX1 = aX1.Degrees;
+               double dPX2 = aX2.Degrees;
+               double dPX3 = aX3.Degrees;
+               double dPX4 = aX4.Degrees;
+
+               double dPY1 = aY1.Degrees;
+               double dPY2 = aY2.Degrees;
+               double dPY3 = aY3.Degrees;
+               double dPY4 = aY4.Degrees;
+
+               // Make sure the coordinates surround center close to edges
+               if (180.0 < Math.Abs(dX1 - dPX1))
+               {
+                  if (dPX1 < dX1)
+                     dPX1 += 360.0;
+                  else
+                     dPX1 -= 360.0;
+               }
+
+               if (180.0 < Math.Abs(dX2 - dPX2))
+               {
+                  if (dPX2 < dX2)
+                     dPX2 += 360.0;
+                  else
+                     dPX2 -= 360.0;
+               }
+
+               if (180.0 < Math.Abs(dX3 - dPX3))
+               {
+                  if (dPX3 < dX3)
+                     dPX3 += 360.0;
+                  else
+                     dPX3 -= 360.0;
+               }
+
+               if (180.0 < Math.Abs(dX4 - dPX4))
+               {
+                  if (dPX4 < dX4)
+                     dPX4 += 360.0;
+                  else
+                     dPX4 -= 360.0;
+               }
+
+               return new GeographicQuad(dPX1, dPY1, dPX2, dPY2, dPX3, dPY3, dPX4, dPY4);
+            }
+         }
          return new GeographicQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
       }
 

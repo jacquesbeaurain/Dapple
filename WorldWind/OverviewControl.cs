@@ -117,11 +117,6 @@ namespace WorldWind
 
 		public Point GetPointFromCoord(double latitude, double longitude)
 		{
-			if(Math.Abs(latitude) > 90.0)
-				latitude = latitude % 90.0;
-			if(Math.Abs(longitude) > 180.0)
-				longitude = longitude % 180.0;
-
 			Point p = new Point();
 
 			if(latitude == 90.0)
