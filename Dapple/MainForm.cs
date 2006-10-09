@@ -25,6 +25,8 @@ using DM.SharedMemory;
 using Microsoft.Win32;
 using Altova.Types;
 
+using Geosoft.GX.DAPGetData;
+
 namespace Dapple
 {
    public partial class MainForm : Form
@@ -85,6 +87,7 @@ namespace Dapple
       //private List<TreeNode> triStateTreeViewLayerNodes = new List<TreeNode>();
       //private TreeNode lastLayerNode, firstLayerNode;
       private WorldWindow worldWindow = new WorldWindow();
+      private ServerTree tvServers;
       private NASA.Plugins.BMNG bmngPlugin;
       private WorldWind.OverviewControl overviewCtl;
       private string openView = "";
@@ -369,7 +372,7 @@ namespace Dapple
 
          this.bmngPlugin = bmng.BMNGForm;
 
-         this.splitContainerMain.Panel2.Controls.Add(this.worldWindow);
+         this.splitContainer1.Panel2.Controls.Add(this.worldWindow);
          this.worldWindow.Dock = DockStyle.Fill;
 
          #endregion
@@ -403,6 +406,13 @@ namespace Dapple
          this.overviewCtl.Dock = DockStyle.Fill;
          this.panelOverview.Controls.Add(this.overviewCtl);
 
+         #endregion
+
+         #region Server Tree
+         this.tvServers = new ServerTree(Path.Combine(WWSettingsCtl.CachePath, "Catalog Cache"));
+         this.splitContainer1.Panel1.Controls.Add(this.tvServers);
+         this.tvServers.Dock = DockStyle.Fill;
+         this.tvServers.SupportDatasetSelection = false;
          #endregion
 
          this.worldWindow.MouseEnter += new EventHandler(this.worldWindow_MouseEnter);
@@ -1065,6 +1075,8 @@ namespace Dapple
                   treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("time");
                   treeNode.Tag = dir;
                   RefreshTreeHelper(treeViewServers, treeNode, dir);
+                  Server oServer;
+                  this.tvServers.AddServer(dlg.DapServer.Url, out oServer, Path.Combine(WWSettingsCtl.CachePath, "Catalog Cache")); 
                }
                SaveLastView();
             }
@@ -2837,8 +2849,9 @@ namespace Dapple
                {
                   lock (lockCatalogUpdates)
                   {
-                     dapServer = new Geosoft.GX.DAPGetData.Server(entry.dapcatalog.url.Value, WWSettingsCtl.CachePath);
+                     this.tvServers.AddServer(entry.dapcatalog.url.Value, out dapServer, WWSettingsCtl.CachePath);
                      BuilderDirectory dapDir = dapBuilder.AddDapServer(dapServer, new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), Parent);
+                     
                      dapBuilder.SubList.Add(dapDir);
                      newServerChildNode = serverNodes.Add("Loading: " + entry.dapcatalog.url.Value);
                      newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = ImageListIndex("time");
@@ -2977,6 +2990,9 @@ namespace Dapple
                      LoadBuilderEntryIntoNode(entry, serverTree, layerTree, null, activeList);
                   }
                }
+
+               this.tvServers.AsyncFilterChanged(ServerTree.SearchModeEnum.All, null, null, false, false);
+               
                InitializeTrees(serverTree, layerTree, activeList);
             }
             return true;

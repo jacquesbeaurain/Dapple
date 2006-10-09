@@ -420,7 +420,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       public void UpdateConfiguration()
       {
-         // --- delete the cache directory ---
+         // --- delete the browser map and configuration ---
 
          string strBrowserMapFile = Path.Combine(m_strCacheDir, BROWSERMAP_FILE);
          string strConfigurationFile = Path.Combine(m_strCacheDir, CONFIGURATION_FILE);

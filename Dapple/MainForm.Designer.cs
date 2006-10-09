@@ -165,6 +165,7 @@ namespace Dapple
            this.timerNavigation = new System.Windows.Forms.Timer(this.components);
            this.WWSettingsCtl = new WorldWind.WorldWindSettingsComponent(this.components);
            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+           this.splitContainer1 = new System.Windows.Forms.SplitContainer();
            this.statusStrip.SuspendLayout();
            this.menuStrip.SuspendLayout();
            this.splitContainerMain.Panel1.SuspendLayout();
@@ -199,6 +200,7 @@ namespace Dapple
            this.toolStripNavigation.SuspendLayout();
            this.contextMenuStripServers.SuspendLayout();
            this.contextMenuStripLayers.SuspendLayout();
+           this.splitContainer1.SuspendLayout();
            this.SuspendLayout();
            // 
            // statusStrip
@@ -611,6 +613,7 @@ namespace Dapple
            // splitContainerMain.Panel2
            // 
            this.splitContainerMain.Panel2.BackColor = System.Drawing.Color.Black;
+           this.splitContainerMain.Panel2.Controls.Add(this.splitContainer1);
            this.splitContainerMain.Panel2.Controls.Add(this.panelLayerTreeTemp);
            this.splitContainerMain.Panel2.Controls.Add(this.panelServerTreeTemp);
            this.splitContainerMain.Size = new System.Drawing.Size(901, 625);
@@ -1503,8 +1506,8 @@ namespace Dapple
            this.WWSettingsCtl.ProxyUrl = "";
            this.WWSettingsCtl.ProxyUsername = "";
            this.WWSettingsCtl.SettingsPath = null;
-           this.WWSettingsCtl.TotalRunTime = System.TimeSpan.Parse("05:33:16.4443040");
-           this.WWSettingsCtl.TotalRunTimeXml = "PT5H33M16.444304S";
+           this.WWSettingsCtl.TotalRunTime = System.TimeSpan.Parse("05:36:17.2255540");
+           this.WWSettingsCtl.TotalRunTimeXml = "PT5H36M17.225554S";
            this.WWSettingsCtl.UpdateCheckDate = new System.DateTime(((long)(0)));
            this.WWSettingsCtl.UseDynamicProxy = false;
            this.WWSettingsCtl.UseWindowsDefaultProxy = true;
@@ -1514,6 +1517,15 @@ namespace Dapple
            this.openFileDialog.Filter = "GeoTiff Files|*.tif;*.tiff";
            this.openFileDialog.RestoreDirectory = true;
            this.openFileDialog.Title = "O";
+           // 
+           // splitContainer1
+           // 
+           this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+           this.splitContainer1.Name = "splitContainer1";
+           this.splitContainer1.Size = new System.Drawing.Size(664, 625);
+           this.splitContainer1.SplitterDistance = 163;
+           this.splitContainer1.TabIndex = 2;
            // 
            // MainForm
            // 
@@ -1582,6 +1594,7 @@ namespace Dapple
            this.toolStripNavigation.PerformLayout();
            this.contextMenuStripServers.ResumeLayout(false);
            this.contextMenuStripLayers.ResumeLayout(false);
+           this.splitContainer1.ResumeLayout(false);
            this.ResumeLayout(false);
            this.PerformLayout();
 
@@ -1725,6 +1738,7 @@ namespace Dapple
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemWebForums;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemWebDoc;
        private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
+       private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 

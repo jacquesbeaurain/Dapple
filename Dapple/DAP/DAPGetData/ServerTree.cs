@@ -10,7 +10,6 @@ using Geosoft.Dap.Common;
 using Geosoft.DotNetTools;
 
 #if !DAPPLE
-using Geosoft.GXNet;
 using Resources = global::Geosoft.GX.Properties.Resources;
 #else
 using Resources = global::Dapple.Properties.Resources;
@@ -52,6 +51,7 @@ namespace Geosoft.GX.DAPGetData
 #if !DAPPLE
       protected bool m_bGeodist;
 #endif
+      protected bool m_bSupportDatasetSelection = true;
       protected bool m_bEntireCatalogMode = false;
       protected bool m_bAOIFilter = false;
       protected bool m_bPrevAOIFilter = false;
@@ -61,7 +61,7 @@ namespace Geosoft.GX.DAPGetData
       protected string m_strHierarchy;
       protected SortedList<string, DataSet> m_hSelectedDataSets = new SortedList<string, DataSet>();
 
-      protected Geosoft.Dap.Common.BoundingBox m_oCatalogBoundingBox = null;
+      protected Geosoft.Dap.Common.BoundingBox m_oCatalogBoundingBox = new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90);
       protected string m_strSearchString = string.Empty;
       protected string m_strCurSearchString = string.Empty;
       protected SearchModeEnum m_eMode = SearchModeEnum.All;
@@ -72,8 +72,8 @@ namespace Geosoft.GX.DAPGetData
       protected SortedList<string, Server> m_oValidServerList = new SortedList<string, Server>();
       protected SortedList<string, Server> m_oFullServerList = new SortedList<string, Server>();
 
-      protected TreeNode m_hCurrentNode;
       protected TreeNode m_hCurServerTreeNode;
+      protected TreeNode m_hDAPRootNode = null;
 
       private ImageList m_hNodeimageList = new ImageList();
       private PictureBox m_pbUpdateCatalog = new PictureBox();
@@ -93,7 +93,7 @@ namespace Geosoft.GX.DAPGetData
       public ServerTree()
       {
          m_oServerList = new ServerList();
-         m_bGeodist = CSYS.iGetGeodist() != 0;
+         m_bGeodist = Geosoft.GXNet.CSYS.iGetGeodist() != 0;
          m_oCacheManager = new CatalogCacheManager(this);
 #else
       public ServerTree(string strCacheDir)
@@ -144,6 +144,12 @@ namespace Geosoft.GX.DAPGetData
 
          m_oAsyncThread2 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
          m_oAsyncThread2.Start();
+
+#if DAPPLE
+         m_hDAPRootNode = new TreeNode("DAP Servers", iImageListIndex("dap"), iImageListIndex("dap"));
+         this.ShowRootLines = false;
+         this.Nodes.Add(m_hDAPRootNode);
+#endif
       }
 
       protected override void Dispose(bool disposing)
@@ -188,11 +194,16 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Invoke the delegatae registered with the select server event
       /// </summary>
-      protected virtual void OnSelectServer(Server server)
+      protected virtual void OnSelectServer(Server oServer)
       {
          if (ServerSelect != null)
          {
-            ServerSelect(this, server);
+            ServerSelect(this, oServer);
+         }
+         else
+         {
+            Login(null);
+            SetupCatalog(m_oCatalogBoundingBox);
          }
       }
 
@@ -257,6 +268,9 @@ namespace Geosoft.GX.DAPGetData
          get { return m_oFullServerList; }
       }
 
+      /// <summary>
+      /// The currently selected DAP dataset (or null)
+      /// </summary>
       public DataSet SelectedDataset
       {
          get
@@ -268,6 +282,35 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
+      /// <summary>
+      /// The root node collection to use to populate DAP servers in
+      /// </summary>
+      protected TreeNodeCollection DAPRootNodes
+      {
+         get
+         {
+            if (m_hDAPRootNode != null)
+               return m_hDAPRootNode.Nodes;
+            else
+               return this.Nodes;
+         }
+      }
+      
+      
+      /// <summary>
+      /// Display checkboxes next to datasets for selection support
+      /// </summary>
+      public bool SupportDatasetSelection
+      {
+         get
+         {
+            return m_bSupportDatasetSelection;
+         }
+         set
+         {
+            m_bSupportDatasetSelection = value;
+         }
+      }
       #endregion
 
       #region Public Methods
@@ -279,6 +322,18 @@ namespace Geosoft.GX.DAPGetData
       {
          m_oServerList.Save();
       }
+
+      /// <summary>
+      /// Add server without immediate catalog loading
+      /// </summary>
+#if !DAPPLE
+      public void AddServer(string strUrl)
+#else
+      public void AddServer(string strUrl, string strCacheDir)
+#endif
+      {
+      }
+
 
       /// <summary>
       /// Add server through its url
@@ -326,7 +381,7 @@ namespace Geosoft.GX.DAPGetData
          {
             GetDapError.Instance.Write("Error adding dap server " + strUrl + " to the list.\n\r(" + e.Message + ")");
 #if !DAPPLE
-            CSYS.iClearErrAP();
+            Geosoft.GXNet.CSYS.iClearErrAP();
 #endif
             bRet = false;
          }
@@ -434,7 +489,7 @@ namespace Geosoft.GX.DAPGetData
 
          // --- Remove all but current server ---
          List<TreeNode> nodeList = new List<TreeNode>();
-         foreach (TreeNode oTreeNode in this.Nodes)
+         foreach (TreeNode oTreeNode in this.DAPRootNodes)
             nodeList.Add(oTreeNode);
          foreach (TreeNode oTreeNode in nodeList)
          {
@@ -491,7 +546,7 @@ namespace Geosoft.GX.DAPGetData
                TreeNode oTreeNode = new TreeNode(str, iImage, iImage);
                oTreeNode.Tag = oServer;
 
-               this.Nodes.Insert(iInsert, oTreeNode);
+               this.DAPRootNodes.Insert(iInsert, oTreeNode);
             }
 
             iInsert++;
@@ -512,7 +567,7 @@ namespace Geosoft.GX.DAPGetData
       {
          if (m_oCurServer != oServer)
          {
-            foreach (TreeNode oTreeNode in this.Nodes)
+            foreach (TreeNode oTreeNode in this.DAPRootNodes)
             {
                if (oServer == oTreeNode.Tag as Server)
                {
@@ -520,12 +575,11 @@ namespace Geosoft.GX.DAPGetData
 #if DEBUG
                   System.Diagnostics.Debug.WriteLine("SelectedNode Changed (SelectServer): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
 #endif
-                  // --- The ServerTree_AfterSelect method will call OnSelectServer ---
-                  return;
                }
             }
+            m_oCurServer = oServer;
+            OnSelectServer(m_oCurServer);
          }
-         OnSelectServer(m_oCurServer);
       }
 
       /// <summary>
@@ -564,8 +618,19 @@ namespace Geosoft.GX.DAPGetData
             m_bEntireCatalogMode = false;
 
          ClearCatalog();
-         m_oCatalogBoundingBox = new Geosoft.Dap.Common.BoundingBox(searchExtents);
+         if (searchExtents != null)
+            m_oCatalogBoundingBox = new Geosoft.Dap.Common.BoundingBox(searchExtents);
+         else
+            m_oCatalogBoundingBox = new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90);
          EnqueueRequest(AsyncRequestType.GetCatalogHierarchy);
+      }
+
+      /// <summary>
+      /// Refresh the catalog based on the new aoi
+      /// </summary>
+      public void AsyncFilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
+      {
+         EnqueueRequest(ServerTree.AsyncRequestType.FilterChanged, (object)ServerTree.SearchModeEnum.All, (object)searchExtents, (object)strSearch, (object)bAOIFilter, (object)bTextFilter);
       }
 
       /// <summary>
@@ -659,7 +724,17 @@ namespace Geosoft.GX.DAPGetData
          else
          {
             bool bEntireCatalog;
-            m_oCatalogHierarchyRoot = m_oCacheManager.GetCatalogHierarchyRoot(m_oCurServer, m_oCatalogBoundingBox, m_bAOIFilter, m_bTextFilter, m_strSearchString, out bEntireCatalog, out strConfigurationEdition);
+            m_oCatalogHierarchyRoot = null;
+
+            try
+            {
+               m_oCatalogHierarchyRoot = m_oCacheManager.GetCatalogHierarchyRoot(m_oCurServer, m_oCatalogBoundingBox, m_bAOIFilter, m_bTextFilter, m_strSearchString, out bEntireCatalog, out strConfigurationEdition);
+            }
+            catch
+            {
+               // Assumed that the server does not support this request, revert to old method
+               bEntireCatalog = true;
+            }
 
             if (m_oCatalogHierarchyRoot == null && bEntireCatalog)
             {
@@ -860,7 +935,7 @@ namespace Geosoft.GX.DAPGetData
       {
          AsyncRequest oRequest;
 #if !DAPPLE
-         CGX_NET oGxNet;
+         Geosoft.GXNet.CGX_NET oGxNet;
          IntPtr oAP = IntPtr.Zero;
          IntPtr oGXP = IntPtr.Zero;
          IntPtr oGXX = IntPtr.Zero;
@@ -870,7 +945,7 @@ namespace Geosoft.GX.DAPGetData
          {
             if (m_bGeodist)
             {
-               oGxNet = new CGX_NET("GetDapData", "1.0", 0, 0, 0);
+               oGxNet = new Geosoft.GXNet.CGX_NET("GetDapData", "1.0", 0, 0, 0);
             }
             else
             {
@@ -886,13 +961,13 @@ namespace Geosoft.GX.DAPGetData
                oGXX = hCreatExtern_GXX(oGXP);
                if (oGXX == IntPtr.Zero) return;
 
-               oGxNet = new CGX_NET(oGXX);
+               oGxNet = new Geosoft.GXNet.CGX_NET(oGXX);
             }
          }
 
          // --- do not display server error messages ---
 
-         CSYS.SetServerMessagesAP(0);
+         Geosoft.GXNet.CSYS.SetServerMessagesAP(0);
 #endif
          do
          {
@@ -967,7 +1042,7 @@ namespace Geosoft.GX.DAPGetData
          if (this.IsDisposed)
             return;
 
-         foreach (TreeNode oTreeNode in this.Nodes)
+         foreach (TreeNode oTreeNode in this.DAPRootNodes)
          {
             Server oServer = oTreeNode.Tag as Server;
 
@@ -1056,7 +1131,7 @@ namespace Geosoft.GX.DAPGetData
          // --- Clear all server nodes ---
          this.BeginUpdate();
 
-         foreach (TreeNode oTreeNode in this.Nodes)
+         foreach (TreeNode oTreeNode in this.DAPRootNodes)
             oTreeNode.Nodes.Clear();
 
          if (m_bEntireCatalogMode)
@@ -1176,12 +1251,20 @@ namespace Geosoft.GX.DAPGetData
                TreeNode hChildTreeNode;
 
                iType = iImageIndex(oDataset.Type);
-               if (m_hSelectedDataSets.ContainsKey(oDataset.UniqueName))
-                  hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType, TriStateTreeView.CheckBoxState.Checked);
+               if (m_bSupportDatasetSelection)
+               {
+                  if (m_hSelectedDataSets.ContainsKey(oDataset.UniqueName))
+                     hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType, TriStateTreeView.CheckBoxState.Checked);
+                  else
+                     hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType, TriStateTreeView.CheckBoxState.Unchecked);
+               }
                else
-                  hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType, TriStateTreeView.CheckBoxState.Unchecked);
-               hChildTreeNode.Tag = oDataset;
+               {
+                  hChildTreeNode = new TreeNode(oDataset.Title, iType, iType);
+                  hTreeNode.Nodes.Add(hChildTreeNode);
+               }
 
+               hChildTreeNode.Tag = oDataset;
             }
          }
          return hTreeNode;
@@ -1383,28 +1466,40 @@ namespace Geosoft.GX.DAPGetData
       {
          if (m_bSelect)
          {
+            TreeNode hCurrentNode;
+            
             m_bSelect = false;
 
-            m_hCurrentNode = e.Node;
+            hCurrentNode = e.Node;
 
-            if (!(m_hCurrentNode.Tag is DataSet))
+            if (hCurrentNode == m_hDAPRootNode)
             {
-               m_strHierarchy = String.Empty;
+               // Clear the DAP server nodes, but still show then
+               foreach (TreeNode hTreeNode in this.DAPRootNodes)
+                  hTreeNode.Nodes.Clear();
+            }
+            else if (!(hCurrentNode.Tag is DataSet))
+            {
+               string strNewHierarchy = String.Empty;
 
-               while (!(m_hCurrentNode.Tag is Server))
+               while (hCurrentNode != null && !(hCurrentNode.Tag is Server))
                {
-                  m_strHierarchy = m_hCurrentNode.Text + "/" + m_strHierarchy;
-                  m_hCurrentNode = m_hCurrentNode.Parent;
+                  strNewHierarchy = hCurrentNode.Text + "/" + strNewHierarchy;
+                  hCurrentNode = hCurrentNode.Parent;
                }
 
-               if (m_hCurrentNode.Tag is Server && m_hCurrentNode.Tag as Server != m_oCurServer)
+               if (hCurrentNode != null)
                {
-                  m_oCurServer = m_hCurrentNode.Tag as Server;
-                  m_hCurServerTreeNode = m_hCurrentNode;
-                  OnSelectServer(m_oCurServer);
+                  m_strHierarchy = strNewHierarchy;
+                  if (hCurrentNode.Tag is Server)
+                  {
+                     m_hCurServerTreeNode = hCurrentNode;
+                     if (m_hCurServerTreeNode.Tag as Server != m_oCurServer)
+                        SelectServer(m_hCurServerTreeNode.Tag as Server);
+                     else
+                        RefreshResults();
+                  }
                }
-               else
-                  RefreshResults();
             }
 
             // --- This is needed because all the docking window activations tends to change the tree selection on us ---
