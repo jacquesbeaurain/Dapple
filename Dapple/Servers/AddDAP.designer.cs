@@ -45,7 +45,6 @@ namespace Dapple
          this.butOK.TabIndex = 2;
          this.butOK.Text = "&OK";
          this.butOK.UseVisualStyleBackColor = true;
-         this.butOK.Click += new System.EventHandler(this.butOK_Click);
          // 
          // butCancel
          // 
@@ -103,6 +102,7 @@ namespace Dapple
          this.ShowInTaskbar = false;
          this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
          this.Text = "Add a DAP Server";
+         this.Load += new System.EventHandler(this.AddDAP_Load);
          this.ResumeLayout(false);
          this.PerformLayout();
 

@@ -213,7 +213,6 @@ namespace Dapple.LayerGeneration
    public delegate void LoadingCompletedCallbackHandler(BuilderDirectory directory, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList);
    public delegate void LoadingFailedCallbackHandler(BuilderDirectory directory, string message, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList);
 
-
    public abstract class ServerBuilder : BuilderDirectory
    {
       protected string m_strUrl;

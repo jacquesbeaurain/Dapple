@@ -155,6 +155,10 @@ namespace Dapple.LayerGeneration
          {
             LoadingCompleted(serverDir, m_serverTree, m_layerTree, m_activeList);
          }
+         if (LoadingCompleted != null)
+         {
+            LoadingCompleted(serverDir, m_serverTree, m_layerTree, m_activeList);
+         }
       }
 
       private void LoadFailed(string serverName, string message)

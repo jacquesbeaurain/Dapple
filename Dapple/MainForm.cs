@@ -25,8 +25,6 @@ using DM.SharedMemory;
 using Microsoft.Win32;
 using Altova.Types;
 
-using Geosoft.GX.DAPGetData;
-
 namespace Dapple
 {
    public partial class MainForm : Form
@@ -225,15 +223,16 @@ namespace Dapple
 
             if (this.serverBuilder != null)
             {
-               if (this.serverBuilder is DAPCatalogBuilder)
-               {
-                  this.toolStripMenuItemaddServer.Text = "Add DAP Server";
-               }
+               //TODO:if (this.serverBuilder is DAPCatalogBuilder)
+               //{
+               //   this.toolStripMenuItemaddServer.Text = "Add DAP Server";
+               //}
                //else if (this.serverBuilder is TileSetSet)
                //{
                //   this.toolStripMenuItemaddServer.Text = "Add Image Tile Server";
                //}
-               else if (this.serverBuilder is WMSCatalogBuilder)
+               //else 
+               if (this.serverBuilder is WMSCatalogBuilder)
                {
                   this.toolStripMenuItemaddServer.Text = "Add WMS Server";
                }
@@ -252,13 +251,15 @@ namespace Dapple
                   this.toolStripMenuItemremoveServer.Visible = false;
                   this.toolStripSeparatorServerRemove.Visible = false;
                }
-               if (this.serverBuilder is DAPServerBuilder || this.serverBuilder is WMSServerBuilder ||
+               //TODO:if (this.serverBuilder is DAPServerBuilder || 
+               if (this.serverBuilder is WMSServerBuilder ||
                    this.serverBuilder is BuilderDirectory)
                {
                   this.toolStripMenuItemgoToServer.Visible = false;
                   this.toolStripSeparatorServerGoto.Visible = false;
                }
-               if (this.serverBuilder is DAPServerBuilder || this.serverBuilder is WMSServerBuilder)
+               //TODO:if (this.serverBuilder is DAPServerBuilder || 
+               if (this.serverBuilder is WMSServerBuilder)
                {
                   this.toolStripSeparatorRefreshCatalog.Visible = true;
                   this.toolStripMenuItemRefreshCatalog.Visible = true;
@@ -272,6 +273,13 @@ namespace Dapple
          }
       }
 
+      public WorldWindow WorldWindowControl
+      {
+         get
+         {
+            return this.worldWindow;
+         }
+      }
 
       #endregion
 
@@ -409,7 +417,7 @@ namespace Dapple
          #endregion
 
          #region Server Tree
-         this.tvServers = new ServerTree(Path.Combine(WWSettingsCtl.CachePath, "Catalog Cache"));
+         this.tvServers = new ServerTree(WWSettingsCtl.CachePath, this);
          this.splitContainer1.Panel1.Controls.Add(this.tvServers);
          this.tvServers.Dock = DockStyle.Fill;
          this.tvServers.SupportDatasetSelection = false;
@@ -1004,7 +1012,27 @@ namespace Dapple
          if (!(ServerBuilderItem is LayerBuilder))
             return;
 
-         this.activeLayers.Add(ServerBuilderItem.Name, ServerBuilderItem as LayerBuilder, true, ServerBuilderItem.Opacity, true);
+         AddLayerBuilder(ServerBuilderItem as LayerBuilder);
+      }
+
+      public bool bContainsDAPLayer(Geosoft.GX.DAPGetData.Server oServer, Geosoft.Dap.Common.DataSet oDataset)
+      {
+         foreach (LayerBuilderContainer container in this.activeLayers)
+         {
+            if (container.Builder is DAPQuadLayerBuilder)
+            {
+               DAPQuadLayerBuilder dapLayerBuilder = container.Builder as DAPQuadLayerBuilder;
+
+               if (dapLayerBuilder.DAPServerURL == oServer.Url && oDataset.Name == dapLayerBuilder.DatasetName)
+                  return true;
+            }
+         }
+         return false;
+      }
+
+      public void AddLayerBuilder(LayerBuilder oLayer)
+      {
+         this.activeLayers.Add(oLayer.Name, oLayer, true, oLayer.Opacity, true);
 
          if (triStateTreeViewLayers.SelectedNode != null)
             LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
@@ -1019,9 +1047,20 @@ namespace Dapple
 
       private void toolStripMenuItemAddDAP_Click(object sender, EventArgs e)
       {
-         TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(DAPCatalogBuilder), this.treeViewServers.Nodes);
-         if (treeNode != null)
-            AddServer(treeNode.Tag as BuilderDirectory, treeNode.Nodes);
+         AddDAP dlg = new AddDAP();
+         if (dlg.ShowDialog(this) == DialogResult.OK)
+         {         
+            Geosoft.GX.DAPGetData.Server oServer;
+            try
+            {
+               this.tvServers.AddDAPServer(dlg.Url, out oServer);
+            }
+            catch (Exception except)
+            {
+               MessageBox.Show(this, "Error adding server \"" + dlg.Url + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            SaveLastView();
+         }
       }
 
       private void toolStripMenuItemAddWMS_Click(object sender, EventArgs e)
@@ -1051,37 +1090,7 @@ namespace Dapple
 
       void AddServer(BuilderDirectory serverDir, TreeNodeCollection nodes)
       {
-         /*DialogResult res = DialogResult.Cancel;
-
-         }
-         else if (serverDir is WMSCatalogBuilder)
-            serverType = LayerAddWizard.ServerType.WmsServer;
-         else if (serverDir is TileSetSet)
-            serverType = LayerAddWizard.ServerType.TileServer;
-         else
-            return;
-         */
-         if (serverDir is DAPCatalogBuilder)
-         {
-            AddDAP dlg = new AddDAP(this.worldWindow, serverDir as DAPCatalogBuilder);
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {         
-               lock (lockCatalogUpdates)
-               {
-                  DAPCatalogBuilder dapBuilder = serverDir as DAPCatalogBuilder;
-                  BuilderDirectory dir = dapBuilder.AddDapServer(dlg.DapServer, new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), serverDir);
-                  serverDir.SubList.Add(dir);
-                  TreeNode treeNode = nodes.Add(dir.Name);
-                  treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("time");
-                  treeNode.Tag = dir;
-                  RefreshTreeHelper(treeViewServers, treeNode, dir);
-                  Server oServer;
-                  this.tvServers.AddServer(dlg.DapServer.Url, out oServer, Path.Combine(WWSettingsCtl.CachePath, "Catalog Cache")); 
-               }
-               SaveLastView();
-            }
-         }
-         else if (serverDir is WMSCatalogBuilder)
+         if (serverDir is WMSCatalogBuilder)
          {
             AddWMS dlg = new AddWMS(this.worldWindow, serverDir as WMSCatalogBuilder);
             if (dlg.ShowDialog(this) == DialogResult.OK)
@@ -1145,8 +1154,8 @@ namespace Dapple
             }
             else
             {
-               if (treeNode.Tag is DAPServerBuilder)
-               {
+               //TODO: if (treeNode.Tag is DAPServerBuilder)
+               /*{
                   DAPServerBuilder serverBuilder = treeNode.Tag as DAPServerBuilder;
                   // Need to have a catalog builder in treenode's parents
                   IBuilder parentCatalog = ServerBuilderItem as IBuilder;
@@ -1157,7 +1166,7 @@ namespace Dapple
                   if (parentCatalog != null && parentCatalog is DAPCatalogBuilder)
                      (parentCatalog as DAPCatalogBuilder).RemoveServer(serverBuilder.URL);
                }
-               else if (treeNode.Tag is WMSServerBuilder)
+               else */if (treeNode.Tag is WMSServerBuilder)
                {
                   WMSServerBuilder serverBuilder = treeNode.Tag as WMSServerBuilder;
                   // Need to have a catalog builder in treenode's parents
@@ -1344,8 +1353,8 @@ namespace Dapple
          TreeNode serverNode  = TreeUtils.FindNodeBFS(ServerBuilderItem, treeViewServers.Nodes);
          if (serverNode != null)
          {
-            if (serverNode.Tag is DAPServerBuilder)
-            {
+            //TODO:if (serverNode.Tag is DAPServerBuilder)
+            /*{
                DAPServerBuilder serverBuilder = serverNode.Tag as DAPServerBuilder;
                // Need to have a catalog builder in treenode's parents
                IBuilder parentCatalog = ServerBuilderItem as IBuilder;
@@ -1371,7 +1380,7 @@ namespace Dapple
                   }
                }
             }
-            else if (serverNode.Tag is WMSServerBuilder)
+            else */if (serverNode.Tag is WMSServerBuilder)
             {
                WMSServerBuilder serverBuilder = serverNode.Tag as WMSServerBuilder;
                // Need to have a catalog builder in treenode's parents
@@ -2537,13 +2546,13 @@ namespace Dapple
       void PopulateEntry(builderentryType entry, TreeNode node)
       {
          IBuilder builder = node.Tag as IBuilder;
-         if (builder is DAPServerBuilder)
-         {
+         //TODO:if (builder is DAPServerBuilder)
+         /*{
             dapcatalogType dap = entry.Newdapcatalog();
             dap.Addurl(new SchemaString((builder as DAPServerBuilder).URL));
             entry.Adddapcatalog(dap);
          }
-         else if (builder is WMSServerBuilder)
+         else */if (builder is WMSServerBuilder)
          {
             wmscatalogType wms = entry.Newwmscatalog();
             wms.Addcapabilitiesurl(new SchemaString((builder as WMSServerBuilder).URL));
@@ -2595,9 +2604,10 @@ namespace Dapple
          {
             builderdirectoryType dir = entry.Newbuilderdirectory();
             dir.Addname(new SchemaString(node.Text));
-            if (builder is DAPCatalogBuilder)
-               dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
-            else if (builder is WMSCatalogBuilder)
+            //TODO: if (builder is DAPCatalogBuilder)
+            //   dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
+            //else 
+            if (builder is WMSCatalogBuilder)
                dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
             else if (builder is TileSetBuilder)
                dir.Addspecialcontainer(new SpecialDirectoryType("ImageServers"));
@@ -2798,13 +2808,14 @@ namespace Dapple
             {
                if (entry.builderdirectory.specialcontainer.Value == "DAPServers")
                {
-                  DAPCatalogBuilder dapBuilder = new DAPCatalogBuilder(WWSettingsCtl.CachePath, this.worldWindow.CurrentWorld, entry.builderdirectory.name.Value, Parent, serverTree, layerTree, activeList);
+                  /*TODO:DAPCatalogBuilder dapBuilder = new DAPCatalogBuilder(WWSettingsCtl.CachePath, this.worldWindow.CurrentWorld, entry.builderdirectory.name.Value, Parent, serverTree, layerTree, activeList);
                   dapBuilder.LoadingCompleted += new LoadingCompletedCallbackHandler(OnCatalogLoaded);
                   dapBuilder.LoadingFailed += new LoadingFailedCallbackHandler(OnCatalogFailed);
 
                   newServerNode.SelectedImageIndex = newServerNode.ImageIndex = ImageListIndex("dap");
 
-                  dir = dapBuilder;
+                  dir = dapBuilder;*/
+                  dir = null;
                }
                else if (entry.builderdirectory.specialcontainer.Value == "ImageServers")
                {
@@ -2835,30 +2846,8 @@ namespace Dapple
          }
          else if (entry.Hasdapcatalog())
          {
-            // Need to have a catalog builder in treenode's parents
-            IBuilder parentCatalog = Parent as IBuilder;
-
-            while (parentCatalog != null && !(parentCatalog is DAPCatalogBuilder))
-               parentCatalog = parentCatalog.Parent;
-
-            if (parentCatalog != null)
-            {
-               DAPCatalogBuilder dapBuilder = parentCatalog as DAPCatalogBuilder;
-               Geosoft.GX.DAPGetData.Server dapServer = dapBuilder.FindServer(entry.dapcatalog.url.Value);
-               if (dapServer == null)
-               {
-                  lock (lockCatalogUpdates)
-                  {
-                     this.tvServers.AddServer(entry.dapcatalog.url.Value, out dapServer, WWSettingsCtl.CachePath);
-                     BuilderDirectory dapDir = dapBuilder.AddDapServer(dapServer, new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), Parent);
-                     
-                     dapBuilder.SubList.Add(dapDir);
-                     newServerChildNode = serverNodes.Add("Loading: " + entry.dapcatalog.url.Value);
-                     newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = ImageListIndex("time");
-                     newServerChildNode.Tag = dapDir;
-                  }
-               }
-            }
+            Geosoft.GX.DAPGetData.Server dapServer;
+            this.tvServers.AddDAPServer(entry.dapcatalog.url.Value, out dapServer);
          }
          else if (entry.Haswmscatalog())
          {
@@ -2978,7 +2967,7 @@ namespace Dapple
                   {
                      datasetType dataset = view.View.activelayers.GetdatasetAt(i);
 
-                     activeList.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte) dataset.opacity.Value, false);
+                     activeList.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte) dataset.opacity.Value, false, this.tvServers);
                   }
                }
 
@@ -3179,14 +3168,14 @@ namespace Dapple
             if (treeParentNode == null)
                return;
 
-            if (directory is DAPServerBuilder)
+            /*TODO: if (directory is DAPServerBuilder)
             {
                (treeParentNode.Tag as BuilderDirectory).SubList.Add(directory);
                treeNode = treeParentNode.Nodes.Add(directory.Name);
                treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("dap");
                treeNode.Tag = directory;
             }
-            else if (directory is WMSServerBuilder)
+            else */if (directory is WMSServerBuilder)
             {
                (treeParentNode.Tag as BuilderDirectory).SubList.Add(directory);
                treeNode = treeParentNode.Nodes.Add(directory.Name);
@@ -3205,13 +3194,13 @@ namespace Dapple
             treeNode.Text = directory.Name;
          }
 
-         treeNode.SelectedImageIndex = treeNode.ImageIndex = (directory is DAPServerBuilder ? ImageListIndex("dap") : (directory is WMSServerBuilder ? ImageListIndex("wms") : ImageListIndex("layer")));
+         treeNode.SelectedImageIndex = treeNode.ImageIndex = (directory is WMSServerBuilder ? ImageListIndex("wms") : ImageListIndex("layer"));
          ProcessCatalogDirectory(directory, treeNode);
          serverTree.Sort();
          serverTree.EndUpdate();
 
          layerTree.BeginUpdate();
-         if (directory is DAPServerBuilder)
+         /*TODO:if (directory is DAPServerBuilder)
          {
             // Find provider in parents first
             IBuilder parentCatalog = directory.Parent;
@@ -3235,7 +3224,8 @@ namespace Dapple
                }
             }
          }
-         else if (directory is WMSServerBuilder)
+         else */
+            if (directory is WMSServerBuilder)
          {
             // Find provider in parents first
             IBuilder parentCatalog = directory.Parent;
@@ -3600,7 +3590,7 @@ namespace Dapple
                else
                   treeNode.SelectedImageIndex = treeNode.ImageIndex;
             }
-            else if (treeNode.Tag is DAPServerBuilder && filterExtents != null)
+            /*TODO:else if (treeNode.Tag is DAPServerBuilder && filterExtents != null)
             {
                // Poke the DAP server again to get a filtered catalog from it.
 
@@ -3629,7 +3619,7 @@ namespace Dapple
                      treeNode.Tag = dapDir;
                   }
                }
-            }
+            }*/
             else if (treeNode.Tag is BuilderDirectory)
                // Recurse
                FilterTreeNodes(treeNode, treeNode.Nodes, filterExtents, bIntersect, filterText);

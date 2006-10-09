@@ -18,7 +18,8 @@ namespace Geosoft.GX.DAPGetData
          OffLine,
          Disabled,
          Unsupported,
-         Maintenance
+         Maintenance,
+         Error
       }
       #endregion
 
@@ -238,14 +239,25 @@ namespace Geosoft.GX.DAPGetData
                      
          GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
 #endif
-         m_oCatalogs = new CatalogCollection(this);
+         try
+         {
+            m_oCatalogs = new CatalogCollection(this);
 
-         ConfigureServer();
+            ConfigureServer();
 
-         // --- If the edition change we need to reload the configuration ---
-         m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-         if (m_strCacheVersion != strConfigEdition)
-            UpdateConfiguration();
+            // --- If the edition change we need to reload the configuration ---
+            m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+            if (m_strCacheVersion != strConfigEdition)
+               UpdateConfiguration();
+         }
+         catch (Exception e)
+         {
+            // In Dapple we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
+            m_eStatus = ServerStatus.OffLine;
+#if !DAPPLE
+            throw e;
+#endif
+         }
       }
 
 #if !DAPPLE
@@ -490,7 +502,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       public void SwitchToUser()
       {
-         if (m_bLoggedIn)
+         if (m_bLoggedIn && m_eStatus == Server.ServerStatus.OnLine)
          {
             Command.ChangeLogin(m_strUserName, m_strPassword);
 #if !DAPPLE

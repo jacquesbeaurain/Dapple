@@ -63,6 +63,9 @@
     <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ServerTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UpdateDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,7 +165,6 @@
     <Compile Include="LayerGeneration\TileSetBuilder.cs" />
     <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
     <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
-    <Compile Include="LayerGeneration\DAPCatalogBuilder.cs" />
     <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
     <Compile Include="LayerGeneration\LayerBuilderProvider.cs" />

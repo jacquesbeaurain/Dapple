@@ -176,23 +176,44 @@ namespace Geosoft.GX.DAPGetData
 
          if (oDoc == null)
          {
-            if (!bAOIFilter && !bTextFilter)
-               oDoc = oServer.Command.GetCatalogHierarchy();
-            else if (!bAOIFilter && bTextFilter)
-               oDoc = oServer.Command.GetCatalogHierarchy(strSearchString);
-            else if (bAOIFilter && !bTextFilter)
-               oDoc = oServer.Command.GetCatalogHierarchy(oBounds);
-            else if (bAOIFilter && bTextFilter)
-               oDoc = oServer.Command.GetCatalogHierarchy(strSearchString, oBounds);
+            try
+            {
+               if (!bAOIFilter && !bTextFilter)
+                  oDoc = oServer.Command.GetCatalogHierarchy();
+               else if (!bAOIFilter && bTextFilter)
+                  oDoc = oServer.Command.GetCatalogHierarchy(strSearchString);
+               else if (bAOIFilter && !bTextFilter)
+                  oDoc = oServer.Command.GetCatalogHierarchy(oBounds);
+               else if (bAOIFilter && bTextFilter)
+                  oDoc = oServer.Command.GetCatalogHierarchy(strSearchString, oBounds);
+            }
+            catch (DapException e)
+            {
+               // Assume the server is older
+               bEntireCatalogMode = true;
+               return null;
+            }
+            catch
+            {
+               oDoc = null;
+            }
 
             if (oDoc == null)
             {
                // --- do something to disable server ---
 
+#if !DAPPLE
                m_oServerTree.NoResponseError();
+#else
+               m_oServerTree.NoResponseError(oServer);
+#endif
                return null;
             }
-   
+
+#if DAPPLE
+            // --- Looks like the server is online now ---
+            m_oServerTree.ReenableServer(oServer);
+#endif
             CatalogFolder oCatalogFolder = CatalogFolder.Parse(oDoc, out strEdition);
 
             if (oCatalogFolder == null)
@@ -207,9 +228,7 @@ namespace Geosoft.GX.DAPGetData
                {
                   oNode = oNodeList[0];
                   if (oNode != null && oNode.InnerText.ToLower() == "unknown request.")
-                  {
                      bEntireCatalogMode = true;
-                  }
                }
             }
             else

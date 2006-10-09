@@ -27,29 +27,28 @@ namespace Dapple.LayerGeneration
          return uri.Substring(0, uri.IndexOf("?")).Replace(URLProtocolName, "http://");
       }
 
-      public static DAPQuadLayerBuilder GetBuilderFromURI(string uri, DAPCatalogBuilder provider, WorldWindow worldWindow, DAPServerBuilder dapserver)
+      public static DAPQuadLayerBuilder GetBuilderFromURI(string uri, Dapple.ServerTree oServerTree, string strCacheDir, WorldWindow worldWindow)
       {
          try
          {
             string strServerUrl = ServerURLFromURI(uri);
             string rest = uri.Substring(uri.IndexOf("=") + 1);
-            Server oServer = provider.FindServer(strServerUrl);
-            if (oServer == null)
-            {
-               oServer = new Server(strServerUrl, provider.CacheDir);
-               if (oServer == null) return null;
-               provider.AddDapServer(oServer, new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), provider);
-            }
+
+            Server oServer = null;
+            if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
+               oServerTree.AddDAPServer(strServerUrl, out oServer);
+            else
+               oServer = oServerTree.FullServerList[strServerUrl];
+
             string[] pairs = rest.Split('&');
             string datasetname = pairs[0];
             int height = Convert.ToInt32(pairs[1].Substring(pairs[1].IndexOf('=') + 1));
             int size = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
-            
-            Catalog oCatalog = oServer.CatalogCollection.GetCatalog(new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), string.Empty);
-            DataSet hDataSet = oCatalog.FindDataset(datasetname, oServer);
+
+            DataSet hDataSet = oServer.Command.GetDataset(datasetname); // TODO: Add this to catalog cache manager for full offline browsing.
             if (hDataSet != null)
             {
-               DAPQuadLayerBuilder layerBuilder = dapserver.FindLayerBuilder(hDataSet);
+               DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
                if (layerBuilder != null)
                {
                   layerBuilder.m_iHeight = height;
@@ -101,6 +100,14 @@ namespace Dapple.LayerGeneration
          get
          {
             return m_hDataSet.Url;
+         }
+      }
+
+      public string DatasetName
+      {
+         get
+         {
+            return m_hDataSet.Name;
          }
       }
 

@@ -57,5 +57,10 @@ namespace Dapple
       {
          MainForm.BrowseTo(MainForm.WMSWebsiteHelpUrl);
       }
+
+      private void AddWMS_Load(object sender, EventArgs e)
+      {
+         this.txtWmsURL.SelectionStart = this.txtWmsURL.Text.Length;
+      }
    }
 }

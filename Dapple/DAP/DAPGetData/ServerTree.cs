@@ -50,6 +50,8 @@ namespace Geosoft.GX.DAPGetData
       #region Members
 #if !DAPPLE
       protected bool m_bGeodist;
+#else
+      protected string m_strCacheDir;
 #endif
       protected bool m_bSupportDatasetSelection = true;
       protected bool m_bEntireCatalogMode = false;
@@ -57,6 +59,7 @@ namespace Geosoft.GX.DAPGetData
       protected bool m_bPrevAOIFilter = false;
       protected bool m_bTextFilter = false;
       protected bool m_bPrevTextFilter = false;
+      protected bool m_bSelect = true;
 
       protected string m_strHierarchy;
       protected SortedList<string, DataSet> m_hSelectedDataSets = new SortedList<string, DataSet>();
@@ -75,13 +78,13 @@ namespace Geosoft.GX.DAPGetData
       protected TreeNode m_hCurServerTreeNode;
       protected TreeNode m_hDAPRootNode = null;
 
-      private ImageList m_hNodeimageList = new ImageList();
-      private PictureBox m_pbUpdateCatalog = new PictureBox();
+      protected ImageList m_hNodeimageList = new ImageList();
+      protected PictureBox m_pbUpdateCatalog = new PictureBox();
 
       protected System.Xml.XmlDocument m_oCatalog = null;
-      private CatalogFolder m_oCatalogHierarchyRoot = null;
+      internal CatalogFolder m_oCatalogHierarchyRoot = null;
 
-      private CatalogCacheManager m_oCacheManager;
+      internal CatalogCacheManager m_oCacheManager;
 
       protected DotNetTools.Common.Queue m_oAsyncQueue = new DotNetTools.Common.Queue();
       protected System.Threading.Thread m_oAsyncThread1;
@@ -98,8 +101,9 @@ namespace Geosoft.GX.DAPGetData
 #else
       public ServerTree(string strCacheDir)
       {
-         m_oServerList = new ServerList(strCacheDir);
-         m_oCacheManager = new CatalogCacheManager(this, strCacheDir);
+         m_strCacheDir = strCacheDir;
+         m_oServerList = new ServerList(m_strCacheDir);
+         m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);
 #endif
          
          m_hNodeimageList.ColorDepth = ColorDepth.Depth32Bit;
@@ -137,7 +141,8 @@ namespace Geosoft.GX.DAPGetData
          this.ImageList = m_hNodeimageList;
          this.ImageIndex = this.SelectedImageIndex = iImageListIndex("folder");
          this.SizeChanged += new EventHandler(this.ServerTree_SizeChanged);
-         this.AfterSelect += new TreeViewEventHandler(this.ServerTree_AfterSelect);
+         this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
+         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
 
          m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
          m_oAsyncThread1.Start();
@@ -202,8 +207,8 @@ namespace Geosoft.GX.DAPGetData
          }
          else
          {
+            // The login will setup the catalog
             Login(null);
-            SetupCatalog(m_oCatalogBoundingBox);
          }
       }
 
@@ -271,7 +276,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// The currently selected DAP dataset (or null)
       /// </summary>
-      public DataSet SelectedDataset
+      public DataSet SelectedDAPDataset
       {
          get
          {
@@ -324,18 +329,6 @@ namespace Geosoft.GX.DAPGetData
       }
 
       /// <summary>
-      /// Add server without immediate catalog loading
-      /// </summary>
-#if !DAPPLE
-      public void AddServer(string strUrl)
-#else
-      public void AddServer(string strUrl, string strCacheDir)
-#endif
-      {
-      }
-
-
-      /// <summary>
       /// Add server through its url
       /// </summary>
       /// <param name="strUrl"></param>
@@ -343,7 +336,7 @@ namespace Geosoft.GX.DAPGetData
 #if !DAPPLE
       public bool AddServer(string strUrl, out Server hRetServer)
 #else
-      public bool AddServer(string strUrl, out Server hRetServer, string strCacheDir)
+      public bool AddDAPServer(string strUrl, out Server hRetServer)
 #endif
       {
          bool bRet;
@@ -362,13 +355,15 @@ namespace Geosoft.GX.DAPGetData
 #if !DAPPLE
             Server oServer = new Server(strServerUrl);
 #else
-            Server oServer = new Server(strServerUrl, strCacheDir);
+            Server oServer = new Server(strServerUrl, m_strCacheDir);
 #endif
             if (oServer.Status == Server.ServerStatus.OnLine || oServer.Status == Server.ServerStatus.Maintenance)
             {
                m_oValidServerList.Remove(oServer.Url);
                m_oValidServerList.Add(oServer.Url, oServer);
+#if !DAPPLE
                PopulateServerList();
+#endif
                hRetServer = oServer;
             }
             m_oFullServerList.Remove(oServer.Url);
@@ -376,6 +371,9 @@ namespace Geosoft.GX.DAPGetData
 
             m_oServerList.RemoveServer(oServer);
             m_oServerList.AddServer(oServer);
+#if DAPPLE
+            PopulateServerList();
+#endif
          }
          catch (Exception e)
          {
@@ -389,6 +387,7 @@ namespace Geosoft.GX.DAPGetData
          return bRet;
       }
 
+#if !DAPPLE
       /// <summary>
       /// Remove the server from the list
       /// </summary>
@@ -434,6 +433,7 @@ namespace Geosoft.GX.DAPGetData
             PopulateServerList();
          }
       }
+#endif
 
       /// <summary>
       /// Update the dataset count list
@@ -441,15 +441,14 @@ namespace Geosoft.GX.DAPGetData
       public void UpdateCounts()
       {
          if (this.InvokeRequired)
-            this.BeginInvoke(new MethodInvoker(this.RefreshCounts));
+            this.BeginInvoke(new MethodInvoker(this.RefreshTreeNodeText));
          else
-            RefreshCounts();
+            RefreshTreeNodeText();
       }
 
       /// <summary>
       /// Populate the list of servers
       /// </summary>
-      bool m_bSelect = true;
       public void PopulateServerList()
       {
          string strServerUrl = string.Empty;
@@ -473,7 +472,12 @@ namespace Geosoft.GX.DAPGetData
             if (!m_oFullServerList.ContainsKey(oServer.Url)) m_oFullServerList.Add(oServer.Url, oServer);
          }
 
+#if DAPPLE
+         // Show all servers in Dapple, there is no other way to manage the list of servers
+         if (m_oCurServer != null && m_oFullServerList.ContainsValue(m_oCurServer))
+#else
          if (m_oCurServer != null && m_oValidServerList.ContainsValue(m_oCurServer))
+#endif
             strServerUrl = m_oCurServer.Url;
          else
             m_oCurServer = null;
@@ -498,52 +502,24 @@ namespace Geosoft.GX.DAPGetData
          }
 
          int iInsert = 0;
+#if DAPPLE
+         // Show all servers in Dapple, there is no other way to manage the list of servers
+         for (int i = 0; i < m_oFullServerList.Count; i++)
+         {
+            Server oServer = m_oFullServerList.Values[i];
+#else
          for (int i = 0; i < m_oValidServerList.Count; i++)
          {
             Server oServer = m_oValidServerList.Values[i];
-
+#endif
             if (m_oCurServer == oServer)
                iInsert++;
             else
             {
-               string str;
-               int iImage;
-
                if (oServer.Url == strServerUrl)
                   oSelectServer = oServer;
 
-               if (oServer.Secure && !oServer.LoggedIn)
-               {
-                  str = oServer.Name + " (unauthorized)";
-                  iImage = iImageListIndex("offline");
-               }
-               else
-               {
-                  switch (oServer.Status)
-                  {
-                     case Server.ServerStatus.OnLine:
-                        str = oServer.Name + " (" + oServer.DatasetCount.ToString() + ")";
-                        iImage = iImageListIndex("enserver");
-                        break;
-                     case Server.ServerStatus.Maintenance:
-                        str = oServer.Name + " (undergoing maintenance)";
-                        iImage = iImageListIndex("disserver");
-                        break;
-                     case Server.ServerStatus.OffLine:
-                        str = oServer.Name + " (offline)";
-                        iImage = iImageListIndex("offline");
-                        break;
-                     case Server.ServerStatus.Disabled:
-                        str = oServer.Name + " (disabled)";
-                        iImage = iImageListIndex("disserver");
-                        break;
-                     default:
-                        str = oServer.Name + " (unsupported)";
-                        iImage = iImageListIndex("offline");
-                        break;
-                  }
-               }
-               TreeNode oTreeNode = new TreeNode(str, iImage, iImage);
+               TreeNode oTreeNode = new TreeNode(oServer.Name);
                oTreeNode.Tag = oServer;
 
                this.DAPRootNodes.Insert(iInsert, oTreeNode);
@@ -552,6 +528,7 @@ namespace Geosoft.GX.DAPGetData
             iInsert++;
          }
 
+         this.RefreshTreeNodeText();
          this.EndUpdate();
 
          m_bSelect = true;
@@ -670,6 +647,7 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
+#if !DAPPLE
       /// <summary>
       /// Request to the server failed to respond
       /// </summary>
@@ -688,7 +666,32 @@ namespace Geosoft.GX.DAPGetData
             MessageBox.Show(this, "An error has occurred while attempting to retrieve the catalog from the dap server.", "Failed to update catalog", MessageBoxButtons.OK, MessageBoxIcon.Information);
          }
       }
+#else
+      public void ReenableServer(Server oServer)
+      {
+         oServer.Status = Server.ServerStatus.OnLine;
+         if (!m_oValidServerList.ContainsKey(oServer.Url))
+            m_oValidServerList.Add(oServer.Url, oServer);
+      }
+      public void NoResponseError(Server oServer)
+      {
+         Int32 iIndex = m_oValidServerList.IndexOfKey(oServer.Url);
 
+         if (iIndex != -1)
+            m_oValidServerList.RemoveAt(iIndex);
+         oServer.Status = Server.ServerStatus.OffLine;
+         if (this.InvokeRequired)
+         {
+            this.BeginInvoke(new MethodInvoker(this.PopulateServerList));
+            this.BeginInvoke(new MethodInvoker(this.HidePictureBox));
+         }
+         else
+         {
+            PopulateServerList();
+            HidePictureBox();
+         }
+      }
+#endif
 
       /// <summary>
       /// Get the catalog hierarchy
@@ -701,22 +704,38 @@ namespace Geosoft.GX.DAPGetData
          {
             Catalog oCatalog = null;
 
-            if (!m_bAOIFilter && !m_bTextFilter)
-               oCatalog = m_oCurServer.CatalogCollection.GetCatalog(null, string.Empty);
-            else if (!m_bAOIFilter && m_bTextFilter)
-               oCatalog = m_oCurServer.CatalogCollection.GetCatalog(null, m_strSearchString);
-            else if (m_bAOIFilter && !m_bTextFilter)
-               oCatalog = m_oCurServer.CatalogCollection.GetCatalog(m_oCatalogBoundingBox, string.Empty);
-            else if (m_bAOIFilter && m_bTextFilter)
-               oCatalog = m_oCurServer.CatalogCollection.GetCatalog(m_oCatalogBoundingBox, m_strSearchString);
+            try
+            {
+               if (!m_bAOIFilter && !m_bTextFilter)
+                  oCatalog = m_oCurServer.CatalogCollection.GetCatalog(null, string.Empty);
+               else if (!m_bAOIFilter && m_bTextFilter)
+                  oCatalog = m_oCurServer.CatalogCollection.GetCatalog(null, m_strSearchString);
+               else if (m_bAOIFilter && !m_bTextFilter)
+                  oCatalog = m_oCurServer.CatalogCollection.GetCatalog(m_oCatalogBoundingBox, string.Empty);
+               else if (m_bAOIFilter && m_bTextFilter)
+                  oCatalog = m_oCurServer.CatalogCollection.GetCatalog(m_oCatalogBoundingBox, m_strSearchString);
+            }
+            catch (DapException e)
+            {
+               oCatalog = null;
+            }
 
             if (oCatalog == null)
             {
+               // --- do something to disable server ---
+#if !DAPPLE
                NoResponseError();
+#else
+               NoResponseError(m_oCurServer);
+#endif
                return;
             }
             else
             {
+#if DAPPLE
+               // --- Looks like the server is online now ---
+               ReenableServer(m_oCurServer);
+#endif
                m_oCatalog = oCatalog.Document;
                strConfigurationEdition = oCatalog.ConfigurationEdition;
             }
@@ -831,7 +850,12 @@ namespace Geosoft.GX.DAPGetData
 
             if (bRet)
             {
+#if DAPPLE
+               // Show all servers in Dapple, there is no other way to manage the list of servers
+               SelectServer(m_oFullServerList[m_oCurServer.Url]);
+#else
                SelectServer(m_oValidServerList[m_oCurServer.Url]);
+#endif
                SetupCatalog(searchExtents);
             }
 
@@ -1033,9 +1057,9 @@ namespace Geosoft.GX.DAPGetData
       }
 
       /// <summary>
-      /// Update the counts for each server
+      /// Update the treenode text for each server
       /// </summary>
-      protected void RefreshCounts()
+      protected void RefreshTreeNodeText()
       {
          // --- do not execute if we are cleanup up --- 
 
@@ -1044,18 +1068,48 @@ namespace Geosoft.GX.DAPGetData
 
          foreach (TreeNode oTreeNode in this.DAPRootNodes)
          {
+            string str;
+            int iImage;
             Server oServer = oTreeNode.Tag as Server;
 
             if (oServer.Secure && !oServer.LoggedIn)
-               oTreeNode.Text = oServer.Name + " (unauthorized)";
-            else if (oServer.Status == Server.ServerStatus.OnLine)
-               oTreeNode.Text = oServer.Name + " (" + oServer.DatasetCount.ToString() + ")";
-            else if (oServer.Status == Server.ServerStatus.Maintenance)
-               oTreeNode.Text = oServer.Name + " (undergoing maintenance)";
+            {
+               str = oServer.Name + " (unauthorized)";
+               iImage = iImageListIndex("offline");
+            }
+            else
+            {
+               switch (oServer.Status)
+               {
+                  case Server.ServerStatus.OnLine:
+                     str = oServer.Name + " (" + oServer.DatasetCount.ToString() + ")";
+                     iImage = iImageListIndex("enserver");
+                     break;
+                  case Server.ServerStatus.Maintenance:
+                     str = oServer.Name + " (undergoing maintenance)";
+                     iImage = iImageListIndex("disserver");
+                     break;
+                  case Server.ServerStatus.OffLine:
+                     str = oServer.Name + " (offline)";
+                     iImage = iImageListIndex("offline");
+                     break;
+                  case Server.ServerStatus.Disabled:
+                     str = oServer.Name + " (disabled)";
+                     iImage = iImageListIndex("disserver");
+                     break;
+                  default:
+                     str = oServer.Name + " (unsupported)";
+                     iImage = iImageListIndex("offline");
+                     break;
+               }
+            }
+
+            oTreeNode.Text = str;
+            oTreeNode.ImageIndex = oTreeNode.SelectedImageIndex = iImage;
          }
       }
 
-      private FolderDatasetList GetDatasets(CatalogFolder oFolder)
+      internal FolderDatasetList GetDatasets(CatalogFolder oFolder)
       {
          return m_oCacheManager.GetDatasets(m_oCurServer, oFolder, m_oCatalogBoundingBox, m_bAOIFilter, m_bTextFilter, m_strSearchString);
       }
@@ -1124,8 +1178,8 @@ namespace Geosoft.GX.DAPGetData
 
          if (this.IsDisposed) return;
 
-         this.AfterSelect -= new TreeViewEventHandler(ServerTree_AfterSelect);
-         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(ServerTree_TreeNodeChecked);
+         this.AfterSelect -= new TreeViewEventHandler(this.OnAfterSelect);
+         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
          m_pbUpdateCatalog.Visible = false;
 
          // --- Clear all server nodes ---
@@ -1143,10 +1197,11 @@ namespace Geosoft.GX.DAPGetData
 #if DEBUG
          System.Diagnostics.Debug.WriteLine("SelectedNode Changed (RefreshResults): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
 #endif
+         this.RefreshTreeNodeText();
          this.ExpandAll();
          this.EndUpdate();
-         this.AfterSelect += new TreeViewEventHandler(ServerTree_AfterSelect);
-         this.TreeNodeChecked += new TreeNodeCheckedEventHandler(ServerTree_TreeNodeChecked);
+         this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
+         this.TreeNodeChecked += new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
       }
 
       /// <summary>
@@ -1378,17 +1433,25 @@ namespace Geosoft.GX.DAPGetData
             if (hChildNode.Name != Geosoft.Dap.Xml.Common.Constant.Tag.COLLECTION_TAG)
             {
                Int32 iType;
-               DataSet hDataSet;
+               DataSet oDataSet;
 
-               m_oCurServer.Command.Parser.DataSet(hChildNode, out hDataSet);
+               m_oCurServer.Command.Parser.DataSet(hChildNode, out oDataSet);
 
-               iType = iImageIndex(hDataSet.Type);
-               if (m_hSelectedDataSets.ContainsKey(hDataSet.UniqueName))
-                  hChildTreeNode = this.Add(hTreeNode, hDataSet.Title, iType, iType, TriStateTreeView.CheckBoxState.Checked);
+               iType = iImageIndex(oDataSet.Type);
+
+               if (m_bSupportDatasetSelection)
+               {
+                  if (m_hSelectedDataSets.ContainsKey(oDataSet.UniqueName))
+                     hChildTreeNode = this.Add(hTreeNode, oDataSet.Title, iType, iType, TriStateTreeView.CheckBoxState.Checked);
+                  else
+                     hChildTreeNode = this.Add(hTreeNode, oDataSet.Title, iType, iType, TriStateTreeView.CheckBoxState.Unchecked);
+               }
                else
-                  hChildTreeNode = this.Add(hTreeNode, hDataSet.Title, iType, iType, TriStateTreeView.CheckBoxState.Unchecked);
-
-               hChildTreeNode.Tag = hDataSet;
+               {
+                  hChildTreeNode = new TreeNode(oDataSet.Title, iType, iType);
+                  hTreeNode.Nodes.Add(hChildTreeNode);
+               }
+               hChildTreeNode.Tag = oDataSet;
             }
          }
          return hTreeNode;
@@ -1462,7 +1525,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-      private void ServerTree_AfterSelect(object sender, TreeViewEventArgs e)
+      protected virtual void OnAfterSelect(object sender, TreeViewEventArgs e)
       {
          if (m_bSelect)
          {
@@ -1516,7 +1579,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-      private void ServerTree_TreeNodeChecked(object sender, Geosoft.DotNetTools.TreeNodeCheckedEventArgs e)
+      protected virtual void OnTreeNodeChecked(object sender, Geosoft.DotNetTools.TreeNodeCheckedEventArgs e)
       {
          DataSetSelectedArgs ex = new DataSetSelectedArgs();
          if (e.Node != null && e.Node.Tag != null)

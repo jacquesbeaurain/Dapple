@@ -67,42 +67,5 @@ namespace Geosoft.GX.DAPGetData
          }
       }
       #endregion
-
-      #region Methods
-
-      public DataSet FindDataset(string name, Server oServer)
-      {
-         try
-         {
-            DataSet hDataset = new DataSet();
-            oServer.Command.Parser.DataSet(FindDatasetHelper(name, m_hCatalog["geosoft_xml"]["response"]["catalog"]),
-               out hDataset);
-            return hDataset;
-         }
-         catch { }
-         return null;
-      }
-
-      private XmlNode FindDatasetHelper(string name, XmlNode oNode)
-      {
-         foreach(XmlNode oChild in oNode.ChildNodes)
-         {
-            if (oChild.Name == Geosoft.Dap.Xml.Common.Constant.Tag.COLLECTION_TAG)
-            {
-               XmlNode oTemp = FindDatasetHelper(name, oChild);
-               if (oTemp != null)
-               {
-                  return oTemp;
-               }
-            }
-            else if ( oChild.Attributes["name"] != null && oChild.Attributes["name"].Value == name)
-            {
-               return oChild;
-            }
-         }
-         return null;
-      }
-
-      #endregion
    }
 }
