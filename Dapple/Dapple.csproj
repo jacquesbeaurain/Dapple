@@ -452,7 +452,6 @@
     <Content Include="Resources\blue-marble_checked.png" />
     <Content Include="Resources\blue-marble_unchecked.png" />
     <Content Include="Resources\collapse.png" />
-    <None Include="Resources\dap update.gif" />
     <Content Include="Resources\dap-18x18.png" />
     <Content Include="Resources\dap.ico" />
     <Content Include="Resources\dap_database.ico" />
