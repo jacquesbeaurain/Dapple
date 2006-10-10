@@ -26,10 +26,6 @@ namespace Dapple.LayerGeneration
       public LoadingCompletedCallbackHandler LoadingCompleted = null;
       public LoadingFailedCallbackHandler LoadingFailed = null;
 
-      TreeView m_serverTree;
-      TriStateTreeView m_layerTree;
-      LayerBuilderList m_activeList;
-
       public static void TrimCapabilitiesURL(ref string serverUrl)
       {
          // Clean up URL first (URL is case sensitive on some servers)
@@ -53,12 +49,9 @@ namespace Dapple.LayerGeneration
          serverUrl = serverUrl.Trim();
       }
 
-      public WMSCatalogBuilder(string appDir, WorldWindow worldWindow, string strName, IBuilder parent, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
+      public WMSCatalogBuilder(string appDir, WorldWindow worldWindow, string strName, IBuilder parent)
          : base(strName, parent, false)
       {
-         m_serverTree = serverTree;
-         m_layerTree = layerTree;
-         m_activeList = activeList;
          m_WorldWindow = worldWindow;
       }
 
@@ -153,11 +146,11 @@ namespace Dapple.LayerGeneration
          }
          if (LoadingCompleted != null)
          {
-            LoadingCompleted(serverDir, m_serverTree, m_layerTree, m_activeList);
+            LoadingCompleted(serverDir);
          }
          if (LoadingCompleted != null)
          {
-            LoadingCompleted(serverDir, m_serverTree, m_layerTree, m_activeList);
+            LoadingCompleted(serverDir);
          }
       }
 
@@ -169,7 +162,7 @@ namespace Dapple.LayerGeneration
             {
                if (dir.Name == serverName)
                {
-                  LoadingFailed(dir, message, m_serverTree, m_layerTree, m_activeList);
+                  LoadingFailed(dir, message);
                   break;
                }
             }            

@@ -6,7 +6,10 @@
             <builderentry>
                <dapcatalog url="http://dap.geosoft.com"/>
             </builderentry>
-         </builderdirectory>
+            <builderentry>
+               <dapcatalog url="http://gna-tec-rp"/>
+            </builderentry>
+      </builderdirectory>
       </builderentry>
       <builderentry>
          <builderdirectory name="Image Tile Servers" specialcontainer="ImageServers">

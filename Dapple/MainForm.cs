@@ -38,7 +38,6 @@ namespace Dapple
       public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
       public const string ViewExt = ".dapple";
       public const string LastView = "lastview" + ViewExt;
-      public const string HomeView = "home" + ViewExt;
       public const string DefaultView = "default" + ViewExt;
       public const string ViewFileDescr = "Dapple View"; 
       public const string WebsiteUrl = "http://dapple.geosoft.com/";
@@ -78,14 +77,11 @@ namespace Dapple
 
       #region Private Members
 
-      private ImageList iconImageList = new ImageList();
-      private TreeView treeViewServers;
-      private TreeView treeViewServerBackup;
-      private TriStateTreeView triStateTreeViewLayers;
+      private ServerTree tvServers;
+      private TriStateTreeView tvLayers;
       //private List<TreeNode> triStateTreeViewLayerNodes = new List<TreeNode>();
       //private TreeNode lastLayerNode, firstLayerNode;
       private WorldWindow worldWindow = new WorldWindow();
-      private ServerTree tvServers;
       private NASA.Plugins.BMNG bmngPlugin;
       private WorldWind.OverviewControl overviewCtl;
       private string openView = "";
@@ -104,7 +100,6 @@ namespace Dapple
 
       Murris.Plugins.Compass compassPlugin;
 
-      private object lockCatalogUpdates = new object();
       private int iLastTransparency = 255; // It breaks the message loop to access the actual property during paint
       private DappleToolStripRenderer toolStripRenderer;
       /* private int iServerPanelLastMinSize, iServerPanelLastPos;
@@ -117,7 +112,6 @@ namespace Dapple
       #region Properties
 
       private LayerBuilderContainer layerBuilder = null;
-      private IBuilder serverBuilder = null;
 
       LayerBuilderContainer LayerBuilderItem
       {
@@ -195,89 +189,20 @@ namespace Dapple
             }
          }
       }
-      IBuilder ServerBuilderItem
-      {
-         get
-         {
-            return this.serverBuilder;
-         }
-         set
-         {
-            this.serverBuilder = value;
-
-            this.toolStripMenuItemAddLayer.Visible = true;
-            this.toolStripMenuItemaddServer.Text = "Add Server";
-            this.toolStripMenuItemaddServer.Visible = true;
-            this.toolStripSeparatorServerAdd.Visible = true;
-            this.toolStripMenuItemgoToServer.Visible = true;
-            this.toolStripSeparatorServerGoto.Visible = true;
-            this.toolStripMenuItemremoveServer.Visible = true;
-            this.toolStripSeparatorServerRemove.Visible = true;
-            this.toolStripMenuItemviewMetadataServer.Visible = false;
-            this.toolStripMenuItemServerLegend.Visible = false;
-            this.toolStripMenuItemviewMetadataServer.Enabled = false;
-            this.toolStripMenuItemServerLegend.Enabled = false;
-            this.toolStripMenuItempropertiesServer.Visible = true;
-            this.toolStripSeparatorRefreshCatalog.Visible = false;
-            this.toolStripMenuItemRefreshCatalog.Visible = false;
-
-            if (this.serverBuilder != null)
-            {
-               //TODO:if (this.serverBuilder is DAPCatalogBuilder)
-               //{
-               //   this.toolStripMenuItemaddServer.Text = "Add DAP Server";
-               //}
-               //else if (this.serverBuilder is TileSetSet)
-               //{
-               //   this.toolStripMenuItemaddServer.Text = "Add Image Tile Server";
-               //}
-               //else 
-               if (this.serverBuilder is WMSCatalogBuilder)
-               {
-                  this.toolStripMenuItemaddServer.Text = "Add WMS Server";
-               }
-               else
-                  this.toolStripMenuItemaddServer.Visible = false;
-               
-               if (!(this.serverBuilder is LayerBuilder))
-                  this.toolStripMenuItemAddLayer.Visible = false;
-
-               if (!this.toolStripMenuItemaddServer.Visible && !this.toolStripMenuItemAddLayer.Visible)
-                  this.toolStripSeparatorServerAdd.Visible = false;
-
-               if (this.serverBuilder is DAPQuadLayerBuilder || this.serverBuilder is VEQuadLayerBuilder || this.serverBuilder is DAPQuadLayerBuilder ||
-                  this.serverBuilder is WMSQuadLayerBuilder || (this.serverBuilder is BuilderDirectory && !(this.serverBuilder as BuilderDirectory).Removable))
-               {
-                  this.toolStripMenuItemremoveServer.Visible = false;
-                  this.toolStripSeparatorServerRemove.Visible = false;
-               }
-               //TODO:if (this.serverBuilder is DAPServerBuilder || 
-               if (this.serverBuilder is WMSServerBuilder ||
-                   this.serverBuilder is BuilderDirectory)
-               {
-                  this.toolStripMenuItemgoToServer.Visible = false;
-                  this.toolStripSeparatorServerGoto.Visible = false;
-               }
-               //TODO:if (this.serverBuilder is DAPServerBuilder || 
-               if (this.serverBuilder is WMSServerBuilder)
-               {
-                  this.toolStripSeparatorRefreshCatalog.Visible = true;
-                  this.toolStripMenuItemRefreshCatalog.Visible = true;
-               }
-
-               this.toolStripMenuItemviewMetadataServer.Visible = this.serverBuilder.SupportsMetaData || this.serverBuilder is LayerBuilder;
-               this.toolStripMenuItemServerLegend.Visible = this.serverBuilder is LayerBuilder;
-               this.toolStripMenuItemviewMetadataServer.Enabled = this.serverBuilder.SupportsMetaData;
-               this.toolStripMenuItemServerLegend.Enabled = (this.serverBuilder is LayerBuilder) && (this.serverBuilder as LayerBuilder).SupportsLegend;
-            }
-         }
-      }
 
       public WorldWindow WorldWindowControl
       {
          get
          {
             return this.worldWindow;
+         }
+      }
+
+      public WorldWind.WorldWindSettingsComponent Settings
+      {
+         get
+         {
+            return this.WWSettingsCtl;
          }
       }
 
@@ -297,6 +222,7 @@ namespace Dapple
          string executablePath = Path.GetDirectoryName(Application.ExecutablePath);
 
          InitializeComponent();
+         this.SuspendLayout();
          this.Icon = new System.Drawing.Icon(@"app.ico");
          this.toolStripRenderer = new DappleToolStripRenderer();
          toolStripServers.Renderer = this.toolStripRenderer;
@@ -380,7 +306,7 @@ namespace Dapple
 
          this.bmngPlugin = bmng.BMNGForm;
 
-         this.splitContainer1.Panel2.Controls.Add(this.worldWindow);
+         this.splitContainerMain.Panel2.Controls.Add(this.worldWindow);
          this.worldWindow.Dock = DockStyle.Fill;
 
          #endregion
@@ -401,6 +327,11 @@ namespace Dapple
          this.toolStripMenuItemshowPosition.Checked = World.Settings.ShowPosition;
          this.toolStripMenuItemshowGridLines.Checked = World.Settings.ShowLatLonLines;
 
+         this.toolStripMenuItemAskAtStartup.Checked = this.WWSettingsCtl.AskLastViewAtStartup;
+         if (!this.WWSettingsCtl.AskLastViewAtStartup)
+            this.toolStripMenuItemLoadLastView.Checked = this.WWSettingsCtl.LastViewAtStartup;
+
+
          #region OverviewPanel
 
          int i;
@@ -416,21 +347,70 @@ namespace Dapple
 
          #endregion
 
-         #region Server Tree
-         this.tvServers = new ServerTree(WWSettingsCtl.CachePath, this);
-         this.splitContainer1.Panel1.Controls.Add(this.tvServers);
-         this.tvServers.Dock = DockStyle.Fill;
-         this.tvServers.SupportDatasetSelection = false;
-         #endregion
 
          this.worldWindow.MouseEnter += new EventHandler(this.worldWindow_MouseEnter);
          this.worldWindow.MouseLeave += new EventHandler(this.worldWindow_MouseLeave);
 
          this.worldWindow.ClearDevice();
 
-         TriStateTreeView layerTree = GetNewLayerTree();
-         InitializeTrees(GetNewServerTree(), layerTree, new LayerBuilderList(this, layerTree, this.worldWindow));
 
+         #region Tree Views
+
+         this.tvLayers = new TriStateTreeView();
+
+         this.tvLayers.ContextMenuStrip = this.contextMenuStripLayers;
+         this.tvLayers.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.tvLayers.HideSelection = false;
+         this.tvLayers.ImageIndex = 0;
+         this.tvLayers.Location = new System.Drawing.Point(0, 0);
+         this.tvLayers.Name = "tvLayers";
+         this.tvLayers.SelectedImageIndex = 0;
+         this.tvLayers.ShowLines = false;
+         this.tvLayers.ShowNodeToolTips = true;
+         this.tvLayers.ShowRootLines = false;
+         this.tvLayers.Size = new System.Drawing.Size(245, 182);
+         this.tvLayers.TabIndex = 1;
+         this.tvLayers.Scrollable = true;
+         //tree.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvLayers_BeforeSelect);
+         this.tvLayers.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvLayers_AfterSelect);
+         this.tvLayers.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tvLayers_KeyUp);
+         this.tvLayers.TreeNodeChecked += new Geosoft.DotNetTools.TreeNodeCheckedEventHandler(this.tvLayers_TreeNodeChecked);
+         this.tvLayers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tvLayers_MouseDown);
+
+         this.activeLayers = new LayerBuilderList(this, this.tvLayers, this.worldWindow);
+
+         this.tvServers = new ServerTree(WWSettingsCtl.CachePath, this, this.tvLayers, this.activeLayers);
+         this.tvServers.SupportDatasetSelection = false;
+         this.tvServers.ContextMenuStrip = this.contextMenuStripServers;
+         this.tvServers.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.tvServers.ImageIndex = 0;
+         this.tvServers.Location = new System.Drawing.Point(0, 0);
+         this.tvServers.Name = "treeViewServers";
+         this.tvServers.SelectedImageIndex = 0;
+         this.tvServers.Size = new System.Drawing.Size(245, 240);
+         this.tvServers.TabIndex = 0;
+         this.tvServers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDoubleClick);
+         this.tvServers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDown);
+
+         this.tvLayers.ImageList = this.tvServers.ImageList;
+
+         this.panelServer.SuspendLayout();
+         this.panelLayers.SuspendLayout();
+
+         this.panelServer.Controls.Add(this.tvServers);
+         this.panelLayers.Controls.Add(this.tvLayers);
+
+         this.panelServer.ResumeLayout(false);
+         this.panelLayers.ResumeLayout(false);
+         this.ResumeLayout(false);
+         this.panelServer.PerformLayout();
+         this.panelLayers.PerformLayout();
+
+
+         #endregion
+
+
+         this.PerformLayout();
 #if !DEBUG
          Application.ThreadException += new ThreadExceptionEventHandler(OnThreadException);
 #endif
@@ -525,130 +505,6 @@ namespace Dapple
       }
       #endregion
 
-      #region TreeView Initialization
-
-      private void ReplaceServerTree(TreeView serverTree)
-      {
-         this.SuspendLayout();
-         this.panelServer.SuspendLayout();
-         this.panelServer.Controls.Clear();
-         this.treeViewServers = serverTree;
-         this.panelServer.Controls.Add(this.treeViewServers);
-         this.panelServer.ResumeLayout(false);
-         this.ResumeLayout(false);
-         this.panelServer.PerformLayout();
-         this.PerformLayout();
-
-         // Expand the first level
-         foreach (TreeNode treeNode in this.treeViewServers.Nodes)
-            treeNode.Expand();
-      }
-
-      private void InitializeTrees(TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
-      {
-         this.treeViewServerBackup = null;
-         this.SuspendLayout();
-         if (this.activeLayers != null && this.activeLayers != activeList)
-         {
-            this.activeLayers.RemoveAll();
-         }
-         this.activeLayers = activeList;
-         this.panelServer.SuspendLayout();
-         this.panelLayers.SuspendLayout();
-         this.panelServer.Controls.Clear();
-         this.panelLayers.Controls.Clear();
-         this.treeViewServers = serverTree;
-         this.triStateTreeViewLayers = layerTree;
-
-         this.panelServerTreeTemp.Controls.Remove(this.treeViewServers);
-         this.panelLayerTreeTemp.Controls.Remove(this.triStateTreeViewLayers);
-         this.panelServer.Controls.Add(this.treeViewServers);
-         this.panelLayers.Controls.Add(this.triStateTreeViewLayers);
-
-         this.panelServer.ResumeLayout(false);
-         this.panelLayers.ResumeLayout(false);
-         this.ResumeLayout(false);
-         this.panelServer.PerformLayout();
-         this.panelLayers.PerformLayout();
-         this.PerformLayout();
-
-         // Expand the first level
-         foreach (TreeNode treeNode in this.treeViewServers.Nodes)
-            treeNode.Expand();
-
-         this.treeViewServerBackup = null;
-         this.toolStripButtonClearFilter.Enabled = false;
-         m_strLastSearchText = "";
-         this.toolStripFilterText.ForeColor = SystemColors.GrayText;
-      }
-
-      TreeView GetNewServerTree()
-      {
-         TreeView tree = new TreeView();
-
-         tree.ContextMenuStrip = this.contextMenuStripServers;
-         tree.Dock = System.Windows.Forms.DockStyle.Fill;
-         tree.ImageIndex = 0;
-         tree.ImageList = this.iconImageList;
-         tree.Location = new System.Drawing.Point(0, 0);
-         tree.Name = "treeViewServers";
-         tree.SelectedImageIndex = 0;
-         tree.ShowLines = true;
-         tree.ShowRootLines = false;
-         tree.ShowNodeToolTips = true;
-         tree.Sorted = true;
-         tree.ShowPlusMinus = false;
-         tree.TreeViewNodeSorter = new TreeNodeSorter();
-         tree.Size = new System.Drawing.Size(245, 240);
-         tree.TabIndex = 0;
-         tree.Scrollable = true;
-         tree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDoubleClick);
-         tree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewServers_AfterSelect);
-         tree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDown);
-
-
-         // Add temporarily to invisible panel to be sure that the control is created/will reparent later
-         this.panelServerTreeTemp.Controls.Add(tree);
-         tree.CreateControl();
-
-         return tree;
-      }
-
-      TriStateTreeView GetNewLayerTree()
-      {
-         TriStateTreeView tree = new TriStateTreeView();
-
-         tree.ContextMenuStrip = this.contextMenuStripLayers;
-         tree.Dock = System.Windows.Forms.DockStyle.Fill;
-         tree.HideSelection = false;
-         tree.ImageIndex = 0;
-         tree.ImageList = this.iconImageList;
-         tree.Location = new System.Drawing.Point(0, 0);
-         tree.Name = "triStateTreeViewLayers";
-         tree.SelectedImageIndex = 0;
-         tree.ShowLines = false;
-         tree.ShowNodeToolTips = true;
-         tree.ShowRootLines = false;
-         tree.Size = new System.Drawing.Size(245, 182);
-         tree.TabIndex = 1;
-         tree.Scrollable = true;
-         //tree.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.triStateTreeViewLayers_BeforeSelect);
-         tree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.triStateTreeViewLayers_AfterSelect);
-         tree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.triStateTreeViewLayers_KeyUp);
-         tree.TreeNodeChecked += new Geosoft.DotNetTools.TreeNodeCheckedEventHandler(this.triStateTreeViewLayers_TreeNodeChecked);
-         tree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.triStateTreeViewLayers_MouseDown);
-         
-         // Add temporarily to invisible panel to be sure that the control is created/will reparent later
-         this.panelLayerTreeTemp.Controls.Add(tree);
-         tree.CreateControl();
-
-         return tree;
-      }
-
-
-
-      #endregion
-
       #region World Window Events
 
       void worldWindow_MouseLeave(object sender, EventArgs e)
@@ -678,8 +534,105 @@ namespace Dapple
 
       private void contextMenuStripServers_Opening(object sender, CancelEventArgs e)
       {
-         if (ServerBuilderItem == null || this.checked_context)
+         if (this.tvServers.SelectedNode == null || this.tvServers.SelectedNode.Tag == null)
             e.Cancel = true;
+
+         this.toolStripMenuItemAddLayer.Visible = false;
+         this.toolStripMenuItemaddServer.Text = "Add Server";
+         this.toolStripMenuItemaddServer.Visible = false;
+         this.toolStripSeparatorServerAdd.Visible = false;
+         this.toolStripMenuItemgoToServer.Visible = false;
+         this.toolStripSeparatorServerGoto.Visible = false;
+         this.toolStripMenuItemremoveServer.Visible = false;
+         this.toolStripSeparatorServerRemove.Visible = false;
+         this.toolStripMenuItemviewMetadataServer.Visible = false;
+         this.toolStripMenuItemServerLegend.Visible = false;
+         this.toolStripMenuItemviewMetadataServer.Enabled = false;
+         this.toolStripMenuItemServerLegend.Enabled = false;
+         this.toolStripMenuItempropertiesServer.Visible = false;
+         this.toolStripSeparatorRefreshCatalog.Visible = false;
+         this.toolStripMenuItemRefreshCatalog.Visible = false;
+
+         if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
+         {
+            this.toolStripMenuItemaddServer.Text = "Add DAP Server";
+            this.toolStripMenuItemaddServer.Visible = true;
+         }
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
+         {
+            this.toolStripMenuItemaddServer.Text = "Add WMS Server";
+            this.toolStripMenuItemaddServer.Visible = true;
+         }
+         else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+         {
+            this.toolStripSeparatorRefreshCatalog.Visible = true;
+            this.toolStripMenuItemRefreshCatalog.Visible = true;
+            this.toolStripMenuItemremoveServer.Visible = true;
+            this.toolStripSeparatorServerRemove.Visible = true;
+         }
+         else
+         {
+            IBuilder builder = null;
+            Geosoft.Dap.Common.DataSet dapDataset = null;
+
+            if (this.tvServers.SelectedNode.Tag is IBuilder)
+               builder = this.tvServers.SelectedNode.Tag as IBuilder;
+            if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
+               dapDataset = this.tvServers.SelectedDAPDataset;
+
+            if (!(builder is LayerBuilder))
+               this.toolStripMenuItemAddLayer.Visible = false;
+            else
+               this.toolStripMenuItemAddLayer.Visible = true;
+
+            if (!this.toolStripMenuItemaddServer.Visible && !this.toolStripMenuItemAddLayer.Visible)
+               this.toolStripSeparatorServerAdd.Visible = false;
+            else
+               this.toolStripSeparatorServerAdd.Visible = true;
+
+            if (dapDataset != null || builder is VEQuadLayerBuilder ||
+               builder is WMSQuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
+            {
+               this.toolStripMenuItemremoveServer.Visible = false;
+               this.toolStripSeparatorServerRemove.Visible = false;
+            }
+            else
+            {
+               this.toolStripMenuItemremoveServer.Visible = true;
+               this.toolStripSeparatorServerRemove.Visible = true;
+            }
+
+            if (builder is WMSServerBuilder ||
+                builder is BuilderDirectory)
+            {
+               this.toolStripMenuItemgoToServer.Visible = false;
+               this.toolStripSeparatorServerGoto.Visible = false;
+            }
+            else
+            {
+               this.toolStripMenuItemgoToServer.Visible = true;
+               this.toolStripSeparatorServerGoto.Visible = true;
+            }
+
+            if (builder is WMSServerBuilder)
+            {
+               this.toolStripSeparatorRefreshCatalog.Visible = true;
+               this.toolStripMenuItemRefreshCatalog.Visible = true;
+            }
+
+            if (builder != null)
+            {
+               this.toolStripMenuItemviewMetadataServer.Visible = builder.SupportsMetaData || builder is LayerBuilder;
+               this.toolStripMenuItemServerLegend.Visible = builder is LayerBuilder;
+               this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
+               this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
+            }
+            if (dapDataset != null)
+            {
+               this.toolStripMenuItemviewMetadataServer.Visible = true;
+               this.toolStripMenuItemviewMetadataServer.Enabled = true;
+            }
+         }
       }
 
       #endregion
@@ -1009,10 +962,13 @@ namespace Dapple
 
       void AddCurrentToActiveLayers()
       {
-         if (!(ServerBuilderItem is LayerBuilder))
+         if (this.tvServers.SelectedNode == null)
             return;
 
-         AddLayerBuilder(ServerBuilderItem as LayerBuilder);
+         if (this.tvServers.SelectedNode.Tag is LayerBuilder)
+            AddLayerBuilder(this.tvServers.SelectedNode.Tag as LayerBuilder);
+         else
+            this.tvServers.AddCurrentDAPDataSet();
       }
 
       public bool bContainsDAPLayer(Geosoft.GX.DAPGetData.Server oServer, Geosoft.Dap.Common.DataSet oDataset)
@@ -1034,8 +990,8 @@ namespace Dapple
       {
          this.activeLayers.Add(oLayer.Name, oLayer, true, oLayer.Opacity, true);
 
-         if (triStateTreeViewLayers.SelectedNode != null)
-            LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+         if (tvLayers.SelectedNode != null)
+            LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
          else
             LayerBuilderItem = null;
 
@@ -1045,11 +1001,11 @@ namespace Dapple
 
       #region Add Servers
 
-      private void toolStripMenuItemAddDAP_Click(object sender, EventArgs e)
+      private void AddDAPServer()
       {
          AddDAP dlg = new AddDAP();
          if (dlg.ShowDialog(this) == DialogResult.OK)
-         {         
+         {
             Geosoft.GX.DAPGetData.Server oServer;
             try
             {
@@ -1063,128 +1019,54 @@ namespace Dapple
          }
       }
 
+      private void AddWMSServer()
+      {
+         TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.tvServers.Nodes);
+
+         if (treeNode != null)
+         {
+            AddWMS dlg = new AddWMS(this.worldWindow, treeNode.Tag as WMSCatalogBuilder);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+               try
+               {
+                  this.tvServers.AddWMSServer(dlg.WmsURL);
+               }
+               catch (Exception except)
+               {
+                  MessageBox.Show(this, "Error adding server \"" + dlg.WmsURL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+               }
+               SaveLastView();
+            }
+         }
+      }
+
+      private void toolStripMenuItemAddDAP_Click(object sender, EventArgs e)
+      {
+         AddDAPServer();
+      }
+
       private void toolStripMenuItemAddWMS_Click(object sender, EventArgs e)
       {
-         TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.treeViewServers.Nodes);
-         if (treeNode != null)
-            AddServer(treeNode.Tag as BuilderDirectory, treeNode.Nodes);
+         AddWMSServer();
       }
 
       void toolStripMenuItemaddServer_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem == null)
-            return;
-
-         if (treeViewServerBackup != null)
-         {
-            MessageBox.Show(this, "It is not possible to add servers to a filtered view.\nClear the results by using the \"Show all layers\" button first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-         }
-
-         if (ServerBuilderItem is BuilderDirectory)
-         {
-            TreeNode treeNode = TreeUtils.FindNodeBFS(ServerBuilderItem, this.treeViewServers.Nodes);
-            AddServer(ServerBuilderItem as BuilderDirectory, treeNode.Nodes);
-         }
+         if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
+            AddDAPServer();
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
+            AddWMSServer();
       }
 
-      void AddServer(BuilderDirectory serverDir, TreeNodeCollection nodes)
-      {
-         if (serverDir is WMSCatalogBuilder)
-         {
-            AddWMS dlg = new AddWMS(this.worldWindow, serverDir as WMSCatalogBuilder);
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {         
-               lock (lockCatalogUpdates)
-               {
-                  WMSCatalogBuilder wmsBuilder = serverDir as WMSCatalogBuilder;
-                  BuilderDirectory dir = wmsBuilder.AddServer(dlg.WmsURL, wmsBuilder);
-                  serverDir.SubList.Add(dir);
-                  TreeNode treeNode = nodes.Add(dir.Name);
-                  treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("time");
-                  treeNode.Tag = dir;
-                  RefreshTreeHelper(treeViewServers, treeNode, dir);
-               }
-               SaveLastView();
-            }
-         }/*
-            else if (serverType == LayerAddWizard.ServerType.TileServer && wiz.TileServer != null)
-            {
-               TreeNode treeNode = nodes.Add(wiz.TileServer.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("tile");
-               treeNode.Tag = wiz.TileServer;
-               serverDir.LayerBuilders.Add(wiz.TileServer);
-            }
-         }*/
-         
-      }
       #endregion
 
       #region Remove Items
 
       private void toolStripMenuItemremoveServer_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem == null)
-            return;
-
-         if (treeViewServerBackup != null)
-         {
-            MessageBox.Show(this, "It is not possible to remove servers from a filtered view.\nClear the results by using the \"Show all layers\" button first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-         }
-
-         TreeNode treeNode = TreeUtils.FindNodeBFS(ServerBuilderItem, treeViewServers.Nodes);
-         if (treeNode != null && treeNode.Parent != null)
-         {
-            // Check the item isn'treeNode part of catalog
-            TreeNode parent = treeNode.Parent;
-            while (parent != null)
-            {
-               if (parent.Tag is ServerBuilder)
-                  return;
-               parent = parent.Parent;
-            }
-
-            if (treeNode.Tag is DAPQuadLayerBuilder || treeNode.Tag is WMSQuadLayerBuilder)
-               return;
-
-            if (treeNode.Tag is LayerBuilder)
-            {
-               (treeNode.Parent.Tag as BuilderDirectory).LayerBuilders.Remove(treeNode.Tag as LayerBuilder);
-            }
-            else
-            {
-               //TODO: if (treeNode.Tag is DAPServerBuilder)
-               /*{
-                  DAPServerBuilder serverBuilder = treeNode.Tag as DAPServerBuilder;
-                  // Need to have a catalog builder in treenode's parents
-                  IBuilder parentCatalog = ServerBuilderItem as IBuilder;
-
-                  while (parentCatalog != null && !(parentCatalog is DAPCatalogBuilder))
-                     parentCatalog = parentCatalog.Parent;
-
-                  if (parentCatalog != null && parentCatalog is DAPCatalogBuilder)
-                     (parentCatalog as DAPCatalogBuilder).RemoveServer(serverBuilder.URL);
-               }
-               else */if (treeNode.Tag is WMSServerBuilder)
-               {
-                  WMSServerBuilder serverBuilder = treeNode.Tag as WMSServerBuilder;
-                  // Need to have a catalog builder in treenode's parents
-                  IBuilder parentCatalog = ServerBuilderItem as IBuilder;
-
-                  while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-                     parentCatalog = parentCatalog.Parent;
-
-                  if (parentCatalog != null && parentCatalog is WMSCatalogBuilder)
-                     (parentCatalog as WMSCatalogBuilder).RemoveServer(serverBuilder.URL);
-               }
-
-               (treeNode.Parent.Tag as BuilderDirectory).SubList.Remove(treeNode.Tag as BuilderDirectory);
-            }
-         
-            treeNode.Parent.Nodes.Remove(treeNode);
-            SaveLastView();
-         }
+         this.tvServers.RemoveCurrentServer();
+         SaveLastView();
       }
 
       private void toolStripMenuItemremoveAllButThis_Click(object sender, EventArgs e)
@@ -1194,8 +1076,8 @@ namespace Dapple
 
          this.activeLayers.RemoveOthers(LayerBuilderItem);
 
-         if (triStateTreeViewLayers.SelectedNode != null)
-            LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+         if (tvLayers.SelectedNode != null)
+            LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
          else
             LayerBuilderItem = null;
       }
@@ -1209,8 +1091,8 @@ namespace Dapple
          LayerBuilderItem = null;
          this.activeLayers.RemoveContainer(current);
 
-         if (triStateTreeViewLayers.SelectedNode != null)
-            LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+         if (tvLayers.SelectedNode != null)
+            LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
          else
             LayerBuilderItem = null;
       }
@@ -1233,8 +1115,8 @@ namespace Dapple
       }
       private void toolStripMenuItemgoToServer_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem is ImageBuilder)
-            GoTo(ServerBuilderItem as ImageBuilder);
+         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is ImageBuilder)
+            GoTo(this.tvServers.SelectedNode.Tag as ImageBuilder);
       }
 
       void GoTo(ImageBuilder builder)
@@ -1278,8 +1160,8 @@ namespace Dapple
          if (LayerBuilderItem != null && !this.activeLayers.IsBottom(LayerBuilderItem))
          {
             this.activeLayers.MoveBottom(LayerBuilderItem);
-            if (triStateTreeViewLayers.SelectedNode != null)
-               LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+            if (tvLayers.SelectedNode != null)
+               LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
             else
                LayerBuilderItem = null;
          }
@@ -1290,8 +1172,8 @@ namespace Dapple
          if (LayerBuilderItem != null && !this.activeLayers.IsBottom(LayerBuilderItem))
          {
             this.activeLayers.MoveDown(LayerBuilderItem);
-            if (triStateTreeViewLayers.SelectedNode != null)
-               LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+            if (tvLayers.SelectedNode != null)
+               LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
             else
                LayerBuilderItem = null;
          }
@@ -1302,8 +1184,8 @@ namespace Dapple
          if (LayerBuilderItem != null && !this.activeLayers.IsTop(LayerBuilderItem))
          {
             this.activeLayers.MoveUp(LayerBuilderItem);
-            if (triStateTreeViewLayers.SelectedNode != null)
-               LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+            if (tvLayers.SelectedNode != null)
+               LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
             else
                LayerBuilderItem = null;
          }
@@ -1314,8 +1196,8 @@ namespace Dapple
          if (LayerBuilderItem != null && !this.activeLayers.IsTop(LayerBuilderItem))
          {
             this.activeLayers.MoveTop(LayerBuilderItem);
-            if (triStateTreeViewLayers.SelectedNode != null)
-               LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+            if (tvLayers.SelectedNode != null)
+               LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
             else
                LayerBuilderItem = null;
          }
@@ -1341,72 +1223,7 @@ namespace Dapple
 
       private void toolStripMenuItemRefreshCatalog_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem == null)
-            return;
-
-         if (treeViewServerBackup != null)
-         {
-            MessageBox.Show(this, "It is not possible to refresh catalogs in a filtered view.\nClear the results by using the \"Show all layers\" button first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-         }
-
-         TreeNode serverNode  = TreeUtils.FindNodeBFS(ServerBuilderItem, treeViewServers.Nodes);
-         if (serverNode != null)
-         {
-            //TODO:if (serverNode.Tag is DAPServerBuilder)
-            /*{
-               DAPServerBuilder serverBuilder = serverNode.Tag as DAPServerBuilder;
-               // Need to have a catalog builder in treenode's parents
-               IBuilder parentCatalog = ServerBuilderItem as IBuilder;
-
-               while (parentCatalog != null && !(parentCatalog is DAPCatalogBuilder))
-                  parentCatalog = parentCatalog.Parent;
-
-               if (parentCatalog != null)
-               {
-                  DAPCatalogBuilder dapBuilder = parentCatalog as DAPCatalogBuilder;
-                  dapBuilder.RemoveServer(serverBuilder.Server.Url);
-
-                  lock (lockCatalogUpdates)
-                  {
-                     Geosoft.GX.DAPGetData.Server dapServer = new Geosoft.GX.DAPGetData.Server(serverBuilder.Server.Url, WWSettingsCtl.CachePath);
-                     BuilderDirectory dapDir = dapBuilder.AddDapServer(dapServer, new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90), serverBuilder.Parent);
-                     dapBuilder.SubList.Add(dapDir);
-
-                     serverNode.Nodes.Clear();
-                     serverNode.Text = "Loading: " + serverBuilder.Server.Url;
-                     serverNode.SelectedImageIndex = serverNode.ImageIndex = ImageListIndex("time");
-                     serverNode.Tag = dapDir;
-                  }
-               }
-            }
-            else */if (serverNode.Tag is WMSServerBuilder)
-            {
-               WMSServerBuilder serverBuilder = serverNode.Tag as WMSServerBuilder;
-               // Need to have a catalog builder in treenode's parents
-               IBuilder parentCatalog = ServerBuilderItem as IBuilder;
-
-               while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-                  parentCatalog = parentCatalog.Parent;
-
-               if (parentCatalog != null)
-               {
-                  WMSCatalogBuilder wmsBuilder = parentCatalog as WMSCatalogBuilder;
-                  wmsBuilder.RemoveServer(serverBuilder.URL);
-
-                  lock (lockCatalogUpdates)
-                  {
-                     BuilderDirectory wmsDir = wmsBuilder.AddServer(serverBuilder.URL, serverBuilder.Parent as BuilderDirectory);
-                     wmsBuilder.SubList.Add(wmsDir);
-
-                     serverNode.Nodes.Clear();
-                     serverNode.Text = "Loading: " + serverBuilder.URL;
-                     serverNode.SelectedImageIndex = serverNode.ImageIndex = ImageListIndex("time");
-                     serverNode.Tag = wmsDir;
-                  }
-               }
-            }
-         }
+         this.tvServers.RefreshCurrentServer();
       }
 
       #endregion
@@ -1431,11 +1248,11 @@ namespace Dapple
 
       private void toolStripMenuItemServerLegend_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem != null && ServerBuilderItem is LayerBuilder)
+         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is LayerBuilder)
          {
-            if ((ServerBuilderItem as LayerBuilder).SupportsLegend)
+            if ((this.tvServers.SelectedNode.Tag as LayerBuilder).SupportsLegend)
             {
-               string[] strLegendArr = (ServerBuilderItem as LayerBuilder).GetLegendURLs();
+               string[] strLegendArr = (this.tvServers.SelectedNode.Tag as LayerBuilder).GetLegendURLs();
                foreach (string strLegend in strLegendArr)
                {
                   if (!String.IsNullOrEmpty(strLegend))
@@ -1453,8 +1270,10 @@ namespace Dapple
 
       private void toolStripMenuItemviewMetadataServer_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem != null)
-            ViewMetadata(ServerBuilderItem);
+         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is IBuilder)
+            ViewMetadata(this.tvServers.SelectedNode.Tag as IBuilder);
+         else
+            ViewMetadata(null);
       }
 
       void ViewMetadata(IBuilder builder)
@@ -1464,7 +1283,13 @@ namespace Dapple
             MetaDataForm form = new MetaDataForm();
             XmlDocument oDoc = new XmlDocument();
             oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
-            XmlNode oNode = builder.GetMetaData(oDoc);
+            
+            XmlNode oNode;
+
+            if (builder == null)
+               oNode = this.tvServers.GetCurrentDAPMetaData(oDoc);
+            else
+               oNode = builder.GetMetaData(oDoc);
 
             if (oNode == null)
                return;
@@ -1503,8 +1328,8 @@ namespace Dapple
 
       private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)
       {
-         if (ServerBuilderItem != null)
-            ViewProperties(ServerBuilderItem);
+         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is IBuilder)
+            ViewProperties(this.tvServers.SelectedNode.Tag as IBuilder);
       }
 
       void ViewProperties(IBuilder builder)
@@ -1515,8 +1340,8 @@ namespace Dapple
          if (builder.IsChanged && builder is LayerBuilder && (builder as LayerBuilder).IsAdded)
          {
             this.activeLayers.RefreshBuilder(builder as LayerBuilder);
-            if (triStateTreeViewLayers.SelectedNode != null)
-               LayerBuilderItem = triStateTreeViewLayers.SelectedNode.Tag as LayerBuilderContainer;
+            if (tvLayers.SelectedNode != null)
+               LayerBuilderItem = tvLayers.SelectedNode.Tag as LayerBuilderContainer;
             else
                LayerBuilderItem = null;
          }
@@ -1527,6 +1352,19 @@ namespace Dapple
       #endregion
 
       #region Main Menu Item Click events
+
+      private void toolStripMenuItemAskAtStartup_Click(object sender, EventArgs e)
+      {
+         toolStripMenuItemLoadLastView.Checked = false;
+         this.WWSettingsCtl.AskLastViewAtStartup = toolStripMenuItemAskAtStartup.Checked;
+      }
+
+      private void toolStripMenuItemLoadLastView_Click(object sender, EventArgs e)
+      {
+         this.WWSettingsCtl.AskLastViewAtStartup = false;
+         this.toolStripMenuItemAskAtStartup.Checked = false;
+         this.WWSettingsCtl.LastViewAtStartup = toolStripMenuItemLoadLastView.Checked;
+      }
 
       private void toolStripMenuItemadvancedSettings_Click(object sender, EventArgs e)
       {
@@ -1587,39 +1425,35 @@ namespace Dapple
          OpenView(Path.Combine(this.worldWindow.WorldWindSettings.DataPath, DefaultView), true);
       }
 
-      private void toolStripMenuItemHomeView_Click(object sender, EventArgs e)
-      {
-         string strHome = Path.Combine(this.worldWindow.WorldWindSettings.ConfigPath, HomeView);
-         if (File.Exists(strHome))
-            OpenView(strHome, true);
-         else
-            OpenView(Path.Combine(this.worldWindow.WorldWindSettings.DataPath, DefaultView), true);
-      }
-
-      private void toolStripMenuItemSetHomeView_Click(object sender, EventArgs e)
-      {
-         if (MessageBox.Show(this, "Make the current view your default start-up Home View?", Text, MessageBoxButtons.YesNo) == DialogResult.Yes)
-         {
-            string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
-            SaveCurrentView(Path.Combine(WWSettingsCtl.ConfigPath, HomeView), tempFile, string.Empty);
-            File.Delete(tempFile);
-         }
-      }
-
       private void MainForm_Shown(object sender, EventArgs e)
       {
          // This will ensure that the buttons is enabled correctly
-         ServerBuilderItem = null; 
          LayerBuilderItem = null;
 
-         string strHome = Path.Combine(this.worldWindow.WorldWindSettings.ConfigPath, HomeView);
          if (this.openView.Length > 0)
             OpenView(openView, this.openGeoTiff.Length == 0);
-         else if (this.openGeoTiff.Length == 0 && File.Exists(Path.Combine(WWSettingsCtl.ConfigPath, LastView)) &&
-            MessageBox.Show(this, "Would you like to open your last View?", Text, MessageBoxButtons.YesNo) == DialogResult.Yes)
-            OpenView(Path.Combine(WWSettingsCtl.ConfigPath, LastView), this.openGeoTiff.Length == 0);
-         else if (File.Exists(strHome))
-            OpenView(strHome, this.openGeoTiff.Length == 0);
+         else if (this.openGeoTiff.Length == 0 && File.Exists(Path.Combine(WWSettingsCtl.ConfigPath, LastView)))
+         {
+            if (WWSettingsCtl.AskLastViewAtStartup)
+            {
+               Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
+               msgBox.AllowSaveResponse = true;
+               msgBox.SaveResponseText = "Don't ask me again";
+               msgBox.Caption = this.Text;
+               msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
+               msgBox.AddButtons(MessageBoxButtons.YesNo);
+               msgBox.Text = "Would you like to open your last View?";
+               msgBox.Font = this.Font;
+               WWSettingsCtl.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
+               if (msgBox.SaveResponse)
+                  WWSettingsCtl.AskLastViewAtStartup = false;
+            }
+
+            if (WWSettingsCtl.LastViewAtStartup)
+               OpenView(Path.Combine(WWSettingsCtl.ConfigPath, LastView), this.openGeoTiff.Length == 0);
+            else
+               OpenView(Path.Combine(WWSettingsCtl.ConfigPath, LastView), false, false);
+         }
          else
             OpenView(Path.Combine(this.worldWindow.WorldWindSettings.DataPath, DefaultView), this.openGeoTiff.Length == 0);
 
@@ -1850,26 +1684,15 @@ namespace Dapple
 
       #region Servers Panel
 
-      private void treeViewServers_AfterSelect(object sender, TreeViewEventArgs e)
-      {
-         if (e.Node != null && e.Node.Tag != null)
-            ServerBuilderItem = e.Node.Tag as IBuilder;
-         else
-            ServerBuilderItem = null;
-      }
-
       private void treeViewServers_MouseDown(object sender, MouseEventArgs e)
       {
-         treeViewServers.SelectedNode = treeViewServers.HitTest(e.Location).Node;
-
-         if (treeViewServers.SelectedNode == null)
-            ServerBuilderItem = null;
+         this.tvServers.SelectedNode = this.tvServers.HitTest(e.Location).Node;
       }
       #endregion
 
       #region Current Layer Panel
 
-      private void triStateTreeViewLayers_TreeNodeChecked(object sender, Geosoft.DotNetTools.TreeNodeCheckedEventArgs e)
+      private void tvLayers_TreeNodeChecked(object sender, Geosoft.DotNetTools.TreeNodeCheckedEventArgs e)
       {
          if (e.Node == null || e.Node.Tag == null)
             return;
@@ -1890,7 +1713,7 @@ namespace Dapple
          }
       }
 
-      private void triStateTreeViewLayers_KeyUp(object sender, KeyEventArgs e)
+      private void tvLayers_KeyUp(object sender, KeyEventArgs e)
       {
          switch (e.KeyCode)
          {
@@ -1902,20 +1725,20 @@ namespace Dapple
 
       // The multiple selection code loosely based on http://www.codeproject.com/cs/miscctrl/treeviewms.asp
       /*
-      private void triStateTreeViewLayers_MouseDown(object sender, MouseEventArgs e)
+      private void tvLayers_MouseDown(object sender, MouseEventArgs e)
       {
          bool bControl = (ModifierKeys == Keys.Control);
          bool bShift = (ModifierKeys == Keys.Shift);
 
-         if (e.Button == MouseButtons.Left && !bControl && !bShift && triStateTreeViewLayers.HitTest(e.Location).Node == null)
+         if (e.Button == MouseButtons.Left && !bControl && !bShift && tvLayers.HitTest(e.Location).Node == null)
          {
-            triStateTreeViewLayers.SelectedNode = null;
-            triStateTreeViewLayers_RemovePaintFromNodes();
+            tvLayers.SelectedNode = null;
+            tvLayers_RemovePaintFromNodes();
             this.triStateTreeViewLayerNodes.Clear();
             LayerBuilderItem = null;
          }
 
-         triStateTreeViewLayers.SelectedNode = null;
+         tvLayers.SelectedNode = null;
 
          if (e.Button == MouseButtons.Right)
             this.rightmouse_context = true;
@@ -1923,7 +1746,7 @@ namespace Dapple
             this.rightmouse_context = false;
       }
 
-      private void triStateTreeViewLayers_PaintSelectedNodes()
+      private void tvLayers_PaintSelectedNodes()
       {
          foreach (TreeNode n in this.triStateTreeViewLayerNodes)
          {
@@ -1932,7 +1755,7 @@ namespace Dapple
          }
       }
 
-      private void triStateTreeViewLayers_RemovePaintFromNodes()
+      private void tvLayers_RemovePaintFromNodes()
       {
          if (this.triStateTreeViewLayerNodes.Count == 0) return;
 
@@ -1947,7 +1770,7 @@ namespace Dapple
          }
       }
       
-      private void triStateTreeViewLayers_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+      private void tvLayers_BeforeSelect(object sender, TreeViewCancelEventArgs e)
       {
          bool bControl = (ModifierKeys == Keys.Control);
          bool bShift = (ModifierKeys == Keys.Shift);
@@ -1960,9 +1783,9 @@ namespace Dapple
             e.Cancel = true;
 
             // update nodes
-            triStateTreeViewLayers_RemovePaintFromNodes();
+            tvLayers_RemovePaintFromNodes();
             this.triStateTreeViewLayerNodes.Remove(e.Node);
-            triStateTreeViewLayers_PaintSelectedNodes();
+            tvLayers_PaintSelectedNodes();
             return;
          }
 
@@ -1970,7 +1793,7 @@ namespace Dapple
          if (!bShift) this.firstLayerNode = e.Node; // store begin of shift sequence
       }
 
-      private void triStateTreeViewLayers_AfterSelect(object sender, TreeViewEventArgs e)
+      private void tvLayers_AfterSelect(object sender, TreeViewEventArgs e)
       {
          bool bControl = (ModifierKeys == Keys.Control);
          bool bShift = (ModifierKeys == Keys.Shift);
@@ -1983,10 +1806,10 @@ namespace Dapple
             }
             else  // not new, remove it from the collection
             {
-               triStateTreeViewLayers_RemovePaintFromNodes();
+               tvLayers_RemovePaintFromNodes();
                this.triStateTreeViewLayerNodes.Remove(e.Node);
             }
-            triStateTreeViewLayers_PaintSelectedNodes();
+            tvLayers_PaintSelectedNodes();
          }
          else
          {
@@ -2065,7 +1888,7 @@ namespace Dapple
 
                this.triStateTreeViewLayerNodes.AddRange(myQueue);
 
-               triStateTreeViewLayers_PaintSelectedNodes();
+               tvLayers_PaintSelectedNodes();
                // let us chain several SHIFTs if we like it
                this.firstLayerNode = e.Node;
 
@@ -2075,7 +1898,7 @@ namespace Dapple
                // in the case of a simple click, just add this item
                if (this.triStateTreeViewLayerNodes != null && this.triStateTreeViewLayerNodes.Count > 0)
                {
-                  triStateTreeViewLayers_RemovePaintFromNodes();
+                  tvLayers_RemovePaintFromNodes();
                   this.triStateTreeViewLayerNodes.Clear();
                }
                this.triStateTreeViewLayerNodes.Add(e.Node);
@@ -2089,7 +1912,7 @@ namespace Dapple
       }
       */
 
-      private void triStateTreeViewLayers_AfterSelect(object sender, TreeViewEventArgs e)
+      private void tvLayers_AfterSelect(object sender, TreeViewEventArgs e)
       {
          if (e.Node != null && e.Node.Tag != null)
             LayerBuilderItem = e.Node.Tag as LayerBuilderContainer;
@@ -2097,11 +1920,11 @@ namespace Dapple
             LayerBuilderItem = null;
       }
 
-      private void triStateTreeViewLayers_MouseDown(object sender, MouseEventArgs e)
+      private void tvLayers_MouseDown(object sender, MouseEventArgs e)
       {
-         triStateTreeViewLayers.SelectedNode = triStateTreeViewLayers.HitTest(e.Location).Node;
+         tvLayers.SelectedNode = tvLayers.HitTest(e.Location).Node;
 
-         if (triStateTreeViewLayers.SelectedNode == null)
+         if (tvLayers.SelectedNode == null)
             LayerBuilderItem = null;
       }
 
@@ -2445,67 +2268,17 @@ namespace Dapple
       /// <returns></returns>
       public int ImageListIndex(string strKey)
       {
-         return this.iconImageList.Images.IndexOfKey(strKey);
-      }
-
-      void ProcessCatalogDirectory(BuilderDirectory dir, TreeNode parent)
-      {
-         if (parent.Tag is WMSServerBuilder && dir.SubList.Count == 1)
-         {
-            BuilderDirectory builders = (BuilderDirectory)dir.SubList[0];
-            ProcessCatalogDirectory(builders, parent);
-         }
-         else
-         {
-            foreach (BuilderDirectory childDir in dir.SubList)
-            {
-               TreeNode treeNode = parent.Nodes.Add(childDir.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("folder");
-               treeNode.Tag = childDir;
-               ProcessCatalogDirectory(childDir, treeNode);
-            }
-         }
-         foreach (LayerBuilder builder in dir.LayerBuilders)
-         {
-            TreeNode treeNode;
-            if (builder is DAPQuadLayerBuilder)
-            {
-               int iImageIndex;
-               DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)builder;
-
-               iImageIndex = ImageListIndex("dap_" + dapbuilder.DAPType.ToLower());
-               if (iImageIndex == -1)
-                  ImageListIndex("layer");
-               treeNode = parent.Nodes.Add(builder.Name, builder.Name, iImageIndex, iImageIndex);
-            }
-            else
-               treeNode = parent.Nodes.Add(builder.Name, builder.Name, ImageListIndex("layer"), ImageListIndex("layer"));
-            treeNode.Tag = builder;
-         }
+         return this.tvServers.iImageListIndex(strKey);
       }
 
       /// <summary>
-      /// Recursive helper method to RefreshTree()
+      /// Returns imagelist index from dap dataset type
       /// </summary>
-      /// <param name="parent"></param>
-      /// <param name="listing"></param>
-      private void RefreshTreeHelper(TreeView tree, TreeNode parent, BuilderDirectory listing)
+      /// <param name="strType"></param>
+      /// <returns></returns>
+      public int ImageIndex(string strType)
       {
-         foreach (BuilderDirectory dir in listing.SubList)
-         {
-            TreeNode treeNode = new TreeNode(dir.Name);
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("layer");
-            treeNode.Tag = dir;
-            if (parent != null)
-               parent.Nodes.Add(treeNode);
-            else
-               tree.Nodes.Add(treeNode);
-            RefreshTreeHelper(tree, treeNode, dir);
-         }
-         foreach (LayerBuilder builder in listing.LayerBuilders)
-         {
-            AddTreeNode(tree, builder, parent);
-         }
+         return this.tvServers.iImageIndex(strType);
       }
 
       private void AddTreeNode(TreeView tree, LayerBuilder builder, TreeNode parent)
@@ -2516,7 +2289,7 @@ namespace Dapple
          {
             DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)builder;
 
-            iImageIndex = ImageListIndex("dap_" + dapbuilder.DAPType.ToLower());
+            iImageIndex = ImageIndex(dapbuilder.DAPType.ToLower());
             if (iImageIndex == -1)
                ImageListIndex("layer");
          }
@@ -2543,85 +2316,6 @@ namespace Dapple
          File.Delete(tempFile);
       }
 
-      void PopulateEntry(builderentryType entry, TreeNode node)
-      {
-         IBuilder builder = node.Tag as IBuilder;
-         //TODO:if (builder is DAPServerBuilder)
-         /*{
-            dapcatalogType dap = entry.Newdapcatalog();
-            dap.Addurl(new SchemaString((builder as DAPServerBuilder).URL));
-            entry.Adddapcatalog(dap);
-         }
-         else */if (builder is WMSServerBuilder)
-         {
-            wmscatalogType wms = entry.Newwmscatalog();
-            wms.Addcapabilitiesurl(new SchemaString((builder as WMSServerBuilder).URL));
-            entry.Addwmscatalog(wms);
-         }
-         else if (builder is VETileSetBuilder)
-         {
-            virtualearthType ve = entry.Newvirtualearth();
-            ve.Addname(new SchemaString(builder.Name));
-            entry.Addvirtualearth(ve);
-         }
-         else if (builder is TileSetSet)
-         {
-            tilelayersType layers = null;
-            tileserversetType set = entry.Newtileserverset();
-            set.Addname(new SchemaString(builder.Name));
-            foreach (TreeNode subnode in node.Nodes)
-            {
-               QuadLayerBuilder layer = subnode.Tag as QuadLayerBuilder;
-               if (layer != null)
-               {
-                  if (layers == null)
-                     layers = set.Newtilelayers();
-
-                  tilelayerType tilelayer = layers.Newtilelayer();
-                  tilelayer.Addname(new SchemaString(subnode.Text));
-                  tilelayer.Adddataset(new SchemaString(layer.TileServerDatasetName));
-                  tilelayer.Addimageextension(new SchemaString(layer.ImageFileExtension));
-                  tilelayer.Addurl(new SchemaString(layer.TileServerURL));
-                  tilelayer.Addlevels(new SchemaInt(layer.Levels));
-                  tilelayer.Addlevelzerotilesize(new SchemaDouble((double) layer.LevelZeroTileSize));
-                  tilelayer.Addtilepixelsize(new SchemaInt(layer.ImagePixelSize));
-
-                  boundingboxType bounds = tilelayer.Newboundingbox();
-                  bounds.Addmaxlat(new SchemaDouble(layer.Extents.North));
-                  bounds.Addminlat(new SchemaDouble(layer.Extents.South));
-                  bounds.Addmaxlon(new SchemaDouble(layer.Extents.East));
-                  bounds.Addminlon(new SchemaDouble(layer.Extents.West)); 
-                  tilelayer.Addboundingbox(bounds);
-                  layers.Addtilelayer(tilelayer);
-               }
-            }
-            if (layers != null)
-               set.Addtilelayers(layers);
-
-            entry.Addtileserverset(set);
-         }
-         else if (builder is BuilderDirectory)
-         {
-            builderdirectoryType dir = entry.Newbuilderdirectory();
-            dir.Addname(new SchemaString(node.Text));
-            //TODO: if (builder is DAPCatalogBuilder)
-            //   dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
-            //else 
-            if (builder is WMSCatalogBuilder)
-               dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
-            else if (builder is TileSetBuilder)
-               dir.Addspecialcontainer(new SpecialDirectoryType("ImageServers"));
-            foreach (TreeNode subnode in node.Nodes)
-            {
-               builderentryType subentry = dir.Newbuilderentry();
-               PopulateEntry(subentry, subnode);
-               dir.Addbuilderentry(subentry);
-            }
-
-            entry.Addbuilderdirectory(dir);
-         }
-      }
-
       /// <summary>
       /// Saves the current view to an xml file, 
       /// this requires that worldWindow was created in the same thread as the caller
@@ -2643,20 +2337,8 @@ namespace Dapple
          camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
 
          //store the servers
-
-         TreeView tree = treeViewServerBackup != null ? treeViewServerBackup : treeViewServers;
-         if (tree.Nodes.Count > 0)
-         {
-            serversType servers = view.View.Newservers();
-            foreach (TreeNode node in tree.Nodes)
-            {
-               builderentryType entry = servers.Newbuilderentry();
-               PopulateEntry(entry, node);
-               servers.Addbuilderentry(entry);
-            }
-            view.View.Addservers(servers);
-         }
-
+         this.tvServers.SaveToView(view);
+         
          // store the current layers
          if (this.activeLayers.Count > 0)
          {
@@ -2779,147 +2461,12 @@ namespace Dapple
          return bmp;
       }
 
-      void LoadBuilderEntryIntoNode(builderentryType entry, TreeView serverTree, TriStateTreeView layerTree, TreeNode serverNode, LayerBuilderList activeList)
+      bool OpenView(string filename, bool bGoto)
       {
-         int i, j;
-         IBuilder Parent = null;
-         BuilderDirectory dir;
-         TreeNodeCollection serverNodes;
-         TreeNode newServerNode;
-         TreeNode newServerChildNode;
-         TreeNode newServerChildSubNode;
-
-         if (serverNode != null)
-         {
-            Parent = (IBuilder)serverNode.Tag;
-            serverNodes = serverNode.Nodes;
-         }
-         else
-         {
-            serverNodes = serverTree.Nodes;
-         }
-
-         
-         if (entry.Hasbuilderdirectory())
-         {
-            newServerNode = serverNodes.Add(entry.builderdirectory.name.Value);
-
-            if (entry.builderdirectory.Hasspecialcontainer())
-            {
-               if (entry.builderdirectory.specialcontainer.Value == "DAPServers")
-               {
-                  /*TODO:DAPCatalogBuilder dapBuilder = new DAPCatalogBuilder(WWSettingsCtl.CachePath, this.worldWindow.CurrentWorld, entry.builderdirectory.name.Value, Parent, serverTree, layerTree, activeList);
-                  dapBuilder.LoadingCompleted += new LoadingCompletedCallbackHandler(OnCatalogLoaded);
-                  dapBuilder.LoadingFailed += new LoadingFailedCallbackHandler(OnCatalogFailed);
-
-                  newServerNode.SelectedImageIndex = newServerNode.ImageIndex = ImageListIndex("dap");
-
-                  dir = dapBuilder;*/
-                  dir = null;
-               }
-               else if (entry.builderdirectory.specialcontainer.Value == "ImageServers")
-               {
-                  TileSetBuilder tileDir = new TileSetBuilder(newServerNode.Text, Parent, false);
-                  newServerNode.SelectedImageIndex = newServerNode.ImageIndex = ImageListIndex("tile");
-                  dir = tileDir;
-               }
-               else if (entry.builderdirectory.specialcontainer.Value == "WMSServers")
-               {
-                  WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder(WWSettingsCtl.WorldWindDirectory, this.worldWindow, entry.builderdirectory.name.Value, Parent, serverTree, layerTree, activeList);
-                  wmsBuilder.LoadingCompleted += new LayerGeneration.LoadingCompletedCallbackHandler(OnCatalogLoaded);
-                  wmsBuilder.LoadingFailed += new LoadingFailedCallbackHandler(OnCatalogFailed);
-
-                  newServerNode.SelectedImageIndex = newServerNode.ImageIndex = ImageListIndex("wms");
-                  dir = wmsBuilder;
-               }
-               else
-                  return;
-            }
-            else
-            {
-               newServerNode.SelectedImageIndex = newServerNode.ImageIndex = ImageListIndex("local");
-               dir = new BuilderDirectory(newServerNode.Text, Parent, false);
-            }
-            newServerNode.Tag = dir;
-            for (i = 0; i < entry.builderdirectory.builderentryCount; i++)
-               LoadBuilderEntryIntoNode(entry.builderdirectory.GetbuilderentryAt(i), serverTree, layerTree, newServerNode, activeList); 
-         }
-         else if (entry.Hasdapcatalog())
-         {
-            Geosoft.GX.DAPGetData.Server dapServer;
-            this.tvServers.AddDAPServer(entry.dapcatalog.url.Value, out dapServer);
-         }
-         else if (entry.Haswmscatalog())
-         {
-            // Need to have a catalog builder in treenode's parents
-            IBuilder parentCatalog = Parent as IBuilder;
-
-            while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-               parentCatalog = parentCatalog.Parent;
-
-            if (parentCatalog != null)
-            {
-               WMSCatalogBuilder wmsBuilder = parentCatalog as WMSCatalogBuilder;
-               WMSList wmsList = wmsBuilder.FindServer(entry.wmscatalog.capabilitiesurl.Value);
-               if (wmsList == null)
-               {
-                  lock (lockCatalogUpdates)
-                  {
-                     BuilderDirectory wmsDir = wmsBuilder.AddServer(entry.wmscatalog.capabilitiesurl.Value, Parent as BuilderDirectory);
-                     wmsBuilder.SubList.Add(wmsDir);
-                     newServerChildNode = serverNodes.Add("Loading: " + entry.wmscatalog.capabilitiesurl.Value);
-                     newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = ImageListIndex("time");
-                     newServerChildNode.Tag = wmsDir;
-                  }
-               }
-            }
-         }
-         else if (entry.Hastileserverset())
-         {
-            TileSetSet tileDir = new TileSetSet(entry.tileserverset.name.Value, Parent, false);
-            newServerChildNode = serverNodes.Add(entry.tileserverset.name.Value);
-            newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = ImageListIndex("tile");
-            newServerChildNode.Tag = tileDir;
-            if (entry.tileserverset.Hastilelayers())
-            {
-               for (j = 0; j < entry.tileserverset.tilelayers.tilelayerCount; j++)
-               {
-                  tilelayerType tile = entry.tileserverset.tilelayers.GettilelayerAt(j);
-                  newServerChildSubNode = newServerChildNode.Nodes.Add(tile.name.Value);
-                  newServerChildSubNode.SelectedImageIndex = newServerChildSubNode.ImageIndex = ImageListIndex("layer");
-
-                  int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
-                  int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
-                  ImageTileService tileService = new ImageTileService(tile.dataset.Value, tile.url.Value);
-                  QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), (decimal) tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tileService,
-                                                          tile.imageextension.Value, 255, this.worldWindow.CurrentWorld, WWSettingsCtl.CachePath, WWSettingsCtl.CachePath, tileDir);
-                  newServerChildSubNode.Tag = quadBuilder;
-               }
-            }
-         }
-         else if (entry.Hasvirtualearth())
-         {
-            VETileSetBuilder veDir = new VETileSetBuilder(entry.virtualearth.name.Value, Parent, false);
-            newServerChildNode = serverNodes.Add(entry.virtualearth.name.Value);
-            newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = ImageListIndex("live");
-            newServerChildNode.Tag = veDir;
-
-            VEQuadLayerBuilder q = new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, this.worldWindow, true, this.worldWindow.CurrentWorld, this.worldWindow.WorldWindSettings.CachePath, veDir);
-            newServerChildSubNode = newServerChildNode.Nodes.Add("Map", "Map", ImageListIndex("live"), ImageListIndex("live"));
-            newServerChildSubNode.Tag = q;
-            veDir.LayerBuilders.Add(q);
-            q = new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, this.worldWindow, true, this.worldWindow.CurrentWorld, this.worldWindow.WorldWindSettings.CachePath, veDir);
-            newServerChildSubNode = newServerChildNode.Nodes.Add("Satellite", "Satellite", ImageListIndex("live"), ImageListIndex("live"));
-            newServerChildSubNode.Tag = q;
-            veDir.LayerBuilders.Add(q);
-            q = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, this.worldWindow, true, this.worldWindow.CurrentWorld, this.worldWindow.WorldWindSettings.CachePath, veDir);
-            newServerChildSubNode = newServerChildNode.Nodes.Add("Map & Satellite", "Map & Satellite", ImageListIndex("live"), ImageListIndex("live"));
-            newServerChildSubNode.Tag = q;
-            veDir.LayerBuilders.Add(q);
-         }
+         return OpenView(filename, bGoto, true);
       }
 
-      bool OpenView(string filename, bool bGoto)
+      bool OpenView(string filename, bool bGoto, bool bLoadLayers)
       {
          try
          {
@@ -2956,41 +2503,35 @@ namespace Dapple
                   this.worldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
                }
 
-               TreeView serverTree = GetNewServerTree();
-               TriStateTreeView layerTree = GetNewLayerTree();
+               this.tvLayers.BeginUpdate();
+               this.activeLayers.RemoveAll();
 
-               LayerBuilderList activeList = new LayerBuilderList(this, layerTree, this.worldWindow);
+               this.tvServers.LoadFromView(Path.GetFileNameWithoutExtension(filename), view);
 
-               if (view.View.Hasactivelayers())
+               if (bLoadLayers && view.View.Hasactivelayers())
                {
                   for (i = 0; i < view.View.activelayers.datasetCount; i++)
                   {
                      datasetType dataset = view.View.activelayers.GetdatasetAt(i);
 
-                     activeList.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte) dataset.opacity.Value, false, this.tvServers);
+                     this.activeLayers.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte) dataset.opacity.Value, false, this.tvServers);
                   }
                }
-
-               if (view.View.Hasservers())
-               {
-                  for (i = 0; i < view.View.servers.builderentryCount; i++)
-                  {
-                     builderentryType entry = view.View.servers.GetbuilderentryAt(i);
-                     LoadBuilderEntryIntoNode(entry, serverTree, layerTree, null, activeList);
-                  }
-               }
-
-               this.tvServers.AsyncFilterChanged(ServerTree.SearchModeEnum.All, null, null, false, false);
-               
-               InitializeTrees(serverTree, layerTree, activeList);
+               this.tvLayers.EndUpdate();
             }
-            return true;
          }
          catch (Exception e)
          {
-            MessageBox.Show(this, e.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
+            if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+            {
+               return OpenView(Path.Combine(this.worldWindow.WorldWindSettings.DataPath, DefaultView), true);
+            }
          }
+
+         this.toolStripButtonClearFilter.Enabled = false;
+         m_strLastSearchText = "";
+         this.toolStripFilterText.ForeColor = SystemColors.GrayText;
+         return true;
       }
 
       #endregion
@@ -3016,36 +2557,8 @@ namespace Dapple
 
       private void MainForm_Load(object sender, EventArgs e)
       {
-         this.treeViewServerBackup = null;
          this.toolStripButtonFilterText.Enabled = false;
          this.toolStripButtonClearFilter.Enabled = false;
-
-         this.iconImageList.ColorDepth = ColorDepth.Depth32Bit;
-         this.iconImageList.Images.Add("dap", global::Dapple.Properties.Resources.dap);
-         this.iconImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
-         this.iconImageList.Images.Add("dap_database", global::Dapple.Properties.Resources.dap_database);
-         this.iconImageList.Images.Add("dap_document", global::Dapple.Properties.Resources.dap_document);
-         this.iconImageList.Images.Add("dap_grid", global::Dapple.Properties.Resources.dap_grid);
-         this.iconImageList.Images.Add("dap_map", global::Dapple.Properties.Resources.dap_map);
-         this.iconImageList.Images.Add("dap_picture", global::Dapple.Properties.Resources.dap_picture);
-         this.iconImageList.Images.Add("dap_point", global::Dapple.Properties.Resources.dap_point);
-         this.iconImageList.Images.Add("dap_spf", global::Dapple.Properties.Resources.dap_spf);
-         this.iconImageList.Images.Add("dap_voxel", global::Dapple.Properties.Resources.dap_voxel);
-         this.iconImageList.Images.Add("error", global::Dapple.Properties.Resources.error);
-         this.iconImageList.Images.Add("folder", global::Dapple.Properties.Resources.folder);
-         this.iconImageList.Images.Add("folder_gray", global::Dapple.Properties.Resources.folder_gray);
-         this.iconImageList.Images.Add("layer", global::Dapple.Properties.Resources.layer);
-         this.iconImageList.Images.Add("live", global::Dapple.Properties.Resources.live);
-         this.iconImageList.Images.Add("tile", global::Dapple.Properties.Resources.tile);
-         this.iconImageList.Images.Add("tile_gray", global::Dapple.Properties.Resources.tile_gray);
-         this.iconImageList.Images.Add("georef_image", global::Dapple.Properties.Resources.georef_image);
-         this.iconImageList.Images.Add("time", global::Dapple.Properties.Resources.time_icon);
-         this.iconImageList.Images.Add("wms", global::Dapple.Properties.Resources.wms);
-         this.iconImageList.Images.Add("wms_gray", global::Dapple.Properties.Resources.wms_gray);
-         this.iconImageList.Images.Add("marble", global::Dapple.Properties.Resources.marble_icon);
-         this.iconImageList.Images.Add("nasa", global::Dapple.Properties.Resources.nasa);
-         this.iconImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
-         this.iconImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
 
          this.worldWindow.IsRenderDisabled = false;
 
@@ -3108,6 +2621,9 @@ namespace Dapple
          WWSettingsCtl.WorldWindSettings.Save();
 
          this.worldWindow.Dispose();
+
+         this.panelServer.Controls.Remove(this.tvServers);
+         this.tvServers.Dispose();
       }
 
       private void MainForm_Deactivate(object sender, EventArgs e)
@@ -3118,138 +2634,6 @@ namespace Dapple
       private void MainForm_Activated(object sender, EventArgs e)
       {
          this.worldWindow.IsRenderDisabled = false;
-      }
-
-      #endregion
-
-      #region Catalog Loaded/Failed Handlers
-
-      delegate void InvokeLoadedCatalog(BuilderDirectory directory, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList);
-      delegate void InvokeFailedCatalog(BuilderDirectory directory, string message, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList);
-
-      void OnCatalogLoaded(BuilderDirectory directory, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
-      {
-         lock (lockCatalogUpdates)
-         {
-            if (serverTree != null && !serverTree.IsDisposed && layerTree != null && !layerTree.IsDisposed)
-               serverTree.BeginInvoke(new InvokeLoadedCatalog(LoadCatalog), new object[] { directory, serverTree, layerTree, activeList });
-         }
-      }
-
-      void OnCatalogFailed(BuilderDirectory directory, string message, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
-      {
-         lock (lockCatalogUpdates)
-         {
-            if (serverTree != null && !serverTree.IsDisposed && layerTree != null && !layerTree.IsDisposed)
-               serverTree.BeginInvoke(new InvokeFailedCatalog(CatalogFailed), new object[] { directory, message, serverTree, layerTree, activeList });
-         }
-      }
-
-      void CatalogFailed(BuilderDirectory directory, string message, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
-      {
-         TreeNode treeNode = TreeUtils.FindNodeBFS(directory, serverTree.Nodes);
-         if (treeNode != null)
-         {
-            treeNode.Text = "Failed: " + directory.Name + ": " + message;
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("error");
-         }
-      }
-
-      void LoadCatalog(BuilderDirectory directory, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList)
-      {
-         serverTree.BeginUpdate();
-
-         TreeNode treeNode = TreeUtils.FindNodeBFS(directory, serverTree.Nodes);
-
-         if (treeNode == null)
-         {
-            TreeNode treeParentNode = TreeUtils.FindNodeBFS(directory.Parent, serverTree.Nodes);
-
-            if (treeParentNode == null)
-               return;
-
-            /*TODO: if (directory is DAPServerBuilder)
-            {
-               (treeParentNode.Tag as BuilderDirectory).SubList.Add(directory);
-               treeNode = treeParentNode.Nodes.Add(directory.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("dap");
-               treeNode.Tag = directory;
-            }
-            else */if (directory is WMSServerBuilder)
-            {
-               (treeParentNode.Tag as BuilderDirectory).SubList.Add(directory);
-               treeNode = treeParentNode.Nodes.Add(directory.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("wms");
-               treeNode.Tag = directory;
-            }
-            else
-            {
-               treeNode = treeParentNode.Nodes.Add(directory.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("folder");
-               treeNode.Tag = directory;
-            }
-         }
-         else
-         {
-            treeNode.Text = directory.Name;
-         }
-
-         treeNode.SelectedImageIndex = treeNode.ImageIndex = (directory is WMSServerBuilder ? ImageListIndex("wms") : ImageListIndex("layer"));
-         ProcessCatalogDirectory(directory, treeNode);
-         serverTree.Sort();
-         serverTree.EndUpdate();
-
-         layerTree.BeginUpdate();
-         /*TODO:if (directory is DAPServerBuilder)
-         {
-            // Find provider in parents first
-            IBuilder parentCatalog = directory.Parent;
-
-            while (parentCatalog != null && !(parentCatalog is DAPCatalogBuilder))
-               parentCatalog = parentCatalog.Parent;
-
-            if (parentCatalog != null)
-            {
-               DAPServerBuilder dapserver = directory as DAPServerBuilder;
-               DAPCatalogBuilder provider = parentCatalog as DAPCatalogBuilder;
-
-               foreach (LayerBuilderContainer container in activeList)
-               {
-                  if (container.Uri.StartsWith(DAPQuadLayerBuilder.URLProtocolName) && dapserver.URL == DAPQuadLayerBuilder.ServerURLFromURI(container.Uri))
-                  {
-                     LayerBuilder builder = DAPQuadLayerBuilder.GetBuilderFromURI(container.Uri, provider, this.worldWindow, dapserver);
-                     if (builder != null)
-                        activeList.RefreshFromSource(container, builder);
-                  }
-               }
-            }
-         }
-         else */
-            if (directory is WMSServerBuilder)
-         {
-            // Find provider in parents first
-            IBuilder parentCatalog = directory.Parent;
-
-            while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-               parentCatalog = parentCatalog.Parent;
-
-            if (parentCatalog != null)
-            {
-               WMSServerBuilder wmsserver = directory as WMSServerBuilder;
-               WMSCatalogBuilder provider = parentCatalog as WMSCatalogBuilder;
-               
-               foreach (LayerBuilderContainer container in activeList)
-               {
-                  if (container.Uri.StartsWith(WMSQuadLayerBuilder.URLProtocolName) && wmsserver.URL == WMSQuadLayerBuilder.ServerURLFromURI(container.Uri))
-                  {
-                     LayerBuilder builder = WMSQuadLayerBuilder.GetBuilderFromURI(container.Uri, provider, this.worldWindow, wmsserver);
-                     if (builder != null)
-                        activeList.RefreshFromSource(container, builder);
-                  }
-               }
-            }
-         }
-         layerTree.EndUpdate();
       }
 
       #endregion
@@ -3412,12 +2796,12 @@ namespace Dapple
                if (m_downloadList[5].builder == null)
                {
                   this.toolStripStatusLabel6.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel6.Image = this.iconImageList.Images["marble"];
+                  this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images["marble"];
                }
                else
                {
                   this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Name;
-                  this.toolStripStatusLabel6.Image = this.iconImageList.Images[m_downloadList[5].builder.LogoKey];
+                  this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images[m_downloadList[5].builder.LogoKey];
                }
                this.toolStripStatusLabel6.Visible = true;
                this.toolStripStatusSpin6.Text = "";
@@ -3437,12 +2821,12 @@ namespace Dapple
                if (m_downloadList[4].builder == null)
                {
                   this.toolStripStatusLabel5.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel5.Image = this.iconImageList.Images["marble"];
+                  this.toolStripStatusLabel5.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
                }
                else
                {
                   this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Name;
-                  this.toolStripStatusLabel5.Image = this.iconImageList.Images[m_downloadList[4].builder.LogoKey];
+                  this.toolStripStatusLabel5.Image = this.tvServers.ImageList.Images[m_downloadList[4].builder.LogoKey];
                }
                this.toolStripStatusLabel5.Visible = true;
                this.toolStripStatusSpin5.Text = "";
@@ -3462,12 +2846,12 @@ namespace Dapple
                if (m_downloadList[3].builder == null)
                {
                   this.toolStripStatusLabel4.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel4.Image = this.iconImageList.Images["marble"];
+                  this.toolStripStatusLabel4.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
                }
                else
                {
                   this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Name;
-                  this.toolStripStatusLabel4.Image = this.iconImageList.Images[m_downloadList[3].builder.LogoKey];
+                  this.toolStripStatusLabel4.Image = this.tvServers.ImageList.Images[m_downloadList[3].builder.LogoKey];
                }
                this.toolStripStatusLabel4.Visible = true;
                this.toolStripStatusSpin4.Text = "";
@@ -3487,12 +2871,12 @@ namespace Dapple
                if (m_downloadList[2].builder == null)
                {
                   this.toolStripStatusLabel3.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel3.Image = this.iconImageList.Images["marble"];
+                  this.toolStripStatusLabel3.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
                }
                else
                {
                   this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Name;
-                  this.toolStripStatusLabel3.Image = this.iconImageList.Images[m_downloadList[2].builder.LogoKey];
+                  this.toolStripStatusLabel3.Image = this.tvServers.ImageList.Images[m_downloadList[2].builder.LogoKey];
                }
                this.toolStripStatusLabel3.Visible = true;
                this.toolStripStatusSpin3.Text = "";
@@ -3512,12 +2896,12 @@ namespace Dapple
                if (m_downloadList[1].builder == null)
                {
                   this.toolStripStatusLabel2.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel2.Image = this.iconImageList.Images["marble"];
+                  this.toolStripStatusLabel2.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
                }
                else
                {
                   this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Name;
-                  this.toolStripStatusLabel2.Image = this.iconImageList.Images[m_downloadList[1].builder.LogoKey];
+                  this.toolStripStatusLabel2.Image = this.tvServers.ImageList.Images[m_downloadList[1].builder.LogoKey];
                }
                this.toolStripStatusLabel2.Visible = true;
                this.toolStripStatusSpin2.Text = "";
@@ -3537,12 +2921,12 @@ namespace Dapple
                if (m_downloadList[0].builder == null)
                {
                   this.toolStripStatusLabel1.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel1.Image = this.iconImageList.Images["marble"];
+                  this.toolStripStatusLabel1.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
                }
                else
                {
                   this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Name;
-                  this.toolStripStatusLabel1.Image = this.iconImageList.Images[m_downloadList[0].builder.LogoKey];
+                  this.toolStripStatusLabel1.Image = this.tvServers.ImageList.Images[m_downloadList[0].builder.LogoKey];
                }
                this.toolStripStatusLabel1.Visible = true;
                this.toolStripStatusSpin1.Text = "";
@@ -3574,98 +2958,12 @@ namespace Dapple
          }
       }
 
-      public void FilterTreeNodes(TreeNode node, TreeNodeCollection col, GeographicBoundingBox filterExtents, bool bIntersect, string filterText)
-      {
-         List<TreeNode> nodeList = new List<TreeNode>();
-         foreach (TreeNode treeNode in col)
-            nodeList.Add(treeNode);
-
-         foreach (TreeNode treeNode in nodeList)
-         {
-            if (treeNode.Tag is ImageBuilder)
-            {
-               ImageBuilder builder = treeNode.Tag as ImageBuilder;
-               if ((filterText.Length > 0 && treeNode.Text.IndexOf(filterText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) || (filterExtents != null && ((bIntersect && !filterExtents.IntersectsWith(builder.Extents)) || (!bIntersect && !filterExtents.Contains(builder.Extents)))))
-                  treeNode.Remove();
-               else
-                  treeNode.SelectedImageIndex = treeNode.ImageIndex;
-            }
-            /*TODO:else if (treeNode.Tag is DAPServerBuilder && filterExtents != null)
-            {
-               // Poke the DAP server again to get a filtered catalog from it.
-
-               DAPServerBuilder serverBuilder = treeNode.Tag as DAPServerBuilder;
-               // Need to have a catalog builder in treenode's parents
-               IBuilder parentCatalog = ServerBuilderItem as IBuilder;
-
-               while (parentCatalog != null && !(parentCatalog is DAPCatalogBuilder))
-                  parentCatalog = parentCatalog.Parent;
-
-               if (parentCatalog != null)
-               {
-                  DAPCatalogBuilder dapBuilder = (DAPCatalogBuilder)(parentCatalog as DAPCatalogBuilder).Clone();
-                  dapBuilder.RemoveServer(serverBuilder.Server.Url);
-                  dapBuilder.ServerTree = treeNode.TreeView;
-
-                  lock (lockCatalogUpdates)
-                  {
-                     Geosoft.GX.DAPGetData.Server dapServer = new Geosoft.GX.DAPGetData.Server(serverBuilder.Server.Url, WWSettingsCtl.CachePath);
-                     BuilderDirectory dapDir = dapBuilder.AddDapServer(dapServer, new Geosoft.Dap.Common.BoundingBox(filterExtents.East, filterExtents.North, filterExtents.West, filterExtents.South), serverBuilder.Parent);
-                     dapBuilder.SubList.Add(dapDir);
-
-                     treeNode.Nodes.Clear();
-                     treeNode.Text = "Loading: " + serverBuilder.Server.Url;
-                     treeNode.SelectedImageIndex = treeNode.ImageIndex = ImageListIndex("time");
-                     treeNode.Tag = dapDir;
-                  }
-               }
-            }*/
-            else if (treeNode.Tag is BuilderDirectory)
-               // Recurse
-               FilterTreeNodes(treeNode, treeNode.Nodes, filterExtents, bIntersect, filterText);
-         }
-
-         // Remove empty folders
-         if (node != null && node.Tag is BuilderDirectory)
-         {
-            int iDatasets = 0;
-            CountTreeNodeDatasets(col, ref iDatasets);
-            if (iDatasets == 0)
-            {
-               if (node.Parent != null)
-                  node.Remove();
-               else
-               {
-                  if (node.ImageIndex == ImageListIndex("dap"))
-                     node.ImageIndex = node.SelectedImageIndex = ImageListIndex("dap_gray");
-                  else if (node.ImageIndex == ImageListIndex("wms"))
-                     node.ImageIndex = node.SelectedImageIndex = ImageListIndex("wms_gray");
-                  else if (node.ImageIndex == ImageListIndex("tile"))
-                     node.ImageIndex = node.SelectedImageIndex = ImageListIndex("tile_gray");
-               }
-            }
-         }
-      }
-
       private void FilterServersToView(bool bIntersect)
       {
-         if (this.treeViewServerBackup == null)
-            this.treeViewServerBackup = this.treeViewServers;
-
-         TreeView filterTree = GetNewServerTree();
-
-         // Make exact copy of tree first
-         foreach (TreeNode treeNode in this.treeViewServerBackup.Nodes)
-            filterTree.Nodes.Add((TreeNode)treeNode.Clone());
-
-         lock (lockCatalogUpdates)
-         {
-            FilterTreeNodes(null, filterTree.Nodes, GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox()), bIntersect, "");
-            ReplaceServerTree(filterTree);
-            this.toolStripButtonClearFilter.Enabled = true;
-            m_strLastSearchText = "";
-            this.toolStripFilterText.ForeColor = SystemColors.GrayText;
-         }
+         this.tvServers.Search(bIntersect, GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox()), "");
+         this.toolStripButtonClearFilter.Enabled = true;
+         m_strLastSearchText = "";
+         this.toolStripFilterText.ForeColor = SystemColors.GrayText;
       }
 
       private void toolStripButtonFilterSpatial_Click(object sender, EventArgs e)
@@ -3680,9 +2978,7 @@ namespace Dapple
 
       private void toolStripButtonClearFilter_Click(object sender, EventArgs e)
       {
-         if (this.treeViewServerBackup != null)
-            ReplaceServerTree(this.treeViewServerBackup);
-         this.treeViewServerBackup = null;
+         this.tvServers.ClearSearch();
          this.toolStripButtonClearFilter.Enabled = false;
          m_strLastSearchText = "";
          this.toolStripFilterText.ForeColor = SystemColors.GrayText;
@@ -3696,29 +2992,10 @@ namespace Dapple
 
       private void toolStripButtonFilterText_Click(object sender, EventArgs e)
       {
-         TreeView filterTree = GetNewServerTree();
-
-         // Are we filtering the results or the original tree
-         if (this.treeViewServerBackup == null)
-         {
-            this.treeViewServerBackup = this.treeViewServers;
-            foreach (TreeNode treeNode in this.treeViewServerBackup.Nodes)
-               filterTree.Nodes.Add((TreeNode)treeNode.Clone());
-         }
-         else
-         {
-            foreach (TreeNode treeNode in this.treeViewServers.Nodes)
-               filterTree.Nodes.Add((TreeNode)treeNode.Clone());
-         }
-
-         lock (lockCatalogUpdates)
-         {
-            FilterTreeNodes(null, filterTree.Nodes, null, false, this.toolStripFilterText.Text);
-            ReplaceServerTree(filterTree);
-            this.toolStripButtonClearFilter.Enabled = true;
-            m_strLastSearchText = this.toolStripFilterText.Text;
-            this.toolStripFilterText.ForeColor = SystemColors.WindowText;
-         }
+         this.tvServers.Search(false, null, "");
+         this.toolStripButtonClearFilter.Enabled = true;
+         m_strLastSearchText = this.toolStripFilterText.Text;
+         this.toolStripFilterText.ForeColor = SystemColors.WindowText;
       }
 
       private void toolStripFilterText_TextChanged(object sender, EventArgs e)
@@ -3819,39 +3096,16 @@ namespace Dapple
       }
 
       #endregion
+
+      private void toolStripNavButton_MouseRemoveCapture(object sender, MouseEventArgs e)
+      {
+
+      }
 #if !DEBUG
       public void OnThreadException(object o, ThreadExceptionEventArgs e)
       {
          Utility.AbortUtility.Abort(e.Exception, Thread.CurrentThread);
       }
 #endif
-   }
-
-   // Create a node sorter that implements the IComparer interface that puts directories in front of layer builders.
-   public class TreeNodeSorter : System.Collections.IComparer
-   {
-      public int Compare(object x, object y)
-      {
-         TreeNode tx = x as TreeNode;
-         TreeNode ty = y as TreeNode;
-
-         if (tx.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
-            return -1;
-         else if (ty.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
-            return 1;
-
-         // Exception, we want "Virtual Earth" on top and "Map & Satellite" at bottom
-         if (tx.Text == "Virtual Earth")
-            return -1;
-         else if (ty.Text == "Virtual Earth")
-            return 1;
-         if (tx.Text == "Map & Satellite")
-            return 1;
-         else if (ty.Text == "Map & Satellite")
-            return -1;         
-
-         // If they are the same length, call Compare.
-         return string.Compare(tx.Text, ty.Text);
-      }
    }
 }

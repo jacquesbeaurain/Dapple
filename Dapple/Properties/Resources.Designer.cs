@@ -165,16 +165,16 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap dap_update {
-            get {
-                object obj = ResourceManager.GetObject("dap_update", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Icon dap_voxel {
             get {
                 object obj = ResourceManager.GetObject("dap_voxel", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon dapple {
+            get {
+                object obj = ResourceManager.GetObject("dapple", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

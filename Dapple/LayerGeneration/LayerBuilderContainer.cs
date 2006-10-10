@@ -237,7 +237,7 @@ namespace Dapple.LayerGeneration
          {
             DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)container.Builder;
 
-            iImageIndex = m_mainWnd.ImageListIndex("dap_" + dapbuilder.DAPType.ToLower());
+            iImageIndex = m_mainWnd.ImageIndex(dapbuilder.DAPType.ToLower());
             if (iImageIndex == -1)
                m_mainWnd.ImageListIndex("layer");
          }
@@ -535,7 +535,7 @@ namespace Dapple.LayerGeneration
                         {
                            DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)container.Builder;
 
-                           node.ImageIndex = node.SelectedImageIndex = m_mainWnd.ImageListIndex("dap_" + dapbuilder.DAPType.ToLower());
+                           node.ImageIndex = node.SelectedImageIndex = m_mainWnd.ImageIndex(dapbuilder.DAPType.ToLower());
                            if (node.ImageIndex == -1)
                               node.ImageIndex = node.SelectedImageIndex = m_mainWnd.ImageListIndex("layer");
                         }

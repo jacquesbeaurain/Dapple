@@ -5,7 +5,7 @@ using dappleview;
 
 namespace Dapple
 {
-   class DappleView
+   public class DappleView
    {
       private dappleviewDoc doc;
       private dappleviewType dappleView;

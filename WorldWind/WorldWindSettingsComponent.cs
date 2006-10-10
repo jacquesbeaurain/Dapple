@@ -323,6 +323,34 @@ namespace WorldWind
          }
       }
 
+      [Browsable(true), Category("Misc")]
+      [Description("Load last view on program startup.")]
+      public bool AskLastViewAtStartup
+      {
+         get
+         {
+            return m_oSettings.AskLastViewAtStartup;
+         }
+         set
+         {
+            m_oSettings.AskLastViewAtStartup = value;
+         }
+      }
+
+      [Browsable(true), Category("Misc")]
+      [Description("Load last view on program startup.")]
+      public bool LastViewAtStartup
+      {
+         get
+         {
+            return m_oSettings.LastViewAtStartup;
+         }
+         set
+         {
+            m_oSettings.LastViewAtStartup = value;
+         }
+      }
+
       public string WorldWindDirectory
       {
          get

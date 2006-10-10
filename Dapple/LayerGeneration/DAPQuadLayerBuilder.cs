@@ -31,6 +31,7 @@ namespace Dapple.LayerGeneration
       {
          try
          {
+
             string strServerUrl = ServerURLFromURI(uri);
             string rest = uri.Substring(uri.IndexOf("=") + 1);
 
@@ -40,12 +41,27 @@ namespace Dapple.LayerGeneration
             else
                oServer = oServerTree.FullServerList[strServerUrl];
 
+            DataSet hDataSet = new DataSet();
+            hDataSet.Url = strServerUrl;
+
             string[] pairs = rest.Split('&');
-            string datasetname = pairs[0];
+            hDataSet.Name = pairs[0];
             int height = Convert.ToInt32(pairs[1].Substring(pairs[1].IndexOf('=') + 1));
             int size = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
+            hDataSet.Type = pairs[3].Substring(pairs[3].IndexOf('=') + 1);
+            hDataSet.Title = pairs[4].Substring(pairs[4].IndexOf('=') + 1);
+            hDataSet.Edition = pairs[5].Substring(pairs[5].IndexOf('=') + 1);
+            hDataSet.Hierarchy = pairs[6].Substring(pairs[6].IndexOf('=') + 1);
+            double north = Convert.ToDouble(pairs[7].Substring(pairs[7].IndexOf('=') + 1));
+            double east = Convert.ToDouble(pairs[8].Substring(pairs[8].IndexOf('=') + 1));
+            double south = Convert.ToDouble(pairs[9].Substring(pairs[9].IndexOf('=') + 1));
+            double west = Convert.ToDouble(pairs[10].Substring(pairs[10].IndexOf('=') + 1));
+            hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
 
-            DataSet hDataSet = oServer.Command.GetDataset(datasetname); // TODO: Add this to catalog cache manager for full offline browsing.
+            int levels = Convert.ToInt32(pairs[11].Substring(pairs[11].IndexOf('=') + 1));
+            decimal lvl0tilesize = Convert.ToDecimal(pairs[12].Substring(pairs[12].IndexOf('=') + 1));
+            
+            
             if (hDataSet != null)
             {
                DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
@@ -53,6 +69,8 @@ namespace Dapple.LayerGeneration
                {
                   layerBuilder.m_iHeight = height;
                   layerBuilder.m_iTileImageSize = size;
+                  layerBuilder.Levels = levels;
+                  layerBuilder.LevelZeroTileSize = lvl0tilesize;
                   return layerBuilder;
                }
             }
@@ -152,6 +170,10 @@ namespace Dapple.LayerGeneration
                m_decLevelZeroTileSizeDegrees = Math.Min(30, Math.Ceiling(10000 * (decimal)Math.Max(m_hDataSet.Boundary.MaxY - m_hDataSet.Boundary.MinY, m_hDataSet.Boundary.MaxX - m_hDataSet.Boundary.MinX)) / 10000);
             return m_decLevelZeroTileSizeDegrees;
          }
+         set
+         {
+            m_decLevelZeroTileSizeDegrees = value;
+         }
       }
 
       public int Levels
@@ -159,6 +181,10 @@ namespace Dapple.LayerGeneration
          get
          {
             return m_iLevels;
+         }
+         set
+         {
+            m_iLevels = value;
          }
       }
 
@@ -370,7 +396,17 @@ namespace Dapple.LayerGeneration
          return m_oServer.Url.Replace("http://", URLProtocolName) + "?" +
             "datasetname=" + m_hDataSet.Name + "&" +
             "height=" + m_iHeight + "&" +
-            "size=" + m_iTileImageSize;
+            "size=" + m_iTileImageSize + "&" +
+            "type=" + m_hDataSet.Type + "&" +
+            "title=" + m_hDataSet.Title + "&" +
+            "edition=" + m_hDataSet.Edition + "&" +
+            "hierarchy=" + m_hDataSet.Hierarchy + "&" +
+            "north=" + m_hDataSet.Boundary.MaxY.ToString() + "&" +
+            "east=" + m_hDataSet.Boundary.MaxX.ToString() + "&" +
+            "south=" + m_hDataSet.Boundary.MinY.ToString() + "&" +
+            "west=" + m_hDataSet.Boundary.MinX.ToString() + "&" +
+            "levels=" + m_iLevels.ToString() + "&" +
+            "lvl0tilesize=" + m_decLevelZeroTileSizeDegrees.ToString();
       }
 
       public override object Clone()

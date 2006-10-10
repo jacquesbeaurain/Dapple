@@ -30,6 +30,7 @@ namespace Geosoft.GX.DAPGetData
 
       public struct AsyncRequest
       {
+         public bool m_bValid;
          public AsyncRequestType m_eType;
          public object m_oParam1;
          public object m_oParam2;
@@ -78,9 +79,6 @@ namespace Geosoft.GX.DAPGetData
       protected TreeNode m_hCurServerTreeNode;
       protected TreeNode m_hDAPRootNode = null;
 
-      protected ImageList m_hNodeimageList = new ImageList();
-      protected PictureBox m_pbUpdateCatalog = new PictureBox();
-
       protected System.Xml.XmlDocument m_oCatalog = null;
       internal CatalogFolder m_oCatalogHierarchyRoot = null;
 
@@ -105,42 +103,30 @@ namespace Geosoft.GX.DAPGetData
          m_oServerList = new ServerList(m_strCacheDir);
          m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);
 #endif
+
+         base.ImageList = new ImageList();
          
-         m_hNodeimageList.ColorDepth = ColorDepth.Depth32Bit;
-         m_hNodeimageList.ImageSize = new Size(16, 16);
-         m_hNodeimageList.TransparentColor = Color.Transparent;
+         base.ImageList.ColorDepth = ColorDepth.Depth32Bit;
+         base.ImageList.ImageSize = new Size(16, 16);
+         base.ImageList.TransparentColor = Color.Transparent;
 
-         m_hNodeimageList.Images.Add("enserver", Resources.enserver);
-         m_hNodeimageList.Images.Add("disserver", Resources.disserver);
-         m_hNodeimageList.Images.Add("offline", Resources.offline);
-         m_hNodeimageList.Images.Add("dap", Resources.dap);
-         m_hNodeimageList.Images.Add("dap_database", Resources.dap_database);
-         m_hNodeimageList.Images.Add("dap_document", Resources.dap_document);
-         m_hNodeimageList.Images.Add("dap_grid", Resources.dap_grid);
-         m_hNodeimageList.Images.Add("dap_map", Resources.dap_map);
-         m_hNodeimageList.Images.Add("dap_picture", Resources.dap_picture);
-         m_hNodeimageList.Images.Add("dap_point", Resources.dap_point);
-         m_hNodeimageList.Images.Add("dap_spf", Resources.dap_spf);
-         m_hNodeimageList.Images.Add("dap_voxel", Resources.dap_voxel);
-         m_hNodeimageList.Images.Add("folder", Resources.folder);
-         m_hNodeimageList.Images.Add("folder_open", Resources.folder_open);
-         m_hNodeimageList.Images.Add("loading", Resources.loading);
+         base.ImageList.Images.Add("enserver", Resources.enserver);
+         base.ImageList.Images.Add("disserver", Resources.disserver);
+         base.ImageList.Images.Add("offline", Resources.offline);
+         base.ImageList.Images.Add("dap", Resources.dap);
+         base.ImageList.Images.Add("dap_database", Resources.dap_database);
+         base.ImageList.Images.Add("dap_document", Resources.dap_document);
+         base.ImageList.Images.Add("dap_grid", Resources.dap_grid);
+         base.ImageList.Images.Add("dap_map", Resources.dap_map);
+         base.ImageList.Images.Add("dap_picture", Resources.dap_picture);
+         base.ImageList.Images.Add("dap_point", Resources.dap_point);
+         base.ImageList.Images.Add("dap_spf", Resources.dap_spf);
+         base.ImageList.Images.Add("dap_voxel", Resources.dap_voxel);
+         base.ImageList.Images.Add("folder", Resources.folder);
+         base.ImageList.Images.Add("folder_open", Resources.folder_open);
+         base.ImageList.Images.Add("loading", Resources.loading);
 
-         m_pbUpdateCatalog.Visible = false;
-         m_pbUpdateCatalog.BackColor = System.Drawing.Color.White;
-         m_pbUpdateCatalog.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-         m_pbUpdateCatalog.Image = Resources.dap_update;
-         m_pbUpdateCatalog.Location = new System.Drawing.Point((this.ClientSize.Width - m_pbUpdateCatalog.Width) / 2, (this.ClientSize.Height - m_pbUpdateCatalog.Height) / 2);
-         m_pbUpdateCatalog.Name = "m_pbUpdateCatalog";
-         m_pbUpdateCatalog.Size = new Size(200, 96);
-         m_pbUpdateCatalog.TabIndex = 2;
-         m_pbUpdateCatalog.TabStop = false;
-         this.Controls.Add(m_pbUpdateCatalog);
-         m_pbUpdateCatalog.BringToFront();
-
-         this.ImageList = m_hNodeimageList;
          this.ImageIndex = this.SelectedImageIndex = iImageListIndex("folder");
-         this.SizeChanged += new EventHandler(this.ServerTree_SizeChanged);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
          this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
 
@@ -149,19 +135,25 @@ namespace Geosoft.GX.DAPGetData
 
          m_oAsyncThread2 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
          m_oAsyncThread2.Start();
-
-#if DAPPLE
-         m_hDAPRootNode = new TreeNode("DAP Servers", iImageListIndex("dap"), iImageListIndex("dap"));
-         this.ShowRootLines = false;
-         this.Nodes.Add(m_hDAPRootNode);
-#endif
       }
 
       protected override void Dispose(bool disposing)
       {
+         // First gracefully
          EnqueueRequest(AsyncRequestType.Stop);
          EnqueueRequest(AsyncRequestType.Stop);
 
+#if DAPPLE
+         try
+         {
+            // Force it in Dapple
+            m_oAsyncThread1.Abort();
+            m_oAsyncThread2.Abort();
+         }
+         catch
+         {
+         }
+#endif
          if (disposing)
          {
             if (m_oCacheManager != null)
@@ -288,9 +280,9 @@ namespace Geosoft.GX.DAPGetData
       }
 
       /// <summary>
-      /// The root node collection to use to populate DAP servers in
+      /// The root node collection to use where DAP servers are kept
       /// </summary>
-      protected TreeNodeCollection DAPRootNodes
+      public TreeNodeCollection DAPRootNodes
       {
          get
          {
@@ -387,7 +379,6 @@ namespace Geosoft.GX.DAPGetData
          return bRet;
       }
 
-#if !DAPPLE
       /// <summary>
       /// Remove the server from the list
       /// </summary>
@@ -395,15 +386,15 @@ namespace Geosoft.GX.DAPGetData
       public void RemoveServer(Server oServer)
       {
          if (m_oValidServerList.ContainsKey(oServer.Url))
-         {
             m_oValidServerList.Remove(oServer.Url);
-            PopulateServerList();
-         }
 
          m_oFullServerList.Remove(oServer.Url);
          m_oServerList.RemoveServer(oServer);
+
+         PopulateServerList();
       }
 
+#if !DAPPLE
       /// <summary>
       /// Enable a server
       /// </summary>
@@ -482,11 +473,9 @@ namespace Geosoft.GX.DAPGetData
          else
             m_oCurServer = null;
 
-         if (strServerUrl == string.Empty)
 #if !DAPPLE
+         if (strServerUrl == string.Empty)
             Constant.GetSelectedServerInSettingsMeta(out strServerUrl);
-#else
-            strServerUrl = "http://dap.geosoft.com";
 #endif
 
          this.BeginUpdate();
@@ -533,7 +522,8 @@ namespace Geosoft.GX.DAPGetData
 
          m_bSelect = true;
 
-         SelectServer(oSelectServer);
+         if (oSelectServer != null)
+            SelectServer(oSelectServer);
       }
 
       /// <summary>
@@ -681,15 +671,9 @@ namespace Geosoft.GX.DAPGetData
             m_oValidServerList.RemoveAt(iIndex);
          oServer.Status = Server.ServerStatus.OffLine;
          if (this.InvokeRequired)
-         {
             this.BeginInvoke(new MethodInvoker(this.PopulateServerList));
-            this.BeginInvoke(new MethodInvoker(this.HidePictureBox));
-         }
          else
-         {
             PopulateServerList();
-            HidePictureBox();
-         }
       }
 #endif
 
@@ -876,6 +860,7 @@ namespace Geosoft.GX.DAPGetData
       public void EnqueueRequest(AsyncRequestType eRequest)
       {
          AsyncRequest oRequest = new AsyncRequest();
+         oRequest.m_bValid = true;
          oRequest.m_eType = eRequest;
          oRequest.m_oParam1 = null;
          oRequest.m_oParam2 = null;
@@ -894,6 +879,7 @@ namespace Geosoft.GX.DAPGetData
       public void EnqueueRequest(AsyncRequestType eRequest, object oParam1, object oParam2)
       {
          AsyncRequest oRequest = new AsyncRequest();
+         oRequest.m_bValid = true;
          oRequest.m_eType = eRequest;
          oRequest.m_oParam1 = oParam1;
          oRequest.m_oParam2 = oParam2;
@@ -915,6 +901,7 @@ namespace Geosoft.GX.DAPGetData
       public void EnqueueRequest(AsyncRequestType eRequest, object oParam1, object oParam2, object oParam3, object oParam4, object oParam5)
       {
          AsyncRequest oRequest = new AsyncRequest();
+         oRequest.m_bValid = true;
          oRequest.m_eType = eRequest;
          oRequest.m_oParam1 = oParam1;
          oRequest.m_oParam2 = oParam2;
@@ -995,12 +982,19 @@ namespace Geosoft.GX.DAPGetData
 #endif
          do
          {
+#if !DAPPLE
             oRequest = (AsyncRequest)m_oAsyncQueue.Dequeue();
-
+#else
+            oRequest = new AsyncRequest();
+            oRequest.m_bValid = false;
+#endif
             // --- Safety try/catch so that a thread will not terminate, and not clean itself up ---
 
             try
             {
+#if DAPPLE
+               oRequest = (AsyncRequest)m_oAsyncQueue.Dequeue();
+#endif
                if (oRequest.m_eType == AsyncRequestType.GetCatalogHierarchy)
                {
                   GetCatalogHierarchy();
@@ -1018,10 +1012,11 @@ namespace Geosoft.GX.DAPGetData
             }
             catch (Exception e)
             {
-               GetDapError.Instance.Write(string.Format("Failed to send request {0} - {1}", oRequest.m_eType.ToString(), e.Message));
+               if (oRequest.m_bValid)
+                  GetDapError.Instance.Write(string.Format("Failed to send request {0} - {1}", oRequest.m_eType.ToString(), e.Message));
             }
 
-         } while (oRequest.m_eType != AsyncRequestType.Stop);
+         } while (!oRequest.m_bValid || oRequest.m_eType != AsyncRequestType.Stop);
 
 #if !DAPPLE
          oGxNet.Dispose();
@@ -1115,13 +1110,26 @@ namespace Geosoft.GX.DAPGetData
       }
 
       /// <summary>
+      /// Returns imagelist
+      /// </summary>
+      /// <param name="strKey"></param>
+      /// <returns></returns>
+      public new ImageList ImageList
+      {
+         get
+         {
+            return base.ImageList;
+         }
+      }
+
+      /// <summary>
       /// Returns imagelist index from key name
       /// </summary>
       /// <param name="strKey"></param>
       /// <returns></returns>
-      protected int iImageListIndex(string strKey)
+      public int iImageListIndex(string strKey)
       {
-         return m_hNodeimageList.Images.IndexOfKey(strKey);
+         return base.ImageList.Images.IndexOfKey(strKey);
       }
 
       /// <summary>
@@ -1129,7 +1137,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strType"></param>
       /// <returns></returns>
-      protected Int32 iImageIndex(string strType)
+      public Int32 iImageIndex(string strType)
       {
          Int32 iRet = 3;
 
@@ -1180,7 +1188,6 @@ namespace Geosoft.GX.DAPGetData
 
          this.AfterSelect -= new TreeViewEventHandler(this.OnAfterSelect);
          this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
-         m_pbUpdateCatalog.Visible = false;
 
          // --- Clear all server nodes ---
          this.BeginUpdate();
@@ -1465,26 +1472,31 @@ namespace Geosoft.GX.DAPGetData
          m_oCatalog = null;
          m_oCatalogHierarchyRoot = null;
 
+#if DAPPLE
+         try
+         {
+            // Stop any current requests forcefully
+
+            m_oAsyncThread1.Abort();
+            m_oAsyncThread2.Abort();
+         }
+         catch
+         {
+         }
+
+         m_oAsyncQueue.Clear();
+
+         m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
+         m_oAsyncThread1.Start();
+
+         m_oAsyncThread2 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
+         m_oAsyncThread2.Start();
+#endif
+
          if (this.InvokeRequired)
-         {
-            this.Invoke(new MethodInvoker(ShowPictureBox));
             this.Invoke(new MethodInvoker(ClearTree));
-         }
          else
-         {
-            ShowPictureBox();
             ClearTree();
-         }
-      }
-
-      protected void ShowPictureBox()
-      {
-         m_pbUpdateCatalog.Visible = true;
-      }
-
-      protected void HidePictureBox()
-      {
-         m_pbUpdateCatalog.Visible = false;
       }
 
       protected void ClearTree()
@@ -1494,7 +1506,16 @@ namespace Geosoft.GX.DAPGetData
          System.Diagnostics.Debug.WriteLine("SelectedNode Changed (ClearTree): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
 #endif
          if (m_hCurServerTreeNode != null)
+         {
             m_hCurServerTreeNode.Nodes.Clear();
+
+            // --- updating in progress ---
+
+            TreeNode hTempNode;
+            hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
+            hTempNode.Tag = null;
+            m_hCurServerTreeNode.Nodes.Add(hTempNode);
+         }
       }
 
       #endregion
@@ -1600,18 +1621,6 @@ namespace Geosoft.GX.DAPGetData
             OnDataSetSelected(ex);
          }
       }
-
-      /// <summary>
-      /// Move Picture box during sizing
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      private void ServerTree_SizeChanged(object sender, EventArgs e)
-      {
-         m_pbUpdateCatalog.Top = (this.ClientSize.Height - m_pbUpdateCatalog.Height) / 2;
-         m_pbUpdateCatalog.Left = (this.ClientSize.Width - m_pbUpdateCatalog.Width) / 2;
-      }
-
       #endregion
    }
 }

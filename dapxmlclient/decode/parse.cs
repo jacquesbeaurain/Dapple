@@ -492,50 +492,6 @@ namespace Geosoft.Dap.Xml
       }
 
       /// <summary>
-      /// Transform the item element, found in the catalog response, to its corresponding structure.
-      /// </summary>
-      /// <param name="szDataset">The unique name of the dataset</param>
-      /// <param name="hDataSetNode">The GeosoftXML meta element</param>
-      /// <param name="hDataSet">The dataset structure to populate</param>
-      public void DataSetFromMeta(string szDataset, System.Xml.XmlNode hDataSetMetaNode, out DataSet hDataSet)
-      {
-         hDataSet = new DataSet();
-
-         System.Xml.XmlNodeList hNodeList = hDataSetMetaNode.SelectNodes("/" + Geosoft.Dap.Xml.Common.Constant.Tag.GEO_XML_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.RESPONSE_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.METADATA_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.META_TAG);
-         if (hNodeList == null || hNodeList.Count == 0)
-         {
-            throw new DapException("Invalid format found in item element.");
-         }
-
-         hDataSet.Url = m_szUrl;
-         hDataSet.Name = szDataset;
-
-         System.Xml.XmlNode hGeosoftNode = hNodeList[0].FirstChild;
-         if (hGeosoftNode == null) throw new DapException("Invalid configuration xml");
-
-         hDataSet.Title = hGeosoftNode.SelectSingleNode("//CLASS/ATTRIBUTE[@name='Name']").Attributes["value"].Value;
-
-         // The first CLASS element we encounter will give us the type
-         foreach (System.Xml.XmlElement hElem in hGeosoftNode.ChildNodes[0].ChildNodes)
-         {
-            if (hElem.Name == "CLASS")
-            {
-               hDataSet.Type = hElem.Attributes["name"].Value;
-               break;
-            }
-         }
-         double dMinX = Convert.ToDouble(hGeosoftNode.SelectSingleNode("//CLASS/ATTRIBUTE[@name='BoundingMinX']").Attributes["value"].Value);
-         double dMinY = Convert.ToDouble(hGeosoftNode.SelectSingleNode("//CLASS/ATTRIBUTE[@name='BoundingMinY']").Attributes["value"].Value);
-         double dMaxX = Convert.ToDouble(hGeosoftNode.SelectSingleNode("//CLASS/ATTRIBUTE[@name='BoundingMaxX']").Attributes["value"].Value);
-         double dMaxY = Convert.ToDouble(hGeosoftNode.SelectSingleNode("//CLASS/ATTRIBUTE[@name='BoundingMaxY']").Attributes["value"].Value);
-         hDataSet.Boundary = new BoundingBox(dMaxX,dMaxY,dMinX,dMinY);
-
-         //Can't do edition and hierarchy, but luckily Dapple does not use it at this point
-         //if (hEdition != null) hDataSet.Edition = hEdition.Value;
-         //if (szHierarchy != null) hDataSet.Hierarchy = szHierarchy;
-      }
-
-      /// <summary>
       /// Transform the bounding box xml element to its corresponding structure.
       /// </summary>
       /// <param name="hBoundingBoxNode">The GeosoftXML Bounding Box node</param>

@@ -30,7 +30,7 @@ namespace Dapple
       public AboutDialog()
       {
          InitializeComponent();
-         Icon = new System.Drawing.Icon(@"app.ico");
+         Icon = global::Dapple.Properties.Resources.dapple;
 
          this.labelVersionNumber.Text = Application.ProductVersion;
       }

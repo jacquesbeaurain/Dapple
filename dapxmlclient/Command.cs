@@ -975,21 +975,6 @@ namespace Geosoft.Dap
       }
 
       /// <summary>
-      /// Get a dataset object based on its unique name
-      /// </summary>
-      /// <returns>The dataset object </returns>
-      /// <param name="szDataset">The unique name of the dataset</param>
-      public DataSet GetDataset(string szDataset)
-      {
-         System.Xml.XmlDocument oDoc = GetMetaData(szDataset);
-
-         DataSet hDataset;
-         Parser.DataSetFromMeta(szDataset, oDoc.DocumentElement, out hDataset);
-         return hDataset;
-      }
-
-
-      /// <summary>
       /// Get the dataset edition in GeosoftXML format from the dap server
       /// </summary>
       /// <param name="hDataSet">The dataset to get the edition of</param>

@@ -261,6 +261,9 @@ namespace WorldWind
 
 		#region Miscellaneous settings
 
+      public bool askLastViewAtStartup = true;
+      public bool lastViewAtStartup = true;
+
 		// Misc
 		private string defaultWorld = "Earth";
 		// default is to show the Configuration Wizard at startup
@@ -309,6 +312,33 @@ namespace WorldWind
            }
        }
 
+      [Browsable(true), Category("Miscellaneous")]
+      [Description("Load last view on program startup.")]
+      public bool AskLastViewAtStartup
+      {
+         get
+         {
+            return askLastViewAtStartup;
+         }
+         set
+         {
+            askLastViewAtStartup = value;
+         }
+      }
+
+      [Browsable(true), Category("Miscellaneous")]
+      [Description("Load last view on program startup.")]
+      public bool LastViewAtStartup
+      {
+         get
+         {
+            return lastViewAtStartup;
+         }
+         set
+         {
+            lastViewAtStartup = value;
+         }
+      }
 		#endregion
 
 		#region File System Settings

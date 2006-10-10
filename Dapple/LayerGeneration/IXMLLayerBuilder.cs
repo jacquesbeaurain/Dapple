@@ -210,8 +210,8 @@ namespace Dapple.LayerGeneration
       #endregion
    }
 
-   public delegate void LoadingCompletedCallbackHandler(BuilderDirectory directory, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList);
-   public delegate void LoadingFailedCallbackHandler(BuilderDirectory directory, string message, TreeView serverTree, TriStateTreeView layerTree, LayerBuilderList activeList);
+   public delegate void LoadingCompletedCallbackHandler(BuilderDirectory directory);
+   public delegate void LoadingFailedCallbackHandler(BuilderDirectory directory, string message);
 
    public abstract class ServerBuilder : BuilderDirectory
    {
