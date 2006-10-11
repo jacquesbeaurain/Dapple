@@ -49,7 +49,7 @@ namespace Dapple
          while (queue.Count > 0)
          {
             TreeNode treeNode = queue.Dequeue();
-            if (treeNode.Tag.GetType() == type)
+            if (treeNode.Tag != null && treeNode.Tag.GetType() == type)
                return treeNode;
             else
             {

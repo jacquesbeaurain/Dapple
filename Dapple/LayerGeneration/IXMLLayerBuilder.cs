@@ -210,9 +210,6 @@ namespace Dapple.LayerGeneration
       #endregion
    }
 
-   public delegate void LoadingCompletedCallbackHandler(BuilderDirectory directory);
-   public delegate void LoadingFailedCallbackHandler(BuilderDirectory directory, string message);
-
    public abstract class ServerBuilder : BuilderDirectory
    {
       protected string m_strUrl;

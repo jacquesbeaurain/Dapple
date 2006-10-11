@@ -81,6 +81,22 @@ namespace Dapple.LayerGeneration
       VisibilityChanged
    }
 
+   public class BuilderEntry
+   {
+      public IBuilder Builder;
+      public bool Error;
+      public bool Loading;
+      public string ErrorString;
+
+      public BuilderEntry(IBuilder builder, bool bError, bool bLoading, string strErr)
+      {
+         Builder = builder;
+         Error = bError;
+         Loading = bLoading;
+         ErrorString = strErr;
+      }
+   }
+
    public abstract class LayerBuilder : IBuilder
    {
       protected string m_strName;

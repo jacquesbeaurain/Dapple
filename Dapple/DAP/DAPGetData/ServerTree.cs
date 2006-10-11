@@ -595,8 +595,12 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Refresh the catalog based on the new aoi
       /// </summary>
-      public void AsyncFilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
+      public virtual void AsyncFilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
       {
+         m_eMode = eMode;
+         m_bAOIFilter = bAOIFilter;
+         m_bTextFilter = bTextFilter;
+         CreateSearchString(strSearch);
          EnqueueRequest(ServerTree.AsyncRequestType.FilterChanged, (object)ServerTree.SearchModeEnum.All, (object)searchExtents, (object)strSearch, (object)bAOIFilter, (object)bTextFilter);
       }
 
@@ -607,9 +611,6 @@ namespace Geosoft.GX.DAPGetData
       {
          bool bChanged = false;
 
-         m_eMode = eMode;
-         m_bAOIFilter = bAOIFilter;
-         m_bTextFilter = bTextFilter;
 
          // --- the catalog filter changed, do we need to do something ---
 
@@ -619,7 +620,6 @@ namespace Geosoft.GX.DAPGetData
             bChanged = true;
          }
 
-         CreateSearchString(strSearch);
          if (m_bTextFilter && (m_strSearchString != m_strCurSearchString || m_eMode != m_ePrevMode))
          {
             m_strSearchString = m_strCurSearchString;
@@ -754,7 +754,15 @@ namespace Geosoft.GX.DAPGetData
          }
 
          if (this.InvokeRequired)
-            this.BeginInvoke(new MethodInvoker(this.RefreshResults));
+         {
+            try
+            {
+               this.Invoke(new MethodInvoker(this.RefreshResults));
+            }
+            catch
+            {
+            }
+         }
          else
             RefreshResults();
       }
@@ -772,7 +780,15 @@ namespace Geosoft.GX.DAPGetData
          }
 
          if (this.InvokeRequired)
-            this.BeginInvoke(new MethodInvoker(this.RefreshResults));
+         {
+            try
+            {
+               this.Invoke(new MethodInvoker(this.RefreshResults));
+            }
+            catch
+            {
+            }
+         }
          else
             RefreshResults();
       }
@@ -1205,7 +1221,10 @@ namespace Geosoft.GX.DAPGetData
          System.Diagnostics.Debug.WriteLine("SelectedNode Changed (RefreshResults): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
 #endif
          this.RefreshTreeNodeText();
-         this.ExpandAll();
+         if (m_hDAPRootNode != null)
+            m_hDAPRootNode.ExpandAll();
+         else
+            this.ExpandAll();
          this.EndUpdate();
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
          this.TreeNodeChecked += new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
@@ -1471,27 +1490,7 @@ namespace Geosoft.GX.DAPGetData
       {
          m_oCatalog = null;
          m_oCatalogHierarchyRoot = null;
-
-#if DAPPLE
-         try
-         {
-            // Stop any current requests forcefully
-
-            m_oAsyncThread1.Abort();
-            m_oAsyncThread2.Abort();
-         }
-         catch
-         {
-         }
-
          m_oAsyncQueue.Clear();
-
-         m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
-         m_oAsyncThread1.Start();
-
-         m_oAsyncThread2 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
-         m_oAsyncThread2.Start();
-#endif
 
          if (this.InvokeRequired)
             this.Invoke(new MethodInvoker(ClearTree));
@@ -1541,12 +1540,16 @@ namespace Geosoft.GX.DAPGetData
 
       #region Event Handlers
 
+      protected virtual void AfterSelected(TreeNode node)
+      {
+         // Override in base to do something
+      }
       /// <summary>
       /// Modify catalog browsing tree
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-      protected virtual void OnAfterSelect(object sender, TreeViewEventArgs e)
+      protected void OnAfterSelect(object sender, TreeViewEventArgs e)
       {
          if (m_bSelect)
          {
@@ -1556,13 +1559,7 @@ namespace Geosoft.GX.DAPGetData
 
             hCurrentNode = e.Node;
 
-            if (hCurrentNode == m_hDAPRootNode)
-            {
-               // Clear the DAP server nodes, but still show then
-               foreach (TreeNode hTreeNode in this.DAPRootNodes)
-                  hTreeNode.Nodes.Clear();
-            }
-            else if (!(hCurrentNode.Tag is DataSet))
+            if (!(hCurrentNode.Tag is DataSet))
             {
                string strNewHierarchy = String.Empty;
 
@@ -1584,10 +1581,13 @@ namespace Geosoft.GX.DAPGetData
                         RefreshResults();
                   }
                }
-            }
+               else
+                  AfterSelected(e.Node);
+            } 
 
             // --- This is needed because all the docking window activations tends to change the tree selection on us ---
-            this.SelectedNode = e.Node;
+            if (this.SelectedNode != e.Node)
+               this.SelectedNode = e.Node;
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("SelectedNode Changed (AfterSelect): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
 #endif

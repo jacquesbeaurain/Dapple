@@ -21,12 +21,15 @@ namespace Dapple
    public class ServerTree : Geosoft.GX.DAPGetData.ServerTree
    {
       #region Members
+      protected string m_strSearch;
+      protected WorldWind.GeographicBoundingBox m_filterExtents;
       protected TreeNode m_hRootNode;
       protected TreeNode m_hTileRootNode;
       protected TreeNode m_hWMSRootNode;
       protected MainForm m_oParent;
       protected TriStateTreeView m_layerTree;
       protected LayerBuilderList m_activeLayers;
+      protected List<BuilderEntry> m_wmsServers = new List<BuilderEntry>();
       #endregion
 
       #region Constructor/Disposal
@@ -62,28 +65,29 @@ namespace Dapple
          this.ShowRootLines = false;
          this.ShowNodeToolTips = true;
          this.Sorted = true;
-         this.ShowPlusMinus = true;
-         this.TreeViewNodeSorter = new TreeNodeSorter();
+         this.ShowPlusMinus = false;
+         //this.TreeViewNodeSorter = new TreeNodeSorter();
          this.Scrollable = true;
 
          m_hRootNode = new TreeNode("Available Servers", iImageListIndex("dapple"), iImageListIndex("dapple"));
          this.Nodes.Add(m_hRootNode);
-         m_hRootNode.ToolTipText = "Double-click on layers in here to\nadd them to the current layers.";
+         m_hRootNode.ToolTipText = "It is possible to double-click on layers in\nhere to add them to the current layers.\nSingle-click browses tree.";
 
          m_hDAPRootNode = new TreeNode("DAP Servers", iImageListIndex("dap"), iImageListIndex("dap"));
          m_hRootNode.Nodes.Add(m_hDAPRootNode);
 
          m_hTileRootNode = new TreeNode("Image Tile Servers", iImageListIndex("tile"), iImageListIndex("tile"));
          m_hRootNode.Nodes.Add(m_hTileRootNode);
-
+         BuilderDirectory tileDir = new BuilderDirectory("Image Tile Servers", null, false);
+        
          WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder(m_oParent.Settings.WorldWindDirectory, m_oParent.WorldWindowControl, "WMS Servers", null);
-         wmsBuilder.LoadingCompleted += new LayerGeneration.LoadingCompletedCallbackHandler(OnCatalogLoaded);
-         wmsBuilder.LoadingFailed += new LoadingFailedCallbackHandler(OnCatalogFailed);
+         wmsBuilder.LoadingCompleted += new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
+         wmsBuilder.LoadingFailed += new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
 
          m_hWMSRootNode = new TreeNode("WMS Servers", iImageListIndex("wms"), iImageListIndex("wms"));
          m_hWMSRootNode.Tag = wmsBuilder;
          m_hRootNode.Nodes.Add(m_hWMSRootNode);
-
+         
          this.MouseDoubleClick += new MouseEventHandler(OnMouseDoubleClick);
       }
       protected override void Dispose(bool disposing)
@@ -103,151 +107,212 @@ namespace Dapple
             return m_hWMSRootNode.Nodes;
          }
       }
+
+      /// <summary>
+      /// The root node collection to use where tile servers are kept
+      /// </summary>
+      public TreeNodeCollection TileRootNodes
+      {
+         get
+         {
+            return m_hTileRootNode.Nodes;
+         }
+      }
+
+      public TreeNode RootNode
+      {
+         get
+         {
+            return m_hRootNode;
+         }
+      }
       #endregion
 
       #region Catalog Loaded/Failed Handlers
 
-      delegate void InvokeLoadedCatalog(BuilderDirectory directory);
-      delegate void InvokeFailedCatalog(BuilderDirectory directory, string message);
-
-      void OnCatalogLoaded(BuilderDirectory directory)
+      void OnWMSCatalogLoaded(WMSServerBuilder builder)
       {
          if (!this.IsDisposed)
          {
             if (this.InvokeRequired)
-               this.BeginInvoke(new InvokeLoadedCatalog(LoadCatalog), new object[] { directory });
+               this.BeginInvoke(new WMSCatalogBuilder.LoadingCompletedCallbackHandler(LoadWMSCatalog), new object[] { builder });
             else
-               LoadCatalog(directory);
+               LoadWMSCatalog(builder);
          }
       }
 
-      void OnCatalogFailed(BuilderDirectory directory, string message)
+      void OnWMSCatalogFailed(WMSServerBuilder builder, string message)
       {
          if (!this.IsDisposed)
          {
             if (this.InvokeRequired)
-               this.BeginInvoke(new InvokeFailedCatalog(CatalogFailed), new object[] { directory, message });
+               this.BeginInvoke(new WMSCatalogBuilder.LoadingFailedCallbackHandler(WMSCatalogFailed), new object[] { builder, message });
             else
-               CatalogFailed(directory, message);
+               WMSCatalogFailed(builder, message);
          }
       }
 
-      void CatalogFailed(BuilderDirectory directory, string message)
+      void WMSCatalogFailed(WMSServerBuilder builder, string message)
       {
-         TreeNode treeNode = TreeUtils.FindNodeBFS(directory, m_hRootNode.Nodes);
-         if (treeNode != null)
+         BuilderEntry builderEntry = null;
+         foreach (BuilderEntry entry in m_wmsServers)
          {
-            treeNode.Nodes.Clear();
-            treeNode.Text = "Failed: " + directory.Name + ": " + message;
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
+            if (entry.Builder == builder)
+            {
+               entry.Error = true;
+               entry.ErrorString = message;
+               entry.Loading = false;
+               builderEntry = entry;
+               break;
+            }
          }
+
+         if (builderEntry != null)
+            bFillWMSCatalogEntriesInTreeNode(builderEntry.Builder as BuilderDirectory);
       }
 
-      void ProcessCatalogDirectory(BuilderDirectory dir, TreeNode parent)
+      bool bFillWMSCatalogEntriesInTreeNode(BuilderDirectory dir)
       {
-         if (parent.Tag is WMSServerBuilder && dir.SubList.Count == 1)
+         TreeNode treeNode;
+
+         TreeNode treeWMSNode = (this.SelectedNode != null && (this.SelectedNode.Tag as BuilderDirectory) == dir) ? this.SelectedNode : null;
+         TreeNode treeWMSRootNode = this.SelectedNode == m_hWMSRootNode ? m_hWMSRootNode : null;
+
+         if (treeWMSNode != null)
          {
-            BuilderDirectory builders = (BuilderDirectory)dir.SubList[0];
-            ProcessCatalogDirectory(builders, parent);
+            treeNode = treeWMSNode;
+            while (treeWMSRootNode == null && treeNode.Parent != null)
+            {
+               if (treeNode.Parent == m_hWMSRootNode)
+               {
+                  treeWMSRootNode = m_hWMSRootNode;
+                  break;
+               }
+               treeNode = treeNode.Parent;
+            }
+         }
+        
+         if (treeWMSRootNode != null)
+         {
+            this.BeginUpdate();
+
+            if (treeWMSRootNode == this.SelectedNode)
+            {
+               treeWMSRootNode.Nodes.Clear();
+               foreach (BuilderEntry entry in m_wmsServers)
+               {
+                  if (entry.Loading)
+                  {
+                     treeNode = treeWMSRootNode.Nodes.Add("Loading: " + entry.Builder.Name);
+                     treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("time");
+                  }
+                  else
+                  {
+                     treeNode = treeWMSRootNode.Nodes.Add(entry.Builder.Name);
+                     if (entry.Error)
+                     {
+                        if (entry.ErrorString != string.Empty)
+                           treeNode.Text += "(" + entry.ErrorString + ")";
+                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
+                     }
+                     else
+                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("enserver");
+                  }
+                  treeNode.Tag = entry.Builder;
+               }
+               treeWMSRootNode.Expand();
+            }
+            else
+            {
+               List<TreeNode> cutList = new List<TreeNode>();
+               foreach (TreeNode cutNode in treeWMSRootNode.Nodes)
+               {
+                  if (cutNode != treeWMSNode)
+                     cutList.Add(cutNode);
+               }
+               foreach (TreeNode cutNode in cutList)
+                  cutNode.Remove();
+
+               if (dir is WMSServerBuilder && dir.SubList.Count == 1)
+               {
+                  foreach (BuilderDirectory childDir in dir.SubList[0].SubList)
+                  {
+                     treeNode = treeWMSNode.Nodes.Add(childDir.Name);
+                     treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("folder");
+                     treeNode.Tag = childDir;
+                  }
+                  foreach (LayerBuilder builder in dir.SubList[0].LayerBuilders)
+                  {
+                     treeNode = treeWMSNode.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
+                     treeNode.Tag = builder;
+                  }
+               }
+               else
+               {
+                  foreach (BuilderDirectory childDir in dir.SubList)
+                  {
+                     treeNode = treeWMSNode.Nodes.Add(childDir.Name);
+                     treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("folder");
+                     treeNode.Tag = childDir;
+                  }
+               }
+               foreach (LayerBuilder builder in dir.LayerBuilders)
+               {
+                  treeNode = treeWMSNode.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
+                  treeNode.Tag = builder;
+               }
+               treeWMSNode.Expand();
+            }
+            this.EndUpdate();
+            return true;
          }
          else
-         {
-            foreach (BuilderDirectory childDir in dir.SubList)
-            {
-               TreeNode treeNode = parent.Nodes.Add(childDir.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("folder");
-               treeNode.Tag = childDir;
-               ProcessCatalogDirectory(childDir, treeNode);
-            }
-         }
-         foreach (LayerBuilder builder in dir.LayerBuilders)
-         {
-            TreeNode treeNode;
-            if (builder is DAPQuadLayerBuilder)
-            {
-               int iImage;
-               DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)builder;
-
-               iImage = iImageIndex(dapbuilder.DAPType.ToLower());
-               if (iImage == -1)
-                  iImage = iImageListIndex("layer");
-               treeNode = parent.Nodes.Add(builder.Name, builder.Name, iImage, iImage);
-            }
-            else
-               treeNode = parent.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
-            treeNode.Tag = builder;
-         }
+            return false;
       }
 
-      void LoadCatalog(BuilderDirectory directory)
+      void LoadWMSCatalog(WMSServerBuilder wmsbuilder)
       {
-         this.BeginUpdate();
-
-         TreeNode treeNode = TreeUtils.FindNodeBFS(directory, m_hRootNode.Nodes);
-
-         if (treeNode == null)
+         BuilderEntry builderEntry = null;
+         foreach (BuilderEntry entry in m_wmsServers)
          {
-            TreeNode treeParentNode = TreeUtils.FindNodeBFS(directory.Parent, m_hRootNode.Nodes);
-
-            if (treeParentNode == null)
-               return;
-
-            if (directory is WMSServerBuilder)
+            if (entry.Builder == wmsbuilder)
             {
-               (treeParentNode.Tag as BuilderDirectory).SubList.Add(directory);
-               treeNode = treeParentNode.Nodes.Add(directory.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("enserver");
-               treeNode.Tag = directory;
-            }
-            else
-            {
-               treeNode = treeParentNode.Nodes.Add(directory.Name);
-               treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("folder");
-               treeNode.Tag = directory;
+               entry.Error = false;
+               entry.Loading = false;
+               builderEntry = entry;
+               break;
             }
          }
-         else
-         {
-            treeNode.Text = directory.Name;
-         }
 
-         treeNode.SelectedImageIndex = treeNode.ImageIndex = (directory is WMSServerBuilder ? iImageListIndex("enserver") : iImageListIndex("layer"));
-         ProcessCatalogDirectory(directory, treeNode);
-         // Remove the nodes (we can restore them using the IBuilder parent/client relations ships from here on)
-         treeNode.Nodes.Clear();
-         this.Sort();
-         this.EndUpdate();
+         if (builderEntry != null)
+            bFillWMSCatalogEntriesInTreeNode(builderEntry.Builder as BuilderDirectory);
 
          m_layerTree.BeginUpdate();
-         if (directory is WMSServerBuilder)
+
+         // Find provider in parents first
+         IBuilder parentCatalog = wmsbuilder;
+
+         while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
+            parentCatalog = parentCatalog.Parent;
+
+         if (parentCatalog != null)
          {
-            // Find provider in parents first
-            IBuilder parentCatalog = directory.Parent;
+            WMSCatalogBuilder provider = parentCatalog as WMSCatalogBuilder;
 
-            while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-               parentCatalog = parentCatalog.Parent;
-
-            if (parentCatalog != null)
+            foreach (LayerBuilderContainer container in m_activeLayers)
             {
-               WMSServerBuilder wmsserver = directory as WMSServerBuilder;
-               WMSCatalogBuilder provider = parentCatalog as WMSCatalogBuilder;
-
-               foreach (LayerBuilderContainer container in m_activeLayers)
+               if (container.Uri.StartsWith(WMSQuadLayerBuilder.URLProtocolName) && wmsbuilder.URL == WMSQuadLayerBuilder.ServerURLFromURI(container.Uri))
                {
-                  if (container.Uri.StartsWith(WMSQuadLayerBuilder.URLProtocolName) && wmsserver.URL == WMSQuadLayerBuilder.ServerURLFromURI(container.Uri))
-                  {
-                     LayerBuilder builder = WMSQuadLayerBuilder.GetBuilderFromURI(container.Uri, provider, m_oParent.WorldWindowControl, wmsserver);
-                     if (builder != null)
-                        m_activeLayers.RefreshFromSource(container, builder);
-                  }
+                  LayerBuilder builder = WMSQuadLayerBuilder.GetBuilderFromURI(container.Uri, provider, m_oParent.WorldWindowControl, wmsbuilder);
+                  if (builder != null)
+                     m_activeLayers.RefreshFromSource(container, builder);
                }
             }
          }
          m_layerTree.EndUpdate();
       }
       #endregion
-
-
+      
       #region Methods
 
       public XmlNode GetCurrentDAPMetaData(XmlDocument oDoc)
@@ -289,24 +354,39 @@ namespace Dapple
          if (this.SelectedNode.Tag is WMSServerBuilder)
          {
             WMSServerBuilder serverBuilder = this.SelectedNode.Tag as WMSServerBuilder;
-            // Need to have a catalog builder in treenode's parents
-            IBuilder parentCatalog = this.SelectedNode.Tag as IBuilder;
-
-            while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-               parentCatalog = parentCatalog.Parent;
-
-            if (parentCatalog != null)
+            BuilderEntry builderEntry = null;
+            foreach (BuilderEntry entry in m_wmsServers)
             {
-               WMSCatalogBuilder wmsBuilder = parentCatalog as WMSCatalogBuilder;
-               wmsBuilder.RemoveServer(serverBuilder.URL);
+               if (entry.Builder == serverBuilder)
+               {
+                  builderEntry = entry;
+                  break;
+               }
+            }
 
-               BuilderDirectory wmsDir = wmsBuilder.AddServer(serverBuilder.URL, serverBuilder.Parent as BuilderDirectory);
-               wmsBuilder.SubList.Add(wmsDir);
 
-               this.SelectedNode.Nodes.Clear();
-               this.SelectedNode.Text = "Loading: " + serverBuilder.URL;
-               this.SelectedNode.SelectedImageIndex = this.SelectedNode.ImageIndex = iImageListIndex("time");
-               this.SelectedNode.Tag = wmsDir;
+            if (builderEntry != null)
+            {
+               builderEntry.Error = false;
+               builderEntry.Loading = true;
+
+               // Need to have a catalog builder in treenode's parents
+               IBuilder parentCatalog = this.SelectedNode.Tag as IBuilder;
+
+               while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
+                  parentCatalog = parentCatalog.Parent;
+
+               if (parentCatalog != null)
+               {
+                  WMSCatalogBuilder wmsBuilder = parentCatalog as WMSCatalogBuilder;
+                  wmsBuilder.RemoveServer(serverBuilder.URL);
+
+                  this.SelectedNode.Nodes.Clear();
+                  this.SelectedNode.Text = "Loading: " + serverBuilder.URL;
+                  this.SelectedNode.SelectedImageIndex = this.SelectedNode.ImageIndex = iImageListIndex("time");
+                  this.SelectedNode.Tag = builderEntry.Builder = wmsBuilder.AddServer(serverBuilder.URL, serverBuilder.Parent as BuilderDirectory);
+                  wmsBuilder.SubList.Add(builderEntry.Builder as BuilderDirectory);
+               }
             }
          }
          else if (this.SelectedNode.Tag is Server)
@@ -337,33 +417,57 @@ namespace Dapple
             else if (treeNode.Tag is WMSServerBuilder)
             {
                WMSServerBuilder serverBuilder = treeNode.Tag as WMSServerBuilder;
-               // Need to have a catalog builder in treenode's parents
-               IBuilder parentCatalog = serverBuilder as IBuilder;
+               BuilderEntry builderEntry = null;
+               foreach (BuilderEntry entry in m_wmsServers)
+               {
+                  if (entry.Builder == serverBuilder)
+                  {
+                     builderEntry = entry;
+                     break;
+                  }
+               }
 
-               while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
-                  parentCatalog = parentCatalog.Parent;
+               if (builderEntry != null)
+               {
+                  m_wmsServers.Remove(builderEntry);
 
-               if (parentCatalog != null && parentCatalog is WMSCatalogBuilder)
-                  (parentCatalog as WMSCatalogBuilder).RemoveServer(serverBuilder.URL);
+                  // Need to have a catalog builder in treenode's parents
+                  IBuilder parentCatalog = serverBuilder as IBuilder;
+
+                  while (parentCatalog != null && !(parentCatalog is WMSCatalogBuilder))
+                     parentCatalog = parentCatalog.Parent;
+
+                  if (parentCatalog != null && parentCatalog is WMSCatalogBuilder)
+                     (parentCatalog as WMSCatalogBuilder).RemoveServer(serverBuilder.URL);
+               }
+               else
+                  return;
             }
-
             (treeNode.Parent.Tag as BuilderDirectory).SubList.Remove(treeNode.Tag as BuilderDirectory);
          }
 
          treeNode.Parent.Nodes.Remove(treeNode);
       }
 
-      public bool AddWMSServer(string strCapUrl)
+      public bool AddWMSServer(string strCapUrl, bool bUpdateTree)
       {
          WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
          WorldWind.WMSList wmsList = wmsBuilder.FindServer(strCapUrl);
          if (wmsList == null)
          {
-            TreeNode treeNode = m_hWMSRootNode.Nodes.Add(strCapUrl);
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("time");
-            treeNode.Tag = wmsBuilder.AddServer(strCapUrl, wmsBuilder);
-            wmsBuilder.SubList.Add(treeNode.Tag as BuilderDirectory);
-            treeNode.Text = (treeNode.Tag as BuilderDirectory).Name;
+            BuilderEntry builderEntry;
+            m_wmsServers.Add(builderEntry = new BuilderEntry(wmsBuilder.AddServer(strCapUrl, wmsBuilder), false, true, String.Empty));
+            if (bUpdateTree)
+            {
+               this.BeginUpdate();
+               m_hWMSRootNode.Nodes.Clear();
+               TreeNode treeNode = WMSRootNodes.Add("Loading: " + strCapUrl);
+               treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("time");
+               treeNode.Tag = builderEntry.Builder;
+               this.EndUpdate();
+            }
+            wmsBuilder.SubList.Add(builderEntry.Builder as BuilderDirectory);
+            
             return true;
          }
          else
@@ -376,9 +480,18 @@ namespace Dapple
 
          try
          {
+            // Clear Tree and WMS servers too
+            WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
+            wmsBuilder.LoadingCompleted -= new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
+            wmsBuilder.LoadingFailed -= new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
+            wmsBuilder = new WMSCatalogBuilder(m_oParent.Settings.WorldWindDirectory, m_oParent.WorldWindowControl, "WMS Servers", null);
+            m_hWMSRootNode.Tag = wmsBuilder;
+            wmsBuilder.LoadingCompleted += new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
+            wmsBuilder.LoadingFailed += new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
+
             foreach (TreeNode node in m_hRootNode.Nodes)
                node.Nodes.Clear();
-
+            
             // Reset First
             m_bEntireCatalogMode = false;
             m_bAOIFilter = false;
@@ -405,207 +518,128 @@ namespace Dapple
                for (int i = 0; i < oView.View.servers.builderentryCount; i++)
                {
                   builderentryType entry = oView.View.servers.GetbuilderentryAt(i);
-                  LoadBuilderEntryIntoNode(entry, m_hRootNode);
+                  LoadServers(entry);
                }
             }
 
-            AsyncFilterChanged(ServerTree.SearchModeEnum.All, null, null, false, false);
+            ClearSearch();
          }
          finally
          {
             // Always expand root node
             m_hRootNode.Expand();
-            this.Sort();
 
-            // Remove the first level nodes (we can restore them using the IBuilder parent/client relations ships from here on)
-            foreach (TreeNode node in m_hTileRootNode.Nodes)
-               node.Nodes.Clear();
-            foreach (TreeNode node in m_hWMSRootNode.Nodes)
-               node.Nodes.Clear();
+            // Collapse the first level nodes and clean the subnodes (we can restore them using the IBuilder parent/client relations ships from here on)
+            foreach (TreeNode node in m_hRootNode.Nodes)
+            {
+               if (node == m_hDAPRootNode)
+                  node.Collapse();
+               else
+                  node.Nodes.Clear();
+               foreach (TreeNode subNode in node.Nodes)
+                  subNode.Nodes.Clear();
+            }
             this.EndUpdate();
          }
       }
 
       public void SaveToView(DappleView oView)
       {
+         builderentryType entry;
+         builderdirectoryType dir;
          serversType servers = oView.View.Newservers();
 
-         foreach (TreeNode node in m_hRootNode.Nodes)
+         entry = servers.Newbuilderentry();
+         dir = entry.Newbuilderdirectory();
+         dir.Addname(new SchemaString(m_hDAPRootNode.Text));
+         dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
+         foreach (string strDapUrl in m_oFullServerList.Keys)
          {
-            builderentryType entry = servers.Newbuilderentry();
-            PopulateEntry(entry, node);
-            servers.Addbuilderentry(entry);
+            builderentryType subentry = servers.Newbuilderentry();
+            dapcatalogType dap = subentry.Newdapcatalog();
+            dap.Addurl(new SchemaString(strDapUrl));
+            subentry.Adddapcatalog(dap);
+            dir.Addbuilderentry(subentry);
          }
+         entry.Addbuilderdirectory(dir);
+         servers.Addbuilderentry(entry);
+
+         entry = servers.Newbuilderentry();
+         entry.Addbuilderdirectory(m_hTileRootNode.Tag as builderdirectoryType);
+         servers.Addbuilderentry(entry);
+
+         entry = servers.Newbuilderentry();
+         dir = entry.Newbuilderdirectory();
+         dir.Addname(new SchemaString(m_hWMSRootNode.Text));
+         dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
+         foreach (BuilderEntry builderEntry in m_wmsServers)
+         {
+            builderentryType subentry = servers.Newbuilderentry();
+            WMSServerBuilder wmsServer = builderEntry.Builder as WMSServerBuilder;
+            wmscatalogType wms = subentry.Newwmscatalog();
+            wms.Addcapabilitiesurl(new SchemaString(wmsServer.URL));
+            subentry.Addwmscatalog(wms);
+            dir.Addbuilderentry(subentry);
+         }
+         entry.Addbuilderdirectory(dir);
+         servers.Addbuilderentry(entry);
+
          oView.View.Addservers(servers);
       }
 
-      protected void PopulateEntry(builderentryType entry, TreeNode node)
+      void LoadBuilderEntryIntoNode(tileserversetType tileServerSet, TreeNode serverNode)
       {
-         if (node.Tag is Server)
+         TreeNode newServerChildNode;
+         int j;
+
+         TileSetSet tileDir = new TileSetSet(tileServerSet.name.Value, null, false);
+         if (tileServerSet.Hastilelayers())
          {
-            dapcatalogType dap = entry.Newdapcatalog();
-            dap.Addurl(new SchemaString((node.Tag as Server).Url));
-            entry.Adddapcatalog(dap);
-         }
-         else 
-         {
-            IBuilder builder = null;
-            
-            if (node.Tag is IBuilder)
-               builder = node.Tag as IBuilder;
-
-            if (builder is WMSServerBuilder)
+            for (j = 0; j < tileServerSet.tilelayers.tilelayerCount; j++)
             {
-               wmscatalogType wms = entry.Newwmscatalog();
-               wms.Addcapabilitiesurl(new SchemaString((builder as WMSServerBuilder).URL));
-               entry.Addwmscatalog(wms);
-            }
-            else if (builder is VETileSetBuilder)
-            {
-               virtualearthType ve = entry.Newvirtualearth();
-               ve.Addname(new SchemaString(builder.Name));
-               entry.Addvirtualearth(ve);
-            }
-            else if (builder is TileSetSet)
-            {
-               tilelayersType layers = null;
-               tileserversetType set = entry.Newtileserverset();
-               set.Addname(new SchemaString(builder.Name));
-               foreach (TreeNode subnode in node.Nodes)
-               {
-                  QuadLayerBuilder layer = subnode.Tag as QuadLayerBuilder;
-                  if (layer != null)
-                  {
-                     if (layers == null)
-                        layers = set.Newtilelayers();
+               tilelayerType tile = tileServerSet.tilelayers.GettilelayerAt(j);
+               newServerChildNode = serverNode.Nodes.Add(tile.name.Value);
+               newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = iImageListIndex("layer");
 
-                     tilelayerType tilelayer = layers.Newtilelayer();
-                     tilelayer.Addname(new SchemaString(subnode.Text));
-                     tilelayer.Adddataset(new SchemaString(layer.TileServerDatasetName));
-                     tilelayer.Addimageextension(new SchemaString(layer.ImageFileExtension));
-                     tilelayer.Addurl(new SchemaString(layer.TileServerURL));
-                     tilelayer.Addlevels(new SchemaInt(layer.Levels));
-                     tilelayer.Addlevelzerotilesize(new SchemaDouble((double)layer.LevelZeroTileSize));
-                     tilelayer.Addtilepixelsize(new SchemaInt(layer.ImagePixelSize));
-
-                     boundingboxType bounds = tilelayer.Newboundingbox();
-                     bounds.Addmaxlat(new SchemaDouble(layer.Extents.North));
-                     bounds.Addminlat(new SchemaDouble(layer.Extents.South));
-                     bounds.Addmaxlon(new SchemaDouble(layer.Extents.East));
-                     bounds.Addminlon(new SchemaDouble(layer.Extents.West));
-                     tilelayer.Addboundingbox(bounds);
-                     layers.Addtilelayer(tilelayer);
-                  }
-               }
-               if (layers != null)
-                  set.Addtilelayers(layers);
-
-               entry.Addtileserverset(set);
-            }
-            else if (builder == null || builder is BuilderDirectory)
-            {
-               builderdirectoryType dir = entry.Newbuilderdirectory();
-               dir.Addname(new SchemaString(node.Text));
-
-               if (builder == null)
-               {
-                  if (node == m_hDAPRootNode)
-                     dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
-                  else if (node == m_hWMSRootNode)
-                     dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
-                  else if (node == m_hTileRootNode)
-                     dir.Addspecialcontainer(new SpecialDirectoryType("ImageServers"));
-               }
-               foreach (TreeNode subnode in node.Nodes)
-               {
-                  builderentryType subentry = dir.Newbuilderentry();
-                  PopulateEntry(subentry, subnode);
-                  dir.Addbuilderentry(subentry);
-               }
-
-               entry.Addbuilderdirectory(dir);
+               int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
+               int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
+               WorldWind.ImageTileService tileService = new WorldWind.ImageTileService(tile.dataset.Value, tile.url.Value);
+               QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), (decimal)tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tileService,
+                                                       tile.imageextension.Value, 255, m_oParent.WorldWindowControl.CurrentWorld, m_oParent.Settings.CachePath, m_oParent.Settings.CachePath, tileDir);
+               newServerChildNode.Tag = quadBuilder;
             }
          }
       }
 
       void LoadBuilderEntryIntoNode(builderentryType entry, TreeNode serverNode)
       {
-         int i, j;
-         IBuilder Parent = null;
-         BuilderDirectory dir;
          TreeNodeCollection serverNodes;
          TreeNode newServerNode;
          TreeNode newServerChildNode;
          TreeNode newServerChildSubNode;
 
-         if (serverNode != null)
-         {
-            Parent = (IBuilder)serverNode.Tag;
-            serverNodes = serverNode.Nodes;
-         }
-         else
-         {
-            serverNodes = m_hRootNode.Nodes;
-         }
-
-
+         serverNodes = serverNode.Nodes;
+         
          if (entry.Hasbuilderdirectory())
          {
             if (entry.builderdirectory.Hasspecialcontainer())
-            {
-               if (entry.builderdirectory.specialcontainer.Value == "ImageServers")
-                  newServerNode = m_hTileRootNode;
-               else if (entry.builderdirectory.specialcontainer.Value == "DAPServers")
-                  newServerNode = m_hDAPRootNode;
-               else if (entry.builderdirectory.specialcontainer.Value == "WMSServers")
-                  newServerNode = m_hWMSRootNode;
-               else
-                  return;
-            }
+               return;
             else
             {
                newServerNode = serverNodes.Add(entry.builderdirectory.name.Value);
                newServerNode.SelectedImageIndex = newServerNode.ImageIndex = iImageListIndex("local");
-               dir = new BuilderDirectory(newServerNode.Text, Parent, false);
-               newServerNode.Tag = dir;
+               newServerNode.Tag = entry.builderdirectory;
             }
-            
-            for (i = 0; i < entry.builderdirectory.builderentryCount; i++)
-               LoadBuilderEntryIntoNode(entry.builderdirectory.GetbuilderentryAt(i), newServerNode);
          }
-         else if (entry.Hasdapcatalog())
-         {
-            Geosoft.GX.DAPGetData.Server dapServer;
-            AddDAPServer(entry.dapcatalog.url.Value, out dapServer);
-         }
-         else if (entry.Haswmscatalog())
-            AddWMSServer(entry.wmscatalog.capabilitiesurl.Value);
          else if (entry.Hastileserverset())
          {
-            TileSetSet tileDir = new TileSetSet(entry.tileserverset.name.Value, Parent, false);
             newServerChildNode = serverNodes.Add(entry.tileserverset.name.Value);
             newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = iImageListIndex("tile");
-            newServerChildNode.Tag = tileDir;
-            if (entry.tileserverset.Hastilelayers())
-            {
-               for (j = 0; j < entry.tileserverset.tilelayers.tilelayerCount; j++)
-               {
-                  tilelayerType tile = entry.tileserverset.tilelayers.GettilelayerAt(j);
-                  newServerChildSubNode = newServerChildNode.Nodes.Add(tile.name.Value);
-                  newServerChildSubNode.SelectedImageIndex = newServerChildSubNode.ImageIndex = iImageListIndex("layer");
-
-                  int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
-                  int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
-                  WorldWind.ImageTileService tileService = new WorldWind.ImageTileService(tile.dataset.Value, tile.url.Value);
-                  QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), (decimal)tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tileService,
-                                                          tile.imageextension.Value, 255, m_oParent.WorldWindowControl.CurrentWorld, m_oParent.Settings.CachePath, m_oParent.Settings.CachePath, tileDir);
-                  newServerChildSubNode.Tag = quadBuilder;
-               }
-            }
+            newServerChildNode.Tag = entry.tileserverset;            
          }
          else if (entry.Hasvirtualearth())
          {
-            VETileSetBuilder veDir = new VETileSetBuilder(entry.virtualearth.name.Value, Parent, false);
+            VETileSetBuilder veDir = new VETileSetBuilder(entry.virtualearth.name.Value, null, false);
             newServerChildNode = serverNodes.Add(entry.virtualearth.name.Value);
             newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = iImageListIndex("live");
             newServerChildNode.Tag = veDir;
@@ -624,22 +658,61 @@ namespace Dapple
             veDir.LayerBuilders.Add(q);
          }
       }
+
+      void LoadServers(builderentryType entry)
+      {
+         int i;
+         
+         if (entry.Hasbuilderdirectory())
+         {
+            if (entry.builderdirectory.Hasspecialcontainer())
+            {
+               if (entry.builderdirectory.specialcontainer.Value == "ImageServers")
+                  m_hTileRootNode.Tag = entry.builderdirectory;
+            }
+            
+            for (i = 0; i < entry.builderdirectory.builderentryCount; i++)
+                LoadServers(entry.builderdirectory.GetbuilderentryAt(i));
+         }
+         else if (entry.Hasdapcatalog())
+         {
+            Geosoft.GX.DAPGetData.Server dapServer;
+            AddDAPServer(entry.dapcatalog.url.Value, out dapServer);
+         }
+         else if (entry.Haswmscatalog())
+            AddWMSServer(entry.wmscatalog.capabilitiesurl.Value, false);
+      }
       #endregion
 
       #region Search
 
       public void ClearSearch()
       {
+         AsyncFilterChanged(ServerTree.SearchModeEnum.All, null, string.Empty, false, false);
+         m_filterExtents = null;
+         m_strSearch = string.Empty;
+
+         // Reselect current node
+         TreeNode treeNode = this.SelectedNode;
+         this.SelectedNode = null;
+         this.SelectedNode = treeNode;
       }
       public void Search(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText)
       {
-        // FilterTreeNodes(null, filterTree.Nodes, GeographicBoundingBox.FromQuad(m_oParent.WorldWindowControl.GetViewBox()), bIntersect, "");
+         AsyncFilterChanged(ServerTree.SearchModeEnum.All, bInterSect ? new BoundingBox(extents.East, extents.North, extents.West, extents.South) : null, strText, bInterSect, strText != string.Empty);
+         m_filterExtents = extents;
+         m_strSearch = strText;
+
+         // Reselect current node
+         TreeNode treeNode = this.SelectedNode;
+         this.SelectedNode = null;
+         this.SelectedNode = treeNode;
       }
-      protected void FilterTreeNodes(TreeNode node, TreeNodeCollection col, WorldWind.GeographicBoundingBox filterExtents, bool bIntersect, string filterText)
+
+      protected void FilterTreeNodes(TreeNode node)
       {
-         /*
          List<TreeNode> nodeList = new List<TreeNode>();
-         foreach (TreeNode treeNode in col)
+         foreach (TreeNode treeNode in node.Nodes)
             nodeList.Add(treeNode);
 
          foreach (TreeNode treeNode in nodeList)
@@ -647,63 +720,13 @@ namespace Dapple
             if (treeNode.Tag is ImageBuilder)
             {
                ImageBuilder builder = treeNode.Tag as ImageBuilder;
-               if ((filterText.Length > 0 && treeNode.Text.IndexOf(filterText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) || (filterExtents != null && ((bIntersect && !filterExtents.IntersectsWith(builder.Extents)) || (!bIntersect && !filterExtents.Contains(builder.Extents)))))
+               if ((m_strSearch != string.Empty && treeNode.Text.IndexOf(m_strSearch, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
+                  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.IntersectsWith(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
                   treeNode.Remove();
                else
                   treeNode.SelectedImageIndex = treeNode.ImageIndex;
             }
-            /*TODO:else if (treeNode.Tag is DAPServerBuilder && filterExtents != null)
-            {
-               // Poke the DAP server again to get a filtered catalog from it.
-
-               DAPServerBuilder serverBuilder = treeNode.Tag as DAPServerBuilder;
-               // Need to have a catalog builder in treenode's parents
-               IBuilder parentCatalog = ServerBuilderItem as IBuilder;
-
-               while (parentCatalog != null && !(parentCatalog is DAPCatalogBuilder))
-                  parentCatalog = parentCatalog.Parent;
-
-               if (parentCatalog != null)
-               {
-                  DAPCatalogBuilder dapBuilder = (DAPCatalogBuilder)(parentCatalog as DAPCatalogBuilder).Clone();
-                  dapBuilder.RemoveServer(serverBuilder.Server.Url);
-                  dapBuilder.ServerTree = treeNode.TreeView;
-
-                     Geosoft.GX.DAPGetData.Server dapServer = new Geosoft.GX.DAPGetData.Server(serverBuilder.Server.Url, m_oParent.Settings.CachePath);
-                     BuilderDirectory dapDir = dapBuilder.AddDapServer(dapServer, new Geosoft.Dap.Common.BoundingBox(filterExtents.East, filterExtents.North, filterExtents.West, filterExtents.South), serverBuilder.Parent);
-                     dapBuilder.SubList.Add(dapDir);
-
-                     treeNode.Nodes.Clear();
-                     treeNode.Text = "Loading: " + serverBuilder.Server.Url;
-                     treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("time");
-                     treeNode.Tag = dapDir;
-               }
-            }
-            else if (treeNode.Tag is BuilderDirectory)
-               // Recurse
-               FilterTreeNodes(treeNode, treeNode.Nodes, filterExtents, bIntersect, filterText);
-         }
-
-         // Remove empty folders
-         if (node != null && node.Tag is BuilderDirectory)
-         {
-            int iDatasets = 0;
-            CountTreeNodeDatasets(col, ref iDatasets);
-            if (iDatasets == 0)
-            {
-               if (node.Parent != null)
-                  node.Remove();
-               else
-               {
-                  if (node.ImageIndex == iImageListIndex("dap"))
-                     node.ImageIndex = node.SelectedImageIndex = iImageListIndex("dap_gray");
-                  else if (node.ImageIndex == iImageListIndex("wms"))
-                     node.ImageIndex = node.SelectedImageIndex = iImageListIndex("wms_gray");
-                  else if (node.ImageIndex == iImageListIndex("tile"))
-                     node.ImageIndex = node.SelectedImageIndex = iImageListIndex("tile_gray");
-               }
-            }
-         }*/
+         }            
       }
 
       #endregion
@@ -712,21 +735,64 @@ namespace Dapple
       /// <summary>
       /// Modify catalog browsing tree
       /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      protected override void OnAfterSelect(object sender, TreeViewEventArgs e)
+      /// <param name="node"></param>
+      protected override void AfterSelected(TreeNode treeNode)
       {
-         base.OnAfterSelect(sender, e);
-         if (m_bSelect)
+         foreach (TreeNode node in m_hRootNode.Nodes)
          {
-            TreeNode hCurrentNode;
-
-            m_bSelect = false;
-
-            hCurrentNode = e.Node;
-
-            m_bSelect = true;
+            TreeNode tnTemp = this.SelectedNode;
+            while (tnTemp != null)
+            {
+               if (tnTemp == node)
+                  break;
+               tnTemp = tnTemp.Parent;
+            }
+            if (tnTemp == null)
+            {
+               node.Collapse();
+               foreach (TreeNode subNode in node.Nodes)
+                  subNode.Nodes.Clear();
+            }
          }
+         if (treeNode.Tag is builderdirectoryType || treeNode.Tag is tileserversetType)
+         {
+            if (treeNode != m_hTileRootNode)
+            {
+               List<TreeNode> cutList = new List<TreeNode>();
+               foreach (TreeNode cutNode in treeNode.Parent.Nodes)
+               {
+                  if (cutNode != treeNode)
+                     cutList.Add(cutNode);
+               }
+               foreach (TreeNode cutNode in cutList)
+                  cutNode.Remove();
+            }
+            treeNode.Nodes.Clear();
+
+            if (treeNode.Tag is builderdirectoryType)
+            {
+               builderdirectoryType dir = treeNode.Tag as builderdirectoryType;
+               for (int i = 0; i < dir.builderentryCount; i++)
+                  LoadBuilderEntryIntoNode(dir.GetbuilderentryAt(i), treeNode);
+            }
+            else if (treeNode.Tag is tileserversetType)
+               LoadBuilderEntryIntoNode(treeNode.Tag as tileserversetType, treeNode);
+            
+            treeNode.ExpandAll();
+         }
+         else if (!(treeNode.Tag is BuilderDirectory && bFillWMSCatalogEntriesInTreeNode(treeNode.Tag as BuilderDirectory)))
+         {
+            if (treeNode == m_hDAPRootNode)
+            {
+               m_oCurServer = null;
+               m_hCurServerTreeNode = null;
+               PopulateServerList();
+               m_hDAPRootNode.Expand();
+            }
+            else if (treeNode == m_hTileRootNode)
+               m_hTileRootNode.Expand();
+         }
+         FilterTreeNodes(treeNode);
       }
 
       protected void OnMouseDoubleClick(object sender, MouseEventArgs e)
@@ -740,6 +806,7 @@ namespace Dapple
       #endregion
    }
 
+   #region TreeNode Sorter
    // Create a node sorter that implements the IComparer interface that puts directories in front of layer builders.
    internal class TreeNodeSorter : System.Collections.IComparer
    {
@@ -748,16 +815,16 @@ namespace Dapple
          TreeNode tx = x as TreeNode;
          TreeNode ty = y as TreeNode;
 
-         // Don't sort these
-         if (tx.Tag is Server || ty.Tag is Server || tx.Tag is DataSet || ty.Tag is DataSet ||
-            tx.Parent == null || ty.Parent == null)
-            return 0;
-
          if (tx.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
             return -1;
          else if (ty.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
             return 1;
 
+         // DAP Sorting
+         if (tx.Tag is DataSet && !(ty.Tag is DataSet))
+            return 1;
+         if (ty.Tag is DataSet && !(tx.Tag is DataSet))
+            return -1;
          // Exception, we want "Virtual Earth" on top and "Map & Satellite" at bottom
          if (tx.Text == "Virtual Earth")
             return -1;
@@ -768,8 +835,9 @@ namespace Dapple
          else if (ty.Text == "Map & Satellite")
             return -1;
 
-         // If they are the same length, call Compare.
+         // If they are the same type, call Compare.
          return string.Compare(tx.Text, ty.Text);
       }
    }
+   #endregion
 }

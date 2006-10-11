@@ -14,6 +14,11 @@ namespace Dapple.LayerGeneration
 {
    public class WMSCatalogBuilder : BuilderDirectory
    {
+      #region Delegates
+      public delegate void LoadingCompletedCallbackHandler(WMSServerBuilder builder);
+      public delegate void LoadingFailedCallbackHandler(WMSServerBuilder builder, string message);
+      #endregion
+
       #region Constants
       protected const string CATALOG_CACHE = "WMS Catalog Cache";
       #endregion

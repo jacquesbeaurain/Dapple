@@ -390,7 +390,6 @@ namespace Dapple
          this.tvServers.Size = new System.Drawing.Size(245, 240);
          this.tvServers.TabIndex = 0;
          this.tvServers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDoubleClick);
-         this.tvServers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDown);
 
          this.tvLayers.ImageList = this.tvServers.ImageList;
 
@@ -534,7 +533,7 @@ namespace Dapple
 
       private void contextMenuStripServers_Opening(object sender, CancelEventArgs e)
       {
-         if (this.tvServers.SelectedNode == null || this.tvServers.SelectedNode.Tag == null)
+         if (this.tvServers.SelectedNode == null)
             e.Cancel = true;
 
          this.toolStripMenuItemAddLayer.Visible = false;
@@ -563,14 +562,15 @@ namespace Dapple
             this.toolStripMenuItemaddServer.Text = "Add WMS Server";
             this.toolStripMenuItemaddServer.Visible = true;
          }
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.TileRootNodes)
+            e.Cancel = true;
          else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
-            this.toolStripSeparatorRefreshCatalog.Visible = true;
             this.toolStripMenuItemRefreshCatalog.Visible = true;
             this.toolStripMenuItemremoveServer.Visible = true;
             this.toolStripSeparatorServerRemove.Visible = true;
          }
-         else
+         else if (this.tvServers.SelectedNode.Tag != null)
          {
             IBuilder builder = null;
             Geosoft.Dap.Common.DataSet dapDataset = null;
@@ -580,18 +580,25 @@ namespace Dapple
             if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
                dapDataset = this.tvServers.SelectedDAPDataset;
 
-            if (!(builder is LayerBuilder))
-               this.toolStripMenuItemAddLayer.Visible = false;
-            else
+            if (builder is LayerBuilder || dapDataset != null)
+            {
                this.toolStripMenuItemAddLayer.Visible = true;
+               this.toolStripMenuItemgoToServer.Visible = true;
+               this.toolStripSeparatorServerGoto.Visible = true;
+            }
+            else
+            {
+               this.toolStripMenuItemAddLayer.Visible = false;
+               this.toolStripMenuItemgoToServer.Visible = false;
+               this.toolStripSeparatorServerGoto.Visible = false;
+            }
 
             if (!this.toolStripMenuItemaddServer.Visible && !this.toolStripMenuItemAddLayer.Visible)
                this.toolStripSeparatorServerAdd.Visible = false;
             else
                this.toolStripSeparatorServerAdd.Visible = true;
 
-            if (dapDataset != null || builder is VEQuadLayerBuilder ||
-               builder is WMSQuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
+            if (dapDataset != null || builder == null || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
             {
                this.toolStripMenuItemremoveServer.Visible = false;
                this.toolStripSeparatorServerRemove.Visible = false;
@@ -600,18 +607,6 @@ namespace Dapple
             {
                this.toolStripMenuItemremoveServer.Visible = true;
                this.toolStripSeparatorServerRemove.Visible = true;
-            }
-
-            if (builder is WMSServerBuilder ||
-                builder is BuilderDirectory)
-            {
-               this.toolStripMenuItemgoToServer.Visible = false;
-               this.toolStripSeparatorServerGoto.Visible = false;
-            }
-            else
-            {
-               this.toolStripMenuItemgoToServer.Visible = true;
-               this.toolStripSeparatorServerGoto.Visible = true;
             }
 
             if (builder is WMSServerBuilder)
@@ -633,6 +628,8 @@ namespace Dapple
                this.toolStripMenuItemviewMetadataServer.Enabled = true;
             }
          }
+         else
+            e.Cancel = true;
       }
 
       #endregion
@@ -1030,7 +1027,7 @@ namespace Dapple
             {
                try
                {
-                  this.tvServers.AddWMSServer(dlg.WmsURL);
+                  this.tvServers.AddWMSServer(dlg.WmsURL, true);
                }
                catch (Exception except)
                {
@@ -1115,34 +1112,52 @@ namespace Dapple
       }
       private void toolStripMenuItemgoToServer_Click(object sender, EventArgs e)
       {
-         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is ImageBuilder)
-            GoTo(this.tvServers.SelectedNode.Tag as ImageBuilder);
+         if (this.tvServers.SelectedNode != null)
+         {
+            if (this.tvServers.SelectedNode.Tag is ImageBuilder)
+               GoTo(this.tvServers.SelectedNode.Tag as ImageBuilder);
+            if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
+            {
+               Geosoft.Dap.Common.DataSet dataSet = this.tvServers.SelectedNode.Tag as Geosoft.Dap.Common.DataSet;
+               GeographicBoundingBox extents =
+                  new GeographicBoundingBox(dataSet.Boundary.MaxY,
+                dataSet.Boundary.MinY,
+                dataSet.Boundary.MinX,
+                dataSet.Boundary.MaxX);
+               GoTo(extents, -1.0);
+            }
+         }
       }
 
       void GoTo(ImageBuilder builder)
       {
+         GoTo(builder.Extents, (builder is QuadLayerBuilder) ? (double) (builder as QuadLayerBuilder).LevelZeroTileSize : -1.0);
+      }
+
+      void GoTo(GeographicBoundingBox extents, double dLevelZeroTileSize)
+      {
          double latitude, longitude;
          long overviewCameraAlt = 12000000;
 
-         if (builder.Extents.North > 89 &&
-            builder.Extents.South < -89 &&
-            builder.Extents.West < -179 &&
-            builder.Extents.East > 179)
+         if (extents.North > 89 &&
+            extents.South < -89 &&
+            extents.West < -179 &&
+            extents.East > 179)
          {
             latitude = this.worldWindow.Latitude;
             longitude = this.worldWindow.Longitude;
          }
          else
          {
-            latitude = builder.Extents.South + (builder.Extents.North - builder.Extents.South) / 2.0;
-            longitude = builder.Extents.West + (builder.Extents.East - builder.Extents.West) / 2.0;
+            latitude = extents.South + (extents.North - extents.South) / 2.0;
+            longitude = extents.West + (extents.East - extents.West) / 2.0;
          }
 
 
-         double fov = 2.0 * Math.Max(builder.Extents.North - builder.Extents.South, builder.Extents.East - builder.Extents.West);
+         double fov = 2.0 * Math.Max(extents.North - extents.South, extents.East - extents.West);
 
-         if (builder is QuadLayerBuilder)
-            fov = Math.Min(fov, (double) (2*(builder as QuadLayerBuilder).LevelZeroTileSize));
+         if (dLevelZeroTileSize > 0.0)
+            fov = Math.Min(fov, 2 * dLevelZeroTileSize);
          if (fov < 180.0)
             this.worldWindow.GotoLatLonHeadingViewRange(latitude, longitude, 0, fov);
          else
@@ -1283,14 +1298,19 @@ namespace Dapple
             MetaDataForm form = new MetaDataForm();
             XmlDocument oDoc = new XmlDocument();
             oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
-            
+            string strStyleSheet = null;
             XmlNode oNode;
 
             if (builder == null)
+            {
                oNode = this.tvServers.GetCurrentDAPMetaData(oDoc);
+               strStyleSheet = "dap_dataset.xsl";
+            }
             else
+            {
                oNode = builder.GetMetaData(oDoc);
-
+               strStyleSheet = builder.StyleSheetName; 
+            }
             if (oNode == null)
                return;
 
@@ -1302,9 +1322,9 @@ namespace Dapple
             {
                oDoc.AppendChild(oNode);
             }
-            if (builder.StyleSheetName != null)
+            if (strStyleSheet != null)
             {
-               XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, builder.StyleSheetName) + "'");
+               XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, strStyleSheet) + "'");
                oDoc.InsertBefore(oRef, oDoc.DocumentElement);
             }
 
@@ -1680,14 +1700,6 @@ namespace Dapple
          }
       }
       */
-      #endregion
-
-      #region Servers Panel
-
-      private void treeViewServers_MouseDown(object sender, MouseEventArgs e)
-      {
-         this.tvServers.SelectedNode = this.tvServers.HitTest(e.Location).Node;
-      }
       #endregion
 
       #region Current Layer Panel
@@ -2946,7 +2958,7 @@ namespace Dapple
       #region Spatial and Text Filtering
 
       private string m_strLastSearchText = "";
-
+      private GeographicBoundingBox m_extentsLastSearch = null;
       public static void CountTreeNodeDatasets(TreeNodeCollection col, ref int iDatasets)
       {
          foreach (TreeNode treeNode in col)
@@ -2960,7 +2972,8 @@ namespace Dapple
 
       private void FilterServersToView(bool bIntersect)
       {
-         this.tvServers.Search(bIntersect, GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox()), "");
+         m_extentsLastSearch = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+         this.tvServers.Search(bIntersect, m_extentsLastSearch, "");
          this.toolStripButtonClearFilter.Enabled = true;
          m_strLastSearchText = "";
          this.toolStripFilterText.ForeColor = SystemColors.GrayText;
@@ -2981,6 +2994,7 @@ namespace Dapple
          this.tvServers.ClearSearch();
          this.toolStripButtonClearFilter.Enabled = false;
          m_strLastSearchText = "";
+         m_extentsLastSearch = null;
          this.toolStripFilterText.ForeColor = SystemColors.GrayText;
       }
 
@@ -2992,7 +3006,7 @@ namespace Dapple
 
       private void toolStripButtonFilterText_Click(object sender, EventArgs e)
       {
-         this.tvServers.Search(false, null, "");
+         this.tvServers.Search(m_extentsLastSearch != null, m_extentsLastSearch, this.toolStripFilterText.Text);
          this.toolStripButtonClearFilter.Enabled = true;
          m_strLastSearchText = this.toolStripFilterText.Text;
          this.toolStripFilterText.ForeColor = SystemColors.WindowText;
