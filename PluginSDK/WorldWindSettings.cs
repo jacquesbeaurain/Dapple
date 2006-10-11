@@ -25,27 +25,11 @@ namespace WorldWind
 
 		// Proxy settings
       private Net.WebDownload.HttpProtoVersion useHttpProtoVersion = Net.WebDownload.HttpProtoVersion.HTTP1_1;
-      private Net.WebDownload.HttpDataPushMethod useHttpDataPushMethod = Net.WebDownload.HttpDataPushMethod.POST;
 		private bool useWindowsDefaultProxy = true;
 		private string proxyUrl = "";
 		private bool useDynamicProxy = false;
 		private string proxyUsername = "";
 		private string proxyPassword = "";
-
-      [Browsable(true), Category("Proxy")]
-      [Description("Which HTTP method to use pushing data to servers.")]
-      public Net.WebDownload.HttpDataPushMethod UseHTTPMethod
-      {
-         get
-         {
-            return useHttpDataPushMethod;
-         }
-         set
-         {
-            this.useHttpDataPushMethod = value;
-            UpdateProxySettings();
-         }
-      }
 
       [Browsable(true), Category("Proxy")]
       [Description("Which HTTP protocol to use in communicating with servers.")]
@@ -424,7 +408,6 @@ namespace WorldWind
 		void UpdateProxySettings()
 		{
          WorldWind.Net.WebDownload.useProto               = this.useHttpProtoVersion;
-         WorldWind.Net.WebDownload.useMethod              = this.useHttpDataPushMethod;
 			WorldWind.Net.WebDownload.useWindowsDefaultProxy = this.useWindowsDefaultProxy;
 			WorldWind.Net.WebDownload.useDynamicProxy        = this.useDynamicProxy;
 			WorldWind.Net.WebDownload.proxyUrl               = this.proxyUrl;

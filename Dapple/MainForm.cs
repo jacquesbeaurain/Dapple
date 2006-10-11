@@ -598,7 +598,7 @@ namespace Dapple
             else
                this.toolStripSeparatorServerAdd.Visible = true;
 
-            if (dapDataset != null || builder == null || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
+            if (dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
             {
                this.toolStripMenuItemremoveServer.Visible = false;
                this.toolStripSeparatorServerRemove.Visible = false;
@@ -846,8 +846,11 @@ namespace Dapple
       {
          string strLastFolderCfg = Path.Combine(this.worldWindow.WorldWindSettings.ConfigPath, "opengeotif.cfg");
 
-         this.openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-         this.openFileDialog.RestoreDirectory = true;
+         OpenFileDialog openFileDialog = new OpenFileDialog();
+         openFileDialog.Filter = "GeoTIFF Files|*.tif;*.tiff";
+         openFileDialog.Title = "Open GeoTIFF File in Current View...";
+         openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+         openFileDialog.RestoreDirectory = true;
          if (File.Exists(strLastFolderCfg))
          {
             try
@@ -856,7 +859,7 @@ namespace Dapple
                {
                   string strDir = sr.ReadLine();
                   if (Directory.Exists(strDir))
-                     this.openFileDialog.InitialDirectory = strDir;
+                     openFileDialog.InitialDirectory = strDir;
                }
             }
             catch
@@ -864,14 +867,14 @@ namespace Dapple
             }
          }
 
-         if (this.openFileDialog.ShowDialog() == DialogResult.OK)
+         if (openFileDialog.ShowDialog(this) == DialogResult.OK)
          {
-            AddGeoTiff(this.openFileDialog.FileName, "", false, true);
+            AddGeoTiff(openFileDialog.FileName, "", false, true);
             try
             {
                using (StreamWriter sw = new StreamWriter(strLastFolderCfg))
                {
-                  sw.WriteLine(Path.GetDirectoryName(this.openFileDialog.FileName));
+                  sw.WriteLine(Path.GetDirectoryName(openFileDialog.FileName));
                }
             }
             catch
@@ -2508,7 +2511,7 @@ namespace Dapple
                   this.toolStripButtonBMNG.Enabled = false;
                }
 
-               if (view.View.Hascameraorientation())
+               if (bGoto && view.View.Hascameraorientation())
                {
                   cameraorientationType orient = view.View.cameraorientation;
                   this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;

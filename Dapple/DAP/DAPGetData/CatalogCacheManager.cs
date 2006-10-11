@@ -35,11 +35,11 @@ namespace Geosoft.GX.DAPGetData
          // --- Create the cache manager ---
 
          GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheDir);
-         m_strCacheDir = Path.Combine(m_strCacheDir, "DapCache");
+         m_strCacheDir = Path.Combine(m_strCacheDir, "Dap Catalog Cache");
 #else
       public CatalogCacheManager(ServerTree oServerTree, string strCacheDir)
       {
-         m_strCacheDir = strCacheDir; 
+         m_strCacheDir = Path.Combine(strCacheDir, "Dap Catalog Cache");
          Directory.CreateDirectory(m_strCacheDir);
 #endif
         // Start the timer
@@ -58,22 +58,29 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="bAOIFilter"></param>
       /// <param name="bTextFilter"></param>
       /// <param name="strSearchString"></param>
-      /// <returns>true if server's cache version changed</returns>
+      /// <returns>true if server's cache version changed or some other error occured</returns>
       public bool bGetDatasetList(Server oServer, string strHierarchy, int iTimestamp, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString)
       {
          string strEdition;
          System.Xml.XmlDocument oDoc = null;
          string strKey = string.Format("{0}:{1}", oServer.Url, strHierarchy);
 
-         if (!bAOIFilter && !bTextFilter)
-            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, null, null);
-         else if (!bAOIFilter && bTextFilter)
-            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, null, null);
-         else if (bAOIFilter && !bTextFilter)
-            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, oBounds, null);
-         else if (bAOIFilter && bTextFilter)
-            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, oBounds, null);
-
+         try
+         {
+            if (!bAOIFilter && !bTextFilter)
+               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, null, null);
+            else if (!bAOIFilter && bTextFilter)
+               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, null, null);
+            else if (bAOIFilter && !bTextFilter)
+               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, oBounds, null);
+            else if (bAOIFilter && bTextFilter)
+               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, oBounds, null);
+         }
+         catch (Exception e)
+         {
+            // FUTURE: May want to give some visual indication of this or handle in server tree
+            throw e;
+         }
          if (bTextFilter)
             strKey += "_" + strSearchString;
          if (bAOIFilter)

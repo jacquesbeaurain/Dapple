@@ -113,7 +113,6 @@ namespace Dapple
            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
            this.timerNavigation = new System.Windows.Forms.Timer(this.components);
            this.WWSettingsCtl = new WorldWind.WorldWindSettingsComponent(this.components);
-           this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
            this.lastViewSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripMenuItemAskAtStartup = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripMenuItemLoadLastView = new System.Windows.Forms.ToolStripMenuItem();
@@ -930,12 +929,6 @@ namespace Dapple
            this.WWSettingsCtl.UseDynamicProxy = false;
            this.WWSettingsCtl.UseWindowsDefaultProxy = true;
            // 
-           // openFileDialog
-           // 
-           this.openFileDialog.Filter = "GeoTiff Files|*.tif;*.tiff";
-           this.openFileDialog.RestoreDirectory = true;
-           this.openFileDialog.Title = "O";
-           // 
            // lastViewSettingsToolStripMenuItem
            // 
            this.lastViewSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1701,7 +1694,6 @@ namespace Dapple
        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
        private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemOpen;
-       private System.Windows.Forms.OpenFileDialog openFileDialog;
        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
        private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemAddDAP;

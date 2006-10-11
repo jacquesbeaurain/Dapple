@@ -37,5 +37,15 @@ namespace Dapple
       {
          this.txtDapURL.SelectionStart = this.txtDapURL.Text.Length;
       }
+
+      private void butOK_Click(object sender, EventArgs e)
+      {
+         if (!txtDapURL.Text.StartsWith("http://") || txtDapURL.Text.Length <= "http://".Length)
+         {
+            MessageBox.Show(this, "Please enter a valid URL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            DialogResult = DialogResult.None;
+            return;
+         }
+      }
    }
 }

@@ -91,11 +91,11 @@ namespace Geosoft.Dap.Xml
                        WorldWind.Net.WebDownload.proxyUserName,
                        WorldWind.Net.WebDownload.proxyPassword);
 
-         if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
+         /*if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
             req.ProtocolVersion = HttpVersion.Version11;
          else
             req.ProtocolVersion = HttpVersion.Version10;
-         
+         */
 #endif
 
          return Download(req, progressCB);
@@ -432,17 +432,13 @@ namespace Geosoft.Dap.Xml
 
             // --- Setup the HTTP Request ---
 
+            cHttpWReq.Method = "POST";
 #if DAPPLE
-            if (WorldWind.Net.WebDownload.useMethod == WorldWind.Net.WebDownload.HttpDataPushMethod.POST)
-               cHttpWReq.Method = "POST";
-            else
-               cHttpWReq.Method = "GET";
             if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
                cHttpWReq.ProtocolVersion = HttpVersion.Version11;
             else
                cHttpWReq.ProtocolVersion = HttpVersion.Version10;
 #else
-            cHttpWReq.Method = "POST";
             cHttpWReq.ProtocolVersion = HttpVersion.Version11;
 #endif
             cHttpWReq.KeepAlive = false;

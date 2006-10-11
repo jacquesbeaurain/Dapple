@@ -26,16 +26,10 @@ namespace WorldWind.Net
           HTTP1_1,
           HTTP1_0
        }
-       public enum HttpDataPushMethod
-       {
-          GET,
-          POST
-       }
 
         #region Static proxy properties
 
         static public HttpProtoVersion useProto;
-        static public HttpDataPushMethod useMethod;
         static public bool useWindowsDefaultProxy = true;
         static public string proxyUrl = "";
         static public bool useDynamicProxy;

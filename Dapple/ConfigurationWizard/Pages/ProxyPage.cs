@@ -32,8 +32,6 @@ namespace ConfigurationWizard
       private GroupBox groupBox1;
       private Label label2;
       private ComboBox cmbHTTPProtocol;
-      private Label label1;
-      private ComboBox cmbHTTPStyle;
 		private System.Windows.Forms.Label labelPassword;
 
 		/// <summary>
@@ -53,10 +51,6 @@ namespace ConfigurationWizard
 				Wizard.Settings.ProxyUrl = this.textBoxProxyUrl.Text;
 				Wizard.Settings.ProxyUsername = this.textBoxUsername.Text;
 				Wizard.Settings.ProxyPassword = this.textBoxPassword.Text;
-            if (this.cmbHTTPStyle.SelectedIndex == 0)
-               Wizard.Settings.UseHTTPMethod = WorldWind.Net.WebDownload.HttpDataPushMethod.GET;
-            else
-               Wizard.Settings.UseHTTPMethod = WorldWind.Net.WebDownload.HttpDataPushMethod.POST;
             if (this.cmbHTTPProtocol.SelectedIndex == 0)
                Wizard.Settings.UseHTTPProtocol = WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1;
             else
@@ -121,8 +115,6 @@ namespace ConfigurationWizard
          this.labelUsername = new System.Windows.Forms.Label();
          this.toolTipProxyPage = new System.Windows.Forms.ToolTip(this.components);
          this.groupBox1 = new System.Windows.Forms.GroupBox();
-         this.cmbHTTPStyle = new System.Windows.Forms.ComboBox();
-         this.label1 = new System.Windows.Forms.Label();
          this.label2 = new System.Windows.Forms.Label();
          this.cmbHTTPProtocol = new System.Windows.Forms.ComboBox();
          this.groupBoxUserDefinedSettings.SuspendLayout();
@@ -132,7 +124,7 @@ namespace ConfigurationWizard
          // 
          // radioButtonUserDefinedProxy
          // 
-         this.radioButtonUserDefinedProxy.Location = new System.Drawing.Point(21, 165);
+         this.radioButtonUserDefinedProxy.Location = new System.Drawing.Point(21, 151);
          this.radioButtonUserDefinedProxy.Name = "radioButtonUserDefinedProxy";
          this.radioButtonUserDefinedProxy.Size = new System.Drawing.Size(128, 24);
          this.radioButtonUserDefinedProxy.TabIndex = 2;
@@ -142,7 +134,7 @@ namespace ConfigurationWizard
          // 
          // radioButtonNoProxy
          // 
-         this.radioButtonNoProxy.Location = new System.Drawing.Point(21, 141);
+         this.radioButtonNoProxy.Location = new System.Drawing.Point(21, 129);
          this.radioButtonNoProxy.Name = "radioButtonNoProxy";
          this.radioButtonNoProxy.Size = new System.Drawing.Size(160, 16);
          this.radioButtonNoProxy.TabIndex = 1;
@@ -154,7 +146,7 @@ namespace ConfigurationWizard
          // radioButtonUseWindowsDefaultProxy
          // 
          this.radioButtonUseWindowsDefaultProxy.Checked = true;
-         this.radioButtonUseWindowsDefaultProxy.Location = new System.Drawing.Point(21, 109);
+         this.radioButtonUseWindowsDefaultProxy.Location = new System.Drawing.Point(21, 99);
          this.radioButtonUseWindowsDefaultProxy.Name = "radioButtonUseWindowsDefaultProxy";
          this.radioButtonUseWindowsDefaultProxy.Size = new System.Drawing.Size(176, 24);
          this.radioButtonUseWindowsDefaultProxy.TabIndex = 0;
@@ -169,16 +161,16 @@ namespace ConfigurationWizard
          this.groupBoxUserDefinedSettings.Controls.Add(this.checkBoxUseProxyScript);
          this.groupBoxUserDefinedSettings.Controls.Add(this.textBoxProxyUrl);
          this.groupBoxUserDefinedSettings.Controls.Add(this.labelProxyUrl);
-         this.groupBoxUserDefinedSettings.Location = new System.Drawing.Point(8, 208);
+         this.groupBoxUserDefinedSettings.Location = new System.Drawing.Point(8, 189);
          this.groupBoxUserDefinedSettings.Name = "groupBoxUserDefinedSettings";
-         this.groupBoxUserDefinedSettings.Size = new System.Drawing.Size(288, 144);
+         this.groupBoxUserDefinedSettings.Size = new System.Drawing.Size(288, 163);
          this.groupBoxUserDefinedSettings.TabIndex = 3;
          this.groupBoxUserDefinedSettings.TabStop = false;
          this.groupBoxUserDefinedSettings.Text = "User-defined settings";
          // 
          // checkBoxUseProxyScript
          // 
-         this.checkBoxUseProxyScript.Location = new System.Drawing.Point(32, 88);
+         this.checkBoxUseProxyScript.Location = new System.Drawing.Point(11, 58);
          this.checkBoxUseProxyScript.Name = "checkBoxUseProxyScript";
          this.checkBoxUseProxyScript.Size = new System.Drawing.Size(200, 16);
          this.checkBoxUseProxyScript.TabIndex = 2;
@@ -189,7 +181,7 @@ namespace ConfigurationWizard
          // 
          // textBoxProxyUrl
          // 
-         this.textBoxProxyUrl.Location = new System.Drawing.Point(13, 56);
+         this.textBoxProxyUrl.Location = new System.Drawing.Point(11, 32);
          this.textBoxProxyUrl.Name = "textBoxProxyUrl";
          this.textBoxProxyUrl.Size = new System.Drawing.Size(267, 20);
          this.textBoxProxyUrl.TabIndex = 1;
@@ -197,7 +189,7 @@ namespace ConfigurationWizard
          // 
          // labelProxyUrl
          // 
-         this.labelProxyUrl.Location = new System.Drawing.Point(12, 40);
+         this.labelProxyUrl.Location = new System.Drawing.Point(10, 16);
          this.labelProxyUrl.Name = "labelProxyUrl";
          this.labelProxyUrl.Size = new System.Drawing.Size(100, 16);
          this.labelProxyUrl.TabIndex = 0;
@@ -219,7 +211,7 @@ namespace ConfigurationWizard
          this.groupBoxCredentials.Controls.Add(this.labelPassword);
          this.groupBoxCredentials.Controls.Add(this.textBoxUsername);
          this.groupBoxCredentials.Controls.Add(this.labelUsername);
-         this.groupBoxCredentials.Location = new System.Drawing.Point(304, 208);
+         this.groupBoxCredentials.Location = new System.Drawing.Point(302, 189);
          this.groupBoxCredentials.Name = "groupBoxCredentials";
          this.groupBoxCredentials.Size = new System.Drawing.Size(232, 104);
          this.groupBoxCredentials.TabIndex = 4;
@@ -264,40 +256,17 @@ namespace ConfigurationWizard
          // 
          this.groupBox1.Controls.Add(this.label2);
          this.groupBox1.Controls.Add(this.cmbHTTPProtocol);
-         this.groupBox1.Controls.Add(this.label1);
-         this.groupBox1.Controls.Add(this.cmbHTTPStyle);
-         this.groupBox1.Location = new System.Drawing.Point(304, 113);
+         this.groupBox1.Location = new System.Drawing.Point(302, 299);
          this.groupBox1.Name = "groupBox1";
-         this.groupBox1.Size = new System.Drawing.Size(231, 85);
+         this.groupBox1.Size = new System.Drawing.Size(231, 53);
          this.groupBox1.TabIndex = 6;
          this.groupBox1.TabStop = false;
          this.groupBox1.Text = "Special DAP communication setting";
          // 
-         // cmbHTTPStyle
-         // 
-         this.cmbHTTPStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-         this.cmbHTTPStyle.FormattingEnabled = true;
-         this.cmbHTTPStyle.Items.AddRange(new object[] {
-            "Compliant",
-            "Standard"});
-         this.cmbHTTPStyle.Location = new System.Drawing.Point(103, 23);
-         this.cmbHTTPStyle.Name = "cmbHTTPStyle";
-         this.cmbHTTPStyle.Size = new System.Drawing.Size(121, 21);
-         this.cmbHTTPStyle.TabIndex = 0;
-         // 
-         // label1
-         // 
-         this.label1.AutoSize = true;
-         this.label1.Location = new System.Drawing.Point(8, 26);
-         this.label1.Name = "label1";
-         this.label1.Size = new System.Drawing.Size(65, 13);
-         this.label1.TabIndex = 1;
-         this.label1.Text = "HTTP Style:";
-         // 
          // label2
          // 
          this.label2.AutoSize = true;
-         this.label2.Location = new System.Drawing.Point(8, 53);
+         this.label2.Location = new System.Drawing.Point(8, 22);
          this.label2.Name = "label2";
          this.label2.Size = new System.Drawing.Size(81, 13);
          this.label2.TabIndex = 3;
@@ -310,9 +279,9 @@ namespace ConfigurationWizard
          this.cmbHTTPProtocol.Items.AddRange(new object[] {
             "HTTP 1.1",
             "HTTP 1.0"});
-         this.cmbHTTPProtocol.Location = new System.Drawing.Point(103, 50);
+         this.cmbHTTPProtocol.Location = new System.Drawing.Point(95, 19);
          this.cmbHTTPProtocol.Name = "cmbHTTPProtocol";
-         this.cmbHTTPProtocol.Size = new System.Drawing.Size(121, 21);
+         this.cmbHTTPProtocol.Size = new System.Drawing.Size(129, 21);
          this.cmbHTTPProtocol.TabIndex = 2;
          // 
          // ProxyPage
@@ -377,10 +346,6 @@ namespace ConfigurationWizard
 				}
 			}
 
-         if (Wizard.Settings.UseHTTPMethod == WorldWind.Net.WebDownload.HttpDataPushMethod.GET)
-            this.cmbHTTPStyle.SelectedIndex = 0;
-         else
-            this.cmbHTTPStyle.SelectedIndex = 1;
          if (Wizard.Settings.UseHTTPProtocol == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
             this.cmbHTTPProtocol.SelectedIndex = 0;
          else

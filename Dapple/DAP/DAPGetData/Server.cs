@@ -229,7 +229,7 @@ namespace Geosoft.GX.DAPGetData
          GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheRoot);
 #else
          m_oCommand = new Geosoft.Dap.Command(strDnsAddress, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
-         m_strCacheRoot = Path.Combine(strCacheDir, "DapCache");
+         m_strCacheRoot = strCacheDir;
 #endif
 
          m_strUrl = strDnsAddress;         
@@ -545,9 +545,13 @@ namespace Geosoft.GX.DAPGetData
 
          // --- only load configuration if we could actually talk to this server ---
 
-         if (m_eStatus == ServerStatus.Unsupported) return;         
+         if (m_eStatus == ServerStatus.Unsupported) return;
 
+#if !DAPPLE
          m_strCacheDir = Path.Combine(m_strCacheRoot, "DapCache");
+#else
+         m_strCacheDir = Path.Combine(m_strCacheRoot, "Dap Catalog Cache");
+#endif
 
          // --- remove the http:// from the directory name ---
 

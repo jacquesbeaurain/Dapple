@@ -45,6 +45,7 @@ namespace Dapple
          this.butOK.TabIndex = 2;
          this.butOK.Text = "&OK";
          this.butOK.UseVisualStyleBackColor = true;
+         this.butOK.Click += new System.EventHandler(this.butOK_Click);
          // 
          // butCancel
          // 

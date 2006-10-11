@@ -323,7 +323,7 @@ namespace Dapple
             XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
             XmlNode metaNode = oDoc.CreateElement("dapmeta");
             XmlNode nameNode = oDoc.CreateElement("name");
-            nameNode.InnerText = Name;
+            nameNode.InnerText = this.SelectedDAPDataset.Title;
             metaNode.AppendChild(nameNode);
             XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
             geoMetaNode.InnerXml = oNode.InnerXml;

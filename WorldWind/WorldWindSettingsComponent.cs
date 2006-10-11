@@ -322,19 +322,6 @@ namespace WorldWind
             m_oSettings.UseWindowsDefaultProxy = value;
          }
       }
-      [Browsable(true)]
-      [Category("Misc")]
-      public Net.WebDownload.HttpDataPushMethod UseHTTPMethod
-      {
-         get
-         {
-            return m_oSettings.UseHTTPMethod;
-         }
-         set
-         {
-            m_oSettings.UseHTTPMethod = value;
-         }
-      }
 
       [Browsable(true)]
       [Category("Misc")]

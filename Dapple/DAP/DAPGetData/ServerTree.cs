@@ -391,6 +391,9 @@ namespace Geosoft.GX.DAPGetData
          m_oFullServerList.Remove(oServer.Url);
          m_oServerList.RemoveServer(oServer);
 
+         if (oServer == m_oCurServer)
+            m_oCurServer = null;
+
          PopulateServerList();
       }
 
@@ -1083,9 +1086,14 @@ namespace Geosoft.GX.DAPGetData
             int iImage;
             Server oServer = oTreeNode.Tag as Server;
 
+            if (string.IsNullOrEmpty(oServer.Name))
+               str = oServer.Url;
+            else
+               str = oServer.Name;
+
             if (oServer.Secure && !oServer.LoggedIn)
             {
-               str = oServer.Name + " (unauthorized)";
+               str += " (unauthorized)";
                iImage = iImageListIndex("offline");
             }
             else
@@ -1093,23 +1101,23 @@ namespace Geosoft.GX.DAPGetData
                switch (oServer.Status)
                {
                   case Server.ServerStatus.OnLine:
-                     str = oServer.Name + " (" + oServer.DatasetCount.ToString() + ")";
+                     str += " (" + oServer.DatasetCount.ToString() + ")";
                      iImage = iImageListIndex("enserver");
                      break;
                   case Server.ServerStatus.Maintenance:
-                     str = oServer.Name + " (undergoing maintenance)";
+                     str += " (undergoing maintenance)";
                      iImage = iImageListIndex("disserver");
                      break;
                   case Server.ServerStatus.OffLine:
-                     str = oServer.Name + " (offline)";
+                     str += " (offline)";
                      iImage = iImageListIndex("offline");
                      break;
                   case Server.ServerStatus.Disabled:
-                     str = oServer.Name + " (disabled)";
+                     str += " (disabled)";
                      iImage = iImageListIndex("disserver");
                      break;
                   default:
-                     str = oServer.Name + " (unsupported)";
+                     str += " (unsupported)";
                      iImage = iImageListIndex("offline");
                      break;
                }
