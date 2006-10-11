@@ -21,8 +21,21 @@ namespace WorldWind.Net
 
     public class WebDownload : IDisposable
     {
+       public enum HttpProtoVersion
+       {
+          HTTP1_1,
+          HTTP1_0
+       }
+       public enum HttpDataPushMethod
+       {
+          GET,
+          POST
+       }
+
         #region Static proxy properties
 
+        static public HttpProtoVersion useProto;
+        static public HttpDataPushMethod useMethod;
         static public bool useWindowsDefaultProxy = true;
         static public string proxyUrl = "";
         static public bool useDynamicProxy;
@@ -80,6 +93,7 @@ namespace WorldWind.Net
         protected Exception downloadException;
 
         protected bool isMemoryDownload;
+        private bool stopFlag = false;
         protected Thread dlThread;
 
         /// <summary>
@@ -115,7 +129,7 @@ namespace WorldWind.Net
         {
             get
             {
-                return dlThread != null;
+				return dlThread != null && dlThread.IsAlive;
             }
         }
 
@@ -292,6 +306,8 @@ namespace WorldWind.Net
             if (dlThread != null && dlThread != Thread.CurrentThread)
             {
                 if (dlThread.IsAlive)
+                    stopFlag = true;
+                    if (!dlThread.Join(500))
                     dlThread.Abort();
                 dlThread = null;
             }
@@ -333,7 +349,14 @@ namespace WorldWind.Net
                     OnProgressCallback(0, -1);
                     OnDebugCallback(this);
 
-                    // create content stream from memory or file
+                    // check to see if thread was aborted (multiple such checks within the thread function)
+                    if (stopFlag)
+                    {
+                        IsComplete = true;
+                        return;
+                    }
+
+					// create content stream from memory or file
                     if (isMemoryDownload && ContentStream == null)
                     {
                         ContentStream = new MemoryStream();
@@ -351,6 +374,11 @@ namespace WorldWind.Net
                     request = (HttpWebRequest)WebRequest.Create(Url);
                     request.UserAgent = UserAgent;
 
+                    if (stopFlag)
+                    {
+                        IsComplete = true;
+                        return;
+                    }
 
                     request.Proxy = ProxyHelper.DetermineProxyForUrl(
                        Url,
@@ -360,6 +388,10 @@ namespace WorldWind.Net
                        proxyUserName,
                        proxyPassword);
 
+                    request.ProtocolVersion = HttpVersion.Version11;
+                    
+                    // TODO: probably better done via BeginGetResponse() / EndGetResponse() because this may block for a while
+                    // causing warnings in thread abortion.
                     using (response = request.GetResponse() as HttpWebResponse)
                     {
                         // only if server responds 200 OK
@@ -380,6 +412,13 @@ namespace WorldWind.Net
                              while (true)
                              {
                                 //  Pass do.readBuffer to BeginRead.
+                                    if (stopFlag)
+                                    {
+                                        IsComplete = true;
+                                        return;
+                                    }
+
+									//  Pass do.readBuffer to BeginRead.
                                 int bytesRead = responseStream.Read(readBuffer, 0, readBuffer.Length);
                                 if (bytesRead <= 0)
                                    break;
@@ -429,6 +468,12 @@ namespace WorldWind.Net
                     {
                     }
                     SaveException(caught);
+                }
+
+                if (stopFlag)
+                {
+                    IsComplete = true;
+                    return;
                 }
 
                 if (ContentLength == 0)
@@ -541,7 +586,7 @@ namespace WorldWind.Net
                 ContentStream.Seek(0, SeekOrigin.Begin);
                 errorDoc.Load(ContentStream);
                 string msg = "";
-                foreach (XmlNode node in errorDoc.GetElementsByTagName("ServiceException"))
+				foreach( XmlNode node in errorDoc.GetElementsByTagName("ServiceException"))
                     msg += node.InnerText.Trim() + Environment.NewLine;
                 SaveException(new WebException(msg.Trim()));
             }
@@ -558,6 +603,8 @@ namespace WorldWind.Net
             if (dlThread != null && dlThread != Thread.CurrentThread)
             {
                 if (dlThread.IsAlive)
+                    stopFlag = true;
+                    if (!dlThread.Join(500))
                     dlThread.Abort();
                 dlThread = null;
             }

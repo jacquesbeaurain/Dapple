@@ -123,10 +123,17 @@
     </Compile>
     <EmbeddedResource Include="MessageBoxExForm.resx">
       <DependentUpon>MessageBoxExForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\StandardButtonsText.de.resx" />
-    <EmbeddedResource Include="Resources\StandardButtonsText.fr.resx" />
-    <EmbeddedResource Include="Resources\StandardButtonsText.resx" />
+    <EmbeddedResource Include="Resources\StandardButtonsText.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StandardButtonsText.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StandardButtonsText.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Content Include="Notes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

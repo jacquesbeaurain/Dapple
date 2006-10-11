@@ -214,7 +214,7 @@ namespace WorldWind.Net
 			if(useDefaultProxy) 
 			{
 				// Get Internet Explorer settings
-				theProxy = WebProxy.GetDefaultProxy();
+                theProxy = WebRequest.DefaultWebProxy;
 			}
 			else 
 			{
@@ -241,7 +241,7 @@ namespace WorldWind.Net
 					if(IsEmpty(proxyUrl)) 
 					{
 						// no scripting, no default -> no proxy
-						theProxy = GlobalProxySelection.GetEmptyWebProxy();
+                        theProxy = null;
 					}
 					else 
 					{

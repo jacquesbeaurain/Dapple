@@ -3,6 +3,10 @@ using System.Net;
 using System.IO;
 using System.Threading;
 
+#if DAPPLE
+using WorldWind.Net;
+#endif
+
 namespace Geosoft.Dap.Xml
 {
    /// <summary>
@@ -77,6 +81,22 @@ namespace Geosoft.Dap.Xml
 
          // Create the request object.
          WebRequest req = WebRequest.Create(httpSite);
+
+#if DAPPLE
+         req.Proxy = ProxyHelper.DetermineProxyForUrl(
+                       url,
+                       WorldWind.Net.WebDownload.useWindowsDefaultProxy,
+                       WorldWind.Net.WebDownload.useDynamicProxy,
+                       WorldWind.Net.WebDownload.proxyUrl,
+                       WorldWind.Net.WebDownload.proxyUserName,
+                       WorldWind.Net.WebDownload.proxyPassword);
+
+         if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
+            req.ProtocolVersion = HttpVersion.Version11;
+         else
+            req.ProtocolVersion = HttpVersion.Version10;
+         
+#endif
 
          return Download(req, progressCB);
       }
@@ -211,9 +231,7 @@ namespace Geosoft.Dap.Xml
       #endregion
       
       #region Member Variables
-#if !DAPPLE 
       private bool m_bTask;
-#endif
       private bool m_bSecure;
       #endregion
 
@@ -227,7 +245,6 @@ namespace Geosoft.Dap.Xml
          set { m_bSecure = value; }
       }
 
-#if !DAPPLE 
       /// <summary>
       /// Get/Set wether to send this through task
       /// </summary>
@@ -236,7 +253,6 @@ namespace Geosoft.Dap.Xml
          get { return m_bTask; }
          set { m_bTask = value; }
       }
-#endif
 
       #endregion
 
@@ -247,12 +263,7 @@ namespace Geosoft.Dap.Xml
       /// <param name="bSecure"></param>
       public Communication(bool bTask, bool bSecure)
       {
-#if !DAPPLE 
          m_bTask = bTask;
-#else
-         if (bTask)
-            throw new ApplicationException("Task based communication not supported in this version of dapxmlclient");
-#endif
          m_bSecure = bSecure;
       }
 
@@ -265,7 +276,7 @@ namespace Geosoft.Dap.Xml
       /// <returns></returns>
       public System.Xml.XmlDocument Send(string szUrl, System.Xml.XmlDocument hRequestDocument, UpdateProgessCallback progressCallBack)
       {
-#if !DAPPLE 
+#if !DAPPLE
          if (m_bTask)
          {
             return SendTask(szUrl, hRequestDocument);
@@ -294,7 +305,7 @@ namespace Geosoft.Dap.Xml
          return SendHttpEx(szUrl, hRequestDocument, progressCallBack);
       }
 
-#if !DAPPLE 
+#if !DAPPLE
       /// <summary>
       /// Send an xml request through task
       /// </summary>
@@ -367,8 +378,8 @@ namespace Geosoft.Dap.Xml
 
          return oResponse;
       }
-#endif
 
+#endif
       /// <summary>
       /// Send an xml request on the wire, get the response and parse it into an XML document
       /// </summary>
@@ -399,6 +410,17 @@ namespace Geosoft.Dap.Xml
             cHttpWReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(szUrl);
             cHttpWReq.Pipelined = false;
 
+#if DAPPLE
+            cHttpWReq.Proxy = ProxyHelper.DetermineProxyForUrl(
+                          szUrl,
+                          WorldWind.Net.WebDownload.useWindowsDefaultProxy,
+                          WorldWind.Net.WebDownload.useDynamicProxy,
+                          WorldWind.Net.WebDownload.proxyUrl,
+                          WorldWind.Net.WebDownload.proxyUserName,
+                          WorldWind.Net.WebDownload.proxyPassword);
+#endif
+
+
 
             // --- Encode the document into ascii ---
 
@@ -410,7 +432,19 @@ namespace Geosoft.Dap.Xml
 
             // --- Setup the HTTP Request ---
 
+#if DAPPLE
+            if (WorldWind.Net.WebDownload.useMethod == WorldWind.Net.WebDownload.HttpDataPushMethod.POST)
+               cHttpWReq.Method = "POST";
+            else
+               cHttpWReq.Method = "GET";
+            if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
+               cHttpWReq.ProtocolVersion = HttpVersion.Version11;
+            else
+               cHttpWReq.ProtocolVersion = HttpVersion.Version10;
+#else
             cHttpWReq.Method = "POST";
+            cHttpWReq.ProtocolVersion = HttpVersion.Version11;
+#endif
             cHttpWReq.KeepAlive = false;
             cHttpWReq.ContentType = "application/x-www-form-urlencoded";
             cHttpWReq.ContentLength = hRequest.GetStringBuilder().Length;

@@ -143,6 +143,12 @@
       <DependentUpon>GeosoftXml.xsd</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebDownload\WebDownload.csproj">
+      <Project>{3B2110D8-D29C-4057-8192-2BFB39A56D54}</Project>
+      <Name>WebDownload</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
