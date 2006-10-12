@@ -49,10 +49,10 @@
                   </tilelayers>
                </tileserverset>
             </builderentry>
-            <builderentry>
-               <virtualearth name="Virtual Earth"/>
-            </builderentry>
          </builderdirectory>
+      </builderentry>
+      <builderentry>
+         <virtualearth name="Virtual Earth"/>
       </builderentry>
       <builderentry>
          <builderdirectory name="WMS Servers" specialcontainer="WMSServers">
