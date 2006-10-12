@@ -467,7 +467,7 @@ namespace Dapple.LayerGeneration
             builder = VEQuadLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow, null);
          else if (strUri.StartsWith(QuadLayerBuilder.URLProtocolName))
             builder = QuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
-         else if (strUri.StartsWith(DAPQuadLayerBuilder.URLProtocolName))
+         else if (strUri.StartsWith(DAPQuadLayerBuilder.URISchemeName))
          {
             builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow);
             bShowAsError = true;

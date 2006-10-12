@@ -93,6 +93,7 @@
       <Name>System.Drawing</Name>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
@@ -132,6 +133,7 @@
     <Compile Include="StringHash.cs" />
     <Compile Include="Threading\Queue.cs" />
     <Compile Include="Threading\Semaphore.cs" />
+    <Compile Include="URI.cs" />
     <Compile Include="Win32Message.cs">
       <SubType>Code</SubType>
     </Compile>

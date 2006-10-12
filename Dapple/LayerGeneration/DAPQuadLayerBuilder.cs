@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using WorldWind;
 using WorldWind.Renderable;
@@ -16,71 +17,61 @@ namespace Dapple.LayerGeneration
    {
       #region Static
 
-      public static readonly string URLProtocolName = "gxdap://";
+      public static readonly string URISchemeName = "gxdap";
 
       public static readonly string TypeName = "DAPQuadLayer";
 
       public static readonly string CacheSubDir = "DAP Tile Cache";
 
-      public static string ServerURLFromURI(string uri)
+      public static DAPQuadLayerBuilder GetBuilderFromURI(string strURI, Dapple.ServerTree oServerTree, string strCacheDir, WorldWindow worldWindow)
       {
-         return uri.Substring(0, uri.IndexOf("?")).Replace(URLProtocolName, "http://");
-      }
+         string strHost = String.Empty;
+         string strPath = String.Empty;
+         NameValueCollection queryColl = Utility.URI.ParseURI(URISchemeName, strURI, ref strHost, ref strPath);
+         /*string strDAPURI = Utility.URI
+         string st= uri.Substring(uri.IndexOf("=") + 1);
 
-      public static DAPQuadLayerBuilder GetBuilderFromURI(string uri, Dapple.ServerTree oServerTree, string strCacheDir, WorldWindow worldWindow)
-      {
-         try
+         Server oServer = null;
+         if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
+            oServerTree.AddDAPServer(strServerUrl, out oServer);
+         else
+            oServer = oServerTree.FullServerList[strServerUrl];
+
+         DataSet hDataSet = new DataSet();
+         hDataSet.Url = strServerUrl;
+
+         string[] pairs = rest.Split('&');
+         hDataSet.Name = pairs[0];
+         int height = Convert.ToInt32(pairs[1].Substring(pairs[1].IndexOf('=') + 1));
+         int size = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
+         hDataSet.Type = pairs[3].Substring(pairs[3].IndexOf('=') + 1);
+         hDataSet.Title = pairs[4].Substring(pairs[4].IndexOf('=') + 1);
+         hDataSet.Edition = pairs[5].Substring(pairs[5].IndexOf('=') + 1);
+         hDataSet.Hierarchy = pairs[6].Substring(pairs[6].IndexOf('=') + 1);
+         double north = Convert.ToDouble(pairs[7].Substring(pairs[7].IndexOf('=') + 1));
+         double east = Convert.ToDouble(pairs[8].Substring(pairs[8].IndexOf('=') + 1));
+         double south = Convert.ToDouble(pairs[9].Substring(pairs[9].IndexOf('=') + 1));
+         double west = Convert.ToDouble(pairs[10].Substring(pairs[10].IndexOf('=') + 1));
+         hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
+
+         int levels = Convert.ToInt32(pairs[11].Substring(pairs[11].IndexOf('=') + 1));
+         decimal lvl0tilesize = Convert.ToDecimal(pairs[12].Substring(pairs[12].IndexOf('=') + 1));
+
+
+         if (hDataSet != null)
          {
-
-            string strServerUrl = ServerURLFromURI(uri);
-            string rest = uri.Substring(uri.IndexOf("=") + 1);
-
-            Server oServer = null;
-            if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
-               oServerTree.AddDAPServer(strServerUrl, out oServer);
-            else
-               oServer = oServerTree.FullServerList[strServerUrl];
-
-            DataSet hDataSet = new DataSet();
-            hDataSet.Url = strServerUrl;
-
-            string[] pairs = rest.Split('&');
-            hDataSet.Name = pairs[0];
-            int height = Convert.ToInt32(pairs[1].Substring(pairs[1].IndexOf('=') + 1));
-            int size = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
-            hDataSet.Type = pairs[3].Substring(pairs[3].IndexOf('=') + 1);
-            hDataSet.Title = pairs[4].Substring(pairs[4].IndexOf('=') + 1);
-            hDataSet.Edition = pairs[5].Substring(pairs[5].IndexOf('=') + 1);
-            hDataSet.Hierarchy = pairs[6].Substring(pairs[6].IndexOf('=') + 1);
-            double north = Convert.ToDouble(pairs[7].Substring(pairs[7].IndexOf('=') + 1));
-            double east = Convert.ToDouble(pairs[8].Substring(pairs[8].IndexOf('=') + 1));
-            double south = Convert.ToDouble(pairs[9].Substring(pairs[9].IndexOf('=') + 1));
-            double west = Convert.ToDouble(pairs[10].Substring(pairs[10].IndexOf('=') + 1));
-            hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
-
-            int levels = Convert.ToInt32(pairs[11].Substring(pairs[11].IndexOf('=') + 1));
-            decimal lvl0tilesize = Convert.ToDecimal(pairs[12].Substring(pairs[12].IndexOf('=') + 1));
-            
-            
-            if (hDataSet != null)
+            DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
+            if (layerBuilder != null)
             {
-               DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
-               if (layerBuilder != null)
-               {
-                  layerBuilder.m_iHeight = height;
-                  layerBuilder.m_iTileImageSize = size;
-                  layerBuilder.Levels = levels;
-                  layerBuilder.LevelZeroTileSize = lvl0tilesize;
-                  return layerBuilder;
-               }
+               layerBuilder.m_iHeight = height;
+               layerBuilder.m_iTileImageSize = size;
+               layerBuilder.Levels = levels;
+               layerBuilder.LevelZeroTileSize = lvl0tilesize;
+               return layerBuilder;
             }
-         }
-         catch
-         {
-         }
+         }*/
          return null;
       }
-
 
       #endregion
 
@@ -393,8 +384,8 @@ namespace Dapple.LayerGeneration
 
       public override string GetURI()
       {
-         return m_oServer.Url.Replace("http://", URLProtocolName) + "?" +
-            "datasetname=" + m_hDataSet.Name + "&" +
+         return m_oServer.Url.Replace("http://", URISchemeName) + "?" +
+            "datasetname=" +  m_hDataSet.Name + "&" +
             "height=" + m_iHeight + "&" +
             "size=" + m_iTileImageSize + "&" +
             "type=" + m_hDataSet.Type + "&" +
