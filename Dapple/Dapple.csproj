@@ -251,12 +251,12 @@
     <Content Include="Plugins\Compass\Compass.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="System\7za.exe">
+    <None Include="System\7za.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="System\geotifcp.exe">
+    </None>
+    <None Include="System\geotifcp.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Data\dappleview.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -543,15 +543,15 @@
     <Content Include="Shaders\SetOpacity.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="System\listgeo.exe">
+    <None Include="System\listgeo.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="System\mailer.exe">
+    </None>
+    <None Include="System\mailer.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="System\mailerd.exe">
+    </None>
+    <None Include="System\mailerd.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="version.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -594,4 +594,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>del /S /Q $(OutDir)System
+mkdir $(OutDir)System
+xcopy $(ProjectDir)System\*.exe $(OutDir)System\</PostBuildEvent>
+  </PropertyGroup>
 </Project>
