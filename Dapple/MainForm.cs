@@ -628,6 +628,9 @@ namespace Dapple
                this.toolStripMenuItemviewMetadataServer.Visible = true;
                this.toolStripMenuItemviewMetadataServer.Enabled = true;
             }
+            
+            if (this.toolStripMenuItemviewMetadataServer.Visible && !this.toolStripMenuItemServerLegend.Visible && !this.toolStripMenuItempropertiesServer.Visible)
+               this.toolStripSeparatorRefreshCatalog.Visible = false;
          }
          else
             e.Cancel = true;

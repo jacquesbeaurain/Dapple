@@ -23,10 +23,12 @@ namespace Utility
       public static string HostFromURI(string strScheme, string strURI)
       {
          string strHost = StripSchemeFromURI(strScheme, strURI);
-         if (strHost.IndexOf("/") != -1)
-            strHost = strHost.Substring(0, strHost.IndexOf("/"));
+
          if (strHost.IndexOf("?") != -1)
             strHost = strHost.Substring(0, strHost.IndexOf("?"));
+
+         if (strHost.IndexOf("/") != -1)
+            strHost = strHost.Substring(0, strHost.IndexOf("/"));
 
          return strHost;
       }
@@ -35,13 +37,13 @@ namespace Utility
       {
          string strPath = StripSchemeFromURI(strScheme, strURI);
 
+         if (strPath.IndexOf("?") != -1)
+            strPath = strPath.Substring(0, strPath.IndexOf("?"));
+
          if (strPath.IndexOf("/") != -1)
             strPath = strPath.Substring(strPath.IndexOf("/") + 1);
          else
             return String.Empty;
-
-         if (strPath.IndexOf("?") != -1)
-            strPath = strPath.Substring(0, strPath.IndexOf("?"));
 
          return strPath;
       }

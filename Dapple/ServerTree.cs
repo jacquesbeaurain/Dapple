@@ -241,6 +241,42 @@ namespace Dapple
          m_layerTree.EndUpdate();
       }
 
+      // We don't do folders with WMS now, it is not reliable
+      void AddWMSLayers(BuilderDirectory dir, TreeNode treeNode)
+      {
+         TreeNode subTreeNode;
+         TreeNode subSubTreeNode;
+
+         if (dir is WMSServerBuilder && dir.SubList.Count == 1)
+         {
+            foreach (BuilderDirectory childDir in dir.SubList[0].SubList)
+            {
+               subTreeNode = treeNode.Nodes.Add(childDir.Name);
+               subTreeNode.SelectedImageIndex = subTreeNode.ImageIndex = iImageListIndex("folder");
+               subTreeNode.Tag = childDir;
+            }
+            foreach (LayerBuilder builder in dir.SubList[0].LayerBuilders)
+            {
+               subTreeNode = treeNode.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
+               subTreeNode.Tag = builder;
+            }
+         }
+         else
+         {
+            foreach (BuilderDirectory childDir in dir.SubList)
+            {
+               subTreeNode = treeNode.Nodes.Add(childDir.Name);
+               subTreeNode.SelectedImageIndex = subTreeNode.ImageIndex = iImageListIndex("folder");
+               subTreeNode.Tag = childDir;
+            }
+
+            foreach (LayerBuilder builder in dir.LayerBuilders)
+            {
+               subTreeNode = treeNode.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
+               subTreeNode.Tag = builder;
+            }
+         }
+      }
       bool bFillWMSCatalogEntriesInTreeNode(BuilderDirectory dir)
       {
          TreeNode treeNode;
@@ -275,7 +311,7 @@ namespace Dapple
             {
                foreach (TreeNode cutNode in m_hWMSRootNode.Nodes)
                {
-                  if (cutNode != treeWMSNode)
+                  if (cutNode != treeWMSNode && treeWMSNode != null && treeWMSNode.Tag is WMSServerBuilder)
                      cutList.Add(cutNode);
                   else if (treeWMSNode != null && treeWMSNode != treeWMSRootNode)
                   {
@@ -291,6 +327,15 @@ namespace Dapple
                         treeWMSNode.Nodes.Clear();
                   }
                }
+               if (treeWMSNode != null && !(treeWMSNode.Tag is WMSServerBuilder) && treeWMSNode.Tag is BuilderDirectory)
+               {
+                  // different cutlist for folders
+                  foreach (TreeNode cutNode in treeWMSNode.Parent.Nodes)
+                  {
+                     if (cutNode != treeWMSNode)
+                        cutList.Add(cutNode);
+                  }
+               }
             }
             else
                treeWMSRootNode.Nodes.Clear();
@@ -300,28 +345,30 @@ namespace Dapple
                if (treeWMSNode != treeWMSRootNode)
                   foreach (TreeNode cutNode in cutList)
                      cutNode.Remove();
+            }
+            foreach (BuilderEntry entry in m_wmsServers)
+            {
+               treeNode = null;
 
-               foreach (BuilderEntry entry in m_wmsServers)
+               if (treeWMSNode != treeWMSRootNode)
                {
-                  treeNode = null;
-
-                  if (treeWMSNode != treeWMSRootNode)
+                  if (treeWMSNode != null && treeWMSNode.Tag is WMSServerBuilder && treeWMSNode.Tag == entry.Builder) 
                   {
-                     if (treeWMSNode != null && treeWMSNode.Tag is WMSServerBuilder && treeWMSNode.Tag == entry.Builder)
-                     {
-                        treeNode = treeWMSNode;
-                        treeNode.Text = entry.Builder.Name;
-                     }
-                     else
-                        continue;
+                     treeNode = treeWMSNode;
+                     treeNode.Text = entry.Builder.Name;
                   }
-                  else if (entry.Loading || entry.Error || (!m_bAOIFilter && String.IsNullOrEmpty(m_strSearch)) || 
-                     (entry.Builder as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) > 0)
-                     treeNode = m_hWMSRootNode.Nodes.Add(entry.Builder.Name);
+                  else
+                     continue;
+               }
+               else if (entry.Loading || entry.Error || (!m_bAOIFilter && String.IsNullOrEmpty(m_strSearch)) ||
+                  (entry.Builder as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) > 0)
+                  treeNode = m_hWMSRootNode.Nodes.Add(entry.Builder.Name);
 
-                  if (treeNode != null)
+               if (treeNode != null)
+               {
+                  if (entry.Loading)
                   {
-                     if (entry.Loading)
+                     if (!bLoadingOrError)
                      {
                         treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("disserver");
 
@@ -332,53 +379,25 @@ namespace Dapple
                         hTempNode.Tag = null;
                         treeNode.Nodes.Add(hTempNode);
                      }
-                     else
-                     {
-                        if (entry.Error)
-                        {
-                           if (entry.ErrorString != string.Empty)
-                              treeNode.Text += " (" + entry.ErrorString + ")";
-                           treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
-                        }
-                        else
-                           treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("enserver");
-                     }
-                     treeNode.Tag = entry.Builder;
-                  }
-               }
-
-               if (treeWMSNode != null && treeWMSNode != treeWMSRootNode)
-               {
-                  if (dir is WMSServerBuilder && dir.SubList.Count == 1)
-                  {
-                     foreach (BuilderDirectory childDir in dir.SubList[0].SubList)
-                     {
-                        treeNode = treeWMSNode.Nodes.Add(childDir.Name);
-                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("folder");
-                        treeNode.Tag = childDir;
-                     }
-                     foreach (LayerBuilder builder in dir.SubList[0].LayerBuilders)
-                     {
-                        treeNode = treeWMSNode.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
-                        treeNode.Tag = builder;
-                     }
                   }
                   else
                   {
-                     foreach (BuilderDirectory childDir in dir.SubList)
+                     if (entry.Error)
                      {
-                        treeNode = treeWMSNode.Nodes.Add(childDir.Name);
-                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("folder");
-                        treeNode.Tag = childDir;
+                        if (entry.ErrorString != string.Empty)
+                           treeNode.Text += " (" + entry.ErrorString + ")";
+                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
                      }
+                     else
+                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("enserver");
                   }
-                  foreach (LayerBuilder builder in dir.LayerBuilders)
-                  {
-                     treeNode = treeWMSNode.Nodes.Add(builder.Name, builder.Name, iImageListIndex("layer"), iImageListIndex("layer"));
-                     treeNode.Tag = builder;
-                  }
+                  treeNode.Tag = entry.Builder;
                }
             }
+
+            if (treeWMSNode != null && treeWMSNode != treeWMSRootNode)
+               AddWMSLayers(dir, treeWMSNode);
+                  
             this.Sorted = true;
             this.TreeViewNodeSorter = m_TreeSorter;
             this.Sort();
@@ -609,7 +628,10 @@ namespace Dapple
             m_ePrevMode = SearchModeEnum.All;
             m_oCurServer = null;
             m_hCurServerTreeNode = null;
-
+            m_wmsServers.Clear();
+            m_bSelect = false;
+            this.SelectedNode = m_hRootNode;
+            m_bSelect = true;
             // m_hRootNode.Text = strName;
 
             /*if (view.View.Hasnotes())
@@ -865,8 +887,11 @@ namespace Dapple
                   (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.IntersectsWith(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
                   treeNode.Remove();
             }
+            if (treeNode.Tag is BuilderDirectory && !(treeNode.Tag is WMSCatalogBuilder) && 
+               (treeNode.Tag as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) == 0)
+               treeNode.Remove();
          }
-
+         
          // Update counts accross the board
          UpdateCounts();
       }
@@ -881,7 +906,9 @@ namespace Dapple
       protected override void AfterSelected(TreeNode treeNode)
       {
          base.AfterSelected(treeNode);
-         
+
+         this.BeginUpdate();
+
          // Cleanup everything but myself
          foreach (TreeNode node in m_hRootNode.Nodes)
          {
@@ -956,6 +983,7 @@ namespace Dapple
                m_hTileRootNode.Expand();
          }
          FilterTreeNodes(treeNode);
+         this.EndUpdate();
       }
 
       TreeNode m_nodeLastCollapsed = null;

@@ -399,6 +399,8 @@ namespace WorldWind.Net
                         XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
                         oSettings.IgnoreWhitespace = true;
                         oSettings.ProhibitDtd = false;
+                        oSettings.XmlResolver = null;
+                        oSettings.ValidationType = ValidationType.None;
                         using (XmlReader oResponseXmlStream = XmlReader.Create(response.GetResponseStream(), oSettings))
                         {
                            XmlDocument doc = new XmlDocument();

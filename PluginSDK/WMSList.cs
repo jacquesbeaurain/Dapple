@@ -253,51 +253,59 @@ namespace WorldWind
       private void load_version_1_1_1(string capabilitiesFilePath)
       {
          capabilities_1_1_1.capabilities_1_1_1Doc doc = new capabilities_1_1_1.capabilities_1_1_1Doc();
-         capabilities_1_1_1.WMT_MS_CapabilitiesType root = new capabilities_1_1_1.WMT_MS_CapabilitiesType(doc.Load(capabilitiesFilePath));
-
-         this._version = "1.1.1";
-         this._name = root.Service.Title.Value.Value;   
-
-         if (!root.HasCapability())
-            return;
-
-         if (!root.Capability.HasLayer())
-            return;
-
-         string[] imageFormats = null;
-         if (root.Capability.HasRequest() &&
-            root.Capability.Request.HasGetMap())
+         XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
+         oSettings.IgnoreWhitespace = true;
+         oSettings.ProhibitDtd = false;
+         oSettings.XmlResolver = null;
+         oSettings.ValidationType = ValidationType.None;
+         using (XmlReader oResponseXmlStream = XmlReader.Create(capabilitiesFilePath, oSettings))
          {
-            if (root.Capability.Request.GetMap.DCPType.HTTP.Get.HasOnlineResource())
+            capabilities_1_1_1.WMT_MS_CapabilitiesType root = new capabilities_1_1_1.WMT_MS_CapabilitiesType(doc.Load(oResponseXmlStream));
+
+            this._version = "1.1.1";
+            this._name = root.Service.Title.Value.Value;
+
+            if (!root.HasCapability())
+               return;
+
+            if (!root.Capability.HasLayer())
+               return;
+
+            string[] imageFormats = null;
+            if (root.Capability.HasRequest() &&
+               root.Capability.Request.HasGetMap())
             {
-               System.Xml.XmlNode hrefnode = root.Capability.Request.GetMap.DCPType.HTTP.Get.OnlineResource.getDOMNode();
-               System.Xml.XmlAttribute attr = hrefnode.Attributes["xlink:href"];
-               if (attr != null)
-                  this._serverGetMapUrl = attr.InnerText;
+               if (root.Capability.Request.GetMap.DCPType.HTTP.Get.HasOnlineResource())
+               {
+                  System.Xml.XmlNode hrefnode = root.Capability.Request.GetMap.DCPType.HTTP.Get.OnlineResource.getDOMNode();
+                  System.Xml.XmlAttribute attr = hrefnode.Attributes["xlink:href"];
+                  if (attr != null)
+                     this._serverGetMapUrl = attr.InnerText;
+                  else
+                     this._serverGetMapUrl = this._serverGetCapabilitiesUrl;
+               }
                else
                   this._serverGetMapUrl = this._serverGetCapabilitiesUrl;
+
+               if (root.Capability.Request.GetMap.HasFormat())
+               {
+                  imageFormats = new string[root.Capability.Request.GetMap.FormatCount];
+                  for (int i = 0; i < root.Capability.Request.GetMap.FormatCount; i++)
+                  {
+                     imageFormats[i] = root.Capability.Request.GetMap.GetFormatAt(i).Value.Value;
+                  }
+               }
             }
             else
                this._serverGetMapUrl = this._serverGetCapabilitiesUrl;
 
-            if (root.Capability.Request.GetMap.HasFormat())
+            this.Layers = new WMSLayer[root.Capability.LayerCount];
+
+            for (int i = 0; i < root.Capability.LayerCount; i++)
             {
-               imageFormats = new string[root.Capability.Request.GetMap.FormatCount];
-               for (int i = 0; i < root.Capability.Request.GetMap.FormatCount; i++)
-               {
-                  imageFormats[i] = root.Capability.Request.GetMap.GetFormatAt(i).Value.Value;
-               }
+               capabilities_1_1_1.LayerType curLayer = (capabilities_1_1_1.LayerType)root.Capability.GetLayerAt(i);
+               this.Layers[i] = this.getWMSLayer(curLayer, null, imageFormats);
             }
-         }
-         else
-            this._serverGetMapUrl = this._serverGetCapabilitiesUrl;
-
-         this.Layers = new WMSLayer[root.Capability.LayerCount];
-
-         for (int i = 0; i < root.Capability.LayerCount; i++)
-         {
-            capabilities_1_1_1.LayerType curLayer = (capabilities_1_1_1.LayerType)root.Capability.GetLayerAt(i);
-            this.Layers[i] = this.getWMSLayer(curLayer, null, imageFormats);
          }
       }
 
@@ -423,44 +431,52 @@ namespace WorldWind
       private void load_version_1_3_0(string capabilitiesFilePath)
       {
          capabilities_1_3_0.capabilities_1_3_0Doc doc = new capabilities_1_3_0.capabilities_1_3_0Doc();
-         capabilities_1_3_0.wms.WMS_CapabilitiesType root = new capabilities_1_3_0.wms.WMS_CapabilitiesType(doc.Load(capabilitiesFilePath));
-
-         this._version = "1.3.0";
-         this._name = root.Service.Title.Value;   
-
-         if (!root.HasCapability())
-            return;
-
-         if (!root.Capability.HasLayer())
-            return;
-
-         string[] imageFormats = null;
-         if (root.Capability.HasRequest() &&
-            root.Capability.Request.HasGetMap())
+         XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
+         oSettings.IgnoreWhitespace = true;
+         oSettings.ProhibitDtd = false;
+         oSettings.XmlResolver = null;
+         oSettings.ValidationType = ValidationType.None;
+         using (XmlReader oResponseXmlStream = XmlReader.Create(capabilitiesFilePath, oSettings))
          {
-            if (root.Capability.Request.GetMap.HasDCPType())
-            {
-               this._serverGetMapUrl = root.Capability.Request.GetMap.DCPType.HTTP.Get.OnlineResource.href.Value;
-            }
-            else
-               this._serverGetMapUrl = this._serverGetCapabilitiesUrl;
+            capabilities_1_3_0.wms.WMS_CapabilitiesType root = new capabilities_1_3_0.wms.WMS_CapabilitiesType(doc.Load(oResponseXmlStream));
 
-            if (root.Capability.Request.GetMap.HasFormat())
+            this._version = "1.3.0";
+            this._name = root.Service.Title.Value;
+
+            if (!root.HasCapability())
+               return;
+
+            if (!root.Capability.HasLayer())
+               return;
+
+            string[] imageFormats = null;
+            if (root.Capability.HasRequest() &&
+               root.Capability.Request.HasGetMap())
             {
-               imageFormats = new string[root.Capability.Request.GetMap.FormatCount];
-               for (int i = 0; i < root.Capability.Request.GetMap.FormatCount; i++)
+               if (root.Capability.Request.GetMap.HasDCPType())
                {
-                  imageFormats[i] = root.Capability.Request.GetMap.GetFormatAt(i).Value;
+                  this._serverGetMapUrl = root.Capability.Request.GetMap.DCPType.HTTP.Get.OnlineResource.href.Value;
+               }
+               else
+                  this._serverGetMapUrl = this._serverGetCapabilitiesUrl;
+
+               if (root.Capability.Request.GetMap.HasFormat())
+               {
+                  imageFormats = new string[root.Capability.Request.GetMap.FormatCount];
+                  for (int i = 0; i < root.Capability.Request.GetMap.FormatCount; i++)
+                  {
+                     imageFormats[i] = root.Capability.Request.GetMap.GetFormatAt(i).Value;
+                  }
                }
             }
-         }
 
-         this.Layers = new WMSLayer[root.Capability.LayerCount];
+            this.Layers = new WMSLayer[root.Capability.LayerCount];
 
-         for (int i = 0; i < root.Capability.LayerCount; i++)
-         {
-            capabilities_1_3_0.wms.LayerType curLayer = (capabilities_1_3_0.wms.LayerType)root.Capability.GetLayerAt(i);
-            this.Layers[i] = this.getWMSLayer(curLayer, null, imageFormats);
+            for (int i = 0; i < root.Capability.LayerCount; i++)
+            {
+               capabilities_1_3_0.wms.LayerType curLayer = (capabilities_1_3_0.wms.LayerType)root.Capability.GetLayerAt(i);
+               this.Layers[i] = this.getWMSLayer(curLayer, null, imageFormats);
+            }
          }
       }
 

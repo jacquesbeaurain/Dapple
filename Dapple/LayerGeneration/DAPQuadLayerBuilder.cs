@@ -34,12 +34,6 @@ namespace Dapple.LayerGeneration
             NameValueCollection queryColl = Utility.URI.ParseURI(URISchemeName, strURI, ref strHost, ref strPath);
             string strServerUrl = Utility.URI.CreateURI("http", strHost, strPath, null);
 
-            Server oServer = null;
-            if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
-               oServerTree.AddDAPServer(strServerUrl, out oServer);
-            else
-               oServer = oServerTree.FullServerList[strServerUrl];
-
             DataSet hDataSet = new DataSet();
             hDataSet.Url = strServerUrl;
 
@@ -59,6 +53,12 @@ namespace Dapple.LayerGeneration
             if (bOldView)
                return null;
 
+            Server oServer = null;
+            if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
+               oServerTree.AddDAPServer(strServerUrl, out oServer);
+            else
+               oServer = oServerTree.FullServerList[strServerUrl];
+
             hDataSet.Type = queryColl.Get("type");
             hDataSet.Title = queryColl.Get("title");
             hDataSet.Edition = queryColl.Get("edition");
@@ -71,7 +71,6 @@ namespace Dapple.LayerGeneration
 
             int levels = Convert.ToInt32(queryColl.Get("levels"));
             decimal lvl0tilesize = Convert.ToDecimal(queryColl.Get("lvl0tilesize"));
-
 
             if (hDataSet != null)
             {
