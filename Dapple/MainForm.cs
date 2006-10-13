@@ -380,7 +380,6 @@ namespace Dapple
          this.activeLayers = new LayerBuilderList(this, this.tvLayers, this.worldWindow);
 
          this.tvServers = new ServerTree(WWSettingsCtl.CachePath, this, this.tvLayers, this.activeLayers);
-         this.tvServers.SupportDatasetSelection = false;
          this.tvServers.ContextMenuStrip = this.contextMenuStripServers;
          this.tvServers.Dock = System.Windows.Forms.DockStyle.Fill;
          this.tvServers.ImageIndex = 0;
@@ -389,8 +388,7 @@ namespace Dapple
          this.tvServers.SelectedImageIndex = 0;
          this.tvServers.Size = new System.Drawing.Size(245, 240);
          this.tvServers.TabIndex = 0;
-         this.tvServers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeViewServers_MouseDoubleClick);
-
+         
          this.tvLayers.ImageList = this.tvServers.ImageList;
 
          this.panelServer.SuspendLayout();
@@ -534,7 +532,10 @@ namespace Dapple
       private void contextMenuStripServers_Opening(object sender, CancelEventArgs e)
       {
          if (this.tvServers.SelectedNode == null)
+         {
             e.Cancel = true;
+            return;
+         }
 
          this.toolStripMenuItemAddLayer.Visible = false;
          this.toolStripMenuItemaddServer.Text = "Add Server";
@@ -952,23 +953,7 @@ namespace Dapple
 
       private void toolStripMenuItemAddLayer_Click(object sender, EventArgs e)
       {
-         AddCurrentToActiveLayers();
-      }
-
-      private void treeViewServers_MouseDoubleClick(object sender, MouseEventArgs e)
-      {
-         AddCurrentToActiveLayers();
-      }
-
-      void AddCurrentToActiveLayers()
-      {
-         if (this.tvServers.SelectedNode == null)
-            return;
-
-         if (this.tvServers.SelectedNode.Tag is LayerBuilder)
-            AddLayerBuilder(this.tvServers.SelectedNode.Tag as LayerBuilder);
-         else
-            this.tvServers.AddCurrentDAPDataSet();
+         this.tvServers.AddCurrentDataset();
       }
 
       public bool bContainsDAPLayer(Geosoft.GX.DAPGetData.Server oServer, Geosoft.Dap.Common.DataSet oDataset)

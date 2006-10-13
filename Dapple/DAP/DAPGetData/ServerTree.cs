@@ -103,6 +103,12 @@ namespace Geosoft.GX.DAPGetData
          m_oServerList = new ServerList(m_strCacheDir);
          m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);
 #endif
+         this.ShowLines = true;
+         this.ShowRootLines = false;
+         this.ShowNodeToolTips = true;
+         this.ShowPlusMinus = false;
+         this.HideSelection = false;
+         this.Scrollable = true;
 
          base.ImageList = new ImageList();
          
@@ -292,7 +298,6 @@ namespace Geosoft.GX.DAPGetData
                return this.Nodes;
          }
       }
-      
       
       /// <summary>
       /// Display checkboxes next to datasets for selection support
@@ -1329,6 +1334,7 @@ namespace Geosoft.GX.DAPGetData
             hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
             hTempNode.Tag = null;
             hTreeNode.Nodes.Add(hTempNode);
+            this.Refresh();
 
             EnqueueRequest(AsyncRequestType.GetDatasetList, oCurFolder.Hierarchy, oCurFolder.Timestamp);
          }
@@ -1522,6 +1528,7 @@ namespace Geosoft.GX.DAPGetData
             hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
             hTempNode.Tag = null;
             m_hCurServerTreeNode.Nodes.Add(hTempNode);
+            this.Refresh();
          }
       }
 
