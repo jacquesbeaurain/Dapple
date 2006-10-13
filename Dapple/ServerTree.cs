@@ -241,7 +241,6 @@ namespace Dapple
          m_layerTree.EndUpdate();
       }
 
-      // We don't do folders with WMS now, it is not reliable
       void AddWMSLayers(BuilderDirectory dir, TreeNode treeNode)
       {
          TreeNode subTreeNode;
@@ -277,6 +276,7 @@ namespace Dapple
             }
          }
       }
+
       bool bFillWMSCatalogEntriesInTreeNode(BuilderDirectory dir)
       {
          TreeNode treeNode;
