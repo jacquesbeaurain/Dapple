@@ -54,7 +54,6 @@ namespace Dapple
          m_activeLayers = activeLayers;
 
          this.SupportDatasetSelection = false;
-         this.BeforeCollapse += new TreeViewCancelEventHandler(OnBeforeCollapse);
          this.AfterCollapse += new TreeViewEventHandler(OnAfterCollapse);
          this.MouseDoubleClick += new MouseEventHandler(OnMouseDoubleClick);
 
@@ -822,6 +821,7 @@ namespace Dapple
       {
          base.AfterSelected(treeNode);
          
+         // Cleanup everything but myself
          foreach (TreeNode node in m_hRootNode.Nodes)
          {
             TreeNode tnTemp = this.SelectedNode;
@@ -833,9 +833,15 @@ namespace Dapple
             }
             if (tnTemp == null)
             {
-               node.Collapse();
-               foreach (TreeNode subNode in node.Nodes)
-                  subNode.Nodes.Clear();
+               // Just collapse and clear the subnodes with the DAP servers
+               if (node == m_hDAPRootNode)
+               {
+                  node.Collapse();
+                  foreach (TreeNode subNode in node.Nodes)
+                     subNode.Nodes.Clear();
+               }
+               else
+                  node.Nodes.Clear();
             }
          }
          if (!(treeNode.Tag is VEQuadLayerBuilder))
@@ -891,50 +897,50 @@ namespace Dapple
          FilterTreeNodes(treeNode);
       }
 
-      protected void OnBeforeCollapse(object sender, TreeViewCancelEventArgs e)
-      {
-         // Never collapse root
-         if (e.Node == null || e.Node == m_hRootNode)
-            e.Cancel = true;
-      }
-
       TreeNode m_nodeLastCollapsed = null;
       protected void OnAfterCollapse(object sender, TreeViewEventArgs e)
       {
-         // Populate parent on collapse, but keep me selected
-         // this makes for better keyboard/double click navigation
-         // in the new tree infrastructure but should only happen in servers
+         // Never collapse root
+         if (e.Node == null || e.Node == m_hRootNode)
+            m_hRootNode.Expand();
 
-         m_nodeLastCollapsed = null;
-         TreeNode serverNode = e.Node;
-         while (serverNode != null && serverNode.Parent != null)
+         if (m_bSelect)
          {
-            if (serverNode.Parent == m_hWMSRootNode || serverNode.Parent == m_hDAPRootNode)
-               break;
-            serverNode = serverNode.Parent;
-         }
+            // Populate parent on collapse, but keep me selected
+            // this makes for better keyboard/double click navigation
+            // in the new tree infrastructure but should only happen in servers
 
-         if (serverNode != null && e.Node != null)
-         {
-            object tag = e.Node.Tag;
-            string strText = e.Node.Text;
-
-            this.BeginUpdate();
-            this.SelectedNode = e.Node.Parent;
-            if (this.SelectedNode != null)
+            m_nodeLastCollapsed = null;
+            TreeNode serverNode = e.Node;
+            while (serverNode != null && serverNode.Parent != null)
             {
-               foreach (TreeNode node in this.SelectedNode.Nodes)
+               if (serverNode.Parent == m_hWMSRootNode || serverNode.Parent == m_hDAPRootNode)
+                  break;
+               serverNode = serverNode.Parent;
+            }
+
+            if (serverNode != null && e.Node != null)
+            {
+               object tag = e.Node.Tag;
+               string strText = e.Node.Text;
+
+               this.BeginUpdate();
+               this.SelectedNode = e.Node.Parent;
+               if (this.SelectedNode != null)
                {
-                  if (node.Tag == tag && node.Text == strText)
+                  foreach (TreeNode node in this.SelectedNode.Nodes)
                   {
-                     m_bSelect = false;
-                     m_nodeLastCollapsed = this.SelectedNode = node;
-                     m_bSelect = true;
-                     break;
+                     if (node.Tag == tag && node.Text == strText)
+                     {
+                        m_bSelect = false;
+                        m_nodeLastCollapsed = this.SelectedNode = node;
+                        m_bSelect = true;
+                        break;
+                     }
                   }
                }
+               this.EndUpdate();
             }
-            this.EndUpdate();
          }
       }
 
