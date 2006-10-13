@@ -303,6 +303,8 @@ namespace Dapple
 
                foreach (BuilderEntry entry in m_wmsServers)
                {
+                  treeNode = null;
+
                   if (treeWMSNode != treeWMSRootNode)
                   {
                      if (treeWMSNode != null && treeWMSNode.Tag is WMSServerBuilder && treeWMSNode.Tag == entry.Builder)
@@ -313,32 +315,36 @@ namespace Dapple
                      else
                         continue;
                   }
-                  else
+                  else if (entry.Loading || entry.Error || (!m_bAOIFilter && String.IsNullOrEmpty(m_strSearch)) || 
+                     (entry.Builder as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) > 0)
                      treeNode = m_hWMSRootNode.Nodes.Add(entry.Builder.Name);
 
-                  if (entry.Loading)
+                  if (treeNode != null)
                   {
-                     treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("disserver");
-
-                     // --- updating in progress ---
-
-                     TreeNode hTempNode;
-                     hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
-                     hTempNode.Tag = null;
-                     treeNode.Nodes.Add(hTempNode);
-                  }
-                  else
-                  {
-                     if (entry.Error)
+                     if (entry.Loading)
                      {
-                        if (entry.ErrorString != string.Empty)
-                           treeNode.Text += " (" + entry.ErrorString + ")";
-                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
+                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("disserver");
+
+                        // --- updating in progress ---
+
+                        TreeNode hTempNode;
+                        hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
+                        hTempNode.Tag = null;
+                        treeNode.Nodes.Add(hTempNode);
                      }
                      else
-                        treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("enserver");
+                     {
+                        if (entry.Error)
+                        {
+                           if (entry.ErrorString != string.Empty)
+                              treeNode.Text += " (" + entry.ErrorString + ")";
+                           treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
+                        }
+                        else
+                           treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("enserver");
+                     }
+                     treeNode.Tag = entry.Builder;
                   }
-                  treeNode.Tag = entry.Builder;
                }
 
                if (treeWMSNode != null && treeWMSNode != treeWMSRootNode)
@@ -637,6 +643,7 @@ namespace Dapple
                foreach (TreeNode subNode in node.Nodes)
                   subNode.Nodes.Clear();
             }
+            UpdateCounts();
             this.EndUpdate();
          }
       }
@@ -790,7 +797,7 @@ namespace Dapple
          this.SelectedNode = treeNode;
       }
 
-      protected void FilterTreeNodes(TreeNode node)
+      protected void UpdateNodeCounts(TreeNode node)
       {
          List<TreeNode> nodeList = new List<TreeNode>();
          foreach (TreeNode treeNode in node.Nodes)
@@ -808,6 +815,60 @@ namespace Dapple
                   treeNode.SelectedImageIndex = treeNode.ImageIndex;
             }
          }
+      }
+
+      protected override void RefreshTreeNodeText()
+      {
+         base.RefreshTreeNodeText();
+
+         // Just count the servers with data in the DAP tree
+         int iCount = 0;
+         foreach (TreeNode treeNode in m_hDAPRootNode.Nodes)
+         {
+            if ((treeNode.Tag as Server).DatasetCount > 0)
+               iCount++;
+         }
+         m_hDAPRootNode.Text = "DAP Servers (" + iCount.ToString() + ")";
+             
+        
+         // WMS Servers 
+         // First just count the servers
+         iCount = 0;
+         foreach (BuilderEntry entry in m_wmsServers)
+         {
+            int iDatasetCount = (entry.Builder as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch);
+
+            if (entry.Loading || entry.Error || iDatasetCount > 0)
+               iCount++;
+
+            foreach (TreeNode treeNode in m_hWMSRootNode.Nodes)
+            {
+               if (treeNode.Tag == entry.Builder && !entry.Loading && !entry.Error)
+                  treeNode.Text = entry.Builder.Name + " (" + iDatasetCount.ToString() + ")";
+            }
+         }
+         m_hWMSRootNode.Text = "WMS Servers (" + iCount.ToString() + ")";
+      }
+
+      protected void FilterTreeNodes(TreeNode node)
+      {
+         List<TreeNode> nodeList = new List<TreeNode>();
+         foreach (TreeNode treeNode in node.Nodes)
+            nodeList.Add(treeNode);
+
+         foreach (TreeNode treeNode in nodeList)
+         {
+            if (treeNode.Tag is ImageBuilder)
+            {
+               ImageBuilder builder = treeNode.Tag as ImageBuilder;
+               if ((m_strSearch != string.Empty && treeNode.Text.IndexOf(m_strSearch, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
+                  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.IntersectsWith(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
+                  treeNode.Remove();
+            }
+         }
+
+         // Update counts accross the board
+         UpdateCounts();
       }
 
       #endregion

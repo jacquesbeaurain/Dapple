@@ -178,6 +178,39 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
+
+      #region Search
+
+      public void GetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText, ref int iCount)
+      {
+         foreach (IBuilder builder in SubList)
+            (builder as BuilderDirectory).GetLayerCount(bInterSect, extents, strText, ref iCount);
+         foreach (IBuilder builder in LayerBuilders)
+         {
+            if (builder is ImageBuilder)
+            {
+               ImageBuilder imgBuilder = builder as ImageBuilder;
+
+               if ((strText != string.Empty && imgBuilder.Name.IndexOf(strText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
+                   (extents != null && bInterSect && !extents.IntersectsWith(imgBuilder.Extents) && !extents.Contains(imgBuilder.Extents)))
+                  continue;
+
+               iCount++;
+            }
+         }
+      }
+
+      public int iGetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText)
+      {
+         int iCount = 0;
+
+         GetLayerCount(bInterSect, extents, strText, ref iCount);
+
+         return iCount;
+      }
+
+      #endregion
+
       public static string TypeName
       {
          get

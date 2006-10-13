@@ -692,6 +692,9 @@ namespace Geosoft.GX.DAPGetData
       {
          string strConfigurationEdition = string.Empty;
 
+         if (m_oCurServer == null)
+            return;
+
          if (m_bEntireCatalogMode)
          {
             Catalog oCatalog = null;
@@ -1078,7 +1081,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Update the treenode text for each server
       /// </summary>
-      protected void RefreshTreeNodeText()
+      protected virtual void RefreshTreeNodeText()
       {
          // --- do not execute if we are cleanup up --- 
 
