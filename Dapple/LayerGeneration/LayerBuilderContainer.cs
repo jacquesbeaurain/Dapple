@@ -456,21 +456,25 @@ namespace Dapple.LayerGeneration
          RefreshLayersAndOrder();
       }
 
-      public void AddUsingUri(string strName, string strUri, bool visible, byte opacity, bool front, ServerTree serverTree)
+      public void AddUsingUri(string strName, string strUri, bool visible, byte opacity, bool front, ServerTree serverTree, ref bool bOldView)
       {
-         bool bShowAsError = false;
+         string strError = string.Empty;
          LayerBuilder builder = null;
 
-         if (strUri.StartsWith(GeorefImageLayerBuilder.URLProtocolName))
-            builder = GeorefImageLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
-         if (strUri.StartsWith(VEQuadLayerBuilder.URLProtocolName))
-            builder = VEQuadLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow, null);
-         else if (strUri.StartsWith(QuadLayerBuilder.URLProtocolName))
-            builder = QuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
-         else if (strUri.StartsWith(DAPQuadLayerBuilder.URISchemeName))
+         try
          {
-            builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow);
-            bShowAsError = true;
+            if (strUri.StartsWith(GeorefImageLayerBuilder.URLProtocolName))
+               builder = GeorefImageLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
+            if (strUri.StartsWith(VEQuadLayerBuilder.URLProtocolName))
+               builder = VEQuadLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow, null);
+            else if (strUri.StartsWith(QuadLayerBuilder.URLProtocolName))
+               builder = QuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
+            else if (strUri.StartsWith(DAPQuadLayerBuilder.URISchemeName))
+               builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow, ref bOldView);
+         }
+         catch (Exception e)
+         {
+            strError = e.Message;
          }
 
          if (builder != null)
@@ -479,26 +483,29 @@ namespace Dapple.LayerGeneration
          {
             int iImage;
 
-            // --- These layers should be populated in catalog loading delegates (or they are errors) ---
-            LayerBuilderContainer container = new LayerBuilderContainer(strName, strUri, visible, opacity);
+            if (!bOldView)
+            {
+               // --- These layers should be populated in catalog loading delegates (or they are errors) ---
+               LayerBuilderContainer container = new LayerBuilderContainer(strName, strUri, visible, opacity);
 
-            if (bShowAsError)
-               iImage = m_mainWnd.ImageListIndex("error");
-            else
-               iImage = m_mainWnd.ImageListIndex("time");
-            
-            TreeNode treeNode;
-            if (front)
-            {
-               Insert(0, container);
-               treeNode = m_treeList.AddTop(null, strName, iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+               if (strError != string.Empty)
+                  iImage = m_mainWnd.ImageListIndex("error");
+               else
+                  iImage = m_mainWnd.ImageListIndex("time");
+
+               TreeNode treeNode;
+               if (front)
+               {
+                  Insert(0, container);
+                  treeNode = m_treeList.AddTop(null, strName, iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+               }
+               else
+               {
+                  Add(container);
+                  treeNode = m_treeList.Add(null, strName, iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+               }
+               treeNode.Tag = container;
             }
-            else
-            {
-               Add(container);
-               treeNode = m_treeList.Add(null, strName, iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
-            }
-            treeNode.Tag = container;
          }
       }
 

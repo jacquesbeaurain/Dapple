@@ -72,14 +72,17 @@ namespace Utility
             strURI += "/" + strPath;
 
          string strQuery = String.Empty;
-         for (int i = 0; i < queryColl.Count; i++)
+         if (queryColl != null)
          {
-            if (!bFirst)
-               strQuery += "&";
-            else
-               bFirst = false;
-            
-            strQuery += queryColl.GetKey(i) + "=" + HttpUtility.UrlEncode(queryColl.Get(i));
+            for (int i = 0; i < queryColl.Count; i++)
+            {
+               if (!bFirst)
+                  strQuery += "&";
+               else
+                  bFirst = false;
+
+               strQuery += queryColl.GetKey(i) + "=" + HttpUtility.UrlEncode(queryColl.Get(i));
+            }
          }
 
          if (strQuery != String.Empty)

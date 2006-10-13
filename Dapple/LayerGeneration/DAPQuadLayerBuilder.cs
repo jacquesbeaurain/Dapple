@@ -23,53 +23,73 @@ namespace Dapple.LayerGeneration
 
       public static readonly string CacheSubDir = "DAP Tile Cache";
 
-      public static DAPQuadLayerBuilder GetBuilderFromURI(string strURI, Dapple.ServerTree oServerTree, string strCacheDir, WorldWindow worldWindow)
+      public static DAPQuadLayerBuilder GetBuilderFromURI(string strURI, Dapple.ServerTree oServerTree, string strCacheDir, WorldWindow worldWindow, ref bool bOldView)
       {
-         string strHost = String.Empty;
-         string strPath = String.Empty;
-         NameValueCollection queryColl = Utility.URI.ParseURI(URISchemeName, strURI, ref strHost, ref strPath);
-         /*string strDAPURI = Utility.URI
-         string st= uri.Substring(uri.IndexOf("=") + 1);
+         bOldView = false;
 
-         Server oServer = null;
-         if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
-            oServerTree.AddDAPServer(strServerUrl, out oServer);
-         else
-            oServer = oServerTree.FullServerList[strServerUrl];
-
-         DataSet hDataSet = new DataSet();
-         hDataSet.Url = strServerUrl;
-
-         string[] pairs = rest.Split('&');
-         hDataSet.Name = pairs[0];
-         int height = Convert.ToInt32(pairs[1].Substring(pairs[1].IndexOf('=') + 1));
-         int size = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
-         hDataSet.Type = pairs[3].Substring(pairs[3].IndexOf('=') + 1);
-         hDataSet.Title = pairs[4].Substring(pairs[4].IndexOf('=') + 1);
-         hDataSet.Edition = pairs[5].Substring(pairs[5].IndexOf('=') + 1);
-         hDataSet.Hierarchy = pairs[6].Substring(pairs[6].IndexOf('=') + 1);
-         double north = Convert.ToDouble(pairs[7].Substring(pairs[7].IndexOf('=') + 1));
-         double east = Convert.ToDouble(pairs[8].Substring(pairs[8].IndexOf('=') + 1));
-         double south = Convert.ToDouble(pairs[9].Substring(pairs[9].IndexOf('=') + 1));
-         double west = Convert.ToDouble(pairs[10].Substring(pairs[10].IndexOf('=') + 1));
-         hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
-
-         int levels = Convert.ToInt32(pairs[11].Substring(pairs[11].IndexOf('=') + 1));
-         decimal lvl0tilesize = Convert.ToDecimal(pairs[12].Substring(pairs[12].IndexOf('=') + 1));
-
-
-         if (hDataSet != null)
+         try
          {
-            DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
-            if (layerBuilder != null)
+            string strHost = String.Empty;
+            string strPath = String.Empty;
+            NameValueCollection queryColl = Utility.URI.ParseURI(URISchemeName, strURI, ref strHost, ref strPath);
+            string strServerUrl = Utility.URI.CreateURI("http", strHost, strPath, null);
+
+            Server oServer = null;
+            if (!oServerTree.FullServerList.ContainsKey(strServerUrl))
+               oServerTree.AddDAPServer(strServerUrl, out oServer);
+            else
+               oServer = oServerTree.FullServerList[strServerUrl];
+
+            DataSet hDataSet = new DataSet();
+            hDataSet.Url = strServerUrl;
+
+            hDataSet.Name = queryColl.Get("datasetname");
+            int height = Convert.ToInt32(queryColl.Get("height"));
+            int size = Convert.ToInt32(queryColl.Get("size"));
+
+            bOldView = true;
+            foreach (string str in queryColl.AllKeys)
             {
-               layerBuilder.m_iHeight = height;
-               layerBuilder.m_iTileImageSize = size;
-               layerBuilder.Levels = levels;
-               layerBuilder.LevelZeroTileSize = lvl0tilesize;
-               return layerBuilder;
+               if (str == "type")
+               {
+                  bOldView = false;
+                  break;
+               }
             }
-         }*/
+            if (bOldView)
+               return null;
+
+            hDataSet.Type = queryColl.Get("type");
+            hDataSet.Title = queryColl.Get("title");
+            hDataSet.Edition = queryColl.Get("edition");
+            hDataSet.Hierarchy = queryColl.Get("hierarchy");
+            double north = Convert.ToDouble(queryColl.Get("north"));
+            double east = Convert.ToDouble(queryColl.Get("east"));
+            double south = Convert.ToDouble(queryColl.Get("south"));
+            double west = Convert.ToDouble(queryColl.Get("west"));
+            hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
+
+            int levels = Convert.ToInt32(queryColl.Get("levels"));
+            decimal lvl0tilesize = Convert.ToDecimal(queryColl.Get("lvl0tilesize"));
+
+
+            if (hDataSet != null)
+            {
+               DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
+               if (layerBuilder != null)
+               {
+                  layerBuilder.m_iHeight = height;
+                  layerBuilder.m_iTileImageSize = size;
+                  layerBuilder.Levels = levels;
+                  layerBuilder.LevelZeroTileSize = lvl0tilesize;
+                  return layerBuilder;
+               }
+            }
+         }
+         catch (Exception e)
+         {
+            throw new ApplicationException("Error parsing DAP layer URI: " +  strURI + "\n(" + e.Message + ")");
+         }
          return null;
       }
 
@@ -384,20 +404,27 @@ namespace Dapple.LayerGeneration
 
       public override string GetURI()
       {
-         return m_oServer.Url.Replace("http://", URISchemeName) + "?" +
-            "datasetname=" +  m_hDataSet.Name + "&" +
-            "height=" + m_iHeight + "&" +
-            "size=" + m_iTileImageSize + "&" +
-            "type=" + m_hDataSet.Type + "&" +
-            "title=" + m_hDataSet.Title + "&" +
-            "edition=" + m_hDataSet.Edition + "&" +
-            "hierarchy=" + m_hDataSet.Hierarchy + "&" +
-            "north=" + m_hDataSet.Boundary.MaxY.ToString() + "&" +
-            "east=" + m_hDataSet.Boundary.MaxX.ToString() + "&" +
-            "south=" + m_hDataSet.Boundary.MinY.ToString() + "&" +
-            "west=" + m_hDataSet.Boundary.MinX.ToString() + "&" +
-            "levels=" + m_iLevels.ToString() + "&" +
-            "lvl0tilesize=" + m_decLevelZeroTileSizeDegrees.ToString();
+         NameValueCollection queryColl = new NameValueCollection();
+
+         queryColl.Add("datasetname", m_hDataSet.Name);
+         queryColl.Add("height", m_iHeight.ToString());
+         queryColl.Add("size", m_iTileImageSize.ToString());
+         queryColl.Add("type", m_hDataSet.Type);
+         queryColl.Add("title", m_hDataSet.Title);
+         queryColl.Add("edition", m_hDataSet.Edition);
+         queryColl.Add("hierarchy", m_hDataSet.Hierarchy);
+         queryColl.Add("north", m_hDataSet.Boundary.MaxY.ToString());
+         queryColl.Add("east", m_hDataSet.Boundary.MaxX.ToString());
+         queryColl.Add("south", m_hDataSet.Boundary.MinY.ToString());
+         queryColl.Add("west", m_hDataSet.Boundary.MinX.ToString());
+         queryColl.Add("levels", m_iLevels.ToString());
+         queryColl.Add("lvl0tilesize", m_decLevelZeroTileSizeDegrees.ToString());
+
+         string strHost = "";
+         string strPath = "";
+         Utility.URI.ParseURI("http", m_oServer.Url, ref strHost, ref strPath);
+         
+         return Utility.URI.CreateURI(URISchemeName, strHost, strPath, queryColl);
       }
 
       public override object Clone()

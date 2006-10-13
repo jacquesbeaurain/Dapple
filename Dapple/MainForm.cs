@@ -1324,7 +1324,7 @@ namespace Dapple
          }
          catch (Exception e)
          {
-            MessageBox.Show(this, e.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, "Could not display metadata because invalid data was received from server (" + e.Message + ").", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
          }
       }
 
@@ -2468,6 +2468,8 @@ namespace Dapple
 
       bool OpenView(string filename, bool bGoto, bool bLoadLayers)
       {
+         bool bOldView = false;
+
          try
          {
             if (File.Exists(filename))
@@ -2514,7 +2516,7 @@ namespace Dapple
                   {
                      datasetType dataset = view.View.activelayers.GetdatasetAt(i);
 
-                     this.activeLayers.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte) dataset.opacity.Value, false, this.tvServers);
+                     this.activeLayers.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte)dataset.opacity.Value, false, this.tvServers, ref bOldView);
                   }
                }
                this.tvLayers.EndUpdate();
@@ -2528,6 +2530,9 @@ namespace Dapple
             }
          }
 
+         if (bOldView)
+            MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            
          this.toolStripButtonClearFilter.Enabled = false;
          m_strLastSearchText = "";
          this.toolStripFilterText.ForeColor = SystemColors.GrayText;
