@@ -216,6 +216,14 @@ namespace Geosoft.GX.DAPGetData
       }
 
       /// <summary>
+      /// Clear the list
+      /// </summary>
+      public void Clear()
+      {
+         m_oServerList.Clear();
+      }
+
+      /// <summary>
       /// Find a server based on its url
       /// </summary>
       /// <param name="strUrl">

@@ -1476,6 +1476,16 @@ namespace Dapple
          if (WWSettingsCtl.UpdateCheckDate.Date != DateTime.Now.Date)
             CheckForUpdates(false);
          WWSettingsCtl.UpdateCheckDate = DateTime.Now;
+
+         foreach (RenderableObject oRO in this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
+         {
+            if (oRO.Name == "1 - Grid Lines")
+            {
+               oRO.IsOn = World.Settings.ShowLatLonLines;
+               break;
+            }
+         }
+         
       }
 
       bool m_bSizing = false;
@@ -2600,6 +2610,9 @@ namespace Dapple
 
       void MainForm_Closing(object sender, CancelEventArgs e)
       {
+         // Turning off the layers will set this
+         bool bSaveGridLineState = World.Settings.ShowLatLonLines;
+
          this.WindowState = FormWindowState.Minimized;
 
          SaveLastView();
@@ -2612,6 +2625,8 @@ namespace Dapple
             oRO.IsOn = false;
             oRO.Dispose();
          }
+
+         World.Settings.ShowLatLonLines = bSaveGridLineState;
 
          // Register the cache location to make it easy for uninstall to clear the cache for at least the current user
          try

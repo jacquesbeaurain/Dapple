@@ -395,7 +395,7 @@ namespace Dapple
                }
             }
 
-            if (treeWMSNode != null && treeWMSNode != treeWMSRootNode)
+            if (treeWMSNode != null && treeWMSNode != treeWMSRootNode && treeWMSNode.Tag != null && treeWMSNode.Tag is BuilderDirectory)
                AddWMSLayers(dir, treeWMSNode);
                   
             this.Sorted = true;
@@ -629,6 +629,9 @@ namespace Dapple
             m_oCurServer = null;
             m_hCurServerTreeNode = null;
             m_wmsServers.Clear();
+            m_oServerList.Clear();
+            m_oFullServerList.Clear();
+            m_oValidServerList.Clear();
             m_bSelect = false;
             this.SelectedNode = m_hRootNode;
             m_bSelect = true;
@@ -798,25 +801,51 @@ namespace Dapple
 
       public void ClearSearch()
       {
+         this.BeginUpdate();
+
          AsyncFilterChanged(ServerTree.SearchModeEnum.All, null, string.Empty, false, false);
          m_filterExtents = null;
          m_strSearch = string.Empty;
 
-         // Reselect current node
-         TreeNode treeNode = this.SelectedNode;
-         this.SelectedNode = null;
-         this.SelectedNode = treeNode;
-      }
-      public void Search(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText)
-      {
-         AsyncFilterChanged(ServerTree.SearchModeEnum.All, bInterSect ? new BoundingBox(extents.East, extents.North, extents.West, extents.South) : null, strText, bInterSect, strText != string.Empty);
-         m_filterExtents = extents;
-         m_strSearch = strText;
+         if (this.SelectedNode != null)
+         {
+            string strText = this.SelectedNode != null ? this.SelectedNode.Text : string.Empty;
+            object tag = this.SelectedNode != null ? this.SelectedNode.Tag : null;
+            this.SelectedNode = this.SelectedNode.Parent;
+            TreeNode treeNode = TreeUtils.FindNodeDFS(m_hRootNode.Nodes, strText, tag);
+            if (treeNode != null)
+               this.SelectedNode = treeNode;
+         }
+         else
+         {
+            this.SelectedNode = m_hRootNode;
+         }
 
-         // Reselect current node
-         TreeNode treeNode = this.SelectedNode;
-         this.SelectedNode = null;
-         this.SelectedNode = treeNode;
+         this.EndUpdate();
+      }
+      public void Search(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strSearch)
+      {
+         this.BeginUpdate();
+
+         AsyncFilterChanged(ServerTree.SearchModeEnum.All, bInterSect ? new BoundingBox(extents.East, extents.North, extents.West, extents.South) : null, strSearch, bInterSect, strSearch != string.Empty);
+         m_filterExtents = extents;
+         m_strSearch = strSearch;
+
+         // Reselect parent node and then the node to refresh the results
+         if (this.SelectedNode != null)
+         {
+            string strText = this.SelectedNode != null ? this.SelectedNode.Text : string.Empty;
+            object tag = this.SelectedNode != null ? this.SelectedNode.Tag : null;
+            this.SelectedNode = this.SelectedNode.Parent;
+            TreeNode treeNode = TreeUtils.FindNodeDFS(m_hRootNode.Nodes, strText, tag);
+            if (treeNode != null)
+               this.SelectedNode = treeNode;
+         }
+         else
+         {
+            this.SelectedNode = m_hRootNode;
+         }
+         this.EndUpdate();
       }
 
       protected void UpdateNodeCounts(TreeNode node)

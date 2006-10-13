@@ -1517,10 +1517,6 @@ namespace Geosoft.GX.DAPGetData
 
       protected void ClearTree()
       {
-         this.SelectedNode = null;
-#if DEBUG
-         System.Diagnostics.Debug.WriteLine("SelectedNode Changed (ClearTree): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
-#endif
          if (m_hCurServerTreeNode != null)
          {
             m_hCurServerTreeNode.Nodes.Clear();

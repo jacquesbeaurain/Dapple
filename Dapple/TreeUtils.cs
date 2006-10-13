@@ -116,5 +116,29 @@ namespace Dapple
          }
          return null;
       }
+
+      /// <summary>
+      /// Depth First search for a node by its tag (or string if tag is null)
+      /// </summary>
+      /// <param name="col"></param>
+      /// <param name="strtext"></param>
+      /// <param name="tag"></param>
+      /// <returns></returns>
+      public static TreeNode FindNodeDFS(TreeNodeCollection col, string strText, object tag)
+      {
+         foreach (TreeNode treeNode in col)
+         {
+            if ((tag == null && treeNode.Text == strText) || (tag != null && treeNode.Tag == tag))
+            {
+               return treeNode;
+            }
+            else
+            {
+               TreeNode temp = FindNodeDFS(treeNode.Nodes, strText, tag);
+               if (temp != null) return temp;
+            }
+         }
+         return null;
+      }
    }
 }
