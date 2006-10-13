@@ -15,7 +15,7 @@ namespace WorldWind.Net
 		/// </summary>
 		/// <param name="owner"></param>
 		/// <param name="uri"></param>
-		protected GeoSpatialDownloadRequest(object owner, string uri) : base( owner, uri )
+		protected GeoSpatialDownloadRequest(object owner, string uri) : base( owner, uri, false )
 		{
 			download.DownloadType = DownloadType.Wms;
 		}

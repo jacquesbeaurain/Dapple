@@ -298,7 +298,7 @@ namespace WorldWind.Renderable
 				if(_imagePath!=null)
 					Directory.CreateDirectory(Path.GetDirectoryName(this._imagePath));
 
-				using(WebDownload downloadReq = new WebDownload(this._imageUrl))
+				using(WebDownload downloadReq = new WebDownload(this._imageUrl, false))
 				{
 					downloadReq.ProgressCallback += new DownloadProgressHandler(UpdateDownloadProgress);
 					string filePath = getFilePathFromUrl(_imageUrl);

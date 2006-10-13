@@ -15,9 +15,10 @@ namespace WorldWind.Net
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Net.WebDownloadRequest"/> class.
 		/// </summary>
 		/// <param name="owner">The object owning this request.</param>
-		public WebDownloadRequest(object owner) : base(owner)
+		public WebDownloadRequest(object owner, bool bXML) : 
+         base(owner)
 		{
-			download = new WebDownload("");
+			download = new WebDownload("", bXML);
 		}
 
 		/// <summary>
@@ -25,9 +26,10 @@ namespace WorldWind.Net
 		/// </summary>
 		/// <param name="owner">The object owning this request.</param>
 		/// <param name="url">The URL to download from.</param>
-		public WebDownloadRequest(object owner, string url) : base(owner)
+      public WebDownloadRequest(object owner, string url, bool bXML)
+         : base(owner)
 		{
-			download = new WebDownload(url);
+         download = new WebDownload(url, bXML);
 		}
 
 

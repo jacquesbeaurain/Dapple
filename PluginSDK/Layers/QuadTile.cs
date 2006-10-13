@@ -2867,7 +2867,7 @@ namespace WorldWind.Renderable
 
       protected override WebDownload BeginDownload()
       {
-         m_Download = new WebDownload(uri);
+         m_Download = new WebDownload(uri, false);
          m_Download.SavedFilePath = m_strImagePath + ".tmp";
          return m_Download;
       }

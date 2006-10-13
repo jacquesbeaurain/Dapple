@@ -886,7 +886,7 @@ namespace bNb.Plugins_GD
          {
             //"http://h1.ortho.tiles.virtualearth.net/tiles/h03022221001.jpeg?g=2"
             //"http://h0.ortho.tiles.virtualearth.net/tiles/h300..jpeg?g=15"
-            download = new WebDownload(textureUrl);
+            download = new WebDownload(textureUrl, false);
             download.DownloadType = DownloadType.Unspecified;
             download.SavedFilePath = textureName + ".tmp"; //?
             download.ProgressCallback += new DownloadProgressHandler(UpdateProgress);

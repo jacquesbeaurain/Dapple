@@ -688,7 +688,7 @@ namespace WorldWind.Net.Monitor
 		{
 			foreach(DebugItem li in listView.SelectedItems)
 			{
-				WebDownload dl = new WebDownload(li.Url);
+				WebDownload dl = new WebDownload(li.Url, false);
 				dl.SavedFilePath = li.SavedFilePath;
 				dl.CompleteCallback += new DownloadCompleteHandler(OnDownloadComplete);
 				dl.BackgroundDownloadFile();

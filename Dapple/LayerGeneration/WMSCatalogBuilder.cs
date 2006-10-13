@@ -81,7 +81,7 @@ namespace Dapple.LayerGeneration
          string url = serverUrl +
             (serverUrl.IndexOf("?") > 0 ? "&" : "?") + "request=GetCapabilities&service=WMS";
 
-         WebDownload download = new WebDownload(url);
+         WebDownload download = new WebDownload(url, true);
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
@@ -189,17 +189,20 @@ namespace Dapple.LayerGeneration
          else
          {
             string imageFormat = "image/png";
-            foreach (string curFormat in layer.ImageFormats)
+            if (layer.ImageFormats != null)
             {
-               if (string.Compare(curFormat, "image/png", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
+               foreach (string curFormat in layer.ImageFormats)
                {
-                  imageFormat = curFormat;
-                  break;
-               }
-               if (string.Compare(curFormat, "image/jpeg", true, System.Globalization.CultureInfo.InvariantCulture) == 0 ||
-                  String.Compare(curFormat, "image/jpg", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
-               {
-                  imageFormat = curFormat;
+                  if (string.Compare(curFormat, "image/png", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
+                  {
+                     imageFormat = curFormat;
+                     break;
+                  }
+                  if (string.Compare(curFormat, "image/jpeg", true, System.Globalization.CultureInfo.InvariantCulture) == 0 ||
+                     String.Compare(curFormat, "image/jpg", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
+                  {
+                     imageFormat = curFormat;
+                  }
                }
             }
 

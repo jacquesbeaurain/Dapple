@@ -495,7 +495,7 @@ namespace Dapple
       void CheckForUpdates(bool bFromMenu)
       {
          m_bUpdateFromMenu = bFromMenu;
-         WebDownload download = new WebDownload(WebsiteUrl + VersionFile);
+         WebDownload download = new WebDownload(WebsiteUrl + VersionFile, false);
          download.DownloadType = DownloadType.Unspecified;
          download.CompleteCallback += new DownloadCompleteHandler(UpdateDownloadComplete);
          download.BackgroundDownloadMemory();
