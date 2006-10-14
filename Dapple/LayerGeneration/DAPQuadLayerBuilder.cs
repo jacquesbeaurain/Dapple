@@ -359,6 +359,8 @@ namespace Dapple.LayerGeneration
             m_layer = new QuadTileSet(m_hDataSet.Title, box, m_oWorld, 0,
                 m_oWorld.TerrainAccessor,
                 imgAccessor, m_bOpacity, true);
+
+            m_layer.IsOn = m_IsOn;
          }
          return m_layer;
       }

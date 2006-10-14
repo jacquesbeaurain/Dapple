@@ -295,14 +295,14 @@ namespace WorldWind.Renderable
             // Defer the updates to after the loop to prevent tiles from updating twice
             // If the tilespread is huge we are likely looking at a small dataset in the view 
             // so just test all the tiles in the dataset.
-            int tileSpread = Math.Max(4, (int)Math.Ceiling(drawArgs.WorldCamera.TrueViewRange.Degrees / (2.0 * (double)QuadTileArgs.ImageAccessor.LevelZeroTileSizeDegrees)));
+            int tileSpread = Math.Max(5, (int)Math.Ceiling(drawArgs.WorldCamera.TrueViewRange.Degrees / (2.0 * (double)QuadTileArgs.ImageAccessor.LevelZeroTileSizeDegrees)));
 
             int middleRow;
             int middleCol;
 
             if (tileSpread > 10)
             {
-               tileSpread = Math.Max(4, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * (double)QuadTileArgs.ImageAccessor.LevelZeroTileSizeDegrees)));
+               tileSpread = Math.Max(5, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * (double)QuadTileArgs.ImageAccessor.LevelZeroTileSizeDegrees)));
                middleRow = MathEngine.GetRowFromLatitude(South + (North - South)/2.0, (double)QuadTileArgs.ImageAccessor.LevelZeroTileSizeDegrees);
                middleCol = MathEngine.GetColFromLongitude(West + (East - West)/2.0, (double)QuadTileArgs.ImageAccessor.LevelZeroTileSizeDegrees);
             }
@@ -489,8 +489,8 @@ namespace WorldWind.Renderable
                {
                   if (DateTime.Now.Subtract(TimeSpan.FromSeconds(15)) < dlq.ConnectionWaitStart)
                   {
-                     string s = "Problem connecting to server...Trying again in 2 minutes.\n";
-                     drawArgs.UpperLeftCornerText += s;
+             //        string s = "Problem connecting to server...Trying again in 2 minutes.\n";
+             //        drawArgs.UpperLeftCornerText += s;
                   }
                }
             }
