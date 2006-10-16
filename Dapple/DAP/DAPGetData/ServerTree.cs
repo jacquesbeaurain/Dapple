@@ -595,8 +595,6 @@ namespace Geosoft.GX.DAPGetData
          ClearCatalog();
          if (searchExtents != null)
             m_oCatalogBoundingBox = new Geosoft.Dap.Common.BoundingBox(searchExtents);
-         else
-            m_oCatalogBoundingBox = new Geosoft.Dap.Common.BoundingBox(180, 90, -180, -90);
          EnqueueRequest(AsyncRequestType.GetCatalogHierarchy);
       }
 

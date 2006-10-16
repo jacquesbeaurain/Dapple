@@ -2481,8 +2481,8 @@ namespace Dapple
 
       bool OpenView(string filename, bool bGoto, bool bLoadLayers)
       {
+         bool bFinishUpdate = false;
          bool bOldView = false;
-
          try
          {
             if (File.Exists(filename))
@@ -2519,6 +2519,7 @@ namespace Dapple
                }
 
                this.tvLayers.BeginUpdate();
+               bFinishUpdate = true;
                this.activeLayers.RemoveAll();
 
                this.tvServers.LoadFromView(Path.GetFileNameWithoutExtension(filename), view);
@@ -2532,20 +2533,23 @@ namespace Dapple
                      this.activeLayers.AddUsingUri(dataset.name.Value, dataset.uri.Value, dataset.Hasinvisible() ? !dataset.invisible.Value : true, (byte)dataset.opacity.Value, false, this.tvServers, ref bOldView);
                   }
                }
-               this.tvLayers.EndUpdate();
             }
          }
          catch (Exception e)
          {
+            if (bFinishUpdate)
+               this.tvLayers.EndUpdate();
+            bFinishUpdate = false;
             if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
             {
                return OpenView(Path.Combine(this.worldWindow.WorldWindSettings.DataPath, DefaultView), true);
             }
          }
 
+         if (bFinishUpdate)
+            this.tvLayers.EndUpdate();
          if (bOldView)
             MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            
          this.toolStripButtonClearFilter.Enabled = false;
          m_strLastSearchText = "";
          this.toolStripFilterText.ForeColor = SystemColors.GrayText;
