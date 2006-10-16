@@ -380,7 +380,7 @@ namespace Dapple
          this.activeLayers = new LayerBuilderList(this, this.tvLayers, this.worldWindow);
 
          this.tvServers = new ServerTree(WWSettingsCtl.CachePath, this, this.tvLayers, this.activeLayers);
-         this.tvServers.ContextMenuStrip = this.contextMenuStripServers;
+         this.tvServers.RMBContextMenuStrip = this.contextMenuStripServers;
          this.tvServers.Dock = System.Windows.Forms.DockStyle.Fill;
          this.tvServers.ImageIndex = 0;
          this.tvServers.Location = new System.Drawing.Point(0, 0);
@@ -522,6 +522,7 @@ namespace Dapple
 
       private void contextMenuStripLayers_Opening(object sender, CancelEventArgs e)
       {
+         e.Cancel = false;
          if (LayerBuilderItem == null || this.checked_context)
          {
             this.checked_context = false;
@@ -531,6 +532,7 @@ namespace Dapple
 
       private void contextMenuStripServers_Opening(object sender, CancelEventArgs e)
       {
+         e.Cancel = false;
          if (this.tvServers.SelectedNode == null)
          {
             e.Cancel = true;
@@ -573,6 +575,7 @@ namespace Dapple
          }
          else if (this.tvServers.SelectedNode.Tag != null)
          {
+            bool bCancel = true;
             IBuilder builder = null;
             Geosoft.Dap.Common.DataSet dapDataset = null;
 
@@ -586,6 +589,7 @@ namespace Dapple
                this.toolStripMenuItemAddLayer.Visible = true;
                this.toolStripMenuItemgoToServer.Visible = true;
                this.toolStripSeparatorServerGoto.Visible = true;
+               bCancel = false;
             }
             else
             {
@@ -597,7 +601,10 @@ namespace Dapple
             if (!this.toolStripMenuItemaddServer.Visible && !this.toolStripMenuItemAddLayer.Visible)
                this.toolStripSeparatorServerAdd.Visible = false;
             else
+            {
                this.toolStripSeparatorServerAdd.Visible = true;
+               bCancel = false;
+            }
 
             if (dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
             {
@@ -608,12 +615,14 @@ namespace Dapple
             {
                this.toolStripMenuItemremoveServer.Visible = true;
                this.toolStripSeparatorServerRemove.Visible = true;
+               bCancel = false;
             }
 
             if (builder is WMSServerBuilder)
             {
                this.toolStripSeparatorRefreshCatalog.Visible = true;
                this.toolStripMenuItemRefreshCatalog.Visible = true;
+               bCancel = false;
             }
 
             if (builder != null)
@@ -622,15 +631,21 @@ namespace Dapple
                this.toolStripMenuItemServerLegend.Visible = builder is LayerBuilder;
                this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
                this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
+               bCancel = !builder.SupportsMetaData && !(builder is LayerBuilder) && !((builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend);
             }
+
             if (dapDataset != null)
             {
                this.toolStripMenuItemviewMetadataServer.Visible = true;
                this.toolStripMenuItemviewMetadataServer.Enabled = true;
+               bCancel = false;
             }
             
             if (this.toolStripMenuItemviewMetadataServer.Visible && !this.toolStripMenuItemServerLegend.Visible && !this.toolStripMenuItempropertiesServer.Visible)
                this.toolStripSeparatorRefreshCatalog.Visible = false;
+
+            if (bCancel)
+               e.Cancel = true;
          }
          else
             e.Cancel = true;

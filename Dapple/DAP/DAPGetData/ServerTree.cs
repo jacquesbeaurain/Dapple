@@ -54,6 +54,7 @@ namespace Geosoft.GX.DAPGetData
 #else
       protected string m_strCacheDir;
 #endif
+      ContextMenuStrip m_oContextMenuStrip;
       protected bool m_bSupportDatasetSelection = true;
       protected bool m_bEntireCatalogMode = false;
       protected bool m_bAOIFilter = false;
@@ -133,6 +134,7 @@ namespace Geosoft.GX.DAPGetData
          base.ImageList.Images.Add("loading", Resources.loading);
 
          this.ImageIndex = this.SelectedImageIndex = iImageListIndex("folder");
+         this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
          this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
 
@@ -246,6 +248,15 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Properties
+
+      /// <summary>
+      /// Context menu to display on RMB
+      /// </summary>
+      public ContextMenuStrip RMBContextMenuStrip
+      {
+         get { return m_oContextMenuStrip; }
+         set { m_oContextMenuStrip = value; }
+      }
 
       /// <summary>
       /// Get the current server
@@ -1531,26 +1542,18 @@ namespace Geosoft.GX.DAPGetData
 
       #endregion
 
-      #region TriStateTreeView Overrides
-
-      protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
-      {
-         base.OnMouseDown(e);
-
-         if (e.Button == MouseButtons.Right)
-         {
-            this.SelectedNode = GetNodeAt(e.X, e.Y);
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("SelectedNode Changed (OnMouseDown): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
-#endif
-         }
-         else
-            base.OnMouseDown(e);
-      }
-
-      #endregion
-
       #region Event Handlers
+
+      protected void OnNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+      {
+         if (m_oContextMenuStrip != null && e.Button == MouseButtons.Right)
+         {
+            // Select first on right click, then display context menu
+            this.SelectedNode = e.Node;
+
+            m_oContextMenuStrip.Show(this, e.Location.X, e.Node.Bounds.Y + e.Node.Bounds.Height/2);
+         }
+      }
 
       protected virtual void AfterSelected(TreeNode node)
       {

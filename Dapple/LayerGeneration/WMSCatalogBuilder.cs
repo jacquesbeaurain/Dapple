@@ -259,7 +259,15 @@ namespace Dapple.LayerGeneration
       public override XmlNode GetMetaData(XmlDocument oDoc)
       {
          XmlDocument responseDoc = new XmlDocument();
-         responseDoc.Load(m_strCapabilitiesFilePath);
+         XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
+         oSettings.IgnoreWhitespace = true;
+         oSettings.ProhibitDtd = false;
+         oSettings.XmlResolver = null;
+         oSettings.ValidationType = ValidationType.None;
+         using (XmlReader oResponseXmlStream = XmlReader.Create(m_strCapabilitiesFilePath, oSettings))
+         {
+            responseDoc.Load(oResponseXmlStream);
+         }
          XmlNode oNode = responseDoc.DocumentElement;
          XmlNode newNode = oDoc.CreateElement(oNode.Name);
          newNode.InnerXml = oNode.InnerXml;

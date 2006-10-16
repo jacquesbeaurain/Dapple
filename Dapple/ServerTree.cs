@@ -903,6 +903,9 @@ namespace Dapple
 
       protected void FilterTreeNodes(TreeNode node)
       {
+         if (m_strSearch == string.Empty && (m_filterExtents == null || !m_bAOIFilter))
+            return;
+
          List<TreeNode> nodeList = new List<TreeNode>();
          foreach (TreeNode treeNode in node.Nodes)
             nodeList.Add(treeNode);
@@ -918,7 +921,25 @@ namespace Dapple
             }
             if (treeNode.Tag is BuilderDirectory && !(treeNode.Tag is WMSCatalogBuilder) && 
                (treeNode.Tag as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) == 0)
+            {
+               // Don't remove loading or error sites from lists.
+               if (treeNode.Tag is WMSServerBuilder)
+               {
+                  bool bLoadingOrError = false;
+                  foreach (BuilderEntry entry in m_wmsServers)
+                  {
+                     if (entry.Builder == treeNode.Tag)
+                     {
+                        if (entry.Loading || entry.Error)
+                           bLoadingOrError = true;
+                        break;
+                     }
+                  }
+                  if (bLoadingOrError)
+                     continue;
+               }
                treeNode.Remove();
+            }
          }
          
          // Update counts accross the board
