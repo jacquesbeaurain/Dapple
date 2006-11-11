@@ -238,12 +238,15 @@ namespace NASA.Plugins
 			m_RenderableList.Add(m_ShadedBathyList);
 		//	m_RenderableList.Add(m_UnShadedList);
 
-			this.trackBarMonth.Value = System.DateTime.Now.Month - 1;
+         this.trackBarMonth.Value = 6; // Midsummer (best image and Dapple does not allow chnaging this) System.DateTime.Now.Month - 1;
 
 			timer = new Timer();
 			timer.Interval = 1000;
-			timer.Tick +=new EventHandler(timer_Tick);
+         timer.Tick +=new EventHandler(timer_Tick);
 			timer.Start();
+
+         // --- Call once to enable ---
+         timer_Tick(this, null);
 		}
 
 		protected override void OnClosing(CancelEventArgs e)

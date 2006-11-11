@@ -1456,6 +1456,9 @@ namespace Dapple
          // This will ensure that the buttons is enabled correctly
          LayerBuilderItem = null;
 
+         // Render once to not just show the atmosphere at startup (looks better) ---
+         this.worldWindow.SafeRender();
+
          if (this.openView.Length > 0)
             OpenView(openView, this.openGeoTiff.Length == 0);
          else if (this.openGeoTiff.Length == 0 && File.Exists(Path.Combine(WWSettingsCtl.ConfigPath, LastView)))
@@ -2726,6 +2729,7 @@ namespace Dapple
             return (y.iTotal - y.iPos).CompareTo(x.iTotal - x.iPos);
          }
       }
+      bool m_bDownloadUpdating = false;
       List<ActiveDownload> m_downloadList = new List<ActiveDownload>();
       int m_iPos = 0, m_iTotal = 0;
       bool m_bDownloading = false;
@@ -2735,17 +2739,18 @@ namespace Dapple
          int iBuilderPos, iBuilderTotal;
          // Do the work in the update thread and just invoke to update the GUI
 
-         m_iPos = 0;
-         m_iTotal = 0;
-         m_bDownloading = false;
+
+         int iPos = 0;
+         int iTotal = 0;
+         bool bDownloading = false;
          List<ActiveDownload> currentList = new List<ActiveDownload>();
          RenderableObject roBMNG = GetActiveBMNG();
 
          if (roBMNG != null && roBMNG.IsOn && ((QuadTileSet)((RenderableObjectList)roBMNG).ChildObjects[1]).bIsDownloading(out iBuilderPos, out iBuilderTotal))
          {
-            m_bDownloading = true;
-            m_iPos += iBuilderPos;
-            m_iTotal += iBuilderTotal;
+            bDownloading = true;
+            iPos += iBuilderPos;
+            iTotal += iBuilderTotal;
             ActiveDownload dl = new ActiveDownload();
             dl.builder = null;
             dl.iPos = iBuilderPos;
@@ -2754,14 +2759,14 @@ namespace Dapple
             dl.bRead = false;
             currentList.Add(dl);
          }
-         
+
          foreach (LayerBuilderContainer container in this.activeLayers)
          {
             if (container.Builder != null && container.Builder.bIsDownloading(out iBuilderPos, out iBuilderTotal))
             {
-               m_bDownloading = true;
-               m_iPos += iBuilderPos;
-               m_iTotal += iBuilderTotal;
+               bDownloading = true;
+               iPos += iBuilderPos;
+               iTotal += iBuilderTotal;
                ActiveDownload dl = new ActiveDownload();
                dl.builder = container.Builder;
                dl.iPos = iBuilderPos;
@@ -2773,215 +2778,224 @@ namespace Dapple
          }
 
 
-         if (m_bDownloading)
-         {
-            // Add new or update information for previous downloads
-            for (int i = 0; i < currentList.Count; i++)
-            {
-               int iFound = -1;
-               for (int j = 0; j < m_downloadList.Count; j++)
-               {
-                  if (currentList[i].builder == m_downloadList[j].builder)
-                  {
-                     iFound = j;
-                     break;
-                  }
-               }
-               if (iFound != -1)
-               {
-                  if (m_downloadList[iFound].bRead)
-                  {
-                     // This for simple flashing led animation
-                     currentList[i].bOn = !m_downloadList[iFound].bOn;
-                     currentList[i].bRead = false;
-                  }
-               }
-            }
-
-            // Sorting to put largest dl first, also causes some animation which indicates "busyness"
-            // currentList.Sort(ActiveDownload.Compare); 
-            m_downloadList = currentList;
-         }
-         else
-            m_downloadList.Clear();
-
-         this.BeginInvoke(new WorldWindow.UpdatedDelegate(Updated));
+         this.BeginInvoke(new UpdateDownloadIndicatorsHandler(UpdateDownloadIndicators), new object[] { bDownloading, iPos, iTotal, currentList });
       }
 
-      private void Updated()
+      private delegate void UpdateDownloadIndicatorsHandler(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList);
+
+      private void UpdateDownloadIndicators(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList)
       {
-         if (!m_bDownloading)
+         // --- This always happens in main thread (but protect it anyway) ---
+         if (!m_bDownloadUpdating)
          {
-            if (this.toolStripProgressBar.Visible)
-               this.toolStripProgressBar.Value = 100;
-            this.toolStripProgressBar.Visible = false;
-            this.toolStripStatusLabel1.Visible = false;
-            this.toolStripStatusSpin1.Visible = false;
-            this.toolStripStatusLabel2.Visible = false;
-            this.toolStripStatusSpin2.Visible = false;
-            this.toolStripStatusLabel3.Visible = false;
-            this.toolStripStatusSpin3.Visible = false;
-            this.toolStripStatusLabel4.Visible = false;
-            this.toolStripStatusSpin4.Visible = false;
-            this.toolStripStatusLabel5.Visible = false;
-            this.toolStripStatusSpin5.Visible = false;
-            this.toolStripStatusLabel6.Visible = false;
-            this.toolStripStatusSpin6.Visible = false;
-         }
-         else
-         {
-            this.toolStripProgressBar.Visible = true;
-            this.toolStripProgressBar.Value = m_iTotal > 0 ? Math.Max(5, Math.Min(100 * m_iPos / m_iTotal, 100)) : 0;
-            this.toolStripProgressBar.ToolTipText = "";// (m_iPos / 1024).ToString() + "KB from an estimated " + (m_iTotal / 1024).ToString() + "KB completed.";
-            if (m_downloadList.Count >= 6)
+            m_bDownloadUpdating = true;
+            m_downloadList = newList;
+            m_bDownloading = bDownloading;
+            m_iPos = iPos;
+            m_iTotal = iTotal;
+            if (m_bDownloading)
             {
-               this.toolStripStatusLabel6.Text = "";
-               if (m_downloadList[5].builder == null)
+               // Add new or update information for previous downloads
+               for (int i = 0; i < newList.Count; i++)
                {
-                  this.toolStripStatusLabel6.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images["marble"];
+                  int iFound = -1;
+                  for (int j = 0; j < m_downloadList.Count; j++)
+                  {
+                     if (newList[i].builder == m_downloadList[j].builder)
+                     {
+                        iFound = j;
+                        break;
+                     }
+                  }
+                  if (iFound != -1)
+                  {
+                     if (m_downloadList[iFound].bRead)
+                     {
+                        // This for simple flashing led animation
+                        newList[i].bOn = !m_downloadList[iFound].bOn;
+                        newList[i].bRead = false;
+                     }
+                  }
                }
-               else
-               {
-                  this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Name;
-                  this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images[m_downloadList[5].builder.LogoKey];
-               }
-               this.toolStripStatusLabel6.Visible = true;
-               this.toolStripStatusSpin6.Text = "";
-               this.toolStripStatusSpin6.Image = m_downloadList[5].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[5].iSpin);
-               this.toolStripStatusSpin6.Visible = true;
-               m_downloadList[5].bRead = true;
+               m_downloadList = newList;
             }
             else
+               m_downloadList.Clear();
+
+            if (!m_bDownloading)
             {
+               if (this.toolStripProgressBar.Visible)
+                  this.toolStripProgressBar.Value = 100;
+               this.toolStripProgressBar.Visible = false;
+               this.toolStripStatusLabel1.Visible = false;
+               this.toolStripStatusSpin1.Visible = false;
+               this.toolStripStatusLabel2.Visible = false;
+               this.toolStripStatusSpin2.Visible = false;
+               this.toolStripStatusLabel3.Visible = false;
+               this.toolStripStatusSpin3.Visible = false;
+               this.toolStripStatusLabel4.Visible = false;
+               this.toolStripStatusSpin4.Visible = false;
+               this.toolStripStatusLabel5.Visible = false;
+               this.toolStripStatusSpin5.Visible = false;
                this.toolStripStatusLabel6.Visible = false;
                this.toolStripStatusSpin6.Visible = false;
             }
-
-            if (m_downloadList.Count >= 5)
+            else
             {
-               this.toolStripStatusLabel5.Text = "";
-               if (m_downloadList[4].builder == null)
+               this.toolStripProgressBar.Visible = true;
+               this.toolStripProgressBar.Value = m_iTotal > 0 ? Math.Max(5, Math.Min(100 * m_iPos / m_iTotal, 100)) : 0;
+               this.toolStripProgressBar.ToolTipText = "";// (m_iPos / 1024).ToString() + "KB from an estimated " + (m_iTotal / 1024).ToString() + "KB completed.";
+               if (m_downloadList.Count >= 6)
                {
-                  this.toolStripStatusLabel5.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel5.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  this.toolStripStatusLabel6.Text = "";
+                  if (m_downloadList[5].builder == null)
+                  {
+                     this.toolStripStatusLabel6.ToolTipText = "Base Image";
+                     this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images["marble"];
+                  }
+                  else
+                  {
+                     this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Name;
+                     this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images[m_downloadList[5].builder.LogoKey];
+                  }
+                  this.toolStripStatusLabel6.Visible = true;
+                  this.toolStripStatusSpin6.Text = "";
+                  this.toolStripStatusSpin6.Image = m_downloadList[5].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[5].iSpin);
+                  this.toolStripStatusSpin6.Visible = true;
+                  m_downloadList[5].bRead = true;
                }
                else
                {
-                  this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Name;
-                  this.toolStripStatusLabel5.Image = this.tvServers.ImageList.Images[m_downloadList[4].builder.LogoKey];
+                  this.toolStripStatusLabel6.Visible = false;
+                  this.toolStripStatusSpin6.Visible = false;
                }
-               this.toolStripStatusLabel5.Visible = true;
-               this.toolStripStatusSpin5.Text = "";
-               this.toolStripStatusSpin5.Image = m_downloadList[4].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[4].iSpin);
-               this.toolStripStatusSpin5.Visible = true;
-               m_downloadList[4].bRead = true;
-            }
-            else
-            {
-               this.toolStripStatusLabel5.Visible = false;
-               this.toolStripStatusSpin5.Visible = false;
-            }
 
-            if (m_downloadList.Count >= 4)
-            {
-               this.toolStripStatusLabel4.Text = "";
-               if (m_downloadList[3].builder == null)
+               if (m_downloadList.Count >= 5)
                {
-                  this.toolStripStatusLabel4.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel4.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  this.toolStripStatusLabel5.Text = "";
+                  if (m_downloadList[4].builder == null)
+                  {
+                     this.toolStripStatusLabel5.ToolTipText = "Base Image";
+                     this.toolStripStatusLabel5.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  }
+                  else
+                  {
+                     this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Name;
+                     this.toolStripStatusLabel5.Image = this.tvServers.ImageList.Images[m_downloadList[4].builder.LogoKey];
+                  }
+                  this.toolStripStatusLabel5.Visible = true;
+                  this.toolStripStatusSpin5.Text = "";
+                  this.toolStripStatusSpin5.Image = m_downloadList[4].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[4].iSpin);
+                  this.toolStripStatusSpin5.Visible = true;
+                  m_downloadList[4].bRead = true;
                }
                else
                {
-                  this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Name;
-                  this.toolStripStatusLabel4.Image = this.tvServers.ImageList.Images[m_downloadList[3].builder.LogoKey];
+                  this.toolStripStatusLabel5.Visible = false;
+                  this.toolStripStatusSpin5.Visible = false;
                }
-               this.toolStripStatusLabel4.Visible = true;
-               this.toolStripStatusSpin4.Text = "";
-               this.toolStripStatusSpin4.Image = m_downloadList[3].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[3].iSpin);
-               this.toolStripStatusSpin4.Visible = true;
-               m_downloadList[3].bRead = true;
-            }
-            else
-            {
-               this.toolStripStatusLabel4.Visible = false;
-               this.toolStripStatusSpin4.Visible = false;
-            }
 
-            if (m_downloadList.Count >= 3)
-            {
-               this.toolStripStatusLabel3.Text = "";
-               if (m_downloadList[2].builder == null)
+               if (m_downloadList.Count >= 4)
                {
-                  this.toolStripStatusLabel3.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel3.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  this.toolStripStatusLabel4.Text = "";
+                  if (m_downloadList[3].builder == null)
+                  {
+                     this.toolStripStatusLabel4.ToolTipText = "Base Image";
+                     this.toolStripStatusLabel4.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  }
+                  else
+                  {
+                     this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Name;
+                     this.toolStripStatusLabel4.Image = this.tvServers.ImageList.Images[m_downloadList[3].builder.LogoKey];
+                  }
+                  this.toolStripStatusLabel4.Visible = true;
+                  this.toolStripStatusSpin4.Text = "";
+                  this.toolStripStatusSpin4.Image = m_downloadList[3].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[3].iSpin);
+                  this.toolStripStatusSpin4.Visible = true;
+                  m_downloadList[3].bRead = true;
                }
                else
                {
-                  this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Name;
-                  this.toolStripStatusLabel3.Image = this.tvServers.ImageList.Images[m_downloadList[2].builder.LogoKey];
+                  this.toolStripStatusLabel4.Visible = false;
+                  this.toolStripStatusSpin4.Visible = false;
                }
-               this.toolStripStatusLabel3.Visible = true;
-               this.toolStripStatusSpin3.Text = "";
-               this.toolStripStatusSpin3.Image = m_downloadList[2].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[2].iSpin);
-               this.toolStripStatusSpin3.Visible = true;
-               m_downloadList[2].bRead = true;
-            }
-            else
-            {
-               this.toolStripStatusLabel3.Visible = false;
-               this.toolStripStatusSpin3.Visible = false;
-            }
 
-            if (m_downloadList.Count >= 2)
-            {
-               this.toolStripStatusLabel2.Text = "";
-               if (m_downloadList[1].builder == null)
+               if (m_downloadList.Count >= 3)
                {
-                  this.toolStripStatusLabel2.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel2.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  this.toolStripStatusLabel3.Text = "";
+                  if (m_downloadList[2].builder == null)
+                  {
+                     this.toolStripStatusLabel3.ToolTipText = "Base Image";
+                     this.toolStripStatusLabel3.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  }
+                  else
+                  {
+                     this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Name;
+                     this.toolStripStatusLabel3.Image = this.tvServers.ImageList.Images[m_downloadList[2].builder.LogoKey];
+                  }
+                  this.toolStripStatusLabel3.Visible = true;
+                  this.toolStripStatusSpin3.Text = "";
+                  this.toolStripStatusSpin3.Image = m_downloadList[2].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[2].iSpin);
+                  this.toolStripStatusSpin3.Visible = true;
+                  m_downloadList[2].bRead = true;
                }
                else
                {
-                  this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Name;
-                  this.toolStripStatusLabel2.Image = this.tvServers.ImageList.Images[m_downloadList[1].builder.LogoKey];
+                  this.toolStripStatusLabel3.Visible = false;
+                  this.toolStripStatusSpin3.Visible = false;
                }
-               this.toolStripStatusLabel2.Visible = true;
-               this.toolStripStatusSpin2.Text = "";
-               this.toolStripStatusSpin2.Image = m_downloadList[1].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[1].iSpin);
-               this.toolStripStatusSpin2.Visible = true;
-               m_downloadList[1].bRead = true;
-            }
-            else
-            {
-               this.toolStripStatusLabel2.Visible = false;
-               this.toolStripStatusSpin2.Visible = false;
-            }
 
-            if (m_downloadList.Count >= 1)
-            {
-               this.toolStripStatusLabel1.Text = "";
-               if (m_downloadList[0].builder == null)
+               if (m_downloadList.Count >= 2)
                {
-                  this.toolStripStatusLabel1.ToolTipText = "Base Image";
-                  this.toolStripStatusLabel1.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  this.toolStripStatusLabel2.Text = "";
+                  if (m_downloadList[1].builder == null)
+                  {
+                     this.toolStripStatusLabel2.ToolTipText = "Base Image";
+                     this.toolStripStatusLabel2.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  }
+                  else
+                  {
+                     this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Name;
+                     this.toolStripStatusLabel2.Image = this.tvServers.ImageList.Images[m_downloadList[1].builder.LogoKey];
+                  }
+                  this.toolStripStatusLabel2.Visible = true;
+                  this.toolStripStatusSpin2.Text = "";
+                  this.toolStripStatusSpin2.Image = m_downloadList[1].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[1].iSpin);
+                  this.toolStripStatusSpin2.Visible = true;
+                  m_downloadList[1].bRead = true;
                }
                else
                {
-                  this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Name;
-                  this.toolStripStatusLabel1.Image = this.tvServers.ImageList.Images[m_downloadList[0].builder.LogoKey];
+                  this.toolStripStatusLabel2.Visible = false;
+                  this.toolStripStatusSpin2.Visible = false;
                }
-               this.toolStripStatusLabel1.Visible = true;
-               this.toolStripStatusSpin1.Text = "";
-               this.toolStripStatusSpin1.Image = m_downloadList[0].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[0].iSpin);
-               this.toolStripStatusSpin1.Visible = true;
-               m_downloadList[0].bRead = true;
+
+               if (m_downloadList.Count >= 1)
+               {
+                  this.toolStripStatusLabel1.Text = "";
+                  if (m_downloadList[0].builder == null)
+                  {
+                     this.toolStripStatusLabel1.ToolTipText = "Base Image";
+                     this.toolStripStatusLabel1.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
+                  }
+                  else
+                  {
+                     this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Name;
+                     this.toolStripStatusLabel1.Image = this.tvServers.ImageList.Images[m_downloadList[0].builder.LogoKey];
+                  }
+                  this.toolStripStatusLabel1.Visible = true;
+                  this.toolStripStatusSpin1.Text = "";
+                  this.toolStripStatusSpin1.Image = m_downloadList[0].bOn ? global::Dapple.Properties.Resources.led_on : global::Dapple.Properties.Resources.led_off; //GetSpinImage(m_downloadList[0].iSpin);
+                  this.toolStripStatusSpin1.Visible = true;
+                  m_downloadList[0].bRead = true;
+               }
+               else
+               {
+                  this.toolStripStatusLabel1.Visible = false;
+                  this.toolStripStatusSpin1.Visible = false;
+               }
             }
-            else
-            {
-               this.toolStripStatusLabel1.Visible = false;
-               this.toolStripStatusSpin1.Visible = false;
-            }
+            m_bDownloadUpdating = false;
          }
       }
       #endregion
