@@ -479,7 +479,7 @@ namespace Dapple
                
             File.Delete(strTemp);
          }
-         catch (System.Net.WebException caught)
+         catch (System.Net.WebException)
          {
          }
          catch
@@ -533,49 +533,40 @@ namespace Dapple
       private void contextMenuStripServers_Opening(object sender, CancelEventArgs e)
       {
          e.Cancel = false;
-         if (this.tvServers.SelectedNode == null)
+         if (this.tvServers.SelectedNode == null || this.tvServers.SelectedNode.Nodes == this.tvServers.TileRootNodes)
          {
             e.Cancel = true;
             return;
          }
 
-         this.toolStripMenuItemAddLayer.Visible = false;
-         this.toolStripMenuItemaddServer.Text = "Add Server";
-         this.toolStripMenuItemaddServer.Visible = false;
-         this.toolStripSeparatorServerAdd.Visible = false;
-         this.toolStripMenuItemgoToServer.Visible = false;
-         this.toolStripSeparatorServerGoto.Visible = false;
-         this.toolStripMenuItemremoveServer.Visible = false;
-         this.toolStripSeparatorServerRemove.Visible = false;
-         this.toolStripMenuItemviewMetadataServer.Visible = false;
-         this.toolStripMenuItemServerLegend.Visible = false;
-         this.toolStripMenuItemviewMetadataServer.Enabled = false;
-         this.toolStripMenuItemServerLegend.Enabled = false;
-         this.toolStripMenuItempropertiesServer.Visible = false;
-         this.toolStripSeparatorRefreshCatalog.Visible = false;
-         this.toolStripMenuItemRefreshCatalog.Visible = false;
+         this.toolStripMenuItemAddLayer.Tag = false;
+         this.toolStripMenuItemaddServer.Tag = false;
+         this.toolStripMenuItemgoToServer.Tag = false;
+         this.toolStripMenuItemremoveServer.Tag = false;
+         this.toolStripMenuItemviewMetadataServer.Tag = false;
+         this.toolStripMenuItemServerLegend.Tag = false;
+         this.toolStripMenuItemviewMetadataServer.Tag = false;
+         this.toolStripMenuItemServerLegend.Tag = false;
+         this.toolStripMenuItempropertiesServer.Tag = false;
+         this.toolStripMenuItemRefreshCatalog.Tag = false;
 
          if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
          {
             this.toolStripMenuItemaddServer.Text = "Add DAP Server";
-            this.toolStripMenuItemaddServer.Visible = true;
+            this.toolStripMenuItemaddServer.Tag = true;
          }
          else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
          {
             this.toolStripMenuItemaddServer.Text = "Add WMS Server";
-            this.toolStripMenuItemaddServer.Visible = true;
+            this.toolStripMenuItemaddServer.Tag = true;
          }
-         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.TileRootNodes)
-            e.Cancel = true;
          else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
-            this.toolStripMenuItemRefreshCatalog.Visible = true;
-            this.toolStripMenuItemremoveServer.Visible = true;
-            this.toolStripSeparatorServerRemove.Visible = true;
+            this.toolStripMenuItemRefreshCatalog.Tag = true;
+            this.toolStripMenuItemremoveServer.Tag = true;
          }
          else if (this.tvServers.SelectedNode.Tag != null)
          {
-            bool bCancel = true;
             IBuilder builder = null;
             Geosoft.Dap.Common.DataSet dapDataset = null;
 
@@ -586,66 +577,76 @@ namespace Dapple
 
             if (builder is LayerBuilder || dapDataset != null)
             {
-               this.toolStripMenuItemAddLayer.Visible = true;
-               this.toolStripMenuItemgoToServer.Visible = true;
-               this.toolStripSeparatorServerGoto.Visible = true;
-               bCancel = false;
-            }
-            else
-            {
-               this.toolStripMenuItemAddLayer.Visible = false;
-               this.toolStripMenuItemgoToServer.Visible = false;
-               this.toolStripSeparatorServerGoto.Visible = false;
+               this.toolStripMenuItemAddLayer.Tag = true;
+               this.toolStripMenuItemgoToServer.Tag = true;
             }
 
-            if (!this.toolStripMenuItemaddServer.Visible && !this.toolStripMenuItemAddLayer.Visible)
-               this.toolStripSeparatorServerAdd.Visible = false;
-            else
-            {
-               this.toolStripSeparatorServerAdd.Visible = true;
-               bCancel = false;
-            }
-
-            if (dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable))
-            {
-               this.toolStripMenuItemremoveServer.Visible = false;
-               this.toolStripSeparatorServerRemove.Visible = false;
-            }
-            else
-            {
-               this.toolStripMenuItemremoveServer.Visible = true;
-               this.toolStripSeparatorServerRemove.Visible = true;
-               bCancel = false;
-            }
-
-            if (builder is WMSServerBuilder)
-            {
-               this.toolStripSeparatorRefreshCatalog.Visible = true;
-               this.toolStripMenuItemRefreshCatalog.Visible = true;
-               bCancel = false;
-            }
+            if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
+               this.toolStripMenuItemremoveServer.Tag = true;
 
             if (builder != null)
             {
-               this.toolStripMenuItemviewMetadataServer.Visible = builder.SupportsMetaData || builder is LayerBuilder;
-               this.toolStripMenuItemServerLegend.Visible = builder is LayerBuilder;
+               this.toolStripMenuItemviewMetadataServer.Tag = builder.SupportsMetaData || builder is LayerBuilder;
+               this.toolStripMenuItemServerLegend.Tag = builder is LayerBuilder;
                this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
                this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
-               bCancel = !builder.SupportsMetaData && !(builder is LayerBuilder) && !((builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend);
+
+               if (builder is WMSServerBuilder)
+                  this.toolStripMenuItemRefreshCatalog.Tag = true;
             }
 
             if (dapDataset != null)
             {
-               this.toolStripMenuItemviewMetadataServer.Visible = true;
+               this.toolStripMenuItemviewMetadataServer.Tag = true;
                this.toolStripMenuItemviewMetadataServer.Enabled = true;
-               bCancel = false;
             }
-            
-            if (this.toolStripMenuItemviewMetadataServer.Visible && !this.toolStripMenuItemServerLegend.Visible && !this.toolStripMenuItempropertiesServer.Visible)
-               this.toolStripSeparatorRefreshCatalog.Visible = false;
+         }
 
-            if (bCancel)
-               e.Cancel = true;
+         // Filter Separators
+         bool bAnyVisible = false;
+         int iTotalVisible = 0;
+         ToolStripSeparator lastSeparator = null;
+
+         this.toolStripSeparatorServerAdd.Visible = true;
+         this.toolStripSeparatorServerGoto.Visible = true;
+         this.toolStripSeparatorServerRemove.Visible = true;
+         this.toolStripSeparatorRefreshCatalog.Visible = true;
+
+
+         for (int i = 0; i < this.contextMenuStripServers.Items.Count; i++)
+         {
+            if (this.contextMenuStripServers.Items[i] is ToolStripSeparator)
+            {
+               if (!bAnyVisible)
+                  this.contextMenuStripServers.Items[i].Visible = false;
+               lastSeparator = this.contextMenuStripServers.Items[i] as ToolStripSeparator;
+               bAnyVisible = false;
+            }
+            else 
+            {
+               if ((bool)this.contextMenuStripServers.Items[i].Tag)
+               {
+                  iTotalVisible++;
+                  this.contextMenuStripServers.Items[i].Visible = true;
+                  bAnyVisible = true;
+               }
+               else
+                  this.contextMenuStripServers.Items[i].Visible = false;
+            }
+         }
+         if (iTotalVisible > 0)
+         {
+            if (iTotalVisible == 1)
+            {
+               // Hide all separators
+               for (int i = 0; i < this.contextMenuStripServers.Items.Count; i++)
+               {
+                  if (this.contextMenuStripServers.Items[i] is ToolStripSeparator)
+                     this.contextMenuStripServers.Items[i].Visible = false;
+               }
+            }
+            else if (lastSeparator != null && !bAnyVisible)
+               lastSeparator.Visible = false;
          }
          else
             e.Cancel = true;
