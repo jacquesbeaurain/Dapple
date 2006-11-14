@@ -719,7 +719,7 @@ namespace Geosoft.GX.DAPGetData
                else if (m_bAOIFilter && m_bTextFilter)
                   oCatalog = m_oCurServer.CatalogCollection.GetCatalog(m_oCatalogBoundingBox, m_strSearchString);
             }
-            catch (DapException e)
+            catch (DapException)
             {
                oCatalog = null;
             }

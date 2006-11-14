@@ -444,7 +444,7 @@ namespace Geosoft.Dap.Xml
             cHttpWReq.KeepAlive = false;
             cHttpWReq.ContentType = "application/x-www-form-urlencoded";
             cHttpWReq.ContentLength = hRequest.GetStringBuilder().Length;
-
+            cHttpWReq.Timeout = 5000;
 
             // --- Serialize the XML document onto the wire ---
 

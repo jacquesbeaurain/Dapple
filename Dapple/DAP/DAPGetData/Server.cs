@@ -245,12 +245,15 @@ namespace Geosoft.GX.DAPGetData
 
             ConfigureServer();
 
-            // --- If the edition change we need to reload the configuration ---
-            m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-            if (m_strCacheVersion != strConfigEdition)
-               UpdateConfiguration();
+            if (m_eStatus == ServerStatus.OnLine)
+            {
+               // --- If the edition change we need to reload the configuration ---
+               m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+               if (m_strCacheVersion != strConfigEdition)
+                  UpdateConfiguration();
+            }
          }
-         catch (Exception e)
+         catch (Exception)
          {
             // In Dapple we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
             m_eStatus = ServerStatus.OffLine;
@@ -603,7 +606,15 @@ namespace Geosoft.GX.DAPGetData
             {
                oDoc = m_oCommand.GetConfiguration(null);
                oDoc.Save(strConfigurationFile);
-            }  
+            }
+            catch (System.Net.WebException we)
+            {
+               // --- verify this server is on-line, because if it is then it is an unsupported version ---
+
+               m_eStatus = ServerStatus.OffLine;
+               GetDapError.Instance.Write("Configure Server, Get Configuration (" + m_strUrl + ") - " + we.Message);
+               return;
+            }
             catch (Exception)
             {
                // --- this server against a 6.2 server ---
@@ -618,7 +629,7 @@ namespace Geosoft.GX.DAPGetData
                {
                   // --- verify this server is on-line, because if it is then it is an unsupported version ---
 
-                  m_eStatus = ServerStatus.OffLine;     
+                  m_eStatus = ServerStatus.OffLine;
                   GetDapError.Instance.Write("Configure Server, Get Configuration (" + m_strUrl + ") - " + ex.Message);
                   return;
                }

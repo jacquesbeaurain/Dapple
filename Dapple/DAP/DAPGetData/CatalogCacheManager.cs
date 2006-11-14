@@ -194,7 +194,7 @@ namespace Geosoft.GX.DAPGetData
                else if (bAOIFilter && bTextFilter)
                   oDoc = oServer.Command.GetCatalogHierarchy(strSearchString, oBounds);
             }
-            catch (DapException e)
+            catch (DapException)
             {
                // Assume the server is older
                bEntireCatalogMode = true;
