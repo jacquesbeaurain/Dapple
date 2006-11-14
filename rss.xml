@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<rss version="2.0">
+   <channel>
+      <title>Dapple</title>
+      <link>http://dapple.geosoft.com/</link>
+      <description>Explore the earth</description>
+      <language>en-us</language>
+
+      <item>
+         <title>Dapple 1.0.10 Released</title>
+         <description>
+            Dapple 1.0.10 has been released.  This hotfix release provides a few bugfixes found after the release of 1.0.8.
+         </description>
+         <pubDate>Tue, 14 Nov 2006</pubDate>
+         <link>http://dapple.geosoft.com/releasenotes.asp#1010</link>
+      </item>
+
+      <item>
+         <title>Dapple 1.0.8 Released</title>
+         <description>
+            Dapple 1.0.8 has been released.  This release provides a couple of bug fixes and new features. Most notable is an enhancement to the server tree inside Dapple to give better visual feedback and un-clutter the tree view when browsing very large catalogs. With this change Dapple can scale to 100's of thousands of layers in this view without encumbering the interface.
+         </description>
+         <pubDate>Mon, 16 Oct 2006</pubDate>
+         <link>http://dapple.geosoft.com/releasenotes.asp#108</link>
+      </item>
+
+      <item>
+         <title>Dapple 1.0.6 Released</title>
+         <description>
+            Dapple 1.0.6 has been released.  This maintenance release addresses a number of bugs found after the intial release, improved metadata support for DAP and WMS servers as well as Windows 2000 support in the install.
+         </description>
+         <pubDate>Mon, 31 July 2006</pubDate>
+         <link>http://dapple.geosoft.com/releasenotes.asp#106</link>
+      </item>
+
+
+      <item>
+         <title>Dapple 1.0.4 Released</title>
+         <description>
+            Dapple 1.0.4 has been released.  This is the first public release of the Dapple project.
+         </description>
+         <pubDate>Mon, 24 July 2006</pubDate>
+         <link>http://dapple.geosoft.com/releasenotes.asp#104</link>
+      </item>
+
+   </channel>
+</rss>
