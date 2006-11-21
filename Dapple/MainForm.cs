@@ -1546,7 +1546,8 @@ namespace Dapple
          {
             this.worldWindow.Visible = true;
             this.worldWindow.SafeRender();
-            this.overviewCtl.Refresh();
+            if (this.overviewCtl != null)
+               this.overviewCtl.Refresh();
          }
       }
 
