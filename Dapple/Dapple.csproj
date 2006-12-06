@@ -52,6 +52,12 @@
     </Compile>
     <Compile Include="Arguments.cs">
     </Compile>
+    <Compile Include="ConfigurationWizard\Pages\DappleSearchPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ConfigurationWizard\Pages\DappleSearchPage.Designer.cs">
+      <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="DAP\DAPGetData\CatalogCacheManager.cs" />
     <Compile Include="DAP\DAPGetData\CatalogFolder.cs" />
     <Compile Include="DAP\DAPGetData\FolderDatasetList.cs" />
@@ -72,6 +78,10 @@
     <Compile Include="TriStateTreeView\TriStateTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UpdateDialog.resx">
       <DependentUpon>UpdateDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -597,6 +607,6 @@
   <PropertyGroup>
     <PostBuildEvent>del /S /Q $(OutDir)System
 mkdir $(OutDir)System
-xcopy $(ProjectDir)System\*.exe $(OutDir)System\</PostBuildEvent>
+xcopy "$(ProjectDir)System\*.exe" $(OutDir)System\</PostBuildEvent>
   </PropertyGroup>
 </Project>

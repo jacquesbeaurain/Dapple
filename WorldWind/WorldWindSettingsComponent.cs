@@ -373,5 +373,17 @@ namespace WorldWind
          }
       }
 
+      public string DappleSearchURL
+      {
+         get
+         {
+            return m_oSettings.DappleSearchURL;
+         }
+         set
+         {
+            m_oSettings.DappleSearchURL = value;
+         }
+      }
+
    }
 }

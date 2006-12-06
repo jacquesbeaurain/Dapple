@@ -24,6 +24,7 @@ using dappleview;
 using DM.SharedMemory;
 using Microsoft.Win32;
 using Altova.Types;
+using System.Net;
 
 namespace Dapple
 {
@@ -306,7 +307,7 @@ namespace Dapple
 
          this.bmngPlugin = bmng.BMNGForm;
 
-         this.splitContainerMain.Panel2.Controls.Add(this.worldWindow);
+         this.WorldResultsSplitPanel.Panel1.Controls.Add(this.worldWindow);
          this.worldWindow.Dock = DockStyle.Fill;
 
          #endregion
@@ -2631,6 +2632,16 @@ namespace Dapple
          this.toolStripStatusSpin6.Visible = false;
          this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right; 
          this.worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
+
+         // --- Configure DappleSearch if it's enabled ---
+         if (!WWSettingsCtl.DappleSearchURL.Equals(String.Empty) && WWSettingsCtl.DappleSearchURL != null)
+         {
+            m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
+            DappleSearchToolbar.Visible = true;
+            Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
+            t.Name = "Background search thread";
+            t.Start();
+         }
       }
 
       void MainForm_Closing(object sender, CancelEventArgs e)
@@ -2666,6 +2677,7 @@ namespace Dapple
 
          // Save changed settings
          World.Settings.Save();
+         Console.WriteLine("**" + WWSettingsCtl.DappleSearchURL + "**");
          WWSettingsCtl.WorldWindSettings.Save();
 
          this.worldWindow.Dispose();
@@ -3162,6 +3174,227 @@ namespace Dapple
       {
 
       }
+
+      #region DappleSearch code
+
+      private enum SearchMode { Text, ROI, Dual };
+      private SearchMode searchMode = SearchMode.Dual;
+      private String SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
+      private String SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
+      private String m_strDappleSearchServerURL = null;
+
+      private void textToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         searchMode = SearchMode.Text;
+         DappleSearchGoButton.Image = textToolStripMenuItem.Image;
+         DappleSearchKeyword.Enabled = true;
+      }
+
+      private void rOIToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         searchMode = SearchMode.ROI;
+         DappleSearchGoButton.Image = rOIToolStripMenuItem.Image;
+         DappleSearchKeyword.Enabled = false;
+      }
+
+      private void dualToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         searchMode = SearchMode.Dual;
+         DappleSearchGoButton.Image = dualToolStripMenuItem.Image;
+         DappleSearchKeyword.Enabled = true;
+      }
+
+      private void DappleSearchGoButton_ButtonClick(object sender, EventArgs e)
+      {
+         ViewSearchResults();
+      }
+
+
+      private void DappleSearchBasicGoButton_Click(object sender, EventArgs e)
+      {
+         ViewSearchResults();
+      }
+
+      private void ViewSearchResults()
+      {
+         openSearchResults();
+         displayResultsPanel();
+      }
+
+      private void CloseSearchResultsButton_Click(object sender, EventArgs e)
+      {
+         hideSearchResults();
+      }
+
+      private void displayResultsPanel()
+      {
+         CloseSearchResultsButton.Enabled = true;
+         this.worldWindow.Visible = false;
+         WorldResultsSplitPanel.Panel2Collapsed = false;
+         this.worldWindow.Visible = true;
+         this.worldWindow.SafeRender();
+      }
+
+      private void hideSearchResults()
+      {
+         CloseSearchResultsButton.Enabled = false;
+         this.worldWindow.Visible = false;
+         WorldResultsSplitPanel.Panel2Collapsed = true;
+         this.worldWindow.Visible = true;
+         this.worldWindow.SafeRender();
+      }
+
+      private void openSearchResults()
+      {
+         if (m_strDappleSearchServerURL == null) return;
+
+         StringBuilder resultsURL = new StringBuilder(m_strDappleSearchServerURL + SEARCH_HTML_GATEWAY + "?");
+         if (searchMode != SearchMode.ROI)
+         {
+            resultsURL.Append("&keyword=");
+            resultsURL.Append(HttpUtility.UrlEncode(DappleSearchKeyword.Text));
+         }
+         if (searchMode != SearchMode.Text)
+         {
+            GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+            resultsURL.Append("&usebbox=true");
+            resultsURL.Append("&minx=");
+            resultsURL.Append(AoI.West);
+            resultsURL.Append("&miny=");
+            resultsURL.Append(AoI.South);
+            resultsURL.Append("&maxx=");
+            resultsURL.Append(AoI.East);
+            resultsURL.Append("&maxy=");
+            resultsURL.Append(AoI.North);
+         }
+
+         SearchResultsBrowser.Navigate(resultsURL.ToString());
+      }
+
+      private void BackgroundSearchThreadMain()
+      {
+         if (m_strDappleSearchServerURL == null) return;
+
+         GeographicBoundingBox lastAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+         GeographicBoundingBox currentAoI = null;
+         String keyword = DappleSearchKeyword.Text;
+         SearchMode mode = searchMode;
+
+         Boolean searchCompleted = false;
+
+         while (true)
+         {
+            try { Thread.Sleep(1000); }
+            catch (ThreadAbortException) { return; }
+            catch (ThreadInterruptedException) { return; }
+
+            try
+            {
+               currentAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+            }
+            catch (NullReferenceException) { return; } // Assume because program is shutting down, so thread does too.
+
+            if (
+               searchMode == mode
+               &&
+               (searchMode == SearchMode.Text || lastAoI.North == currentAoI.North && lastAoI.East == currentAoI.East && lastAoI.South == currentAoI.South && lastAoI.West == currentAoI.West)
+               &&
+               (searchMode == SearchMode.ROI || keyword.Equals(DappleSearchKeyword.Text))
+               )
+            {
+               if (!searchCompleted)
+               {
+                  DappleSearchResultsLabel.Text = "Hits: <searching...>";
+                  int hits, error;
+
+                  doBackgroundSearch(out hits,
+                      out error,
+                      searchMode == SearchMode.ROI ? null : keyword,
+                      searchMode == SearchMode.Text ? null : currentAoI);
+
+                  if (error == 0)
+                     DappleSearchResultsLabel.Text = "Hits: " + hits;
+                  else if (error > 0)
+                     DappleSearchResultsLabel.Text = "Hits: <ERROR " + error + ">";
+                  else
+                  {
+                     DappleSearchResultsLabel.Text = "ERROR CONTACTING SEARCH SERVER";
+                  }
+                  searchCompleted = true;
+               }
+            }
+            else
+            {
+               searchCompleted = false;
+               DappleSearchResultsLabel.Text = "Hits: <waiting...>";
+               lastAoI = currentAoI;
+               keyword = DappleSearchKeyword.Text;
+               mode = searchMode;
+            }
+         }
+      }
+
+      private void doBackgroundSearch(out int hits, out int error, String keywords, GeographicBoundingBox ROI)
+      {
+         XmlDocument query = new XmlDocument();
+         XmlElement geoRoot = query.CreateElement("geosoft_xml");
+         query.AppendChild(geoRoot);
+         XmlElement root = query.CreateElement("search_request");
+         root.SetAttribute("version", "1.0");
+         root.SetAttribute("handle", "cheese");
+         root.SetAttribute("maxcount", "0");
+         root.SetAttribute("offset", "0");
+         geoRoot.AppendChild(root);
+
+         if (ROI != null)
+         {
+            XmlElement boundingBox = query.CreateElement("bounding_box");
+            boundingBox.SetAttribute("minx", ROI.West.ToString());
+            boundingBox.SetAttribute("miny", ROI.South.ToString());
+            boundingBox.SetAttribute("maxx", ROI.East.ToString());
+            boundingBox.SetAttribute("maxy", ROI.North.ToString());
+            boundingBox.SetAttribute("crs", "WSG84");
+            root.AppendChild(boundingBox);
+         }
+
+         if (keywords != null)
+         {
+            XmlElement keyword = query.CreateElement("text_filter");
+            keyword.InnerText = keywords;
+            root.AppendChild(keyword);
+         }
+
+         // --- Do the request ---
+
+         try
+         {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_strDappleSearchServerURL + SEARCH_XML_GATEWAY);
+            request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;
+            WebResponse response = request.GetResponse();
+
+            XmlDocument responseXML = new XmlDocument();
+            responseXML.Load(response.GetResponseStream());
+
+            System.Xml.XPath.XPathNavigator navcom = responseXML.CreateNavigator();
+            if (navcom.MoveToFollowing("error", ""))
+            {
+               String errorString = navcom.GetAttribute("code", "");
+               hits = -1;
+               error = Int32.Parse(errorString);
+            }
+            else
+            {
+               navcom.MoveToFollowing("search_result", "");
+               String countString = navcom.GetAttribute("totalcount", "");
+               hits = Int32.Parse(countString);
+               error = 0;
+            }
+         }
+         catch (WebException) { hits = 0; error = -1; return; }
+         catch (IOException) { hits = 0; error = -2; return; }
+      }
+      #endregion
+
 #if !DEBUG
       public void OnThreadException(object o, ThreadExceptionEventArgs e)
       {

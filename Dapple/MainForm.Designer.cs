@@ -128,6 +128,20 @@ namespace Dapple
            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
            this.toolStripButtonResetCamera = new System.Windows.Forms.ToolStripButton();
            this.panelOverview = new System.Windows.Forms.Panel();
+           this.WorldResultsSplitPanel = new System.Windows.Forms.SplitContainer();
+           this.SearchResultsBrowser = new System.Windows.Forms.WebBrowser();
+           this.DappleSearchToolbar = new System.Windows.Forms.ToolStrip();
+           this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+           this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+           this.DappleSearchKeyword = new System.Windows.Forms.ToolStripTextBox();
+           this.DappleSearchBasicGoButton = new System.Windows.Forms.ToolStripButton();
+           this.DappleSearchGoButton = new System.Windows.Forms.ToolStripSplitButton();
+           this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.rOIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.dualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.CloseSearchResultsButton = new System.Windows.Forms.ToolStripButton();
+           this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+           this.DappleSearchResultsLabel = new System.Windows.Forms.ToolStripLabel();
            this.contextMenuStripServers = new System.Windows.Forms.ContextMenuStrip(this.components);
            this.toolStripMenuItemAddLayer = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripMenuItemaddServer = new System.Windows.Forms.ToolStripMenuItem();
@@ -166,6 +180,7 @@ namespace Dapple
            this.statusStrip.SuspendLayout();
            this.menuStrip.SuspendLayout();
            this.splitContainerMain.Panel1.SuspendLayout();
+           this.splitContainerMain.Panel2.SuspendLayout();
            this.splitContainerMain.SuspendLayout();
            this.splitContainerLeft.Panel1.SuspendLayout();
            this.splitContainerLeft.Panel2.SuspendLayout();
@@ -194,6 +209,9 @@ namespace Dapple
            this.splitContainerOverview.SuspendLayout();
            this.toolStripOverview.SuspendLayout();
            this.toolStripNavigation.SuspendLayout();
+           this.WorldResultsSplitPanel.Panel2.SuspendLayout();
+           this.WorldResultsSplitPanel.SuspendLayout();
+           this.DappleSearchToolbar.SuspendLayout();
            this.contextMenuStripServers.SuspendLayout();
            this.contextMenuStripLayers.SuspendLayout();
            this.SuspendLayout();
@@ -240,7 +258,7 @@ namespace Dapple
            // 
            this.toolStripStatusSpin1.Margin = new System.Windows.Forms.Padding(-5, 3, 5, 2);
            this.toolStripStatusSpin1.Name = "toolStripStatusSpin1";
-           this.toolStripStatusSpin1.Size = new System.Drawing.Size(11, 17);
+           this.toolStripStatusSpin1.Size = new System.Drawing.Size(12, 17);
            this.toolStripStatusSpin1.Text = "/";
            // 
            // toolStripStatusLabel1
@@ -253,7 +271,7 @@ namespace Dapple
            // 
            this.toolStripStatusSpin2.Margin = new System.Windows.Forms.Padding(-5, 3, 5, 2);
            this.toolStripStatusSpin2.Name = "toolStripStatusSpin2";
-           this.toolStripStatusSpin2.Size = new System.Drawing.Size(11, 17);
+           this.toolStripStatusSpin2.Size = new System.Drawing.Size(12, 17);
            this.toolStripStatusSpin2.Text = "/";
            // 
            // toolStripStatusLabel2
@@ -266,7 +284,7 @@ namespace Dapple
            // 
            this.toolStripStatusSpin3.Margin = new System.Windows.Forms.Padding(-5, 3, 5, 2);
            this.toolStripStatusSpin3.Name = "toolStripStatusSpin3";
-           this.toolStripStatusSpin3.Size = new System.Drawing.Size(11, 17);
+           this.toolStripStatusSpin3.Size = new System.Drawing.Size(12, 17);
            this.toolStripStatusSpin3.Text = "/";
            // 
            // toolStripStatusLabel3
@@ -279,7 +297,7 @@ namespace Dapple
            // 
            this.toolStripStatusSpin4.Margin = new System.Windows.Forms.Padding(-5, 3, 5, 2);
            this.toolStripStatusSpin4.Name = "toolStripStatusSpin4";
-           this.toolStripStatusSpin4.Size = new System.Drawing.Size(11, 17);
+           this.toolStripStatusSpin4.Size = new System.Drawing.Size(12, 17);
            this.toolStripStatusSpin4.Text = "/";
            // 
            // toolStripStatusLabel4
@@ -292,7 +310,7 @@ namespace Dapple
            // 
            this.toolStripStatusSpin5.Margin = new System.Windows.Forms.Padding(-5, 3, 5, 2);
            this.toolStripStatusSpin5.Name = "toolStripStatusSpin5";
-           this.toolStripStatusSpin5.Size = new System.Drawing.Size(11, 17);
+           this.toolStripStatusSpin5.Size = new System.Drawing.Size(12, 17);
            this.toolStripStatusSpin5.Text = "/";
            // 
            // toolStripStatusLabel5
@@ -305,7 +323,7 @@ namespace Dapple
            // 
            this.toolStripStatusSpin6.Margin = new System.Windows.Forms.Padding(-5, 3, 5, 2);
            this.toolStripStatusSpin6.Name = "toolStripStatusSpin6";
-           this.toolStripStatusSpin6.Size = new System.Drawing.Size(11, 17);
+           this.toolStripStatusSpin6.Size = new System.Drawing.Size(12, 17);
            this.toolStripStatusSpin6.Text = "/";
            // 
            // toolStripStatusLabel6
@@ -352,14 +370,14 @@ namespace Dapple
             this.toolStripMenuItemResetDefaultView});
            this.toolStripMenuItemOpenView.Image = global::Dapple.Properties.Resources.open;
            this.toolStripMenuItemOpenView.Name = "toolStripMenuItemOpenView";
-           this.toolStripMenuItemOpenView.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemOpenView.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemOpenView.Text = "Open view";
            // 
            // toolStripMenuItemOpenSaved
            // 
            this.toolStripMenuItemOpenSaved.Image = global::Dapple.Properties.Resources.openview;
            this.toolStripMenuItemOpenSaved.Name = "toolStripMenuItemOpenSaved";
-           this.toolStripMenuItemOpenSaved.Size = new System.Drawing.Size(169, 22);
+           this.toolStripMenuItemOpenSaved.Size = new System.Drawing.Size(171, 22);
            this.toolStripMenuItemOpenSaved.Text = "Open saved view...";
            this.toolStripMenuItemOpenSaved.Click += new System.EventHandler(this.toolStripMenuItemOpenSaved_Click);
            // 
@@ -367,7 +385,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemResetDefaultView.Image = global::Dapple.Properties.Resources.reset_dapple_defaults;
            this.toolStripMenuItemResetDefaultView.Name = "toolStripMenuItemResetDefaultView";
-           this.toolStripMenuItemResetDefaultView.Size = new System.Drawing.Size(169, 22);
+           this.toolStripMenuItemResetDefaultView.Size = new System.Drawing.Size(171, 22);
            this.toolStripMenuItemResetDefaultView.Text = "Dapple default view";
            this.toolStripMenuItemResetDefaultView.Click += new System.EventHandler(this.toolStripMenuItemResetDefaultView_Click);
            // 
@@ -375,7 +393,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemsave.Image = global::Dapple.Properties.Resources.saveview;
            this.toolStripMenuItemsave.Name = "toolStripMenuItemsave";
-           this.toolStripMenuItemsave.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemsave.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemsave.Text = "Save view....";
            this.toolStripMenuItemsave.Click += new System.EventHandler(this.toolStripMenuItemsave_Click);
            // 
@@ -383,20 +401,20 @@ namespace Dapple
            // 
            this.toolStripMenuItemsend.Image = global::Dapple.Properties.Resources.email_view;
            this.toolStripMenuItemsend.Name = "toolStripMenuItemsend";
-           this.toolStripMenuItemsend.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemsend.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemsend.Text = "Send view to...";
            this.toolStripMenuItemsend.Click += new System.EventHandler(this.toolStripMenuItemsend_Click);
            // 
            // toolStripSeparator10
            // 
            this.toolStripSeparator10.Name = "toolStripSeparator10";
-           this.toolStripSeparator10.Size = new System.Drawing.Size(173, 6);
+           this.toolStripSeparator10.Size = new System.Drawing.Size(175, 6);
            // 
            // toolStripMenuItemOpen
            // 
            this.toolStripMenuItemOpen.Image = global::Dapple.Properties.Resources.import;
            this.toolStripMenuItemOpen.Name = "toolStripMenuItemOpen";
-           this.toolStripMenuItemOpen.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemOpen.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemOpen.Text = "Open Image...";
            this.toolStripMenuItemOpen.Click += new System.EventHandler(this.toolStripMenuItemOpen_Click);
            // 
@@ -404,20 +422,20 @@ namespace Dapple
            // 
            this.toolStripMenuItemExport.Image = global::Dapple.Properties.Resources.export;
            this.toolStripMenuItemExport.Name = "toolStripMenuItemExport";
-           this.toolStripMenuItemExport.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemExport.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemExport.Text = "Export...";
            this.toolStripMenuItemExport.Click += new System.EventHandler(this.toolStripMenuItemExport_Click);
            // 
            // toolStripSeparator12
            // 
            this.toolStripSeparator12.Name = "toolStripSeparator12";
-           this.toolStripSeparator12.Size = new System.Drawing.Size(173, 6);
+           this.toolStripSeparator12.Size = new System.Drawing.Size(175, 6);
            // 
            // toolStripMenuItemAddDAP
            // 
            this.toolStripMenuItemAddDAP.Image = global::Dapple.Properties.Resources.addserver;
            this.toolStripMenuItemAddDAP.Name = "toolStripMenuItemAddDAP";
-           this.toolStripMenuItemAddDAP.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemAddDAP.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemAddDAP.Text = "Add a DAP Server...";
            this.toolStripMenuItemAddDAP.Click += new System.EventHandler(this.toolStripMenuItemAddDAP_Click);
            // 
@@ -425,20 +443,20 @@ namespace Dapple
            // 
            this.toolStripMenuItemAddWMS.Image = global::Dapple.Properties.Resources.addserver;
            this.toolStripMenuItemAddWMS.Name = "toolStripMenuItemAddWMS";
-           this.toolStripMenuItemAddWMS.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemAddWMS.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemAddWMS.Text = "Add a WMS Server...";
            this.toolStripMenuItemAddWMS.Click += new System.EventHandler(this.toolStripMenuItemAddWMS_Click);
            // 
            // toolStripSeparator11
            // 
            this.toolStripSeparator11.Name = "toolStripSeparator11";
-           this.toolStripSeparator11.Size = new System.Drawing.Size(173, 6);
+           this.toolStripSeparator11.Size = new System.Drawing.Size(175, 6);
            // 
            // toolStripMenuItemexit
            // 
            this.toolStripMenuItemexit.Image = global::Dapple.Properties.Resources.exit;
            this.toolStripMenuItemexit.Name = "toolStripMenuItemexit";
-           this.toolStripMenuItemexit.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemexit.Size = new System.Drawing.Size(178, 22);
            this.toolStripMenuItemexit.Text = "Exit";
            this.toolStripMenuItemexit.Click += new System.EventHandler(this.toolStripMenuItemexit_Click);
            // 
@@ -449,7 +467,7 @@ namespace Dapple
             this.lastViewSettingsToolStripMenuItem,
             this.toolStripMenuItemadvancedSettings});
            this.toolStripMenuItemedit.Name = "toolStripMenuItemedit";
-           this.toolStripMenuItemedit.Size = new System.Drawing.Size(58, 20);
+           this.toolStripMenuItemedit.Size = new System.Drawing.Size(57, 20);
            this.toolStripMenuItemedit.Text = "Settings";
            // 
            // toolStripMenuItemverticalExagerration
@@ -503,14 +521,14 @@ namespace Dapple
             this.toolStripMenuItemshowPosition,
             this.toolStripMenuItemtileActivity});
            this.toolStripMenuItemoptions.Name = "toolStripMenuItemoptions";
-           this.toolStripMenuItemoptions.Size = new System.Drawing.Size(41, 20);
+           this.toolStripMenuItemoptions.Size = new System.Drawing.Size(42, 20);
            this.toolStripMenuItemoptions.Text = "View";
            // 
            // toolStripMenuItemshowGridLines
            // 
            this.toolStripMenuItemshowGridLines.CheckOnClick = true;
            this.toolStripMenuItemshowGridLines.Name = "toolStripMenuItemshowGridLines";
-           this.toolStripMenuItemshowGridLines.Size = new System.Drawing.Size(177, 22);
+           this.toolStripMenuItemshowGridLines.Size = new System.Drawing.Size(179, 22);
            this.toolStripMenuItemshowGridLines.Text = "Grid overlay";
            this.toolStripMenuItemshowGridLines.Click += new System.EventHandler(this.toolStripMenuItemshowGridLines_Click);
            // 
@@ -518,7 +536,7 @@ namespace Dapple
            // 
            this.toolStripCrossHairs.CheckOnClick = true;
            this.toolStripCrossHairs.Name = "toolStripCrossHairs";
-           this.toolStripCrossHairs.Size = new System.Drawing.Size(177, 22);
+           this.toolStripCrossHairs.Size = new System.Drawing.Size(179, 22);
            this.toolStripCrossHairs.Text = "Cross-hair";
            this.toolStripCrossHairs.Click += new System.EventHandler(this.toolStripCrossHairs_Click);
            // 
@@ -526,7 +544,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemcompass.CheckOnClick = true;
            this.toolStripMenuItemcompass.Name = "toolStripMenuItemcompass";
-           this.toolStripMenuItemcompass.Size = new System.Drawing.Size(177, 22);
+           this.toolStripMenuItemcompass.Size = new System.Drawing.Size(179, 22);
            this.toolStripMenuItemcompass.Text = "Compass";
            this.toolStripMenuItemcompass.Click += new System.EventHandler(this.toolStripMenuItemcompass_Click);
            // 
@@ -534,7 +552,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemshowPosition.CheckOnClick = true;
            this.toolStripMenuItemshowPosition.Name = "toolStripMenuItemshowPosition";
-           this.toolStripMenuItemshowPosition.Size = new System.Drawing.Size(177, 22);
+           this.toolStripMenuItemshowPosition.Size = new System.Drawing.Size(179, 22);
            this.toolStripMenuItemshowPosition.Text = "Information overlay";
            this.toolStripMenuItemshowPosition.Click += new System.EventHandler(this.toolStripMenuItemshowPosition_Click);
            // 
@@ -542,7 +560,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemtileActivity.CheckOnClick = true;
            this.toolStripMenuItemtileActivity.Name = "toolStripMenuItemtileActivity";
-           this.toolStripMenuItemtileActivity.Size = new System.Drawing.Size(177, 22);
+           this.toolStripMenuItemtileActivity.Size = new System.Drawing.Size(179, 22);
            this.toolStripMenuItemtileActivity.Text = "Tile download activity";
            this.toolStripMenuItemtileActivity.Click += new System.EventHandler(this.toolStripMenuItemtileActivity_Click);
            // 
@@ -557,51 +575,51 @@ namespace Dapple
             this.toolStripSeparator13,
             this.checkForUpdatesToolStripMenuItem});
            this.toolStripMenuItemhelp.Name = "toolStripMenuItemhelp";
-           this.toolStripMenuItemhelp.Size = new System.Drawing.Size(40, 20);
+           this.toolStripMenuItemhelp.Size = new System.Drawing.Size(41, 20);
            this.toolStripMenuItemhelp.Text = "Help";
            // 
            // toolStripMenuItemabout
            // 
            this.toolStripMenuItemabout.Name = "toolStripMenuItemabout";
-           this.toolStripMenuItemabout.Size = new System.Drawing.Size(210, 22);
+           this.toolStripMenuItemabout.Size = new System.Drawing.Size(211, 22);
            this.toolStripMenuItemabout.Text = "About Dapple...";
            this.toolStripMenuItemabout.Click += new System.EventHandler(this.toolStripMenuItemabout_Click);
            // 
            // toolStripSeparator14
            // 
            this.toolStripSeparator14.Name = "toolStripSeparator14";
-           this.toolStripSeparator14.Size = new System.Drawing.Size(207, 6);
+           this.toolStripSeparator14.Size = new System.Drawing.Size(208, 6);
            // 
            // toolStripMenuItemWeb
            // 
            this.toolStripMenuItemWeb.Name = "toolStripMenuItemWeb";
-           this.toolStripMenuItemWeb.Size = new System.Drawing.Size(210, 22);
+           this.toolStripMenuItemWeb.Size = new System.Drawing.Size(211, 22);
            this.toolStripMenuItemWeb.Text = "Dapple Project Homepage...";
            this.toolStripMenuItemWeb.Click += new System.EventHandler(this.toolStripMenuItemWeb_Click);
            // 
            // toolStripMenuItemWebForums
            // 
            this.toolStripMenuItemWebForums.Name = "toolStripMenuItemWebForums";
-           this.toolStripMenuItemWebForums.Size = new System.Drawing.Size(210, 22);
+           this.toolStripMenuItemWebForums.Size = new System.Drawing.Size(211, 22);
            this.toolStripMenuItemWebForums.Text = "Dapple Forums...";
            this.toolStripMenuItemWebForums.Click += new System.EventHandler(this.toolStripMenuItemWebForums_Click);
            // 
            // toolStripMenuItemWebDoc
            // 
            this.toolStripMenuItemWebDoc.Name = "toolStripMenuItemWebDoc";
-           this.toolStripMenuItemWebDoc.Size = new System.Drawing.Size(210, 22);
+           this.toolStripMenuItemWebDoc.Size = new System.Drawing.Size(211, 22);
            this.toolStripMenuItemWebDoc.Text = "Dapple Documentaion...";
            this.toolStripMenuItemWebDoc.Click += new System.EventHandler(this.toolStripMenuItemWebDoc_Click);
            // 
            // toolStripSeparator13
            // 
            this.toolStripSeparator13.Name = "toolStripSeparator13";
-           this.toolStripSeparator13.Size = new System.Drawing.Size(207, 6);
+           this.toolStripSeparator13.Size = new System.Drawing.Size(208, 6);
            // 
            // checkForUpdatesToolStripMenuItem
            // 
            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-           this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+           this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
            this.checkForUpdatesToolStripMenuItem.Text = "Check for updates...";
            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
            // 
@@ -618,6 +636,8 @@ namespace Dapple
            // splitContainerMain.Panel2
            // 
            this.splitContainerMain.Panel2.BackColor = System.Drawing.Color.Black;
+           this.splitContainerMain.Panel2.Controls.Add(this.WorldResultsSplitPanel);
+           this.splitContainerMain.Panel2.Controls.Add(this.DappleSearchToolbar);
            this.splitContainerMain.Size = new System.Drawing.Size(901, 625);
            this.splitContainerMain.SplitterDistance = 233;
            this.splitContainerMain.TabIndex = 11;
@@ -1210,6 +1230,142 @@ namespace Dapple
            this.panelOverview.Size = new System.Drawing.Size(233, 123);
            this.panelOverview.TabIndex = 1;
            // 
+           // WorldResultsSplitPanel
+           // 
+           this.WorldResultsSplitPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.WorldResultsSplitPanel.IsSplitterFixed = true;
+           this.WorldResultsSplitPanel.Location = new System.Drawing.Point(0, 25);
+           this.WorldResultsSplitPanel.Name = "WorldResultsSplitPanel";
+           // 
+           // WorldResultsSplitPanel.Panel2
+           // 
+           this.WorldResultsSplitPanel.Panel2.Controls.Add(this.SearchResultsBrowser);
+           this.WorldResultsSplitPanel.Panel2Collapsed = true;
+           this.WorldResultsSplitPanel.Size = new System.Drawing.Size(664, 600);
+           this.WorldResultsSplitPanel.SplitterDistance = 221;
+           this.WorldResultsSplitPanel.TabIndex = 1;
+           // 
+           // SearchResultsBrowser
+           // 
+           this.SearchResultsBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.SearchResultsBrowser.Location = new System.Drawing.Point(0, 0);
+           this.SearchResultsBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+           this.SearchResultsBrowser.Name = "SearchResultsBrowser";
+           this.SearchResultsBrowser.Size = new System.Drawing.Size(96, 100);
+           this.SearchResultsBrowser.TabIndex = 0;
+           // 
+           // DappleSearchToolbar
+           // 
+           this.DappleSearchToolbar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+           this.DappleSearchToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel2,
+            this.toolStripLabel3,
+            this.DappleSearchKeyword,
+            this.DappleSearchBasicGoButton,
+            this.DappleSearchGoButton,
+            this.CloseSearchResultsButton,
+            this.toolStripSeparator15,
+            this.DappleSearchResultsLabel});
+           this.DappleSearchToolbar.Location = new System.Drawing.Point(0, 0);
+           this.DappleSearchToolbar.Name = "DappleSearchToolbar";
+           this.DappleSearchToolbar.Size = new System.Drawing.Size(664, 25);
+           this.DappleSearchToolbar.TabIndex = 0;
+           this.DappleSearchToolbar.Visible = false;
+           // 
+           // toolStripLabel2
+           // 
+           this.toolStripLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+           this.toolStripLabel2.ForeColor = System.Drawing.Color.MediumBlue;
+           this.toolStripLabel2.Name = "toolStripLabel2";
+           this.toolStripLabel2.Size = new System.Drawing.Size(66, 22);
+           this.toolStripLabel2.Text = "Dapple";
+           // 
+           // toolStripLabel3
+           // 
+           this.toolStripLabel3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+           this.toolStripLabel3.ForeColor = System.Drawing.Color.DarkOrange;
+           this.toolStripLabel3.Name = "toolStripLabel3";
+           this.toolStripLabel3.Size = new System.Drawing.Size(57, 22);
+           this.toolStripLabel3.Text = "Search";
+           // 
+           // DappleSearchKeyword
+           // 
+           this.DappleSearchKeyword.Name = "DappleSearchKeyword";
+           this.DappleSearchKeyword.Size = new System.Drawing.Size(200, 25);
+           // 
+           // DappleSearchBasicGoButton
+           // 
+           this.DappleSearchBasicGoButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+           this.DappleSearchBasicGoButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+           this.DappleSearchBasicGoButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+           this.DappleSearchBasicGoButton.Name = "DappleSearchBasicGoButton";
+           this.DappleSearchBasicGoButton.Size = new System.Drawing.Size(34, 22);
+           this.DappleSearchBasicGoButton.Text = "GO";
+           this.DappleSearchBasicGoButton.ToolTipText = "View results for current search.";
+           this.DappleSearchBasicGoButton.Click += new System.EventHandler(this.DappleSearchBasicGoButton_Click);
+           // 
+           // DappleSearchGoButton
+           // 
+           this.DappleSearchGoButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.textToolStripMenuItem,
+            this.rOIToolStripMenuItem,
+            this.dualToolStripMenuItem});
+           this.DappleSearchGoButton.Image = global::Dapple.Properties.Resources.blue_marble;
+           this.DappleSearchGoButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+           this.DappleSearchGoButton.Name = "DappleSearchGoButton";
+           this.DappleSearchGoButton.Size = new System.Drawing.Size(55, 22);
+           this.DappleSearchGoButton.Text = "GO";
+           this.DappleSearchGoButton.Visible = false;
+           this.DappleSearchGoButton.ButtonClick += new System.EventHandler(this.DappleSearchGoButton_ButtonClick);
+           // 
+           // textToolStripMenuItem
+           // 
+           this.textToolStripMenuItem.Image = global::Dapple.Properties.Resources.blue_marble;
+           this.textToolStripMenuItem.Name = "textToolStripMenuItem";
+           this.textToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+           this.textToolStripMenuItem.Text = "Text";
+           this.textToolStripMenuItem.Click += new System.EventHandler(this.textToolStripMenuItem_Click);
+           // 
+           // rOIToolStripMenuItem
+           // 
+           this.rOIToolStripMenuItem.Image = global::Dapple.Properties.Resources.blue_marble_checked;
+           this.rOIToolStripMenuItem.Name = "rOIToolStripMenuItem";
+           this.rOIToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+           this.rOIToolStripMenuItem.Text = "ROI";
+           this.rOIToolStripMenuItem.Click += new System.EventHandler(this.rOIToolStripMenuItem_Click);
+           // 
+           // dualToolStripMenuItem
+           // 
+           this.dualToolStripMenuItem.Image = global::Dapple.Properties.Resources.blue_marble_unchecked;
+           this.dualToolStripMenuItem.Name = "dualToolStripMenuItem";
+           this.dualToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+           this.dualToolStripMenuItem.Text = "Dual";
+           this.dualToolStripMenuItem.Click += new System.EventHandler(this.dualToolStripMenuItem_Click);
+           // 
+           // CloseSearchResultsButton
+           // 
+           this.CloseSearchResultsButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+           this.CloseSearchResultsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+           this.CloseSearchResultsButton.Enabled = false;
+           this.CloseSearchResultsButton.Image = global::Dapple.Properties.Resources.delete;
+           this.CloseSearchResultsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+           this.CloseSearchResultsButton.Name = "CloseSearchResultsButton";
+           this.CloseSearchResultsButton.Size = new System.Drawing.Size(23, 22);
+           this.CloseSearchResultsButton.Text = "toolStripButton1";
+           this.CloseSearchResultsButton.ToolTipText = "Close results";
+           this.CloseSearchResultsButton.Click += new System.EventHandler(this.CloseSearchResultsButton_Click);
+           // 
+           // toolStripSeparator15
+           // 
+           this.toolStripSeparator15.Name = "toolStripSeparator15";
+           this.toolStripSeparator15.Size = new System.Drawing.Size(6, 25);
+           // 
+           // DappleSearchResultsLabel
+           // 
+           this.DappleSearchResultsLabel.Name = "DappleSearchResultsLabel";
+           this.DappleSearchResultsLabel.Size = new System.Drawing.Size(31, 22);
+           this.DappleSearchResultsLabel.Text = "Hits: ";
+           // 
            // contextMenuStripServers
            // 
            this.contextMenuStripServers.ImageScalingSize = new System.Drawing.Size(18, 18);
@@ -1336,27 +1492,27 @@ namespace Dapple
             this.toolStripMenuItemRefresh,
             this.toolStripMenuItemClearRefresh});
            this.contextMenuStripLayers.Name = "contextMenuStripLayers";
-           this.contextMenuStripLayers.Size = new System.Drawing.Size(176, 340);
+           this.contextMenuStripLayers.Size = new System.Drawing.Size(177, 340);
            this.contextMenuStripLayers.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripLayers_Opening);
            // 
            // toolStripMenuItemgoTo
            // 
            this.toolStripMenuItemgoTo.Image = global::Dapple.Properties.Resources.layers_goto;
            this.toolStripMenuItemgoTo.Name = "toolStripMenuItemgoTo";
-           this.toolStripMenuItemgoTo.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemgoTo.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemgoTo.Text = "Go To";
            this.toolStripMenuItemgoTo.Click += new System.EventHandler(this.toolStripMenuButtonItemGoTo_Click);
            // 
            // toolStripSeparatorLayerGoto
            // 
            this.toolStripSeparatorLayerGoto.Name = "toolStripSeparatorLayerGoto";
-           this.toolStripSeparatorLayerGoto.Size = new System.Drawing.Size(172, 6);
+           this.toolStripSeparatorLayerGoto.Size = new System.Drawing.Size(173, 6);
            // 
            // toolStripMenuItemremove
            // 
            this.toolStripMenuItemremove.Image = global::Dapple.Properties.Resources.layers_remove;
            this.toolStripMenuItemremove.Name = "toolStripMenuItemremove";
-           this.toolStripMenuItemremove.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemremove.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemremove.Text = "Remove";
            this.toolStripMenuItemremove.Click += new System.EventHandler(this.toolStripMenuButtonItemremove_Click);
            // 
@@ -1364,7 +1520,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemRemoveAll.Image = global::Dapple.Properties.Resources.layers_remove_all;
            this.toolStripMenuItemRemoveAll.Name = "toolStripMenuItemRemoveAll";
-           this.toolStripMenuItemRemoveAll.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemRemoveAll.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemRemoveAll.Text = "Remove All";
            this.toolStripMenuItemRemoveAll.Click += new System.EventHandler(this.toolStripMenuItemRemoveAll_Click);
            // 
@@ -1372,20 +1528,20 @@ namespace Dapple
            // 
            this.toolStripMenuItemremoveAllButThis.Image = global::Dapple.Properties.Resources.layers_removeallothers;
            this.toolStripMenuItemremoveAllButThis.Name = "toolStripMenuItemremoveAllButThis";
-           this.toolStripMenuItemremoveAllButThis.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemremoveAllButThis.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemremoveAllButThis.Text = "Remove all but this";
            this.toolStripMenuItemremoveAllButThis.Click += new System.EventHandler(this.toolStripMenuItemremoveAllButThis_Click);
            // 
            // toolStripSeparatorLayerRemove
            // 
            this.toolStripSeparatorLayerRemove.Name = "toolStripSeparatorLayerRemove";
-           this.toolStripSeparatorLayerRemove.Size = new System.Drawing.Size(172, 6);
+           this.toolStripSeparatorLayerRemove.Size = new System.Drawing.Size(173, 6);
            // 
            // toolStripMenuItemputOnTop
            // 
            this.toolStripMenuItemputOnTop.Image = global::Dapple.Properties.Resources.layers_top;
            this.toolStripMenuItemputOnTop.Name = "toolStripMenuItemputOnTop";
-           this.toolStripMenuItemputOnTop.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemputOnTop.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemputOnTop.Text = "Put on top";
            this.toolStripMenuItemputOnTop.Click += new System.EventHandler(this.toolStripMenuItemButtonOnTop_Click);
            // 
@@ -1393,7 +1549,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemmoveUp.Image = global::Dapple.Properties.Resources.layers_up;
            this.toolStripMenuItemmoveUp.Name = "toolStripMenuItemmoveUp";
-           this.toolStripMenuItemmoveUp.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemmoveUp.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemmoveUp.Text = "Move up";
            this.toolStripMenuItemmoveUp.Click += new System.EventHandler(this.toolStripMenuItemButtonMoveUp_Click);
            // 
@@ -1401,7 +1557,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemmoveDown.Image = global::Dapple.Properties.Resources.layers_down;
            this.toolStripMenuItemmoveDown.Name = "toolStripMenuItemmoveDown";
-           this.toolStripMenuItemmoveDown.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemmoveDown.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemmoveDown.Text = "Move  down";
            this.toolStripMenuItemmoveDown.Click += new System.EventHandler(this.toolStripMenuItemButtonMoveDown_Click);
            // 
@@ -1409,20 +1565,20 @@ namespace Dapple
            // 
            this.toolStripMenuItemputAtBottom.Image = global::Dapple.Properties.Resources.layers_bottom;
            this.toolStripMenuItemputAtBottom.Name = "toolStripMenuItemputAtBottom";
-           this.toolStripMenuItemputAtBottom.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemputAtBottom.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemputAtBottom.Text = "Put at bottom";
            this.toolStripMenuItemputAtBottom.Click += new System.EventHandler(this.toolStripMenuItemButtonAtBottom_Click);
            // 
            // toolStripSeparatorLayerZOrder
            // 
            this.toolStripSeparatorLayerZOrder.Name = "toolStripSeparatorLayerZOrder";
-           this.toolStripSeparatorLayerZOrder.Size = new System.Drawing.Size(172, 6);
+           this.toolStripSeparatorLayerZOrder.Size = new System.Drawing.Size(173, 6);
            // 
            // toolStripMenuItemviewMetadata
            // 
            this.toolStripMenuItemviewMetadata.Image = global::Dapple.Properties.Resources.metadata;
            this.toolStripMenuItemviewMetadata.Name = "toolStripMenuItemviewMetadata";
-           this.toolStripMenuItemviewMetadata.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemviewMetadata.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemviewMetadata.Text = "View Metadata...";
            this.toolStripMenuItemviewMetadata.Click += new System.EventHandler(this.toolStripMenuItemviewMetadata_Click);
            // 
@@ -1430,7 +1586,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemGetLegend.Image = global::Dapple.Properties.Resources.legend;
            this.toolStripMenuItemGetLegend.Name = "toolStripMenuItemGetLegend";
-           this.toolStripMenuItemGetLegend.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemGetLegend.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemGetLegend.Text = "Get legend...";
            this.toolStripMenuItemGetLegend.Click += new System.EventHandler(this.toolStripMenuItemGetLegend_Click);
            // 
@@ -1438,20 +1594,20 @@ namespace Dapple
            // 
            this.toolStripMenuItemproperties.Image = global::Dapple.Properties.Resources.properties;
            this.toolStripMenuItemproperties.Name = "toolStripMenuItemproperties";
-           this.toolStripMenuItemproperties.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemproperties.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemproperties.Text = "Properties...";
            this.toolStripMenuItemproperties.Click += new System.EventHandler(this.toolStripMenuItemproperties_Click);
            // 
            // toolStripSeparatorRefresh
            // 
            this.toolStripSeparatorRefresh.Name = "toolStripSeparatorRefresh";
-           this.toolStripSeparatorRefresh.Size = new System.Drawing.Size(172, 6);
+           this.toolStripSeparatorRefresh.Size = new System.Drawing.Size(173, 6);
            // 
            // toolStripMenuItemRefresh
            // 
            this.toolStripMenuItemRefresh.Image = global::Dapple.Properties.Resources.refresh;
            this.toolStripMenuItemRefresh.Name = "toolStripMenuItemRefresh";
-           this.toolStripMenuItemRefresh.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemRefresh.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemRefresh.Text = "Retry/Refresh Layer";
            this.toolStripMenuItemRefresh.Click += new System.EventHandler(this.toolStripMenuItemRefresh_Click);
            // 
@@ -1459,7 +1615,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemClearRefresh.Image = global::Dapple.Properties.Resources.refresh_cache;
            this.toolStripMenuItemClearRefresh.Name = "toolStripMenuItemClearRefresh";
-           this.toolStripMenuItemClearRefresh.Size = new System.Drawing.Size(175, 24);
+           this.toolStripMenuItemClearRefresh.Size = new System.Drawing.Size(176, 24);
            this.toolStripMenuItemClearRefresh.Text = "Clear Layer\'s Cache ";
            this.toolStripMenuItemClearRefresh.Click += new System.EventHandler(this.toolStripMenuItemClearRefresh_Click);
            // 
@@ -1485,6 +1641,7 @@ namespace Dapple
            this.WWSettingsCtl.CacheSizeGigaBytes = 10;
            this.WWSettingsCtl.ConfigPath = "C:\\Program Files\\Microsoft Visual Studio 8\\Common7\\IDE\\Config";
            this.WWSettingsCtl.ConfigurationWizardAtStartup = true;
+           this.WWSettingsCtl.DappleSearchURL = "";
            this.WWSettingsCtl.DataPath = "C:\\Program Files\\Microsoft Visual Studio 8\\Common7\\IDE\\Data";
            this.WWSettingsCtl.DefaultWorld = "Earth";
            this.WWSettingsCtl.FormatVersion = "8.0.50727.42";
@@ -1494,8 +1651,8 @@ namespace Dapple
            this.WWSettingsCtl.ProxyUrl = "";
            this.WWSettingsCtl.ProxyUsername = "";
            this.WWSettingsCtl.SettingsPath = null;
-           this.WWSettingsCtl.TotalRunTime = System.TimeSpan.Parse("06:31:04.1847815");
-           this.WWSettingsCtl.TotalRunTimeXml = "PT6H31M4.1847815S";
+           this.WWSettingsCtl.TotalRunTime = System.TimeSpan.Parse("3.18:41:10.0665517");
+           this.WWSettingsCtl.TotalRunTimeXml = "P3DT18H41M10.0665517S";
            this.WWSettingsCtl.UpdateCheckDate = new System.DateTime(((long)(0)));
            this.WWSettingsCtl.UseDynamicProxy = false;
            this.WWSettingsCtl.UseHTTPProtocol = WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1;
@@ -1527,6 +1684,8 @@ namespace Dapple
            this.menuStrip.ResumeLayout(false);
            this.menuStrip.PerformLayout();
            this.splitContainerMain.Panel1.ResumeLayout(false);
+           this.splitContainerMain.Panel2.ResumeLayout(false);
+           this.splitContainerMain.Panel2.PerformLayout();
            this.splitContainerMain.ResumeLayout(false);
            this.splitContainerLeft.Panel1.ResumeLayout(false);
            this.splitContainerLeft.Panel2.ResumeLayout(false);
@@ -1566,6 +1725,10 @@ namespace Dapple
            this.toolStripOverview.PerformLayout();
            this.toolStripNavigation.ResumeLayout(false);
            this.toolStripNavigation.PerformLayout();
+           this.WorldResultsSplitPanel.Panel2.ResumeLayout(false);
+           this.WorldResultsSplitPanel.ResumeLayout(false);
+           this.DappleSearchToolbar.ResumeLayout(false);
+           this.DappleSearchToolbar.PerformLayout();
            this.contextMenuStripServers.ResumeLayout(false);
            this.contextMenuStripLayers.ResumeLayout(false);
            this.ResumeLayout(false);
@@ -1709,6 +1872,20 @@ namespace Dapple
        private System.Windows.Forms.ToolStripMenuItem lastViewSettingsToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemAskAtStartup;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemLoadLastView;
+        private System.Windows.Forms.ToolStrip DappleSearchToolbar;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripTextBox DappleSearchKeyword;
+        private System.Windows.Forms.ToolStripSplitButton DappleSearchGoButton;
+        private System.Windows.Forms.ToolStripMenuItem textToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rOIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dualToolStripMenuItem;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+        private System.Windows.Forms.ToolStripButton CloseSearchResultsButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
+        private System.Windows.Forms.ToolStripLabel DappleSearchResultsLabel;
+        private System.Windows.Forms.SplitContainer WorldResultsSplitPanel;
+        private System.Windows.Forms.WebBrowser SearchResultsBrowser;
+        private System.Windows.Forms.ToolStripButton DappleSearchBasicGoButton;
     }
 }
 

@@ -275,7 +275,23 @@ namespace WorldWind
 
 		#endregion
 
-		#region Miscellaneous settings
+      #region DappleSearch settings
+      private String dappleSearchURL = String.Empty;
+
+      public string DappleSearchURL
+      {
+         get
+         {
+            return dappleSearchURL;
+         }
+         set
+         {
+            dappleSearchURL = value;
+         }
+      }
+      #endregion
+
+      #region Miscellaneous settings
 
       public bool askLastViewAtStartup = true;
       public bool lastViewAtStartup = true;
