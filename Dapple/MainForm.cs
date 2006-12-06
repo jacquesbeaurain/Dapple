@@ -2677,7 +2677,6 @@ namespace Dapple
 
          // Save changed settings
          World.Settings.Save();
-         Console.WriteLine("**" + WWSettingsCtl.DappleSearchURL + "**");
          WWSettingsCtl.WorldWindSettings.Save();
 
          this.worldWindow.Dispose();
@@ -3393,7 +3392,20 @@ namespace Dapple
          catch (WebException) { hits = 0; error = -1; return; }
          catch (IOException) { hits = 0; error = -2; return; }
       }
+
+      
       #endregion
+
+      private void WorldResultsSplitPanel_SplitterMoving(object sender, SplitterCancelEventArgs e)
+      {
+         worldWindow.Visible = false;
+      }
+
+      private void WorldResultsSplitPanel_SplitterMoved(object sender, SplitterEventArgs e)
+      {
+         worldWindow.Visible = true;
+         worldWindow.SafeRender();
+      }
 
 #if !DEBUG
       public void OnThreadException(object o, ThreadExceptionEventArgs e)
