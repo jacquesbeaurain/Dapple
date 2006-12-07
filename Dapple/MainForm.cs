@@ -259,7 +259,7 @@ namespace Dapple
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\" + ViewExt, "" , "Dapple View");
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View", "", "Dapple View");
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open", "", "Open &" + ViewFileDescr);
-         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open\\Command", "", "\"" + executablePath + "\" \"%1\"");
+         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open\\Command", "", "\"" + Application.ExecutablePath + "\" \"%1\"");
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\DefaultIcon", "", Path.Combine(executablePath, "app.ico"));
 
          this.worldWindow.WorldWindSettingsComponent = WWSettingsCtl;
