@@ -224,6 +224,20 @@ namespace Dapple.LayerGeneration
          BuilderChanged -= handler;
       }
 
+      public LayerBuilder GetLayerBuilderByName(String layerName)
+      {
+         foreach (LayerBuilder b in m_colChildren)
+         {
+            if (layerName.Equals(b.Name)) return b;
+         }
+         foreach (BuilderDirectory bd in m_colSublist)
+         {
+            LayerBuilder result = bd.GetLayerBuilderByName(layerName);
+            if (result != null) return result;
+         }
+         return null;
+      }
+
       #region ICloneable Members
 
       public virtual object Clone()

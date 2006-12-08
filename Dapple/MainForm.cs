@@ -38,9 +38,11 @@ namespace Dapple
 
       public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
       public const string ViewExt = ".dapple";
+      public const string LinkExt = ".dapple_datasetlink";
       public const string LastView = "lastview" + ViewExt;
       public const string DefaultView = "default" + ViewExt;
-      public const string ViewFileDescr = "Dapple View"; 
+      public const string ViewFileDescr = "Dapple View";
+      public const string LinkFileDescr = "Dapple Link";
       public const string WebsiteUrl = "http://dapple.geosoft.com/";
       public const string VersionFile = "version.txt";
       public const string LicenseWebsiteUrl = "http://dapple.geosoft.com/license.asp";
@@ -91,6 +93,7 @@ namespace Dapple
       private bool openGeoTiffTmp = false;
       private string lastView = "";
       private string metaviewerDir = "";
+      private string strLayerToLoad = String.Empty;
 
       private bool rightmouse_context = false;
       private bool checked_context = false;
@@ -211,7 +214,7 @@ namespace Dapple
 
       #region Constructor
 
-      public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView)
+      public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink)
       {
          if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
             this.openView = strView;
@@ -261,6 +264,15 @@ namespace Dapple
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open", "", "Open &" + ViewFileDescr);
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open\\Command", "", "\"" + Application.ExecutablePath + "\" \"%1\"");
          Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\DefaultIcon", "", Path.Combine(executablePath, "app.ico"));
+
+         // register handler for dataset links
+
+         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Mime\\Database\\Content Type\\text/Geosoft_datasetlink", "Extension", LinkExt);
+         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\" + LinkExt, "", "Dapple DataSetLink");
+         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink", "", "Geosoft Dapple Dataset Link XML");
+         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open", "", "Open Dapple Dataset Link");
+         Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open\\Command", "", "\"" + Application.ExecutablePath + "\" -datasetlink=\"%1\"");
+
 
          this.worldWindow.WorldWindSettingsComponent = WWSettingsCtl;
          WorldSettings settings = new WorldSettings();
@@ -412,6 +424,7 @@ namespace Dapple
 #if !DEBUG
          Application.ThreadException += new ThreadExceptionEventHandler(OnThreadException);
 #endif
+         strLayerToLoad = strDatasetLink;
       }
 
       #endregion
@@ -1505,7 +1518,10 @@ namespace Dapple
                break;
             }
          }
-         
+
+         // Load datasetlink, now that everything is laid out
+         if (strLayerToLoad.Length > 0)
+            OpenDatasetLink(strLayerToLoad);
       }
 
       bool m_bSizing = false;
@@ -2713,11 +2729,14 @@ namespace Dapple
                string strGeoTiffName = strData[2];
                bool bGeotiffTmp = strData[3] == "YES";
                this.lastView = strData[4];
+               string strDatasetLink = strData[5];
 
                if (strView.Length > 0)
                   OpenView(strView, strGeoTiff.Length == 0);
                if (strGeoTiff.Length > 0)
                   AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
+               if (strDatasetLink.Length > 0)
+                  OpenDatasetLink(strDatasetLink);
             }
             catch
             {
@@ -3318,6 +3337,7 @@ namespace Dapple
                   else
                   {
                      DappleSearchResultsLabel.Text = "ERROR CONTACTING SEARCH SERVER";
+                     DappleSearchGoButton.Enabled = false;
                   }
                   searchCompleted = true;
                }
@@ -3393,9 +3413,6 @@ namespace Dapple
          catch (IOException) { hits = 0; error = -2; return; }
       }
 
-      
-      #endregion
-
       private void WorldResultsSplitPanel_SplitterMoving(object sender, SplitterCancelEventArgs e)
       {
          worldWindow.Visible = false;
@@ -3406,6 +3423,55 @@ namespace Dapple
          worldWindow.Visible = true;
          worldWindow.SafeRender();
       }
+
+      private void OpenDatasetLink(String linkFilename)
+      {
+         if (!File.Exists(linkFilename)) return;
+         XmlDocument linkData = new XmlDocument();
+         linkData.Load(linkFilename);
+
+         XmlElement displayMapElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/display_map");
+
+         String serverType = displayMapElement.GetAttribute("type");
+         String serverURL = displayMapElement.GetAttribute("server");
+         String layerName = displayMapElement.GetAttribute("layername");
+         String layerTitle = displayMapElement.GetAttribute("layertitle");
+
+         if (serverType.Equals("DAP"))
+         {
+            MessageBox.Show("DAP servers have been disabled, pending a major overhaul of the internals of the catalog.", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
+         }
+         else if (serverType.Equals("WMS"))
+         {
+            BuilderEntry sb = this.tvServers.GetWMSBuilderByURL(serverURL);
+            if (sb == null)
+            {
+               this.tvServers.AddWMSServer("http://" + serverURL, true);
+               bool oldView = false;
+               activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, false, this.tvServers, ref oldView);
+            }
+            else if (sb.Loading == false)
+            {
+               LayerBuilder builder = ((WMSServerBuilder)sb.Builder).GetLayerBuilderByName(layerTitle);
+               if (builder != null)
+                  activeLayers.Add(layerTitle, builder, false, 255, true);
+               else
+                  MessageBox.Show("Unable to view layer: server does not provide a layer named " + layerName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+               //If this thread is preempted here, and the layerbuilder loads, then this layer will never get loaded.
+               bool oldView = false;
+               activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, false, this.tvServers, ref oldView);
+            }
+         }
+         else
+         {
+            MessageBox.Show("Unable to view layer: unknown server type '" + serverType + "'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+         }
+      }
+
+      #endregion
 
 #if !DEBUG
       public void OnThreadException(object o, ThreadExceptionEventArgs e)

@@ -569,6 +569,7 @@ namespace Dapple
       public bool AddWMSServer(string strCapUrl, bool bUpdateTree)
       {
          WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
+         if (wmsBuilder.IsServerAdded(strCapUrl)) return false; // Don't add a server multiple times
          WorldWind.WMSList wmsList = wmsBuilder.FindServer(strCapUrl);
          if (wmsList == null)
          {
@@ -717,6 +718,16 @@ namespace Dapple
          servers.Addbuilderentry(entry);
 
          oView.View.Addservers(servers);
+      }
+
+      public BuilderEntry GetWMSBuilderByURL(String strUrl)
+      {
+         String compURL = ("http://" + strUrl).ToLower();
+         foreach (BuilderEntry serverBuilder in m_wmsServers)
+         {
+            if (((WMSServerBuilder)serverBuilder.Builder).URL.ToLower().Equals(compURL)) return serverBuilder;
+         }
+         return null;
       }
 
       void LoadBuilderEntryIntoNode(tileserversetType tileServerSet, TreeNode serverNode)

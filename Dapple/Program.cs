@@ -25,7 +25,7 @@ namespace Dapple
 #endif
          {
             bool bAbort = false;
-            string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "";
+            string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "";
             bool bGeotiffTmp = false;
 
             // Command line parsing
@@ -84,6 +84,9 @@ namespace Dapple
 
             if (cmdl["exitview"] != null)
                strLastView = Path.GetFullPath(cmdl["exitview"]);
+
+            if (cmdl["datasetlink"] != null)
+               strDatasetLink = Path.GetFullPath(cmdl["datasetlink"]);
          
             // From now on in own path please and free the console
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
@@ -117,23 +120,24 @@ namespace Dapple
 
                if (RunningInstance() == null)
                {
-                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView));
+                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink));
                }
                else
                {
                   HandleRunningInstance(instance);
-                  if (strView.Length > 0 || strGeoTiff.Length > 0)
+                  if (strView.Length > 0 || strGeoTiff.Length > 0 || strDatasetLink.Length > 0)
                   {
                      try
                      {
                         using (Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Create, 10000))
                         {
-                           string[] strData = new string[5];
+                           string[] strData = new string[6];
                            strData[0] = strView;
                            strData[1] = strGeoTiff;
                            strData[2] = strGeoTiffName;
                            strData[3] = bGeotiffTmp ? "YES" : "NO";
                            strData[4] = strLastView;
+                           strData[5] = strDatasetLink;
 
                            s.SetData(strData);
                            SendMessage(instance.MainWindowHandle, MainForm.OpenViewMessage, IntPtr.Zero, IntPtr.Zero);

@@ -99,6 +99,17 @@ namespace Dapple.LayerGeneration
          return m_oServers[url.ToLower()] as WMSList;
       }
 
+      public bool IsServerAdded(string url)
+      {
+         if (m_oServers.ContainsKey(url.ToLower())) return true;
+
+         foreach (WMSServerBuilder builder in m_oTable.Values)
+         {
+            if (builder.URL.ToLower().Equals(url.ToLower())) return true;
+         }
+         return false;
+      }
+
       public void RemoveServer(string url)
       {
          WMSList oServer = m_oServers[url.ToLower()] as WMSList;
