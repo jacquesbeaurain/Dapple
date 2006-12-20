@@ -3201,6 +3201,11 @@ namespace Dapple
       private String SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
       private String m_strDappleSearchServerURL = null;
 
+      private void DappleSearchKeyword_KeyPress(object sender, KeyPressEventArgs e)
+      {
+         if (((ushort)e.KeyChar) == 13) ViewSearchResults(); // return key pressed
+      }
+
       private void textToolStripMenuItem_Click(object sender, EventArgs e)
       {
          searchMode = SearchMode.Text;
@@ -3248,6 +3253,7 @@ namespace Dapple
       {
          CloseSearchResultsButton.Enabled = true;
          this.worldWindow.Visible = false;
+         WorldResultsSplitPanel.SplitterDistance = WorldResultsSplitPanel.Width - 400;
          WorldResultsSplitPanel.Panel2Collapsed = false;
          this.worldWindow.Visible = true;
          this.worldWindow.SafeRender();
@@ -3430,19 +3436,86 @@ namespace Dapple
          XmlDocument linkData = new XmlDocument();
          linkData.Load(linkFilename);
 
+         XmlElement searchElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/search_params");
+
+         if (searchElement != null)
+         {
+            StringBuilder resultsURL = new StringBuilder(m_strDappleSearchServerURL + SEARCH_HTML_GATEWAY + "?");
+            if (!searchElement.GetAttribute("keyword").Equals(String.Empty))
+            {
+               resultsURL.Append("&keyword=");
+               resultsURL.Append(searchElement.GetAttribute("keyword"));
+            }
+            if (!searchElement.GetAttribute("minx").Equals(String.Empty))
+            {
+               GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+               resultsURL.Append("&usebbox=true");
+               resultsURL.Append("&minx=");
+               resultsURL.Append(searchElement.GetAttribute("minx"));
+               resultsURL.Append("&miny=");
+               resultsURL.Append(searchElement.GetAttribute("miny"));
+               resultsURL.Append("&maxx=");
+               resultsURL.Append(searchElement.GetAttribute("maxx"));
+               resultsURL.Append("&maxy=");
+               resultsURL.Append(searchElement.GetAttribute("maxy"));
+            }
+            if (!searchElement.GetAttribute("page").Equals(String.Empty))
+            {
+               resultsURL.Append("&page=");
+               resultsURL.Append(searchElement.GetAttribute("page"));
+            }
+            if (!searchElement.GetAttribute("numresults").Equals(String.Empty))
+            {
+               resultsURL.Append("&numresults=");
+               resultsURL.Append(searchElement.GetAttribute("numresults"));
+            }
+            SearchResultsBrowser.Navigate(resultsURL.ToString());
+            displayResultsPanel();
+         }
+
          XmlElement displayMapElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/display_map");
 
          String serverType = displayMapElement.GetAttribute("type");
          String serverURL = displayMapElement.GetAttribute("server");
-         String layerName = displayMapElement.GetAttribute("layername");
          String layerTitle = displayMapElement.GetAttribute("layertitle");
+         float minx = Single.Parse(displayMapElement.GetAttribute("minx"));
+         float miny = Single.Parse(displayMapElement.GetAttribute("miny"));
+         float maxx = Single.Parse(displayMapElement.GetAttribute("maxx"));
+         float maxy = Single.Parse(displayMapElement.GetAttribute("maxy"));
 
          if (serverType.Equals("DAP"))
          {
-            MessageBox.Show("DAP servers have been disabled, pending a major overhaul of the internals of the catalog.", null, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            String layerName = displayMapElement.GetAttribute("datasetname");
+            String strHeight = displayMapElement.GetAttribute("height");
+            String strSize = displayMapElement.GetAttribute("size");
+            String datasetType = displayMapElement.GetAttribute("datasettype");
+            String edition = displayMapElement.GetAttribute("edition");
+            String hierarchy = displayMapElement.GetAttribute("hierarchy");
+            String strLevels = displayMapElement.GetAttribute("levels");
+            String strLevelZeroTilesize = displayMapElement.GetAttribute("levelzerotilesize");
+
+            String uri = "gxdap://" + serverURL +
+               "?datasetname=" + HttpUtility.UrlEncode(layerName) +
+               "&height=" + strHeight +
+               "&size=" + strSize +
+               "&type=" + datasetType +
+               "&title=" + HttpUtility.UrlEncode(layerTitle) +
+               "&edition=" + HttpUtility.UrlEncode(edition) +
+               "&hierarchy=" + HttpUtility.UrlEncode(hierarchy) +
+               "&north=" + maxy +
+               "&east=" + maxx +
+               "&south=" + miny +
+               "&west=" + minx +
+               "&levels=" + strLevels +
+               "&lvl0tilesize=" + strLevelZeroTilesize;
+
+            bool oldView = false;
+            activeLayers.AddUsingUri(layerTitle, uri, true, 255, true, this.tvServers, ref oldView);
          }
          else if (serverType.Equals("WMS"))
          {
+            String layerName = displayMapElement.GetAttribute("layername");
+
             BuilderEntry sb = this.tvServers.GetWMSBuilderByURL(serverURL);
             if (sb == null)
             {
@@ -3452,11 +3525,16 @@ namespace Dapple
             }
             else if (sb.Loading == false)
             {
-               LayerBuilder builder = ((WMSServerBuilder)sb.Builder).GetLayerBuilderByName(layerTitle);
-               if (builder != null)
-                  activeLayers.Add(layerTitle, builder, false, 255, true);
+               if (sb.Error)
+                  MessageBox.Show("Unable to view layer: an error occurred while retrieving server configuration.  Refresh the server named \"" + sb.Builder.Name + "\", and then try viewing the layer again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                else
-                  MessageBox.Show("Unable to view layer: server does not provide a layer named " + layerName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+               {
+                  LayerBuilder builder = ((WMSServerBuilder)sb.Builder).GetLayerBuilderByName(layerTitle);
+                  if (builder != null)
+                     activeLayers.Add(layerTitle, builder, false, 255, true);
+                  else
+                     MessageBox.Show("Unable to view layer: server does not provide a layer named " + layerName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+               }
             }
             else
             {
