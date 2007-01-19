@@ -24,17 +24,25 @@ namespace Geosoft.Dap.Xml
       public event UpdateProgessCallback ProgressCallback;
       public byte[] downloadedData = null;
       public string downloadUrl = "";
-      public WebRequest webReq = null; 
+      public WebRequest webReq = null;
+      public Exception excepted = null;
 
       public void Download()
       {
          if (ProgressCallback != null)
          {
-            WebDownload webDL = new WebDownload();
-            if (webReq != null)
-               downloadedData = webDL.Download(webReq, ProgressCallback);
-            else if (downloadUrl.Length > 0)
-               downloadedData = webDL.Download(downloadUrl, ProgressCallback);
+            try
+            {
+               WebDownload webDL = new WebDownload();
+               if (webReq != null)
+                  downloadedData = webDL.Download(webReq, ProgressCallback);
+               else if (downloadUrl.Length > 0)
+                  downloadedData = webDL.Download(downloadUrl, ProgressCallback);
+            }
+            catch (Exception e)
+            {
+               excepted = e;
+            }
          }
       }
    }
@@ -90,12 +98,6 @@ namespace Geosoft.Dap.Xml
                        WorldWind.Net.WebDownload.proxyUrl,
                        WorldWind.Net.WebDownload.proxyUserName,
                        WorldWind.Net.WebDownload.proxyPassword);
-
-         /*if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
-            req.ProtocolVersion = HttpVersion.Version11;
-         else
-            req.ProtocolVersion = HttpVersion.Version10;
-         */
 #endif
 
          return Download(req, progressCB);
@@ -476,6 +478,9 @@ namespace Geosoft.Dap.Xml
                System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(dl.Download));
                t.Start();
                t.Join();
+
+               if (dl.excepted != null)
+                  throw dl.excepted;
                
                MemoryStream memStrm = new MemoryStream(dl.downloadedData);
                oResponseXmlStream = System.Xml.XmlReader.Create(memStrm);

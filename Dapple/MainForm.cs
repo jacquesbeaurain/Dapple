@@ -2649,14 +2649,16 @@ namespace Dapple
          this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right; 
          this.worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
 
+         this.tvServers.Load();
+
          // --- Configure DappleSearch if it's enabled ---
          if (!WWSettingsCtl.DappleSearchURL.Equals(String.Empty) && WWSettingsCtl.DappleSearchURL != null)
          {
-            m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
-            DappleSearchToolbar.Visible = true;
-            Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
-            t.Name = "Background search thread";
-            t.Start();
+            //m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
+            //DappleSearchToolbar.Visible = true;
+            //Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
+            //t.Name = "Background search thread";
+            //t.Start();
          }
       }
 
