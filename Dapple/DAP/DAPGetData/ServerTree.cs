@@ -88,15 +88,16 @@ namespace Geosoft.GX.DAPGetData
       protected DotNetTools.Common.Queue m_oAsyncQueue = new DotNetTools.Common.Queue();
       protected System.Threading.Thread m_oAsyncThread1;
       protected System.Threading.Thread m_oAsyncThread2;
+
+      protected string m_strSecureToken;
+
       #endregion
 
       #region Construction/Destruction
 #if !DAPPLE
       public ServerTree()
       {
-         m_oServerList = new ServerList();
-         m_bGeodist = Geosoft.GXNet.CSYS.iGetGeodist() != 0;
-         m_oCacheManager = new CatalogCacheManager(this);
+         m_oServerList = new ServerList();                  
 #else
       public ServerTree(string strCacheDir)
       {
@@ -104,6 +105,15 @@ namespace Geosoft.GX.DAPGetData
          m_oServerList = new ServerList(m_strCacheDir);
          m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);
 #endif
+
+         // --- Creaet Secure Token ---
+
+         GeoSecureClient.CGeoSecureInterfaceClass scClass = new GeoSecureClient.CGeoSecureInterfaceClass();
+         scClass.CreateSecureToken(out m_strSecureToken);
+
+
+         InitializeComponent();
+
          this.ShowLines = true;
          this.ShowRootLines = false;
          this.ShowNodeToolTips = true;
@@ -136,13 +146,7 @@ namespace Geosoft.GX.DAPGetData
          this.ImageIndex = this.SelectedImageIndex = iImageListIndex("folder");
          this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
-         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
-
-         m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
-         m_oAsyncThread1.Start();
-
-         m_oAsyncThread2 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
-         m_oAsyncThread2.Start();
+         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);         
       }
 
       protected override void Dispose(bool disposing)
@@ -327,6 +331,22 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Public Methods
+      /// <summary>
+      /// Handle the control creation event
+      /// </summary>
+      public void Load()
+      {
+#if !DAPPLE
+         m_bGeodist = Geosoft.GXNet.CSYS.iGetGeodist() != 0;
+         m_oCacheManager = new CatalogCacheManager(this);
+         m_oServerList.Load(m_strSecureToken);
+#endif
+         m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
+         m_oAsyncThread1.Start();
+
+         m_oAsyncThread2 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
+         m_oAsyncThread2.Start();
+      }
 
       /// <summary>
       /// Save server list to CSV
@@ -361,9 +381,9 @@ namespace Geosoft.GX.DAPGetData
                strServerUrl = "http://" + strServerUrl;
 
 #if !DAPPLE
-            Server oServer = new Server(strServerUrl);
+            Server oServer = new Server(strServerUrl, m_strSecureToken);
 #else
-            Server oServer = new Server(strServerUrl, m_strCacheDir);
+            Server oServer = new Server(strServerUrl, m_strCacheDir, m_strSecureToken);
 #endif
             if (oServer.Status == Server.ServerStatus.OnLine || oServer.Status == Server.ServerStatus.Maintenance)
             {
@@ -838,33 +858,18 @@ namespace Geosoft.GX.DAPGetData
       {
          bool bRet = true;
 
+         if (m_oCurServer == null)
+            return false;
+
+
          // --- ensure we only attempt to login 1 at a time ---
 
          lock (this)
          {
-            // --- see if this server requires us to log in ---
+            // --- Set the Server Token ---
 
-            if (m_oCurServer.Secure)
-            {
-               // --- check to see if we have already successfully logged in to this server, if so then use that user name/password ---
+            m_oCurServer.SetServerToken();
 
-               if (m_oCurServer.LoggedIn)
-               {
-                  m_oCurServer.SwitchToUser();
-                  bRet = true;
-               }
-               else
-               {
-                  if (m_oCurServer.Login())
-                     bRet = true;
-               }
-            }
-            else
-            {
-               // --- pick up the default user name and password so we are not passing it to a server who doesn't need it ---
-
-               m_oCurServer.SwitchToUser();
-            }
 
             // --- if we are successfully logged in, then get the data from the dap server ---
 
@@ -1108,37 +1113,30 @@ namespace Geosoft.GX.DAPGetData
             else
                str = oServer.Name;
 
-            if (oServer.Secure && !oServer.LoggedIn)
-            {
-               str += " (unauthorized)";
-               iImage = iImageListIndex("offline");
-            }
-            else
-            {
-               switch (oServer.Status)
-               {
-                  case Server.ServerStatus.OnLine:
-                     str += " (" + oServer.DatasetCount.ToString() + ")";
-                     iImage = iImageListIndex("enserver");
-                     break;
-                  case Server.ServerStatus.Maintenance:
-                     str += " (undergoing maintenance)";
-                     iImage = iImageListIndex("disserver");
-                     break;
-                  case Server.ServerStatus.OffLine:
-                     str += " (offline)";
-                     iImage = iImageListIndex("offline");
-                     break;
-                  case Server.ServerStatus.Disabled:
-                     str += " (disabled)";
-                     iImage = iImageListIndex("disserver");
-                     break;
-                  default:
-                     str += " (unsupported)";
-                     iImage = iImageListIndex("offline");
-                     break;
-               }
-            }
+           switch (oServer.Status)
+           {
+               case Server.ServerStatus.OnLine:
+                   str += " (" + oServer.DatasetCount.ToString() + ")";
+                   iImage = iImageListIndex("enserver");
+                   break;
+               case Server.ServerStatus.Maintenance:
+                   str += " (undergoing maintenance)";
+                   iImage = iImageListIndex("disserver");
+                   break;
+               case Server.ServerStatus.OffLine:
+                   str += " (offline)";
+                   iImage = iImageListIndex("offline");
+                   break;
+               case Server.ServerStatus.Disabled:
+                   str += " (disabled)";
+                   iImage = iImageListIndex("disserver");
+                   break;
+               default:
+                   str += " (unsupported)";
+                   iImage = iImageListIndex("offline");
+                   break;
+           }
+
 
             oTreeNode.Text = str;
             oTreeNode.ImageIndex = oTreeNode.SelectedImageIndex = iImage;
@@ -1635,7 +1633,17 @@ namespace Geosoft.GX.DAPGetData
 
             OnDataSetSelected(ex);
          }
-      }
+      }      
       #endregion
+
+      private void InitializeComponent()
+      {
+         this.SuspendLayout();
+         // 
+         // ServerTree
+         // 
+         this.ResumeLayout(false);
+
+      }      
    }
 }

@@ -11,17 +11,15 @@ namespace Geosoft.GX.DAPGetData
       {
       }
 
+      #if !DAPPLE
       /// <summary>
       /// Reproject the src bounding box into the destination coordinate system
       /// </summary>
       /// <param name="hSrcBB"></param>
       /// <param name="hDestCS"></param>
       /// <returns></returns>
-      static public bool Reproject(Geosoft.Dap.Common.BoundingBox  hSrcBB, Geosoft.Dap.Common.CoordinateSystem hDestCS)
+      static public bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipSrcIPJ, Geosoft.GXNet.CIPJ ipDestIPJ)
       {
-#if !DAPPLE
-         Geosoft.GXNet.CIPJ   hSrcIPJ = null; 
-         Geosoft.GXNet.CIPJ   hDestIPJ = null;
          Geosoft.GXNet.CPJ    hPJ = null;
 
          double               dMinX;
@@ -47,17 +45,10 @@ namespace Geosoft.GX.DAPGetData
 
 
          try
-         {
-            hSrcIPJ = Geosoft.GXNet.CIPJ.Create();
-            hDestIPJ = Geosoft.GXNet.CIPJ.Create();
-
-            hSrcIPJ.SetGXF("", hSrcBB.CoordinateSystem.Datum, hSrcBB.CoordinateSystem.Method, hSrcBB.CoordinateSystem.Units, hSrcBB.CoordinateSystem.LocalDatum);         
-            hDestIPJ.SetGXF("", hDestCS.Datum, hDestCS.Method, hDestCS.Units, hDestCS.LocalDatum);       
-         
-
+         {            
             // --- check to see if this is a valid coordinate system for the given coordinates ---
 
-            hPJ = Geosoft.GXNet.CPJ.CreateIPJ(hSrcIPJ, hDestIPJ);
+            hPJ = Geosoft.GXNet.CPJ.CreateIPJ(ipSrcIPJ, ipDestIPJ);
             dMinX = hSrcBB.MinX;
             dMinY = hSrcBB.MinY;
             dMaxX = hSrcBB.MaxX;
@@ -76,16 +67,17 @@ namespace Geosoft.GX.DAPGetData
          
             // --- copy new projection into src bounding box ---
 
-            hDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_DATUM, ref strDatum);
-            hDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_METHOD, ref strProjection);
-            hDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_LDATUM, ref strLocalDatum);
-            hDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_UNIT_FULL, ref strUnits);
+            ipDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_PCS, ref strProjectionName);
+            ipDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_DATUM, ref strDatum);
+            ipDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_PROJECTION, ref strProjection);
+            ipDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_LDATUM, ref strLocalDatum);
+            ipDestIPJ.IGetName(Geosoft.GXNet.Constant.IPJ_NAME_UNIT_ABBR, ref strUnits);
 
-            hSrcBB.CoordinateSystem.Projection = hDestCS.Projection;
-            hSrcBB.CoordinateSystem.Datum = hDestCS.Datum;
-            hSrcBB.CoordinateSystem.Method = hDestCS.Method;
-            hSrcBB.CoordinateSystem.Units =hDestCS.Units;
-            hSrcBB.CoordinateSystem.LocalDatum = hDestCS.LocalDatum;
+            hSrcBB.CoordinateSystem.Projection = strProjectionName;
+            hSrcBB.CoordinateSystem.Datum = strDatum;
+            hSrcBB.CoordinateSystem.Method = strProjection;
+            hSrcBB.CoordinateSystem.Units = strUnits;
+            hSrcBB.CoordinateSystem.LocalDatum = strLocalDatum;
             hSrcBB.MinX = dMinX;
             hSrcBB.MinY = dMinY;
             hSrcBB.MaxX = dMaxX;
@@ -99,7 +91,88 @@ namespace Geosoft.GX.DAPGetData
          }
          finally
          {
-            if (hPJ != null) hPJ.Dispose();
+            if (hPJ != null) hPJ.Dispose();            
+         }
+         return false;         
+      }
+
+      /// <summary>
+      /// Reproject the src bounding box into the destination coordinate system
+      /// </summary>
+      /// <param name="hSrcBB"></param>
+      /// <param name="hDestCS"></param>
+      /// <returns></returns>
+      static public bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipDestIPJ)
+      {
+         Geosoft.GXNet.CIPJ ipSrcIPJ = null;
+
+         try {
+            ipSrcIPJ = Geosoft.GXNet.CIPJ.Create();
+
+            ipSrcIPJ.SetGXF("", hSrcBB.CoordinateSystem.Datum, hSrcBB.CoordinateSystem.Method, hSrcBB.CoordinateSystem.Units, hSrcBB.CoordinateSystem.LocalDatum);
+
+            return Reproject(hSrcBB, ipSrcIPJ, ipDestIPJ);
+         } catch (Exception e) {
+            GetDapError.Instance.Write("Reproject - " + e.Message);
+         } finally {
+            if (ipSrcIPJ != null) ipSrcIPJ.Dispose();
+         }
+         return false;
+      }
+
+      /// <summary>
+      /// Reproject the src bounding box into the destination coordinate system
+      /// </summary>
+      /// <param name="hSrcBB"></param>
+      /// <param name="hDestCS"></param>
+      /// <returns></returns>
+      static public bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipSrcIPJ, Geosoft.Dap.Common.CoordinateSystem hDestCS)
+      {
+         Geosoft.GXNet.CIPJ hDestIPJ = null;
+
+         try {
+            hDestIPJ = Geosoft.GXNet.CIPJ.Create();
+
+            hDestIPJ.SetGXF("", hDestCS.Datum, hDestCS.Method, hDestCS.Units, hDestCS.LocalDatum);
+
+            return Reproject(hSrcBB, ipSrcIPJ, hDestIPJ);
+         } catch (Exception e) {
+            GetDapError.Instance.Write("Reproject - " + e.Message);
+         } finally {
+            if (hDestIPJ != null) hDestIPJ.Dispose();
+         }
+         return false;
+      }
+      #endif
+
+      /// <summary>
+      /// Reproject the src bounding box into the destination coordinate system
+      /// </summary>
+      /// <param name="hSrcBB"></param>
+      /// <param name="hDestCS"></param>
+      /// <returns></returns>
+      static public bool Reproject(Geosoft.Dap.Common.BoundingBox  hSrcBB, Geosoft.Dap.Common.CoordinateSystem hDestCS)
+      {
+#if !DAPPLE
+         Geosoft.GXNet.CIPJ   hSrcIPJ = null; 
+         Geosoft.GXNet.CIPJ   hDestIPJ = null;
+         
+         try
+         {
+            hSrcIPJ = Geosoft.GXNet.CIPJ.Create();
+            hDestIPJ = Geosoft.GXNet.CIPJ.Create();
+
+            hSrcIPJ.SetGXF("", hSrcBB.CoordinateSystem.Datum, hSrcBB.CoordinateSystem.Method, hSrcBB.CoordinateSystem.Units, hSrcBB.CoordinateSystem.LocalDatum);         
+            hDestIPJ.SetGXF("", hDestCS.Datum, hDestCS.Method, hDestCS.Units, hDestCS.LocalDatum);
+
+            return Reproject(hSrcBB, hSrcIPJ, hDestIPJ);
+         } 
+         catch (Exception e)
+         {
+            GetDapError.Instance.Write("Reproject - " + e.Message);
+         }
+         finally
+         {
             if (hSrcIPJ != null) hSrcIPJ.Dispose();
             if (hDestIPJ != null) hDestIPJ.Dispose();
          }

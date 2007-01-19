@@ -36,6 +36,11 @@ namespace Geosoft.GX.DAPGetData
          m_strKey = strKey;
          m_iTimestamp = iTimestamp;
          m_oDatasets = oList;
+
+         if (m_oDatasets != null) {
+            DatasetCompare dc = new DatasetCompare();
+            m_oDatasets.Sort(dc);
+         }
       }
       #endregion
 
@@ -67,6 +72,29 @@ namespace Geosoft.GX.DAPGetData
             }
          }
          return new FolderDatasetList(strKey, iTimestamp, oList);
+      }
+
+      private class DatasetCompare : IComparer
+      {
+         public int Compare(object ds1, object ds2)
+         {
+            return string.Compare(((Geosoft.Dap.Common.DataSet)ds1).Title, ((Geosoft.Dap.Common.DataSet)ds2).Title, true);
+         }
+      }
+   }
+
+   sealed class FolderDatasetListDeserializationBinder : System.Runtime.Serialization.SerializationBinder
+   {
+      public override Type BindToType(string assemblyName, string typeName)
+      {
+         if (assemblyName.ToLower().Contains("dapxmlclient")) {
+            Geosoft.Dap.Common.DataSet oD = new Geosoft.Dap.Common.DataSet();
+            System.Reflection.Assembly oAssembly = System.Reflection.Assembly.GetAssembly(oD.GetType());
+            assemblyName = oAssembly.FullName;
+         }
+         
+         Type oType = Type.GetType(string.Format("{0}, {1}", typeName, assemblyName));
+         return oType;
       }
    }
 }

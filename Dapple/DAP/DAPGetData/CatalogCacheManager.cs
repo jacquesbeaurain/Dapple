@@ -3,6 +3,7 @@ using System.Threading;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Soap;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,8 +107,8 @@ namespace Geosoft.GX.DAPGetData
                // --- Use SOAP formatting and GZip compression to disk  ---
                // --- This way we have a nice human readable format and ---
                // --- we may later move caching to database based.      ---
-               IFormatter formatter = new SoapFormatter();
-
+               SoapFormatter formatter = new SoapFormatter();
+               
                using (Stream stream = new FileStream(strFile, FileMode.Create, FileAccess.Write, FileShare.None))
                {
                   using (GZipStream compStream = new GZipStream(stream, CompressionMode.Compress, true))
@@ -155,7 +156,6 @@ namespace Geosoft.GX.DAPGetData
             try
             {
                // --- Use GZip compression to disk  ---
-               IFormatter formatter = new SoapFormatter();
                using (Stream stream = new FileStream(strFile, FileMode.Open, FileAccess.Read, FileShare.Read))
                {
                   using (GZipStream compStream = new GZipStream(stream, CompressionMode.Decompress))
@@ -194,7 +194,7 @@ namespace Geosoft.GX.DAPGetData
                else if (bAOIFilter && bTextFilter)
                   oDoc = oServer.Command.GetCatalogHierarchy(strSearchString, oBounds);
             }
-            catch (DapException)
+            catch (DapException e)
             {
                // Assume the server is older
                bEntireCatalogMode = true;
@@ -294,8 +294,9 @@ namespace Geosoft.GX.DAPGetData
                // --- Use SOAP formatting and GZip compression to disk  ---
                // --- This way we have a nice human readable format and ---
                // --- we may later move caching to database based.      ---
-               IFormatter formatter = new SoapFormatter();
-
+               SoapFormatter formatter = new SoapFormatter();
+               formatter.Binder = new FolderDatasetListDeserializationBinder();
+               
                using (Stream stream = new FileStream(strFile, FileMode.Open, FileAccess.Read, FileShare.Read))
                {
                   using (GZipStream compStream = new GZipStream(stream, CompressionMode.Decompress))
@@ -385,6 +386,7 @@ namespace Geosoft.GX.DAPGetData
       public static ArrayList GetDirectoryFileInfoList(DirectoryInfo inDir)
       {
          ArrayList returnList = new ArrayList();
+         
          foreach (DirectoryInfo subDir in inDir.GetDirectories())
          {
             returnList.AddRange(GetDirectoryFileInfoList(subDir));
@@ -400,6 +402,8 @@ namespace Geosoft.GX.DAPGetData
       public static long GetDirectorySize(DirectoryInfo inDir)
       {
          long returnBytes = 0;
+         if (!inDir.Exists) return returnBytes;
+
          foreach (DirectoryInfo subDir in inDir.GetDirectories())
          {
             returnBytes += GetDirectorySize(subDir);

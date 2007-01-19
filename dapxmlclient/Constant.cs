@@ -423,7 +423,7 @@ namespace Geosoft.Dap.Xml.Common
          public const string INDEX_MAP_ATTR     = "index_map";
 
          /// <summary></summary>
-         public const string USER_NAME_ATTR     = "user_name";
+         public const string TOKEN_ATTR     = "secure_token";
 
          /// <summary></summary>
          public const string PASSWORD_ATTR      = "password";         

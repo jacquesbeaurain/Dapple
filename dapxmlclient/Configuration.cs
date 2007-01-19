@@ -117,31 +117,56 @@ namespace Geosoft.Dap
       /// </summary>
       /// <returns></returns>
       public void  GetVersion(out Int32 iMajorVersion, out Int32 iMinorVersion)
-      {         
-         XmlNode  oAttr;
+      {
+         Int32 iBuild;
+         Int32 iRevision;
 
-         iMajorVersion = 6;
-         iMinorVersion = 2;
+         GetVersion(out iMajorVersion, out iMinorVersion, out iBuild, out iRevision);         
+      }
+
+      /// <summary>
+      /// Get the version of the server
+      /// </summary>
+      /// <returns></returns>
+      public void GetVersion(out Int32 iMajorVersion, out Int32 iMinorVersion, out Int32 iBuild, out Int32 iRevision)
+      {
+         XmlNode oAttr;
+
+         bool bRet = true;
+
+         iMajorVersion = 1;
+         iMinorVersion = 0;
+         iBuild = 0;
+         iRevision = 0;
 
          if (m_oIdentification == null) return;
 
-         foreach (XmlNode oAttrNode in m_oIdentification.ChildNodes)
-         {
+         foreach (XmlNode oAttrNode in m_oIdentification.ChildNodes) {
             oAttr = oAttrNode.Attributes.GetNamedItem(Geosoft.Dap.Xml.Common.Constant.Attribute.NAME_ATTR);
             if (oAttr == null || oAttr.Value != "Version") continue;
-               
+
             oAttr = oAttrNode.Attributes.GetNamedItem(Geosoft.Dap.Xml.Common.Constant.Attribute.VALUE_ATTR);
             if (oAttr == null) break;
-            
-            Int32 iIndex = oAttr.Value.IndexOf('.');
 
-            if (iIndex != -1)
-            {
-               string szMajor = oAttr.Value.Substring(0, iIndex);
-               string szMinor = oAttr.Value.Substring(iIndex + 1);
-            
-               iMajorVersion = Int32.Parse(szMajor);
-               iMinorVersion = Int32.Parse(szMinor);
+            string[] strComponents = oAttr.Value.Split('.');
+
+            if (strComponents.Length >= 1)
+               bRet = Int32.TryParse(strComponents[0], out iMajorVersion);
+
+            if (bRet && strComponents.Length >= 2)
+               bRet = Int32.TryParse(strComponents[1], out iMinorVersion);
+
+            if (bRet && strComponents.Length >= 3)
+               bRet = Int32.TryParse(strComponents[2], out iBuild);
+
+            if (bRet && strComponents.Length >= 4)
+               bRet = Int32.TryParse(strComponents[3], out iRevision);
+
+            if (!bRet) {
+               iMajorVersion = 6;
+               iMinorVersion = 2;
+               iBuild = 0;
+               iRevision = 0;
             }
          }
       }

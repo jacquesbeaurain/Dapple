@@ -41,28 +41,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       public ServerList()
       {         
-         string   strDir = string.Empty;
-         
-         m_oServerList = new ArrayList();
-
-         CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref strDir);
-         m_strCSV = System.IO.Path.Combine(strDir, "csv\\Dap_Servers.xml");
-
-         if (!System.IO.File.Exists(m_strCSV))
-         {
-            string strTemp;
-
-            CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_GEOSOFT, ref strDir);
-            strTemp = System.IO.Path.Combine(strDir, "csv\\Dap_Servers.xml");
-                        
-            
-            // --- Copy file to user directory ---
-
-            if (System.IO.File.Exists(strTemp))
-               System.IO.File.Copy(strTemp, m_strCSV, true);
-         }
-         
-         Load();
+         m_oServerList = new ArrayList();         
       }      
 #else
       /// <summary>
@@ -77,11 +56,41 @@ namespace Geosoft.GX.DAPGetData
 #endif
       #endregion
 
+      #region Public Methods
+#if !DAPPLE
+      public void Load(string strSecureToken)
+      {
+         string strDir = string.Empty;
+
+
+         CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref strDir);
+         m_strCSV = System.IO.Path.Combine(strDir, "csv\\Dap_Servers.xml");
+
+         if (!System.IO.File.Exists(m_strCSV))
+         {
+            string strTemp;
+
+            CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_GEOSOFT, ref strDir);
+            strTemp = System.IO.Path.Combine(strDir, "csv\\Dap_Servers.xml");
+
+
+            // --- Copy file to user directory ---
+
+            if (System.IO.File.Exists(strTemp))
+               System.IO.File.Copy(strTemp, m_strCSV, true);
+         }
+
+         LoadInternal(strSecureToken);
+      }
+#endif
+      #endregion
+
       #region Protected Members
+#if !DAPPLE
       /// <summary>
       /// Load the server list into memory
       /// </summary>
-      protected void Load()
+      protected void LoadInternal(string strSecureToken)
       {
          XmlDocument oDoc;
          XmlNode oRoot;
@@ -100,12 +109,7 @@ namespace Geosoft.GX.DAPGetData
             {
                try
                {
-#if !DAPPLE
-                  Server oServer = new Server(oServerNode);
-#else
-                  XmlNode oAttr = oServerNode.Attributes.GetNamedItem(Constant.Xml.Attr.Url);
-                  Server oServer = new Server(oAttr.Value, m_strCacheDir);
-#endif
+                  Server oServer = new Server(oServerNode, strSecureToken);
 
                   // --- only add the server to the list if there was no errors in reading it from the xml ---
 
@@ -118,6 +122,7 @@ namespace Geosoft.GX.DAPGetData
             }
          }
       }
+#endif
 
       /// <summary>
       /// Verify that this server url is not already in the list

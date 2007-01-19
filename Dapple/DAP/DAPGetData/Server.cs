@@ -35,10 +35,8 @@ namespace Geosoft.GX.DAPGetData
       protected Int32                     m_iMajorVersion;
       protected Int32                     m_iMinorVersion;
       protected string                    m_strCacheVersion;
-      protected bool                      m_bSecure = false;
-      protected bool                      m_bLoggedIn = false;
-      protected string                    m_strUserName;
-      protected string                    m_strPassword;
+      protected bool m_bLogin = false;
+      protected string                    m_strToken;
 
       protected ServerStatus              m_eStatus;
       protected Int32                     m_iCount;
@@ -52,6 +50,8 @@ namespace Geosoft.GX.DAPGetData
 
       protected string m_strCacheDir;
       protected string m_strCacheRoot;
+
+      protected string m_strSecureToken;
       #endregion
 
       #region Properties
@@ -192,18 +192,12 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get whether this is a secure server or not
       /// </summary>
-      public bool Secure
+      public bool Login
       {
-         get { return m_bSecure; }
+         get { return m_bLogin; }
       }
 
-      /// <summary>
-      /// Get whether we have already logged in
-      /// </summary>
-      public bool LoggedIn
-      {
-         get { return m_bLoggedIn; }
-      }      
+     
       #endregion
 
       #region Constructor
@@ -213,12 +207,14 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="strDnsAddress">
       /// </param>
 #if !DAPPLE
-      public Server(string strDnsAddress)
+      public Server(string strDnsAddress, string strSecureToken)
 #else
-      public Server(string strDnsAddress, string strCacheDir)
+      public Server(string strDnsAddress, string strCacheDir, string strSecureToken)
 #endif
       {
          string strEdition, strConfigEdition;
+         
+         m_strSecureToken = strSecureToken;
 
          // --- create the connection to the server ---
 
@@ -245,21 +241,15 @@ namespace Geosoft.GX.DAPGetData
 
             ConfigureServer();
 
-            if (m_eStatus == ServerStatus.OnLine)
-            {
-               // --- If the edition change we need to reload the configuration ---
-               m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-               if (m_strCacheVersion != strConfigEdition)
-                  UpdateConfiguration();
-            }
+            // --- If the edition change we need to reload the configuration ---
+            m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+            if (m_strCacheVersion != strConfigEdition)
+               UpdateConfiguration();
          }
-         catch (Exception)
+         catch
          {
-            // In Dapple we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
+            // we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
             m_eStatus = ServerStatus.OffLine;
-#if !DAPPLE
-            throw e;
-#endif
          }
       }
 
@@ -275,10 +265,12 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentOutOfRangeException">
       /// 	<para>The argument <paramref name="oServerNode"/> is out of range.</para>
       /// </exception>
-      public Server(XmlNode oServerNode)
+      public Server(XmlNode oServerNode, string strSecureToken)
       {
          string strEdition, strConfigEdition;
          XmlNode oAttr;
+
+         m_strSecureToken = strSecureToken;
 
          m_strCacheRoot = string.Empty;
          GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheRoot);
@@ -321,14 +313,19 @@ namespace Geosoft.GX.DAPGetData
                      
          GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
 
-         m_oCatalogs = new CatalogCollection(this);
+         try {
+            m_oCatalogs = new CatalogCollection(this);
 
-         ConfigureServer();
+            ConfigureServer();
 
-         // --- If the edition change we need to reload the configuration ---
-         m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-         if (m_strCacheVersion != strConfigEdition)
-            UpdateConfiguration();
+            // --- If the edition change we need to reload the configuration ---
+            m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+            if (m_strCacheVersion != strConfigEdition)
+               UpdateConfiguration();
+         } catch {
+            // we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
+            m_eStatus = ServerStatus.OffLine;
+         }
       }
 #endif
 
@@ -447,70 +444,36 @@ namespace Geosoft.GX.DAPGetData
          ConfigureServer();
       }
 
-      /// <summary>
-      /// Authenticate the user
-      /// </summary>
-      /// <param name="strUserName"></param>
-      /// <param name="strPassword"></param>
-      /// <returns></returns>
-      public bool Login()
-      {
-         Login oLogin = new Login(this);
 
-         m_bLoggedIn = false;
-         if (oLogin.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-         {         
-            m_bLoggedIn = true;
-            m_strUserName = oLogin.UserName;
-            m_strPassword = oLogin.Password;
-            Command.ChangeLogin(m_strUserName, m_strPassword);
-#if !DAPPLE
-            Geosoft.GXNet.CDAP.SetUserNamePassword(m_strUserName, m_strPassword);
-#endif
-            oLogin.Dispose();
-            return true;
-         }
 
-         CatalogCollection.Clear();
-         oLogin.Dispose();
-         return false;
-      }
 
       /// <summary>
-      /// Logout from this server
+      /// Set the server token
       /// </summary>
-      /// <returns></returns>
-      public bool Logout()
+      public void SetServerToken()
       {
-         m_bLoggedIn = false;
-         m_strUserName = string.Empty;
-         m_strPassword = string.Empty;
-         Command.ChangeLogin(m_strUserName, m_strPassword);
-
-         try
+         if (m_eStatus == Server.ServerStatus.OnLine)
          {
-#if !DAPPLE
-            Geosoft.GXNet.CDAP.SetUserNamePassword(m_strUserName, m_strPassword);
-#endif
-         } 
-         catch {}
+            string strToken;
 
-    
-         CatalogCollection.Clear();
-         return true;
-      }
+            // --- Is this a secure server ? ---
 
-      /// <summary>
-      /// Switch to the already authenticated user
-      /// </summary>
-      public void SwitchToUser()
-      {
-         if (m_bLoggedIn && m_eStatus == Server.ServerStatus.OnLine)
-         {
-            Command.ChangeLogin(m_strUserName, m_strPassword);
-#if !DAPPLE
-            Geosoft.GXNet.CDAP.SetUserNamePassword(m_strUserName, m_strPassword);
-#endif
+            if (m_bLogin)
+                strToken = m_strSecureToken;
+            else
+                strToken = string.Empty;
+
+
+            // --- Set the Token ---
+
+            Command.ChangeLogin(strToken);
+
+
+            // --- Manage the Task ---
+
+            #if !DAPPLE
+            Geosoft.GXNet.CDAP.SetSecureToken(strToken);
+            #endif
          }
       }
       #endregion
@@ -550,11 +513,7 @@ namespace Geosoft.GX.DAPGetData
 
          if (m_eStatus == ServerStatus.Unsupported) return;
 
-#if !DAPPLE
-         m_strCacheDir = Path.Combine(m_strCacheRoot, "DapCache");
-#else
          m_strCacheDir = Path.Combine(m_strCacheRoot, "Dap Catalog Cache");
-#endif
 
          // --- remove the http:// from the directory name ---
 
@@ -606,15 +565,7 @@ namespace Geosoft.GX.DAPGetData
             {
                oDoc = m_oCommand.GetConfiguration(null);
                oDoc.Save(strConfigurationFile);
-            }
-            catch (System.Net.WebException we)
-            {
-               // --- verify this server is on-line, because if it is then it is an unsupported version ---
-
-               m_eStatus = ServerStatus.OffLine;
-               GetDapError.Instance.Write("Configure Server, Get Configuration (" + m_strUrl + ") - " + we.Message);
-               return;
-            }
+            }  
             catch (Exception)
             {
                // --- this server against a 6.2 server ---
@@ -629,7 +580,7 @@ namespace Geosoft.GX.DAPGetData
                {
                   // --- verify this server is on-line, because if it is then it is an unsupported version ---
 
-                  m_eStatus = ServerStatus.OffLine;
+                  m_eStatus = ServerStatus.OffLine;     
                   GetDapError.Instance.Write("Configure Server, Get Configuration (" + m_strUrl + ") - " + ex.Message);
                   return;
                }
@@ -682,11 +633,15 @@ namespace Geosoft.GX.DAPGetData
          }
          else if (m_iMajorVersion > 6 || (m_iMajorVersion == 6 && m_iMinorVersion >= 3))
          {
-            if (m_oServerConfiguration.bSecure())
-               m_oCommand.ChangeSecureConnection(true);
+             // --- Is this server Secure ? ---
 
             if (m_oServerConfiguration.bLogin())
-               m_bSecure = true;
+             {
+                 // --- Mark the server secure ---
+
+                 m_bLogin = true;
+                 SetServerToken();
+             }
          }
       }
 

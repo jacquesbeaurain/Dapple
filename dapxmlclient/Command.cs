@@ -79,7 +79,7 @@ namespace Geosoft.Dap
       {
          get { 
             Version eVersion;
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             eVersion = m_hEncodeRequest.Version; 
             m_oLock.ReleaseReaderLock();
             return eVersion;
@@ -93,7 +93,7 @@ namespace Geosoft.Dap
       {
          get { 
             bool bSecure;
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             bSecure = m_oCommunication.Secure; 
             m_oLock.ReleaseReaderLock();
             return bSecure;
@@ -103,27 +103,12 @@ namespace Geosoft.Dap
       /// <summary>
       /// Get/set the user name
       /// </summary>
-      public string UserName
+      public string Token
       {
          get { 
             string str;
-            m_oLock.AcquireReaderLock(0);
-            str = m_hEncodeRequest.UserName; 
-            m_oLock.ReleaseReaderLock();
-            return str;
-         }
-      }
-
-      /// <summary>
-      /// Get/set the user's password
-      /// </summary>
-      public string Password
-      { 
-         get 
-         { 
-            string str;
-            m_oLock.AcquireReaderLock(0);
-            str = m_hEncodeRequest.Password; 
+            m_oLock.AcquireReaderLock(-1);
+            str = m_hEncodeRequest.Token; 
             m_oLock.ReleaseReaderLock();
             return str;
          }
@@ -175,13 +160,12 @@ namespace Geosoft.Dap
       /// <param name="bTask"></param>
       /// <param name="eVersion"></param>
       /// <param name="bSecure"></param>
-      /// <param name="strPassword"></param>
-      /// <param name="strUserName"></param>
-      public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strUserName, string strPassword)
+      /// <param name="strToken"></param>
+      public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strToken)
       {
          m_strUrl = szUrl;
          m_hParse = new Parse(szUrl);
-         m_hEncodeRequest = new EncodeRequest(eVersion, strUserName, strPassword);
+         m_hEncodeRequest = new EncodeRequest(eVersion, strToken);
          m_oCommunication = new Communication(bTask, bSecure);
       }      
       #endregion
@@ -193,7 +177,7 @@ namespace Geosoft.Dap
       /// <param name="eVersion"></param>
       public void ChangeVersion(Version eVersion)
       {
-         m_oLock.AcquireWriterLock(0);
+         m_oLock.AcquireWriterLock(-1);
          m_hEncodeRequest.Version = eVersion;
          m_oLock.ReleaseWriterLock();
       }
@@ -201,13 +185,11 @@ namespace Geosoft.Dap
       /// <summary>
       /// Change login information for this server
       /// </summary>
-      /// <param name="strUserName"></param>
-      /// <param name="strPassword"></param>
-      public void ChangeLogin(string strUserName, string strPassword)
+      /// <param name="strToken"></param>
+      public void ChangeLogin(string strToken)
       {
-         m_oLock.AcquireWriterLock(0);
-         m_hEncodeRequest.UserName = strUserName;
-         m_hEncodeRequest.Password = strPassword;
+         m_oLock.AcquireWriterLock(-1);
+         m_hEncodeRequest.Token = strToken;
          m_oLock.ReleaseWriterLock();
       }
 
@@ -217,50 +199,9 @@ namespace Geosoft.Dap
       /// <param name="bSecure"></param>
       public void ChangeSecureConnection(bool bSecure)
       {
-         m_oLock.AcquireWriterLock(0);
+         m_oLock.AcquireWriterLock(-1);
          m_oCommunication.Secure = bSecure;
          m_oLock.ReleaseWriterLock();
-      }
-
-      /// <summary>
-      /// Authenticate the user in GeosoftXML format from the dap server
-      /// </summary>
-      /// <param name="strUserName">Username</param>
-      /// <param name="strPassword">Password</param>
-      /// <returns>True/False depending if the user is authenticated or not</returns>
-      public bool AuthenticateUser(string strUserName, string strPassword)
-      {
-         return AuthenticateUser(strUserName, strPassword, null);
-      }
-
-      /// <summary>
-      /// Authenticate the user in GeosoftXML format from the dap server
-      /// </summary>
-      /// <param name="strUserName">Username</param>
-      /// <param name="strPassword">Password</param>
-      /// <param name="progressCallBack">Progress handler (may be null)</param>
-      /// <returns>True/False depending if the user is authenticated or not</returns>
-      public bool AuthenticateUser(string strUserName, string strPassword, UpdateProgessCallback progressCallBack)
-      {
-         bool                    bAuthenticated = false;
-         string                  szUrl;
-         System.Xml.XmlDocument  hRequestDocument;
-         System.Xml.XmlDocument  hResponseDocument;
-         
-         try 
-         {
-            m_oLock.AcquireReaderLock(0);
-
-            szUrl = CreateUrl(Constant.Request.CONFIGURATION);
-            hRequestDocument = m_hEncodeRequest.AuthenticateUser(null, strUserName, strPassword);
-            hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);  
-            bAuthenticated = m_hParse.AuthenticateUser(hResponseDocument);
-         }
-         finally
-         {
-            m_oLock.ReleaseReaderLock();
-         }
-         return bAuthenticated;
       }
 
       /// <summary>
@@ -285,7 +226,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CONFIGURATION);
             hRequestDocument = m_hEncodeRequest.Configuration(null);
@@ -322,7 +263,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CONFIGURATION);
             hRequestDocument = m_hEncodeRequest.ServerConfiguration(null, strPassword);
@@ -361,7 +302,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CONFIGURATION);
             hRequestDocument = m_hEncodeRequest.UpdateServerConfiguration(null, strPassword, oConfiguration);
@@ -420,7 +361,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CAPABILITIES);
 
             hRequestDocument = m_hEncodeRequest.Capabilities( null );
@@ -455,7 +396,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.PROPERTIES);
 
             hRequestDocument = m_hEncodeRequest.Properties( null );
@@ -526,7 +467,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
             hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox);
@@ -568,7 +509,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
             hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iDepth, 0, 0, null, null);
@@ -659,7 +600,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
             hRequestDocument = m_hEncodeRequest.Catalog( null, false, szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox);
@@ -759,7 +700,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
             hRequestDocument = m_hEncodeRequest.CatalogHierarchy(null, strQueryString, oBox);
@@ -797,7 +738,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CATALOG);
             hRequestDocument = m_hEncodeRequest.RefreshCatalog(null, strPassword);
@@ -881,7 +822,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CATALOG);
 
             hRequestDocument = m_hEncodeRequest.Catalog( null, true, szPath, iDepth, iStartIndex, iMaxResults, szKeywords, hBoundingBox);
@@ -915,7 +856,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.CATALOG_EDITION);
 
             hRequestDocument = m_hEncodeRequest.CatalogEdition( null );
@@ -1004,7 +945,7 @@ namespace Geosoft.Dap
 
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.DATASET_EDITION);
 
             hRequestDocument = m_hEncodeRequest.DatasetEdition( null, hDataSet.Name );
@@ -1122,7 +1063,7 @@ namespace Geosoft.Dap
 
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.META);
 
             hRequestDocument = m_hEncodeRequest.Metadata( null, szDataSet );
@@ -1270,7 +1211,7 @@ namespace Geosoft.Dap
 
          try 
          {            
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.IMAGE);
 
             hRequestDocument = m_hEncodeRequest.Image( null, hFormat, hBoundingBox, hResolution, bBaseMap, bIndexMap, hArrayList);
@@ -1348,7 +1289,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.DEFAULT_RESOLUTION);
 
             hRequestDocument = m_hEncodeRequest.DefaultResolution(null, szType, hBoundingBox );
@@ -1749,7 +1690,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.SUPPORTED_COORDINATE_SYSTEMS);
 
             hRequestDocument = m_hEncodeRequest.CoordinateSystemList( null, CoordinateSystem.TYPES[Convert.ToInt32(eType)], szDatum );
@@ -1874,7 +1815,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.EXTRACT);
 
             hRequestDocument = m_hEncodeRequest.Extract(null, hDataSetList, hBox, bNative);
@@ -1967,7 +1908,7 @@ namespace Geosoft.Dap
 
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.EXTRACT);
 
             hRequestDocument = m_hEncodeRequest.ExtractProgress(null, szKey);
@@ -2004,7 +1945,7 @@ namespace Geosoft.Dap
 
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.EXTRACT);
 
             hRequestDocument = m_hEncodeRequest.ExtractData(null, szKey);
@@ -2044,7 +1985,7 @@ namespace Geosoft.Dap
 
          try
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.EXTRACT);
 
             hRequestDocument = m_hEncodeRequest.ExtractData(null, szKey);
@@ -2126,7 +2067,7 @@ namespace Geosoft.Dap
 
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.TRANSLATE);
 
             hRequestDocument = m_hEncodeRequest.TranslateCoordinates(null, hInputCoordinateSystem, hOutputCoordinateSystem, hItems);
@@ -2250,7 +2191,7 @@ namespace Geosoft.Dap
 
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
             szUrl = CreateUrl(Constant.Request.TRANSLATE);
 
             hRequestDocument = m_hEncodeRequest.TranslateBoundingBox(null,hBoundingBox,hOCS, dResolution);
@@ -2310,7 +2251,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CONFIGURATION);
             hRequestDocument = m_hEncodeRequest.GetLog(null, strPassword, oDate);
@@ -2370,7 +2311,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CONFIGURATION);
             hRequestDocument = m_hEncodeRequest.ClearLog(null, strPassword, oDate);
@@ -2433,7 +2374,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CONFIGURATION);
             hRequestDocument = m_hEncodeRequest.ListLogs(null, strPassword);
@@ -2453,7 +2394,7 @@ namespace Geosoft.Dap
       /// <returns></returns>
       public string CreateUrl(Constant.Request eRequest)
       {
-         m_oLock.AcquireReaderLock(0);
+         m_oLock.AcquireReaderLock(-1);
 
          string strUrl = m_strUrl;
 
@@ -2501,7 +2442,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CATALOG);
             hRequestDocument = m_hEncodeRequest.CreateClientState(null);
@@ -2539,7 +2480,7 @@ namespace Geosoft.Dap
          
          try 
          {
-            m_oLock.AcquireReaderLock(0);
+            m_oLock.AcquireReaderLock(-1);
 
             szUrl = CreateUrl(Constant.Request.CATALOG);
             hRequestDocument = m_hEncodeRequest.DestroyClientState(null, strKey);

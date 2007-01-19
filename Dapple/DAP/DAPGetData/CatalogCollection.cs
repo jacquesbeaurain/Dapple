@@ -54,7 +54,10 @@ namespace Geosoft.GX.DAPGetData
 
             if (strEdition != hRetCatalog.Edition || strConfigEdition != hRetCatalog.ConfigurationEdition)
             {
-               m_hCatalogList.Remove(hHash);
+               lock (m_hCatalogList) {
+                  if (m_hCatalogList.ContainsKey(hHash))
+                     m_hCatalogList.Remove(hHash);
+               }
                hRetCatalog = null;
             }
          }
@@ -79,7 +82,12 @@ namespace Geosoft.GX.DAPGetData
 
                hRetCatalog = new Catalog(hDocument, strEdition);
 
-               m_hCatalogList.Add(hHash, hRetCatalog);
+               lock (m_hCatalogList) {
+                  if (!m_hCatalogList.ContainsKey(hHash))
+                     m_hCatalogList.Add(hHash, hRetCatalog);
+                  else
+                     m_hCatalogList[hHash] = hRetCatalog;
+               }
             } 
             catch (Exception e)
             {

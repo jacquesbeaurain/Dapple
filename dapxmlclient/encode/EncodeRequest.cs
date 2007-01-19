@@ -13,8 +13,7 @@ namespace Geosoft.Dap.Xml
       #region Member Variables
       private Command.Version  m_eVersion;
 
-      private string           m_strUserName = string.Empty;
-      private string           m_strPassword = string.Empty;
+      private string           m_strToken = string.Empty;
       #endregion
 
       #region Properties
@@ -30,19 +29,10 @@ namespace Geosoft.Dap.Xml
       /// <summary>
       /// Get/set the user name
       /// </summary>
-      public string UserName
+      public string Token
       { 
-         get { return m_strUserName; }
-         set { m_strUserName = value; }
-      }
-
-      /// <summary>
-      /// Get/Set the password
-      /// </summary>
-      public string Password
-      {
-         get { return m_strPassword; }
-         set { m_strPassword = value; }
+         get { return m_strToken; }
+         set { m_strToken = value; }
       }
       #endregion
 
@@ -60,13 +50,11 @@ namespace Geosoft.Dap.Xml
       /// Default constructor
       /// </summary>
       /// <param name="eVersion"></param>
-      /// <param name="strUserName"></param>
-      /// <param name="strPassword"></param>
-      public EncodeRequest(Command.Version eVersion, string strUserName, string strPassword)
+      /// <param name="strToken"></param>
+      public EncodeRequest(Command.Version eVersion, string strToken)
       {
          m_eVersion = eVersion;
-         m_strUserName = strUserName;
-         m_strPassword = strPassword;
+         m_strToken = strToken;
       }
 
       #endregion
@@ -101,12 +89,8 @@ namespace Geosoft.Dap.Xml
          {
             System.Xml.XmlAttribute oAttr;
 
-            oAttr = oXmlRequest.CreateAttribute(Constant.Attribute.USER_NAME_ATTR);
-            oAttr.Value = m_strUserName;
-            oCommandNode.Attributes.Append(oAttr);
-
-            oAttr = oXmlRequest.CreateAttribute(Constant.Attribute.PASSWORD_ATTR);
-            oAttr.Value = m_strPassword;
+            oAttr = oXmlRequest.CreateAttribute(Constant.Attribute.TOKEN_ATTR);
+            oAttr.Value = m_strToken;
             oCommandNode.Attributes.Append(oAttr);
          }
 
@@ -223,30 +207,6 @@ namespace Geosoft.Dap.Xml
          return hNode;
       }
       #endregion
-
-      /// <summary>
-      /// Encode the request to see if this user/password is valid on the Dap server
-      /// </summary>
-      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>
-      /// <param name="strUserName">The user name</param>
-      /// <param name="strPassword">The password</param>
-      /// <returns>The GeosoftXML request</returns>
-      public System.Xml.XmlDocument AuthenticateUser(string szHandle, string strUserName, string strPassword)
-      {
-         System.Xml.XmlElement	hAuthenticateNode = CreateRequest(szHandle, Constant.Tag.AUTHENTICATE_TAG);
-         
-         System.Xml.XmlAttribute oAttr;
-
-         oAttr = hAuthenticateNode.OwnerDocument.CreateAttribute(Constant.Attribute.USER_NAME_ATTR);
-         oAttr.Value = strUserName;
-         hAuthenticateNode.Attributes.Append(oAttr);
-
-         oAttr = hAuthenticateNode.OwnerDocument.CreateAttribute(Constant.Attribute.PASSWORD_ATTR);
-         oAttr.Value = strPassword;
-         hAuthenticateNode.Attributes.Append(oAttr);
-
-         return hAuthenticateNode.OwnerDocument;
-      }
 
       /// <summary>
       /// Encode the request to discover the configuration of a Dap server
