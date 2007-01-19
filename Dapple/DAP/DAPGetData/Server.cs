@@ -302,29 +302,35 @@ namespace Geosoft.GX.DAPGetData
          if (oAttr == null) throw new ApplicationException("Missing cache version attribute in server node");
          m_strCacheVersion = oAttr.Value;         
 
-         m_oCommand = new Geosoft.Dap.Command(m_strUrl, true, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
+         if (m_eStatus != ServerStatus.Disabled)
+         {
+            m_oCommand = new Geosoft.Dap.Command(m_strUrl, true, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1);
 
-         // --- this is a 6.2 server, get decreased configuration parameters ---
+            // --- this is a 6.2 server, get decreased configuration parameters ---
 
-         if (m_iMajorVersion < 6 || (m_iMajorVersion == 6 && m_iMinorVersion < 3))
-            m_oCommand.ChangeVersion(Command.Version.GEOSOFT_XML_1_0);
-         
-         // --- ensure this server is trusted ---
-                     
-         GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
+            if (m_iMajorVersion < 6 || (m_iMajorVersion == 6 && m_iMinorVersion < 3))
+               m_oCommand.ChangeVersion(Command.Version.GEOSOFT_XML_1_0);
 
-         try {
-            m_oCatalogs = new CatalogCollection(this);
+            // --- ensure this server is trusted ---
 
-            ConfigureServer();
+            GXNet.CDAP.SetAuthorization(m_strUrl, Geosoft.GXNet.Constant.GUI_AUTH_TRUST);
 
-            // --- If the edition change we need to reload the configuration ---
-            m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-            if (m_strCacheVersion != strConfigEdition)
-               UpdateConfiguration();
-         } catch {
-            // we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
-            m_eStatus = ServerStatus.OffLine;
+            try
+            {
+               m_oCatalogs = new CatalogCollection(this);
+
+               ConfigureServer();
+
+               // --- If the edition change we need to reload the configuration ---
+               m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+               if (m_strCacheVersion != strConfigEdition)
+                  UpdateConfiguration();
+            }
+            catch
+            {
+               // we want to support showing servers as offline in the tree (otherwise we may loose them with offline mode)
+               m_eStatus = ServerStatus.OffLine;
+            }
          }
       }
 #endif
