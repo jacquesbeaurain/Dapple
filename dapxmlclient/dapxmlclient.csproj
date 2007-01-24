@@ -137,7 +137,9 @@
     <Compile Include="Structs\resolution.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Content Include="GeosoftXml.xsd" />
+    <Content Include="GeosoftXml.xsd">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="GeosoftXml.xsx">
       <DependentUpon>GeosoftXml.xsd</DependentUpon>
     </None>
