@@ -176,8 +176,8 @@ namespace Dapple.LayerGeneration
          get
          {
             if (m_decLevelZeroTileSizeDegrees == 0)
-               // Round to ceiling of four decimals (>~ 10 meter resolution)
-               m_decLevelZeroTileSizeDegrees = Math.Min(30, Math.Ceiling(10000 * (decimal)Math.Max(m_hDataSet.Boundary.MaxY - m_hDataSet.Boundary.MinY, m_hDataSet.Boundary.MaxX - m_hDataSet.Boundary.MinX)) / 10000);
+               // Shared code in DappleUtils of dapxmlclient
+               m_decLevelZeroTileSizeDegrees = DappleUtils.LevelZeroTileSize(m_hDataSet);
             return m_decLevelZeroTileSizeDegrees;
          }
          set
@@ -334,16 +334,13 @@ namespace Dapple.LayerGeneration
             System.IO.Directory.CreateDirectory(strCachePath);
 
             // Determine the needed levels (function of tile size and resolution if available)
-            double dRes = GetResolution();
-            if (dRes > 0)
+            // Shared code in DappleUtils of dapxmlclient
+            try
             {
-               decimal dTileSize = LevelZeroTileSize;
-               m_iLevels = 1;
-               while ((double) dTileSize / Convert.ToDouble(m_iTileImageSize) > dRes / 4.0)
-               {
-                  m_iLevels++;
-                  dTileSize /= 2;
-               }
+               m_iLevels = DappleUtils.Levels(m_oServer.Command, m_hDataSet);
+            }
+            catch
+            {
             }
 
             GeosoftPlugin.New.DAPImageAccessor imgAccessor = new GeosoftPlugin.New.DAPImageAccessor(
@@ -363,39 +360,6 @@ namespace Dapple.LayerGeneration
             m_layer.IsOn = m_IsOn;
          }
          return m_layer;
-      }
-
-      /// <summary>
-      /// Resolves resolution in degrees
-      /// </summary>
-      /// <returns></returns>
-      public double GetResolution()
-      {
-         try
-         {
-            XmlDocument doc = m_oServer.Command.GetMetaData(m_hDataSet, null);
-            XmlNode nodeRes = doc.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='SpatialResolution']");
-            if (nodeRes != null)
-            {
-               int dX, dY;
-
-               double dSpatRes = Convert.ToDouble(nodeRes.Attributes["value"].Value);
-               double dMinX = Convert.ToDouble(doc.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMinX']").Attributes["value"].Value);
-               double dMinY = Convert.ToDouble(doc.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMinY']").Attributes["value"].Value);
-               double dMaxX = Convert.ToDouble(doc.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMaxX']").Attributes["value"].Value);
-               double dMaxY = Convert.ToDouble(doc.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMaxY']").Attributes["value"].Value);
-
-               dX = (int)Math.Round((dMaxX - dMinX) / dSpatRes);
-               dY = (int)Math.Round((dMaxY - dMinY) / dSpatRes);
-
-               return Math.Min((m_hDataSet.Boundary.MaxX - m_hDataSet.Boundary.MinX) / dX, (m_hDataSet.Boundary.MaxY - m_hDataSet.Boundary.MinY) / dY);
-            }
-         }
-         catch
-         {
-            return 0.0;
-         }
-         return 0.0;
       }
 
       public override string GetCachePath()

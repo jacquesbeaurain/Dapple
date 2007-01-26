@@ -92,6 +92,8 @@
     <Compile Include="Constant.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DappleExport.cs" />
+    <Compile Include="DappleUtils.cs" />
     <Compile Include="Decode\parse.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -113,6 +115,7 @@
     <Compile Include="Exceptions\daperror.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GoogleEarthExport.cs" />
     <Compile Include="Structs\boundingbox.cs">
       <SubType>Code</SubType>
     </Compile>
