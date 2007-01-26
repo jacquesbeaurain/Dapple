@@ -73,17 +73,7 @@ namespace Dapple.LayerGeneration
             decimal lvl0tilesize = Convert.ToDecimal(queryColl.Get("lvl0tilesize"));
 
             if (hDataSet != null)
-            {
-               DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null);
-               if (layerBuilder != null)
-               {
-                  layerBuilder.m_iHeight = height;
-                  layerBuilder.m_iTileImageSize = size;
-                  layerBuilder.Levels = levels;
-                  layerBuilder.LevelZeroTileSize = lvl0tilesize;
-                  return layerBuilder;
-               }
-            }
+               return new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null, height, size, lvl0tilesize, levels);
          }
          catch (Exception e)
          {
@@ -95,16 +85,21 @@ namespace Dapple.LayerGeneration
       #endregion
 
       private QuadTileSet m_layer;
-      public int m_iHeight = 0;
-      public int m_iTileImageSize = 256;
+      public int m_iHeight;
+      public int m_iTileImageSize;
       public DataSet m_hDataSet;
       private string m_strDAPType;
       private string m_strCacheRoot;
       private Server m_oServer;
-      private int m_iLevels = 15;
-      private decimal m_decLevelZeroTileSizeDegrees = 0;
+      private int m_iLevels;
+      private decimal m_decLevelZeroTileSizeDegrees;
 
-      public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent)
+      public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent) :
+         this(dataSet, world, cacheDirectory, server, parent, 0, 256, 0, 15)
+      {
+      }
+
+      public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent, int height, int size, decimal lvl0tilesize, int levels)
       {
          m_strName = dataSet.Title;
          m_strDAPType = dataSet.Type;
@@ -113,6 +108,11 @@ namespace Dapple.LayerGeneration
          m_strCacheRoot = cacheDirectory;
          m_oServer = server;
          m_Parent = parent;
+         
+         m_iHeight = height;
+         m_iTileImageSize = size;
+         this.LevelZeroTileSize = lvl0tilesize;
+         this.Levels = levels;                  
       }
 
       public override string ServiceType
@@ -337,7 +337,8 @@ namespace Dapple.LayerGeneration
             // Shared code in DappleUtils of dapxmlclient
             try
             {
-               m_iLevels = DappleUtils.Levels(m_oServer.Command, m_hDataSet);
+               if (m_iLevels == 0)
+                  m_iLevels = DappleUtils.Levels(m_oServer.Command, m_hDataSet);
             }
             catch
             {
@@ -403,7 +404,7 @@ namespace Dapple.LayerGeneration
          hDSCopy.Type = m_hDataSet.Type;
          hDSCopy.Url = m_hDataSet.Url;
 
-         return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_strCacheRoot, m_oServer, m_Parent);
+         return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_strCacheRoot, m_oServer, m_Parent, m_iHeight, m_iTileImageSize, this.LevelZeroTileSize, this.Levels);
       }
 
       protected override void CleanUpLayer(bool bFinal)

@@ -67,7 +67,7 @@ namespace Geosoft.Dap.Common
       /// <returns>default level zero tile size</returns>
       public static decimal LevelZeroTileSize(DataSet oDataset)
       {
-         return Math.Min(30, Math.Ceiling(10000 * (decimal)Math.Max(oDataset.Boundary.MaxY - oDataset.Boundary.MinY, oDataset.Boundary.MaxX - oDataset.Boundary.MinX)) / 10000);
+         return Math.Min(15, Math.Ceiling(10000 * (decimal)Math.Max(oDataset.Boundary.MaxY - oDataset.Boundary.MinY, oDataset.Boundary.MaxX - oDataset.Boundary.MinX)) / 10000);
       }
    }
 }
