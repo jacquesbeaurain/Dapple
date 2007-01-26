@@ -434,7 +434,7 @@ namespace WorldWind.Renderable
             foreach (long key in m_topmostTiles.Keys)
             {
                QuadTile qt = (QuadTile)m_topmostTiles[key];
-               qt.InitExportInfo(drawArgs, info);
+               qt.bInitExportInfo(drawArgs, info);
             }
          }
       }
@@ -1069,29 +1069,29 @@ namespace WorldWind.Renderable
       }
 
 
-      public void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+      public bool bInitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
       {
          bool bChildren = false;
 
          if (northWestChild != null)
          {
-            northWestChild.InitExportInfo(drawArgs, info);
-            bChildren = true;
+            if (northWestChild.bInitExportInfo(drawArgs, info))
+               bChildren = true;
          }
          if (northEastChild != null)
          {
-            northEastChild.InitExportInfo(drawArgs, info);
-            bChildren = true;
+            if (northEastChild.bInitExportInfo(drawArgs, info))
+               bChildren = true;
          }
          if (southWestChild != null)
          {
-            southWestChild.InitExportInfo(drawArgs, info);
-            bChildren = true;
+            if (southWestChild.bInitExportInfo(drawArgs, info))
+               bChildren = true;
          }
          if (southEastChild != null)
          {
-            southEastChild.InitExportInfo(drawArgs, info);
-            bChildren = true;
+            if (southEastChild.bInitExportInfo(drawArgs, info))
+               bChildren = true;
          }
 
          if (!bChildren && texture != null)
@@ -1104,6 +1104,7 @@ namespace WorldWind.Renderable
             info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
             info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
          }
+         return bChildren;
       }
 
       public bool bExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
@@ -1119,26 +1120,26 @@ namespace WorldWind.Renderable
 
             if (northWestChild != null && northWestChild.isInitialized)
             {
-               northWestChild.bExportProcess(drawArgs, expInfo);
-               bChildren = true;
+               if (northWestChild.bExportProcess(drawArgs, expInfo))
+                  bChildren = true;
             }
 
             if (northEastChild != null && northEastChild.isInitialized)
             {
-               northEastChild.bExportProcess(drawArgs, expInfo);
-               bChildren = true;
+               if (northEastChild.bExportProcess(drawArgs, expInfo))
+                  bChildren = true;
             }
 
             if (southWestChild != null && southWestChild.isInitialized)
             {
-               southWestChild.bExportProcess(drawArgs, expInfo);
-               bChildren = true;
+               if (southWestChild.bExportProcess(drawArgs, expInfo))
+                  bChildren = true;
             }
 
             if (southEastChild != null && southEastChild.isInitialized)
             {
-               southEastChild.bExportProcess(drawArgs, expInfo);
-               bChildren = true;
+               if (southEastChild.bExportProcess(drawArgs, expInfo))
+                  bChildren = true;
             }
 
             if (!bChildren && texture != null)
