@@ -1,16 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C# Express 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapple", "Dapple\Dapple.csproj", "{585D62EE-A32B-48CF-9677-2ECA07B298FE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE} = {3E1BDCFA-686C-4173-928D-8425FE0BE0FE}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltovaGen", "AltovaGen\AltovaGen.csproj", "{02816A2C-2B27-4782-A163-6AD58B5BF6F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dapxmlclient", "dapxmlclient\dapxmlclient.csproj", "{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mailer", "mailer\mailer.vcproj", "{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginSDK", "PluginSDK\PluginSDK.csproj", "{30178337-6BBE-45A0-B7DF-73B2A46F06EE}"
 EndProject
@@ -19,12 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldWind", "WorldWind\WorldWind.csproj", "{394E6BC1-62F8-4776-9FC5-25633A239433}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDownload", "WebDownload\WebDownload.csproj", "{3B2110D8-D29C-4057-8192-2BFB39A56D54}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EBDC1558-6CA2-49FC-BC70-723B7CD2B92B}"
-	ProjectSection(SolutionItems) = preProject
-		releasenotes.asp = releasenotes.asp
-		Version.Assembly.cs = Version.Assembly.cs
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mapack", "Mapack\Mapack.csproj", "{A5E82574-F090-4A9A-ABAB-A77B296DF530}"
 EndProject
@@ -78,18 +67,6 @@ Global
 		{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}.Release|Win32.ActiveCfg = Release|x86
 		{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}.Release|x86.ActiveCfg = Release|x86
 		{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}.Release|x86.Build.0 = Release|x86
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Debug|Win32.Build.0 = Debug|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Debug|x86.ActiveCfg = Debug|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Release|Any CPU.ActiveCfg = Release|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Release|Win32.ActiveCfg = Release|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Release|Win32.Build.0 = Release|Win32
-		{3E1BDCFA-686C-4173-928D-8425FE0BE0FE}.Release|x86.ActiveCfg = Release|Win32
 		{30178337-6BBE-45A0-B7DF-73B2A46F06EE}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{30178337-6BBE-45A0-B7DF-73B2A46F06EE}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{30178337-6BBE-45A0-B7DF-73B2A46F06EE}.Debug|Mixed Platforms.Build.0 = Debug|x86

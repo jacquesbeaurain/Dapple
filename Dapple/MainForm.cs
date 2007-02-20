@@ -1627,12 +1627,7 @@ namespace Dapple
          string tempBodyFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
          string tempJpgFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
          string tempViewFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ViewExt);
-         string strMailApp = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "System");
-#if DEBUG
-         strMailApp = Path.Combine(strMailApp, "mailerd.exe");
-#else
-         strMailApp = Path.Combine(strMailApp, "mailer.exe");
-#endif
+         string strMailApp = Path.Combine(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "System"), "mailer.exe");
 
          SaveCurrentView(tempViewFile, tempJpgFile, "");
 

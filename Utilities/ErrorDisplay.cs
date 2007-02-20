@@ -79,12 +79,7 @@ namespace Utility
             sw.WriteLine();
          }
 
-         string strMailApp = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "System");
-#if DEBUG
-         strMailApp = Path.Combine(strMailApp, "mailerd.exe");
-#else
-         strMailApp = Path.Combine(strMailApp, "mailer.exe");
-#endif
+         string strMailApp = Path.Combine(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "System"), "mailer.exe");
 
          this.TopMost = false;
 
