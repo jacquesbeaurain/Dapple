@@ -19,6 +19,9 @@ namespace WorldWind.Net
       Wms
    }
 
+   /// <summary>
+   /// 
+   /// </summary>
    public class WebDownload : IDisposable
    {
       public enum HttpProtoVersion
