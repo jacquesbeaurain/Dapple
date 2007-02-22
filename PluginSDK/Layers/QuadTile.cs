@@ -1096,7 +1096,38 @@ namespace WorldWind.Renderable
       {
          try
          {
-            if (texture != null)
+            bool bChildren = false;
+
+            if (!isInitialized || texture == null)
+               return;
+            if (!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
+               return;
+
+            if (northWestChild != null && northWestChild.isInitialized)
+            {
+               northWestChild.ExportProcess(drawArgs, expInfo);
+               bChildren = true;
+            }
+
+            if (northEastChild != null && northEastChild.isInitialized)
+            {
+               northEastChild.ExportProcess(drawArgs, expInfo);
+               bChildren = true;
+            }
+
+            if (southWestChild != null && southWestChild.isInitialized)
+            {
+               southWestChild.ExportProcess(drawArgs, expInfo);
+               bChildren = true;
+            }
+
+            if (southEastChild != null && southEastChild.isInitialized)
+            {
+               southEastChild.ExportProcess(drawArgs, expInfo);
+               bChildren = true;
+            }
+
+            if (!bChildren && texture != null)
             {
                Image img = null;
 
@@ -1125,18 +1156,6 @@ namespace WorldWind.Renderable
                      img.Dispose();
                }
             }
-
-            if (northWestChild != null && northWestChild.isInitialized)
-               northWestChild.ExportProcess(drawArgs, expInfo);
-
-            if (northEastChild != null && northEastChild.isInitialized)
-               northEastChild.ExportProcess(drawArgs, expInfo);
-
-            if (southWestChild != null && southWestChild.isInitialized)
-               southWestChild.ExportProcess(drawArgs, expInfo);
-
-            if (southEastChild != null && southEastChild.isInitialized)
-               southEastChild.ExportProcess(drawArgs, expInfo);
          }
          catch
          {
