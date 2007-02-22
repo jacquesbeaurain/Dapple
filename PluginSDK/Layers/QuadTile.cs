@@ -434,7 +434,7 @@ namespace WorldWind.Renderable
             foreach (long key in m_topmostTiles.Keys)
             {
                QuadTile qt = (QuadTile)m_topmostTiles[key];
-               qt.bInitExportInfo(drawArgs, info);
+               qt.InitExportInfo(drawArgs, info);
             }
          }
       }
@@ -1069,28 +1069,28 @@ namespace WorldWind.Renderable
       }
 
 
-      public bool bInitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+      public void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
       {
          bool bChildren = false;
 
          if (northWestChild != null)
          {
-            if (northWestChild.bInitExportInfo(drawArgs, info))
+            northWestChild.InitExportInfo(drawArgs, info);
                bChildren = true;
          }
          if (northEastChild != null)
          {
-            if (northEastChild.bInitExportInfo(drawArgs, info))
+            northEastChild.InitExportInfo(drawArgs, info);
                bChildren = true;
          }
          if (southWestChild != null)
          {
-            if (southWestChild.bInitExportInfo(drawArgs, info))
+            southWestChild.InitExportInfo(drawArgs, info);
                bChildren = true;
          }
          if (southEastChild != null)
          {
-            if (southEastChild.bInitExportInfo(drawArgs, info))
+            southEastChild.InitExportInfo(drawArgs, info);
                bChildren = true;
          }
 
@@ -1104,7 +1104,6 @@ namespace WorldWind.Renderable
             info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
             info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
          }
-         return bChildren;
       }
 
       public bool bExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
@@ -1120,25 +1119,25 @@ namespace WorldWind.Renderable
 
             if (northWestChild != null && northWestChild.isInitialized)
             {
-               if (northWestChild.bExportProcess(drawArgs, expInfo))
+               northWestChild.bExportProcess(drawArgs, expInfo);
                   bChildren = true;
             }
 
             if (northEastChild != null && northEastChild.isInitialized)
             {
-               if (northEastChild.bExportProcess(drawArgs, expInfo))
+               northEastChild.bExportProcess(drawArgs, expInfo);
                   bChildren = true;
             }
 
             if (southWestChild != null && southWestChild.isInitialized)
             {
-               if (southWestChild.bExportProcess(drawArgs, expInfo))
+               southWestChild.bExportProcess(drawArgs, expInfo);
                   bChildren = true;
             }
 
             if (southEastChild != null && southEastChild.isInitialized)
             {
-               if (southEastChild.bExportProcess(drawArgs, expInfo))
+               southEastChild.bExportProcess(drawArgs, expInfo);
                   bChildren = true;
             }
 
