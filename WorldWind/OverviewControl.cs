@@ -22,7 +22,7 @@ namespace WorldWind
       Bitmap m_BackBm;
       string m_strMinimapFilePath;
 
-		System.Timers.Timer m_RenderTimer = new System.Timers.Timer(35);
+		System.Timers.Timer m_RenderTimer = new System.Timers.Timer(150);
 
 		public OverviewControl(System.ComponentModel.IContainer container)
 		{
