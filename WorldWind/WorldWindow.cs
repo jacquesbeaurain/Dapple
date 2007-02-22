@@ -530,7 +530,7 @@ namespace WorldWind
       const double HVangle = 22.21; // Horizontal view angle
       const double Deg2Rad = Math.PI / 180.0;
       const double Rad2Deg = 180 / Math.PI;
-      public GeographicQuad GetViewBox()
+      public GeographicQuad GetViewBox(bool bForceRayIntersectionTest)
       {
          // Known Variables
          double dAlt = this.drawArgs.WorldCamera.Distance; // distance to target position on ground
@@ -605,9 +605,10 @@ namespace WorldWind
          // If tilted or too close to poles or if any one fails fall back 
          // to an estimate method
 
-         if (this.drawArgs.WorldCamera.Tilt.Degrees < 5.0 && 
+         if (bForceRayIntersectionTest ||
+            (this.drawArgs.WorldCamera.Tilt.Degrees < 5.0 && 
              this.drawArgs.WorldCamera.Latitude.Degrees < 72 &&
-             this.drawArgs.WorldCamera.Latitude.Degrees > -72)
+             this.drawArgs.WorldCamera.Latitude.Degrees > -72))
          {
             Angle aX1, aY1; // lower left
             Angle aX2, aY2; // lower right

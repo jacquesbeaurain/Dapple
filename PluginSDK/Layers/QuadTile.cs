@@ -447,7 +447,7 @@ namespace WorldWind.Renderable
             foreach (long key in m_topmostTiles.Keys)
             {
                QuadTile qt = (QuadTile)m_topmostTiles[key];
-               qt.bExportProcess(drawArgs, expInfo);
+               qt.ExportProcess(drawArgs, expInfo);
             }
          }
       }
@@ -1071,30 +1071,7 @@ namespace WorldWind.Renderable
 
       public void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
       {
-         bool bChildren = false;
-
-         if (northWestChild != null)
-         {
-            northWestChild.InitExportInfo(drawArgs, info);
-               bChildren = true;
-         }
-         if (northEastChild != null)
-         {
-            northEastChild.InitExportInfo(drawArgs, info);
-               bChildren = true;
-         }
-         if (southWestChild != null)
-         {
-            southWestChild.InitExportInfo(drawArgs, info);
-               bChildren = true;
-         }
-         if (southEastChild != null)
-         {
-            southEastChild.InitExportInfo(drawArgs, info);
-               bChildren = true;
-         }
-
-         if (!bChildren && texture != null)
+         if (isInitialized)
          {
             info.dMaxLat = Math.Max(info.dMaxLat, this.North);
             info.dMinLat = Math.Min(info.dMinLat, this.South);
@@ -1104,44 +1081,22 @@ namespace WorldWind.Renderable
             info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
             info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
          }
+
+         if (northWestChild != null && northWestChild.isInitialized)
+            northWestChild.InitExportInfo(drawArgs, info);
+         if (northEastChild != null && northEastChild.isInitialized)
+            northEastChild.InitExportInfo(drawArgs, info);
+         if (southWestChild != null && southWestChild.isInitialized)
+            southWestChild.InitExportInfo(drawArgs, info);
+         if (southEastChild != null && southEastChild.isInitialized)
+            southEastChild.InitExportInfo(drawArgs, info);
       }
 
-      public bool bExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
+      public void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
       {
          try
          {
-            bool bChildren = false;
-
-            if (!isInitialized || texture == null)
-               return false;
-            if (!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
-               return false;
-
-            if (northWestChild != null && northWestChild.isInitialized)
-            {
-               northWestChild.bExportProcess(drawArgs, expInfo);
-                  bChildren = true;
-            }
-
-            if (northEastChild != null && northEastChild.isInitialized)
-            {
-               northEastChild.bExportProcess(drawArgs, expInfo);
-                  bChildren = true;
-            }
-
-            if (southWestChild != null && southWestChild.isInitialized)
-            {
-               southWestChild.bExportProcess(drawArgs, expInfo);
-                  bChildren = true;
-            }
-
-            if (southEastChild != null && southEastChild.isInitialized)
-            {
-               southEastChild.bExportProcess(drawArgs, expInfo);
-                  bChildren = true;
-            }
-
-            if (!bChildren && texture != null)
+            if (texture != null)
             {
                Image img = null;
 
@@ -1169,13 +1124,23 @@ namespace WorldWind.Renderable
                   if (img != null)
                      img.Dispose();
                }
-               return true;
             }
+
+            if (northWestChild != null && northWestChild.isInitialized)
+               northWestChild.ExportProcess(drawArgs, expInfo);
+
+            if (northEastChild != null && northEastChild.isInitialized)
+               northEastChild.ExportProcess(drawArgs, expInfo);
+
+            if (southWestChild != null && southWestChild.isInitialized)
+               southWestChild.ExportProcess(drawArgs, expInfo);
+
+            if (southEastChild != null && southEastChild.isInitialized)
+               southEastChild.ExportProcess(drawArgs, expInfo);
          }
          catch
          {
          }
-         return false;
       }
 
       private void UpdateChildren(DrawArgs drawArgs)

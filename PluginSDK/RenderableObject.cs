@@ -67,8 +67,8 @@ namespace WorldWind.Renderable
          public double dMinLon = double.MaxValue;
          public double dMaxLon = double.MinValue;
 
-         public int iPixelsX;
-         public int iPixelsY;
+         public int iPixelsX = -1;
+         public int iPixelsY = -1;
 
          public Graphics gr;
 

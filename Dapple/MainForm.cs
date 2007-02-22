@@ -2156,7 +2156,7 @@ namespace Dapple
                camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
                
                // Determine output parameters
-               GeographicBoundingBox geoExtent = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+               GeographicBoundingBox geoExtent = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(true));
                int iResolution = dlg.Resolution;
                int iExportPixelsX, iExportPixelsY;
 
@@ -2235,6 +2235,19 @@ namespace Dapple
                      gr.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
                      foreach (ExportEntry exp in expList)
                      {
+                        // Limit info for layer to area we are looking at
+
+                        double dExpXRes = (double)exp.Info.iPixelsX / (exp.Info.dMaxLon - exp.Info.dMinLon);
+                        double dExpYRes = (double)exp.Info.iPixelsY / (exp.Info.dMaxLat - exp.Info.dMinLat);
+                        int iExpOffsetX = (int)Math.Round((geoExtent.West - exp.Info.dMinLon) * dExpXRes);
+                        int iExpOffsetY = (int)Math.Round((exp.Info.dMaxLat - geoExtent.North) * dExpYRes);
+                        exp.Info.iPixelsX = (int)Math.Round((geoExtent.East - geoExtent.West) * dExpXRes);
+                        exp.Info.iPixelsY = (int)Math.Round((geoExtent.North - geoExtent.South) * dExpYRes);
+                        exp.Info.dMinLon = exp.Info.dMinLon + (double)iExpOffsetX / dExpXRes;
+                        exp.Info.dMaxLat = exp.Info.dMaxLat - (double)iExpOffsetY / dExpYRes;
+                        exp.Info.dMaxLon = exp.Info.dMinLon + (double)exp.Info.iPixelsX / dExpXRes;
+                        exp.Info.dMinLat = exp.Info.dMaxLat - (double)exp.Info.iPixelsY / dExpYRes;
+                        
                         using (Bitmap bitMap = new Bitmap(exp.Info.iPixelsX, exp.Info.iPixelsY))
                         {
                            int iOffsetX, iOffsetY;
@@ -3046,7 +3059,7 @@ namespace Dapple
 
       private void FilterServersToView(bool bIntersect)
       {
-         m_extentsLastSearch = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+         m_extentsLastSearch = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
          this.tvServers.Search(bIntersect, m_extentsLastSearch, "");
          this.toolStripButtonClearFilter.Enabled = true;
          m_strLastSearchText = "";
@@ -3277,7 +3290,7 @@ namespace Dapple
          }
          if (searchMode != SearchMode.Text)
          {
-            GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+            GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
             resultsURL.Append("&usebbox=true");
             resultsURL.Append("&minx=");
             resultsURL.Append(AoI.West);
@@ -3296,7 +3309,7 @@ namespace Dapple
       {
          if (m_strDappleSearchServerURL == null) return;
 
-         GeographicBoundingBox lastAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+         GeographicBoundingBox lastAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
          GeographicBoundingBox currentAoI = null;
          String keyword = DappleSearchKeyword.Text;
          SearchMode mode = searchMode;
@@ -3311,7 +3324,7 @@ namespace Dapple
 
             try
             {
-               currentAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
+               currentAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
             }
             catch (NullReferenceException) { return; } // Assume because program is shutting down, so thread does too.
 
@@ -3445,7 +3458,6 @@ namespace Dapple
             }
             if (!searchElement.GetAttribute("minx").Equals(String.Empty))
             {
-               GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox());
                resultsURL.Append("&usebbox=true");
                resultsURL.Append("&minx=");
                resultsURL.Append(searchElement.GetAttribute("minx"));
