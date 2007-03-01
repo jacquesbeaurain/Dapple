@@ -201,7 +201,8 @@ namespace Dapple
       public static void HandleRunningInstance(Process instance)
       {
          //Make sure the window is not minimized or maximized
-         ShowWindowAsync(instance.MainWindowHandle, WS_SHOWNORMAL);
+         if (IsIconic(instance.MainWindowHandle))
+            ShowWindowAsync(instance.MainWindowHandle, WS_SHOWNORMAL);
 
          //Set the real intance to foreground window
          SetForegroundWindow(instance.MainWindowHandle);
@@ -209,6 +210,9 @@ namespace Dapple
 
       [DllImport("User32.dll")]
       private static extern bool ShowWindowAsync(IntPtr hWnd, int cmdShow);
+
+      [DllImport("User32.dll")]
+      private static extern bool IsIconic(IntPtr hWnd);
 
       [DllImport("User32.dll")]
       private static extern UInt32 SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);

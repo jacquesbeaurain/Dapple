@@ -2662,11 +2662,11 @@ namespace Dapple
          // --- Configure DappleSearch if it's enabled ---
          if (!WWSettingsCtl.DappleSearchURL.Equals(String.Empty) && WWSettingsCtl.DappleSearchURL != null)
          {
-            //m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
-            //DappleSearchToolbar.Visible = true;
-            //Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
-            //t.Name = "Background search thread";
-            //t.Start();
+            m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
+            DappleSearchToolbar.Visible = true;
+            Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
+            t.Name = "Background search thread";
+            t.Start();
          }
       }
 
@@ -3530,7 +3530,7 @@ namespace Dapple
             {
                this.tvServers.AddWMSServer("http://" + serverURL, true);
                bool oldView = false;
-               activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, false, this.tvServers, ref oldView);
+               activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, true, this.tvServers, ref oldView);
             }
             else if (sb.Loading == false)
             {
@@ -3540,7 +3540,7 @@ namespace Dapple
                {
                   LayerBuilder builder = ((WMSServerBuilder)sb.Builder).GetLayerBuilderByName(layerTitle);
                   if (builder != null)
-                     activeLayers.Add(layerTitle, builder, false, 255, true);
+                     activeLayers.Add(layerTitle, builder, true, 255, true);
                   else
                      MessageBox.Show("Unable to view layer: server does not provide a layer named " + layerName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                }
@@ -3549,7 +3549,7 @@ namespace Dapple
             {
                //If this thread is preempted here, and the layerbuilder loads, then this layer will never get loaded.
                bool oldView = false;
-               activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, false, this.tvServers, ref oldView);
+               activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, true, this.tvServers, ref oldView);
             }
          }
          else

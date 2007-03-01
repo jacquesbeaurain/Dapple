@@ -478,7 +478,7 @@ namespace Dapple.LayerGeneration
          }
 
          if (builder != null)
-            Add(strName, builder, false, opacity, visible);
+            Add(strName, builder, front, opacity, visible);
          else
          {
             int iImage;
