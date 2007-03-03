@@ -61,13 +61,14 @@ namespace Utility
 
 		private void copyButton_Click(object sender, System.EventArgs e)
 		{
+         string strVersion = Application.ProductVersion;
          string tempBodyFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
          string tempAbortFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".log");
 
          using (StreamWriter sw = new StreamWriter(tempAbortFile, false))
          {
             // HACK Use this.errorLabel.Tag to avoid the "&" in the label's Text
-            string temp = this.Text + "\r\n" + this.errorLabel.Tag + "\r\n" + this.errorText.Text;
+            string temp = this.Text + " " + strVersion + "\r\n" + this.errorLabel.Tag + "\r\n" + this.errorText.Text;
             sw.Write(temp);
          }
 
@@ -88,7 +89,7 @@ namespace Utility
          psi.CreateNoWindow = true;
          psi.Arguments = String.Format(CultureInfo.InvariantCulture,
             " \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" \"{5}\"",
-            "Dapple Abort Log Report", "", "dapple@geosoft.com",
+            "Dapple(" + strVersion + ") Abort Log Report", "", "dapple@geosoft.com",
             tempAbortFile, "abort.log", tempBodyFile);
          using (Process p = Process.Start(psi))
          {
