@@ -12,7 +12,7 @@ namespace WorldWind
 {
    public partial class WorldWindSettingsComponent : Component
    {
-      private string m_strSettingsPath;
+      private string m_strSettingsPath = string.Empty;
       private WorldWindSettings m_oSettings = new WorldWindSettings();
 
       public WorldWindSettingsComponent()
