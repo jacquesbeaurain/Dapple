@@ -309,13 +309,13 @@ namespace Dapple.LayerGeneration
          "datasetname=" + m_strDataSetName + "&" +
          "name=" + System.Web.HttpUtility.UrlEncode(m_strName) + "&" +
          "height=" + distAboveSurface.ToString() + "&" +
-         "north=" + m_hBoundary.North.ToString() + "&" +
-         "east=" + m_hBoundary.East.ToString() + "&" +
-         "south=" + m_hBoundary.South.ToString() + "&" +
-         "west=" + m_hBoundary.West.ToString() + "&" +
+         "north=" + m_hBoundary.North.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
+         "east=" + m_hBoundary.East.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
+         "south=" + m_hBoundary.South.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
+         "west=" + m_hBoundary.West.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
          "size=" + m_intTextureSizePixels.ToString() + "&" +
          "levels=" + m_intNumberLevels.ToString() + "&" +
-         "lvl0tilesize=" + m_decLevelZeroTileSizeDegrees.ToString() + "&" +
+         "lvl0tilesize=" + m_decLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
          "terrainMapped=" + terrainMapped.ToString() + "&" +
          "imgfileext=" + m_strImageFileExtension;
       }
@@ -335,13 +335,13 @@ namespace Dapple.LayerGeneration
             string datasetname = pairs[0].Substring(pairs[0].IndexOf('=') + 1);
             string name = pairs[1].Substring(pairs[1].IndexOf('=') + 1);
             int height = Convert.ToInt32(pairs[2].Substring(pairs[2].IndexOf('=') + 1));
-            double north = Convert.ToDouble(pairs[3].Substring(pairs[3].IndexOf('=') + 1));
-            double east = Convert.ToDouble(pairs[4].Substring(pairs[4].IndexOf('=') + 1));
-            double south = Convert.ToDouble(pairs[5].Substring(pairs[5].IndexOf('=') + 1));
-            double west = Convert.ToDouble(pairs[6].Substring(pairs[6].IndexOf('=') + 1));
+            double north = Convert.ToDouble(pairs[3].Substring(pairs[3].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
+            double east = Convert.ToDouble(pairs[4].Substring(pairs[4].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
+            double south = Convert.ToDouble(pairs[5].Substring(pairs[5].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
+            double west = Convert.ToDouble(pairs[6].Substring(pairs[6].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
             int size = Convert.ToInt32(pairs[7].Substring(pairs[7].IndexOf('=') + 1));
             int levels = Convert.ToInt32(pairs[8].Substring(pairs[8].IndexOf('=') + 1));
-            decimal lvl0tilesize = Convert.ToDecimal(pairs[9].Substring(pairs[9].IndexOf('=') + 1));
+            decimal lvl0tilesize = Convert.ToDecimal(pairs[9].Substring(pairs[9].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
             bool terrainMapped = Convert.ToBoolean(pairs[10].Substring(pairs[10].IndexOf('=') + 1));
             string fileExt = pairs[11].Substring(pairs[11].IndexOf('=') + 1);
 

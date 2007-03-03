@@ -63,14 +63,14 @@ namespace Dapple.LayerGeneration
             hDataSet.Title = queryColl.Get("title");
             hDataSet.Edition = queryColl.Get("edition");
             hDataSet.Hierarchy = queryColl.Get("hierarchy");
-            double north = Convert.ToDouble(queryColl.Get("north"));
-            double east = Convert.ToDouble(queryColl.Get("east"));
-            double south = Convert.ToDouble(queryColl.Get("south"));
-            double west = Convert.ToDouble(queryColl.Get("west"));
+            double north = Convert.ToDouble(queryColl.Get("north"), System.Globalization.CultureInfo.InvariantCulture);
+            double east = Convert.ToDouble(queryColl.Get("east"), System.Globalization.CultureInfo.InvariantCulture);
+            double south = Convert.ToDouble(queryColl.Get("south"), System.Globalization.CultureInfo.InvariantCulture);
+            double west = Convert.ToDouble(queryColl.Get("west"), System.Globalization.CultureInfo.InvariantCulture);
             hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
 
             int levels = Convert.ToInt32(queryColl.Get("levels"));
-            decimal lvl0tilesize = Convert.ToDecimal(queryColl.Get("lvl0tilesize"));
+            decimal lvl0tilesize = Convert.ToDecimal(queryColl.Get("lvl0tilesize"), System.Globalization.CultureInfo.InvariantCulture);
 
             if (hDataSet != null)
                return new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null, height, size, lvl0tilesize, levels);
@@ -95,7 +95,7 @@ namespace Dapple.LayerGeneration
       private decimal m_decLevelZeroTileSizeDegrees;
 
       public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent) :
-         this(dataSet, world, cacheDirectory, server, parent, 0, 256, 0, 15)
+         this(dataSet, world, cacheDirectory, server, parent, 0, 256, 0, 0)
       {
       }
 
@@ -330,7 +330,7 @@ namespace Dapple.LayerGeneration
       {
          if (m_layer == null)
          {
-            string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString());
+            string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.GetHashCode().ToString());
             System.IO.Directory.CreateDirectory(strCachePath);
 
             // Determine the needed levels (function of tile size and resolution if available)
@@ -342,6 +342,7 @@ namespace Dapple.LayerGeneration
             }
             catch
             {
+               m_iLevels = 15;
             }
 
             GeosoftPlugin.New.DAPImageAccessor imgAccessor = new GeosoftPlugin.New.DAPImageAccessor(
@@ -379,12 +380,12 @@ namespace Dapple.LayerGeneration
          queryColl.Add("title", m_hDataSet.Title);
          queryColl.Add("edition", m_hDataSet.Edition);
          queryColl.Add("hierarchy", m_hDataSet.Hierarchy);
-         queryColl.Add("north", m_hDataSet.Boundary.MaxY.ToString());
-         queryColl.Add("east", m_hDataSet.Boundary.MaxX.ToString());
-         queryColl.Add("south", m_hDataSet.Boundary.MinY.ToString());
-         queryColl.Add("west", m_hDataSet.Boundary.MinX.ToString());
+         queryColl.Add("north", m_hDataSet.Boundary.MaxY.ToString(System.Globalization.CultureInfo.InvariantCulture));
+         queryColl.Add("east", m_hDataSet.Boundary.MaxX.ToString(System.Globalization.CultureInfo.InvariantCulture));
+         queryColl.Add("south", m_hDataSet.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture));
+         queryColl.Add("west", m_hDataSet.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture));
          queryColl.Add("levels", m_iLevels.ToString());
-         queryColl.Add("lvl0tilesize", m_decLevelZeroTileSizeDegrees.ToString());
+         queryColl.Add("lvl0tilesize", m_decLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
          string strHost = "";
          string strPath = "";

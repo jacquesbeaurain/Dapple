@@ -88,10 +88,10 @@ namespace Dapple.LayerGeneration
 
                if (iWGS84Check >= 2 && strUL.Length > 0 && strLL.Length > 0 && strUR.Length > 0 && strLR.Length > 0)
                {
-                  double dWest = Convert.ToDouble(strUL.Substring(strUL.IndexOf('(') + 1).Substring(0, strUL.IndexOf(',') - strUL.IndexOf('(') - 2).Trim());
-                  double dEast = Convert.ToDouble(strUR.Substring(strUR.IndexOf('(') + 1).Substring(0, strUR.IndexOf(',') - strUR.IndexOf('(') - 2).Trim());
-                  double dNorth = Convert.ToDouble(strUL.Substring(strUL.IndexOf(',') + 1).Substring(0, strUL.IndexOf(')') - strUL.IndexOf(',') - 2).Trim());
-                  double dSouth = Convert.ToDouble(strLL.Substring(strLL.IndexOf(',') + 1).Substring(0, strLL.IndexOf(')') - strLL.IndexOf(',') - 2).Trim());
+                  double dWest = Convert.ToDouble(strUL.Substring(strUL.IndexOf('(') + 1).Substring(0, strUL.IndexOf(',') - strUL.IndexOf('(') - 2).Trim(), System.Globalization.CultureInfo.InvariantCulture);
+                  double dEast = Convert.ToDouble(strUR.Substring(strUR.IndexOf('(') + 1).Substring(0, strUR.IndexOf(',') - strUR.IndexOf('(') - 2).Trim(), System.Globalization.CultureInfo.InvariantCulture);
+                  double dNorth = Convert.ToDouble(strUL.Substring(strUL.IndexOf(',') + 1).Substring(0, strUL.IndexOf(')') - strUL.IndexOf(',') - 2).Trim(), System.Globalization.CultureInfo.InvariantCulture);
+                  double dSouth = Convert.ToDouble(strLL.Substring(strLL.IndexOf(',') + 1).Substring(0, strLL.IndexOf(')') - strLL.IndexOf(',') - 2).Trim(), System.Globalization.CultureInfo.InvariantCulture);
 
                   if (dWest < dEast && dSouth < dNorth)
                      return new GeographicBoundingBox(dNorth, dSouth, dWest, dEast);

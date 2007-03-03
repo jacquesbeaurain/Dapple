@@ -169,19 +169,19 @@ namespace Geosoft.Dap.Common
          oGroundOverlayNode.AppendChild(oWGS84BoundingBoxNode);
 
          oCNode = oKmlNode.OwnerDocument.CreateElement("north", "http://earth.google.com/kml/2.1");
-         oCNode.InnerText = oDataset.Boundary.MaxY.ToString();
+         oCNode.InnerText = oDataset.Boundary.MaxY.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oWGS84BoundingBoxNode.AppendChild(oCNode);
 
          oCNode = oKmlNode.OwnerDocument.CreateElement("south", "http://earth.google.com/kml/2.1");
-         oCNode.InnerText = oDataset.Boundary.MinY.ToString();
+         oCNode.InnerText = oDataset.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oWGS84BoundingBoxNode.AppendChild(oCNode);
 
          oCNode = oKmlNode.OwnerDocument.CreateElement("east", "http://earth.google.com/kml/2.1");
-         oCNode.InnerText = oDataset.Boundary.MaxX.ToString();
+         oCNode.InnerText = oDataset.Boundary.MaxX.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oWGS84BoundingBoxNode.AppendChild(oCNode);
 
          oCNode = oKmlNode.OwnerDocument.CreateElement("west", "http://earth.google.com/kml/2.1");
-         oCNode.InnerText = oDataset.Boundary.MinX.ToString();
+         oCNode.InnerText = oDataset.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oWGS84BoundingBoxNode.AppendChild(oCNode);
 
          oCurFolder.AppendChild(oGroundOverlayNode);

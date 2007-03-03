@@ -85,19 +85,19 @@ namespace Geosoft.Dap.Common
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oAttr = oXmlNode.OwnerDocument.CreateAttribute("minx");
-         oAttr.Value = oDataset.Boundary.MinX.ToString();
+         oAttr.Value = oDataset.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oAttr = oXmlNode.OwnerDocument.CreateAttribute("miny");
-         oAttr.Value = oDataset.Boundary.MinY.ToString();
+         oAttr.Value = oDataset.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oAttr = oXmlNode.OwnerDocument.CreateAttribute("maxx");
-         oAttr.Value = oDataset.Boundary.MaxX.ToString();
+         oAttr.Value = oDataset.Boundary.MaxX.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oAttr = oXmlNode.OwnerDocument.CreateAttribute("maxy");
-         oAttr.Value = oDataset.Boundary.MaxY.ToString();
+         oAttr.Value = oDataset.Boundary.MaxY.ToString(System.Globalization.CultureInfo.InvariantCulture);
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oAttr = oXmlNode.OwnerDocument.CreateAttribute("height");
@@ -113,7 +113,7 @@ namespace Geosoft.Dap.Common
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oAttr = oXmlNode.OwnerDocument.CreateAttribute("levelzerotilesize");
-         oAttr.Value = DappleUtils.LevelZeroTileSize(oDataset).ToString();
+         oAttr.Value = DappleUtils.LevelZeroTileSize(oDataset).ToString(System.Globalization.CultureInfo.InvariantCulture);
          oDisplayMapNode.Attributes.Append(oAttr);
 
          oXmlNode.AppendChild(oDisplayMapNode);

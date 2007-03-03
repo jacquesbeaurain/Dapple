@@ -21,11 +21,11 @@ namespace Geosoft.Dap.Common
             if (oNodeRes != null) {
                int dX, dY;
 
-               double dSpatRes = Convert.ToDouble(oNodeRes.Attributes["value"].Value);
-               double dMinX = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMinX']").Attributes["value"].Value);
-               double dMinY = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMinY']").Attributes["value"].Value);
-               double dMaxX = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMaxX']").Attributes["value"].Value);
-               double dMaxY = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMaxY']").Attributes["value"].Value);
+               double dSpatRes = Convert.ToDouble(oNodeRes.Attributes["value"].Value, System.Globalization.CultureInfo.InvariantCulture);
+               double dMinX = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMinX']").Attributes["value"].Value, System.Globalization.CultureInfo.InvariantCulture);
+               double dMinY = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMinY']").Attributes["value"].Value, System.Globalization.CultureInfo.InvariantCulture);
+               double dMaxX = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMaxX']").Attributes["value"].Value, System.Globalization.CultureInfo.InvariantCulture);
+               double dMaxY = Convert.ToDouble(oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='BoundingMaxY']").Attributes["value"].Value, System.Globalization.CultureInfo.InvariantCulture);
 
                dX = (int)Math.Round((dMaxX - dMinX) / dSpatRes);
                dY = (int)Math.Round((dMaxY - dMinY) / dSpatRes);
