@@ -2662,11 +2662,11 @@ namespace Dapple
          // --- Configure DappleSearch if it's enabled ---
          if (!WWSettingsCtl.DappleSearchURL.Equals(String.Empty) && WWSettingsCtl.DappleSearchURL != null)
          {
-            m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
-            DappleSearchToolbar.Visible = true;
-            Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
-            t.Name = "Background search thread";
-            t.Start();
+            //m_strDappleSearchServerURL = WWSettingsCtl.DappleSearchURL;
+            //DappleSearchToolbar.Visible = true;
+            //Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
+            //t.Name = "Background search thread";
+            //t.Start();
          }
       }
 

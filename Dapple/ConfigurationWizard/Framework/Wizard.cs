@@ -87,7 +87,7 @@ namespace ConfigurationWizard
 			AddPage( new WelcomePage() );
 			AddPage( new CachePage() );
 			AddPage( new ProxyPage() );
-         AddPage( new DappleSearchPage() );
+         //AddPage( new DappleSearchPage() );
 			AddPage( new FinalPage() );
 		}
 
