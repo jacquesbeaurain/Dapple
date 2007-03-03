@@ -112,6 +112,9 @@ namespace WorldWind
       {
          get
          {
+            if (!Path.IsPathRooted(m_oSettings.CachePath))
+               return Path.Combine(SettingsPath, m_oSettings.CachePath);
+
             return m_oSettings.CachePath;
          }
          set
@@ -151,6 +154,9 @@ namespace WorldWind
       {
          get
          {
+            if (!Path.IsPathRooted(m_oSettings.ConfigPath))
+               return Path.Combine(SettingsPath, m_oSettings.ConfigPath);
+
             return m_oSettings.ConfigPath;
          }
          set
@@ -190,6 +196,9 @@ namespace WorldWind
       {
          get
          {
+            if (!Path.IsPathRooted(m_oSettings.DataPath))
+               return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), m_oSettings.DataPath);
+
             return m_oSettings.DataPath;
          }
          set
@@ -364,7 +373,7 @@ namespace WorldWind
             m_oSettings.LastViewAtStartup = value;
          }
       }
-
+      
       public string WorldWindDirectory
       {
          get
@@ -372,7 +381,7 @@ namespace WorldWind
             return m_oSettings.WorldWindDirectory;
          }
       }
-
+      
       public string DappleSearchURL
       {
          get

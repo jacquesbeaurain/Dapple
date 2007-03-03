@@ -140,8 +140,6 @@ namespace WorldWind
 		{
 			get
 			{
-				if (!Path.IsPathRooted(cachePath))
-					return Path.Combine( WorldWindDirectory, cachePath);
 				return cachePath;
 			}
 			set
@@ -385,8 +383,6 @@ namespace WorldWind
 		{
 			get
 			{
-				if (!Path.IsPathRooted(configPath))
-					return Path.Combine( WorldWindDirectory, configPath);
 				return configPath;
 			}
 			set
@@ -401,8 +397,6 @@ namespace WorldWind
 		{
 			get
 			{
-				if (!Path.IsPathRooted(dataPath))
-					return Path.Combine( WorldWindDirectory, dataPath);
 				return dataPath;
 			}
 			set

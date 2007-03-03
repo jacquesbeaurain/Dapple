@@ -474,6 +474,20 @@ namespace WorldWind
             long CacheUpperLimit = (long)m_oWWSettings.CacheSizeGigaBytes * 1024L * 1024L;
             long CacheLowerLimit = (long)m_oWWSettings.CacheSizeGigaBytes * 768L * 1024L;	//75% of upper limit
             //Set up the cache
+
+            try
+            {
+               Directory.CreateDirectory(m_oWWSettings.CachePath);
+            }
+            catch
+            {
+               // We get here when people used a cache drive that since dissappeared (e.g. USB flash)
+               // Revert to default cache directory in this case
+
+               m_oWWSettings.CachePath = Path.Combine(m_oWWSettings.SettingsPath, "Cache");
+               Directory.CreateDirectory(m_oWWSettings.CachePath);
+            }
+
             m_Cache = new Cache(
              m_oWWSettings.CachePath,
              CacheLowerLimit,

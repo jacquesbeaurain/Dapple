@@ -288,9 +288,17 @@ namespace Dapple
 
          if (WWSettingsCtl.NewCachePath.Length > 0)
          {
-            if (Directory.Exists(WWSettingsCtl.CachePath))
-               Utility.FileSystem.DeleteFolderGUI(this, WWSettingsCtl.CachePath);
-            WWSettingsCtl.CachePath = WWSettingsCtl.NewCachePath;
+            try
+            {
+               // We want to make sure the new cache path is writable
+               Directory.CreateDirectory(WWSettingsCtl.NewCachePath);
+               if (Directory.Exists(WWSettingsCtl.CachePath))
+                  Utility.FileSystem.DeleteFolderGUI(this, WWSettingsCtl.CachePath);
+               WWSettingsCtl.CachePath = WWSettingsCtl.NewCachePath;
+            }
+            catch
+            {
+            }
             WWSettingsCtl.NewCachePath = "";
          }
 
