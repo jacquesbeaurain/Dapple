@@ -60,6 +60,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon _3dxicon {
+            get {
+                object obj = ResourceManager.GetObject("_3dxicon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap addserver {
             get {
                 object obj = ResourceManager.GetObject("addserver", resourceCulture);

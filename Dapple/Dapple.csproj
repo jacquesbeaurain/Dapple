@@ -73,6 +73,9 @@
     <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Plugins\3DConnexion\TDxWWInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -373,6 +376,7 @@
     <Content Include="Data\MetaViewer\wms_layer_meta.xslt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Plugins\3DConnexion\3dxicon.ico" />
     <Content Include="Plugins\Atmosphere\Atmosphere.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
