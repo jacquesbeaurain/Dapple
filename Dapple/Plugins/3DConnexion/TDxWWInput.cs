@@ -225,18 +225,24 @@ namespace ThreeDconnexion.Plugin
 
             m_TheCamera = m_WW.DrawArgs.WorldCamera;
 
-            m_TheInputDevice = new TDconnexion.TDxDeviceWrapper();
-            if (m_TheInputDevice != null)
+            try
             {
-                m_app.MenuStrip.Items.Add(menuItem);
+               m_TheInputDevice = new TDconnexion.TDxDeviceWrapper();
+               if (m_TheInputDevice != null)
+               {
+                  m_app.MenuStrip.Items.Add(menuItem);
 
-                m_TheSensor = m_TheInputDevice.Sensor;
-                m_TheKeyBoard = m_TheInputDevice.Keyboard;
-                m_Position = new Vector3d();
-                SetCameraMode();
-                m_KeyEventHandler = new TDconnexion.TDxKeyboardEvent(KeyboardEventHandler);
-                m_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;
-                m_TheInputDevice.Connect();
+                  m_TheSensor = m_TheInputDevice.Sensor;
+                  m_TheKeyBoard = m_TheInputDevice.Keyboard;
+                  m_Position = new Vector3d();
+                  SetCameraMode();
+                  m_KeyEventHandler = new TDconnexion.TDxKeyboardEvent(KeyboardEventHandler);
+                  m_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;
+                  m_TheInputDevice.Connect();
+               }
+            }
+            catch
+            {
             }
         }
 
