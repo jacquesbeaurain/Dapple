@@ -317,7 +317,7 @@ namespace Dapple
             WorldWind.Terrain.TerrainAccessor terrainAccessor = new WorldWind.Terrain.NltTerrainAccessor("Earth", -180, -90, 180, 90, terrainTileService, null);
 
             WorldWind.World world = new WorldWind.World("Earth",
-                new Vector3d(0, 0, 0), new Quaternion4d(0, 0, 0, 0),
+                new Point3d(0, 0, 0), new Quaternion4d(0, 0, 0, 0),
                 (float)6378137,
                 System.IO.Path.Combine(this.worldWindow.Cache.CacheDirectory, "Earth"),
                 terrainAccessor);

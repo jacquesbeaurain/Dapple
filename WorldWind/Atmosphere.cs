@@ -143,8 +143,8 @@ namespace Atmosphere.Plugin
 			Device device = drawArgs.device;
 
 			// Calculate perp1 and perp2 so they form a plane perpendicular to camera vector and crossing earth center
-         Vector3d perp1 = Vector3d.cross(camera.Position, new Vector3d(1, 1, 1));
-         Vector3d perp2 = Vector3d.cross(perp1, camera.Position);
+         Point3d perp1 = Point3d.cross(camera.Position, new Point3d(1, 1, 1));
+         Point3d perp2 = Point3d.cross(perp1, camera.Position);
 			perp1.normalize();
 			perp2.normalize();
 
@@ -154,11 +154,11 @@ namespace Atmosphere.Plugin
 
 			// Move the plane towards us so it lies on the horizon
          double distHorizon = Math.Sqrt(camera.Position.LengthSq - world.EquatorialRadius * world.EquatorialRadius);
-         Vector3d cameraDir = Vector3d.normalize(camera.Position);
-         Vector3d offset = cameraDir * (camera.Position.Length - distHorizon);
+         Point3d cameraDir = Point3d.normalize(camera.Position);
+         Point3d offset = cameraDir * (camera.Position.Length - distHorizon);
 
 			// Calculate the triangle vertices (triangle 1)
-			Vector3d ur = -perp1 + perp2 + offset;
+			Point3d ur = -perp1 + perp2 + offset;
 			borderVertices[0].X = (float)ur.X;
          borderVertices[0].Y = (float)ur.Y;
          borderVertices[0].Z = (float)ur.Z;

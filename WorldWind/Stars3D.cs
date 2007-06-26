@@ -278,7 +278,7 @@ namespace Stars3D.Plugin
 			// Create mesh for flares
 			int vertIndex=0;
 			CustomVertex.PositionTextured pnt;
-			Vector3d v;
+			Point3d v;
 			int numVertices = 4 * FlareCount;
 			int numFaces	= 2 * FlareCount;
 			FlareMesh = new Mesh(numFaces, numVertices, MeshFlags.Managed, CustomVertex.PositionTextured.Format, drawArgs.device);
@@ -355,13 +355,13 @@ namespace Stars3D.Plugin
 						double flareFactor = sphereRadius * 5 / drawArgs.device.Viewport.Width;
 						double l = (VM + 1.5) / (FlareMag + 1.5) * flareFactor;	// Size of half flare texture in meter
 						// Calculate perp1 and perp2 so they form a plane perpendicular to the star vector and crossing earth center
-						Vector3d perp1 = Vector3d.cross( v, new Vector3d(1,1,1) );
-						Vector3d perp2 = Vector3d.cross( perp1, v );
+						Point3d perp1 = Point3d.cross( v, new Point3d(1,1,1) );
+						Point3d perp2 = Point3d.cross( perp1, v );
 						perp1.normalize();
 						perp2.normalize();
 						perp1 *= l;
 						perp2 *= l;
-						Vector3d v1;
+						Point3d v1;
 
 						//v = MathEngine.SphericalToCartesian( latitude + l, longitude - l, sphereRadius);			
 						v1 = v + perp1 - perp2;
@@ -679,7 +679,7 @@ namespace Stars3D.Plugin
 				{
 					CustomVertex.PositionColored pnt = new CustomVertex.PositionColored();
 					double longitude = 180 - ((float)slice/slices*(float)360);
-					Vector3d v = MathEngine.SphericalToCartesian( latitude, longitude, radius);
+					Point3d v = MathEngine.SphericalToCartesian( latitude, longitude, radius);
                pnt.X = (float)v.X;
                pnt.Y = (float)v.Y;
                pnt.Z = (float)v.Z;

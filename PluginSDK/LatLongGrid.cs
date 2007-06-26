@@ -111,7 +111,7 @@ namespace WorldWind.Renderable
 				int vertexIndex = 0;
 				for(float latitude = MinVisibleLatitude; latitude <= MaxVisibleLatitude; latitude += LatitudeInterval)
 				{
-					Vector3d pointXyz = MathEngine.SphericalToCartesian(latitude, longitude, radius);
+					Point3d pointXyz = MathEngine.SphericalToCartesian(latitude, longitude, radius);
                lineVertices[vertexIndex].X = (float)pointXyz.X;
                lineVertices[vertexIndex].Y = (float)pointXyz.Y;
                lineVertices[vertexIndex].Z = (float)pointXyz.Z;
@@ -124,7 +124,7 @@ namespace WorldWind.Renderable
 				float lat = (float)(drawArgs.WorldCamera.Latitude).Degrees;
 				if(lat > 70)
 					lat = 70;
-				Vector3d v = MathEngine.SphericalToCartesian(lat,(float)longitude, radius);
+				Point3d v = MathEngine.SphericalToCartesian(lat,(float)longitude, radius);
 				if (drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v))
 				{
 					// Make sure longitude is in -180 .. 180 range
@@ -152,7 +152,7 @@ namespace WorldWind.Renderable
 				// Draw latitude label
 				float longitude = (float)(drawArgs.WorldCamera.Longitude).Degrees + offsetDegrees;
 
-				Vector3d v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
+				Point3d v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
 				if(drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v))
 				{
 					v = drawArgs.WorldCamera.Project(v);
@@ -174,7 +174,7 @@ namespace WorldWind.Renderable
 				int vertexIndex = 0;
 				for(longitude = MinVisibleLongitude; longitude <= MaxVisibleLongitude; longitude +=LongitudeInterval)
 				{
-					Vector3d pointXyz = MathEngine.SphericalToCartesian(latitude, longitude, radius);
+					Point3d pointXyz = MathEngine.SphericalToCartesian(latitude, longitude, radius);
                lineVertices[vertexIndex].X = (float)pointXyz.X;
                lineVertices[vertexIndex].Y = (float)pointXyz.Y;
                lineVertices[vertexIndex].Z = (float)pointXyz.Z;
@@ -202,10 +202,6 @@ namespace WorldWind.Renderable
 		{
 			this.isInitialized = true;
 		}
-
-      protected override void FreeResources()
-      {
-      }
 
       public override void Dispose()
 		{
@@ -254,7 +250,7 @@ namespace WorldWind.Renderable
 			int vertexIndex = 0;
 			for(float longitude = MinVisibleLongitude; longitude <= MaxVisibleLongitude; longitude = longitude + LongitudeInterval)
 			{
-				Vector3d pointXyz = MathEngine.SphericalToCartesian(latitude,longitude,radius);
+				Point3d pointXyz = MathEngine.SphericalToCartesian(latitude,longitude,radius);
 
             lineVertices[vertexIndex].X = (float)pointXyz.X;
             lineVertices[vertexIndex].Y = (float)pointXyz.Y;
@@ -264,7 +260,7 @@ namespace WorldWind.Renderable
 			}
 			drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, LongitudePointCount-1, lineVertices);
 
-			Vector3d t1 = MathEngine.SphericalToCartesian(Angle.FromDegrees(latitude), 
+			Point3d t1 = MathEngine.SphericalToCartesian(Angle.FromDegrees(latitude), 
 				drawArgs.WorldCamera.Longitude - drawArgs.WorldCamera.TrueViewRange*0.3f*0.5f, radius);
 			if(drawArgs.WorldCamera.ViewFrustum.ContainsPoint(t1))
 			{

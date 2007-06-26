@@ -21,7 +21,7 @@ namespace WorldWind.Renderable
       /// </summary>
       /// <param name="name"></param>
       public RenderableObjectList(string name)
-         : base(name, new Vector3d(0, 0, 0), new Quaternion4d())
+         : base(name, new Point3d(0, 0, 0), new Quaternion4d())
       {
          this.isSelectable = true;
       }
@@ -143,10 +143,6 @@ namespace WorldWind.Renderable
          { }
 
          this.isInitialized = true;
-      }
-
-      protected override void FreeResources()
-      {
       }
 
       public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)

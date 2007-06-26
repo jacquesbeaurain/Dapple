@@ -4,203 +4,246 @@ using System.IO;
 using System.Net;
 using System.Diagnostics;
 using System.Globalization;
+using WorldWind.Configuration;
 using WorldWind.Net;
+
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace WorldWind.Terrain
 {
-	/// <summary>
-	/// Terrain tile download request
-	/// </summary>
-	public class TerrainDownloadRequest : GeoSpatialDownloadRequest
-	{
-		public TerrainTile TerrainTile;
+   /// <summary>
+   /// Terrain tile download request
+   /// </summary>
+   public class TerrainDownloadRequest : GeoSpatialDownloadRequest
+   {
+      public TerrainTile TerrainTile;
 
-		const string ContentType7z = "application/x-7z-compressed";
-		const string ContentTypeXCompressed = "application/x-compressed";
+      const string ContentTypeZip = "application/zip";
+      const string ContentType7z = "application/x-7z-compressed";
+      const string ContentTypeXCompressed = "application/x-compressed";
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Terrain.TerrainDownloadRequest"/> class.
-		/// </summary>
-		/// <param name="tile"></param>
-		/// <param name="owner"></param>
-		/// <param name="row"></param>
-		/// <param name="col"></param>
-		/// <param name="targetLevel"></param>
-		public TerrainDownloadRequest(TerrainTile tile, TerrainTileService owner, int row, int col, int targetLevel) : base(owner)
-		{
-			TerrainTile = tile;
-			download.Url = String.Format(CultureInfo.InvariantCulture,
-				"{0}?T={1}&L={2}&X={3}&Y={4}",
-				owner.ServerUrl,
-				owner.DataSet,
-				targetLevel, col, row );
-		}
+      /// <summary>
+      /// Initializes a new instance of the <see cref= "T:WorldWind.Terrain.TerrainDownloadRequest"/> class.
+      /// </summary>
+      /// <param name="tile"></param>
+      /// <param name="owner"></param>
+      /// <param name="row"></param>
+      /// <param name="col"></param>
+      /// <param name="targetLevel"></param>
+      public TerrainDownloadRequest(TerrainTile tile, TerrainTileService owner, int row, int col, int targetLevel)
+         : base(owner)
+      {
+         TerrainTile = tile;
+         download.Url = String.Format(CultureInfo.InvariantCulture,
+            "{0}?T={1}&L={2}&X={3}&Y={4}",
+            owner.ServerUrl,
+            owner.DataSet,
+            targetLevel, col, row);
+      }
 
-		/// <summary>
-		/// Western bound of current request (decimal degrees)
-		/// </summary>
-		public override float West
-		{
-			get 
-			{
-				return (float)TerrainTile.West;
-			}
-		}
+      /// <summary>
+      /// Western bound of current request (decimal degrees)
+      /// </summary>
+      public override float West
+      {
+         get
+         {
+            return (float)TerrainTile.West;
+         }
+      }
 
-		/// <summary>
-		/// Eastern bound of current request (decimal degrees)
-		/// </summary>
-		public override float East
-		{
-			get 
-			{
-				return (float)TerrainTile.East;
-			}
-		}
+      /// <summary>
+      /// Eastern bound of current request (decimal degrees)
+      /// </summary>
+      public override float East
+      {
+         get
+         {
+            return (float)TerrainTile.East;
+         }
+      }
 
-		/// <summary>
-		/// Northern bound of current request (decimal degrees)
-		/// </summary>
-		public override float North
-		{
-			get
-			{
-				return (float)TerrainTile.North;
-			}
-		}
+      /// <summary>
+      /// Northern bound of current request (decimal degrees)
+      /// </summary>
+      public override float North
+      {
+         get
+         {
+            return (float)TerrainTile.North;
+         }
+      }
 
-		/// <summary>
-		/// Southern bound of current request (decimal degrees)
-		/// </summary>
-		public override float South
-		{
-			get 
-			{
-				return (float)TerrainTile.South;
-			}
-		}
-		
-		/// <summary>
-		/// Terrain request color
-		/// </summary>
-		public override int Color
-		{
-			get
-			{
-				return World.Settings.downloadTerrainRectangleColor;
-			}
-		}
+      /// <summary>
+      /// Southern bound of current request (decimal degrees)
+      /// </summary>
+      public override float South
+      {
+         get
+         {
+            return (float)TerrainTile.South;
+         }
+      }
 
-		protected void ProcessFile()
-		{
-			if(download.ContentType==ContentType7z || download.ContentType==ContentTypeXCompressed) 
-			{
-				// Decompress 7z
-				string compressedPath = download.SavedFilePath + ".7z";
+      /// <summary>
+      /// Terrain request color
+      /// </summary>
+      public override int Color
+      {
+         get
+         {
+            return World.Settings.DownloadTerrainRectangleColor.ToArgb();
+         }
+      }
 
-				// Parent of destination
-				string tempDirectory = Path.GetDirectoryName(Path.GetDirectoryName(download.SavedFilePath));
-				string tempFullPath = Path.Combine(tempDirectory, Path.GetFileNameWithoutExtension( download.SavedFilePath ) );
+      protected void ProcessFile()
+      {
+         if (download.ContentType == ContentTypeZip)
+         {
+            string compressedPath = download.SavedFilePath + ".zip";
 
-				// Remove any old temporary file
-				if(File.Exists(compressedPath))
-					File.Delete(compressedPath);
-				if(File.Exists(tempFullPath))
-					File.Delete(tempFullPath);
+            DirectoryInfo tempDirectory = new DirectoryInfo(Path.GetDirectoryName(compressedPath) + "\\" + System.DateTime.Now.Ticks.ToString());
+            tempDirectory.Create();
 
-				File.Move(download.SavedFilePath, compressedPath);
+            string tempFullPath = Path.Combine(tempDirectory.FullName, Path.GetFileNameWithoutExtension(download.SavedFilePath));
 
-				ProcessStartInfo psi = new ProcessStartInfo(Path.GetDirectoryName(Application.ExecutablePath) + @"\System\7za.exe");
-				psi.UseShellExecute = false;
-				psi.CreateNoWindow = true;
-				psi.Arguments = String.Format(CultureInfo.InvariantCulture,
-					" x -y -o\"{1}\" \"{0}\"", compressedPath, tempDirectory);
+            // Remove any old temporary file
+            if (File.Exists(compressedPath))
+               File.Delete(compressedPath);
 
-				using( Process p = Process.Start(psi) )
-				{
-					p.WaitForExit();
-					if(p.ExitCode!=0)
-						throw new ApplicationException("7z decompression of file '" + compressedPath + "' failed.");
-				}
+            if (File.Exists(tempFullPath))
+               File.Delete(tempFullPath);
 
-				File.Delete(compressedPath);
-				File.Move(tempFullPath, SaveFilePath);
-			}
-		}
+            if (File.Exists(SaveFilePath))
+               File.Delete(SaveFilePath);
 
-		/// <summary>
-		/// Tile download completed callback
-		/// </summary>
-		protected override void DownloadComplete()
-		{
-			try
-			{
-				download.Verify();
-				ProcessFile();
-			}
-			catch(FileNotFoundException)
-			{
-				FlagBadTile();
-			}
-			catch(WebException caught)
-			{
-				HttpWebResponse response = caught.Response as HttpWebResponse;
-				if(response!=null && response.StatusCode==HttpStatusCode.NotFound)
-				{
-					FlagBadTile();
-				}
-			}
-			catch
-			{
-			}
-		}
+            File.Move(download.SavedFilePath, compressedPath);
 
-		/// <summary>
-		/// Download tile in foreground
-		/// </summary>
-		public void DownloadInForeGround()
-		{
-			try
-			{
-				download.DownloadFile(download.SavedFilePath);
-				ProcessFile();
-			}
-			catch(FileNotFoundException)
-			{
-				FlagBadTile();
-			}
-			catch(WebException caught)
-			{
-				HttpWebResponse response = caught.Response as HttpWebResponse;
-				if(response!=null && response.StatusCode==HttpStatusCode.NotFound)
-				{
-					FlagBadTile();
-				}
-			}
-			catch
-			{
-			}
-		}
+            FastZip fastZip = new FastZip();
+            fastZip.ExtractZip(
+                compressedPath,
+                tempDirectory.FullName,
+                "");
 
-		/// <summary>
-		/// Creates an empty file signalling the current request is for some reason permanently unavailable.
-		/// </summary>
-		void FlagBadTile()
-		{
-			// Server says it doesn't have the file, don't hammer
-			// Create empty tile file on disk to signal the bad download
-			// TerrainTile will remove it when it's older than BadTileRetryInterval
-			using( Stream flagFile = File.Create(SaveFilePath) )
-			{
-			}
-		}
+            File.Move(tempFullPath, SaveFilePath);
 
-		/// <summary>
-		/// Calculates the relative importance of this download.
-		/// </summary>
-		public override float CalculateScore()
-		{
-			return 0;
-		}
-	}
+            try
+            {
+               File.Delete(compressedPath);
+               tempDirectory.Delete();
+            }
+            catch { }
+
+         }
+         else if (download.ContentType == ContentType7z || download.ContentType == ContentTypeXCompressed)
+         {
+            // Decompress 7z
+            string compressedPath = download.SavedFilePath + ".7z";
+
+            // Parent of destination
+            string tempDirectory = Path.GetDirectoryName(Path.GetDirectoryName(download.SavedFilePath));
+            string tempFullPath = Path.Combine(tempDirectory, Path.GetFileNameWithoutExtension(download.SavedFilePath));
+
+            // Remove any old temporary file
+            if (File.Exists(compressedPath))
+               File.Delete(compressedPath);
+            if (File.Exists(tempFullPath))
+               File.Delete(tempFullPath);
+
+            File.Move(download.SavedFilePath, compressedPath);
+
+            ProcessStartInfo psi = new ProcessStartInfo(Path.GetDirectoryName(Application.ExecutablePath) + @"\System\7za.exe");
+            psi.UseShellExecute = false;
+            psi.CreateNoWindow = true;
+            psi.Arguments = String.Format(CultureInfo.InvariantCulture,
+               " x -y -o\"{1}\" \"{0}\"", compressedPath, tempDirectory);
+
+            using (Process p = Process.Start(psi))
+            {
+               p.WaitForExit();
+               if (p.ExitCode != 0)
+                  throw new ApplicationException(string.Format("7z decompression of file '{0}' failed.", compressedPath));
+            }
+
+            File.Delete(compressedPath);
+            File.Move(tempFullPath, SaveFilePath);
+         }
+
+      }
+
+      /// <summary>
+      /// Tile download completed callback
+      /// </summary>
+      protected override void DownloadComplete()
+      {
+         try
+         {
+            download.Verify();
+            ProcessFile();
+         }
+         catch (FileNotFoundException)
+         {
+            FlagBadTile();
+         }
+         catch (WebException caught)
+         {
+            HttpWebResponse response = caught.Response as HttpWebResponse;
+            if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+            {
+               FlagBadTile();
+            }
+         }
+         catch
+         {
+         }
+      }
+
+      /// <summary>
+      /// Download tile in foreground
+      /// </summary>
+      public void DownloadInForeground()
+      {
+         try
+         {
+            download.DownloadFile(download.SavedFilePath);
+            ProcessFile();
+         }
+         catch (FileNotFoundException)
+         {
+            FlagBadTile();
+         }
+         catch (WebException caught)
+         {
+            HttpWebResponse response = caught.Response as HttpWebResponse;
+            if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+            {
+               FlagBadTile();
+            }
+         }
+         catch
+         {
+         }
+      }
+
+      /// <summary>
+      /// Creates an empty file signalling the current request is for some reason permanently unavailable.
+      /// </summary>
+      void FlagBadTile()
+      {
+         // Server says it doesn't have the file, so don't hammer the server with repeated requests.
+         // Create an empty tile file on disk to 'flag' the missing file.
+         // TerrainTile will handle removal of the empty file and reissuing a request to the server.
+         using (Stream flagFile = File.Create(SaveFilePath))
+         {
+         }
+      }
+
+      /// <summary>
+      /// Calculates the relative importance of this download.
+      /// </summary>
+      public override float CalculateScore()
+      {
+         return 0;
+      }
+   }
 }

@@ -86,7 +86,7 @@ namespace WorldWind
 		/// <param name="equatorialRadius"></param>
 		/// <param name="cacheDirectory"></param>
 		/// <param name="terrainAccessor"></param>
-		public World(string name, Vector3d position, Quaternion4d orientation, double equatorialRadius,
+		public World(string name, Point3d position, Quaternion4d orientation, double equatorialRadius,
 			string cacheDirectory,
 			TerrainAccessor terrainAccessor)
 			: base(name, position, orientation)
@@ -194,21 +194,17 @@ namespace WorldWind
 			}
 		}
 
-      protected override void FreeResources()
-      {
-      }
-
 		private void DrawAxis(DrawArgs drawArgs)
 		{
 			CustomVertex.PositionColored[] axis = new CustomVertex.PositionColored[2];
-			Vector3d topV = MathEngine.SphericalToCartesian(90,0,this.EquatorialRadius + 0.15f*this.EquatorialRadius);
+			Point3d topV = MathEngine.SphericalToCartesian(90,0,this.EquatorialRadius + 0.15f*this.EquatorialRadius);
          axis[0].X = (float)topV.X;
          axis[0].Y = (float)topV.Y;
          axis[0].Z = (float)topV.Z;
 
 			axis[0].Color = System.Drawing.Color.Pink.ToArgb();
 
-			Vector3d botV = MathEngine.SphericalToCartesian(-90,0,this.EquatorialRadius + 0.15f*this.EquatorialRadius);
+			Point3d botV = MathEngine.SphericalToCartesian(-90,0,this.EquatorialRadius + 0.15f*this.EquatorialRadius);
          axis[1].X = (float)botV.X;
          axis[1].Y = (float)botV.Y;
          axis[1].Z = (float)botV.Z;
@@ -331,7 +327,7 @@ namespace WorldWind
 		/// abs(lon1-lon2)=pi) because then the route is undefined.
 		/// </summary>
 		/// <param name="f">Fraction of the distance for intermediate point (0..1)</param>
-		public Vector3d IntermediateGCPoint(double f, Angle lat1, Angle lon1, Angle lat2, Angle lon2, Angle d)
+		public Point3d IntermediateGCPoint(double f, Angle lat1, Angle lon1, Angle lat2, Angle lon2, Angle d)
 		{
 			double sind = Math.Sin(d.Radians);
 			double cosLat1 = Math.Cos(lat1.Radians);
@@ -344,7 +340,7 @@ namespace WorldWind
 			Angle lat=Angle.FromRadians(Math.Atan2(z,Math.Sqrt(x*x+y*y)));
 			Angle lon=Angle.FromRadians(Math.Atan2(y,x));
 
-			Vector3d v = MathEngine.SphericalToCartesian(lat,lon,equatorialRadius);
+			Point3d v = MathEngine.SphericalToCartesian(lat,lon,equatorialRadius);
 			return v;
 		}
 	}

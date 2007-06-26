@@ -189,20 +189,20 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d LookAtRH(Vector3d cameraPosition, Vector3d cameraTarget, Vector3d cameraUpVector)
+      public static Matrix4d LookAtRH(Point3d cameraPosition, Point3d cameraTarget, Point3d cameraUpVector)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.LookAtRH(ConvertDX.FromVector3d(cameraPosition), ConvertDX.FromVector3d(cameraTarget), ConvertDX.FromVector3d(cameraUpVector)));
 
-         Vector3d z = Vector3d.normalize(cameraPosition - cameraTarget);
-         Vector3d x = Vector3d.normalize(Vector3d.cross(cameraUpVector, z));
-         Vector3d y = Vector3d.cross(z, x);
+         Point3d z = Point3d.normalize(cameraPosition - cameraTarget);
+         Point3d x = Point3d.normalize(Point3d.cross(cameraUpVector, z));
+         Point3d y = Point3d.cross(z, x);
          
          Matrix4d solution = new Matrix4d(new Matrix(new double[][] 
             {
                new double[] { x.X, y.X, z.X, 0 },
                new double[] { x.Y, y.Y, z.Y, 0},
                new double[] { x.Z, y.Z, z.Z, 0 },
-               new double[] { -Vector3d.dot(x, cameraPosition), -Vector3d.dot(y, cameraPosition), -Vector3d.dot(z, cameraPosition), 1 }
+               new double[] { -Point3d.dot(x, cameraPosition), -Point3d.dot(y, cameraPosition), -Point3d.dot(z, cameraPosition), 1 }
             }));
          return solution;
       }

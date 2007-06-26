@@ -1221,7 +1221,7 @@ namespace bNb.Plugins_GD
          }
 
          UV geo;
-         Vector3d pos;
+         Point3d pos;
          double height = 0;
          for (int i = 0; i < meshPointCount; i++)
          {
@@ -1445,10 +1445,10 @@ namespace bNb.Plugins_GD
       public void CreateDownloadRectangle(DrawArgs drawArgs, int color)
       {
          // Render terrain download rectangle
-         Vector3d northWestV = MathEngine.SphericalToCartesian((float)North, (float)West, _layerRadius);
-         Vector3d southWestV = MathEngine.SphericalToCartesian((float)South, (float)West, _layerRadius);
-         Vector3d northEastV = MathEngine.SphericalToCartesian((float)North, (float)East, _layerRadius);
-         Vector3d southEastV = MathEngine.SphericalToCartesian((float)South, (float)East, _layerRadius);
+         Point3d northWestV = MathEngine.SphericalToCartesian((float)North, (float)West, _layerRadius);
+         Point3d southWestV = MathEngine.SphericalToCartesian((float)South, (float)West, _layerRadius);
+         Point3d northEastV = MathEngine.SphericalToCartesian((float)North, (float)East, _layerRadius);
+         Point3d southEastV = MathEngine.SphericalToCartesian((float)South, (float)East, _layerRadius);
 
          downloadRectangle[0].X = (float)northWestV.X;
          downloadRectangle[0].Y = (float)northWestV.Y;

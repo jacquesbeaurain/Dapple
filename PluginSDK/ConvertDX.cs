@@ -8,14 +8,19 @@ namespace WorldWind
 {
    public class ConvertDX
    {
-      public static Vector3 FromVector3d(Vector3d v)
+      public static Vector3 ToVector3(Point3d v)
       {
-         return new Vector3((float)v.X, (float)v.Y, (float) v.Z);
+         return new Vector3((float)v.X, (float)v.Y, (float)v.Z);
       }
 
-      public static Vector3d ToVector3d(Vector3 v)
+      public static Vector4 ToVector4(Point3d v)
       {
-         return new Vector3d(v.X, v.Y, v.Z);
+         return new Vector4((float)v.X, (float)v.Y, (float) v.Z, 0.0f);
+      }
+
+      public static Point3d ToPoint3d(Vector3 v)
+      {
+         return new Point3d(v.X, v.Y, v.Z);
       }
 
       public static Matrix FromMatrix4d(Matrix4d m)

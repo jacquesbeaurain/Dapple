@@ -8,14 +8,14 @@ namespace WorldWind
 	/// </summary>
 	public class BoundingSphere
 	{
-		public Vector3d Center;
+		public Point3d Center;
 		public double RadiusSq;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.BoundingSphere"/> class
 		/// from a center point and a radius.
 		/// </summary>
-		public BoundingSphere(Vector3d center, double radiussq)
+		public BoundingSphere(Point3d center, double radiussq)
 		{
 			this.Center = center;
 			this.RadiusSq = radiussq;
@@ -28,7 +28,7 @@ namespace WorldWind
       public BoundingSphere(double south, double north, double west, double east, double radius1, double radius2)
 		{
 			// Compute the points in world coordinates
-			Vector3d[] corners = new Vector3d[8];
+			Point3d[] corners = new Point3d[8];
 
          double scale = radius2 / radius1;
 			corners[0] = MathEngine.SphericalToCartesian(south, west, radius1);
@@ -41,12 +41,12 @@ namespace WorldWind
 			corners[7] = corners[6] * scale;
 
 			//Find the center.  In this case, we'll simply average the coordinates. 
-			foreach(Vector3d v in corners)
+			foreach(Point3d v in corners)
 				Center += v;
 			Center *= 1.0 / 8.0;
 
 			//Loop through the coordinates and find the maximum distance from the center.  This is the radius.		
-			foreach(Vector3d v in corners)
+			foreach(Point3d v in corners)
 			{
             double distSq = (v - Center).LengthSq;
 				if (distSq > RadiusSq)

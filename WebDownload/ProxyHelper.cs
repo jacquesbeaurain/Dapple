@@ -251,8 +251,9 @@ namespace WorldWind.Net
 				}
 			}
 
-			// add credentials to the mix if provided
-			theProxy.Credentials = DetermineCredentials(userName, password, null);
+			// add credentials to the mix if provided and if proxy exists
+			if (theProxy != null)
+				theProxy.Credentials = DetermineCredentials(userName, password, null);
 
 			return theProxy;
 		}

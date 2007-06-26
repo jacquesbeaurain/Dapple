@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using WorldWind.Menu;
 using WorldWind.VisualControl;
 
 namespace WorldWind.Renderable
@@ -26,13 +27,30 @@ namespace WorldWind.Renderable
 
 		public RenderableObjectList ParentList;
 
+		public string dbfPath = "";
+		public bool dbfIsInZip = false;
+		
+
 		protected string name;
+		protected string m_description = null;
 		protected Hashtable _metaData = new Hashtable();
-		protected Vector3d position;
+		protected Point3d position;
 		protected Quaternion4d orientation;
 		protected bool isOn = true;
-		protected byte _opacity = 255;
+		protected byte m_opacity = 255;
 		protected Form m_propertyBrowser;
+
+		protected Image m_thumbnailImage;
+		protected string m_iconImagePath;
+		protected Image m_iconImage;
+		protected World m_world;
+		string m_thumbnail;
+
+		public string Description
+		{
+			get{ return m_description; }
+			set{ m_description = value; }
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.RenderableObject"/> class.
@@ -43,13 +61,19 @@ namespace WorldWind.Renderable
 			this.name = name;
 		}
 
+		protected RenderableObject(string name, World parentWorld)
+		{
+			this.name = name;
+			this.m_world = parentWorld;
+		}
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="name">Object description</param>
 		/// <param name="position">Object position (XYZ world coordinates)</param>
 		/// <param name="orientation">Object rotation (Quaternion)</param>
-		protected RenderableObject(string name, Vector3d position, Quaternion4d orientation)
+		protected RenderableObject(string name, Point3d position, Quaternion4d orientation)
 		{
 			this.name = name;
 			this.position = position;
@@ -60,31 +84,6 @@ namespace WorldWind.Renderable
 
 		public abstract void Update(DrawArgs drawArgs);
 
-      public class ExportInfo
-      {
-         public double dMinLat = double.MaxValue;
-         public double dMaxLat = double.MinValue;
-         public double dMinLon = double.MaxValue;
-         public double dMaxLon = double.MinValue;
-
-         public int iPixelsX = -1;
-         public int iPixelsY = -1;
-
-         public Graphics gr;
-
-         public ExportInfo()
-         {
-         }
-      }
-      
-      public virtual void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
-      {
-      }
-      
-      public virtual void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
-      {
-      }
-
 		public abstract void Render(DrawArgs drawArgs);
 
       public virtual bool Initialized
@@ -93,6 +92,93 @@ namespace WorldWind.Renderable
 			{
 				return isInitialized;
 			}	
+		}
+
+		/// <summary>
+		/// The planet this layer is a part of.
+		/// </summary>
+		[TypeConverter(typeof(ExpandableObjectConverter))]
+		public virtual World World
+		{
+			get
+			{
+				return m_world;
+			}
+		}
+
+		/// <summary>
+		/// Path to a Thumbnail image(e.g. for use as a Toolbar button).
+		/// </summary>
+		public virtual string Thumbnail
+		{
+			get
+			{
+				return m_thumbnail;
+			}
+			set
+			{
+				m_thumbnail = ImageHelper.FindResource(value);
+			}
+		}
+
+		/// <summary>
+		/// The image referenced by Thumbnail. 
+		/// </summary>
+		public virtual Image ThumbnailImage
+		{
+			get
+			{
+				if(m_thumbnailImage==null)
+				{
+					if(m_thumbnail==null)
+						return null;
+					try
+					{
+						if(File.Exists(m_thumbnail))
+							m_thumbnailImage = ImageHelper.LoadImage(m_thumbnail);
+					}
+					catch {}
+				}
+				return m_thumbnailImage;
+			}
+		}
+
+		/// <summary>
+		/// Path for an icon for the object, such as an image to be used in the Active Layer window.
+		/// This can be different than the Thumbnail(e.g. an ImageLayer can have an IconImage, and no Thumbnail).
+		/// </summary>
+		public string IconImagePath
+		{
+			get
+			{
+				return m_iconImagePath;
+			}
+			set
+			{
+				m_iconImagePath = value;
+			}
+		}
+
+		/// <summary>
+		/// The icon image referenced by IconImagePath. 
+		/// </summary>
+		public Image IconImage
+		{
+			get
+			{
+				if(m_iconImage==null)
+				{
+					if(m_iconImagePath==null)
+						return null;
+					try
+					{
+						if(File.Exists(m_iconImagePath))
+							m_iconImage = ImageHelper.LoadImage(m_iconImagePath);
+					}
+					catch {}
+				}
+				return m_iconImage;
+			}
 		}
 
 		/// <summary>
@@ -195,11 +281,11 @@ namespace WorldWind.Renderable
 		{
 			get
 			{
-				return this._opacity;
+				return this.m_opacity;
 			}
 			set
 			{
-				this._opacity = value;
+				this.m_opacity = value;
 			}
 		}
 
@@ -212,10 +298,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-      /// <summary>
-      /// Friendly request to release some resources if the object is turned off
-      /// </summary>
-      protected abstract void FreeResources();
 		/// <summary>
 		/// Hide/Show this object.
 		/// </summary>
@@ -228,9 +310,9 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
+				if(isOn && !value)
+					this.Dispose();
 				this.isOn = value;
-            if (!this.isOn)
-               FreeResources();
 			}
 		}
 
@@ -254,7 +336,7 @@ namespace WorldWind.Renderable
 		/// Object position (XYZ world coordinates)
 		/// </summary>
 		[Browsable(false)]
-		public virtual Vector3d Position
+		public virtual Point3d Position
 		{
 			get
 			{
@@ -286,19 +368,79 @@ namespace WorldWind.Renderable
 
 		#region Menu items
 
+		///<summary>
+		///  Goes to the Shapefiles's DBF Information Window
+		/// </summary>
+		protected virtual void OnDbfInfo(object sender, EventArgs e)
+		{			
+			ShapeFileInfoDlg sfid = new ShapeFileInfoDlg(dbfPath, dbfIsInZip);
+			sfid.Show();	
+		}
+
+		///<summary>
+		///  Goes to the extent specified by the bounding box for the QTS layer
+        ///  or to the lat/lon for icons
+		/// </summary>
+		protected virtual void OnGotoClick(object sender, EventArgs e)
+		{
+			lock(this.ParentList.ChildObjects.SyncRoot)
+			{
+            /*
+				for(int i = 0; i < this.ParentList.ChildObjects.Count; i++)
+				{
+					RenderableObject ro = (RenderableObject)this.ParentList.ChildObjects[i];
+					if(ro.Name.Equals(name))
+					{
+                        if (ro is QuadTileSet)
+                        {
+                            QuadTileSet qts = (QuadTileSet)ro;
+                            DrawArgs.Camera.SetPosition((qts.North + qts.South) / 2, (qts.East + qts.West) / 2);
+                            double perpendicularViewRange = (qts.North - qts.South > qts.East - qts.West ? qts.North - qts.South : qts.East - qts.West);
+                            double altitude = qts.LayerRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
+
+                            DrawArgs.Camera.Altitude = altitude;
+
+                            break;
+                        }
+                        if (ro is Icon)
+						{
+							Icon ico = (Icon)ro;
+							DrawArgs.Camera.SetPosition(ico.Latitude,ico.Longitude);
+							DrawArgs.Camera.Altitude/=2;
+				
+							break;
+						}
+                        if (ro is ShapeFileLayer)
+                        {
+                            ShapeFileLayer slayer = (ShapeFileLayer)ro;
+                            DrawArgs.Camera.SetPosition((slayer.North + slayer.South) / 2, (slayer.East + slayer.West) / 2);
+                            double perpendicularViewRange = (slayer.North - slayer.South > slayer.East - slayer.West ? slayer.North - slayer.South : slayer.East - slayer.West);
+                            double altitude = slayer.MaxAltitude;
+
+                            DrawArgs.Camera.Altitude = altitude;
+
+                            break;
+                        }
+					}
+				}
+             */ 
+			}
+		}
+
+		
 		/// <summary>
 		/// Layer info context menu item
 		/// </summary>
-		protected virtual void OnInfoClick(object sender, System.EventArgs e)
+		protected virtual void OnInfoClick(object sender, EventArgs e)
 		{
-			WorldWind.Menu.LayerManagerItemInfo lmii = new WorldWind.Menu.LayerManagerItemInfo(MetaData);
+			LayerManagerItemInfo lmii = new LayerManagerItemInfo(MetaData);
 			lmii.ShowDialog();
 		}
 
 		/// <summary>
 		/// Layer properties context menu item
 		/// </summary>
-		protected virtual void OnPropertiesClick(object sender, System.EventArgs e)
+		protected virtual void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if(m_propertyBrowser!=null)
 				m_propertyBrowser.Dispose();
@@ -310,30 +452,54 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Delete layer context menu item
 		/// </summary>
-		protected virtual void OnDeleteClick(object sender, System.EventArgs e)
+		protected virtual void OnDeleteClick(object sender, EventArgs e)
 		{
-			if(ParentList == null || ParentList.ParentList == null)
-			{
-				MessageBox.Show("Unable to delete root layer list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-				return;
-			}
+			//World w = this.World;
 
-			string message = "Permanently Delete Layer '" + name + "'?";
-			if(DialogResult.Yes != MessageBox.Show( message, "Delete layer", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
-				MessageBoxDefaultButton.Button2 ))
+			/*if (this.ParentList.Name != "Earth")
+			{
+				MessageBox.Show("Can't delete sub-items from layers.  Try deleting the top-level layer.", "Error deleting layer");
 				return;
+			}*/
+
+			//MessageBox.Show("Delete click fired");
+
 
 			try
 			{
-				Delete();
+				this.Delete();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message);
+				MessageBox.Show(ex.Message,"Layer Delete");
 			}
 		}
 
 		#endregion
 
+      public class ExportInfo
+      {
+         public double dMinLat = double.MaxValue;
+         public double dMaxLat = double.MinValue;
+         public double dMinLon = double.MaxValue;
+         public double dMaxLon = double.MinValue;
+
+         public int iPixelsX = -1;
+         public int iPixelsY = -1;
+
+         public Graphics gr;
+
+         public ExportInfo()
+         {
+         }
+      }
+      
+      public virtual void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
+      {
+      }
+      
+      public virtual void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
+      {
+      }
 	}
 }

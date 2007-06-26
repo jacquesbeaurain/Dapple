@@ -191,7 +191,7 @@ namespace WorldWind
                  short mid_hyp_indice = MidHypVerticeIndice(v1, v3);
                  // find real elevation in middle of hypothenuse
                  CustomVertex.PositionColoredTextured vh = this._elevatedVertices[mid_hyp_indice];
-                 Vector3d v = MathEngine.CartesianToSpherical(vh.X, vh.Y, vh.Z);
+                 Point3d v = MathEngine.CartesianToSpherical(vh.X, vh.Y, vh.Z);
                  double real = v.X - this._layerRadius;
                  // find extrapolated elevation in middle hyp.
                  double xe = (this._elevatedVertices[v1].X + this._elevatedVertices[v3].X) / 2;

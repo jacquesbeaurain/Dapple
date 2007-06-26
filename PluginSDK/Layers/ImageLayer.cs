@@ -284,10 +284,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-      protected override void FreeResources()
-      {
-      }
-
 		/// <summary>
 		/// Downloads image from web
 		/// </summary>
@@ -381,17 +377,17 @@ namespace WorldWind.Renderable
 		{
 			get
 			{
-				return _opacity;
+				return m_opacity;
 			}
 			set
 			{
-				_opacity = value;
+				m_opacity = value;
 
 				if(vertices==null)
 					return;
 
 				// Update mesh opacity
-				int opacityColor = _opacity << 24;
+				int opacityColor = m_opacity << 24;
 				for(int index = 0; index < vertices.Length; index++)
 					vertices[index].Color = opacityColor;
 			}
@@ -424,7 +420,7 @@ namespace WorldWind.Renderable
                      (float)(minLon + scaleFactor * lonrange * j),
                      (float)(upperBound / latrange));
 
-					Vector3d pos = MathEngine.SphericalToCartesian( 
+					Point3d pos = MathEngine.SphericalToCartesian( 
 						maxLat - scaleFactor*latrange*i,
 						minLon + scaleFactor*lonrange*j, 
 						layerRadius + height);

@@ -54,7 +54,7 @@ namespace WorldWind
 		/// Transforms a rotation in quaternion form to a set of Euler angles 
 		/// </summary>
 		/// <returns>The rotation transformed to Euler angles, X=Yaw, Y=Pitch, Z=Roll (radians)</returns>
-		public static Vector3d QuaternionToEuler(Quaternion4d q)
+		public static Point3d QuaternionToEuler(Quaternion4d q)
 		{
 			double q0 = q.W;
 			double q1 = q.X;
@@ -65,7 +65,7 @@ namespace WorldWind
 			double y = Math.Asin( -2 * (q1*q3 - q0*q2));
 			double z = Math.Atan2( 2 * (q1*q2 + q0*q3), (q0*q0 + q1*q1 - q2*q2 - q3*q3));
 
-			return new Vector3d(x, y, z);
+			return new Point3d(x, y, z);
 		}
 
 		public static Quaternion4d operator+(Quaternion4d a, Quaternion4d b)
@@ -98,7 +98,7 @@ namespace WorldWind
 		}
 
 		// equivalent to multiplying by the quaternion (0, v)
-		public static Quaternion4d operator*(Vector3d v, Quaternion4d q)
+		public static Quaternion4d operator*(Point3d v, Quaternion4d q)
 		{
 			return new Quaternion4d(
 					 v.X * q.W + v.Y * q.Z - v.Z * q.Y,

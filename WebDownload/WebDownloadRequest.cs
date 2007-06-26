@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Utility;
 
 namespace WorldWind.Net
 {
@@ -125,7 +126,7 @@ namespace WorldWind.Net
 			}
 			catch(Exception caught)
 			{
-				Utility.Log.Write("QUEU", download.Url + ": " + caught.Message);
+				Log.Write(Log.Levels.Error, "QUEU", download.Url + ": " + caught.Message);
 			}
 
 			OnComplete();

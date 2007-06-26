@@ -67,7 +67,7 @@ namespace WorldWind.Net.Monitor
 		//	private DebugItemComparer comparer = new DebugItemComparer();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Net.Monitor.ProgressMonitor"/> class.
+		/// Initializes a new instance of the <see cref="ProgressMonitor"/> class.
 		/// </summary>
 		public ProgressMonitor()
 		{
@@ -76,19 +76,81 @@ namespace WorldWind.Net.Monitor
 			//
 			InitializeComponent();
 
+			InitializeComponentText();
+
 			// Sorting disabled
 			//	listView.ListViewItemSorter = comparer;
-			WebDownload.DebugCallback += new DownloadDebugHandler(Update);
+			WebDownload.DebugCallback += new DownloadCompleteHandler(Update);
 		}
 
+		
+		#region I18N code
+		/// <summary>
+		/// We use this to override any strings set in InitializeComponent()
+		/// that need to be able to be translated, because the Visual Studio
+		/// Designer will overwrite things like menu names if the Designer is
+		/// used after changes are made in InitializeComponent().
+		/// 
+		/// Any time this class is changed via the Designer, make sure that
+		/// any translatable strings in InitializeComponent() are also
+		/// represented in InitializeComponentText().
+		/// </summary>
+		private void InitializeComponentText()
+		{
+			string tabChar = "\t";
+
+			this.columnHeader1.Text = "Start time";
+			this.columnHeader2.Text = "Position";
+			this.columnHeader8.Text = "Length";
+			this.columnHeader5.Text = "Status";
+			this.columnHeader4.Text = "Url";
+			this.columnHeader6.Text = "Destination file";
+			this.columnHeader7.Text = "Headers";
+			this.columnHeader3.Text = "Download Time";
+			this.menuItemHeaders.Text = "View request &details";
+			this.menuItemOpenUrl.Text = "Open &Url in web browser";
+			this.menuItemViewDir.Text = "&View destination directory";
+			this.menuItemCopy.Text = "&Copy information";
+			this.menuItemClear.Text = "&Clear list";
+			this.menuItemFile.Text = "&File";
+			this.menuItemFileRetry.Text = "&Retry download";
+			this.menuItemFileClose.Text = "&Close";
+			this.menuItemEdit.Text = "&Edit";
+			this.menuItemEditCopy.Text = "&Copy";
+			this.menuItemEditDelete.Text = "&Delete";
+			this.menuItemEditSelectAll.Text = "Select &All";
+			this.menuItemEditClear.Text = "&Clear";
+			this.menuItem9.Text = "&Monitor";
+			this.menuItemRun.Text = "&Run";
+			this.menuItemWriteLog.Text = "&Write Log";
+			this.menuItemTools.Text = "&Tools";
+			this.menuItemToolsDetails.Text = string.Format("View request &details{0}{1}", tabChar, "Enter");
+			this.menuItemToolsViewUrl.Text = "Open &Url in web browser";
+			this.menuItemToolsViewDirectory.Text = "&View destination directory";
+			this.Text = "Download progress monitor";
+		}
+		#endregion
+
+
+		/// <summary>
+		/// Updates the specified download.
+		/// </summary>
+		/// <param name="wd">The wd.</param>
 		public void Update(WebDownload wd)
 		{
 			// Make sure we're on the right thread
 			if( this.InvokeRequired ) 
 			{
-				// Update progress asynchronously
-				DownloadDebugHandler dlgt = new DownloadDebugHandler(Update);
-				this.Invoke(dlgt, new object[] { wd });
+				try
+				{
+					// Update progress asynchronously
+					DownloadCompleteHandler dlgt = new DownloadCompleteHandler(Update);
+					this.Invoke(dlgt, new object[] { wd });
+				}
+				catch (Exception ex)
+				{
+					Log.Write(ex);
+				}
 				return;
 			}
 
@@ -102,8 +164,8 @@ namespace WorldWind.Net.Monitor
 					{
 						if(wd.Exception != null)
 						{
-							Log.Write( logCategory, "Error : " + wd.Url.Replace("http://","") );
-							Log.Write( logCategory, "  \\---" + wd.Exception.Message );
+							Log.Write(Log.Levels.Error, logCategory, "Error : " + wd.Url.Replace("http://","") );
+							Log.Write(Log.Levels.Error, logCategory, "  \\---" + wd.Exception.Message);
 						}
 						if(wd.ContentLength == wd.BytesProcessed)
 						{
@@ -111,7 +173,7 @@ namespace WorldWind.Net.Monitor
 								"Done ({0:f2}s): {1}",
 								item.ElapsedTime.TotalSeconds,
 								wd.Url.Replace("http://","") );
-							Log.Write( logCategory, msg );
+							Log.Write(Log.Levels.Debug, logCategory, msg);
 						}
 					}
 					return;
@@ -125,9 +187,9 @@ namespace WorldWind.Net.Monitor
 
 			if(logToFile)
 			{
-				Log.Write( logCategory, "Get  : " + wd.Url );
+				Log.Write(Log.Levels.Debug, logCategory, "Get  : " + wd.Url );
 				if(wd.SavedFilePath!=null)
-					Log.Write( logCategory, "  \\--- " + wd.SavedFilePath );
+					Log.Write(Log.Levels.Debug+1, logCategory, "  \\--- " + wd.SavedFilePath );
 			}
 
 			DebugItem newItem = new DebugItem( wd );
@@ -135,6 +197,9 @@ namespace WorldWind.Net.Monitor
 			listView.Items.Insert(0,newItem);
 		}
 
+		/// <summary>
+		/// Removes the oldest item.
+		/// </summary>
 		private void RemoveOldestItem()
 		{
 			DebugItem oldest = null;
@@ -153,6 +218,10 @@ namespace WorldWind.Net.Monitor
 				listView.Items.Remove( oldest );
 		}
 
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.KeyUp"/> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs"/> that contains the event data.</param>
 		protected override void OnKeyUp(System.Windows.Forms.KeyEventArgs e) 
 		{
 			if(e==null)
@@ -181,8 +250,11 @@ namespace WorldWind.Net.Monitor
 		}
 
 		/// <summary>
-		/// Clean up any resources being used.
+		/// Disposes of the resources (other than memory) used by
+		/// the <see cref="T:System.Windows.Forms.Form"/>
+		/// .
 		/// </summary>
+		/// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
 		protected override void Dispose( bool disposing )
 		{
 			if( disposing )
@@ -192,15 +264,12 @@ namespace WorldWind.Net.Monitor
 					components.Dispose();
 				}
 			}
-			WebDownload.DebugCallback -= new DownloadDebugHandler(Update);
+			WebDownload.DebugCallback -= new DownloadCompleteHandler(Update);
 
-         if (retryDownloads != null)
-         {
-            foreach (WebDownload dl in retryDownloads)
-               if (dl != null)
-                  dl.Dispose();
-            retryDownloads.Clear();
-         }
+			foreach( WebDownload dl in retryDownloads )
+				if (dl!=null)
+					dl.Dispose();
+			retryDownloads.Clear();
 
 			base.Dispose( disposing );
 		}
@@ -255,14 +324,14 @@ namespace WorldWind.Net.Monitor
 			// listView
 			// 
 			this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-																																							 this.columnHeader1,
-																																							 this.columnHeader2,
-																																							 this.columnHeader8,
-																																							 this.columnHeader5,
-																																							 this.columnHeader4,
-																																							 this.columnHeader6,
-																																							 this.columnHeader7,
-																																							 this.columnHeader3});
+																					   this.columnHeader1,
+																					   this.columnHeader2,
+																					   this.columnHeader8,
+																					   this.columnHeader5,
+																					   this.columnHeader4,
+																					   this.columnHeader6,
+																					   this.columnHeader7,
+																					   this.columnHeader3});
 			this.listView.ContextMenu = this.contextMenu;
 			this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.listView.FullRowSelect = true;
@@ -284,13 +353,13 @@ namespace WorldWind.Net.Monitor
 			// 
 			this.columnHeader2.Text = "Position";
 			this.columnHeader2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.columnHeader2.Width = 55;
+			this.columnHeader2.Width = 65;
 			// 
 			// columnHeader8
 			// 
 			this.columnHeader8.Text = "Length";
 			this.columnHeader8.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.columnHeader8.Width = 55;
+			this.columnHeader8.Width = 65;
 			// 
 			// columnHeader5
 			// 
@@ -315,18 +384,18 @@ namespace WorldWind.Net.Monitor
 			// 
 			this.columnHeader3.Text = "Download Time";
 			this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.columnHeader3.Width = 50;
+			this.columnHeader3.Width = 70;
 			// 
 			// contextMenu
 			// 
 			this.contextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																								this.menuItemHeaders,
-																																								this.menuItemSpacer1,
-																																								this.menuItemOpenUrl,
-																																								this.menuItemViewDir,
-																																								this.menuItemSpacer2,
-																																								this.menuItemCopy,
-																																								this.menuItemClear});
+																						this.menuItemHeaders,
+																						this.menuItemSpacer1,
+																						this.menuItemOpenUrl,
+																						this.menuItemViewDir,
+																						this.menuItemSpacer2,
+																						this.menuItemCopy,
+																						this.menuItemClear});
 			this.contextMenu.Popup += new System.EventHandler(this.contextMenu_Popup);
 			// 
 			// menuItemHeaders
@@ -373,18 +442,18 @@ namespace WorldWind.Net.Monitor
 			// mainMenu1
 			// 
 			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuItemFile,
-																																							this.menuItemEdit,
-																																							this.menuItem9,
-																																							this.menuItemTools});
+																					  this.menuItemFile,
+																					  this.menuItemEdit,
+																					  this.menuItem9,
+																					  this.menuItemTools});
 			// 
 			// menuItemFile
 			// 
 			this.menuItemFile.Index = 0;
 			this.menuItemFile.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																								 this.menuItemFileRetry,
-																																								 this.menuItemSeparator3,
-																																								 this.menuItemFileClose});
+																						 this.menuItemFileRetry,
+																						 this.menuItemSeparator3,
+																						 this.menuItemFileClose});
 			this.menuItemFile.Text = "&File";
 			this.menuItemFile.Popup += new System.EventHandler(this.menuItemFile_Popup);
 			// 
@@ -411,12 +480,12 @@ namespace WorldWind.Net.Monitor
 			// 
 			this.menuItemEdit.Index = 1;
 			this.menuItemEdit.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																								 this.menuItemEditCopy,
-																																								 this.menuItemEditDelete,
-																																								 this.menuItem6,
-																																								 this.menuItemEditSelectAll,
-																																								 this.menuItem7,
-																																								 this.menuItemEditClear});
+																						 this.menuItemEditCopy,
+																						 this.menuItemEditDelete,
+																						 this.menuItem6,
+																						 this.menuItemEditSelectAll,
+																						 this.menuItem7,
+																						 this.menuItemEditClear});
 			this.menuItemEdit.Text = "&Edit";
 			this.menuItemEdit.Popup += new System.EventHandler(this.menuItemEdit_Popup);
 			// 
@@ -462,9 +531,9 @@ namespace WorldWind.Net.Monitor
 			// 
 			this.menuItem9.Index = 2;
 			this.menuItem9.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuItemRun,
-																																							this.menuItem4,
-																																							this.menuItemWriteLog});
+																					  this.menuItemRun,
+																					  this.menuItem4,
+																					  this.menuItemWriteLog});
 			this.menuItem9.Text = "&Monitor";
 			// 
 			// menuItemRun
@@ -490,10 +559,10 @@ namespace WorldWind.Net.Monitor
 			// 
 			this.menuItemTools.Index = 3;
 			this.menuItemTools.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																									this.menuItemToolsDetails,
-																																									this.menuItemSpacer3,
-																																									this.menuItemToolsViewUrl,
-																																									this.menuItemToolsViewDirectory});
+																						  this.menuItemToolsDetails,
+																						  this.menuItemSpacer3,
+																						  this.menuItemToolsViewUrl,
+																						  this.menuItemToolsViewDirectory});
 			this.menuItemTools.Text = "&Tools";
 			this.menuItemTools.Popup += new System.EventHandler(this.menuItemTools_Popup);
 			// 
@@ -536,27 +605,29 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Sorts ascending/descending on clicked column
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.Forms.ColumnClickEventArgs"/> instance containing the event data.</param>
 		private void listView_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
 		{
 			// Sorting disabled
-//			comparer.SortColumn( e.Column );
+			//			comparer.SortColumn( e.Column );
 		}
 
 		/// <summary>
 		/// Clears the download list
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemClear_Click(object sender, System.EventArgs e)
 		{
 			listView.Items.Clear();
 		}
 
 		/// <summary>
-		/// Opens a directory window containing selected item(s). 
+		/// Opens a directory window containing selected item(s).
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemViewDir_Click(object sender, System.EventArgs e)
 		{
 			foreach( DebugItem item in listView.SelectedItems)
@@ -570,6 +641,8 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Opens the selected items in web browser
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemOpenUrl_Click(object sender, System.EventArgs e)
 		{
 			foreach( DebugItem item in listView.SelectedItems)
@@ -579,6 +652,8 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Copy download info to clipboard
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		internal void menuItemCopy_Click(object sender, System.EventArgs e)
 		{
 			StringBuilder res = new StringBuilder();
@@ -593,6 +668,8 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Displays HTTP headers in a new window
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemHeaders_Click(object sender, System.EventArgs e)
 		{
 			if(listView.SelectedItems.Count<=0)
@@ -606,6 +683,8 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Selects all items
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemSelectAll_Click(object sender, System.EventArgs e)
 		{
 			foreach( DebugItem item in listView.Items )
@@ -615,6 +694,8 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Enables debug monitor
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemRun_Click(object sender, System.EventArgs e)
 		{
 			isRunning = !isRunning;
@@ -624,6 +705,8 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Delete selected items from list
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemEditDelete_Click(object sender, System.EventArgs e)
 		{
 			while(listView.SelectedItems.Count>0)
@@ -633,14 +716,19 @@ namespace WorldWind.Net.Monitor
 		/// <summary>
 		/// Enables writing to log file.
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemWriteLog_Click(object sender, System.EventArgs e)
 		{
 			logToFile = !logToFile;
 			menuItemWriteLog.Checked = logToFile;
 		}
 
+		/// <summary>
+		/// Handles the Popup event of the contextMenu control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void contextMenu_Popup(object sender, System.EventArgs e)
 		{
 			bool hasSelection = listView.SelectedItems.Count>0;
@@ -653,6 +741,11 @@ namespace WorldWind.Net.Monitor
 			this.menuItemClear.Enabled = hasItems;
 		}
 
+		/// <summary>
+		/// Handles the Popup event of the menuItemFile control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemFile_Popup(object sender, System.EventArgs e)
 		{
 			if(listView.SelectedItems.Count<=0)
@@ -665,6 +758,11 @@ namespace WorldWind.Net.Monitor
 			this.menuItemFileRetry.Enabled = li.HasFailed;
 		}
 
+		/// <summary>
+		/// Handles the Popup event of the menuItemEdit control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemEdit_Popup(object sender, System.EventArgs e)
 		{
 			bool hasSelection = listView.SelectedItems.Count>0;
@@ -675,6 +773,11 @@ namespace WorldWind.Net.Monitor
 			this.menuItemEditSelectAll.Enabled = hasItems;
 		}
 
+		/// <summary>
+		/// Handles the Popup event of the menuItemTools control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemTools_Popup(object sender, System.EventArgs e)
 		{
 			bool hasSelection = listView.SelectedItems.Count>0;
@@ -684,11 +787,16 @@ namespace WorldWind.Net.Monitor
 			this.menuItemToolsViewUrl.Enabled = hasSelection;
 		}
 
+		/// <summary>
+		/// Handles the Click event of the menuItemFileRetry control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemFileRetry_Click(object sender, System.EventArgs e)
 		{
 			foreach(DebugItem li in listView.SelectedItems)
 			{
-				WebDownload dl = new WebDownload(li.Url, false);
+				WebDownload dl = new WebDownload(li.Url, li.XML);
 				dl.SavedFilePath = li.SavedFilePath;
 				dl.CompleteCallback += new DownloadCompleteHandler(OnDownloadComplete);
 				dl.BackgroundDownloadFile();
@@ -696,6 +804,10 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Called when download is complete.
+		/// </summary>
+		/// <param name="dl">The download.</param>
 		private void OnDownloadComplete( WebDownload dl )
 		{
 			if (retryDownloads.Contains(dl))
@@ -703,6 +815,11 @@ namespace WorldWind.Net.Monitor
 			dl.Dispose();
 		}
 
+		/// <summary>
+		/// Handles the Click event of the menuItemFileClose control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void menuItemFileClose_Click(object sender, System.EventArgs e)
 		{
 			Close();
@@ -723,22 +840,32 @@ namespace WorldWind.Net.Monitor
 		string m_savedFilePath;
 		string m_headers;
 		WebDownload m_webDownload;
+      bool m_XML;
 
 		static Color AliveColor = Color.Blue;
 		static Color FailedColor = Color.Red;
 		static Color CompleteColor = Color.Black;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DebugItem"/> class.
+		/// </summary>
+		/// <param name="dl">The download.</param>
 		public DebugItem( WebDownload dl )
 		{
 			m_webDownload = dl;
 			m_startTime = dl.DownloadStartTime;
 			Text = m_startTime.ToLongTimeString();
 			m_url = dl.Url;
+         m_XML = dl.XML;
 			m_savedFilePath = dl.SavedFilePath == null ? "<Memory>" : dl.SavedFilePath;
 			SubItems.AddRange( new string[]{"","",m_status, "", m_url, m_savedFilePath, "", "" } );
 			ForeColor = Color.Blue;
 		}
 
+		/// <summary>
+		/// Gets the actual web download.
+		/// </summary>
+		/// <value>The web download.</value>
 		public WebDownload WebDownload
 		{
 			get
@@ -747,11 +874,30 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+      /// <summary>
+      /// Is this an XML web download?
+      /// </summary>
+      public bool XML
+      {
+         get
+         {
+            return m_XML;
+         }
+      }
+
+		/// <summary>
+		/// Gets the download start time.
+		/// </summary>
+		/// <value>The start time.</value>
 		public DateTime StartTime
 		{
 			get { return m_startTime; }
 		}
 
+		/// <summary>
+		/// Gets or sets the number of bytes processed.
+		/// </summary>
+		/// <value>The bytes processed.</value>
 		public long BytesProcessed
 		{
 			get { return m_bytesProcessed; }
@@ -762,6 +908,10 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the byte length of the downloaded content.
+		/// </summary>
+		/// <value>The length of the content.</value>
 		public long ContentLength
 		{
 			get { return m_contentLength; }
@@ -772,6 +922,10 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the download status.
+		/// </summary>
+		/// <value>The status.</value>
 		public string Status
 		{
 			get { return m_status; }
@@ -782,16 +936,28 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Gets the downloaded URL.
+		/// </summary>
+		/// <value>The URL.</value>
 		public string Url
 		{
 			get { return m_url; }
 		}
 
+		/// <summary>
+		/// Gets the file path where the file will be saved.
+		/// </summary>
+		/// <value>The saved file path.</value>
 		public string SavedFilePath
 		{
 			get { return m_savedFilePath; }
 		}
 
+		/// <summary>
+		/// Gets or sets the HTTP headers.
+		/// </summary>
+		/// <value>The headers.</value>
 		public string Headers
 		{
 			get { return m_headers; }
@@ -802,6 +968,10 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the elapsed time.
+		/// </summary>
+		/// <value>The elapsed time.</value>
 		public TimeSpan ElapsedTime
 		{
 			get { return m_elapsed; }
@@ -812,11 +982,21 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this instance has failed.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance has failed; otherwise, <c>false</c>.
+		/// </value>
 		public bool HasFailed
 		{
 			get { return ForeColor == FailedColor; }
 		}
 
+		/// <summary>
+		/// Updates the display for the specified download.
+		/// </summary>
+		/// <param name="wd">The download to update.</param>
 		public void Update( WebDownload wd )
 		{
 			try
@@ -847,6 +1027,11 @@ namespace WorldWind.Net.Monitor
 					// In progress
 					Status = "Receiving.";
 
+				if(wd.response != null)
+				{
+					Status = wd.response.StatusCode.ToString() + " " + Status;
+				}
+
 				if(m_headers==null && wd.response != null && wd.response.Headers != null)
 				{
 					string hdr="";
@@ -862,7 +1047,7 @@ namespace WorldWind.Net.Monitor
 
 		public override string ToString()
 		{
-			string proxy = System.Net.GlobalProxySelection.Select.GetProxy(new Uri(Url)).ToString();
+			string proxy = System.Net.WebRequest.DefaultWebProxy.GetProxy(new Uri(Url)).ToString();
 			return string.Format(CultureInfo.CurrentCulture,
 				"Start time: {7}{0}Total download time: {10}{0}Average transfer rate: {11:f1} kbit/s{0}Url: {1}{0}Target file: {2}{0}Progress: {3}/{4} bytes{0}Status: {5}{0}Proxy: {8}{0}{0}Response headers:{0}{9}{0}{6}{0}",
 				Environment.NewLine,
@@ -876,12 +1061,9 @@ namespace WorldWind.Net.Monitor
 				proxy,
 				"".PadRight(40,'='),
 				this.m_elapsed,
-				m_contentLength>0 ? m_contentLength*8/m_elapsed.TotalSeconds/1000 : 0
-				);
-
+				m_contentLength>0 ? m_contentLength*8/m_elapsed.TotalSeconds/1000 : 0);
 		}
 	}
-
 
 	/// <summary>
 	/// Sorts the debug window list.
@@ -891,15 +1073,28 @@ namespace WorldWind.Net.Monitor
 		private int column;
 		private SortOrder	sortOrder = SortOrder.Ascending;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DebugItemComparer"/> class.
+		/// </summary>
 		public DebugItemComparer()
-		{}
-
-		public DebugItemComparer(int column, SortOrder sortOrder)
 		{
-			column = column;
-			sortOrder = sortOrder;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DebugItemComparer"/> class.
+		/// </summary>
+		/// <param name="column">The column to sort on.</param>
+		/// <param name="sortOrder">The sort order.</param>
+		public DebugItemComparer(int column, SortOrder sortOrder)
+		{
+			this.column = column;
+			this.sortOrder = sortOrder;
+		}
+
+		/// <summary>
+		/// Sorts by a specific column.
+		/// </summary>
+		/// <param name="column">The column to sort by.</param>
 		public void SortColumn( int column )
 		{
 			if ( this.column != column )
@@ -921,6 +1116,41 @@ namespace WorldWind.Net.Monitor
 			}
 		}
 
+		/// <summary>
+		/// Compares two objects and returns a value indicating whether one
+		/// is less than, equal to or greater than the other.
+		/// </summary>
+		/// <param name="x">First object to compare.</param>
+		/// <param name="y">Second object to compare.</param>
+		/// <returns>
+		/// 	<list type="table">
+		/// 		<listheader>
+		/// 			<term>Value</term>
+		/// 			<description>Condition</description>
+		/// 		</listheader>
+		/// 		<item>
+		/// 			<term> Less than zero</term>
+		/// 			<description>
+		/// 				<paramref name="x"/> is less than <paramref name="y"/>.</description>
+		/// 		</item>
+		/// 		<item>
+		/// 			<term> Zero</term>
+		/// 			<description>
+		/// 				<paramref name="x"/> equals <paramref name="y"/>.</description>
+		/// 		</item>
+		/// 		<item>
+		/// 			<term> Greater than zero</term>
+		/// 			<description>
+		/// 				<paramref name="x"/> is greater than <paramref name="y"/>.</description>
+		/// 		</item>
+		/// 	</list>
+		/// </returns>
+		/// <exception cref="T:System.ArgumentException">
+		/// 	<para>Neither <paramref name="x"/> nor <paramref name="y"/> implements the <see cref="T:System.IComparable"/> interface.</para>
+		/// 	<para>-or-</para>
+		/// 	<para>
+		/// 		<paramref name="x"/> and <paramref name="y"/> are of different types and neither one can handle comparisons with the other.</para>
+		/// </exception>
 		public int Compare(object x, object y)
 		{
 			if (sortOrder == SortOrder.None)

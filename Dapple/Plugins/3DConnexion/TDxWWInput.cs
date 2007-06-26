@@ -200,7 +200,7 @@ namespace ThreeDconnexion.Plugin
         static WorldWindow m_WW = null;
         static Dapple.MainForm m_app; 
         static CameraBase m_TheCamera = null;
-        static Vector3d m_Position;
+        static Point3d m_Position;
         TDconnexion.TDxSensorInputEvent m_SensorEventHandler = null;
         TDconnexion.TDxKeyboardEvent m_KeyEventHandler = null;
         static double m_dLastHeight = 0;
@@ -234,7 +234,7 @@ namespace ThreeDconnexion.Plugin
 
                   m_TheSensor = m_TheInputDevice.Sensor;
                   m_TheKeyBoard = m_TheInputDevice.Keyboard;
-                  m_Position = new Vector3d();
+                  m_Position = new Point3d();
                   SetCameraMode();
                   m_KeyEventHandler = new TDconnexion.TDxKeyboardEvent(KeyboardEventHandler);
                   m_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;

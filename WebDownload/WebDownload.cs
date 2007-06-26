@@ -3,15 +3,16 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using System.Xml;
 using Utility;
+using WorldWind;
 
 namespace WorldWind.Net
 {
    public delegate void DownloadProgressHandler(int bytesRead, int totalBytes);
-   public delegate void DownloadCompleteHandler(WebDownload downloadInfo);
-   public delegate void DownloadDebugHandler(WebDownload wd);
+	public delegate void DownloadCompleteHandler(WebDownload wd);
 
    public enum DownloadType
    {
@@ -19,9 +20,6 @@ namespace WorldWind.Net
       Wms
    }
 
-   /// <summary>
-   /// 
-   /// </summary>
    public class WebDownload : IDisposable
    {
       public enum HttpProtoVersion
@@ -33,6 +31,7 @@ namespace WorldWind.Net
       #region Static proxy properties
 
       static public HttpProtoVersion useProto;
+		static public bool Log404Errors = false;
       static public bool useWindowsDefaultProxy = true;
       static public string proxyUrl = "";
       static public bool useDynamicProxy;
@@ -46,7 +45,8 @@ namespace WorldWind.Net
          "World Wind v{0} ({1}, {2})",
          System.Windows.Forms.Application.ProductVersion,
          Environment.OSVersion.ToString(),
-         System.Globalization.CultureInfo.CurrentCulture.Name);
+			CultureInfo.CurrentCulture.Name);
+
 
       public string Url;
 
@@ -54,7 +54,6 @@ namespace WorldWind.Net
       /// Memory downloads fills this stream
       /// </summary>
       public Stream ContentStream;
-
 
       public string SavedFilePath;
       public bool IsComplete;
@@ -68,9 +67,14 @@ namespace WorldWind.Net
       /// <summary>
       /// Called to update debug window.
       /// </summary>
-      public static DownloadDebugHandler DebugCallback;
+		public static DownloadCompleteHandler DebugCallback;
 
-      /// <summary>
+		/// <summary>
+		/// Called when a download has ended with success or failure
+		/// </summary>
+		public static DownloadCompleteHandler DownloadEnded;
+
+		/// <summary>
       /// Called when download is completed.  Call Verify from event handler to throw any exception.
       /// </summary>
       public DownloadCompleteHandler CompleteCallback;
@@ -80,6 +84,11 @@ namespace WorldWind.Net
       public int BytesProcessed;
       public int ContentLength;
 
+		// variables to allow placefinder to use gzipped requests
+		//  *default to uncompressed requests to avoid breaking other things
+		public bool Compressed = false;
+		public string ContentEncoding;
+
       /// <summary>
       /// The download start time (or MinValue if not yet started)
       /// </summary>
@@ -87,12 +96,18 @@ namespace WorldWind.Net
 
       internal HttpWebRequest request;
       internal HttpWebResponse response;
+        internal Stream responseStream;
+        internal byte[] readBuffer;
+        internal bool asyncInProgress = false;
 
       protected Exception downloadException;
 
       protected bool isMemoryDownload;
-      private bool stopFlag = false;
-      protected Thread dlThread;
+        /// <summary>
+        /// used to signal thread abortion; if true, the download thread was aborted
+        /// </summary>
+//        protected Thread dlThread;
+
       protected bool m_bXML = false;
       /// <summary>
       /// Constructor
@@ -110,17 +125,6 @@ namespace WorldWind.Net
       {
       }
 
-#if DEBUG
-
-      ~WebDownload()
-      {
-         // Somebody forgot to dispose me...
-         // We've done what we can for now (mashi)
-         // Debug.Assert(request==null);
-      }
-
-#endif
-
       /// <summary>
       /// Whether the download is currently being processed (active).
       /// </summary>
@@ -128,7 +132,7 @@ namespace WorldWind.Net
       {
          get
          {
-            return dlThread != null && dlThread.IsAlive;
+                return asyncInProgress;
          }
       }
 
@@ -144,6 +148,17 @@ namespace WorldWind.Net
       }
 
       /// <summary>
+      /// Is this an XML download?
+      /// </summary>
+      public bool XML
+      {
+         get
+         {
+            return m_bXML;
+         }
+      }
+
+      /// <summary>
       /// Asynchronous download of HTTP data to file. 
       /// </summary>
       public void BackgroundDownloadFile()
@@ -151,18 +166,8 @@ namespace WorldWind.Net
          if (CompleteCallback == null)
             throw new ArgumentException("No download complete callback specified.");
 
-         ThreadPool.QueueUserWorkItem(new WaitCallback(Download));
-
-         //dlThread = new Thread(new ThreadStart(Download));
-         //dlThread.Name = "WebDownload.dlThread";
-         //dlThread.IsBackground = true;
-         //dlThread.Start();
-      }
-
-      public void Download(object statusInfo)
-      {
-         Download();
-      }
+            DownloadAsync();
+		}
 
       /// <summary>
       /// Asynchronous download of HTTP data to file.
@@ -191,12 +196,7 @@ namespace WorldWind.Net
             throw new ArgumentException("No download complete callback specified.");
 
          isMemoryDownload = true;
-         ThreadPool.QueueUserWorkItem(new WaitCallback(Download));
-
-         //dlThread = new Thread(new ThreadStart(Download));
-         //dlThread.Name = "WebDownload.dlThread(2)";
-         //dlThread.IsBackground = true;
-         //dlThread.Start();
+            DownloadAsync();
       }
 
       /// <summary>
@@ -211,6 +211,7 @@ namespace WorldWind.Net
       /// <summary>
       /// Download image of specified type. (handles server errors for WMS type)
       /// </summary>
+		/// <param name="dlType">Type of download.</param>
       public void BackgroundDownloadMemory(DownloadType dlType)
       {
          DownloadType = dlType;
@@ -235,6 +236,10 @@ namespace WorldWind.Net
          DownloadMemory();
       }
 
+		/// <summary>
+		/// HTTP downloads to memory.
+		/// </summary>
+		/// <param name="progressCallback">The progress callback.</param>
       public void DownloadMemory(DownloadProgressHandler progressCallback)
       {
          ProgressCallback += progressCallback;
@@ -300,24 +305,50 @@ namespace WorldWind.Net
       /// </summary>
       public void Cancel()
       {
-         CompleteCallback = null;
-         ProgressCallback = null;
-         if (dlThread != null && dlThread != Thread.CurrentThread)
-         {
-            if (dlThread.IsAlive)
-               stopFlag = true;
-            if (!dlThread.Join(500))
-               dlThread.Abort();
-            dlThread = null;
-         }
-      }
+			// completed downloads can't be cancelled.
+			if (IsComplete)
+				return;
+
+            if (asyncInProgress)
+			{
+                asyncInProgress = false;
+                Log.Write(Log.Levels.Debug, "Cancelling async download for " + this.Url);
+
+                if(request != null)
+                    request.Abort();
+                if(response != null)
+                    response.Close();
+            }
+
+            // cancelled downloads must still be verified to set
+            // the proper error bits and avoid immediate re-download
+            if (CompleteCallback == null)
+            {
+                Verify();
+            }
+            else
+            {
+                try
+                {
+                    CompleteCallback(this);
+                }
+                catch
+                {
+
+                }
+            }
+            OnDebugCallback(this);
+            OnDownloadEnded(this);
+            // it's not really complete, but done with...
+            IsComplete = true;
+        }
 
       /// <summary>
       /// Notify event subscribers of download progress.
       /// </summary>
       /// <param name="bytesRead">Number of bytes read.</param>
       /// <param name="totalBytes">Total number of bytes for request or 0 if unknown.</param>
-      protected void OnProgressCallback(int bytesRead, int totalBytes)
+		private void OnProgressCallback(int bytesRead, int totalBytes)
       {
          if (ProgressCallback != null)
          {
@@ -325,7 +356,11 @@ namespace WorldWind.Net
          }
       }
 
-      protected static void OnDebugCallback(WebDownload wd)
+		/// <summary>
+		/// Called with detailed information about the download.
+		/// </summary>
+		/// <param name="wd">The WebDownload.</param>
+		private static void OnDebugCallback(WebDownload wd)
       {
          if (DebugCallback != null)
          {
@@ -333,51 +368,29 @@ namespace WorldWind.Net
          }
       }
 
-      /// <summary>
-      /// Synchronous HTTP download
-      /// </summary>
-      protected virtual void Download()
-      {
-         Debug.Assert(Url.StartsWith("http://"));
-         DownloadStartTime = DateTime.Now;
-         try
-         {
-            try
+		/// <summary>
+		/// Called when downloading has ended.
+		/// </summary>
+		/// <param name="wd">The download.</param>
+		private static void OnDownloadEnded(WebDownload wd)
+		{
+			if (DownloadEnded != null)
+			{
+				DownloadEnded(wd);
+			}
+		}
+
+        protected HttpWebRequest BuildRequest()
+        {
+            // Create the request object.
+            request = (HttpWebRequest)WebRequest.Create(Url);
+            request.UserAgent = UserAgent;
+
+
+            if (this.Compressed)
             {
-               // If a registered progress-callback, inform it of our download progress so far.
-               OnProgressCallback(0, -1);
-               OnDebugCallback(this);
-
-               // check to see if thread was aborted (multiple such checks within the thread function)
-               if (stopFlag)
-               {
-                  IsComplete = true;
-                  return;
-               }
-
-               // create content stream from memory or file
-               if (isMemoryDownload && ContentStream == null)
-               {
-                  ContentStream = new MemoryStream();
-               }
-               else
-               {
-                  // Download to file
-                  string targetDirectory = Path.GetDirectoryName(SavedFilePath);
-                  if (targetDirectory.Length > 0)
-                     Directory.CreateDirectory(targetDirectory);
-                  ContentStream = new FileStream(SavedFilePath, FileMode.Create);
-               }
-
-               // Create the request object.
-               request = (HttpWebRequest)WebRequest.Create(Url);
-               request.UserAgent = UserAgent;
-
-               if (stopFlag)
-               {
-                  IsComplete = true;
-                  return;
-               }
+                request.Headers.Add("Accept-Encoding", "gzip,deflate");
+            }
 
                request.Proxy = ProxyHelper.DetermineProxyForUrl(
                   Url,
@@ -389,75 +402,120 @@ namespace WorldWind.Net
 
                request.ProtocolVersion = HttpVersion.Version11;
 
+            return request;
+        }
 
-               // TODO: probably better done via BeginGetResponse() / EndGetResponse() because this may block for a while
-               // causing warnings in thread abortion.
-               using (response = request.GetResponse() as HttpWebResponse)
+        protected void BuildContentStream()
+        {
+            // create content stream from memory or file
+            if (isMemoryDownload && ContentStream == null)
+            {
+                ContentStream = new MemoryStream();
+            }
+            else
+            {
+                // Download to file
+                string targetDirectory = Path.GetDirectoryName(SavedFilePath);
+                if (targetDirectory.Length > 0)
+                    Directory.CreateDirectory(targetDirectory);
+                ContentStream = new FileStream(SavedFilePath, FileMode.Create);
+            }
+        }
+
+      /// <summary>
+      /// Synchronous HTTP download
+      /// </summary>
+      protected virtual void Download()
+      {
+            Log.Write(Log.Levels.Debug, "Starting sync download for " + this.Url);
+
+            Debug.Assert(Url.StartsWith("http://"));
+            DownloadStartTime = DateTime.Now;
+            try
+            {
+               try
                {
-                  // only if server responds 200 OK
-                  if (response.StatusCode == HttpStatusCode.OK)
+                  // If a registered progress-callback, inform it of our download progress so far.
+                  OnProgressCallback(0, 1);
+                  OnDebugCallback(this);
+
+                  BuildContentStream();
+                  request = BuildRequest();
+
+
+                  // TODO: probably better done via BeginGetResponse() / EndGetResponse() because this may block for a while
+                  // causing warnings in thread abortion.
+                  using (response = request.GetResponse() as HttpWebResponse)
                   {
-                     if (m_bXML)
+                     // only if server responds 200 OK
+                     if (response.StatusCode == HttpStatusCode.OK)
                      {
-                        XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
-                        oSettings.IgnoreWhitespace = true;
-                        oSettings.ProhibitDtd = false;
-                        oSettings.XmlResolver = null;
-                        oSettings.ValidationType = ValidationType.None;
-                        using (XmlReader oResponseXmlStream = XmlReader.Create(response.GetResponseStream(), oSettings))
+                        if (m_bXML)
                         {
-                           XmlDocument doc = new XmlDocument();
-                           doc.Load(oResponseXmlStream);
-                           doc.Save(ContentStream);
-                        }
-                     }
-                     else
-                     {
-                        ContentType = response.ContentType;
-
-                        // Find the data size from the headers.
-                        string strContentLength = response.Headers["Content-Length"];
-                        if (strContentLength != null)
-                        {
-                           ContentLength = int.Parse(strContentLength, CultureInfo.InvariantCulture);
-                        }
-
-                        byte[] readBuffer = new byte[1500];
-                        using (Stream responseStream = response.GetResponseStream())
-                        {
-                           while (true)
+                           XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
+                           oSettings.IgnoreWhitespace = true;
+                           oSettings.ProhibitDtd = false;
+                           oSettings.XmlResolver = null;
+                           oSettings.ValidationType = ValidationType.None;
+                           using (XmlReader oResponseXmlStream = XmlReader.Create(response.GetResponseStream(), oSettings))
                            {
-                              //  Pass do.readBuffer to BeginRead.
-                              if (stopFlag)
-                              {
-                                 IsComplete = true;
-                                 return;
-                              }
-
-                              //  Pass do.readBuffer to BeginRead.
-                              int bytesRead = responseStream.Read(readBuffer, 0, readBuffer.Length);
-                              if (bytesRead <= 0)
-                                 break;
-
-                              ContentStream.Write(readBuffer, 0, bytesRead);
-                              BytesProcessed += bytesRead;
-
-                              // If a registered progress-callback, inform it of our download progress so far.
-                              OnProgressCallback(BytesProcessed, ContentLength);
-                              OnDebugCallback(this);
-
-                              // Give up our timeslice, to allow other thread (i.e. GUI progress to respond)
-                              Thread.Sleep(0);
+                              XmlDocument doc = new XmlDocument();
+                              doc.Load(oResponseXmlStream);
+                              doc.Save(ContentStream);
                            }
                         }
+                        else
+                        {
+                           ContentType = response.ContentType;
+
+
+                           // Find the data size from the headers.
+                           string strContentLength = response.Headers["Content-Length"];
+                           if (strContentLength != null)
+                           {
+                              ContentLength = int.Parse(strContentLength, CultureInfo.InvariantCulture);
+                           }
+
+
+
+                           byte[] readBuffer = new byte[1500];
+                           using (Stream responseStream = response.GetResponseStream())
+                           {
+                              while (true)
+                              {
+                                 //  Pass do.readBuffer to BeginRead.
+                                 int bytesRead = responseStream.Read(readBuffer, 0, readBuffer.Length);
+                                 if (bytesRead <= 0)
+                                    break;
+
+                                 //TODO: uncompress responseStream if necessary so that ContentStream is always uncompressed
+                                 //  - at the moment, ContentStream is compressed if the requesting code sets
+                                 //    download.Compressed == true, so ContentStream must be decompressed 
+                                 //    by whatever code is requesting the gzipped download
+                                 //  - this hack only works for requests made using the methods that download to memory,
+                                 //    requests downloading to file will result in a gzipped file
+                                 //  - requests that do not explicity set download.Compressed = true should be unaffected
+
+                                 ContentStream.Write(readBuffer, 0, bytesRead);
+
+                                 BytesProcessed += bytesRead;
+
+                                 // If a registered progress-callback, inform it of our download progress so far.
+                                 OnProgressCallback(BytesProcessed, ContentLength);
+                                 OnDebugCallback(this);
+                              }
+                           }
+
+                        }
                      }
                   }
-                  else
-                  {
-                     throw new ApplicationException("BAD REQUEST");
-                  }
+                  HandleErrors();
                }
-               HandleErrors();
+               catch (ThreadAbortException)
+                {
+                    // re-throw to avoid it being caught by the catch-all below
+                    Log.Write(Log.Levels.Verbose, "Re-throwing ThreadAbortException.");
+                    throw;
             }
             catch (System.Configuration.ConfigurationException)
             {
@@ -479,19 +537,137 @@ namespace WorldWind.Net
                   {
                      File.Delete(SavedFilePath);
                   }
-               }
+					} 
                catch (Exception)
                {
                }
                SaveException(caught);
             }
 
-            if (stopFlag)
+				if (ContentLength == 0)
+				{
+					ContentLength = BytesProcessed;
+					// If a registered progress-callback, inform it of our completion
+					OnProgressCallback(BytesProcessed, ContentLength);
+				}
+
+				if (ContentStream is MemoryStream)
+				{
+					ContentStream.Seek(0, SeekOrigin.Begin);
+				}
+				else if (ContentStream != null)
+				{
+					ContentStream.Close();
+					ContentStream = null;
+				}
+			
+				OnDebugCallback(this);
+				
+				if (CompleteCallback == null)
+				{
+					Verify();
+				}
+				else
+				{
+					CompleteCallback(this);
+				}
+			}
+			catch (ThreadAbortException)
+			{
+                Log.Write(Log.Levels.Verbose, "Download aborted.");
+            }
+			finally
             {
                IsComplete = true;
-               return;
+			}
+
+			OnDownloadEnded(this);
+		}
+
+        private static void AsyncResponseCallback(IAsyncResult asyncResult)
+        {
+            WebDownload webDL = (WebDownload)asyncResult.AsyncState;
+
+            if (webDL.request == null)
+            {
+                Log.Write(Log.Levels.Debug, "AsyncResponseCallback: request was cancelled for " + webDL.Url);
+                return;
             }
 
+            try
+            {
+                webDL.response = webDL.request.EndGetResponse(asyncResult) as HttpWebResponse;
+
+                // only if server responds 200 OK
+                if (webDL.response.StatusCode == HttpStatusCode.OK)
+                {
+                    webDL.ContentType = webDL.response.ContentType;
+                    webDL.ContentEncoding = webDL.response.ContentEncoding;
+
+                    // Find the data size from the headers.
+                    string strContentLength = webDL.response.Headers["Content-Length"];
+                    if (strContentLength != null)
+                    {
+                        webDL.ContentLength = int.Parse(strContentLength, CultureInfo.InvariantCulture);
+                    }
+
+                    webDL.responseStream = webDL.response.GetResponseStream();
+
+                    IAsyncResult result = webDL.responseStream.BeginRead(webDL.readBuffer, 0, webDL.readBuffer.Length, new AsyncCallback(AsyncReadCallback), webDL);
+                    return;
+                }
+                else
+                {
+                    webDL.response.Close();
+                }
+            }
+            catch (WebException e)
+            {
+                // request cancelled.
+				Utility.Log.Write(Log.Levels.Debug, "NET", "AsyncResponseCallback(): WebException: " + e.Status.ToString());
+                webDL.SaveException(e);
+                webDL.Cancel();
+            }
+        }
+
+        private static void AsyncReadCallback(IAsyncResult asyncResult)
+        {
+            WebDownload webDL = (WebDownload)asyncResult.AsyncState;
+
+            Stream responseStream = webDL.responseStream;
+
+            try
+            {
+                int read = responseStream.EndRead(asyncResult);
+                if (read > 0)
+                {
+                    webDL.ContentStream.Write(webDL.readBuffer, 0, read);
+                    webDL.BytesProcessed += read;
+                    webDL.OnProgressCallback(webDL.BytesProcessed, webDL.ContentLength);
+                    IAsyncResult asynchronousResult = responseStream.BeginRead(webDL.readBuffer, 0, webDL.readBuffer.Length, new AsyncCallback(AsyncReadCallback), webDL);
+                    return;
+                }
+                else
+                {
+                    webDL.AsyncFinishDownload();
+                }
+            }
+            catch (IOException ex)
+            {
+                webDL.SaveException(ex);
+                webDL.Cancel();
+            }
+            catch (WebException e)
+            {
+                // request cancelled.
+				Utility.Log.Write(Log.Levels.Debug, "NET", "AsyncReadCallback(): WebException: " + e.Status.ToString());
+                webDL.SaveException(e);
+                webDL.Cancel();
+            }
+        }
+
+        private void AsyncFinishDownload()
+        {
             if (ContentLength == 0)
             {
                ContentLength = BytesProcessed;
@@ -513,33 +689,61 @@ namespace WorldWind.Net
 
             if (CompleteCallback == null)
             {
-               //Verify();
-#if DEBUG
-               // Used to be that it verified here, this crashes if canceled from downloads timing out (See GeoSpatialDownloadRequest.Cancel)
-               // Just notify this in debug mode for now, this may need further thought
-               // This class should only be used with CompleteCallback's anyway (there are exceptions thrown)
-               // so should be safe.
-               if (Exception != null)
-               {
-                  if (Exception.InnerException != null)
-                     System.Diagnostics.Debug.WriteLine("Exception in download: " + Url + "\n\t" + Exception.InnerException.Message);
-                  else
-                     System.Diagnostics.Debug.WriteLine("Exception in download: " + Url + "\n\t" + Exception.Message);
-               }
-#endif
+                Verify();
             }
             else
             {
-               CompleteCallback(this);
+                try
+                {
+                    CompleteCallback(this);
+                }
+                catch
+                {
+                }
             }
-         }
-         catch (ThreadAbortException)
-         { }
-         finally
-         {
-            IsComplete = true;
-         }
-      }
+
+            OnDownloadEnded(this);
+			IsComplete = true;
+		}
+
+        protected void DownloadAsync()
+        {
+            asyncInProgress = true;
+            Log.Write(Log.Levels.Debug, "Starting async download for " + this.Url);
+
+            Debug.Assert(Url.StartsWith("http://"));
+            DownloadStartTime = DateTime.Now;
+			try
+			{
+				// If a registered progress-callback, inform it of our download progress so far.
+				OnProgressCallback(0, 1);
+				OnDebugCallback(this);
+
+				BuildContentStream();
+				request = BuildRequest();
+				request.Timeout = 1000;
+
+				readBuffer = new byte[1500];
+
+				// TODO: probably better done via BeginGetResponse() / EndGetResponse() because this may block for a while
+				// causing warnings in thread abortion.
+				IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(AsyncResponseCallback), this);
+			}
+			catch (System.Configuration.ConfigurationException)
+			{
+				// is thrown by WebRequest.Create if App.config is not in the correct format
+				// TODO: don't know what to do with it
+				throw;
+			}
+			catch (WebException e)
+			{
+				// Abort() was called.
+				Utility.Log.Write(Log.Levels.Debug, "NET", "DownloadAsync(): WebException: " + e.Status.ToString());
+				Cancel();
+			}
+        }
+		
+
 
       /// <summary>
       /// Handle server errors that don't get trapped by the web request itself.
@@ -571,6 +775,8 @@ namespace WorldWind.Net
       public void Verify()
       {
          if (Exception != null)
+                //these occur regularly - ignore
+                if(!(Exception is WebException))
             throw Exception;
       }
 
@@ -587,9 +793,12 @@ namespace WorldWind.Net
             // Don't log canceled downloads
             return;
 
-         Log.Write("HTTP", "Error: " + Url);
-         Log.Write("HTTP", "     : " + exception.Message);
-      }
+			if(Log404Errors)
+			{
+				Log.Write(Log.Levels.Error, "HTTP", "Error: " + Url );
+				Log.Write(Log.Levels.Error+1, "HTTP", "     : " + exception.Message );
+			}
+		}
 
       /// <summary>
       /// Reads the xml response from the server and throws an error with the message.
@@ -614,16 +823,16 @@ namespace WorldWind.Net
 
       #region IDisposable Members
 
-      public void Dispose()
-      {
-         if (dlThread != null && dlThread != Thread.CurrentThread)
-         {
-            if (dlThread.IsAlive)
-               stopFlag = true;
-            if (!dlThread.Join(500))
-               dlThread.Abort();
-            dlThread = null;
-         }
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or
+		/// resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+            if (asyncInProgress)
+            {
+                this.Cancel();
+            }
 
          if (request != null)
          {

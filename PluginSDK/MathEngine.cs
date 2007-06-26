@@ -25,7 +25,7 @@ namespace WorldWind
 			double latitude,
 			double longitude,
 			double radius,
-         ref Vector3d v
+         ref Point3d v
 			)
 		{
 			latitude *= System.Math.PI / 180.0f;
@@ -37,13 +37,13 @@ namespace WorldWind
 			v.Y = radCosLat * Math.Sin(longitude);
 			v.Z = radius * Math.Sin(latitude);
 		}
-      public static Vector3d SphericalToCartesian(
+      public static Point3d SphericalToCartesian(
          double latitude,
          double longitude,
          double radius
          )
       {
-         Vector3d v = Vector3d.Empty;
+         Point3d v = Point3d.Empty;
          SphericalToCartesian(latitude, longitude, radius, ref v);
          return v;   
       }
@@ -59,7 +59,7 @@ namespace WorldWind
 			Angle latitude,
 			Angle longitude,
 			double radius,
-         ref Vector3d v)
+         ref Point3d v)
 		{
 			double latRadians = latitude.Radians;
 			double lonRadians = longitude.Radians;
@@ -70,12 +70,12 @@ namespace WorldWind
 			v.Y = radCosLat * Math.Sin(lonRadians);
 			v.Z = radius * Math.Sin(latRadians);
 		}
-      public static Vector3d SphericalToCartesian(
+      public static Point3d SphericalToCartesian(
          Angle latitude,
          Angle longitude,
          double radius)
       {
-         Vector3d v = Vector3d.Empty;
+         Point3d v = Point3d.Empty;
          SphericalToCartesian(latitude, longitude, radius, ref v);
          return v;   
       }
@@ -84,13 +84,13 @@ namespace WorldWind
 		/// Converts position in cartesian coordinates (XYZ) to spherical (lat/lon/radius) coordinates in radians.
 		/// </summary>
 		/// <returns>Coordinates converted to spherical coordinates.  X=radius, Y=latitude (radians), Z=longitude (radians).</returns>
-      public static Vector3d CartesianToSpherical(double x, double y, double z)
+      public static Point3d CartesianToSpherical(double x, double y, double z)
 		{
 			double rho = Math.Sqrt((x * x + y * y + z * z));
 			double longitude = Math.Atan2(y,x);
 			double latitude = (Math.Asin(z / rho));
 
-         return new Vector3d(rho, latitude, longitude);
+         return new Point3d(rho, latitude, longitude);
 		}
 		
 		/// <summary>
@@ -196,7 +196,7 @@ namespace WorldWind
 		/// <param name="p">Plane</param>
 		/// <param name="v">Point (XYZ coordinates)</param>
 		/// <returns>The shortest distance between the point and the plane.</returns>
-		public static double DistancePlaneToPoint(Plane2d p, Vector3d v)
+		public static double DistancePlaneToPoint(Plane2d p, Point3d v)
 		{
 			return p.A * v.X + p.B * v.Y + p.C + v.Z + p.D;
 		}

@@ -106,10 +106,10 @@ namespace WorldWind
 		/// </summary>
 		/// <returns>true when the point is inside.</returns>
 		/// <param name="v">XYZ in world coordinates of the point to test.</param>
-		public bool ContainsPoint(Vector3d v)
+		public bool ContainsPoint(Point3d v)
 		{
 			foreach(Plane2d p in this.planes)
-				if(Vector3d.dot(new Vector3d(p.A, p.B, p.C), v) + p.D < 0)
+				if(Point3d.dot(new Point3d(p.A, p.B, p.C), v) + p.D < 0)
 					return false;
 
 			return true;
@@ -134,7 +134,7 @@ namespace WorldWind
 				int iPtIn = 1;
 				for(int i = 0; i < 8; i++)
 				{
-					if(Vector3d.dot(new Vector3d(p.A,p.B,p.C), bb.corners[i]) + p.D < 0)
+					if(Point3d.dot(new Point3d(p.A,p.B,p.C), bb.corners[i]) + p.D < 0)
 					{
 						iPtIn = 0;
 						--iInCount;
@@ -159,7 +159,7 @@ namespace WorldWind
 		/// <returns>true when the box intersects with the frustum.</returns>
 		public bool Intersects(BoundingBox bb)
 		{
-         Vector3d v;
+         Point3d v;
 
          // Optimize by always checking bounding sphere first
          if (!IntersectsOne(bb.boundsphere))
@@ -173,7 +173,7 @@ namespace WorldWind
 				bool isInside = false;
 				for(int i = 0; i < 8; i++)
 				{
-					if(Vector3d.dot(v, bb.corners[i]) + p.D >= 0)
+					if(Point3d.dot(v, bb.corners[i]) + p.D >= 0)
 					{
 						isInside = true;
 						break;

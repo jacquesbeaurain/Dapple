@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Globalization;
 using WorldWind.Net.Wms;
 
 namespace WorldWind.Terrain
@@ -15,10 +15,24 @@ namespace WorldWind.Terrain
    {
       public static int CacheSize = 100;
       protected TerrainTileService m_terrainTileService;
-      protected TerrainAccessor[] m_higherResolutionSubsets;
+      //protected WmsImageStore m_wmsElevationSet;
       protected Hashtable m_tileCache = new Hashtable();
 
       #region Properties
+
+      /*
+      public WmsImageStore WmsElevationStore
+      {
+         get
+         {
+            return m_wmsElevationSet;
+         }
+         set
+         {
+            m_wmsElevationSet = value;
+         }
+      }
+       */
 
       public TerrainAccessor this[int index]
       {
@@ -61,11 +75,11 @@ namespace WorldWind.Terrain
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <param name="targetSamplesPerDegree"></param>
       /// <returns>Returns 0 if the tile is not available on disk.</returns>
-      public override float GetElevationAt(float latitude, float longitude, float targetSamplesPerDegree)
+      public override float GetElevationAt(double latitude, double longitude, double targetSamplesPerDegree)
       {
          try
          {
-            if (m_terrainTileService == null || targetSamplesPerDegree < 3.0)
+            if (m_terrainTileService == null || targetSamplesPerDegree < World.Settings.MinSamplesPerDegree)
                return 0;
 
             if (m_higherResolutionSubsets != null)
@@ -98,6 +112,58 @@ namespace WorldWind.Terrain
          }
          return 0;
       }
+      /// <summary>
+      /// Get fast terrain elevation at specified location from already loaded data.
+      /// Will not trigger any download or data loading from files in cache - just memory.
+      /// </summary>
+      /// <param name="latitude">Latitude in decimal degrees.</param>
+      /// <param name="longitude">Longitude in decimal degrees.</param>
+      /// <returns>Returns NaN if no tile is available in cache.</returns>
+      public override float GetCachedElevationAt(double latitude, double longitude)
+      {
+         try
+         {
+            if (m_terrainTileService == null)
+               return 0;
+            // Use higher res subset if any
+            if (m_higherResolutionSubsets != null)
+            {
+               foreach (TerrainAccessor higherResSub in m_higherResolutionSubsets)
+               {
+                  if (latitude > higherResSub.South && latitude < higherResSub.North &&
+                      longitude > higherResSub.West && longitude < higherResSub.East)
+                  {
+                     return higherResSub.GetCachedElevationAt(latitude, longitude);
+                  }
+               }
+            }
+            // Look for a tile starting from higher res level, moving down the levels
+            TerrainTileCacheEntry ttce = null;
+            for (int targetLevel = m_terrainTileService.NumberLevels - 1; targetLevel >= 0; targetLevel--)
+            {
+               // File name and path for that level
+               double tileSize = m_terrainTileService.LevelZeroTileSizeDegrees * Math.Pow(0.5, targetLevel);
+               int row = TerrainTileService.GetRowFromLatitude(latitude, tileSize);
+               int col = TerrainTileService.GetColFromLongitude(longitude, tileSize);
+               string terrainTileFilePath = string.Format(CultureInfo.InvariantCulture,
+                   @"{0}\{4}\{1:D4}\{1:D4}_{2:D4}.{3}",
+                   m_terrainTileService.TerrainTileDirectory, row, col, m_terrainTileService.FileExtension, targetLevel);
+               // Look in cache
+               ttce = (TerrainTileCacheEntry)m_tileCache[terrainTileFilePath];
+               if (ttce != null)
+               {
+                  // Tile found, get elevation from it
+                  ttce.LastAccess = DateTime.Now;
+                  return ttce.TerrainTile.GetElevationAt(latitude, longitude);
+               }
+            }
+         }
+         catch (Exception)
+         {
+         }
+         // No tile found - sorry.
+         return float.NaN;
+      }
 
       /// <summary>
       /// Get terrain elevation at specified location.  
@@ -105,7 +171,7 @@ namespace WorldWind.Terrain
       /// <param name="latitude">Latitude in decimal degrees.</param>
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <returns>Returns 0 if the tile is not available on disk.</returns>
-      public override float GetElevationAt(float latitude, float longitude)
+      public override float GetElevationAt(double latitude, double longitude)
       {
          return GetElevationAt(latitude, longitude, m_terrainTileService.SamplesPerTile / m_terrainTileService.LevelZeroTileSizeDegrees);
       }
@@ -118,7 +184,7 @@ namespace WorldWind.Terrain
       /// <param name="west">West edge in decimal degrees.</param>
       /// <param name="east">East edge in decimal degrees.</param>
       /// <param name="samples"></param>
-      public override TerrainTile GetElevationArray(float north, float south, float west, float east,
+      public override TerrainTile GetElevationArray(double north, double south, double west, double east,
          int samples)
       {
          TerrainTile res = null;
@@ -146,24 +212,46 @@ namespace WorldWind.Terrain
          res.IsInitialized = true;
          res.IsValid = true;
 
-         float samplesPerDegree = (samples / (north - south));
-         float latrange = Math.Abs(north - south);
-         float lonrange = Math.Abs(east - west);
+         double samplesPerDegree = (double)samples / (double)(north - south);
+         double latrange = Math.Abs(north - south);
+         double lonrange = Math.Abs(east - west);
          TerrainTileCacheEntry ttce = null;
 
-         res.ElevationData = new List<float>(samples * samples);
+         float[,] data = new float[samples, samples];
 
-         if (samplesPerDegree < 3.0)
-            return null;
-
-         float scaleFactor = 1.0f / (samples - 1);
-         float curLat, curLon;
-         for (int y = 0; y < samples; y++)
+         if (samplesPerDegree < World.Settings.MinSamplesPerDegree)
          {
-            for (int x = 0; x < samples; x++)
+            res.ElevationData = data;
+            return res;
+         }
+
+         double scaleFactor = (double)1 / (samples - 1);
+         for (int x = 0; x < samples; x++)
+         {
+            for (int y = 0; y < samples; y++)
             {
-               curLat = north - scaleFactor * latrange * x;
-               curLon = west + scaleFactor * lonrange * y;
+               double curLat = north - scaleFactor * latrange * x;
+               double curLon = west + scaleFactor * lonrange * y;
+
+               // Wrap lat/lon to fit range 90/-90 and -180/180 (PM 2006-11-17)
+               if (curLat > 90)
+               {
+                  curLat = 90 - (curLat - 90);
+                  curLon += 180;
+               }
+               if (curLat < -90)
+               {
+                  curLat = -90 - (curLat + 90);
+                  curLon += 180;
+               }
+               if (curLon > 180)
+               {
+                  curLon -= 360;
+               }
+               if (curLon < -180)
+               {
+                  curLon += 360;
+               }
 
                if (ttce == null ||
                   curLat < ttce.TerrainTile.South ||
@@ -185,9 +273,11 @@ namespace WorldWind.Terrain
                      res.IsValid = false;
                }
 
-               res.ElevationData.Add(ttce.TerrainTile.GetElevationAt(curLat, curLon));
+               data[x, y] = ttce.TerrainTile.GetElevationAt(curLat, curLon);
             }
          }
+         res.ElevationData = data;
+
          return res;
       }
 

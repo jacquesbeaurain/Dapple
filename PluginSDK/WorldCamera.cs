@@ -27,7 +27,7 @@ namespace WorldWind.Camera
 		/// </summary>
 		/// <param name="targetPosition"></param>
 		/// <param name="radius"></param>
-		public WorldCamera( Vector3d targetPosition,double radius ) : base( targetPosition, radius ) 
+		public WorldCamera( Point3d targetPosition,double radius ) : base( targetPosition, radius ) 
 		{
 			this._targetOrientation = m_Orientation;
 			this._targetDistance = this._distance;
@@ -48,7 +48,7 @@ namespace WorldWind.Camera
 				MathEngine.DegreesToRadians(lat),
 				MathEngine.DegreesToRadians(heading));
 
-			Vector3d v = Quaternion4d.QuaternionToEuler(this._targetOrientation);
+			Point3d v = Quaternion4d.QuaternionToEuler(this._targetOrientation);
 			this._targetLatitude.Radians = v.Y;
 			this._targetLongitude.Radians = v.X;
 			this._targetHeading.Radians = v.Z;
@@ -74,7 +74,7 @@ namespace WorldWind.Camera
 
 			m_Orientation = Quaternion4d.Slerp(m_Orientation, this._targetOrientation, percent);
 		
-			Vector3d v = Quaternion4d.QuaternionToEuler(m_Orientation);
+			Point3d v = Quaternion4d.QuaternionToEuler(m_Orientation);
 			if(!double.IsNaN(v.Y))
 			{
 				this._latitude.Radians = v.Y;
@@ -91,7 +91,7 @@ namespace WorldWind.Camera
       protected void NoSlerpToTargetOrientation()
       {
          m_Orientation = this._targetOrientation;
-         Vector3d v = Quaternion4d.QuaternionToEuler(m_Orientation);
+         Point3d v = Quaternion4d.QuaternionToEuler(m_Orientation);
          if (!double.IsNaN(v.Y))
          {
             this._latitude.Radians = v.Y;
@@ -238,7 +238,7 @@ namespace WorldWind.Camera
 			}
 
 			_targetOrientation = Quaternion4d.EulerToQuaternion(yaw.Radians, pitch.Radians, roll.Radians) * _targetOrientation;
-			Vector3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
+			Point3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
 			if(!double.IsNaN(v.Y))
 				this._targetLatitude.Radians = v.Y;
 			if(!double.IsNaN(v.X))
@@ -360,7 +360,7 @@ namespace WorldWind.Camera
 		/// </summary>
 		/// <param name="targetPosition"></param>
 		/// <param name="radius"></param>
-		public MomentumCamera( Vector3d targetPosition,double radius ) : base( targetPosition, radius ) 
+		public MomentumCamera( Point3d targetPosition,double radius ) : base( targetPosition, radius ) 
 		{
 			this._targetOrientation = m_Orientation;
 			this._targetDistance = this._distance;
@@ -389,7 +389,7 @@ namespace WorldWind.Camera
 			}
 
 			this._targetOrientation = Quaternion4d.EulerToQuaternion( yaw.Radians, pitch.Radians, roll.Radians ) * _targetOrientation;
-			Vector3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
+			Point3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
 			if(!double.IsNaN(v.Y))
 			{
 				this._targetLatitude.Radians = v.Y;
@@ -429,7 +429,7 @@ namespace WorldWind.Camera
 				lat.Radians,
 				_targetHeading.Radians);
 
-			Vector3d v = Quaternion4d.QuaternionToEuler(this._targetOrientation);
+			Point3d v = Quaternion4d.QuaternionToEuler(this._targetOrientation);
 			if(!double.IsNaN(v.Y))
 			{
 				_targetLatitude.Radians = v.Y;

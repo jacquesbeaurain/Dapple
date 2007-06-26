@@ -10,8 +10,8 @@ namespace WorldWind
 	/// </summary>
 	public class BoundingBox
 	{
-      public readonly Vector3d[] corners = new Vector3d[8];
-      public readonly BoundingSphere boundsphere = new BoundingSphere(new Vector3d(0.0,0.0,0.0), 0.0);
+      public readonly Point3d[] corners = new Point3d[8];
+      public readonly BoundingSphere boundsphere = new BoundingSphere(new Point3d(0.0,0.0,0.0), 0.0);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.BoundingSphere"/> class.
@@ -24,11 +24,11 @@ namespace WorldWind
 		/// <param name="v5"></param>
 		/// <param name="v6"></param>
 		/// <param name="v7"></param>
-		public BoundingBox(Vector3d v0, Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, Vector3d v5, Vector3d v6, Vector3d v7)
+		public BoundingBox(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
 		{
          Update(v0, v1, v2, v3, v4, v5, v6, v7);
 		}
-      public void Update(Vector3d v0, Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, Vector3d v5, Vector3d v6, Vector3d v7)
+      public void Update(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
       {
          this.corners[0] = v0;
          this.corners[1] = v1;
@@ -83,12 +83,12 @@ namespace WorldWind
          this.boundsphere.RadiusSq = 0.0;
 
          //Find the center.  In this case, we'll simply average the coordinates. 
-         foreach (Vector3d v in this.corners)
+         foreach (Point3d v in this.corners)
             this.boundsphere.Center += v;
          this.boundsphere.Center *= 1.0 / 8.0;
 
          //Loop through the coordinates and find the maximum distance from the center.  This is the radius.		
-         foreach (Vector3d v in this.corners)
+         foreach (Point3d v in this.corners)
          {
             double distSq = (v - this.boundsphere.Center).LengthSq;
             if (distSq > this.boundsphere.RadiusSq)
@@ -101,17 +101,17 @@ namespace WorldWind
 		/// </summary>
 		public double CalcRelativeScreenArea(CameraBase camera)
 		{
-			Vector3d a = camera.Project(corners[0]);
-			Vector3d b = camera.Project(corners[2]);
-			Vector3d c = camera.Project(corners[6]);
-			Vector3d d = camera.Project(corners[4]);
+			Point3d a = camera.Project(corners[0]);
+			Point3d b = camera.Project(corners[2]);
+			Point3d c = camera.Project(corners[6]);
+			Point3d d = camera.Project(corners[4]);
 
-			Vector3d ab = b - a;
-			Vector3d ac = c - a;
-			Vector3d ad = d - a;
+			Point3d ab = b - a;
+			Point3d ac = c - a;
+			Point3d ad = d - a;
 
-			double tri1SqArea = Vector3d.cross(ab,ac).LengthSq; 
-			double tri2SqArea = Vector3d.cross(ad,ac).LengthSq; 
+			double tri1SqArea = Point3d.cross(ab,ac).LengthSq; 
+			double tri2SqArea = Point3d.cross(ad,ac).LengthSq; 
 			// Real area = (sqrt(tri1SqArea)+sqrt(tri2SqArea))/2 but we're only interested in relative size
 			return tri1SqArea + tri2SqArea; 
 		}
