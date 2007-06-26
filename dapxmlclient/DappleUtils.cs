@@ -67,7 +67,16 @@ namespace Geosoft.Dap.Common
       /// <returns>default level zero tile size</returns>
       public static decimal LevelZeroTileSize(DataSet oDataset)
       {
-         return Math.Min(15, Math.Ceiling(10000 * (decimal)Math.Max(oDataset.Boundary.MaxY - oDataset.Boundary.MinY, oDataset.Boundary.MaxX - oDataset.Boundary.MinX)) / 10000);
+         // Round to ceiling of four decimals (>~ 10 meter resolution)
+         // Empirically determined as pretty good tile size choice for small data sets
+         decimal dLevelZero = (decimal) (Math.Ceiling(10000.0 * Math.Max(oDataset.Boundary.MaxY - oDataset.Boundary.MinY, oDataset.Boundary.MaxX - oDataset.Boundary.MinX)) / 10000.0);
+         
+         // Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
+         decimal dRet = (decimal) 22.5;
+         while (dLevelZero < dRet)
+            dRet /= 2;
+
+         return dRet;
       }
    }
 }
