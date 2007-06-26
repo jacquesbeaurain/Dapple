@@ -65,11 +65,6 @@ namespace WorldWind.Renderable
       protected QuadTile northEastChild;
       protected QuadTile southEastChild;
 
-      protected QuadTileSubset northWestChildSubset;
-      protected QuadTileSubset southWestChildSubset;
-      protected QuadTileSubset northEastChildSubset;
-      protected QuadTileSubset southEastChildSubset;
-
       protected CustomVertex.PositionColoredTextured[] northWestVertices;
       protected CustomVertex.PositionColoredTextured[] southWestVertices;
       protected CustomVertex.PositionColoredTextured[] northEastVertices;
@@ -237,54 +232,12 @@ namespace WorldWind.Renderable
          return child;
       }
 
-      private QuadTileSubset ComputeChildSubset(DrawArgs drawArgs, double childSouth, double childNorth, double childWest, double childEast, double tileSize)
-      {
-         int row = MathEngine.GetRowFromLatitude(childSouth, tileSize);
-         int col = MathEngine.GetColFromLongitude(childWest, tileSize);
-
-         QuadTileSubset child = new QuadTileSubset(
-            childSouth,
-            childNorth,
-            childWest,
-            childEast,
-            this.level + 1,
-            QuadTileArgs,
-            texture,
-            North,
-            South,
-            West,
-            East);
-
-         return child;
-      }
-
       public virtual void ComputeChildren(DrawArgs drawArgs)
       {
          double tileSize = 0.5 * (North - South);
 
          double CenterLat = 0.5f * (South + North);
          double CenterLon = 0.5f * (East + West);
-
-         if (level + 1 >= QuadTileArgs.ImageAccessor.LevelCount)
-         {
-            if (northWestChildSubset == null)
-            {
-               northWestChildSubset = ComputeChildSubset(drawArgs, CenterLat, North, West, CenterLon, tileSize);
-            }
-            if (northEastChildSubset == null)
-            {
-               northEastChildSubset = ComputeChildSubset(drawArgs, CenterLat, North, CenterLon, East, tileSize);
-            }
-            if (southWestChildSubset == null)
-            {
-               southWestChildSubset = ComputeChildSubset(drawArgs, South, CenterLat, West, CenterLon, tileSize);
-            }
-            if (southEastChildSubset == null)
-            {
-               southEastChildSubset = ComputeChildSubset(drawArgs, South, CenterLat, CenterLon, East, tileSize);
-            }
-            return;
-         }
 
          if (northWestChild == null)
          {
@@ -459,11 +412,7 @@ namespace WorldWind.Renderable
                   && drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox)
                   )
                {
-                  if ((northEastChild == null && northEastChildSubset == null) ||
-                     (northWestChild == null && northWestChildSubset == null) ||
-                     (southEastChild == null && southEastChildSubset == null) ||
-                     (southWestChild == null && southWestChildSubset == null)
-                     )
+                  if (northEastChild == null || northWestChild == null || southEastChild == null || southWestChild == null)
                   {
                      ComputeChildren(drawArgs);
                   }
@@ -597,23 +546,6 @@ namespace WorldWind.Renderable
          {
             southWestChild.Update(drawArgs);
          }
-
-         if (northEastChildSubset != null)
-         {
-            northEastChildSubset.Update(drawArgs);
-         }
-         if (northWestChildSubset != null)
-         {
-            northWestChildSubset.Update(drawArgs);
-         }
-         if (southEastChildSubset != null)
-         {
-            southEastChildSubset.Update(drawArgs);
-         }
-         if (southWestChildSubset != null)
-         {
-            southWestChildSubset.Update(drawArgs);
-         }
       }
       public void DisposeChildren()
       {
@@ -639,26 +571,6 @@ namespace WorldWind.Renderable
          {
             southWestChild.Dispose();
             southWestChild = null;
-         }
-         if (northWestChildSubset != null)
-         {
-            northWestChildSubset.Dispose();
-            northWestChildSubset = null;
-         }
-         if (northEastChildSubset != null)
-         {
-            northEastChildSubset.Dispose();
-            northEastChildSubset = null;
-         }
-         if (southWestChildSubset != null)
-         {
-            southWestChildSubset.Dispose();
-            southWestChildSubset = null;
-         }
-         if (southEastChildSubset != null)
-         {
-            southEastChildSubset.Dispose();
-            southEastChildSubset = null;
          }
       }
 
@@ -1003,10 +915,6 @@ namespace WorldWind.Renderable
             {
                northWestChild.Render(drawArgs);
             }
-            else if (northWestChildSubset != null && northWestChildSubset.isInitialized)
-            {
-               northWestChildSubset.Render(drawArgs);
-            }
             else if (texture != null && !texture.Disposed)
             {
                drawArgs.device.Transform.World *= Matrix.Translation((float)m_TileOffset.X, (float)m_TileOffset.Y, (float)m_TileOffset.Z);
@@ -1023,10 +931,6 @@ namespace WorldWind.Renderable
             if (northEastChild != null && northEastChild.isInitialized)
             {
                northEastChild.Render(drawArgs);
-            }
-            else if (northEastChildSubset != null && northEastChildSubset.isInitialized)
-            {
-               northEastChildSubset.Render(drawArgs);
             }
             else if (texture != null && !texture.Disposed)
             {
@@ -1046,10 +950,6 @@ namespace WorldWind.Renderable
             {
                southWestChild.Render(drawArgs);
             }
-            else if (southWestChildSubset != null && southWestChildSubset.isInitialized)
-            {
-               southWestChildSubset.Render(drawArgs);
-            }
             else if (texture != null && !texture.Disposed)
             {
                drawArgs.device.Transform.World *= Matrix.Translation((float)m_TileOffset.X, (float)m_TileOffset.Y, (float)m_TileOffset.Z);
@@ -1067,10 +967,6 @@ namespace WorldWind.Renderable
             if (southEastChild != null && southEastChild.isInitialized)
             {
                southEastChild.Render(drawArgs);
-            }
-            else if (southEastChildSubset != null && southEastChildSubset.isInitialized)
-            {
-               southEastChildSubset.Render(drawArgs);
             }
             else if (texture != null && !texture.Disposed)
             {

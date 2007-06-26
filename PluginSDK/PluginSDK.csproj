@@ -173,7 +173,6 @@
     <Compile Include="Layers\QuadTile.cs" />
     <Compile Include="Layers\QuadTileArgs.cs" />
     <Compile Include="Layers\QuadTileSet.cs" />
-    <Compile Include="Layers\QuadTileSubset.cs" />
     <Compile Include="Layers\WMSLayer.cs">
     </Compile>
     <Compile Include="Layers\WWDownloadRequest.cs" />
