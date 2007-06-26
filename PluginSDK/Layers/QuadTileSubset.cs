@@ -1,20 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
-using WorldWind;
-using WorldWind.Camera;
-using WorldWind.Net;
+using Utility;
 using WorldWind.Terrain;
-using WorldWind.VisualControl;
 
 namespace WorldWind.Renderable
 {
-   public class QuadTile : IDisposable
+   public class QuadTileSubset : IDisposable
    {
 #if DEBUG
       static object lockalloc = new object();
@@ -32,7 +29,6 @@ namespace WorldWind.Renderable
          SouthEast
       }
 
-      private bool disposed = false;
       public QuadTileArgs QuadTileArgs;
       public double West;
       public double East;
@@ -46,6 +42,7 @@ namespace WorldWind.Renderable
       public bool isInitialized;
       public BoundingBox BoundingBox;
       public GeoSpatialDownloadRequest DownloadRequest;
+      byte m_CurrentOpacity = 255;
 
       protected Texture texture;
 
@@ -60,15 +57,10 @@ namespace WorldWind.Renderable
       protected static int vertexCountElevated = 32;
       protected int level;
 
-      protected QuadTile northWestChild;
-      protected QuadTile southWestChild;
-      protected QuadTile northEastChild;
-      protected QuadTile southEastChild;
-
-      protected QuadTileSubset northWestChildSubset;
-      protected QuadTileSubset southWestChildSubset;
-      protected QuadTileSubset northEastChildSubset;
-      protected QuadTileSubset southEastChildSubset;
+      protected QuadTileSubset northWestChild;
+      protected QuadTileSubset southWestChild;
+      protected QuadTileSubset northEastChild;
+      protected QuadTileSubset southEastChild;
 
       protected CustomVertex.PositionColoredTextured[] northWestVertices;
       protected CustomVertex.PositionColoredTextured[] southWestVertices;
@@ -76,102 +68,21 @@ namespace WorldWind.Renderable
       protected CustomVertex.PositionColoredTextured[] southEastVertices;
       protected short[] vertexIndices;
 
+      double m_ParentTextureNorth;
+      double m_ParentTextureSouth;
+      double m_ParentTextureWest;
+      double m_ParentTextureEast;
+
       /// <summary>
       /// The vertical exaggeration the tile mesh was computed for
       /// </summary>
       float verticalExaggeration;
 
+      Vector3d m_TileOffset;
       CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
 
+      private bool disposed = false;
 
-      public QuadTile NorthWestChild
-      {
-         get
-         {
-            return northWestChild;
-         }
-      }
-
-      public QuadTile NorthEastChild
-      {
-         get
-         {
-            return northEastChild;
-         }
-      }
-
-      public QuadTile SouthWestChild
-      {
-         get
-         {
-            return southWestChild;
-         }
-      }
-
-      public QuadTile SouthEastChild
-      {
-         get
-         {
-            return southEastChild;
-         }
-      }
-
-      public byte Opacity
-      {
-         get
-         {
-            return m_CurrentOpacity;
-         }
-         set
-         {
-            m_CurrentOpacity = value;
-            int opacity = value << 24;
-            if (northEastVertices != null)
-            {
-               for (int i = 0; i < northEastVertices.Length; i++)
-               {
-                  northEastVertices[i].Color = opacity;
-               }
-            }
-            if (northWestVertices != null)
-            {
-               for (int i = 0; i < northWestVertices.Length; i++)
-               {
-                  northWestVertices[i].Color = opacity;
-               }
-            }
-            if (southEastVertices != null)
-            {
-               for (int i = 0; i < southEastVertices.Length; i++)
-               {
-                  southEastVertices[i].Color = opacity;
-               }
-            }
-            if (southWestVertices != null)
-            {
-               for (int i = 0; i < southWestVertices.Length; i++)
-               {
-                  southWestVertices[i].Color = opacity;
-               }
-            }
-            if (northEastChild != null)
-            {
-               northEastChild.Opacity = value;
-            }
-            if (northWestChild != null)
-            {
-               northWestChild.Opacity = value;
-            }
-            if (southWestChild != null)
-            {
-               southWestChild.Opacity = value;
-            }
-            if (southEastChild != null)
-            {
-               southEastChild.Opacity = value;
-            }
-         }
-      }
       /// <summary>
       /// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.QuadTile"/> class.
       /// </summary>
@@ -181,29 +92,46 @@ namespace WorldWind.Renderable
       /// <param name="east"></param>
       /// <param name="level"></param>
       /// <param name="quadTileArgs"></param>
-      public QuadTile(double south, double north, double west, double east, int level, QuadTileArgs quadTileArgs)
+      public QuadTileSubset(
+         double south,
+         double north,
+         double west,
+         double east,
+         int level,
+         QuadTileArgs quadTileArgs,
+         Texture parentTexture,
+         double parentTextureNorth,
+         double parentTextureSouth,
+         double parentTextureWest,
+         double parentTextureEast)
       {
 #if DEBUG
          lock (lockalloc)
          {
             lockcount++;
-            System.Diagnostics.Debug.WriteLine("Allocating QuadTile " + lockcount.ToString());
+            System.Diagnostics.Debug.WriteLine("Allocating QuadTileSubset " + lockcount.ToString());
          }
 #endif
 
-         this.South = south;
-         this.North = north;
-         this.West = west;
-         this.East = east;
+         South = south;
+         North = north;
+         West = west;
+         East = east;
          CenterLatitude = Angle.FromDegrees(0.5f * (North + South));
          CenterLongitude = Angle.FromDegrees(0.5f * (West + East));
          LatitudeSpan = Math.Abs(North - South);
          LongitudeSpan = Math.Abs(East - West);
 
-         m_TileOffset = MathEngine.SphericalToCartesian(
-            Math.Round(CenterLatitude.Degrees, 4), Math.Round(CenterLongitude.Degrees, 4), quadTileArgs.LayerRadius);
-
          this.level = level;
+         texture = parentTexture;
+         m_ParentTextureNorth = parentTextureNorth;
+         m_ParentTextureSouth = parentTextureSouth;
+         m_ParentTextureWest = parentTextureWest;
+         m_ParentTextureEast = parentTextureEast;
+         m_TileOffset = MathEngine.SphericalToCartesian(
+            //Math.Round(CenterLatitude.Degrees, 4), Math.Round(CenterLongitude.Degrees, 4), quadTileArgs.LayerRadius);
+            CenterLatitude.Degrees, CenterLongitude.Degrees, quadTileArgs.LayerRadius);
+
          QuadTileArgs = quadTileArgs;
 
          BoundingBox = new BoundingBox((float)south, (float)north, (float)west, (float)east,
@@ -218,26 +146,7 @@ namespace WorldWind.Renderable
       /// Tries to queue a download if not available.
       /// </summary>
       /// <returns>Initialized QuadTile if available locally, else null.</returns>
-      private QuadTile ComputeChild(DrawArgs drawArgs, double childSouth, double childNorth, double childWest, double childEast, double tileSize)
-      {
-         int row = MathEngine.GetRowFromLatitude(childSouth, tileSize);
-         int col = MathEngine.GetColFromLongitude(childWest, tileSize);
-
-         if (QuadTileArgs.ImageAccessor.LevelCount <= level + 1)
-            return null;
-
-         QuadTile child = new QuadTile(
-            childSouth,
-            childNorth,
-            childWest,
-            childEast,
-            this.level + 1,
-            QuadTileArgs);
-
-         return child;
-      }
-
-      private QuadTileSubset ComputeChildSubset(DrawArgs drawArgs, double childSouth, double childNorth, double childWest, double childEast, double tileSize)
+      private QuadTileSubset ComputeChild(DrawArgs drawArgs, double childSouth, double childNorth, double childWest, double childEast, double tileSize)
       {
          int row = MathEngine.GetRowFromLatitude(childSouth, tileSize);
          int col = MathEngine.GetColFromLongitude(childWest, tileSize);
@@ -250,42 +159,20 @@ namespace WorldWind.Renderable
             this.level + 1,
             QuadTileArgs,
             texture,
-            North,
-            South,
-            West,
-            East);
+            m_ParentTextureNorth,
+            m_ParentTextureSouth,
+            m_ParentTextureWest,
+            m_ParentTextureEast);
 
          return child;
       }
 
       public virtual void ComputeChildren(DrawArgs drawArgs)
       {
-         double tileSize = 0.5 * (North - South);
+         float tileSize = (float)(0.5 * (North - South));
 
          double CenterLat = 0.5f * (South + North);
          double CenterLon = 0.5f * (East + West);
-
-         if (level + 1 >= QuadTileArgs.ImageAccessor.LevelCount)
-         {
-            if (northWestChildSubset == null)
-            {
-               northWestChildSubset = ComputeChildSubset(drawArgs, CenterLat, North, West, CenterLon, tileSize);
-            }
-            if (northEastChildSubset == null)
-            {
-               northEastChildSubset = ComputeChildSubset(drawArgs, CenterLat, North, CenterLon, East, tileSize);
-            }
-            if (southWestChildSubset == null)
-            {
-               southWestChildSubset = ComputeChildSubset(drawArgs, South, CenterLat, West, CenterLon, tileSize);
-            }
-            if (southEastChildSubset == null)
-            {
-               southEastChildSubset = ComputeChildSubset(drawArgs, South, CenterLat, CenterLon, East, tileSize);
-            }
-            return;
-         }
-
          if (northWestChild == null)
          {
             northWestChild = ComputeChild(drawArgs, CenterLat, North, West, CenterLon, tileSize);
@@ -315,22 +202,11 @@ namespace WorldWind.Renderable
 #if DEBUG
             lock (lockalloc)
             {
-               System.Diagnostics.Debug.WriteLine("Disposing QuadTile " + lockcount.ToString());
+               System.Diagnostics.Debug.WriteLine("Disposing QuadTileSubSet " + lockcount.ToString());
                lockcount--;
             }
 #endif
-            try
-            {
-               this.isInitialized = false;
-               if (this.texture != null)
-               {
-                  this.texture.Dispose();
-                  texture = null;
-               }
-            }
-            catch
-            {
-            }
+            this.isInitialized = false;
             DisposeChildren();
             disposed = true;
 
@@ -347,64 +223,41 @@ namespace WorldWind.Renderable
          Dispose(true);
       }
 
-      ~QuadTile()
+      ~QuadTileSubset()
       {
          Dispose(false);
       }
       #endregion
 
+      private void DisposeChildren()
+      {
+         if (northWestChild != null)
+         {
+            northWestChild.Dispose();
+            northWestChild = null;
+         }
+         if (southWestChild != null)
+         {
+            southWestChild.Dispose();
+            southWestChild = null;
+         }
+         if (northEastChild != null)
+         {
+            northEastChild.Dispose();
+            northEastChild = null;
+         }
+         if (southEastChild != null)
+         {
+            southEastChild.Dispose();
+            southEastChild = null;
+         }
+      }
+
       public virtual void Initialize(DrawArgs drawArgs)
       {
          try
          {
-            GeographicBoundingBox geoBox = new GeographicBoundingBox(North, South, West, East);
-            string strImagePath = QuadTileArgs.ImageAccessor.GetImagePath(geoBox, level);
-
-            if (DownloadRequest != null && (DownloadRequest.IsDownloading || !DownloadRequest.IsComplete))
-            {
-               // Sort of a hack
-               if (!QuadTileArgs.ImageAccessor.DownloadQueue.Contains(DownloadRequest))
-               {
-                  GeographicBoundingBox geoBox1 = new GeographicBoundingBox(North, South, West, East);
-                  DownloadRequest = QuadTileArgs.ImageAccessor.RequestTexture(drawArgs, geoBox1, this.level);
-               }
-               // Waiting for download
-               return;
-            }
-
-            if (texture != null)
-            {
-               texture.Dispose();
-               texture = null;
-            }
-
-            if (DownloadRequest != null && DownloadRequest.IsComplete)
-            {
-               texture = QuadTileArgs.ImageAccessor.GetTexture(drawArgs, geoBox, level);
-               //if (texture == null)
-               //{
-               //    DownloadRequest = QuadTileArgs.ImageAccessor.RequestTexture(drawArgs, geoBox, level);
-               //}
-            }
-            else if (DownloadRequest == null)
-            {
-               DownloadRequest = QuadTileArgs.ImageAccessor.RequestTexture(drawArgs, geoBox, level);
-               if (DownloadRequest.IsComplete)
-               {
-                  texture = QuadTileArgs.ImageAccessor.GetTexture(drawArgs, geoBox, level);
-               }
-               else
-               {
-                  return;
-               }
-            }
-
-            if (texture == null)
-            {
-               return;
-            }
-
-            m_CurrentOpacity = QuadTileArgs.Opacity;
+            m_CurrentOpacity = QuadTileArgs.ParentQuadTileSet.Opacity;
             CreateTileMesh();
             drawArgs.Repaint = true;
          }
@@ -423,10 +276,11 @@ namespace WorldWind.Renderable
 
             if (!isInitialized)
             {
-               if ((drawArgs.WorldCamera.ViewRange * 0.5f < Angle.FromDegrees(QuadTileArgs.TileDrawDistance * tileSize)
+               if (drawArgs.WorldCamera.ViewRange * 0.5f < Angle.FromDegrees(QuadTileArgs.TileDrawDistance * tileSize)
                   && MathEngine.SphericalDistance(CenterLatitude, CenterLongitude,
                   drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) < Angle.FromDegrees(QuadTileArgs.TileDrawSpread * tileSize * 1.25f)
-                  && drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox)) || (this.level == 0 && QuadTileArgs.AlwaysRenderBaseTiles))
+                  && drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox)
+                  )
                   this.Initialize(drawArgs);
             }
             else
@@ -441,12 +295,12 @@ namespace WorldWind.Renderable
                   return;
                }
             }
-            
-            // if the vertical exaggeration or opacity have changed, recreate the tile mesh
+
             if (isInitialized &&
-               (World.Settings.VerticalExaggeration != verticalExaggeration || m_CurrentOpacity != QuadTileArgs.Opacity))
+              (World.Settings.VerticalExaggeration != verticalExaggeration || m_CurrentOpacity != QuadTileArgs.ParentQuadTileSet.Opacity)
+              )
             {
-               m_CurrentOpacity = QuadTileArgs.Opacity;
+               m_CurrentOpacity = QuadTileArgs.ParentQuadTileSet.Opacity;
                CreateTileMesh();
                drawArgs.Repaint = true;
             }
@@ -459,206 +313,41 @@ namespace WorldWind.Renderable
                   && drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox)
                   )
                {
-                  if ((northEastChild == null && northEastChildSubset == null) ||
-                     (northWestChild == null && northWestChildSubset == null) ||
-                     (southEastChild == null && southEastChildSubset == null) ||
-                     (southWestChild == null && southWestChildSubset == null)
-                     )
+                  if (northEastChild == null ||
+                     northWestChild == null ||
+                     southEastChild == null ||
+                     southWestChild == null)
                   {
                      ComputeChildren(drawArgs);
                   }
 
-                  UpdateChildren(drawArgs);
+                  if (northEastChild != null)
+                  {
+                     northEastChild.Update(drawArgs);
+                  }
+
+                  if (northWestChild != null)
+                  {
+                     northWestChild.Update(drawArgs);
+                  }
+
+                  if (southEastChild != null)
+                  {
+                     southEastChild.Update(drawArgs);
+                  }
+
+                  if (southWestChild != null)
+                  {
+                     southWestChild.Update(drawArgs);
+                  }
                }
                else
-               {
                   DisposeChildren();
-               }
             }
          }
          catch (Exception ex)
          {
             Utility.Log.Write(ex);
-         }
-      }
-
-
-      public void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
-      {
-         if (isInitialized)
-         {
-            info.dMaxLat = Math.Max(info.dMaxLat, this.North);
-            info.dMinLat = Math.Min(info.dMinLat, this.South);
-            info.dMaxLon = Math.Max(info.dMaxLon, this.East);
-            info.dMinLon = Math.Min(info.dMinLon, this.West);
-
-            info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
-            info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * QuadTileArgs.ImageAccessor.TextureSizePixels);
-         }
-
-         if (northWestChild != null && northWestChild.isInitialized)
-            northWestChild.InitExportInfo(drawArgs, info);
-         if (northEastChild != null && northEastChild.isInitialized)
-            northEastChild.InitExportInfo(drawArgs, info);
-         if (southWestChild != null && southWestChild.isInitialized)
-            southWestChild.InitExportInfo(drawArgs, info);
-         if (southEastChild != null && southEastChild.isInitialized)
-            southEastChild.InitExportInfo(drawArgs, info);
-      }
-
-      public void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
-      {
-         try
-         {
-            bool bChildren = false;
-
-            if (!isInitialized || texture == null)
-               return;
-            if (!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
-               return;
-
-            if (northWestChild != null && northWestChild.isInitialized)
-            {
-               northWestChild.ExportProcess(drawArgs, expInfo);
-               bChildren = true;
-            }
-
-            if (northEastChild != null && northEastChild.isInitialized)
-            {
-               northEastChild.ExportProcess(drawArgs, expInfo);
-               bChildren = true;
-            }
-
-            if (southWestChild != null && southWestChild.isInitialized)
-            {
-               southWestChild.ExportProcess(drawArgs, expInfo);
-               bChildren = true;
-            }
-
-            if (southEastChild != null && southEastChild.isInitialized)
-            {
-               southEastChild.ExportProcess(drawArgs, expInfo);
-               bChildren = true;
-            }
-
-            if (!bChildren && texture != null)
-            {
-               Image img = null;
-
-               try
-               {
-                  int iWidth, iHeight, iX, iY;
-
-                  GeographicBoundingBox geoBox = new GeographicBoundingBox(this.North, this.South, this.West, this.East);
-                  img = Image.FromFile(QuadTileArgs.ImageAccessor.GetImagePath(geoBox, level));
-
-                  iWidth = (int)Math.Round((this.East - this.West) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
-                  iHeight = (int)Math.Round((this.North - this.South) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
-                  iX = (int)Math.Round((this.West - expInfo.dMinLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
-                  iY = (int)Math.Round((expInfo.dMaxLat - this.North) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
-                  expInfo.gr.DrawImage(img, new Rectangle(iX, iY, iWidth, iHeight));
-               }
-               catch
-               {
-#if DEBUG
-                  System.Diagnostics.Debug.WriteLine("Thrown in image export");
-#endif
-               }
-               finally
-               {
-                  if (img != null)
-                     img.Dispose();
-               }
-            }
-         }
-         catch
-         {
-         }
-      }
-
-      private void UpdateChildren(DrawArgs drawArgs)
-      {
-         if (northEastChild != null)
-         {
-            northEastChild.Update(drawArgs);
-         }
-
-         if (northWestChild != null)
-         {
-            northWestChild.Update(drawArgs);
-         }
-
-         if (southEastChild != null)
-         {
-            southEastChild.Update(drawArgs);
-         }
-
-         if (southWestChild != null)
-         {
-            southWestChild.Update(drawArgs);
-         }
-
-         if (northEastChildSubset != null)
-         {
-            northEastChildSubset.Update(drawArgs);
-         }
-         if (northWestChildSubset != null)
-         {
-            northWestChildSubset.Update(drawArgs);
-         }
-         if (southEastChildSubset != null)
-         {
-            southEastChildSubset.Update(drawArgs);
-         }
-         if (southWestChildSubset != null)
-         {
-            southWestChildSubset.Update(drawArgs);
-         }
-      }
-      public void DisposeChildren()
-      {
-         if (northWestChild != null)
-         {
-            northWestChild.Dispose();
-            northWestChild = null;
-         }
-
-         if (northEastChild != null)
-         {
-            northEastChild.Dispose();
-            northEastChild = null;
-         }
-
-         if (southEastChild != null)
-         {
-            southEastChild.Dispose();
-            southEastChild = null;
-         }
-
-         if (southWestChild != null)
-         {
-            southWestChild.Dispose();
-            southWestChild = null;
-         }
-         if (northWestChildSubset != null)
-         {
-            northWestChildSubset.Dispose();
-            northWestChildSubset = null;
-         }
-         if (northEastChildSubset != null)
-         {
-            northEastChildSubset.Dispose();
-            northEastChildSubset = null;
-         }
-         if (southWestChildSubset != null)
-         {
-            southWestChildSubset.Dispose();
-            southWestChildSubset = null;
-         }
-         if (southEastChildSubset != null)
-         {
-            southEastChildSubset.Dispose();
-            southEastChildSubset = null;
          }
       }
 
@@ -669,6 +358,109 @@ namespace WorldWind.Renderable
       {
          verticalExaggeration = World.Settings.VerticalExaggeration;
          CreateElevatedMesh();
+      }
+
+      short[] m_NwIndices;
+      short[] m_NeIndices;
+      short[] m_SwIndices;
+      short[] m_SeIndices;
+
+      /// <summary>
+      /// Build the elevated terrain mesh
+      /// </summary>
+      protected virtual void CreateElevatedMesh()
+      {
+         TerrainTile tile = null;
+
+         if (QuadTileArgs.TerrainAccessor != null)
+            tile = QuadTileArgs.TerrainAccessor.GetElevationArray((float)North, (float)South, (float)West, (float)East, vertexCountElevated + 1);
+
+         int vertexCountElevatedPlus3 = vertexCountElevated / 2 + 3;
+         int totalVertexCount = vertexCountElevatedPlus3 * vertexCountElevatedPlus3;
+         northWestVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
+         southWestVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
+         northEastVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
+         southEastVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
+         float layerRadius = (float)QuadTileArgs.LayerRadius;
+         double scaleFactor = 1f / vertexCountElevated;
+
+         float meshBaseRadius = layerRadius;
+         if (tile != null)
+         {
+            // Calculate mesh base radius (bottom vertices)
+            // Find minimum elevation to account for possible bathymetry
+            float minimumElevation = float.MaxValue;
+            float maximumElevation = float.MinValue;
+            foreach (float height in tile.ElevationData)
+            {
+               if (height < minimumElevation)
+                  minimumElevation = height;
+               if (height > maximumElevation)
+                  maximumElevation = height;
+            }
+            minimumElevation *= verticalExaggeration;
+            maximumElevation *= verticalExaggeration;
+
+            if (minimumElevation > maximumElevation)
+            {
+               // Compensate for negative vertical exaggeration
+               float tmp = minimumElevation;
+               minimumElevation = maximumElevation;
+               maximumElevation = minimumElevation;
+            }
+
+            float overlap = 500 * verticalExaggeration; // 500m high tiles
+
+            // Radius of mesh bottom grid
+            meshBaseRadius = layerRadius + minimumElevation - overlap;
+         }
+
+         if (tile != null)
+         {
+            CreateElevatedMesh(ChildLocation.NorthWest, ref northWestVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
+            CreateElevatedMesh(ChildLocation.SouthWest, ref southWestVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
+            CreateElevatedMesh(ChildLocation.NorthEast, ref northEastVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
+            CreateElevatedMesh(ChildLocation.SouthEast, ref southEastVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
+         }
+         else
+         {
+            List<float> nullRef = null;
+
+            CreateElevatedMesh(ChildLocation.NorthWest, ref northWestVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
+            CreateElevatedMesh(ChildLocation.SouthWest, ref southWestVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
+            CreateElevatedMesh(ChildLocation.NorthEast, ref northEastVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
+            CreateElevatedMesh(ChildLocation.SouthEast, ref southEastVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
+         }
+
+         BoundingBox = new BoundingBox((float)South, (float)North, (float)West, (float)East,
+            (float)layerRadius, (float)layerRadius + 10000 * this.verticalExaggeration);
+
+
+         m_NwIndices = CreateTriangleIndicesBTT(northWestVertices, (int)vertexCountElevated / 2, 1, layerRadius);
+         m_NeIndices = CreateTriangleIndicesBTT(northEastVertices, (int)vertexCountElevated / 2, 1, layerRadius);
+         m_SwIndices = CreateTriangleIndicesBTT(southWestVertices, (int)vertexCountElevated / 2, 1, layerRadius);
+         m_SeIndices = CreateTriangleIndicesBTT(southEastVertices, (int)vertexCountElevated / 2, 1, layerRadius);
+
+         QuadTileArgs.IsDownloadingElevation = false;
+
+         // Build common set of indices for the 4 child meshes
+         int vertexCountElevatedPlus2 = vertexCountElevated / 2 + 2;
+         vertexIndices = new short[2 * vertexCountElevatedPlus2 * vertexCountElevatedPlus2 * 3];
+
+         int elevated_idx = 0;
+         for (int i = 0; i < vertexCountElevatedPlus2; i++)
+         {
+            for (int j = 0; j < vertexCountElevatedPlus2; j++)
+            {
+               vertexIndices[elevated_idx++] = (short)(i * vertexCountElevatedPlus3 + j);
+               vertexIndices[elevated_idx++] = (short)((i + 1) * vertexCountElevatedPlus3 + j);
+               vertexIndices[elevated_idx++] = (short)(i * vertexCountElevatedPlus3 + j + 1);
+
+               vertexIndices[elevated_idx++] = (short)(i * vertexCountElevatedPlus3 + j + 1);
+               vertexIndices[elevated_idx++] = (short)((i + 1) * vertexCountElevatedPlus3 + j);
+               vertexIndices[elevated_idx++] = (short)((i + 1) * vertexCountElevatedPlus3 + j + 1);
+            }
+         }
       }
 
       // Create indice list (PM)
@@ -705,112 +497,6 @@ namespace WorldWind.Renderable
          return indices;
       }
 
-      byte m_CurrentOpacity = 255;
-
-      /// <summary>
-      /// Build the elevated terrain mesh
-      /// </summary>
-      protected virtual void CreateElevatedMesh()
-      {
-         TerrainTile tile = null;
-         if (QuadTileArgs.TerrainAccessor != null)
-            tile = QuadTileArgs.TerrainAccessor.GetElevationArray((float)North, (float)South, (float)West, (float)East, vertexCountElevated + 1);
-
-         int vertexCountElevatedPlus3 = vertexCountElevated / 2 + 3;
-         int totalVertexCount = vertexCountElevatedPlus3 * vertexCountElevatedPlus3;
-         northWestVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
-         southWestVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
-         northEastVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
-         southEastVertices = new CustomVertex.PositionColoredTextured[totalVertexCount];
-         float layerRadius = (float)QuadTileArgs.LayerRadius;
-         double scaleFactor = 1f / vertexCountElevated;
-
-         float meshBaseRadius = (float)QuadTileArgs.LayerRadius;
-
-         if (tile != null)
-         {
-            // Calculate mesh base radius (bottom vertices)
-            float minimumElevation = float.MaxValue;
-            float maximumElevation = float.MinValue;
-
-            // Find minimum elevation to account for possible bathymetry
-            foreach (float height in tile.ElevationData)
-            {
-               if (height < minimumElevation)
-                  minimumElevation = height;
-               if (height > maximumElevation)
-                  maximumElevation = height;
-            }
-            minimumElevation *= verticalExaggeration;
-            maximumElevation *= verticalExaggeration;
-
-            if (minimumElevation > maximumElevation)
-            {
-               // Compensate for negative vertical exaggeration
-               float tmp = minimumElevation;
-               minimumElevation = maximumElevation;
-               maximumElevation = minimumElevation;
-            }
-
-            float overlap = 500 * verticalExaggeration; // 500m high tiles
-
-            // Radius of mesh bottom grid
-            meshBaseRadius = layerRadius + minimumElevation - overlap;
-         }
-
-         if (tile != null)
-         {
-            CreateElevatedMesh(ChildLocation.NorthWest, ref northWestVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
-            CreateElevatedMesh(ChildLocation.SouthWest, ref southWestVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
-            CreateElevatedMesh(ChildLocation.NorthEast, ref northEastVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
-            CreateElevatedMesh(ChildLocation.SouthEast, ref southEastVertices, meshBaseRadius, ref tile.ElevationData, vertexCountElevated + 1);
-         }
-         else
-         {
-            List<float> nullRef = null;
-            CreateElevatedMesh(ChildLocation.NorthWest, ref northWestVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
-            CreateElevatedMesh(ChildLocation.SouthWest, ref southWestVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
-            CreateElevatedMesh(ChildLocation.NorthEast, ref northEastVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
-            CreateElevatedMesh(ChildLocation.SouthEast, ref southEastVertices, meshBaseRadius, ref nullRef, vertexCountElevated + 1);
-         }
-
-         BoundingBox = new BoundingBox((float)South, (float)North, (float)West, (float)East,
-            (float)layerRadius, (float)layerRadius + 10000 * this.verticalExaggeration);
-
-         m_NwIndices = CreateTriangleIndicesBTT(northWestVertices, (int)vertexCountElevated / 2, 1, layerRadius);
-         m_NeIndices = CreateTriangleIndicesBTT(northEastVertices, (int)vertexCountElevated / 2, 1, layerRadius);
-         m_SwIndices = CreateTriangleIndicesBTT(southWestVertices, (int)vertexCountElevated / 2, 1, layerRadius);
-         m_SeIndices = CreateTriangleIndicesBTT(southEastVertices, (int)vertexCountElevated / 2, 1, layerRadius);
-
-         QuadTileArgs.IsDownloadingElevation = false;
-
-         // Build common set of indices for the 4 child meshes
-         int vertexCountElevatedPlus2 = vertexCountElevated / 2 + 2;
-         vertexIndices = new short[2 * vertexCountElevatedPlus2 * vertexCountElevatedPlus2 * 3];
-
-         int elevated_idx = 0;
-         for (int i = 0; i < vertexCountElevatedPlus2; i++)
-         {
-            for (int j = 0; j < vertexCountElevatedPlus2; j++)
-            {
-               vertexIndices[elevated_idx++] = (short)(i * vertexCountElevatedPlus3 + j);
-               vertexIndices[elevated_idx++] = (short)((i + 1) * vertexCountElevatedPlus3 + j);
-               vertexIndices[elevated_idx++] = (short)(i * vertexCountElevatedPlus3 + j + 1);
-
-               vertexIndices[elevated_idx++] = (short)(i * vertexCountElevatedPlus3 + j + 1);
-               vertexIndices[elevated_idx++] = (short)((i + 1) * vertexCountElevatedPlus3 + j);
-               vertexIndices[elevated_idx++] = (short)((i + 1) * vertexCountElevatedPlus3 + j + 1);
-            }
-         }
-      }
-
-      short[] m_NwIndices;
-      short[] m_NeIndices;
-      short[] m_SwIndices;
-      short[] m_SeIndices;
-
-      Vector3d m_TileOffset = Vector3d.Empty;
-
       /// <summary>
       /// Create child tile terrain mesh
       /// </summary>
@@ -825,34 +511,53 @@ namespace WorldWind.Renderable
          float TuOffset = 0;
          float TvOffset = 0;
 
+         float uOffset = 0;
+         float vOffset = 0;
+
+         double parentLongitudeSpan = Math.Abs(m_ParentTextureEast - m_ParentTextureWest);
+         double parentLatitudeSpan = Math.Abs(m_ParentTextureNorth - m_ParentTextureSouth);
+
          switch (corner)
          {
             case ChildLocation.NorthWest:
-               // defaults are all good
+               TuOffset = (float)(West - m_ParentTextureWest) / (float)parentLongitudeSpan;
+               TvOffset = (float)(m_ParentTextureNorth - North) / (float)parentLatitudeSpan;
                break;
             case ChildLocation.NorthEast:
                west = MathEngine.DegreesToRadians(0.5 * (West + East));
-               TuOffset = 0.5f;
+               TuOffset = (float)(0.5 * (West + East) - m_ParentTextureWest) / (float)parentLongitudeSpan;
+               TvOffset = (float)(m_ParentTextureNorth - North) / (float)parentLatitudeSpan;
+               uOffset = 0.5f;
                break;
             case ChildLocation.SouthWest:
                north = MathEngine.DegreesToRadians(0.5 * (North + South));
-               TvOffset = 0.5f;
+               TuOffset = (float)(West - m_ParentTextureWest) / (float)parentLongitudeSpan;
+               TvOffset = (float)(m_ParentTextureNorth - 0.5 * (North + South)) / (float)parentLatitudeSpan;
+               vOffset = 0.5f;
                break;
             case ChildLocation.SouthEast:
                north = MathEngine.DegreesToRadians(0.5 * (North + South));
                west = MathEngine.DegreesToRadians(0.5 * (West + East));
-               TuOffset = 0.5f;
-               TvOffset = 0.5f;
+               TuOffset = (float)(0.5 * (West + East) - m_ParentTextureWest) / (float)parentLongitudeSpan;
+               TvOffset = (float)(m_ParentTextureNorth - 0.5 * (North + South)) / (float)parentLatitudeSpan;
+               uOffset = 0.5f;
+               vOffset = 0.5f;
                break;
          }
+
+         double parentLatitudeRadianSpan = MathEngine.DegreesToRadians(parentLatitudeSpan);
+         double parentLongitudeRadianSpan = MathEngine.DegreesToRadians(parentLongitudeSpan);
 
          double latitudeRadianSpan = MathEngine.DegreesToRadians(LatitudeSpan);
          double longitudeRadianSpan = MathEngine.DegreesToRadians(LongitudeSpan);
 
+         double tuFactor = (longitudeRadianSpan / parentLongitudeRadianSpan) / (double)vertexCountElevated;
+         double tvFactor = (latitudeRadianSpan / parentLatitudeRadianSpan) / (double)vertexCountElevated;
+
          float layerRadius = (float)QuadTileArgs.LayerRadius;
          double scaleFactor = 1f / vertexCountElevated;
-         int terrainLongitudeIndex = (int)(TuOffset * vertexCountElevated);
-         int terrainLatitudeIndex = (int)(TvOffset * vertexCountElevated);
+         int terrainLongitudeIndex = (int)(uOffset * vertexCountElevated);
+         int terrainLatitudeIndex = (int)(vOffset * vertexCountElevated);
 
          int vertexCountElevatedPlus1 = vertexCountElevated / 2 + 1;
 
@@ -883,9 +588,9 @@ namespace WorldWind.Renderable
 
                if (longitudeIndex != longitudePoint || latitudeIndex != latitudePoint)
                {
-
                   if (heightData != null && heightData.Count > 0)
                   {
+                     // Mesh base (flat)
                      radius = layerRadius +
                         heightData[terrainLatitudeIndex + latitudePoint + (terrainLongitudeIndex + longitudePoint) * samples]
                         * verticalExaggeration;
@@ -913,19 +618,16 @@ namespace WorldWind.Renderable
                double longitudeFactor = longitudePoint * scaleFactor;
 
                // Texture coordinates
-               vertices[vertexIndex].Tu = TuOffset + (float)longitudeFactor;
-               vertices[vertexIndex].Tv = TvOffset + (float)latitudeFactor;
+               vertices[vertexIndex].Tu = TuOffset + longitudePoint * (float)tuFactor;//(float)longitudeFactor;
+               vertices[vertexIndex].Tv = TvOffset + latitudePoint * (float)tvFactor;//(float)latitudeFactor;
 
                // Convert from spherical (radians) to cartesian
                double longitude = west + longitudeFactor * longitudeRadianSpan;
                double radCosLat = radius * cosLat;
-
                vertices[vertexIndex].X = (float)(radCosLat * Math.Cos(longitude) - m_TileOffset.X);
                vertices[vertexIndex].Y = (float)(radCosLat * Math.Sin(longitude) - m_TileOffset.Y);
                vertices[vertexIndex].Z = (float)(radius * sinLat - m_TileOffset.Z);
-
                vertices[vertexIndex].Color = m_CurrentOpacity << 24;
-
                vertexIndex++;
             }
          }
@@ -982,30 +684,15 @@ namespace WorldWind.Renderable
          {
             if (!isInitialized || texture == null)
                return;
+
             if (!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
                return;
 
-            if (isInitialized && DownloadRequest != null)
-            {
-               DownloadRequest = null;
-            }
-
-
             Matrix curWorld = drawArgs.device.Transform.World;
 
-            drawArgs.device.VertexFormat = CustomVertex.PositionColoredTextured.Format;
-            drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
-            drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Add;
-            drawArgs.device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
-
-            // NORTH WEST Quarter rendering
             if (northWestChild != null && northWestChild.isInitialized)
             {
                northWestChild.Render(drawArgs);
-            }
-            else if (northWestChildSubset != null && northWestChildSubset.isInitialized)
-            {
-               northWestChildSubset.Render(drawArgs);
             }
             else if (texture != null && !texture.Disposed)
             {
@@ -1016,6 +703,7 @@ namespace WorldWind.Renderable
                   (m_NwIndices != null ? m_NwIndices.Length / 3 : vertexIndices.Length / 3),
                   (m_NwIndices != null ? m_NwIndices : vertexIndices),
                   true, northWestVertices);
+               //drawArgs.device.Transform.World *= Matrix.Translation(-m_TileOffset.X, -m_TileOffset.Y, -m_TileOffset.Z);
                drawArgs.device.Transform.World = curWorld;
                drawArgs.numberTilesDrawn++;
             }
@@ -1024,20 +712,16 @@ namespace WorldWind.Renderable
             {
                northEastChild.Render(drawArgs);
             }
-            else if (northEastChildSubset != null && northEastChildSubset.isInitialized)
-            {
-               northEastChildSubset.Render(drawArgs);
-            }
             else if (texture != null && !texture.Disposed)
             {
                drawArgs.device.Transform.World *= Matrix.Translation((float)m_TileOffset.X, (float)m_TileOffset.Y, (float)m_TileOffset.Z);
-
                drawArgs.device.SetTexture(0, texture);
                drawArgs.device.DrawIndexedUserPrimitives(
                   PrimitiveType.TriangleList, 0, northEastVertices.Length,
                   (m_NeIndices != null ? m_NeIndices.Length / 3 : vertexIndices.Length / 3),
                   (m_NeIndices != null ? m_NeIndices : vertexIndices),
                   true, northEastVertices);
+               //drawArgs.device.Transform.World *= Matrix.Translation(-m_TileOffset.X, -m_TileOffset.Y, -m_TileOffset.Z);
                drawArgs.device.Transform.World = curWorld;
                drawArgs.numberTilesDrawn++;
             }
@@ -1046,20 +730,16 @@ namespace WorldWind.Renderable
             {
                southWestChild.Render(drawArgs);
             }
-            else if (southWestChildSubset != null && southWestChildSubset.isInitialized)
-            {
-               southWestChildSubset.Render(drawArgs);
-            }
             else if (texture != null && !texture.Disposed)
             {
                drawArgs.device.Transform.World *= Matrix.Translation((float)m_TileOffset.X, (float)m_TileOffset.Y, (float)m_TileOffset.Z);
-
                drawArgs.device.SetTexture(0, texture);
                drawArgs.device.DrawIndexedUserPrimitives(
                   PrimitiveType.TriangleList, 0, southWestVertices.Length,
                   (m_SwIndices != null ? m_SwIndices.Length / 3 : vertexIndices.Length / 3),
                   (m_SwIndices != null ? m_SwIndices : vertexIndices),
                   true, southWestVertices);
+               //drawArgs.device.Transform.World *= Matrix.Translation(-m_TileOffset.X, -m_TileOffset.Y, -m_TileOffset.Z);
                drawArgs.device.Transform.World = curWorld;
                drawArgs.numberTilesDrawn++;
             }
@@ -1068,20 +748,16 @@ namespace WorldWind.Renderable
             {
                southEastChild.Render(drawArgs);
             }
-            else if (southEastChildSubset != null && southEastChildSubset.isInitialized)
-            {
-               southEastChildSubset.Render(drawArgs);
-            }
             else if (texture != null && !texture.Disposed)
             {
                drawArgs.device.Transform.World *= Matrix.Translation((float)m_TileOffset.X, (float)m_TileOffset.Y, (float)m_TileOffset.Z);
-
                drawArgs.device.SetTexture(0, texture);
                drawArgs.device.DrawIndexedUserPrimitives(
                   PrimitiveType.TriangleList, 0, southEastVertices.Length,
                   (m_SeIndices != null ? m_SeIndices.Length / 3 : vertexIndices.Length),
                   (m_SeIndices != null ? m_SeIndices : vertexIndices),
                   true, southEastVertices);
+               //drawArgs.device.Transform.World *= Matrix.Translation(-m_TileOffset.X, -m_TileOffset.Y, -m_TileOffset.Z);
                drawArgs.device.Transform.World = curWorld;
                drawArgs.numberTilesDrawn++;
             }
