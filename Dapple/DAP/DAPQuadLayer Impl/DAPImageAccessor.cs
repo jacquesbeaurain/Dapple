@@ -55,7 +55,7 @@ namespace GeosoftPlugin.New
           Geosoft.GX.DAPGetData.Server server,
          string permanentTextureDirectory,
          int textureSizePixels,
-         decimal levelZeroTileSizeDegrees,
+         double levelZeroTileSizeDegrees,
          int numberLevels,
          string imageFileExtension,
          string cacheDirectory)
@@ -83,7 +83,7 @@ namespace GeosoftPlugin.New
           Geosoft.GX.DAPGetData.Server server,
 			string permanentTextureDirectory, 
 			int textureSizePixels, 
-			decimal levelZeroTileSizeDegrees,
+			double levelZeroTileSizeDegrees,
 			int numberLevels,
 			string imageFileExtension,
 			string cacheDirectory,

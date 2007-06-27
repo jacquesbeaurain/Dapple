@@ -17,11 +17,7 @@ namespace WorldWind.Widgets
 		bool OnKeyUp(KeyEventArgs e);
 
 		bool OnKeyPress(KeyPressEventArgs e);
-
-      bool OnMouseClick(MouseEventArgs e);
-      
-      bool OnMouseDoubleClick(MouseEventArgs e);
-
+		
 		bool OnMouseDown(MouseEventArgs e);
 		
 		bool OnMouseEnter(EventArgs e);
@@ -29,8 +25,8 @@ namespace WorldWind.Widgets
 		bool OnMouseLeave(EventArgs e);
 		
 		bool OnMouseMove(MouseEventArgs e);
-
-      bool OnMouseUp(MouseEventArgs e);
+		
+		bool OnMouseUp(MouseEventArgs e);
 		
 		bool OnMouseWheel(MouseEventArgs e);
 		#endregion

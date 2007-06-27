@@ -45,7 +45,7 @@ namespace Dapple.LayerGeneration
       string m_strCacheRoot;
 
       //Image Accessor
-      private decimal m_decLevelZeroTileSizeDegrees = 30;
+      private decimal m_dLevelZeroTileSizeDegrees = 30;
       private int m_intNumberLevels = 1;
       private int m_intTextureSizePixels = 256;
       string m_strImageFileExtension = ".png";
@@ -72,7 +72,7 @@ namespace Dapple.LayerGeneration
          m_hBoundary = boundary;
          m_oImageAccessor = imageAccessor;
 
-         m_decLevelZeroTileSizeDegrees = imageAccessor.LevelZeroTileSizeDegrees;
+         m_dLevelZeroTileSizeDegrees = imageAccessor.LevelZeroTileSizeDegrees;
          m_intNumberLevels = imageAccessor.LevelCount;
          m_intTextureSizePixels = imageAccessor.TextureSizePixels;
          m_strImageFileExtension = imageAccessor.ImageExtension;
@@ -85,7 +85,7 @@ namespace Dapple.LayerGeneration
       }
 
       public QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         decimal levelZeroTileSize, int levels, int textureSize, ImageTileService tileService, string imageExtension,
+         double levelZeroTileSize, int levels, int textureSize, ImageTileService tileService, string imageExtension,
          byte opacity, World world, string textureDirectory, string cacheDirectory, IBuilder parent)
          : this(name, height, isTerrainMapped, boundary,
          new ImageAccessor(textureDirectory, textureSize, levelZeroTileSize, levels, imageExtension, Path.Combine(cacheDirectory, name), tileService),
@@ -97,7 +97,7 @@ namespace Dapple.LayerGeneration
       }
 
       public QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         decimal levelZeroTileSize, int levels, int textureSize, string serverURL, string dataSetName, string imageExtension,
+         double levelZeroTileSize, int levels, int textureSize, string serverURL, string dataSetName, string imageExtension,
          byte opacity, World world, string textureDirectory, string cacheDirectory, IBuilder parent)
          : this(name, height, isTerrainMapped, boundary, levelZeroTileSize, levels, textureSize,
          new ImageTileService(dataSetName, serverURL), imageExtension, opacity, world, textureDirectory, cacheDirectory, parent)
@@ -120,7 +120,7 @@ namespace Dapple.LayerGeneration
             }
             m_oImageAccessor = new ImageAccessor(strCachePath,
                 m_intTextureSizePixels,
-                m_decLevelZeroTileSizeDegrees,
+                m_dLevelZeroTileSizeDegrees,
                 m_intNumberLevels,
                 m_strImageFileExtension,
                 strCachePath,
@@ -224,15 +224,15 @@ namespace Dapple.LayerGeneration
 
       #region Public Properties
 
-      public decimal LevelZeroTileSize
+      public double LevelZeroTileSizeDegrees
       {
-         get { return m_decLevelZeroTileSizeDegrees; }
+         get { return m_dLevelZeroTileSizeDegrees; }
          set
          {
-            if (value != m_decLevelZeroTileSizeDegrees)
+            if (value != m_dLevelZeroTileSizeDegrees)
             {
                m_blnIsChanged = true;
-               m_decLevelZeroTileSizeDegrees = value;
+               m_dLevelZeroTileSizeDegrees = value;
             }
          }
       }
@@ -315,14 +315,14 @@ namespace Dapple.LayerGeneration
          "west=" + m_hBoundary.West.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
          "size=" + m_intTextureSizePixels.ToString() + "&" +
          "levels=" + m_intNumberLevels.ToString() + "&" +
-         "lvl0tilesize=" + m_decLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
+         "lvl0tilesize=" + m_dLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
          "terrainMapped=" + terrainMapped.ToString() + "&" +
          "imgfileext=" + m_strImageFileExtension;
       }
 
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), GetServerFileNameFromUrl(m_strServerUrl)), Utility.StringHash.GetBase64HashForPath(m_strDataSetName)), m_decLevelZeroTileSizeDegrees.GetHashCode().ToString());
+         return Path.Combine(Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), GetServerFileNameFromUrl(m_strServerUrl)), Utility.StringHash.GetBase64HashForPath(m_strDataSetName)), m_dLevelZeroTileSizeDegrees.GetHashCode().ToString());
       }
 
       public static QuadLayerBuilder GetQuadLayerBuilderFromURI(string uri, string textureDir, string cacheDir, World world, IBuilder parent)
@@ -356,7 +356,7 @@ namespace Dapple.LayerGeneration
 
       public override object Clone()
       {
-         return new QuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_decLevelZeroTileSizeDegrees,
+         return new QuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees,
             m_intNumberLevels, m_intTextureSizePixels, m_strServerUrl, m_strDataSetName,
             m_strImageFileExtension, m_bOpacity, m_oWorld, m_strTextureDirectory,
             m_strCacheRoot, m_Parent);

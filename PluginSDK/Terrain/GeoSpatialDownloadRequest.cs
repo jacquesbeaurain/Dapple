@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using System.Net;
 using WorldWind.Renderable;
+using WorldWind.Net;
 
-namespace WorldWind.Net
+namespace WorldWind.Terrain
 {
 	/// <summary>
 	/// Base class for geo-spatial download requests

@@ -109,6 +109,16 @@ namespace WorldWind.Net
 //        protected Thread dlThread;
 
       protected bool m_bXML = false;
+
+      /// <summary>
+      /// Constructor
+      /// </summary>
+      public WebDownload(string url)
+      {
+         this.Url = url;
+         m_bXML = false;
+      }
+
       /// <summary>
       /// Constructor
       /// </summary>

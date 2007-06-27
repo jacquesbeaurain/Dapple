@@ -92,7 +92,7 @@ namespace Dapple.LayerGeneration
       private string m_strCacheRoot;
       private Server m_oServer;
       private int m_iLevels;
-      private decimal m_decLevelZeroTileSizeDegrees;
+      private decimal m_dLevelZeroTileSizeDegrees;
 
       public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent) :
          this(dataSet, world, cacheDirectory, server, parent, 0, 256, 0, 0)
@@ -171,18 +171,18 @@ namespace Dapple.LayerGeneration
 
       #region Public Properties
 
-      public decimal LevelZeroTileSize
+      public double LevelZeroTileSize
       {
          get
          {
-            if (m_decLevelZeroTileSizeDegrees == 0)
+            if (m_dLevelZeroTileSizeDegrees == 0)
                // Shared code in DappleUtils of dapxmlclient
-               m_decLevelZeroTileSizeDegrees = DappleUtils.LevelZeroTileSize(m_hDataSet);
-            return m_decLevelZeroTileSizeDegrees;
+               m_dLevelZeroTileSizeDegrees = DappleUtils.LevelZeroTileSize(m_hDataSet);
+            return m_dLevelZeroTileSizeDegrees;
          }
          set
          {
-            m_decLevelZeroTileSizeDegrees = value;
+            m_dLevelZeroTileSizeDegrees = value;
          }
       }
 
@@ -385,7 +385,7 @@ namespace Dapple.LayerGeneration
          queryColl.Add("south", m_hDataSet.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture));
          queryColl.Add("west", m_hDataSet.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture));
          queryColl.Add("levels", m_iLevels.ToString());
-         queryColl.Add("lvl0tilesize", m_decLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture));
+         queryColl.Add("lvl0tilesize", m_dLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
          string strHost = "";
          string strPath = "";

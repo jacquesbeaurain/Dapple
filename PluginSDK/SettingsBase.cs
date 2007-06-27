@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml.Serialization;
 using System.Windows.Forms;
+using Utility;
 
 namespace WorldWind.Configuration
 {
@@ -35,6 +36,35 @@ namespace WorldWind.Configuration
 			Application,    // application - settings will be saved in appdir
 		}
 
+
+		// get the default location, given type of location
+		public static string DefaultLocation(LocationType locationType)
+		{
+			string directory;
+
+			switch(locationType) 
+			{
+				case LocationType.UserLocal:
+					// Example: @"C:\Documents and Settings\<user>\Local Settings\Application Data\NASA\NASA World Wind\1.3.3.11250"
+					return Application.LocalUserAppDataPath;
+				
+				case LocationType.UserCommon:
+					// Example: @"C:\Documents and Settings\All Users\Application Data\NASA\NASA World Wind\1.3.3.11250"
+					return Application.CommonAppDataPath;
+				
+				case LocationType.Application:
+					// Example: @"C:\Program Files\NASA\World Wind\"
+					return Application.StartupPath;
+
+				default:
+					// fall through to regular (roaming) user
+				case LocationType.User:   
+					// Example: @"C:\Documents and Settings\<user>\Application Data\NASA\World Wind\1.3.3"
+					directory = Log.DefaultSettingsDirectory();
+					Directory.CreateDirectory(directory);
+					return directory;
+			}
+		}
 
 		// Return the default filename (without path) to be used when saving
 		// this class's data(e.g. via serialization).
@@ -86,7 +116,7 @@ namespace WorldWind.Configuration
 			}
 			catch(Exception caught)
 			{
-				Utility.Log.Write(caught);
+				Log.Write(caught);
 			}
 		}
 
@@ -128,6 +158,26 @@ namespace WorldWind.Configuration
 		{
 			string fileName = Path.Combine(path, defaultSettings.DefaultName());
 			return Load(defaultSettings, fileName);
+		}
+
+
+		// Load settings from specified location using specified name
+		public static SettingsBase Load(SettingsBase defaultSettings, LocationType locationType, string name)
+		{
+			string fileName = Path.Combine(DefaultLocation(locationType), name);
+			return Load(defaultSettings, fileName);
+		}
+
+		// load settings from specified location using default name
+		public static SettingsBase Load(SettingsBase defaultSettings, LocationType locationType)
+		{
+			return Load(defaultSettings, locationType, defaultSettings.DefaultName());
+		}
+
+		// load settings from default file
+		public static SettingsBase Load(SettingsBase defaultSettings) 
+		{
+			return Load(defaultSettings, LocationType.User);
 		}
 
 		public string SettingsFilePath

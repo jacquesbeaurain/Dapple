@@ -529,7 +529,7 @@ namespace Dapple
         void CheckForUpdates(bool bFromMenu)
         {
             m_bUpdateFromMenu = bFromMenu;
-            WebDownload download = new WebDownload(WebsiteUrl + VersionFile, false);
+            WebDownload download = new WebDownload(WebsiteUrl + VersionFile);
             download.DownloadType = DownloadType.Unspecified;
             download.CompleteCallback += new DownloadCompleteHandler(UpdateDownloadComplete);
             download.BackgroundDownloadMemory();
@@ -1172,7 +1172,7 @@ namespace Dapple
 
         void GoTo(ImageBuilder builder)
         {
-            GoTo(builder.Extents, (builder is QuadLayerBuilder) ? (double)(builder as QuadLayerBuilder).LevelZeroTileSize : -1.0);
+            GoTo(builder.Extents, (builder is QuadLayerBuilder) ? (builder as QuadLayerBuilder).LevelZeroTileSize : -1.0);
         }
 
         void GoTo(GeographicBoundingBox extents, double dLevelZeroTileSize)

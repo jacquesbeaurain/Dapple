@@ -27,7 +27,6 @@ namespace WorldWind.VisualControl
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-         this.Icon = new System.Drawing.Icon(@"app.ico");
 
 			Text = selected.ToString() + " Properties";
 			propertyGrid.SelectedObject = selected;

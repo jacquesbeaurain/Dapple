@@ -25,6 +25,22 @@ namespace WorldWind
          }
       }
 
+      public Microsoft.DirectX.Vector3 Vector3
+      {
+         get 
+         {
+            return ConvertDX.ToVector3(this);
+         }
+      }
+
+      public Microsoft.DirectX.Vector4 Vector4
+      {
+         get
+         {
+            return ConvertDX.ToVector4(this);
+         }
+      }
+
       public void MultiplyMatrix(Matrix4d m, ref double w)
       {
          double wprev = w;

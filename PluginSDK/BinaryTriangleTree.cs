@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
@@ -11,7 +10,7 @@ namespace WorldWind
 	// BinaryTriangleTree class - handle mesh optimization (PM)
 	public class BinaryTriangleTree
 	{
-      CustomVertex.PositionColoredTextured[] _elevatedVertices;
+		CustomVertex.PositionTextured[] _elevatedVertices;
 		int _vertexDensity;
 		int _verticeDensity;
 		int _margin;
@@ -23,10 +22,10 @@ namespace WorldWind
 		short nw, sw, ne, se;
 
 		public int TriangleCount;
-		public List<short> Indices;
+		public short[] Indices;
 		
 		public BinaryTriangleTree(
-         CustomVertex.PositionColoredTextured[] ElevatedVertices, 
+			CustomVertex.PositionTextured[] ElevatedVertices, 
 			int VertexDensity,  // must be a power of 2
 			int Margin, 
 			double LayerRadius)
@@ -179,38 +178,29 @@ namespace WorldWind
 		private double FaceVariance(short v1, short v2, short v3)
 		{
 			double MaxVar = 0;
-         if ((v1 - v2 <= 1 && v1 - v2 >= -1) || (v3 - v2 <= 1 && v3 - v2 >= -1) || v3 == v1) 
+			if(Math.Abs(v1 - v2) == 1 || Math.Abs(v3 - v2) == 1) 
 			{
 				MaxVar = 0; // minimal face, no variance
 			}
 			else
 			{
-             try
-             {
-                 // find vertice in middle of hypothenuse
-                 short mid_hyp_indice = MidHypVerticeIndice(v1, v3);
-                 // find real elevation in middle of hypothenuse
-                 CustomVertex.PositionColoredTextured vh = this._elevatedVertices[mid_hyp_indice];
-                 Point3d v = MathEngine.CartesianToSpherical(vh.X, vh.Y, vh.Z);
-                 double real = v.X - this._layerRadius;
-                 // find extrapolated elevation in middle hyp.
-                 double xe = (this._elevatedVertices[v1].X + this._elevatedVertices[v3].X) / 2;
-                 double ye = (this._elevatedVertices[v1].Y + this._elevatedVertices[v3].Y) / 2;
-                 double ze = (this._elevatedVertices[v1].Z + this._elevatedVertices[v3].Z) / 2;
-                 v = MathEngine.CartesianToSpherical(xe, ye, ze);
-                 double extrapolated = v.X - this._layerRadius;
-                 // variance Note: could be done w/out MathEngine by computing raw cartesian distance
-                 MaxVar = real - extrapolated;
-                 // recurse for potential childs until unit face
-
-                 if (v2 != v1 || mid_hyp_indice != v2 || v1 != v3)
-                     MaxVar = Math.Max(MaxVar, FaceVariance(v2, mid_hyp_indice, v1));
-                 if (v3 != v1 || mid_hyp_indice != v2 || v2 != v3)
-                     MaxVar = Math.Max(MaxVar, FaceVariance(v3, mid_hyp_indice, v2));
-             }
-             catch 
-             {
-             }
+				// find vertice in middle of hypothenuse
+				short mid_hyp_indice = MidHypVerticeIndice(v1, v3);
+				// find real elevation in middle of hypothenuse
+				CustomVertex.PositionTextured vh = this._elevatedVertices[mid_hyp_indice];
+            Point3d v = MathEngine.CartesianToSpherical(vh.X, vh.Y, vh.Z);
+				double real = v.X - this._layerRadius;
+				// find extrapolated elevation in middle hyp.
+				float xe = (this._elevatedVertices[v1].X + this._elevatedVertices[v3].X) / 2;
+				float ye = (this._elevatedVertices[v1].Y + this._elevatedVertices[v3].Y) / 2;
+				float ze = (this._elevatedVertices[v1].Z + this._elevatedVertices[v3].Z) / 2;
+				v = MathEngine.CartesianToSpherical(xe, ye, ze);
+				double extrapolated = v.X - this._layerRadius;
+				// variance Note: could be done w/out MathEngine by computing raw cartesian distance
+				MaxVar = real - extrapolated; 
+				// recurse for potential childs until unit face
+				MaxVar = Math.Max(MaxVar, FaceVariance(v2, mid_hyp_indice, v1));
+				MaxVar = Math.Max(MaxVar, FaceVariance(v3, mid_hyp_indice, v2));
 			}
 			return MaxVar;
 		}
@@ -220,16 +210,17 @@ namespace WorldWind
 			// how many faces total with walls/margin ?
 			int MarginFaces = (this._margin + this._vertexDensity) * this._margin * 2 * 4;
 			int TotFaces = MarginFaces + this._terrainFaceCount;
-			this.Indices = new List<short>(TotFaces * 3);
-			
-         // build terrain
+			this.Indices = new short[TotFaces * 3];
+			int idx = 0;
+			// build terrain
 			for(short i = 0; i < this._treeListLength; i++) 
 			{
 				if(this._treeList[i].rc == -1) // no child: is to be drawn
 				{
-					this.Indices.Add(this._treeList[i].i1);
-					this.Indices.Add(this._treeList[i].i2);
-					this.Indices.Add(this._treeList[i].i3);
+					this.Indices[idx] = this._treeList[i].i1;
+					this.Indices[idx+1] = this._treeList[i].i2;
+					this.Indices[idx+2] = this._treeList[i].i3;
+					idx += 3;
 				}
 			}
 			// build walls/margin if any
@@ -240,14 +231,16 @@ namespace WorldWind
 				i1 = this.nw;
 				for(i2 = (short)(this.nw + 1); i2 <= this.ne; i2++)
 				{
-					if(this.Indices.Contains(i2))
+					if(VerticeIsUsedInTerrain(i2))
 					{
-						this.Indices.Add(i1);
-						this.Indices.Add(i2);
-						this.Indices.Add((short)(i2 - (short)this._verticeDensity));
-						this.Indices.Add((short)(i2 - (short)this._verticeDensity));
-						this.Indices.Add((short)(i1 - (short)this._verticeDensity));
-						this.Indices.Add(i1);
+						this.Indices[idx] = i1;
+						this.Indices[idx+1] = i2;
+						this.Indices[idx+2] = (short)(i2 - (short)this._verticeDensity);
+						idx += 3;
+						this.Indices[idx] = (short)(i2 - (short)this._verticeDensity);
+						this.Indices[idx+1] = (short)(i1 - (short)this._verticeDensity);
+						this.Indices[idx+2] = i1;
+						idx += 3;
 						i1 = i2;					
 					}
 				}
@@ -255,14 +248,16 @@ namespace WorldWind
 				i1 = this.sw;
 				for(i2 = (short)(this.sw + 1); i2 <= this.se; i2++)
 				{
-					if(this.Indices.Contains(i2))
+					if(VerticeIsUsedInTerrain(i2))
 					{
-						this.Indices.Add(i2);
-						this.Indices.Add(i1);
-						this.Indices.Add((short)(i1 + (short)this._verticeDensity));
-						this.Indices.Add((short)(i1 + (short)this._verticeDensity));
-						this.Indices.Add((short)(i2 + (short)this._verticeDensity));
-						this.Indices.Add(i2);
+						this.Indices[idx] = i2;
+						this.Indices[idx+1] = i1;
+						this.Indices[idx+2] = (short)(i1 + (short)this._verticeDensity);
+						idx += 3;
+						this.Indices[idx] = (short)(i1 + (short)this._verticeDensity);
+						this.Indices[idx+1] = (short)(i2 + (short)this._verticeDensity);
+						this.Indices[idx+2] = i2;
+						idx += 3;
 						i1 = i2;					
 					}
 				}
@@ -270,14 +265,16 @@ namespace WorldWind
 				i1 = this.nw;
 				for(i2 = (short)(this.nw + (short)this._verticeDensity); i2 <= this.sw; i2 += (short)this._verticeDensity)
 				{
-					if(this.Indices.Contains(i2))
+					if(VerticeIsUsedInTerrain(i2))
 					{
-						this.Indices.Add(i2);
-						this.Indices.Add(i1);
-						this.Indices.Add((short)(i1 - 1));
-						this.Indices.Add((short)(i1 - 1));
-						this.Indices.Add((short)(i2 - 1));
-						this.Indices.Add(i2);
+						this.Indices[idx] = i2;
+						this.Indices[idx+1] = i1;
+						this.Indices[idx+2] = (short)(i1 - 1);
+						idx += 3;
+						this.Indices[idx] = (short)(i1 - 1);
+						this.Indices[idx+1] = (short)(i2 - 1);
+						this.Indices[idx+2] = i2;
+						idx += 3;
 						i1 = i2;					
 					}
 				}
@@ -285,14 +282,16 @@ namespace WorldWind
 				i1 = this.ne;
 				for(i2 = (short)(this.ne + (short)this._verticeDensity); i2 <= this.se; i2 += (short)this._verticeDensity)
 				{
-					if(this.Indices.Contains(i2))
+					if(VerticeIsUsedInTerrain(i2))
 					{
-						this.Indices.Add(i1);
-						this.Indices.Add(i2);
-						this.Indices.Add((short)(i2 + 1));
-						this.Indices.Add((short)(i2 + 1));
-						this.Indices.Add((short)(i1 + 1));
-						this.Indices.Add(i1);
+						this.Indices[idx] = i1;
+						this.Indices[idx+1] = i2;
+						this.Indices[idx+2] = (short)(i2 + 1);
+						idx += 3;
+						this.Indices[idx] = (short)(i2 + 1);
+						this.Indices[idx+1] = (short)(i1 + 1);
+						this.Indices[idx+2] = i1;
+						idx += 3;
 						i1 = i2;					
 					}
 				}
@@ -343,6 +342,15 @@ namespace WorldWind
 				*/
 			}
 
+		}
+
+		private bool VerticeIsUsedInTerrain(short v)
+		{
+			for(int i = 0; i < this.Indices.Length; i++)
+			{
+				if (this.Indices[i] == v) return true;
+			}
+			return false;
 		}
 	}
 

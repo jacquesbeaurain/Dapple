@@ -122,6 +122,19 @@ namespace WorldWind
          return solution;
       }
 
+      public static Matrix4d Scaling(double x, double y, double z)
+      {
+         //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.Scaling((float)x, (float)y, (float)z));
+         Matrix4d solution = new Matrix4d(new Matrix(new double[][] 
+            {
+               new double[] { x, 0, 0, 0} ,
+               new double[] { 0, y, 0, 0} ,
+               new double[] { 0, 0, z, 0} ,
+               new double[] { 0, 0, 0, 1} 
+            }));
+         return solution;
+      }
+
       public static Matrix4d RotationX(double angle)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.RotationX((float)angle));

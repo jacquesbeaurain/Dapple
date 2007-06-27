@@ -65,7 +65,7 @@ namespace Geosoft.Dap.Common
       /// </summary>
       /// <param name="oDataset"></param>
       /// <returns>default level zero tile size</returns>
-      public static decimal LevelZeroTileSize(DataSet oDataset)
+      public static double(DataSet oDataset)
       {
          // Round to ceiling of four decimals (>~ 10 meter resolution)
          // Empirically determined as pretty good tile size choice for small data sets

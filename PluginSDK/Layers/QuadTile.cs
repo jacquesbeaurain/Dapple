@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -11,6 +12,7 @@ using WorldWind.Camera;
 using WorldWind.Net;
 using WorldWind.Terrain;
 using WorldWind.VisualControl;
+using Utility;
 
 namespace WorldWind.Renderable
 {
@@ -980,6 +982,7 @@ namespace WorldWind.Renderable
 
 
       public string ImageFilePath = null;
+      public int TextureSize = 0;
 
       public virtual bool Render(DrawArgs drawArgs)
       {
@@ -1258,7 +1261,7 @@ namespace WorldWind.Renderable
                   param = (EffectHandle)QuadTileSet.EffectParameters["LocalOrigin"];
                   if (param != null)
                   {
-                     effect.SetValue(param, ConvertDX.ToVector4(localOrigin));
+                     effect.SetValue(param, localOrigin.Vector4);
                   }
 
                   // sun position
@@ -1281,25 +1284,27 @@ namespace WorldWind.Renderable
                   {
                      //localOrigin = BoundingBox.CalculateCenter();
                      Point3d centerPoint =
-                         MathEngine.SphericalToCartesianD(CenterLatitude, CenterLongitude,
+                         MathEngine.SphericalToCartesian(CenterLatitude, CenterLongitude,
                                                           QuadTileSet.LayerRadius);
                      Point3d northHalf =
-                         MathEngine.SphericalToCartesianD(Angle.FromDegrees(North), CenterLongitude,
+                         MathEngine.SphericalToCartesian(Angle.FromDegrees(North), CenterLongitude,
                                                           QuadTileSet.LayerRadius);
                      Point3d eastHalf =
-                         MathEngine.SphericalToCartesianD(CenterLatitude, Angle.FromDegrees(East),
+                         MathEngine.SphericalToCartesian(CenterLatitude, Angle.FromDegrees(East),
                                                           QuadTileSet.LayerRadius);
 
-                     Vector4 xdir = 2 * (eastHalf - centerPoint).Vector4;
-                     Vector4 ydir = 2 * (northHalf - centerPoint).Vector4;
+                     Vector4 xdir = (2 * (eastHalf - centerPoint)).Vector4;
+                     Vector4 ydir = (2 * (northHalf - centerPoint)).Vector4;
                      // up vector is radius at center point, normalized
-                     Vector4 zdir = centerPoint.normalize().Vector4;
+                     Point3d zdir3 = centerPoint;
+                     zdir3.normalize();
+                     Vector4 zdir = zdir3.Vector4;
                      // local frame origin at SW corner, relative to local origin
                      Point3d localFrameOrigin = northHalf + eastHalf - centerPoint - localOrigin;
                      Vector4 lfoW = localFrameOrigin.Vector4;
                      lfoW.W = 1;
                      lfoW.Transform(device.Transform.World);
-                     effect.SetValue(param, localFrameOrigin.Vector4);
+                     effect.SetValue(param, localFrameOrigin.Vector4); // JBTODO: Should this be lfoW?
 
                      param = (EffectHandle)QuadTileSet.EffectParameters["LocalFrameXAxis"];
                      if (param != null) effect.SetValue(param, xdir);
@@ -1444,8 +1449,8 @@ namespace WorldWind.Renderable
             info.dMaxLon = Math.Max(info.dMaxLon, this.East);
             info.dMinLon = Math.Min(info.dMinLon, this.West);
 
-            info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * QuadTileSet.ImageAccessor.TextureSizePixels);
-            info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * QuadTileSet.ImageAccessor.TextureSizePixels);
+            info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * TextureSize);
+            info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * TextureSize);
          }
 
          if (northWestChild != null && northWestChild.isInitialized)
@@ -1464,7 +1469,7 @@ namespace WorldWind.Renderable
          {
             bool bChildren = false;
 
-            if (!isInitialized || texture == null)
+            if (!isInitialized || textures == null || textures[0] == null)
                return;
             if (!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
                return;
@@ -1493,7 +1498,7 @@ namespace WorldWind.Renderable
                bChildren = true;
             }
 
-            if (!bChildren && texture != null)
+            if (!bChildren && textures == null || textures[0] == null)
             {
                Image img = null;
 
@@ -1502,7 +1507,7 @@ namespace WorldWind.Renderable
                   int iWidth, iHeight, iX, iY;
 
                   GeographicBoundingBox geoBox = new GeographicBoundingBox(this.North, this.South, this.West, this.East);
-                  img = Image.FromFile(QuadTileSet.ImageAccessor.GetImagePath(geoBox, level));
+                  img = Image.FromFile(ImageFilePath);
 
                   iWidth = (int)Math.Round((this.East - this.West) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
                   iHeight = (int)Math.Round((this.North - this.South) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));

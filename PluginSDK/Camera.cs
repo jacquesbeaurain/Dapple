@@ -921,40 +921,40 @@ namespace WorldWind.Camera
             _latitude, _longitude, _distance, _altitude, _fov);
          return res;
       }
-      /*
-            /// <summary>
-            /// Gets the visible bounding box for the application in degrees.
-            /// </summary>
-            /// <returns>An array of Angles in minx.miny,maxx, maxy order</returns>
-            public static Angle[] getViewBoundingBox()
-            {
-               /// TODO: Correct the ViewRange for non-square windows. Is is accurate horizontally
-               /// but not vertically.
-               Angle[] bbox = new Angle[4];
-			
-               /// HACK: need to deal with startup of World (nothing is instantiated yet)
-               if (DrawArgs.Camera !=null)
-               {
-                  Angle lat = DrawArgs.Camera.Latitude;
-                  Angle lon = DrawArgs.Camera.Longitude;
-                  Angle vr  = DrawArgs.Camera.ViewRange;
-				
-                  Angle North = lat + (0.5 * vr);
-                  Angle South = lat - (0.5 * vr);
-                  Angle East  = lon + (0.5 * vr);
-                  Angle West  = lon - (0.5 * vr);
-				
-                  //minX(West), minY(South), maxX(East), MaxY(North)
-                  bbox[0] = West; bbox[1] = South; 
-                  bbox[2] = East; bbox[3] = North;
-               }
-               else
-               {
-                  bbox[0] = Angle.FromDegrees(-180.0); bbox[1]= Angle.FromDegrees(-90.0);
-                  bbox[2] = Angle.FromDegrees(180.0);  bbox[3]= Angle.FromDegrees(90.0);
-               }
-               return bbox; 
-            }
-      */
+
+      /// <summary>
+      /// Gets the visible bounding box for the application in degrees.
+      /// </summary>
+      /// <returns>An array of Angles in minx.miny,maxx, maxy order</returns>
+      public static Angle[] getViewBoundingBox()
+      {
+         /// TODO: Correct the ViewRange for non-square windows. Is is accurate horizontally
+         /// but not vertically.
+         Angle[] bbox = new Angle[4];
+
+         /// HACK: need to deal with startup of World (nothing is instantiated yet)
+         if (DrawArgs.Camera != null)
+         {
+            Angle lat = DrawArgs.Camera.Latitude;
+            Angle lon = DrawArgs.Camera.Longitude;
+            Angle vr = DrawArgs.Camera.ViewRange;
+
+            Angle North = lat + (0.5 * vr);
+            Angle South = lat - (0.5 * vr);
+            Angle East = lon + (0.5 * vr);
+            Angle West = lon - (0.5 * vr);
+
+            //minX(West), minY(South), maxX(East), MaxY(North)
+            bbox[0] = West; bbox[1] = South;
+            bbox[2] = East; bbox[3] = North;
+         }
+         else
+         {
+            bbox[0] = Angle.FromDegrees(-180.0); bbox[1] = Angle.FromDegrees(-90.0);
+            bbox[2] = Angle.FromDegrees(180.0); bbox[3] = Angle.FromDegrees(90.0);
+         }
+         return bbox;
+      }
+      
    }
 }

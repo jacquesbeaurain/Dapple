@@ -33,7 +33,7 @@ namespace Dapple.LayerGeneration
       bool terrainMapped = false;
       GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
       ImageAccessor m_oImageAccessor = null;
-      private decimal m_decLevelZeroTileSizeDegrees = 0;
+      private decimal m_dLevelZeroTileSizeDegrees = 0;
 
       WMSServerBuilder m_Server;
 
@@ -446,22 +446,22 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      public decimal LevelZeroTileSize
+      public double LevelZeroTileSize
       {
          get
          {
-            if (m_decLevelZeroTileSizeDegrees == 0)
+            if (m_dLevelZeroTileSizeDegrees == 0)
             {
                // Round to ceiling of four decimals (>~ 10 meter resolution)
                // Empirically determined as pretty good tile size choice for small data sets
                decimal dLevelZero = (decimal) (Math.Ceiling(10000.0 * Math.Max(m_hBoundary.North - m_hBoundary.South, m_hBoundary.West - m_hBoundary.East)) / 10000.0);
 
                // Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
-               m_decLevelZeroTileSizeDegrees = (decimal)22.5;
-               while (dLevelZero < m_decLevelZeroTileSizeDegrees)
-                  m_decLevelZeroTileSizeDegrees /= 2;
+               m_dLevelZeroTileSizeDegrees = (decimal)22.5;
+               while (dLevelZero < m_dLevelZeroTileSizeDegrees)
+                  m_dLevelZeroTileSizeDegrees /= 2;
             }
-            return m_decLevelZeroTileSizeDegrees;
+            return m_dLevelZeroTileSizeDegrees;
          }
       }
       

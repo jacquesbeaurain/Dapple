@@ -8,6 +8,7 @@ using Microsoft.DirectX.Direct3D;
 using WorldWind.Camera;
 using WorldWind;
 using WorldWind.Net;
+using Utility;
 
 namespace WorldWind
 {
@@ -23,6 +24,8 @@ namespace WorldWind
 		public int numBoundaryPointsRendered;
 		public int numBoundariesDrawn;
 		public Font defaultDrawingFont;
+		public System.Drawing.Font defaultSubTitleFont;
+		public Font defaultSubTitleDrawingFont;
 		public Font toolbarFont;
 		public int screenWidth;
 		public int screenHeight;
@@ -32,13 +35,26 @@ namespace WorldWind
 		public string UpperLeftCornerText = "";
 		CameraBase m_WorldCamera;
 		public World m_CurrentWorld = null;
-		public static bool IsLeftMouseButtonDown;
-		public static bool IsRightMouseButtonDown;
+		public static bool IsLeftMouseButtonDown = false;
+		public static bool IsRightMouseButtonDown = false;
 		public static DownloadQueue DownloadQueue = new DownloadQueue();
-
-		public int TexturesLoadedThisFrame = 0;
+        public static WorldWind.Widgets.RootWidget RootWidget = null;
+        public static WorldWind.NewWidgets.RootWidget NewRootWidget = null;
+        public int TexturesLoadedThisFrame = 0;
+		private static System.Drawing.Bitmap bitmap;
+		public static System.Drawing.Graphics Graphics = null;
 
 		public bool RenderWireFrame = false;
+
+        /// <summary>
+        /// Table of all icon textures
+        /// </summary>
+        protected static Hashtable m_textures= new Hashtable();
+        public static Hashtable Textures
+        {
+            get { return m_textures; }
+        }
+
 		public static CameraBase Camera = null;
 		public CameraBase WorldCamera
 		{
@@ -53,6 +69,7 @@ namespace WorldWind
 			}
 		}
 
+        public static World CurrentWorldStatic = null;
 		public World CurrentWorld
 		{
 			get
@@ -62,6 +79,7 @@ namespace WorldWind
 			set
 			{
 				m_CurrentWorld = value;
+                CurrentWorldStatic = value;
 			}
 		}
 		/*
@@ -106,9 +124,17 @@ namespace WorldWind
 			defaultDrawingFont = CreateFont( World.Settings.defaultFontName, World.Settings.defaultFontSize );
 			if(defaultDrawingFont==null)
 				defaultDrawingFont = CreateFont( "", 10 );
+
+			defaultSubTitleFont = new System.Drawing.Font("Ariel", 8.0f);
+			defaultSubTitleDrawingFont = new Font(device, defaultSubTitleFont);
+			if(defaultSubTitleDrawingFont==null)
+				defaultSubTitleDrawingFont = CreateFont( "", 8 );
+			
 			toolbarFont = CreateFont( World.Settings.ToolbarFontName, World.Settings.ToolbarFontSize, World.Settings.ToolbarFontStyle );
 		
-			InitializeReference();
+			bitmap = new System.Drawing.Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			DrawArgs.Graphics = System.Drawing.Graphics.FromImage(bitmap);
+		//	InitializeReference();
 		}
 
 		System.Windows.Forms.Control m_ReferenceForm;
@@ -160,6 +186,8 @@ namespace WorldWind
 
 		private void OnDeviceReset(object sender, EventArgs e)
 		{
+            using(new DirectXProfilerEvent("DrawArgs::OnDeviceReset"))
+            {
 			// Can we use anisotropic texture minify filter?
 			if( m_Device3dReference.DeviceCaps.TextureFilterCaps.SupportsMinifyAnisotropic)
 			{
@@ -193,6 +221,7 @@ namespace WorldWind
 			m_Device3dReference.RenderState.SourceBlend = Blend.SourceAlpha;
 			m_Device3dReference.RenderState.DestinationBlend = Blend.InvSourceAlpha;
 		}
+        }
 
 		Device m_Device3dReference = null;
 		public void BeginRender()
@@ -226,6 +255,7 @@ namespace WorldWind
 			PerformanceTimer.QueryPerformanceCounter(ref CurrentFrameStartTicks);
 			LastFrameSecondsElapsed = (CurrentFrameStartTicks - previousFrameStartTicks) / 
 				(float)PerformanceTimer.TicksPerSecond;
+
 			// Display the render
 			device.Present();
 		}
@@ -255,12 +285,12 @@ namespace WorldWind
 					description.IsItalic = true;
 				if((style & System.Drawing.FontStyle.Bold) != 0)
 					description.Weight = FontWeight.Heavy;
-				
+                description.Quality = FontQuality.AntiAliased;
 				return CreateFont( description );
 			}
 			catch
 			{
-				Utility.Log.Write("FONT", string.Format("Unable to load '{0}' {2} ({1}em)", 
+				Log.Write(Log.Levels.Error, "FONT", string.Format("Unable to load '{0}' {2} ({1}em)", 
 					familyName, emSize, style ) );
 				return defaultDrawingFont;
 			}
@@ -292,7 +322,7 @@ namespace WorldWind
 			}
 			catch
 			{
-				Utility.Log.Write("FONT", string.Format("Unable to load '{0}' (Height: {1})", description.FaceName, description.Height) );
+				Log.Write(Log.Levels.Error, "FONT", string.Format("Unable to load '{0}' (Height: {1})", description.FaceName, description.Height) );
 				return defaultDrawingFont;
 			}
 		}
@@ -324,6 +354,11 @@ namespace WorldWind
 					break;
 				case CursorType.Cross:
 					parent.Cursor = System.Windows.Forms.Cursors.Cross;
+					break;
+				case CursorType.Measure:
+					if(measureCursor == null)
+						measureCursor = ImageHelper.LoadCursor("measure.cur");
+					parent.Cursor = measureCursor;
 					break;
 				case CursorType.SizeWE:
 					parent.Cursor = System.Windows.Forms.Cursors.SizeWE;

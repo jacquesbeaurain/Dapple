@@ -26,6 +26,16 @@ namespace WorldWind
       public double South;
       public double West;
       public double East;
+		public double MinimumAltitude;
+		public double MaximumAltitude;
+
+		public GeographicBoundingBox()
+		{
+			North = 90;
+			South = -90;
+			West = -180;
+			East = 180;
+		}
 
       public GeographicBoundingBox(double north, double south, double west, double east)
       {
@@ -35,6 +45,16 @@ namespace WorldWind
          East = east;
       }
 
+		public GeographicBoundingBox(double north, double south, double west, double east, double minAltitude, double maxAltitude)
+		{
+			North = north;
+			South = south;
+			West = west;
+			East = east;
+			MinimumAltitude = minAltitude;
+			MaximumAltitude = maxAltitude;
+		}
+
       public static GeographicBoundingBox FromQuad(GeographicQuad quad)
       {
          return new GeographicBoundingBox(Math.Max(Math.Max(Math.Max(quad.Y1, quad.Y2), quad.Y3), quad.Y4),
@@ -43,10 +63,20 @@ namespace WorldWind
             Math.Max(Math.Max(Math.Max(quad.X1, quad.X2), quad.X3), quad.X4));
       }
 
-      public bool IntersectsWith(GeographicBoundingBox test)
-      {
-          return (test.West < this.East && this.West < test.East && test.South < this.North && this.South < test.North);
-      }
+		public bool Intersects(GeographicBoundingBox boundingBox)
+		{
+			if(North <= boundingBox.South ||
+				South >= boundingBox.North ||
+				West >= boundingBox.East ||
+				East <= boundingBox.West)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
 
       public bool Contains(GeographicBoundingBox test)
       {

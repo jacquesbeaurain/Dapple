@@ -160,44 +160,6 @@ namespace WorldWind.Widgets
 			return false;
 		}
 
-      public bool OnMouseClick(System.Windows.Forms.MouseEventArgs e)
-      {
-         for (int index = 0; index < m_ChildWidgets.Count; index++)
-         {
-            IWidget currentWidget = m_ChildWidgets[index] as IWidget;
-
-            if (currentWidget != null && currentWidget is IInteractive)
-            {
-               IInteractive currentInteractive = m_ChildWidgets[index] as IInteractive;
-
-               bool handled = currentInteractive.OnMouseClick(e);
-               if (handled)
-                  return handled;
-            }
-         }
-
-         return false;
-      }
-
-      public bool OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs e)
-      {
-         for (int index = 0; index < m_ChildWidgets.Count; index++)
-         {
-            IWidget currentWidget = m_ChildWidgets[index] as IWidget;
-
-            if (currentWidget != null && currentWidget is IInteractive)
-            {
-               IInteractive currentInteractive = m_ChildWidgets[index] as IInteractive;
-
-               bool handled = currentInteractive.OnMouseDoubleClick(e);
-               if (handled)
-                  return handled;
-            }
-         }
-
-         return false;
-      }
-
 		public bool OnMouseUp(System.Windows.Forms.MouseEventArgs e)
 		{
 			for(int index = 0; index < m_ChildWidgets.Count; index++)
