@@ -1,5 +1,4 @@
 using System;
-using WorldWind;
 
 namespace WorldWind.PluginEngine
 {
@@ -9,10 +8,10 @@ namespace WorldWind.PluginEngine
 	/// </summary>
 	public abstract class Plugin
 	{
-       /// <summary>
-       /// Handle to the World Wind Application object
-       /// </summary>
-       protected WorldWindow m_WorldWindow;
+		/// <summary>
+		/// Handle to the World Wind Application object
+		/// </summary>
+		protected MainApplication m_Application;
 
 		/// <summary>
 		/// The directory from which this plugin was loaded.
@@ -24,29 +23,16 @@ namespace WorldWind.PluginEngine
 		/// </summary>
 		protected bool m_isLoaded;
 
-      ///// <summary>
-      ///// Reference to the World Wind main application object.  
-      ///// Deprecated: Use ParentApplication property instead!  
-      ///// TODO: Remove this to avoid name collision
-      ///// </summary>
-      //public virtual MainApplication Application
-      //{
-      //   get
-      //   {
-      //      return m_Application;
-      //   }
-      //}
-
-      /// <summary>
-      /// Reference to the World Wind main application object.
-      /// </summary>
-      public virtual WorldWindow WorldWindow
-      {
-          get
-          {
-              return m_WorldWindow;
-          }
-      }
+		/// <summary>
+		/// Reference to the World Wind main application object.
+		/// </summary>
+		public virtual MainApplication ParentApplication
+		{
+			get
+			{
+				return m_Application;
+			}
+		}
 
 		/// <summary>
 		/// The location this plugin was loaded from.
@@ -92,13 +78,13 @@ namespace WorldWind.PluginEngine
 		/// Base class load, calls Load. 
 		/// </summary>
 		/// <param name="parent"></param>
-		public virtual void PluginLoad( WorldWindow parent , string pluginDirectory )
+		public virtual void PluginLoad( MainApplication parent, string pluginDirectory )
 		{
 			if(m_isLoaded)
 				// Already loaded
 				return;
 
-         m_WorldWindow = parent;
+			m_Application = parent;
 			m_PluginDirectory = pluginDirectory;
 			Load();
 			m_isLoaded = true;

@@ -106,7 +106,7 @@ namespace WorldWind
                     World newWorld = new World(
                         worldName,
                         new Point3d(0, 0, 0),
-                        new Quaternion4d(0, 0, 0, 0),
+                        Quaternion4d.RotationYawPitchRoll(0, 0, 0),
                         equatorialRadius,
                         cache.CacheDirectory,
                         (terrainAccessor != null ? terrainAccessor[0] : null)//TODO: Oops, World should be able to handle an array of terrainAccessors

@@ -81,7 +81,7 @@ namespace WorldWind.Renderable
 			FontDescription fontDescription,
 			System.Drawing.Color color,
 			string iconFilePath
-			) : base(name, parentWorld.Position, new Quaternion4d(0, 0, 0, 0))
+			) : base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 			m_parentWorld = parentWorld;
 			m_altitude = altitude;

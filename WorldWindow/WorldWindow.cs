@@ -1,3 +1,4 @@
+
 #region OPEN SOURCE AGREEMENT
 /*
 	NASA OPEN SOURCE AGREEMENT VERSION 1.3
@@ -298,24 +299,21 @@ using System;
 using WorldWind.Camera;
 using WorldWind.Menu;
 using WorldWind;
+using WorldWind.DataSource;
 using WorldWind.Net;
 using WorldWind.Net.Wms;
 using WorldWind.Interop;
 using WorldWind.VisualControl;
-using Utility.Location;
-using WorldWind.Net.Monitor;
+using Utility;
 
 namespace WorldWind
 {
    public class WorldWindow : Control, IGlobe
    {
-      #region Private Fields
-
       /// <summary>
       /// Direct3D rendering m_Device3d
       /// </summary>
       private Device m_Device3d;
-      private ProgressMonitor progressMonitor;
       private PresentParameters m_presentParams;
       private DrawArgs drawArgs;
       private World m_World;
@@ -335,11 +333,9 @@ namespace WorldWind
       private bool isMouseDragging;
       private Point mouseDownStartPosition = Point.Empty;
       private bool renderWireFrame;
-      private PluginEngine.PluginCompiler m_PluginCompiler = null;
-      private Angle targetLatitude;
-      private Angle targetLongitude;
-
-      #endregion
+      private System.Timers.Timer m_FpsTimer = new System.Timers.Timer(250);
+      
+      //		protected DownloadIndicator m_downloadIndicator;
 
       /// <summary>
       /// Initializes a new instance of the <see cref= "T:WorldWind.WorldWindow"/> class.
@@ -350,29 +346,42 @@ namespace WorldWind
 
          // The m_Device3d can't be created unless the control is at least 1 x 1 pixels in size
          this.Size = new Size(1, 1);
+
          try
          {
             // Now perform the rendering m_Device3d initialization
             // Skip DirectX initialization in design mode
             if (!IsInDesignMode())
-             {
-                 this.InitializeGraphics();
-                 Application.Idle += new EventHandler(this.OnApplicationIdle);
-             }
+            {
+               this.InitializeGraphics();
+               Application.Idle += new EventHandler(this.OnApplicationIdle);
+            }
 
             //Post m_Device3d creation initialization
             this.drawArgs = new DrawArgs(m_Device3d, this);
             this.m_RootWidget = new WorldWind.Widgets.RootWidget(this);
+            this.m_NewRootWidget = new WorldWind.NewWidgets.RootWidget(this);
+
+            //this.m_RootWidget.ChildWidgets.Add(layerManager);
+            DrawArgs.RootWidget = this.m_RootWidget;
+            DrawArgs.NewRootWidget = this.m_NewRootWidget;
+
+            m_FpsTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_FpsTimer_Elapsed);
+            m_FpsTimer.Start();
+
+            TimeKeeper.Start();
+            //	WorldWind.Widgets.LayerManager layerManager = new WorldWind.Widgets.LayerManager();
+            //	m_RootWidget.ChildWidgets.Add(layerManager);
          }
          catch (InvalidCallException caught)
          {
             throw new InvalidCallException(
-               "Unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.\nAlso note that this application does not support execution within virtual machines or through remote desktop connections.", caught);
+                "Unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.", caught);
          }
          catch (NotAvailableException caught)
          {
             throw new NotAvailableException(
-               "Unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.\nAlso note that this application does not support execution within virtual machines or through remote desktop connections.", caught);
+                "Unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.", caught);
          }
       }
 
@@ -389,8 +398,31 @@ namespace WorldWind
             m_World = value;
             if (m_World != null)
             {
-               this.drawArgs.WorldCamera = new MomentumCamera(m_World.Position, m_World.EquatorialRadius);
+               MomentumCamera camera = new MomentumCamera(m_World.Position, m_World.EquatorialRadius);
+               if (!World.Settings.CameraResetsAtStartup)
+               {
+                  camera.SetPosition(
+                      World.Settings.CameraLatitude.Degrees,
+                      World.Settings.CameraLongitude.Degrees,
+                      World.Settings.CameraHeading.Degrees,
+                      World.Settings.CameraAltitude,
+                      World.Settings.CameraTilt.Degrees,
+                      0
+                      );
+               }
+               this.drawArgs.WorldCamera = camera;
 
+               this.drawArgs.CurrentWorld = value;
+               /*
+               this.layerManagerButton = new LayerManagerButton(
+                   Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), @"Data\Icons\Interface\layer-manager2.png"),
+                   m_World);
+
+               this._menuBar.AddToolsMenuButton(this.layerManagerButton, 0);
+               this._menuBar.AddToolsMenuButton(new PositionMenuButton(Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\coordinates.png"), 1);
+               this._menuBar.AddToolsMenuButton(new LatLonMenuButton(Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\lat-long.png", m_World), 2);
+               this.layerManagerButton.SetPushed(World.Settings.ShowLayerManager);
+               */
                // TODO: Decide how to load grids
                m_World.RenderableObjects.Add(new Renderable.LatLongGrid(m_World));
             }
@@ -436,11 +468,40 @@ namespace WorldWind
          get { return this.drawArgs; }
       }
 
+      /*
+      public MenuBar MenuBar
+      {
+         get
+         {
+            return this._menuBar;
+         }
+      }
+
+      public bool ShowLayerManager
+      {
+         get
+         {
+            if (this.layerManagerButton != null)
+               return this.layerManagerButton.IsPushed();
+            else
+               return false;
+         }
+         set
+         {
+            if (this.layerManagerButton != null)
+               this.layerManagerButton.SetPushed(value);
+         }
+      }
+      */
       public Cache Cache
       {
          get
          {
             return m_Cache;
+         }
+         set
+         {
+            m_Cache = value;
          }
       }
 
@@ -505,18 +566,6 @@ namespace WorldWind
          }
       }
 
-      private PluginEngine.PluginCompiler PluginCompiler
-      {
-         get
-         {
-            if (m_PluginCompiler == null)
-            {
-               m_PluginCompiler = new WorldWind.PluginEngine.PluginCompiler();//m_oWWSettings.WorldWindDirectory);
-            }
-            return m_PluginCompiler;
-         }
-      }
-
       #endregion
 
       #region Public methods
@@ -528,16 +577,16 @@ namespace WorldWind
       /// <param name="dY"></param>
       /// <param name="dCos"></param>
       /// <param name="dSin"></param>
-      private static void Rotate(ref double dX, ref double dY, double dCos, double dSin) 
+      private static void Rotate(ref double dX, ref double dY, double dCos, double dSin)
       {
-         double dTemp = dX*dCos + dY*dSin;
-         dY = dY*dCos - dX*dSin;
+         double dTemp = dX * dCos + dY * dSin;
+         dY = dY * dCos - dX * dSin;
          dX = dTemp;
       }
 
 
       /// <summary>
-      /// Algorithm for a better estimate of waht we are looking at on the planet.
+      /// Algorithm for a better estimate of what we are looking at on the planet.
       /// Used for overview drawing as well as dataset filtering and export in Dapple.
       /// </summary>
       const double DVangle = 30.0; // Diagonal view angle in radians
@@ -552,13 +601,13 @@ namespace WorldWind
          double dHead = this.drawArgs.WorldCamera.Heading.Degrees; // view direction CW relative to North
          double dX = this.drawArgs.WorldCamera.Longitude.Degrees, dY = this.drawArgs.WorldCamera.Latitude.Degrees; // view centre
          double dRadius = m_World.EquatorialRadius;
-         double dX1,dY1; // lower left
-         double dX2,dY2; // lower right
-         double dX3,dY3; // upper right
-         double dX4,dY4; // upper left
-         
+         double dX1, dY1; // lower left
+         double dX2, dY2; // lower right
+         double dX3, dY3; // upper right
+         double dX4, dY4; // upper left
+
          // Maximum visibility
-         double dMaxAngle = Math.Acos(dRadius  / (dRadius + dAlt)) * Rad2Deg;
+         double dMaxAngle = Math.Acos(dRadius / (dRadius + dAlt)) * Rad2Deg;
 
          double H_Range, D_Range;
          double dHRatio = (dAlt + dRadius) * Math.Sin(HVangle * Deg2Rad) / dRadius;
@@ -597,7 +646,8 @@ namespace WorldWind
          dX3 = H_Range + dSkew * (dY3 / (-dY1));
          dX4 = -dX3;
 
-         if (dHead != 0) {
+         if (dHead != 0)
+         {
             double dCos = Math.Cos(dHead * Deg2Rad);
             double dSin = Math.Sin(dHead * Deg2Rad);
             Rotate(ref dX1, ref dY1, dCos, dSin);
@@ -620,7 +670,7 @@ namespace WorldWind
          // to an estimate method
 
          if (bForceRayIntersectionTest ||
-            (this.drawArgs.WorldCamera.Tilt.Degrees < 5.0 && 
+            (this.drawArgs.WorldCamera.Tilt.Degrees < 5.0 &&
              this.drawArgs.WorldCamera.Latitude.Degrees < 72 &&
              this.drawArgs.WorldCamera.Latitude.Degrees > -72))
          {
@@ -799,6 +849,9 @@ namespace WorldWind
 
          try
          {
+            if (Parent.Focused && !Focused)
+               Focus();
+
             while (IsAppStillIdle)
             {
                if (!World.Settings.AlwaysRenderWindow && m_isRenderDisabled && !World.Settings.CameraHasMomentum)
@@ -808,26 +861,26 @@ namespace WorldWind
 
                //if (World.Settings.ThrottleFpsHz > 0)
                //{
-                  // DAPPLE: Ignore the setting, 20FPS should be just fine, 
-                  // DAPPLE: we don't have animated moving objects (yet)
-                  // optionally throttle the frame rate (to get consistent frame
-                  // rates or reduce CPU usage.
-                  //float frameSeconds = 1.0f / World.Settings.ThrottleFpsHz - PresentOverheadSeconds;
-                  float frameSeconds = 1.0f / 20.0f - PresentOverheadSeconds;
+               // DAPPLE: Ignore the setting, 20FPS should be just fine, 
+               // DAPPLE: we don't have animated moving objects (yet)
+               // optionally throttle the frame rate (to get consistent frame
+               // rates or reduce CPU usage.
+               //float frameSeconds = 1.0f / World.Settings.ThrottleFpsHz - PresentOverheadSeconds;
+               float frameSeconds = 1.0f / 20.0f - PresentOverheadSeconds;
 
-                  // Sleep for remaining period of time until next render
-                  float sleepSeconds = frameSeconds - SleepOverHeadSeconds - DrawArgs.SecondsSinceLastFrame;
-                  if (sleepSeconds > 0)
-                  {
-                     // Don't sleep too long. We don't know the accuracy of Thread.Sleep
-                     Thread.Sleep((int)(1000 * sleepSeconds));
+               // Sleep for remaining period of time until next render
+               float sleepSeconds = frameSeconds - SleepOverHeadSeconds - DrawArgs.SecondsSinceLastFrame;
+               if (sleepSeconds > 0)
+               {
+                  // Don't sleep too long. We don't know the accuracy of Thread.Sleep
+                  Thread.Sleep((int)(1000 * sleepSeconds));
 
-                     // Burn off what little time still remains at 100% CPU load
-                     //while (DrawArgs.SecondsSinceLastFrame < frameSeconds)
-                     //{
-                        // Patience
-                     //}
-                  }
+                  // Burn off what little time still remains at 100% CPU load
+                  //while (DrawArgs.SecondsSinceLastFrame < frameSeconds)
+                  //{
+                  // Patience
+                  //}
+               }
                //}
                // Flip
                drawArgs.Present();
@@ -839,7 +892,7 @@ namespace WorldWind
          }
          catch (Exception caught)
          {
-            Utility.Log.Write(caught);
+            Log.Write(caught);
          }
       }
 
@@ -858,43 +911,6 @@ namespace WorldWind
          {
             Utility.Log.Write(caught);
          }
-      }
-
-      /// <summary>
-      /// Load a plugin from a path
-      /// </summary>
-      /// <param name="fullPath">the path of the code file or assembly containing the plugin</param>
-      /// <returns>the plugin as an object</returns>
-      public PluginEngine.Plugin GetPlugin(string fullPath)
-      {
-         try
-         {
-            return PluginCompiler.Load(fullPath);
-         }
-         catch (Exception)
-         {
-         }
-         return null;
-      }
-
-      public bool AddPlugin(PluginEngine.Plugin plugin, string pluginPath)
-      {
-         if (CurrentWorld == null || plugin == null)
-         {
-            return false;
-         }
-         PluginCompiler.AddPlugin(plugin, this, pluginPath);
-         return true;
-      }
-
-      public bool RemovePlugin(PluginEngine.Plugin plugin)
-      {
-         if (CurrentWorld == null || plugin == null)
-         {
-            return false;
-         }
-         PluginCompiler.RemovePlugin(plugin);
-         return true;
       }
       #endregion
 
@@ -926,6 +942,8 @@ namespace WorldWind
                return;
             }
 
+            // to prevent screen garbage when resizing
+            //Render();
             m_Device3d.Present();
          }
          catch (DeviceLostException)
@@ -936,6 +954,7 @@ namespace WorldWind
 
                // Our surface was lost, force re-render
                Render();
+
                m_Device3d.Present();
             }
             catch (DirectXException)
@@ -952,153 +971,208 @@ namespace WorldWind
 
       System.Collections.ArrayList m_FrameTimes = new ArrayList();
       WorldWind.Widgets.RootWidget m_RootWidget = null;
-
+      WorldWind.NewWidgets.RootWidget m_NewRootWidget = null;
       /// <summary>
       /// Render the scene.
       /// </summary>
       public void Render()
       {
-         long startTicks = 0;
-         PerformanceTimer.QueryPerformanceCounter(ref startTicks);
-
-         try
+         using (new DirectXProfilerEvent("WorldWindow::Render"))
          {
-            this.drawArgs.BeginRender();
-
-            // Render the sky according to view - example, close to earth, render sky blue, render space as black
-            System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
-
-            /*if (drawArgs.WorldCamera != null &&
-               drawArgs.WorldCamera.Altitude < 1000000f &&
-               m_World != null &&
-               m_World.Name.IndexOf("Earth") >= 0)
-            {
-               float percent = 1 - (float)(drawArgs.WorldCamera.Altitude / 1000000);
-               if (percent > 1.0f)
-                  percent = 1.0f;
-               else if (percent < 0.0f)
-                  percent = 0.0f;
-
-               backgroundColor = System.Drawing.Color.FromArgb(
-                  (int)(World.Settings.SkyColor.R * percent),
-                  (int)(World.Settings.SkyColor.G * percent),
-                  (int)(World.Settings.SkyColor.B * percent));
-            }*/
-
-            m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
-
-            if (m_World == null)
-            {
-               m_Device3d.BeginScene();
-               m_Device3d.EndScene();
-               m_Device3d.Present();
-               Thread.Sleep(25);
-               return;
-            }
-
-            if (m_WorkerThread == null)
-            {
-               m_WorkerThreadRunning = true;
-               m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
-               m_WorkerThread.Name = "WorldWindow.WorkerThreadFunc";
-               m_WorkerThread.IsBackground = true;
-               if (World.Settings.UseBelowNormalPriorityUpdateThread)
-               {
-                  m_WorkerThread.Priority = ThreadPriority.BelowNormal;
-               }
-               else
-               {
-                  m_WorkerThread.Priority = ThreadPriority.Normal;
-               }
-               // BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
-               // TODO: Implement dynamic FPS limiter (or different solution)
-               m_WorkerThread.Start();
-            }
-
-            this.drawArgs.WorldCamera.Update(m_Device3d);
-
-            m_Device3d.BeginScene();
-
-            // Set fill mode
-            if (renderWireFrame)
-               m_Device3d.RenderState.FillMode = FillMode.WireFrame;
-            else
-               m_Device3d.RenderState.FillMode = FillMode.Solid;
-
-            drawArgs.RenderWireFrame = renderWireFrame;
-
-            // Render the current planet
-            m_World.Render(this.drawArgs);
-
-            if (World.Settings.ShowCrosshairs)
-               this.DrawCrossHairs();
-
-            frameCounter++;
-            if (frameCounter == 30)
-            {
-               fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
-               frameCounter = 0;
-               lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
-            }
-
-            if (saveScreenShotFilePath != null)
-               SaveScreenShot();
-
-            drawArgs.device.RenderState.ZBufferEnable = false;
-
-            // 3D rendering complete, switch to 2D for UI rendering
-
-            // Restore normal fill mode
-            if (renderWireFrame)
-               m_Device3d.RenderState.FillMode = FillMode.Solid;
-
-            // Disable fog for UI
-            m_Device3d.RenderState.FogEnable = false;
-
-            RenderPositionInfo();
+            long startTicks = 0;
+            PerformanceTimer.QueryPerformanceCounter(ref startTicks);
 
             try
             {
+               this.drawArgs.BeginRender();
+
+               // Render the sky according to view - example, close to earth, render sky blue, render space as black
+               System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
+
+               /*if (drawArgs.WorldCamera != null &&
+                  drawArgs.WorldCamera.Altitude < 1000000f &&
+                  m_World != null &&
+                  m_World.Name.IndexOf("Earth") >= 0)
+               {
+                  float percent = 1 - (float)(drawArgs.WorldCamera.Altitude / 1000000);
+                  if (percent > 1.0f)
+                     percent = 1.0f;
+                  else if (percent < 0.0f)
+                     percent = 0.0f;
+
+                  backgroundColor = System.Drawing.Color.FromArgb(
+                     (int)(World.Settings.SkyColor.R * percent),
+                     (int)(World.Settings.SkyColor.G * percent),
+                     (int)(World.Settings.SkyColor.B * percent));
+               }*/
+
+               m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
+
+               if (m_World == null)
+               {
+                  m_Device3d.BeginScene();
+                  m_Device3d.EndScene();
+                  m_Device3d.Present();
+                  Thread.Sleep(25);
+                  return;
+               }
+
+               if (m_WorkerThread == null)
+               {
+                  m_WorkerThreadRunning = true;
+                  m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
+                  m_WorkerThread.Name = "WorldWindow.WorkerThreadFunc";
+                  m_WorkerThread.IsBackground = true;
+                  if (World.Settings.UseBelowNormalPriorityUpdateThread)
+                  {
+                     m_WorkerThread.Priority = ThreadPriority.BelowNormal;
+                  }
+                  else
+                  {
+                     m_WorkerThread.Priority = ThreadPriority.Normal;
+                  }
+                  // BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
+                  // TODO: Implement dynamic FPS limiter (or different solution)
+                  m_WorkerThread.Start();
+               }
+
+               // Update camera view
+               this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
+               this.drawArgs.WorldCamera.Update(m_Device3d);
+
+               m_Device3d.BeginScene();
+
+               // Set fill mode
+               if (renderWireFrame)
+                  m_Device3d.RenderState.FillMode = FillMode.WireFrame;
+               else
+                  m_Device3d.RenderState.FillMode = FillMode.Solid;
+
+               drawArgs.RenderWireFrame = renderWireFrame;
+
+               // Render the current planet
+               m_World.Render(this.drawArgs);
+
+               if (World.Settings.ShowCrosshairs)
+                  this.DrawCrossHairs();
+
+               frameCounter++;
+               if (frameCounter == 30)
+               {
+                  fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
+                  frameCounter = 0;
+                  lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
+               }
+
                m_RootWidget.Render(drawArgs);
+               m_NewRootWidget.Render(drawArgs);
+
+               if (saveScreenShotFilePath != null)
+                  SaveScreenShot();
+
+               drawArgs.device.RenderState.ZBufferEnable = false;
+
+               // 3D rendering complete, switch to 2D for UI rendering
+
+               // Restore normal fill mode
+               if (renderWireFrame)
+                  m_Device3d.RenderState.FillMode = FillMode.Solid;
+
+               // Disable fog for UI
+               m_Device3d.RenderState.FogEnable = false;
+
+               /*
+                               if(World.Settings.ShowDownloadIndicator)
+                               {
+                                   if(m_downloadIndicator == null)
+                                       m_downloadIndicator = new DownloadIndicator();
+                                   m_downloadIndicator.Render(drawArgs);
+                               }
+               */
+               RenderPositionInfo();
+
+               /*
+               _menuBar.Render(drawArgs);
+                */ 
+               m_FpsGraph.Render(drawArgs);
+
+               if (m_World.OnScreenMessages != null)
+               {
+                  try
+                  {
+                     foreach (OnScreenMessage dm in m_World.OnScreenMessages)
+                     {
+                        int xPos = (int)Math.Round(dm.X * this.Width);
+                        int yPos = (int)Math.Round(dm.Y * this.Height);
+                        Rectangle posRect =
+                           new Rectangle(xPos, yPos, this.Width, this.Height);
+                        this.drawArgs.defaultDrawingFont.DrawText(null,
+                           dm.Message, posRect,
+                           DrawTextFormat.NoClip | DrawTextFormat.WordBreak,
+                           Color.White);
+                     }
+                  }
+                  catch (Exception)
+                  {
+                     // Don't let a script error cancel the frame.
+                  }
+               }
+
+               m_Device3d.EndScene();
             }
             catch (Exception ex)
             {
-               Utility.Log.Write(ex);
+               Log.Write(ex);
             }
-            if (m_World.OnScreenMessages != null)
+            finally
             {
-               try
-               {
-                  foreach (OnScreenMessage dm in m_World.OnScreenMessages)
-                  {
-                     int xPos = (int)Math.Round(dm.X * this.Width);
-                     int yPos = (int)Math.Round(dm.Y * this.Height);
-                     Rectangle posRect =
-                        new Rectangle(xPos, yPos, this.Width, this.Height);
-                     this.drawArgs.defaultDrawingFont.DrawText(null,
-                        dm.Message, posRect,
-                        DrawTextFormat.NoClip | DrawTextFormat.WordBreak,
-                        Color.White);
-                  }
-               }
-               catch (Exception)
-               {
-                  // Don't let a script error cancel the frame.
-               }
-            }
 
-            m_Device3d.EndScene();
+               if (World.Settings.ShowFpsGraph)
+               {
+                  long endTicks = 0;
+                  PerformanceTimer.QueryPerformanceCounter(ref endTicks);
+                  float elapsedMilliSeconds = 1000.0f / (1000.0f * (float)(endTicks - startTicks) / PerformanceTimer.TicksPerSecond);
+                  m_FrameTimes.Add(elapsedMilliSeconds);
+               }
+               this.drawArgs.EndRender();
+            }
+            drawArgs.UpdateMouseCursor(this);
          }
-         finally
-         {
-            this.drawArgs.EndRender();
-         }
-         drawArgs.UpdateMouseCursor(this);
       }
 
+      private LineGraph m_FpsGraph = new LineGraph();
+
+      /*
+      public void ResetToolbar()
+      {
+         lock (this._menuBar.LayersMenuButtons.SyncRoot)
+         {
+            foreach (IMenu m in this._menuBar.LayersMenuButtons)
+            {
+               m.Dispose();
+            }
+            this._menuBar.LayersMenuButtons.Clear();
+         }
+
+         lock (this._menuBar.ToolsMenuButtons.SyncRoot)
+         {
+
+            for (int i = 0; i < this._menuBar.ToolsMenuButtons.Count; i++)
+            {
+               IMenu m = (IMenu)this._menuBar.ToolsMenuButtons[i];
+               if (m != null)
+               {
+                  m.Dispose();
+               }
+            }
+
+            this._menuBar.ToolsMenuButtons.Clear();
+         }
+      }
+      */
       private const int positionAlphaStep = 20;
       private int positionAlpha = 255;
-      private int positionAlphaMin = 40;
+      //private int positionAlphaMin = 40;
       private int positionAlphaMax = 205;
 
       protected void RenderPositionInfo()
@@ -1110,47 +1184,103 @@ namespace WorldWind
 
          if (World.Settings.ShowPosition)
          {
+            double feetPerMeter = 3.2808399;
+            double feetPerMile = 5280;
+
             // TODO: Configurable transparent number->string conversion (metric/imperial etc units)
             string alt = null;
-            float agl = (float)this.drawArgs.WorldCamera.AltitudeAboveTerrain;
-            if (agl > 100000)
-               alt = string.Format("{0:f2}km", agl / 1000);
-            else
-               alt = string.Format("{0:f0}m", agl);
+            float agl = (float)this.drawArgs.WorldCamera.Altitude;
             string dist = null;
             float dgl = (float)this.drawArgs.WorldCamera.Distance;
-            if (dgl > 100000)
-               dist = string.Format("{0:f2}km", dgl / 1000);
+
+            if (World.Settings.DisplayUnits == Units.Metric)
+            {
+               if (agl >= 1000)
+                  alt = string.Format("{0:,.0} km", agl / 1000);
+               else
+                  alt = string.Format("{0:f0} m", agl);
+
+               if (dgl > 100000)
+                  dist = string.Format("{0:f2} km", dgl / 1000);
+               else
+                  dist = string.Format("{0:f0} m", dgl);
+            }
             else
-               dist = string.Format("{0:f0}m", dgl);
+            {
+               agl *= (float)feetPerMeter;
+               dgl *= (float)feetPerMeter;
+
+               if (agl >= feetPerMile)
+                  alt = string.Format("{0:,.0} miles", agl / feetPerMile);
+               else
+                  alt = string.Format("{0:f0} ft", agl);
+
+               if (dgl > 100000)
+                  dist = string.Format("{0:f2} miles", dgl / feetPerMile);
+               else
+                  dist = string.Format("{0:f0} ft", dgl);
+            }
 
             // Heading from 0 - 360
             double heading = this.drawArgs.WorldCamera.Heading.Degrees;
             if (heading < 0)
                heading += 360;
-            /*captionText += String.Format("Latitude: {0}\nLongitude: {1}\nHeading: {2:f2}°\nTilt: {3}\nAltitude: {4}\nDistance: {5}\nFOV: {6}",
-               new Latitude(this.drawArgs.WorldCamera.Latitude.Degrees),
-               new Longitude(this.drawArgs.WorldCamera.Longitude.Degrees),
-               heading,
-               this.drawArgs.WorldCamera.Tilt,
-               alt,
-               dist,
-               this.drawArgs.WorldCamera.Fov);*/
-            captionText += String.Format("Latitude: {0}\nLongitude: {1}\nHeading: {2:f2}°\nTilt: {3}\nAltitude: {4}\nDistance: {5}",
-               new Latitude(this.drawArgs.WorldCamera.Latitude.Degrees),
-               new Longitude(this.drawArgs.WorldCamera.Longitude.Degrees),
-               heading,
-               this.drawArgs.WorldCamera.Tilt,
-               alt,
-               dist);
+            captionText += String.Format("Latitude: {0:f6}°\nLongitude: {1:f6}°\nHeading: {2:f2}°\nTilt: {3:f2}°\nAltitude: {4}\nDistance: {5}\nFOV: {6}",
+                this.drawArgs.WorldCamera.Latitude.Degrees,
+                this.drawArgs.WorldCamera.Longitude.Degrees,
+                heading,
+                this.drawArgs.WorldCamera.Tilt.Degrees,
+                alt,
+                dist,
+                this.drawArgs.WorldCamera.Fov);
 
-            if (agl < 300000)
+            if (drawArgs.WorldCamera.AltitudeAboveTerrain < 300000)
             {
-               captionText += String.Format("\nTerrain Elevation: {0:n} meters\n", this.drawArgs.WorldCamera.TerrainElevation);
+               double terrainElevation = drawArgs.WorldCamera.TerrainElevation;
+               if (World.Settings.DisplayUnits == Units.Metric)
+               {
+                  captionText += String.Format("\nTerrain Elevation: {0:n} meters\n", terrainElevation);
+               }
+               else
+               {
+                  captionText += String.Format("\nTerrain Elevation: {0:n} feet\n", terrainElevation * feetPerMeter);
+               }
+               /*double terrainElevationUC = drawArgs.WorldCamera.TerrainElevationUnderCamera;
+               if (World.Settings.DisplayUnits == Units.Metric)
+               {
+                   captionText += String.Format("Under camera: {0:n} meters\n", terrainElevationUC);
+               }
+               else
+               {
+                   captionText += String.Format("Under camera: {0:n} feet\n", terrainElevationUC * feetPerMeter);
+               }*/
             }
          }
 
          if (this.showDiagnosticInfo)
+         {
+            string bytesTransferred;
+            float bytes = DataRequest.TotalBytes;
+            if (bytes > 1024)
+            {
+               bytes /= 1024;
+               if (bytes > 1024)
+               {
+                  bytes /= 1024;
+                  if (bytes > 1024)
+                  {
+                     bytes /= 1024;
+                     bytesTransferred = bytes.ToString("0.#") + "G";
+                  }
+                  else
+                     bytesTransferred = bytes.ToString("0.#") + "M";
+               }
+               else
+                  bytesTransferred = bytes.ToString("0.#") + "K";
+            }
+            else
+               bytesTransferred = bytes.ToString();
+
             captionText +=
                "\nAvailable Texture Memory: " + (m_Device3d.AvailableTextureMemory / 1024).ToString("N0") + " kB" +
                "\nBoundary Points: " + this.drawArgs.numBoundaryPointsRendered.ToString() + " / " + this.drawArgs.numBoundaryPointsTotal.ToString() + " : " + this.drawArgs.numBoundariesDrawn.ToString() +
@@ -1159,7 +1289,12 @@ namespace WorldWind
                "\nFPS: " + this.fps.ToString("f1") +
                "\nRO: " + m_World.RenderableObjects.Count.ToString("f0") +
                "\nmLat: " + this.cLat.Degrees.ToString() +
-               "\nmLon: " + this.cLon.Degrees.ToString();
+                    "\nmLon: " + this.cLon.Degrees.ToString() +
+                    "\nTotal Data Requests: " + DataRequest.TotalRequests + ", " + DataRequest.CacheHits + " cache hits (" + string.Format("{0:f2}", 100.0 * DataRequest.CacheHits / DataRequest.TotalRequests) + " %)" +
+                    "\nCurrent Data Requests: " + DataStore.ActiveRequestCount + " active, " + DataStore.PendingRequestCount + " pending." +
+                    "\nBytes Transferred: " + bytesTransferred +
+                    "\n" + TimeKeeper.CurrentTimeUtc.ToLocalTime().ToLongTimeString();
+         }
 
 
          captionText = captionText.Trim();
@@ -1169,16 +1304,18 @@ namespace WorldWind
          Rectangle textRect = Rectangle.FromLTRB(x, y, this.Width - 8, this.Height - 8);
 
          // Hide position info when toolbar is open
-         //if (_menuBar.IsActive)
-         //{
-         //   positionAlpha -= positionAlphaStep;
-         //   if (positionAlpha<positionAlphaMin)
-         //   {
-         //      positionAlpha=positionAlphaMin;
-         //   }
-         //}
-         //else
-         //{
+         /*
+                     if (_menuBar.IsActive)
+                     {
+                         positionAlpha -= positionAlphaStep;
+                         if (positionAlpha < positionAlphaMin)
+                         {
+                             positionAlpha = positionAlphaMin;
+                         }
+                     }
+                     else
+                     {
+         */
          positionAlpha += positionAlphaStep;
          if (positionAlpha > positionAlphaMax)
             positionAlpha = positionAlphaMax;
@@ -1197,12 +1334,12 @@ namespace WorldWind
       /// TODO: Make this user-resizeable and color customizable
       /// </summary>
       Line crossHairs;
-      int crossHairColor = Color.GhostWhite.ToArgb();
       protected void DrawCrossHairs()
       {
-         int crossHairSize = 10;
+         int crossHairColor = World.Settings.CrosshairColor.ToArgb();
+         int crossHairSize = World.Settings.CrosshairSize;
 
-         if (this.crossHairs == null)
+         if (crossHairs == null)
          {
             crossHairs = new Line(m_Device3d);
          }
@@ -1212,13 +1349,13 @@ namespace WorldWind
 
          horizontal[0].X = this.Width / 2 - crossHairSize;
          horizontal[0].Y = this.Height / 2;
-         horizontal[1].X = this.Width / 2 + crossHairSize;
+         horizontal[1].X = this.Width / 2 + crossHairSize + 1;
          horizontal[1].Y = this.Height / 2;
 
          vertical[0].X = this.Width / 2;
          vertical[0].Y = this.Height / 2 - crossHairSize;
          vertical[1].X = this.Width / 2;
-         vertical[1].Y = this.Height / 2 + crossHairSize;
+         vertical[1].Y = this.Height / 2 + crossHairSize + 1;
 
          crossHairs.Begin();
          crossHairs.Draw(horizontal, crossHairColor);
@@ -1254,21 +1391,43 @@ namespace WorldWind
 
       #region Event handlers
 
+      public void HandleMouseWheel(MouseEventArgs e)
+      {
+         OnMouseWheel(e);
+      }
+
       /// <summary>
       /// Occurs when the mouse wheel moves while the control has focus.
       /// </summary>
       protected override void OnMouseWheel(MouseEventArgs e)
       {
+         if (!IsWorldReady())
+         {
+            return;
+         }
          try
          {
-            //if(this._menuBar.OnMouseWheel(e))
-            //   return;
+            /*
+                            if (this._menuBar.OnMouseWheel(e))
+                                return;
+            */
 
             this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia * 2;
             this.drawArgs.WorldCamera.ZoomStepped(-e.Delta / 120.0f);
          }
          finally
          {
+            if (m_NewRootWidget != null)
+            {
+               try
+               {
+                  m_NewRootWidget.OnMouseWheel(e);
+               }
+               finally
+               {
+               }
+            }
+
             // Call the base class's OnMouseWheel method so that registered delegates receive the event.
             base.OnMouseWheel(e);
          }
@@ -1279,6 +1438,10 @@ namespace WorldWind
       /// </summary>
       protected override void OnKeyDown(KeyEventArgs e)
       {
+         if (!IsWorldReady())
+         {
+            return;
+         }
          try
          {
             e.Handled = HandleKeyDown(e);
@@ -1295,6 +1458,10 @@ namespace WorldWind
       /// </summary>
       protected override void OnKeyUp(KeyEventArgs e)
       {
+         if (!IsWorldReady())
+         {
+            return;
+         }
          try
          {
             e.Handled = HandleKeyUp(e);
@@ -1308,9 +1475,18 @@ namespace WorldWind
 
       protected override void OnKeyPress(KeyPressEventArgs e)
       {
+         if (!IsWorldReady())
+         {
+            return;
+         }
          if (m_RootWidget != null)
          {
             bool handled = m_RootWidget.OnKeyPress(e);
+            e.Handled = handled;
+         }
+         if (m_NewRootWidget != null)
+         {
+            bool handled = m_NewRootWidget.OnKeyPress(e);
             e.Handled = handled;
          }
          base.OnKeyPress(e);
@@ -1354,9 +1530,14 @@ namespace WorldWind
       /// </summary>
       /// <param name="e"></param>
       /// <returns>Returns true if the key is handled.</returns>
-      protected bool HandleKeyDown(KeyEventArgs e)
+      public bool HandleKeyDown(KeyEventArgs e)
       {
+
          bool handled = this.m_RootWidget.OnKeyDown(e);
+         if (handled)
+            return handled;
+
+         handled = this.m_NewRootWidget.OnKeyDown(e);
          if (handled)
             return handled;
 
@@ -1420,14 +1601,14 @@ namespace WorldWind
                   return true;
                // rotate right
                case Keys.D:
-                  this.drawArgs.WorldCamera.SlerpPercentage = 1.0; 
+                  this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
                   Angle rotateCounterclockwise = Angle.FromRadians(-0.01f);
                   this.drawArgs.WorldCamera.Heading += rotateCounterclockwise;
                   this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
                   return true;
                // rotate up
                case Keys.W:
-                  this.drawArgs.WorldCamera.SlerpPercentage = 1.0; 
+                  this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
                   this.drawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
                   return true;
                // rotate down
@@ -1495,9 +1676,15 @@ namespace WorldWind
       /// </summary>
       /// <param name="e"></param>
       /// <returns>Returns true if the key is handled.</returns>
-      protected bool HandleKeyUp(KeyEventArgs e)
+      public bool HandleKeyUp(KeyEventArgs e)
       {
          bool handled = m_RootWidget.OnKeyUp(e);
+         if (handled)
+         {
+            e.Handled = handled;
+            return handled;
+         }
+         handled = m_NewRootWidget.OnKeyUp(e);
          if (handled)
          {
             e.Handled = handled;
@@ -1513,22 +1700,6 @@ namespace WorldWind
          {
             switch (e.KeyCode)
             {
-#if DEBUG
-               case Keys.H:
-                  if (progressMonitor != null)
-                  {
-                     bool wasVisible = progressMonitor.Visible;
-                     progressMonitor.Close();
-                     progressMonitor.Dispose();
-                     progressMonitor = null;
-                     if (wasVisible)
-                        return true;
-                  }
-
-                  progressMonitor = new ProgressMonitor();
-                  progressMonitor.Show();
-                  return true;
-#endif
                case Keys.D:
                   this.showDiagnosticInfo = !this.showDiagnosticInfo;
                   return true;
@@ -1554,6 +1725,13 @@ namespace WorldWind
 
       protected override void OnMouseDown(MouseEventArgs e)
       {
+         this.Focus();  //fixes mousewheel not working problem
+
+         if (!IsWorldReady())
+         {
+            return;
+         }
+
          DrawArgs.LastMousePosition.X = e.X;
          DrawArgs.LastMousePosition.Y = e.Y;
 
@@ -1566,87 +1744,59 @@ namespace WorldWind
             bool handled = false;
             handled = m_RootWidget.OnMouseDown(e);
 
-//            if (!handled)
-//            {
-//               if (this._menuBar.OnMouseDown(e))
-//                  return;
-//            }
-         }
-         finally
-         {
-				if(e.Button == MouseButtons.Left)
-					DrawArgs.IsLeftMouseButtonDown = true;
-
-				if(e.Button == MouseButtons.Right)
-					DrawArgs.IsRightMouseButtonDown = true;
-            // Call the base class method so that registered delegates receive the event.
-            base.OnMouseDown(e);
-         }
-      }
-
-      protected override void OnMouseDoubleClick(MouseEventArgs e)
-      {
-         DrawArgs.LastMousePosition.X = e.X;
-         DrawArgs.LastMousePosition.Y = e.Y;
-
-         try
-         {
-            bool handled = false;
-
-            handled = m_RootWidget.OnMouseDoubleClick(e);
+            if (!handled)
+            {
+               handled = m_NewRootWidget.OnMouseDown(e);
+            }
 
             if (!handled)
             {
-               // Mouse must have been clicked outside our window and released on us, ignore
-               if (mouseDownStartPosition == Point.Empty)
-                  return;
+               /*
+               if (!this._menuBar.OnMouseDown(e))
+               {
 
-               mouseDownStartPosition = Point.Empty;
-
-               //					if(!this.isMouseDragging)
-               //					{
-               //						if(this._menuBar.OnMouseUp(e))
-               //							return;
-               //					}
-
-               if (m_World == null)
-                  return;
-
-               double Coeff;
-               double ZoomFactIn = 0.25;
-               double ZoomFactOut = 0.2;
-
-               if (e.Button == MouseButtons.Right)
-                  Coeff = 1 / ZoomFactOut;
-               else
-                  Coeff = ZoomFactIn;
-               GotoLatLonAltitude(this.targetLatitude.Degrees, this.targetLongitude.Degrees, Coeff * this.drawArgs.WorldCamera.Altitude);
+               }
+                */ 
             }
          }
          finally
          {
             if (e.Button == MouseButtons.Left)
-               DrawArgs.IsLeftMouseButtonDown = false;
+               DrawArgs.IsLeftMouseButtonDown = true;
 
             if (e.Button == MouseButtons.Right)
-               DrawArgs.IsRightMouseButtonDown = false;
-
+               DrawArgs.IsRightMouseButtonDown = true;
             // Call the base class method so that registered delegates receive the event.
-            base.OnMouseDoubleClick(e);
+            base.OnMouseDown(e);
          }
       }
 
-      protected override void OnMouseClick(MouseEventArgs e)
+      bool isDoubleClick = false;
+      protected override void OnMouseDoubleClick(MouseEventArgs e)
       {
+         isDoubleClick = true;
+         base.OnMouseDoubleClick(e);
+      }
+
+      protected override void OnMouseUp(MouseEventArgs e)
+      {
+         if (!IsWorldReady())
+         {
+            return;
+         }
          DrawArgs.LastMousePosition.X = e.X;
          DrawArgs.LastMousePosition.Y = e.Y;
 
          try
          {
-
             bool handled = false;
 
-            handled = m_RootWidget.OnMouseClick(e);
+            handled = m_RootWidget.OnMouseUp(e);
+
+            if (!handled)
+            {
+               handled = m_NewRootWidget.OnMouseUp(e);
+            }
 
             if (!handled)
             {
@@ -1656,29 +1806,88 @@ namespace WorldWind
 
                mouseDownStartPosition = Point.Empty;
 
-               //					if(!this.isMouseDragging)
-               //					{
-               //						if(this._menuBar.OnMouseUp(e))
-               //							return;
-               //					}
+               if (!this.isMouseDragging)
+               {
+                  /*
+                  if (this._menuBar.OnMouseUp(e))
+                     return;
+                   */ 
+               }
 
                if (m_World == null)
                   return;
 
-               if (this.isMouseDragging)
-                  this.isMouseDragging = false;
-               else if (!m_World.PerformSelectionAction(this.drawArgs))
+               if (isDoubleClick)
                {
-                  //Quaternion targetOrientation = new Quaternion();
-                  this.drawArgs.WorldCamera.PickingRayIntersection(
-                     DrawArgs.LastMousePosition.X,
-                     DrawArgs.LastMousePosition.Y,
-                     out this.targetLatitude,
-                     out this.targetLongitude);
-                  if (!Angle.IsNaN(targetLatitude))
+                  isDoubleClick = false;
+                  if (e.Button == MouseButtons.Left)
                   {
-                     this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-                     this.drawArgs.WorldCamera.PointGoto(targetLatitude, targetLongitude);
+                     drawArgs.WorldCamera.SlerpPercentage = 1.0;
+                     drawArgs.WorldCamera.Zoom(World.Settings.CameraDoubleClickZoomFactor);
+                  }
+                  else if (e.Button == MouseButtons.Right)
+                  {
+                     drawArgs.WorldCamera.SlerpPercentage = 1.0;
+                     drawArgs.WorldCamera.Zoom(-World.Settings.CameraDoubleClickZoomFactor);
+                  }
+               }
+               else
+               {
+                  if (e.Button == MouseButtons.Left)
+                  {
+                     if (this.isMouseDragging)
+                     {
+                        this.isMouseDragging = false;
+                     }
+                     else
+                     {
+                        if (!m_World.PerformSelectionAction(this.drawArgs))
+                        {
+
+                           Angle targetLatitude;
+                           Angle targetLongitude;
+                           //Quaternion targetOrientation = new Quaternion();
+                           this.drawArgs.WorldCamera.PickingRayIntersection(
+                               DrawArgs.LastMousePosition.X,
+                               DrawArgs.LastMousePosition.Y,
+                               out targetLatitude,
+                               out targetLongitude);
+                           if (this.drawArgs.WorldCamera.Altitude < 60e3)
+                              this.drawArgs.WorldCamera.PickingRayIntersectionWithTerrain(
+                               DrawArgs.LastMousePosition.X,
+                               DrawArgs.LastMousePosition.Y,
+                               out targetLatitude,
+                               out targetLongitude,
+                               m_World);
+                           if (!Angle.IsNaN(targetLatitude))
+                           {
+                              this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+                              this.drawArgs.WorldCamera.PointGoto(targetLatitude, targetLongitude);
+                           }
+                        }
+                     }
+                  }
+                  else if (e.Button == MouseButtons.Right)
+                  {
+                     if (this.isMouseDragging)
+                        this.isMouseDragging = false;
+                     else
+                     {
+                        if (!m_World.PerformSelectionAction(this.drawArgs))
+                        {
+                           //nothing at the moment
+                        }
+                     }
+                  }
+                  else if (e.Button == MouseButtons.Middle)
+                  {
+                     if (this.isMouseDragging)
+                        this.isMouseDragging = false;
+                     else
+                     {
+                        // Switch sun shading on/off
+                        World.Settings.EnableSunShading = !World.Settings.EnableSunShading;
+                     }
                   }
                }
             }
@@ -1691,43 +1900,39 @@ namespace WorldWind
             if (e.Button == MouseButtons.Right)
                DrawArgs.IsRightMouseButtonDown = false;
             // Call the base class method so that registered delegates receive the event.
-            base.OnMouseClick(e);
-         }
-      }
-
-      protected override void OnMouseUp(MouseEventArgs e)
-      {
-         DrawArgs.LastMousePosition.X = e.X;
-         DrawArgs.LastMousePosition.Y = e.Y;
-
-         try
-         {
-
-            bool handled = false;
-
-            handled = m_RootWidget.OnMouseUp(e);
-
-            if (!handled)
-            {
-            }
-         }
-         finally
-         {
-            // Call the base class method so that registered delegates receive the event.
             base.OnMouseUp(e);
          }
       }
 
+      private bool IsWorldReady()
+      {
+         if (this.m_World == null || this.drawArgs == null || this.drawArgs.WorldCamera == null)
+            return false;
+         else
+            return true;
+      }
+
       protected override void OnMouseMove(MouseEventArgs e)
       {
+         if (!IsWorldReady())
+         {
+            return;
+         }
          // Default to default cursor
          DrawArgs.MouseCursor = CursorType.Arrow;
 
          try
          {
             bool handled = false;
-            handled = m_RootWidget.OnMouseMove(e);
+            if (!isMouseDragging)
+            {
+               handled = m_RootWidget.OnMouseMove(e);
 
+               if (!handled)
+               {
+                  handled = m_NewRootWidget.OnMouseMove(e);
+               }
+            }
 
             if (!handled)
             {
@@ -1736,21 +1941,24 @@ namespace WorldWind
                float deltaXNormalized = (float)deltaX / drawArgs.screenWidth;
                float deltaYNormalized = (float)deltaY / drawArgs.screenHeight;
 
-               //if(!this.isMouseDragging)
-               //{
-               //   if(this._menuBar.OnMouseMove(e))
-               //   {
-               //      base.OnMouseMove(e);
-               //      return;
-               //   }
-               //}
+               if (!this.isMouseDragging)
+               {
+                  /*
+                  if (this._menuBar.OnMouseMove(e))
+                  {
+                     base.OnMouseMove(e);
+                     return;
+                  }
+                   */ 
+               }
 
                if (mouseDownStartPosition == Point.Empty)
                   return;
 
                bool isMouseLeftButtonDown = ((int)e.Button & (int)MouseButtons.Left) != 0;
                bool isMouseRightButtonDown = ((int)e.Button & (int)MouseButtons.Right) != 0;
-               if (isMouseLeftButtonDown || isMouseRightButtonDown)
+               bool isMouseMiddleButtonDown = ((int)e.Button & (int)MouseButtons.Middle) != 0;
+               if (isMouseLeftButtonDown || isMouseRightButtonDown || isMouseMiddleButtonDown)
                {
                   int dx = this.mouseDownStartPosition.X - e.X;
                   int dy = this.mouseDownStartPosition.Y - e.Y;
@@ -1760,7 +1968,7 @@ namespace WorldWind
                      this.isMouseDragging = true;
                }
 
-               if (isMouseLeftButtonDown && !isMouseRightButtonDown)
+               if (isMouseLeftButtonDown && !isMouseRightButtonDown && !isMouseMiddleButtonDown)
                {
                   // Left button (pan)
                   // Store start lat/lon for drag
@@ -1806,7 +2014,7 @@ namespace WorldWind
                         Angle.Zero);
                   }
                }
-               else if (!isMouseLeftButtonDown && isMouseRightButtonDown)
+               else if (!isMouseLeftButtonDown && isMouseRightButtonDown && !isMouseMiddleButtonDown)
                {
                   //Right mouse button
 
@@ -1821,12 +2029,27 @@ namespace WorldWind
                else if (isMouseLeftButtonDown && isMouseRightButtonDown)
                {
                   // Both buttons (zoom)
+                  // Zoom
                   this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
                   if (Math.Abs(deltaYNormalized) > float.Epsilon)
                      this.drawArgs.WorldCamera.Zoom(-deltaYNormalized * World.Settings.CameraZoomAnalogFactor);
 
                   if (!World.Settings.CameraBankLock)
                      this.drawArgs.WorldCamera.Bank -= Angle.FromRadians(deltaXNormalized * World.Settings.CameraRotationSpeed);
+               }
+               else if (!isMouseLeftButtonDown && !isMouseRightButtonDown && isMouseMiddleButtonDown)
+               {
+                  // Middle button
+                  if (World.Settings.EnableSunShading)
+                  {
+                     // Sun light control
+                     if (Math.Abs(deltaYNormalized) > float.Epsilon) World.Settings.SunElevation -= deltaYNormalized * Math.PI;
+                     if (Math.Abs(deltaXNormalized) > float.Epsilon) World.Settings.SunHeading -= deltaXNormalized * Math.PI;
+                     if (World.Settings.SunElevation < MathEngine.DegreesToRadians(-10)) World.Settings.SunElevation = MathEngine.DegreesToRadians(-10);
+                     if (World.Settings.SunElevation > MathEngine.DegreesToRadians(90)) World.Settings.SunElevation = MathEngine.DegreesToRadians(90);
+                     if (World.Settings.SunHeading < -Math.PI) World.Settings.SunHeading += Math.PI * 2;
+                     if (World.Settings.SunHeading > Math.PI) World.Settings.SunHeading -= Math.PI * 2;
+                  }
                }
             }
          }
@@ -1849,11 +2072,18 @@ namespace WorldWind
       }
 
       Angle cLat, cLon;
+
       protected override void OnMouseLeave(EventArgs e)
       {
-         //if(_menuBar!=null)
-         //   // reset menu bar mouse hover state.
-         //   _menuBar.OnMouseMove(new MouseEventArgs(MouseButtons.None, 0,-1,-1,0));
+         if (!IsWorldReady())
+         {
+            return;
+         }
+         /*
+         if (_menuBar != null)
+            // reset menu bar mouse hover state.
+            _menuBar.OnMouseMove(new MouseEventArgs(MouseButtons.None, 0, -1, -1, 0));
+          */ 
          base.OnMouseLeave(e);
       }
 
@@ -1888,6 +2118,7 @@ namespace WorldWind
                   m_WorkerThread.Abort();
                }
             }
+            m_FpsTimer.Stop();
             if (m_World != null)
             {
                m_World.Dispose();
@@ -1898,6 +2129,13 @@ namespace WorldWind
                this.drawArgs.Dispose();
                this.drawArgs = null;
             }
+            /*
+            if (this._menuBar != null)
+            {
+               this._menuBar.Dispose();
+               this._menuBar = null;
+            }
+             */ 
 
             //TODO: Ensure user is not held up here
             try
@@ -1905,13 +2143,20 @@ namespace WorldWind
                m_Device3d.Dispose();
             }
             catch { }
+            /*
+                            if(m_downloadIndicator != null)
+                            {
+                                m_downloadIndicator.Dispose();
+                                m_downloadIndicator = null;
+                            }
+            */
          }
 
          base.Dispose(disposing);
          GC.SuppressFinalize(this);
       }
 
-      private void OnDeviceResizing(object sender, CancelEventArgs e)
+      private void m_Device3d_DeviceResizing(object sender, CancelEventArgs e)
       {
          if (!m_Device3d.CheckCooperativeLevel() || this.Size.Width == 0 || this.Size.Height == 0)
          {
@@ -1980,12 +2225,7 @@ namespace WorldWind
             flags = CreateFlags.HardwareVertexProcessing;
 
          // Use multi-threading for now - TODO: See if the code can be changed such that this isn't necessary (Texture Loading for example)
-			flags |= CreateFlags.MultiThreaded | CreateFlags.FpuPreserve;
-
-         if (World.Settings.AllowPureDevice && caps.DeviceCaps.SupportsPureDevice)
-         {
-            flags |= CreateFlags.PureDevice;
-         }
+         flags |= CreateFlags.MultiThreaded | CreateFlags.FpuPreserve;
 
          try
          {
@@ -1999,7 +2239,7 @@ namespace WorldWind
 
          // Hook the m_Device3d reset event
          m_Device3d.DeviceReset += new EventHandler(OnDeviceReset);
-         m_Device3d.DeviceResizing += new CancelEventHandler(OnDeviceResizing);
+         m_Device3d.DeviceResizing += new CancelEventHandler(m_Device3d_DeviceResizing);
          OnDeviceReset(m_Device3d, null);
       }
 
@@ -2031,7 +2271,7 @@ namespace WorldWind
          m_Device3d.RenderState.Clipping = true;
          m_Device3d.RenderState.CullMode = Cull.Clockwise;
          m_Device3d.RenderState.Lighting = false;
-         m_Device3d.RenderState.Ambient = Color.FromArgb(0x40, 0x40, 0x40);
+         m_Device3d.RenderState.Ambient = World.Settings.StandardAmbientColor;
 
          m_Device3d.RenderState.ZBufferEnable = true;
          m_Device3d.RenderState.AlphaBlendEnable = true;
@@ -2060,9 +2300,11 @@ namespace WorldWind
                {
                   m_WorkerThread.Priority = System.Threading.ThreadPriority.Normal;
                }
+
                long startTicks = 0;
                PerformanceTimer.QueryPerformanceCounter(ref startTicks);
 
+               DataStore.Update();
 
                m_World.Update(this.drawArgs);
                if (Updated != null)
@@ -2077,7 +2319,7 @@ namespace WorldWind
             }
             catch (Exception caught)
             {
-               Utility.Log.Write(caught);
+               Log.Write(caught);
             }
          }
       }
@@ -2118,7 +2360,7 @@ namespace WorldWind
       }
 
       public void SetViewPosition(double degreesLatitude, double degreesLongitude,
-			double metersElevation)
+         double metersElevation)
       {
          this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
          this.drawArgs.WorldCamera.SetPosition(degreesLatitude, degreesLongitude, this.drawArgs.WorldCamera.Heading.Degrees,
@@ -2145,5 +2387,47 @@ namespace WorldWind
       }
 
       #endregion
+
+      bool m_FpsUpdate = false;
+      private void m_FpsTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+      {
+         if (m_FpsUpdate)
+            return;
+
+         m_FpsUpdate = true;
+
+         try
+         {
+            if (World.Settings.ShowFpsGraph)
+            {
+               if (!m_FpsGraph.Visible)
+               {
+                  m_FpsGraph.Visible = true;
+               }
+
+               if (m_FrameTimes.Count > World.Settings.FpsFrameCount)
+               {
+                  m_FrameTimes.RemoveRange(0, m_FrameTimes.Count - World.Settings.FpsFrameCount);
+               }
+
+               m_FpsGraph.Size = new Size((int)(Width * .5), (int)(Height * .1));
+               m_FpsGraph.Location = new Point((int)(Width * .35), (int)(Height * .895));
+               m_FpsGraph.Values = (float[])m_FrameTimes.ToArray(typeof(float));
+            }
+            else
+            {
+               if (m_FpsGraph.Visible)
+               {
+                  m_FpsGraph.Visible = false;
+               }
+            }
+         }
+         catch (Exception ex)
+         {
+            Log.Write(ex);
+         }
+
+         m_FpsUpdate = false;
+      }
    }
 }

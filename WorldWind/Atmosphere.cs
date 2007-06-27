@@ -28,23 +28,17 @@ namespace Atmosphere.Plugin
 		/// Name displayed in layer manager
 		/// </summary>
 		public static string LayerName = "2 - Atmosphere";
-       private string m_strPluginPath;
-
-       public Atmosphere(string pluginPath): base()
-       {
-           m_strPluginPath = pluginPath;           
-       }
 
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
 		/// </summary>
 		public override void Load() 
 		{
-			if(WorldWindow.CurrentWorld != null && WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
+			if(ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
 			{
-            AtmosphereLayer layer = new AtmosphereLayer(LayerName, m_strPluginPath, WorldWindow);
-				//WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
-				WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
+				AtmosphereLayer layer = new AtmosphereLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
+				//ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
+				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
 			}
 		}
 
@@ -53,7 +47,7 @@ namespace Atmosphere.Plugin
 		/// </summary>
 		public override void Unload() 
 		{
-			WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
+			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
 		}
 	}
 
@@ -78,12 +72,12 @@ namespace Atmosphere.Plugin
 		/// <summary>
 		/// Constructor
 		/// </summary>
-       public AtmosphereLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow)
-           : base(LayerName)
+		public AtmosphereLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName)
 		{
-			this.pluginPath = Path.Combine(pluginPath, @"Plugins\Atmosphere\");
+			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\Atmosphere\");
 			this.world = worldWindow.CurrentWorld;
 			this.drawArgs = worldWindow.DrawArgs;
+			//this.RenderPriority = RenderPriority.SurfaceImages;
 			ReadSettings();
 		}
 		/// <summary>
@@ -98,7 +92,7 @@ namespace Atmosphere.Plugin
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch(Exception caught) {}
+			catch(Exception) {}
 			if(line != "")
 			{
 				string[] settingsList = line.Split(';');
@@ -119,7 +113,7 @@ namespace Atmosphere.Plugin
 				sw.Write(line);
 				sw.Close();
 			}
-			catch(Exception caught) {}
+			catch(Exception) {}
 		}
 
 		#region RenderableObject
@@ -130,7 +124,7 @@ namespace Atmosphere.Plugin
 		/// </summary>
 		public override void Render(DrawArgs drawArgs)
 		{
-			if(!isInitialized)
+			if(!isInitialized || World.Settings.EnableAtmosphericScattering)
 				return;
 
 			// Camera shortcut ;)
@@ -199,15 +193,24 @@ namespace Atmosphere.Plugin
 
 			// Set new one (to avoid being clipped) - probably better ways of doing this?
 			double aspectRatio =  (double) device.Viewport.Width / (double) device.Viewport.Height;
-			device.Transform.Projection = ConvertDX.FromMatrix4d(Matrix4d.PerspectiveFovRH(camera.Fov.Radians, aspectRatio, 1, float.MaxValue));
+			device.Transform.Projection = ConvertDX.FromMatrix4d(Matrix4d.PerspectiveFovRH(camera.Fov.Radians, aspectRatio, 1, 2*World.EquatorialRadius));
          device.TextureState[0].ColorOperation = TextureOperation.BlendCurrentAlpha;
 
 			// Draw our 2 triangles
 			device.VertexFormat = CustomVertex.PositionTextured.Format;
 			device.SetTexture(0,texture);
+
+			drawArgs.device.Transform.World = Matrix.Translation(
+				(float)-drawArgs.WorldCamera.ReferenceCenter.X,
+				(float)-drawArgs.WorldCamera.ReferenceCenter.Y,
+				(float)-drawArgs.WorldCamera.ReferenceCenter.Z
+				);
+
 			device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
 
+
 			// Restore device states
+			drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 			device.Transform.Projection = origProjection;
 			device.RenderState.ZBufferEnable = true;
 			device.RenderState.FogEnable = origFog;
@@ -231,10 +234,6 @@ namespace Atmosphere.Plugin
 					MessageBoxIcon.Error );
 			}
 		}
-
-      protected override void FreeResources()
-      {
-      }
 
 		/// <summary>
 		/// RenderableObject abstract member (needed)
@@ -282,7 +281,7 @@ namespace Atmosphere.Plugin
 		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
-		public void OnPropertiesClick(object sender, EventArgs e)
+		public new void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if(pDialog != null && ! pDialog.IsDisposed)
 				// Already open

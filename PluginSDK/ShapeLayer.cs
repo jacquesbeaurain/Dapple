@@ -59,7 +59,7 @@ namespace WorldWind.Renderable
 			System.Drawing.Color color,
 			string scalarKey,
 			bool showBoundaries,
-			bool showFilledPolygons) : base(name, parentWorld.Position, new Quaternion4d(0,0,0,0))
+			bool showFilledPolygons) : base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 			this._parentWorld = parentWorld;
 			this._Altitude = Altitude;

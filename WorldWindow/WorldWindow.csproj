@@ -35,7 +35,8 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>WorldWindow.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -73,14 +74,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-    <Reference Include="Microsoft.DirectX.Direct3D">
-      <Name>Microsoft.DirectX.Direct3D</Name>
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\..\..\..\WINDOWS\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.Direct3D.dll</HintPath>
-      <AssemblyFolderKey>hklm\dn\dx_1.0.2902.0</AssemblyFolderKey>
     </Reference>
-    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2911.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2910.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -101,6 +98,10 @@
       <Project>{19E069AA-4993-4CA3-8F80-CCB76E96E3ED}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
+    <ProjectReference Include="..\WebDownload\WebDownload.csproj">
+      <Project>{3B2110D8-D29C-4057-8192-2BFB39A56D54}</Project>
+      <Name>WebDownload</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs">
@@ -111,6 +112,12 @@
     </Compile>
     <Compile Include="WorldWindow.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WorldWindSettingsComponent.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WorldWindSettingsComponent.designer.cs">
+      <DependentUpon>WorldWindSettingsComponent.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="WorldWindow.resx">
       <DependentUpon>WorldWindow.cs</DependentUpon>

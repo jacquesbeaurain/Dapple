@@ -63,10 +63,10 @@ namespace Murris.Plugins
 //			m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Compass", Path.Combine(this.PluginDirectory, @"Plugins\Compass\tbcompass.png"), control);
 //			m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
 
-         layer = new CompassLayer(LayerName, PluginDirectory, WorldWindow);
+         layer = new CompassLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
 			layer.IsOn = World.Settings.ShowCompass;
 			//ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
-			WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
+         ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
 //			m_ToolbarItem.SetPushed(World.Settings.ShowCompass);
 			
 		}
@@ -206,6 +206,11 @@ namespace Murris.Plugins
 			bool origFog = device.RenderState.FogEnable;
 			device.RenderState.FogEnable = false;
 
+			if(drawArgs.device.RenderState.Lighting)
+			{
+				drawArgs.device.RenderState.Lighting = false;
+				drawArgs.device.RenderState.Ambient = World.Settings.StandardAmbientColor;
+			}
 			// Save original projection and change it to ortho
 			// Note: using pixels as units produce a 1:1 projection of textures
 			Matrix origProjection = device.Transform.Projection;
@@ -214,7 +219,7 @@ namespace Murris.Plugins
 			
 			Matrix origWorld = device.Transform.World;
 
-         device.Transform.Projection = Matrix.OrthoRH((float)device.Viewport.Width, (float)device.Viewport.Height, -(float)4e6, (float)4e6 );
+         device.Transform.Projection = Matrix.OrthoRH((float)device.Viewport.Width, (float)device.Viewport.Height, -(float)4e3, (float)4e3 );
 
 			// Note: the compass is centered on origin, the camera view moves.
 			float offsetY = 0;
@@ -450,10 +455,6 @@ namespace Murris.Plugins
 			}
 			isInitializing = false;
 		}
-
-      protected override void FreeResources()
-      {
-      }
 
 		private string LoadSVG(string filePath)
 		{

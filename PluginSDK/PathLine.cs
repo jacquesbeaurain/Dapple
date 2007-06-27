@@ -37,7 +37,7 @@ namespace WorldWind.Renderable
 		/// <param name="lineColor"></param>
 		public PathLine(string name, World parentWorld, string terrainfileName, float heightAboveSurface, 
 			System.Drawing.Color lineColor) 
-			: base(name, parentWorld.Position, new Quaternion4d(0,0,0,0)) 
+			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
 		{
 			this._parentWorld = parentWorld;
 			//this.terrainManager = terrainManager;

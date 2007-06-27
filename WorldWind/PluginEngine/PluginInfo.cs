@@ -159,26 +159,26 @@ namespace WorldWind.PluginEngine
 		{
 			get
 			{
-            //foreach(string startupId in MainApplication.Settings.PluginsLoadedOnStartup)
-            //   if(ID==startupId)
-            //      return true;
+            foreach (string startupId in MainApplication.Settings.PluginsLoadedOnStartup)
+					if(ID==startupId)
+						return true;
 				return false;
 			}
 			set
 			{
-            //ArrayList startupPlugins = MainApplication.Settings.PluginsLoadedOnStartup;
-            //for(int index=0; index < startupPlugins.Count; index++)
-            //{
-            //   string startupId = (string)startupPlugins[index];
-            //   if(ID==startupId)
-            //   {
-            //      startupPlugins.RemoveAt(index);
-            //      break;
-            //   }
-            //}
+            ArrayList startupPlugins = MainApplication.Settings.PluginsLoadedOnStartup;
+				for(int index=0; index < startupPlugins.Count; index++)
+				{
+					string startupId = (string)startupPlugins[index];
+					if(ID==startupId)
+					{
+						startupPlugins.RemoveAt(index);
+						break;
+					}
+				}
 
-            //if(value)
-            //   startupPlugins.Add(ID);
+				if(value)
+					startupPlugins.Add(ID);
 			}
 		}
 

@@ -30,13 +30,6 @@ namespace Stars3D.Plugin
 	/// </summary>
 	public class Stars3D : WorldWind.PluginEngine.Plugin 
 	{
-       private string m_strPluginPath;
-
-       public Stars3D(string pluginPath):base()
-       {
-           m_strPluginPath = pluginPath;           
-       }
-
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
@@ -47,16 +40,18 @@ namespace Stars3D.Plugin
 		/// </summary>
 		public override void Load() 
 		{
-          Stars3DLayer layer = new Stars3DLayer(LayerName, m_strPluginPath, WorldWindow);
-          WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0, layer);
+			if(ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("SDSS") == -1)
+			{
+				Stars3DLayer layer = new Stars3DLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
+				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
+			}
 		}
-
 		/// <summary>
 		/// Unloads our plugin
 		/// </summary>
 		public override void Unload() 
 		{
-			WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
+			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
 		}
 	}
 
@@ -90,9 +85,10 @@ namespace Stars3D.Plugin
 		/// </summary>
 		public Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName)
 		{
-			this.pluginPath = Path.Combine(pluginPath, @"Plugins\stars3d\");
+			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\stars3d\");
 			this.world = worldWindow.CurrentWorld;
 			this.drawArgs = worldWindow.DrawArgs;
+			//this.RenderPriority = RenderPriority.SurfaceImages;
 			//this.sphereRadius = this.drawArgs.WorldCamera.WorldRadius * 20;
 			ReadSettings();
 		}
@@ -109,7 +105,7 @@ namespace Stars3D.Plugin
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch(Exception caught) {}
+			catch(Exception) {}
 			if(line != "")
 			{
 				string[] settingsList = line.Split(';');
@@ -158,7 +154,12 @@ namespace Stars3D.Plugin
 			}
 
 
-			if(camera.Altitude < 100e3) return;
+			// if(camera.Altitude < 500e3) return;
+			if(drawArgs.device.RenderState.Lighting)
+			{
+				drawArgs.device.RenderState.Lighting = false;
+				drawArgs.device.RenderState.Ambient = World.Settings.StandardAmbientColor;
+			}
 						
 			// save world and projection transform
 			Matrix origWorld = device.Transform.World;
@@ -170,15 +171,32 @@ namespace Stars3D.Plugin
 
 			// Set new projection (to avoid being clipped) - probably better ways of doing this?
 			float aspectRatio =  (float)device.Viewport.Width / device.Viewport.Height;
-			device.Transform.Projection = Matrix.PerspectiveFovRH((float)camera.Fov.Radians, aspectRatio, 1, float.MaxValue );
+            device.Transform.Projection = Matrix.PerspectiveFovRH((float)camera.Fov.Radians, aspectRatio, (float)(0.5f * sphereRadius), (float)(2.0f * sphereRadius));
+
 
 			// This is where we can rotate the star dome to acomodate time and seasons
+			drawArgs.device.Transform.World = Matrix.Translation(
+				(float)-drawArgs.WorldCamera.ReferenceCenter.X,
+				(float)-drawArgs.WorldCamera.ReferenceCenter.Y,
+				(float)-drawArgs.WorldCamera.ReferenceCenter.Z
+				);
+
+			
+			drawArgs.device.Transform.World *= Matrix.RotationZ(
+				(float)(TimeKeeper.CurrentTimeUtc.Hour + 
+				TimeKeeper.CurrentTimeUtc.Minute / 60.0 +
+				TimeKeeper.CurrentTimeUtc.Second / 3600.0 + 
+				TimeKeeper.CurrentTimeUtc.Millisecond / 3600000.0) / 24.0f * (float)(-2 * Math.PI));
 
 			// Render textured flares if set
 			if(showFlares)
 			{
 				device.SetTexture(0,texture);
+                device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+                device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
 				device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+                device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+                device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
 				device.VertexFormat = CustomVertex.PositionTextured.Format;
 				FlareMesh.DrawSubset(0);
 			}
@@ -186,6 +204,11 @@ namespace Stars3D.Plugin
 			// draw StarListVB
 			device.SetTexture(0,null);
 			device.VertexFormat = CustomVertex.PositionColored.Format;
+            device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+            device.TextureState[0].AlphaArgument1 = TextureArgument.Diffuse;
+            device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
+            device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
+				
 			device.SetStreamSource(0, StarListVB, 0);
 			device.DrawPrimitives(PrimitiveType.PointList, 0, StarCount );
 
@@ -214,10 +237,6 @@ namespace Stars3D.Plugin
 					MessageBoxIcon.Error );
 			}
 		}
-
-      protected override void FreeResources()
-      {
-      }
 
 		// Read star catalog and build vertex list
 		private void LoadStars()
@@ -327,11 +346,11 @@ namespace Stars3D.Plugin
 					if(Vdec > 255) Vdec = 255;
 					// convert B-V  -0.5 - 4 for rgb color select
 					double BVdec = 0;
-					try {
-                  if (BV.Length == 0)
-                     BV = "0";
-                     BVdec = Convert.ToDouble(BV.Replace(".", DecSep));}
-					catch {BVdec = 0;}
+                    if (BV.Length > 0)
+                    {
+                        try { BVdec = Convert.ToDouble(BV.Replace(".", DecSep)); }
+                        catch { BVdec = 0; }
+                    }
 					if(BVdec > maxBVdec) maxBVdec = BVdec;
 					if(BVdec < minBVdec) minBVdec = BVdec;
 					
@@ -420,8 +439,7 @@ namespace Stars3D.Plugin
 				arr.SetValue((short)(v1 + 2),vertIndex++);
 			}
 			FlareMesh.IndexBuffer.SetData(arr,0,LockFlags.None);
-
-
+            FlareMesh.UnlockIndexBuffer();
 		}
 
 		/// <summary>
@@ -478,7 +496,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
-		public void OnPropertiesClick(object sender, EventArgs e)
+		public new void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if(pDialog != null && ! pDialog.IsDisposed)
 				// Already open

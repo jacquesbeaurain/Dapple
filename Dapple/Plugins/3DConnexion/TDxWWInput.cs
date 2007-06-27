@@ -380,7 +380,7 @@ namespace ThreeDconnexion.Plugin
             if (World.Settings.CameraTwistLock)
             {
                 Quaternion4d Orientation
-                   = Quaternion4d.EulerToQuaternion(m_TheCamera.Longitude.Radians + (TranslVector.X * factor)
+                   = Quaternion4d.RotationYawPitchRoll(m_TheCamera.Longitude.Radians + (TranslVector.X * factor)
                                                     , m_TheCamera.Latitude.Radians + (TranslVector.Z * factor)
                                                     , dHeading);
 
@@ -397,7 +397,7 @@ namespace ThreeDconnexion.Plugin
             {
                 Quaternion4d rCurrentOrient = m_TheCamera.CurrentOrientation;
                 Quaternion4d Orientation
-                   = Quaternion4d.EulerToQuaternion(TranslVector.X * factor
+                   = Quaternion4d.RotationYawPitchRoll(TranslVector.X * factor
                                                     , TranslVector.Z * factor
                                                     , dHeading) * rCurrentOrient;
 
@@ -613,17 +613,17 @@ namespace ThreeDconnexion.Plugin
             /// set the new View/Camera - position                                              ///
             /////////////////////////////////////////////////////////////////////////////////////// 
             Quaternion4d TiltQuat
-               = Quaternion4d.EulerToQuaternion(0
+               = Quaternion4d.RotationYawPitchRoll(0
                                                 , -dAlpha
                                                 , 0);
 
             Quaternion4d TiltQuatInv
-               = Quaternion4d.EulerToQuaternion(0
+               = Quaternion4d.RotationYawPitchRoll(0
                                                 , dAlpha
                                                 , 0);
 
             Quaternion4d SpMoQuat
-               = Quaternion4d.EulerToQuaternion(dDeltaLongitude
+               = Quaternion4d.RotationYawPitchRoll(dDeltaLongitude
                                                 , dDeltaLatitude
                                                 , dHeading);
 

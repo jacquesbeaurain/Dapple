@@ -133,21 +133,31 @@
     <Compile Include="OverviewControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="PluginEngine\MainApplication.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PluginEngine\NativeMethods.cs" />
     <Compile Include="PluginEngine\Plugin.cs" />
     <Compile Include="PluginEngine\PluginCompiler.cs" />
+    <Compile Include="PluginEngine\PluginDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="PluginEngine\PluginInfo.cs" />
+    <Compile Include="PluginEngine\PluginInstallDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PluginEngine\PluginListItem.cs" />
+    <Compile Include="PluginEngine\PluginListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Splash.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Stars3D.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WorldWindow.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WorldWindSettingsComponent.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WorldWindSettingsComponent.Designer.cs">
-      <DependentUpon>WorldWindSettingsComponent.cs</DependentUpon>
-    </Compile>
+    <Compile Include="WhiteboardPlugin.cs" />
+    <Compile Include="WindowsControlMenuButton.cs" />
     <EmbeddedResource Include="BMNG.resx">
       <DependentUpon>BMNG.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -160,12 +170,32 @@
       <DependentUpon>OverviewControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="WorldWindow.resx">
-      <DependentUpon>WorldWindow.cs</DependentUpon>
+    <EmbeddedResource Include="PluginEngine\PluginDialog.resx">
+      <DependentUpon>PluginDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginEngine\PluginInstallDialog.resx">
+      <DependentUpon>PluginInstallDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginEngine\PluginListView.resx">
+      <DependentUpon>PluginListView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Splash.resx">
+      <DependentUpon>Splash.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Collab\Collab.csproj">
+      <Project>{B86848BD-12A5-44F9-8464-DB387C64D9A6}</Project>
+      <Name>Collab</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JhuaplWorldWind\JhuaplWorldWind.csproj">
+      <Project>{0BFE5EF3-9A5A-441A-918F-E763070ECE46}</Project>
+      <Name>JhuaplWorldWind</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PluginSDK\PluginSDK.csproj">
       <Project>{30178337-6BBE-45A0-B7DF-73B2A46F06EE}</Project>
       <Name>PluginSDK</Name>
@@ -178,12 +208,10 @@
       <Project>{3B2110D8-D29C-4057-8192-2BFB39A56D54}</Project>
       <Name>WebDownload</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="PluginEngine\Icon1.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="OverviewControl\" />
+    <ProjectReference Include="..\WorldWindow\WorldWindow.csproj">
+      <Project>{4C575E6F-27B6-4397-87C8-008742DF0E2D}</Project>
+      <Name>WorldWindow</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

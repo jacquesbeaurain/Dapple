@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Drawing;
 using System.Collections;
@@ -17,9 +18,7 @@ namespace WorldWind
 		private bool hasError;
 		private DateTime startTime = DateTime.Now;
 		private TimeSpan timeOut = TimeSpan.FromSeconds(1);
-		private System.Windows.Forms.PictureBox pictureBox;
-		private int defaultHeight;
-		private System.Windows.Forms.Label label;
+        private int defaultHeight;
 
 		/// <summary>
 		/// Required designer variable.
@@ -35,6 +34,14 @@ namespace WorldWind
 
 			//pictureBox.Image = GetStartupImage();
 			defaultHeight = this.Height;
+
+			FileInfo splashImageFile = new FileInfo(
+				Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\splash.png");
+
+			if(splashImageFile.Exists)
+			{
+			//	pictureBox.Image = Image.FromFile(splashImageFile.FullName);
+			}
 		}
 
 		/// <summary>
@@ -69,14 +76,14 @@ namespace WorldWind
 				{
 					// Make space for error messages
 					Height = defaultHeight + 80;
-					label.TextAlign = ContentAlignment.MiddleCenter;
-					label.BorderStyle = BorderStyle.Fixed3D;
+				//	label.TextAlign = ContentAlignment.MiddleCenter;
+				//	label.BorderStyle = BorderStyle.Fixed3D;
 				}
 				else
 				{
 					Height = defaultHeight;
-					label.TextAlign = ContentAlignment.MiddleLeft;
-					label.BorderStyle = BorderStyle.None;
+				//	label.TextAlign = ContentAlignment.MiddleLeft;
+				//	label.BorderStyle = BorderStyle.None;
 				}
 			}
 		}
@@ -89,8 +96,8 @@ namespace WorldWind
 			if(hasError)
 				Wait();
 			HasError = false;
-			this.label.Text = message;
-			this.label.ForeColor = Color.Black;
+		//	this.label.Text = message;
+		//	this.label.ForeColor = Color.Black;
 			this.Invalidate();
 			Application.DoEvents();
 		}
@@ -106,8 +113,8 @@ namespace WorldWind
 			HasError = true;
 			wasClicked = false;
 			this.timeOut = TimeSpan.FromSeconds(30);
-			this.label.Text = message + "\n\nPress any key or click to continue.";
-			this.label.ForeColor = Color.Red;
+		//	this.label.Text = message + "\n\nPress any key or click to continue.";
+		//	this.label.ForeColor = Color.Red;
 			this.Invalidate();
 			Application.DoEvents();
 		}
@@ -151,23 +158,7 @@ namespace WorldWind
 		/// <returns></returns>
 		public static Image GetStartupImage()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Splash));
-			using( Image image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image"))) )
-			{
-				Image startupImage = new Bitmap( image.Width, image.Height );
-				using (Font font = LoadFont("Tahoma", 10, FontStyle.Bold))
-				using (Graphics g = Graphics.FromImage(startupImage)) 
-				{
-					g.DrawImageUnscaled(image,0,0);
-					g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-					StringFormat format = new StringFormat();
-					format.LineAlignment = StringAlignment.Far;
-					format.Alignment = StringAlignment.Far;
-					using( Brush versionBrush = new SolidBrush( Color.FromArgb(200,0,0,0)) )
-						g.DrawString( MainApplication.Release, font, versionBrush,  image.Width-8, image.Height-10, format );
-				}
-				return startupImage;
-			}
+			return Image.FromFile(Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\splash.png");
 		}
 
 		private static Font LoadFont( string familyName, float emSize, FontStyle newStyle )
@@ -191,61 +182,36 @@ namespace WorldWind
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(Splash));
-			this.pictureBox = new System.Windows.Forms.PictureBox();
-			this.label = new System.Windows.Forms.Label();
-			this.SuspendLayout();
-			// 
-			// pictureBox
-			// 
-			this.pictureBox.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox.Image")));
-			this.pictureBox.Location = new System.Drawing.Point(3, 3);
-			this.pictureBox.Name = "pictureBox";
-			this.pictureBox.Size = new System.Drawing.Size(512, 253);
-			this.pictureBox.TabIndex = 2;
-			this.pictureBox.TabStop = false;
-			this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Splash_MouseDown);
-			// 
-			// label
-			// 
-			this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right)));
-			this.label.Location = new System.Drawing.Point(8, 261);
-			this.label.Name = "label";
-			this.label.Size = new System.Drawing.Size(504, 27);
-			this.label.TabIndex = 3;
-			this.label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.label.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Splash_MouseDown);
-			// 
-			// Splash
-			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.BackColor = System.Drawing.Color.White;
-			this.ClientSize = new System.Drawing.Size(520, 296);
-			this.ControlBox = false;
-			this.Controls.Add(this.label);
-			this.Controls.Add(this.pictureBox);
-			this.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.KeyPreview = true;
-			this.MaximizeBox = false;
-			this.Name = "Splash";
-			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Splash";
-			this.TransparencyKey = System.Drawing.Color.FromArgb(((System.Byte)(192)), ((System.Byte)(0)), ((System.Byte)(0)));
-			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Splash_MouseDown);
-			this.ResumeLayout(false);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Splash));
+            this.SuspendLayout();
+            // 
+            // Splash
+            // 
+            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.BackColor = System.Drawing.Color.Lime;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.ClientSize = new System.Drawing.Size(620, 300);
+            this.ControlBox = false;
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.Name = "Splash";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Splash";
+            this.TransparencyKey = System.Drawing.Color.Lime;
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Splash_MouseDown);
+            this.ResumeLayout(false);
 
 		}
 		#endregion
 
-		protected override void OnPaint(PaintEventArgs e)
+		/*protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 
 			ControlPaint.DrawBorder3D(e.Graphics, 0,0,(int)e.Graphics.VisibleClipBounds.Width, (int)e.Graphics.VisibleClipBounds.Height, Border3DStyle.Raised);
-		}
+		}*/
 	}
 }

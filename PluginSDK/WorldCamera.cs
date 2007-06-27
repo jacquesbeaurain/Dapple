@@ -43,7 +43,7 @@ namespace WorldWind.Camera
 			if(double.IsNaN(heading)) heading = this._heading.Degrees;
 			if(double.IsNaN(bank)) bank = _targetBank.Degrees;
 
-			this._targetOrientation = Quaternion4d.EulerToQuaternion(
+			this._targetOrientation = Quaternion4d.RotationYawPitchRoll(
 				MathEngine.DegreesToRadians(lon),
 				MathEngine.DegreesToRadians(lat),
 				MathEngine.DegreesToRadians(heading));
@@ -237,7 +237,7 @@ namespace WorldWind.Camera
 				return;
 			}
 
-			_targetOrientation = Quaternion4d.EulerToQuaternion(yaw.Radians, pitch.Radians, roll.Radians) * _targetOrientation;
+			_targetOrientation = Quaternion4d.RotationYawPitchRoll(yaw.Radians, pitch.Radians, roll.Radians) * _targetOrientation;
 			Point3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
 			if(!double.IsNaN(v.Y))
 				this._targetLatitude.Radians = v.Y;
@@ -388,7 +388,7 @@ namespace WorldWind.Camera
 				_headingMomentum += roll/100;
 			}
 
-			this._targetOrientation = Quaternion4d.EulerToQuaternion( yaw.Radians, pitch.Radians, roll.Radians ) * _targetOrientation;
+			this._targetOrientation = Quaternion4d.RotationYawPitchRoll( yaw.Radians, pitch.Radians, roll.Radians ) * _targetOrientation;
 			Point3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
 			if(!double.IsNaN(v.Y))
 			{
@@ -424,7 +424,7 @@ namespace WorldWind.Camera
 				lat.Radians = Math.Sign(lat.Radians)*(Math.PI/2 - 1e-3);
 			}
 
-			this._targetOrientation = Quaternion4d.EulerToQuaternion(
+			this._targetOrientation = Quaternion4d.RotationYawPitchRoll(
 				lon.Radians,
 				lat.Radians,
 				_targetHeading.Radians);

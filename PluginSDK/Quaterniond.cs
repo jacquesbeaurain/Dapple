@@ -17,23 +17,39 @@ namespace WorldWind
 			W = w;
 		}
 
-		public override int GetHashCode() 
-		{
-			return (int)(X / Y / Z / W);
-		}
+      public static Quaternion4d Identity
+      {
+         get
+         {
+            return new Quaternion4d(0, 0, 0, 1);
+         }
+      }
 
-		public override bool Equals(object obj)
-		{
-			if(obj is Quaternion4d)
-			{
-				Quaternion4d q = (Quaternion4d)obj;
-				return q == this;
-			}
-			else
-				return false;
-		}
+      /// <summary>
+      /// Get the hash code
+      /// </summary>
+      /// <returns></returns>
+      public override int GetHashCode()
+      {
+         return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode() ^ W.GetHashCode();
+      }
 
-		public static Quaternion4d EulerToQuaternion(double yaw, double pitch, double roll)
+      /// <summary>
+      /// Compare this class
+      /// </summary>
+      /// <param name="obj"></param>
+      /// <returns></returns>
+      public override bool Equals(object obj)
+      {
+         if (obj.GetType() != typeof(Quaternion4d))
+            return false;
+
+         Quaternion4d inObj = (Quaternion4d)obj;
+         return X == inObj.X && Y == inObj.Y && Z == inObj.Z && W == inObj.W;
+      }
+
+
+		public static Quaternion4d RotationYawPitchRoll(double yaw, double pitch, double roll)
 		{
 			double cy = Math.Cos(yaw * 0.5);
 			double cp = Math.Cos(pitch * 0.5);
@@ -150,7 +166,7 @@ namespace WorldWind
 
 		public void Normalize()
 		{
-			double L = Length();
+			double L = Length;
 
 			X = X / L;
 			Y = Y / L;
@@ -158,11 +174,22 @@ namespace WorldWind
 			W = W / L;
 		}
 
-		public double Length()
+		public double Length
 		{
-			return Math.Sqrt(X * X + Y * Y +
-				Z * Z + W * W);
+         get
+         {
+            return Math.Sqrt(X * X + Y * Y +
+               Z * Z + W * W);
+         }
 		}
+
+      public double LengthSq
+      {
+         get
+         {
+            return X * X + Y * Y + Z * Z + W * W;
+         }
+      }
 		
 		public static Quaternion4d Slerp(Quaternion4d q0, Quaternion4d q1, double t)
 		{

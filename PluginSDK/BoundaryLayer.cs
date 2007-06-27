@@ -37,7 +37,7 @@ namespace WorldWind.Renderable
 			double minDisplayAltitude,
 			double maxDisplayAltitude,
 			string boundaryFilePath,
-			int color) : base(name, parentWorld.Position, new Quaternion4d(0,0,0,0))
+			int color) : base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 			this._parentWorld = parentWorld;
 			this._distanceAboveSurface = distanceAboveSurface;

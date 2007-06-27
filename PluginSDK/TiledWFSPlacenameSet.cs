@@ -101,7 +101,7 @@ namespace WorldWind.Renderable
 			string iconFilePath,
 			Cache cache
          )
-         : base(name, parentWorld.Position, new Quaternion4d(0, 0, 0, 0))
+         : base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 		    m_name = name;
 			m_parentWorld = parentWorld;

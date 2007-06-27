@@ -65,7 +65,7 @@ namespace WorldWind.Camera
          this._altitude = this._distance;
          maximumAltitude = 20 * _worldRadius;
          //	this._orientation = MathEngine.EulerToQuaternion(0,0,0);
-         this.m_Orientation = Quaternion4d.EulerToQuaternion(0, 0, 0);
+         this.m_Orientation = Quaternion4d.RotationYawPitchRoll(0, 0, 0);
       }
 
       public Viewport Viewport
@@ -625,7 +625,7 @@ namespace WorldWind.Camera
          if (double.IsNaN(heading)) heading = this._heading.Degrees;
          if (double.IsNaN(bank)) bank = this._bank.Degrees;
 
-         m_Orientation = Quaternion4d.EulerToQuaternion(
+         m_Orientation = Quaternion4d.RotationYawPitchRoll(
             MathEngine.DegreesToRadians(lon),
             MathEngine.DegreesToRadians(lat),
             MathEngine.DegreesToRadians(heading));
@@ -769,7 +769,7 @@ namespace WorldWind.Camera
          //		this._heading.Radians = v.Z;
 
 
-         m_Orientation = Quaternion4d.EulerToQuaternion(yaw.Radians, pitch.Radians, roll.Radians) * m_Orientation;
+         m_Orientation = Quaternion4d.RotationYawPitchRoll(yaw.Radians, pitch.Radians, roll.Radians) * m_Orientation;
 
          Point3d p = Quaternion4d.QuaternionToEuler(m_Orientation);
          if (!double.IsNaN(p.Y))
@@ -844,7 +844,7 @@ namespace WorldWind.Camera
          //		lat.Radians,
          //		_heading.Radians);
 
-         m_Orientation = Quaternion4d.EulerToQuaternion(
+         m_Orientation = Quaternion4d.RotationYawPitchRoll(
             lon.Radians, lat.Radians, _heading.Radians);
 
          Point3d p = Quaternion4d.QuaternionToEuler(m_Orientation);

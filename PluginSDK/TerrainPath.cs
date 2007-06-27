@@ -76,7 +76,7 @@ namespace WorldWind.Renderable
 			float heightAboveSurface, 
 			System.Drawing.Color lineColor,
 			TerrainAccessor terrainAccessor) 
-			: base(name, parentWorld.Position, new Quaternion4d(0,0,0,0)) 
+			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
 		{
 			this._parentWorld = parentWorld;
 			this._minDisplayAltitude = minDisplayAltitude;
@@ -121,7 +121,7 @@ namespace WorldWind.Renderable
 			float heightAboveSurface, 
 			System.Drawing.Color lineColor,
 			TerrainAccessor terrainAccessor) 
-			: base(name, parentWorld.Position, new Quaternion4d(0,0,0,0)) 
+			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
 		{
 			this._parentWorld = parentWorld;
 			this._minDisplayAltitude = minDisplayAltitude;
