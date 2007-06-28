@@ -370,7 +370,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override int ImagePixelSize
+      public override int TextureSizePixels
       {
          get
          {

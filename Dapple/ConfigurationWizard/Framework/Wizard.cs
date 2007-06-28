@@ -24,7 +24,7 @@ namespace ConfigurationWizard
 		private WizardPage currentPage;
 		private int currentPageIndex=-1;
 		private bool isComplete;
-      internal static WorldWindSettingsComponent Settings;
+      internal static WorldWindSettings Settings;
 
 		/// <summary>
 		/// The window title on the wizard
@@ -72,7 +72,7 @@ namespace ConfigurationWizard
 		/// Initializes settings, message and pages.
 		/// </summary>
       /// <param name="settings">The WorldWindSettingsComponent to use</param>
-      public Wizard(WorldWindSettingsComponent settings)
+      public Wizard(WorldWindSettings settings)
 		{
 			//
 			// Required for Windows Form Designer support

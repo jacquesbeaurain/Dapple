@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version.Assembly.cs">
+      <Link>Version.Assembly.cs</Link>
+    </Compile>
     <Compile Include="jhuapl\Util\CollabObj.cs">
       <DependentUpon>CollabObj.xsd</DependentUpon>
     </Compile>

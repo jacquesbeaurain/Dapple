@@ -13,6 +13,8 @@ using Geosoft.Dap;
 using Geosoft.Dap.Common;
 using Geosoft.DotNetTools;
 
+using WorldWind.PluginEngine;
+
 namespace Dapple
 {
    /// <summary>
@@ -26,14 +28,16 @@ namespace Dapple
 
       protected TreeNode m_hRootNode;
       protected TreeNode m_hTileRootNode;
-      protected TreeNode m_hVERootNode;
-      protected TreeNode m_hWMSRootNode;
+      //protected TreeNode m_hVERootNode;
+      //protected TreeNode m_hWMSRootNode;
 
       TreeNodeSorter m_TreeSorter;
 
+      /* JBTODO
       VEQuadLayerBuilder m_VEMapQTB;
       VEQuadLayerBuilder m_VESatQTB;
       VEQuadLayerBuilder m_VEMapAndSatQTB;
+      */
 
       protected MainForm m_oParent;
       protected TriStateTreeView m_layerTree;
@@ -85,26 +89,27 @@ namespace Dapple
          m_hRootNode.Nodes.Add(m_hTileRootNode);
          BuilderDirectory tileDir = new BuilderDirectory("Image Tile Servers", null, false);
 
+         /* JBTODO:
          VETileSetBuilder veDir = new VETileSetBuilder("Virtual Earth", null, false);
          m_hVERootNode = m_hRootNode.Nodes.Add("Virtual Earth");
          m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = iImageListIndex("live");
          m_hVERootNode.Tag = veDir;
 
-         m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, m_oParent.WorldWindowControl, true, m_oParent.WorldWindowControl.CurrentWorld, m_oParent.WorldWindowControl.WorldWindSettings.CachePath, veDir);
-         m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, m_oParent.WorldWindowControl, true, m_oParent.WorldWindowControl.CurrentWorld, m_oParent.WorldWindowControl.WorldWindSettings.CachePath, veDir);
-         m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, m_oParent.WorldWindowControl, true, m_oParent.WorldWindowControl.CurrentWorld, m_oParent.WorldWindowControl.WorldWindSettings.CachePath, veDir);
+         m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, m_oParent.WorldWindow, true, m_oParent.WorldWindow.CurrentWorld, m_oParent.WorldWindow.WorldWindSettings.CachePath, veDir);
+         m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, m_oParent.WorldWindow, true, m_oParent.WorldWindow.CurrentWorld, m_oParent.WorldWindow.WorldWindSettings.CachePath, veDir);
+         m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, m_oParent.WorldWindow, true, m_oParent.WorldWindow.CurrentWorld, m_oParent.WorldWindow.WorldWindSettings.CachePath, veDir);
          veDir.LayerBuilders.Add(m_VEMapQTB);
          veDir.LayerBuilders.Add(m_VESatQTB);
          veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
 
-         WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder(m_oParent.Settings.WorldWindDirectory, m_oParent.WorldWindowControl, "WMS Servers", null);
+         WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder(MainApplication.Settings.WorldWindDirectory, m_oParent.WorldWindow, "WMS Servers", null);
          wmsBuilder.LoadingCompleted += new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
          wmsBuilder.LoadingFailed += new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
-
+         
          m_hWMSRootNode = new TreeNode("WMS Servers", iImageListIndex("wms"), iImageListIndex("wms"));
          m_hWMSRootNode.Tag = wmsBuilder;
          m_hRootNode.Nodes.Add(m_hWMSRootNode);
-
+         */
          m_TreeSorter = new TreeNodeSorter(this);
       }
       protected override void Dispose(bool disposing)
@@ -114,6 +119,7 @@ namespace Dapple
       #endregion
 
       #region Properties
+      /*
       /// <summary>
       /// The root node collection to use where WMS servers are kept
       /// </summary>
@@ -124,6 +130,7 @@ namespace Dapple
             return m_hWMSRootNode.Nodes;
          }
       }
+       */ 
 
       /// <summary>
       /// The root node collection to use where tile servers are kept
@@ -136,6 +143,7 @@ namespace Dapple
          }
       }
 
+      /*
       /// <summary>
       /// The root node collection to use where Virtual Earth is kept
       /// </summary>
@@ -146,6 +154,7 @@ namespace Dapple
             return m_hVERootNode.Nodes;
          }
       }
+       */ 
 
       public TreeNode RootNode
       {
@@ -156,8 +165,8 @@ namespace Dapple
       }
       #endregion
 
+      /* JBTODO
       #region Catalog Loaded/Failed Handlers
-
       void OnWMSCatalogLoaded(WMSServerBuilder builder)
       {
          if (!this.IsDisposed)
@@ -232,7 +241,7 @@ namespace Dapple
             {
                if (container.Uri.StartsWith(WMSQuadLayerBuilder.URLProtocolName) && wmsbuilder.URL == WMSQuadLayerBuilder.ServerURLFromURI(container.Uri))
                {
-                  LayerBuilder builder = WMSQuadLayerBuilder.GetBuilderFromURI(container.Uri, provider, m_oParent.WorldWindowControl, wmsbuilder);
+                  LayerBuilder builder = WMSQuadLayerBuilder.GetBuilderFromURI(container.Uri, provider, m_oParent.WorldWindow, wmsbuilder);
                   if (builder != null)
                      m_activeLayers.RefreshFromSource(container, builder);
                }
@@ -413,7 +422,7 @@ namespace Dapple
             return false;
       }
       #endregion
-
+      */
       #region Methods
 
       public XmlNode GetCurrentDAPMetaData(XmlDocument oDoc)
@@ -437,15 +446,18 @@ namespace Dapple
 
       public void AddCurrentDataset()
       {
+         /* JBTODO:
          if (this.SelectedDAPDataset != null)
          {
             if (!m_oParent.bContainsDAPLayer(m_oCurServer, this.SelectedDAPDataset))
             {
-               DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(this.SelectedDAPDataset, m_oParent.WorldWindowControl.CurrentWorld, m_strCacheDir, m_oCurServer, null);
+               DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(this.SelectedDAPDataset, m_oParent.WorldWindow.CurrentWorld, m_strCacheDir, m_oCurServer, null);
                m_oParent.AddLayerBuilder(layerBuilder);
             }
          }
-         else if (this.SelectedNode != null && SelectedNode.Tag is LayerBuilder)
+         else 
+          */
+         if (this.SelectedNode != null && SelectedNode.Tag is LayerBuilder)
             m_oParent.AddLayerBuilder(SelectedNode.Tag as LayerBuilder);
       }
 
@@ -465,6 +477,7 @@ namespace Dapple
          treeNodeSel.Nodes.Add(hTempNode);
          this.Refresh();
 
+         /* JBTODO:
          if (treeNodeSel.Tag is WMSServerBuilder)
          {
             WMSServerBuilder serverBuilder = treeNodeSel.Tag as WMSServerBuilder;
@@ -508,6 +521,7 @@ namespace Dapple
             GetDatasetCount(treeNodeSel.Tag as Server);
             RefreshTreeNodeText();
          }
+          */ 
       }
 
       public void RemoveCurrentServer()
@@ -515,6 +529,7 @@ namespace Dapple
          if (this.SelectedNode == null)
             return;
 
+         /* JBTODO:
          TreeNode treeNode = this.SelectedNode;
 
          if (treeNode.Tag == null || treeNode.Tag is DataSet || treeNode.Tag is WMSQuadLayerBuilder)
@@ -564,10 +579,12 @@ namespace Dapple
          }
 
          treeNode.Parent.Nodes.Remove(treeNode);
+          */ 
       }
 
       public bool AddWMSServer(string strCapUrl, bool bUpdateTree)
       {
+         /* JBTODO:
          WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
          if (wmsBuilder.IsServerAdded(strCapUrl)) return false; // Don't add a server multiple times
          WorldWind.WMSList wmsList = wmsBuilder.FindServer(strCapUrl);
@@ -593,6 +610,7 @@ namespace Dapple
             return true;
          }
          else
+          */
             return false;
       }
 
@@ -603,13 +621,15 @@ namespace Dapple
          try
          {
             // Clear Tree and WMS servers too
+            /* JBTODO:
             WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
             wmsBuilder.LoadingCompleted -= new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
             wmsBuilder.LoadingFailed -= new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
-            wmsBuilder = new WMSCatalogBuilder(m_oParent.Settings.WorldWindDirectory, m_oParent.WorldWindowControl, "WMS Servers", null);
+            wmsBuilder = new WMSCatalogBuilder(MainApplication.Settings.WorldWindDirectory, m_oParent.WorldWindow, "WMS Servers", null);
             m_hWMSRootNode.Tag = wmsBuilder;
             wmsBuilder.LoadingCompleted += new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
             wmsBuilder.LoadingFailed += new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
+            */
 
             foreach (TreeNode node in m_hRootNode.Nodes)
                node.Nodes.Clear();
@@ -678,6 +698,7 @@ namespace Dapple
          builderdirectoryType dir;
          serversType servers = oView.View.Newservers();
 
+         /* JBTODO:
          entry = servers.Newbuilderentry();
          dir = entry.Newbuilderdirectory();
          dir.Addname(new SchemaString(m_hDAPRootNode.Text));
@@ -692,11 +713,11 @@ namespace Dapple
          }
          entry.Addbuilderdirectory(dir);
          servers.Addbuilderentry(entry);
-
+         */
          entry = servers.Newbuilderentry();
          entry.Addbuilderdirectory(m_hTileRootNode.Tag as builderdirectoryType);
          servers.Addbuilderentry(entry);
-
+         /* JBTODO:
          entry = servers.Newbuilderentry();
          virtualearthType ve = entry.Newvirtualearth();
          ve.Addname(new SchemaString("Virtual Earth"));
@@ -716,17 +737,20 @@ namespace Dapple
          }
          entry.Addbuilderdirectory(dir);
          servers.Addbuilderentry(entry);
+         */
 
          oView.View.Addservers(servers);
       }
 
       public BuilderEntry GetWMSBuilderByURL(String strUrl)
       {
+         /* JBTODO:
          String compURL = ("http://" + strUrl).ToLower();
          foreach (BuilderEntry serverBuilder in m_wmsServers)
          {
             if (((WMSServerBuilder)serverBuilder.Builder).URL.ToLower().Equals(compURL)) return serverBuilder;
          }
+          */ 
          return null;
       }
 
@@ -746,9 +770,8 @@ namespace Dapple
 
                int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
                int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
-               WorldWind.ImageTileService tileService = new WorldWind.ImageTileService(tile.dataset.Value, tile.url.Value);
-               QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), (decimal)tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tileService,
-                                                       tile.imageextension.Value, 255, m_oParent.WorldWindowControl.CurrentWorld, m_oParent.Settings.CachePath, m_oParent.Settings.CachePath, tileDir);
+               QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tile.url.Value,
+                                                       tile.dataset.Value, tile.imageextension.Value, 255, m_oParent.WorldWindow.CurrentWorld, MainApplication.Settings.CachePath, MainApplication.Settings.CachePath, tileDir);
                newServerChildNode.Tag = quadBuilder;
             }
          }
@@ -869,7 +892,7 @@ namespace Dapple
             {
                ImageBuilder builder = treeNode.Tag as ImageBuilder;
                if ((m_strSearch != string.Empty && treeNode.Text.IndexOf(m_strSearch, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
-                  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.IntersectsWith(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
+                  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.Intersects(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
                   treeNode.Remove();
                else
                   treeNode.SelectedImageIndex = treeNode.ImageIndex;
@@ -889,8 +912,9 @@ namespace Dapple
                iCount++;
          }
          m_hDAPRootNode.Text = "DAP Servers (" + iCount.ToString() + ")";
-             
-        
+
+
+         /* JBTODO:
          // WMS Servers 
          // First just count the servers
          iCount = 0;
@@ -908,6 +932,7 @@ namespace Dapple
             }
          }
          m_hWMSRootNode.Text = "WMS Servers (" + iCount.ToString() + ")";
+          */ 
       }
 
       protected void FilterTreeNodes(TreeNode node)
@@ -915,6 +940,7 @@ namespace Dapple
          if (m_strSearch == string.Empty && (m_filterExtents == null || !m_bAOIFilter))
             return;
 
+         /* JBTODO:
          List<TreeNode> nodeList = new List<TreeNode>();
          foreach (TreeNode treeNode in node.Nodes)
             nodeList.Add(treeNode);
@@ -925,7 +951,7 @@ namespace Dapple
             {
                ImageBuilder builder = treeNode.Tag as ImageBuilder;
                if ((m_strSearch != string.Empty && treeNode.Text.IndexOf(m_strSearch, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
-                  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.IntersectsWith(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
+                  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.Intersects(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
                   treeNode.Remove();
             }
             if (treeNode.Tag is BuilderDirectory && !(treeNode.Tag is WMSCatalogBuilder) && 
@@ -953,6 +979,7 @@ namespace Dapple
          
          // Update counts accross the board
          UpdateCounts();
+          */ 
       }
 
       #endregion
@@ -991,6 +1018,7 @@ namespace Dapple
                   node.Nodes.Clear();
             }
          }
+         /* JBTODO:
          if (!(treeNode.Tag is VEQuadLayerBuilder))
             m_hVERootNode.Nodes.Clear();
          if (treeNode.Tag is VETileSetBuilder)
@@ -1003,6 +1031,7 @@ namespace Dapple
             treeSubNode.Tag = m_VEMapAndSatQTB;
             treeNode.ExpandAll();
          }
+          */ 
          if (treeNode.Tag is builderdirectoryType || treeNode.Tag is tileserversetType)
          {
             if (treeNode != m_hTileRootNode)
@@ -1029,6 +1058,7 @@ namespace Dapple
 
             treeNode.ExpandAll();
          }
+            /* JBTODO:
          else if (!(treeNode.Tag is BuilderDirectory && bFillWMSCatalogEntriesInTreeNode(treeNode.Tag as BuilderDirectory)))
          {
             if (treeNode == m_hDAPRootNode)
@@ -1041,6 +1071,7 @@ namespace Dapple
             else if (treeNode == m_hTileRootNode)
                m_hTileRootNode.Expand();
          }
+             */ 
          FilterTreeNodes(treeNode);
          this.EndUpdate();
       }
@@ -1062,8 +1093,10 @@ namespace Dapple
             TreeNode serverNode = e.Node;
             while (serverNode != null && serverNode.Parent != null)
             {
+               /* JBTODO:
                if (serverNode.Parent == m_hWMSRootNode || serverNode.Parent == m_hDAPRootNode)
                   break;
+                */ 
                serverNode = serverNode.Parent;
             }
 
@@ -1126,19 +1159,22 @@ namespace Dapple
                return -2;
             if (tx.Nodes == m_ServerTree.TileRootNodes)
                return -1;
+            /* JBTODO:
             if (tx.Nodes == m_ServerTree.VERootNodes)
                return 1;
             if (tx.Nodes == m_ServerTree.WMSRootNodes)
                return 2;
-
+            */
             if (ty.Nodes == m_ServerTree.DAPRootNodes)
                return 2;
             if (ty.Nodes == m_ServerTree.TileRootNodes)
                return 1;
+            /* JBTODO:
             if (ty.Nodes == m_ServerTree.VERootNodes)
                return -1;
             if (ty.Nodes == m_ServerTree.WMSRootNodes)
                return -2;
+             */ 
 
             if (tx.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
                return -1;

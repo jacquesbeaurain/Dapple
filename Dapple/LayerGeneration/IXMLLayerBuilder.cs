@@ -192,7 +192,7 @@ namespace Dapple.LayerGeneration
                ImageBuilder imgBuilder = builder as ImageBuilder;
 
                if ((strText != string.Empty && imgBuilder.Name.IndexOf(strText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
-                   (extents != null && bInterSect && !extents.IntersectsWith(imgBuilder.Extents) && !extents.Contains(imgBuilder.Extents)))
+                   (extents != null && bInterSect && !extents.Intersects(imgBuilder.Extents) && !extents.Contains(imgBuilder.Extents)))
                   continue;
 
                iCount++;

@@ -70,9 +70,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="LayerGeneration\GeorefImageLayerBuilder.cs" />
-    <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
+    <None Include="LayerGeneration\VEQuadLayerBuilder.cs">
       <SubType>Code</SubType>
-    </Compile>
+    </None>
     <Compile Include="Plugins\3DConnexion\TDxWWInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -143,8 +143,8 @@
     <Compile Include="DAP\DAPGetData\CatalogCollection.cs" />
     <Compile Include="DAP\DAPGetData\Constant.cs" />
     <Compile Include="DAP\DAPGetData\GetDapError.cs" />
-    <Compile Include="DAP\DAPQuadLayer Impl\DapDownload.cs" />
-    <Compile Include="DAP\DAPQuadLayer Impl\DAPImageAccessor.cs" />
+    <None Include="DAP\DAPQuadLayer Impl\DapDownload.cs" />
+    <None Include="DAP\DAPQuadLayer Impl\DAPImageAccessor.cs" />
     <Compile Include="DAP\DAPGetData\Server.cs" />
     <Compile Include="DAP\DAPGetData\ServerList.cs" />
     <Compile Include="DAP\ErrorLogger\ErrorLogger.cs">
@@ -173,13 +173,13 @@
     </Compile>
     <Compile Include="LayerGeneration\LayerBuilderContainer.cs" />
     <Compile Include="LayerGeneration\TileSetBuilder.cs" />
-    <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
-    <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
-    <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
+    <None Include="LayerGeneration\VETileSetBuilder.cs" />
+    <None Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
+    <None Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
     <Compile Include="LayerGeneration\LayerBuilderProvider.cs" />
     <Compile Include="LayerGeneration\QuadLayerBuilder.cs" />
-    <Compile Include="LayerGeneration\WMSCatalogBuilder.cs" />
+    <None Include="LayerGeneration\WMSCatalogBuilder.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -195,8 +195,7 @@
     <Compile Include="MetaDataForm.Designer.cs">
       <DependentUpon>MetaDataForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\VirtualEarth\VEPluginLayer.cs">
-    </Compile>
+    <None Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
     <Compile Include="PropertyBag.cs" />
     <Compile Include="SaveViewForm.cs">
       <SubType>Form</SubType>
@@ -283,18 +282,18 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Servers\AddDAP.cs">
+    <None Include="Servers\AddDAP.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Servers\AddDAP.designer.cs">
+    </None>
+    <None Include="Servers\AddDAP.designer.cs">
       <DependentUpon>AddDAP.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Servers\AddWMS.cs">
+    </None>
+    <None Include="Servers\AddWMS.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Servers\AddWMS.designer.cs">
+    </None>
+    <None Include="Servers\AddWMS.designer.cs">
       <DependentUpon>AddWMS.cs</DependentUpon>
-    </Compile>
+    </None>
     <None Include="Servers\AddImageTile.cs">
       <SubType>Form</SubType>
     </None>
@@ -588,6 +587,10 @@
     <ProjectReference Include="..\WebDownload\WebDownload.csproj">
       <Project>{3B2110D8-D29C-4057-8192-2BFB39A56D54}</Project>
       <Name>WebDownload</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WorldWindow\WorldWindow.csproj">
+      <Project>{4C575E6F-27B6-4397-87C8-008742DF0E2D}</Project>
+      <Name>WorldWindow</Name>
     </ProjectReference>
     <ProjectReference Include="..\WorldWind\WorldWind.csproj">
       <Project>{394E6BC1-62F8-4776-9FC5-25633A239433}</Project>

@@ -126,6 +126,21 @@ namespace WorldWind
          }
       }
 
+      
+      /// <summary>
+      /// The size of a texture tile in the store (for Nlt servers this is later determined in QTS texture loading code once first tile is read)
+      /// </summary>
+      public virtual int TextureSizePixels
+      {
+         get
+         {
+            return -1;
+         }
+         set
+         {
+         }
+      }
+
       /// <summary>
       /// Number of detail levels
       /// </summary>
@@ -360,7 +375,7 @@ namespace WorldWind
          SurfaceDescription sd = texture.GetLevelDescription(0);
          if (sd.Width != sd.Height)
             Log.Write(Log.Levels.Error, "ISTOR", "non-square texture in file " + filePath + "may cause export issues :");
-         qt.TextureSize = sd.Width;
+         qt.TextureSizePixels = sd.Width;
 
          if (qt.QuadTileSet.CacheExpirationTime != TimeSpan.MaxValue)
          {

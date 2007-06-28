@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -39,69 +40,46 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-
       QuadTileSet m_oQuadTileSet;
-      string m_strTextureDirectory;
       string m_strCacheRoot;
-
-      //Image Accessor
-      private decimal m_dLevelZeroTileSizeDegrees = 30;
-      private int m_intNumberLevels = 1;
-      private int m_intTextureSizePixels = 256;
-      string m_strImageFileExtension = ".png";
-      ImageTileService m_oImageTileService = null;
-
-      //Image Tile Service
-      string m_strServerUrl = string.Empty;
-      string m_strDataSetName = string.Empty;
 
       //QuadTileLayer
       int distAboveSurface = 0;
       bool terrainMapped = false;
       GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
-      ImageAccessor m_oImageAccessor = null;
+      ImageStore[] m_oImageStores = null;
 
       bool m_blnIsChanged = true;
 
       private QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         ImageAccessor imageAccessor, byte opacity, World World, string textureDirectory, string cacheDirectory, IBuilder parent)
+         ImageStore[] imageStores, byte opacity, World World, string cacheDirectory, IBuilder parent)
       {
          m_strName = name;
          distAboveSurface = height;
          terrainMapped = isTerrainMapped;
          m_hBoundary = boundary;
-         m_oImageAccessor = imageAccessor;
-
-         m_dLevelZeroTileSizeDegrees = imageAccessor.LevelZeroTileSizeDegrees;
-         m_intNumberLevels = imageAccessor.LevelCount;
-         m_intTextureSizePixels = imageAccessor.TextureSizePixels;
-         m_strImageFileExtension = imageAccessor.ImageExtension;
-
+         m_oImageStores = imageStores;
          m_bOpacity = opacity;
-         m_strTextureDirectory = textureDirectory;
          m_strCacheRoot = cacheDirectory;
          m_oWorld = World;
          m_Parent = parent;
       }
 
       public QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         double levelZeroTileSize, int levels, int textureSize, ImageTileService tileService, string imageExtension,
-         byte opacity, World world, string textureDirectory, string cacheDirectory, IBuilder parent)
-         : this(name, height, isTerrainMapped, boundary,
-         new ImageAccessor(textureDirectory, textureSize, levelZeroTileSize, levels, imageExtension, Path.Combine(cacheDirectory, name), tileService),
-         opacity, world, textureDirectory, cacheDirectory, parent)
-      {
-         m_strServerUrl = tileService.ServerURI;
-         m_strDataSetName = tileService.DataSetName;
-         m_oImageTileService = tileService;
-      }
-
-      public QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
          double levelZeroTileSize, int levels, int textureSize, string serverURL, string dataSetName, string imageExtension,
          byte opacity, World world, string textureDirectory, string cacheDirectory, IBuilder parent)
-         : this(name, height, isTerrainMapped, boundary, levelZeroTileSize, levels, textureSize,
-         new ImageTileService(dataSetName, serverURL), imageExtension, opacity, world, textureDirectory, cacheDirectory, parent)
+         : this(name, height, isTerrainMapped, boundary, null, opacity, world, cacheDirectory, parent)
       {
+         m_oImageStores = new ImageStore[1];
+         m_oImageStores[0] = new NltImageStore(dataSetName, serverURL);
+         m_oImageStores[0].DataDirectory = null;
+         m_oImageStores[0].LevelZeroTileSizeDegrees = levelZeroTileSize;
+         m_oImageStores[0].LevelCount = levels;
+         m_oImageStores[0].ImageExtension = imageExtension;
+         m_oImageStores[0].CacheDirectory = textureDirectory;
+         //ia.ServerLogo = serverLogoFilePath;
+         m_oImageStores[0].TextureFormat = World.Settings.TextureFormat;
+         m_oImageStores[0].TextureSizePixels = textureSize;
       }
 
       public override RenderableObject GetLayer()
@@ -113,25 +91,10 @@ namespace Dapple.LayerGeneration
       {
          if (m_blnIsChanged)
          {
-            string strCachePath = GetCachePath();
-            if (m_oImageTileService == null && m_strDataSetName != string.Empty && m_strServerUrl != string.Empty)
-            {
-               m_oImageTileService = new ImageTileService(m_strDataSetName, m_strServerUrl);
-            }
-            m_oImageAccessor = new ImageAccessor(strCachePath,
-                m_intTextureSizePixels,
-                m_dLevelZeroTileSizeDegrees,
-                m_intNumberLevels,
-                m_strImageFileExtension,
-                strCachePath,
-                m_oImageTileService);
-
             m_oQuadTileSet = new QuadTileSet(m_strName,
-                m_hBoundary,
                 m_oWorld,
                 distAboveSurface,
-                (terrainMapped ? m_oWorld.TerrainAccessor : null),
-                m_oImageAccessor, m_bOpacity, false);
+                m_hBoundary.North, m_hBoundary.South, m_hBoundary.West, m_hBoundary.East, terrainMapped, m_oImageStores);
             m_blnIsChanged = false;
          }
          return m_oQuadTileSet;
@@ -224,28 +187,42 @@ namespace Dapple.LayerGeneration
 
       #region Public Properties
 
-      public double LevelZeroTileSizeDegrees
+      public virtual double LevelZeroTileSizeDegrees
       {
-         get { return m_dLevelZeroTileSizeDegrees; }
+         get 
+         {
+            if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
+               return m_oImageStores[0].LevelZeroTileSizeDegrees;
+            else
+               return 22.5;
+         }
          set
          {
-            if (value != m_dLevelZeroTileSizeDegrees)
+            // JBTODO: Shouldn't we just allow this for DAP and WMS?
+            if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
             {
                m_blnIsChanged = true;
-               m_dLevelZeroTileSizeDegrees = value;
+               m_oImageStores[0].LevelZeroTileSizeDegrees = value;
             }
          }
       }
 
-      public int Levels
+      public virtual int LevelCount
       {
-         get { return m_intNumberLevels; }
+         get 
+         {
+            if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
+               return m_oImageStores[0].LevelCount;
+            else
+               return 15;
+         }
          set
          {
-            if (m_intNumberLevels != value)
+            // JBTODO: Shouldn't we just allow this for DAP and WMS?
+            if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
             {
                m_blnIsChanged = true;
-               m_intNumberLevels = value;
+               m_oImageStores[0].LevelCount = value;
             }
          }
       }
@@ -259,15 +236,22 @@ namespace Dapple.LayerGeneration
          get { return m_hBoundary; }
       }
 
-      public override int ImagePixelSize
+      public override int TextureSizePixels
       {
-         get { return m_intTextureSizePixels; }
+         get 
+         {
+            if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
+               return m_oImageStores[0].TextureSizePixels;
+            else
+               return 15;
+         }
          set
          {
-            if (m_intTextureSizePixels != value)
+            // JBTODO: Shouldn't we just allow this for DAP and WMS?
+            if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
             {
                m_blnIsChanged = true;
-               m_intTextureSizePixels = value;
+               m_oImageStores[0].TextureSizePixels = value;
             }
          }
       }
@@ -278,51 +262,38 @@ namespace Dapple.LayerGeneration
       {
          get { return "Tile Server"; }
       }
-      
-      public string TileServerURL
-      {
-         get
-         {
-            return m_strServerUrl;
-         }
-      }
-
-      public string ImageFileExtension
-      {
-         get
-         {
-            return m_strImageFileExtension;
-         }
-      }
-
-      public string TileServerDatasetName
-      {
-         get
-         {
-            return m_strDataSetName;
-         }
-      }
 
       public override string GetURI()
       {
-         return m_strServerUrl.Replace("http://", URLProtocolName) + "?" +
-         "datasetname=" + m_strDataSetName + "&" +
-         "name=" + System.Web.HttpUtility.UrlEncode(m_strName) + "&" +
-         "height=" + distAboveSurface.ToString() + "&" +
-         "north=" + m_hBoundary.North.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
-         "east=" + m_hBoundary.East.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
-         "south=" + m_hBoundary.South.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
-         "west=" + m_hBoundary.West.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
-         "size=" + m_intTextureSizePixels.ToString() + "&" +
-         "levels=" + m_intNumberLevels.ToString() + "&" +
-         "lvl0tilesize=" + m_dLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +
-         "terrainMapped=" + terrainMapped.ToString() + "&" +
-         "imgfileext=" + m_strImageFileExtension;
+         if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null && m_oImageStores[0] is NltImageStore)
+         {
+            NltImageStore nltStore = m_oImageStores[0] as NltImageStore;
+            string formatString = "{0}?datasetname={1}&name={2}&height={3}&north={4}&east={5}&south={6}&west={7}&size={8}&levels={9}&lvl0tilesize={10}&terrainMapped={11}&imgfileext={12}";
+
+            return string.Format(CultureInfo.InvariantCulture, formatString,
+               nltStore.ServerUri.Replace("http://", URLProtocolName),
+               nltStore.DatasetName,
+               System.Web.HttpUtility.UrlEncode(m_strName),
+               distAboveSurface.ToString(),
+               m_hBoundary.North,
+               m_hBoundary.East,
+               m_hBoundary.South,
+               m_hBoundary.West,
+               nltStore.TextureSizePixels,
+               nltStore.LevelCount,
+               nltStore.LevelZeroTileSizeDegrees,
+               terrainMapped,
+               nltStore.ImageExtension);
+         }
+         else
+            return "";
       }
 
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), GetServerFileNameFromUrl(m_strServerUrl)), Utility.StringHash.GetBase64HashForPath(m_strDataSetName)), m_dLevelZeroTileSizeDegrees.GetHashCode().ToString());
+         // JBTODO:
+         return string.Empty;
+         //return Path.Combine(Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), GetServerFileNameFromUrl(m_strServerUrl)), Utility.StringHash.GetBase64HashForPath(m_strDataSetName)), m_oImageStores[0].LevelZeroTileSizeDegrees.GetHashCode().ToString());
       }
 
       public static QuadLayerBuilder GetQuadLayerBuilderFromURI(string uri, string textureDir, string cacheDir, World world, IBuilder parent)
@@ -341,12 +312,12 @@ namespace Dapple.LayerGeneration
             double west = Convert.ToDouble(pairs[6].Substring(pairs[6].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
             int size = Convert.ToInt32(pairs[7].Substring(pairs[7].IndexOf('=') + 1));
             int levels = Convert.ToInt32(pairs[8].Substring(pairs[8].IndexOf('=') + 1));
-            decimal lvl0tilesize = Convert.ToDecimal(pairs[9].Substring(pairs[9].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
+            double lvl0tilesize = Convert.ToDouble(pairs[9].Substring(pairs[9].IndexOf('=') + 1), System.Globalization.CultureInfo.InvariantCulture);
             bool terrainMapped = Convert.ToBoolean(pairs[10].Substring(pairs[10].IndexOf('=') + 1));
             string fileExt = pairs[11].Substring(pairs[11].IndexOf('=') + 1);
 
             return new QuadLayerBuilder(name.Replace('+', ' '), height, terrainMapped, new GeographicBoundingBox(north, south, west, east),
-               lvl0tilesize, levels, size, new ImageTileService(datasetname, serverUrl), fileExt, 255,
+               lvl0tilesize, levels, size, serverUrl, datasetname, fileExt, 255,
                world, textureDir, cacheDir, parent);
          }
          catch { }
@@ -356,20 +327,14 @@ namespace Dapple.LayerGeneration
 
       public override object Clone()
       {
-         return new QuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees,
-            m_intNumberLevels, m_intTextureSizePixels, m_strServerUrl, m_strDataSetName,
-            m_strImageFileExtension, m_bOpacity, m_oWorld, m_strTextureDirectory,
-            m_strCacheRoot, m_Parent);
+         return new QuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_oImageStores, Opacity, m_oWorld, m_strCacheRoot, m_Parent);
       }
 
       protected override void CleanUpLayer(bool bFinal)
       {
          if (m_oQuadTileSet != null)
             m_oQuadTileSet.Dispose();
-         if (m_oImageAccessor != null)
-            m_oImageAccessor.Dispose();
-         m_oImageTileService = null;
-         m_oImageAccessor = null;
+         m_oImageStores = null;
          m_oQuadTileSet = null;
          m_blnIsChanged = true;
       }

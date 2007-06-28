@@ -433,7 +433,7 @@ namespace Dapple.LayerGeneration
          get;
       }
 
-      public abstract int ImagePixelSize
+      public abstract int TextureSizePixels
       {
          get;
          set;

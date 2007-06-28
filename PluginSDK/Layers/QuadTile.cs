@@ -982,7 +982,7 @@ namespace WorldWind.Renderable
 
 
       public string ImageFilePath = null;
-      public int TextureSize = 0;
+      public int TextureSizePixels = -1;
 
       public virtual bool Render(DrawArgs drawArgs)
       {
@@ -1449,8 +1449,8 @@ namespace WorldWind.Renderable
             info.dMaxLon = Math.Max(info.dMaxLon, this.East);
             info.dMinLon = Math.Min(info.dMinLon, this.West);
 
-            info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * TextureSize);
-            info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * TextureSize);
+            info.iPixelsY = Math.Max(info.iPixelsY, (int)Math.Round((info.dMaxLat - info.dMinLat) / (this.North - this.South)) * TextureSizePixels);
+            info.iPixelsX = Math.Max(info.iPixelsX, (int)Math.Round((info.dMaxLon - info.dMinLon) / (this.East - this.West)) * TextureSizePixels);
          }
 
          if (northWestChild != null && northWestChild.isInitialized)

@@ -37,8 +37,8 @@ namespace WorldWind.Camera
       protected static readonly double minimumAltitude = 100;
       protected static double maximumAltitude = double.MaxValue;
 
-      protected Matrix4d m_ProjectionMatrix; // Projection matrix used in last render.
-      protected Matrix4d m_ViewMatrix; // View matrix used in last render.
+      protected Matrix4d m_ProjectionMatrix = Matrix4d.Identity; // Projection matrix used in last render.
+      protected Matrix4d m_ViewMatrix = Matrix4d.Identity; // View matrix used in last render.
       protected Matrix4d m_WorldMatrix = Matrix4d.Identity;
 
       protected Angle viewRange;

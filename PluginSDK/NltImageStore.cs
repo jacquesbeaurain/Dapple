@@ -56,5 +56,21 @@ namespace WorldWind
                 m_dataSetName, qt.Level, qt.Col, qt.Row,
                 qt.West, qt.South, qt.East, qt.North);
         }
+
+       public string ServerUri
+       {
+          get
+          {
+             return m_serverUri;
+          }
+       }
+
+       public string DatasetName
+       {
+          get
+          {
+             return m_dataSetName;
+          }
+       }
     }
 }

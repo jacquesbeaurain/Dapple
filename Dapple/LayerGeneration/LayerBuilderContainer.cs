@@ -4,6 +4,7 @@ using System.Text;
 using WorldWind;
 using System.Windows.Forms;
 using Geosoft.DotNetTools;
+using WorldWind.PluginEngine;
 using Dapple;
 using Dapple.LayerGeneration;
 
@@ -233,6 +234,7 @@ namespace Dapple.LayerGeneration
          else
             Add(container);
 
+         /* JBTODO
          if (container.Builder is DAPQuadLayerBuilder)
          {
             DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)container.Builder;
@@ -243,7 +245,7 @@ namespace Dapple.LayerGeneration
          }
          else if (container.Builder is VEQuadLayerBuilder)
             iImageIndex = m_mainWnd.ImageListIndex("live");
-         else if (container.Builder is GeorefImageLayerBuilder)
+         else */ if (container.Builder is GeorefImageLayerBuilder)
             iImageIndex = m_mainWnd.ImageListIndex("georef_image");
          else
             iImageIndex = m_mainWnd.ImageListIndex("layer");
@@ -464,13 +466,17 @@ namespace Dapple.LayerGeneration
          try
          {
             if (strUri.StartsWith(GeorefImageLayerBuilder.URLProtocolName))
-               builder = GeorefImageLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
-            if (strUri.StartsWith(VEQuadLayerBuilder.URLProtocolName))
+               builder = GeorefImageLayerBuilder.GetBuilderFromURI(strUri, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
+            /* JBTODO
+            else if (strUri.StartsWith(VEQuadLayerBuilder.URLProtocolName))
                builder = VEQuadLayerBuilder.GetBuilderFromURI(strUri, m_worldWindow, null);
+             */ 
             else if (strUri.StartsWith(QuadLayerBuilder.URLProtocolName))
-               builder = QuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow.CurrentWorld, null);
+               builder = QuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, MainApplication.Settings.CachePath, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
+            /* JBTODO
             else if (strUri.StartsWith(DAPQuadLayerBuilder.URISchemeName))
-               builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, m_worldWindow.WorldWindSettings.CachePath, m_worldWindow, ref bOldView);
+               builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, MainApplication.Settings.CachePath, m_worldWindow, ref bOldView);
+             */ 
          }
          catch (Exception e)
          {
@@ -538,6 +544,7 @@ namespace Dapple.LayerGeneration
                      if (node.Tag as LayerBuilderContainer == container)
                      {
                         // --- Also refresh icons ---
+                        /* JBTODO
                         if (container.Builder is DAPQuadLayerBuilder)
                         {
                            DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)container.Builder;
@@ -548,7 +555,7 @@ namespace Dapple.LayerGeneration
                         }
                         else if (container.Builder is VEQuadLayerBuilder)
                            node.ImageIndex = node.SelectedImageIndex = m_mainWnd.ImageListIndex("live");
-                        else if (container.Builder is GeorefImageLayerBuilder)
+                        else */ if (container.Builder is GeorefImageLayerBuilder)
                            node.ImageIndex = node.SelectedImageIndex = m_mainWnd.ImageListIndex("georef_image");
                         else
                            node.ImageIndex = node.SelectedImageIndex = m_mainWnd.ImageListIndex("layer");

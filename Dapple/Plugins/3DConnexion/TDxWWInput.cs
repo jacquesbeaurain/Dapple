@@ -29,10 +29,11 @@ using System.Reflection.Emit;
 using Microsoft.Win32;
 using System.Diagnostics;
 
-
 using WorldWind;
 using WorldWind.Camera;
 using WorldWind.Interop;
+
+using WorldWind.PluginEngine;
 
 namespace ThreeDconnexion.Plugin
 {
@@ -198,7 +199,6 @@ namespace ThreeDconnexion.Plugin
         static TDconnexion.I3DxSensor m_TheSensor = null;
         static TDconnexion.I3DxKeyboard m_TheKeyBoard = null;
         static WorldWindow m_WW = null;
-        static Dapple.MainForm m_app; 
         static CameraBase m_TheCamera = null;
         static Point3d m_Position;
         TDconnexion.TDxSensorInputEvent m_SensorEventHandler = null;
@@ -207,9 +207,8 @@ namespace ThreeDconnexion.Plugin
         static double m_dDeltaHeight = 0;
         static private Stopwatch m_stopWatch;  //check event interval of the input device
 
-        public TDxWWInput(Dapple.MainForm app)
+        public TDxWWInput()
         {
-            m_app = app;
         }
 
         public override void Load()
@@ -221,7 +220,7 @@ namespace ThreeDconnexion.Plugin
             menuItem.Text = "3Dconnexion Input Device";
             menuItem.Click += new System.EventHandler(menuItem_Click);
             m_stopWatch = new Stopwatch();
-            m_WW = m_app.WorldWindowControl;
+            m_WW = m_Application.WorldWindow;
 
             m_TheCamera = m_WW.DrawArgs.WorldCamera;
 
@@ -230,7 +229,7 @@ namespace ThreeDconnexion.Plugin
                m_TheInputDevice = new TDconnexion.TDxDeviceWrapper();
                if (m_TheInputDevice != null)
                {
-                  m_app.MenuStrip.Items.Add(menuItem);
+                  // JBTODO: m_app.MenuStrip.Items.Add(menuItem);
 
                   m_TheSensor = m_TheInputDevice.Sensor;
                   m_TheKeyBoard = m_TheInputDevice.Keyboard;
@@ -274,7 +273,7 @@ namespace ThreeDconnexion.Plugin
             m_TheInputDevice = null;
 
             // Clean up, remove menu item
-            m_app.MenuStrip.Items.Remove(menuItem);
+            // JBTODO: m_app.MenuStrip.Items.Remove(menuItem);
             base.Unload();
         }
 

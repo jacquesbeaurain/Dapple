@@ -176,7 +176,6 @@ namespace Dapple
            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
            this.timerNavigation = new System.Windows.Forms.Timer(this.components);
-           this.WWSettingsCtl = new WorldWind.WorldWindSettingsComponent(this.components);
            this.statusStrip.SuspendLayout();
            this.menuStrip.SuspendLayout();
            this.splitContainerMain.Panel1.SuspendLayout();
@@ -1635,32 +1634,6 @@ namespace Dapple
            // 
            this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
            // 
-           // WWSettingsCtl
-           // 
-           this.WWSettingsCtl.AskLastViewAtStartup = true;
-           this.WWSettingsCtl.CacheCleanupInterval = System.TimeSpan.Parse("01:00:00");
-           this.WWSettingsCtl.CacheCleanupIntervalXml = "PT1H";
-           this.WWSettingsCtl.CachePath = "C:\\Program Files\\Microsoft Visual Studio 8\\Common7\\IDE\\Cache";
-           this.WWSettingsCtl.CacheSizeGigaBytes = 10;
-           this.WWSettingsCtl.ConfigPath = "C:\\Program Files\\Microsoft Visual Studio 8\\Common7\\IDE\\Config";
-           this.WWSettingsCtl.ConfigurationWizardAtStartup = true;
-           this.WWSettingsCtl.DappleSearchURL = "";
-           this.WWSettingsCtl.DataPath = "C:\\Program Files\\Microsoft Visual Studio 8\\Common7\\IDE\\Data";
-           this.WWSettingsCtl.DefaultWorld = "Earth";
-           this.WWSettingsCtl.FormatVersion = "8.0.50727.42";
-           this.WWSettingsCtl.LastViewAtStartup = true;
-           this.WWSettingsCtl.NewCachePath = "";
-           this.WWSettingsCtl.ProxyPassword = "";
-           this.WWSettingsCtl.ProxyUrl = "";
-           this.WWSettingsCtl.ProxyUsername = "";
-           this.WWSettingsCtl.SettingsPath = null;
-           this.WWSettingsCtl.TotalRunTime = System.TimeSpan.Parse("4.01:24:35.8004860");
-           this.WWSettingsCtl.TotalRunTimeXml = "P4DT1H24M35.800486S";
-           this.WWSettingsCtl.UpdateCheckDate = new System.DateTime(((long)(0)));
-           this.WWSettingsCtl.UseDynamicProxy = false;
-           this.WWSettingsCtl.UseHTTPProtocol = WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1;
-           this.WWSettingsCtl.UseWindowsDefaultProxy = true;
-           // 
            // MainForm
            // 
            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1759,7 +1732,6 @@ namespace Dapple
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemoptions;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemhelp;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemabout;
-       private WorldWind.WorldWindSettingsComponent WWSettingsCtl;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemshowGridLines;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemshowPosition;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemverticalExagerration;

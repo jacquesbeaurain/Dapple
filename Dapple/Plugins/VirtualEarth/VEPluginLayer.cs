@@ -141,12 +141,38 @@ namespace bNb.Plugins_GD
             //#endif
             if (File.Exists(spritePath) == false)
             {
-               Utility.Log.Write("spritePath not found " + spritePath);
+                    Utility.Log.Write(new Exception("spritePath not found " + spritePath));
             }
             spriteSize = new Rectangle(0, 0, iconWidth, iconHeight);
             spriteTexture = TextureLoader.FromFile(drawArgs.device, spritePath);
 
-            earthRadius = worldWindow.CurrentWorld.EquatorialRadius;
+                /*
+                try
+                {
+                    //purposefully download the bad tile
+                    //so it is not displayed or cached later on
+                    Downloader d = new Downloader();
+                    string badTileUrl = "http://r2.ortho.tiles.virtualearth.net/tiles/r0.png?g=1";
+                    MemoryStream ms = d.DownloadImageStream(badTileUrl);
+                    if(ms != null && ms.Length > 0)
+                    {
+                        //save off bad tile size for comparison
+                        badTileSize = (int) ms.Length;
+                        //save off some bytes to compare for false positives
+                        ms.Position = badTileSize / 2;
+                        badTileBytes = new byte[8];
+                        ms.Read(badTileBytes, 0, badTileBytes.Length);
+                        ms.Close();
+                        ms = null;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Utility.Log.Write(ex);
+                }
+                */
+
+                earthRadius = parentApplication.WorldWindow.CurrentWorld.EquatorialRadius;
             earthCircum = earthRadius * 2.0 * Math.PI; //40075016.685578488
             earthHalfCirc = earthCircum / 2; //20037508.
 
@@ -170,17 +196,19 @@ namespace bNb.Plugins_GD
          }
       }
 
+      /* JBTODO:
       protected override void FreeResources()
       {
          RemoveAllTiles();
          ForceRefresh();
       }
+       */ 
       
       public string GetLocalLiveLink()
       {
          //http://local.live.com/default.aspx?v=2&cp=43.057723~-88.404224&style=r&lvl=12
-         string lat = worldWindow.DrawArgs.WorldCamera.Latitude.Degrees.ToString("###.#####");
-         string lon = worldWindow.DrawArgs.WorldCamera.Longitude.Degrees.ToString("###.#####");
+            string lat = parentApplication.WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees.ToString("###.#####");
+            string lon = parentApplication.WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees.ToString("###.#####");
          string link = "http://local.live.com/default.aspx?v=2&cp=" + lat + "~" + lon + "&styles=" + datasetName + "&lvl=" + prevLvl.ToString();
          return link;
       }
@@ -573,33 +601,33 @@ namespace bNb.Plugins_GD
          return level - 1;
       }
 
-      /*private int LatitudeToYAtZoom(double lat, int zoom)
-      {
-         int y;
-         //code VE Mobile v1 - NO LONGER VALID
-         //double sinLat = Math.Sin(DegToRad(lat));
-         //double metersY = 6378137 / 2 * Math.Log((1 + sinLat) / (1 - sinLat));
-         //y = (int)Math.Round((20971520 - metersY) / MetersPerPixel(zoom));
-         //forum - SKIPS TILES THE FURTHER YOU GET FROM EQUATOR
-         double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
-         double sinLat = Math.Sin(DegToRad(lat));
-         double metersY = earthRadius / 2 * Math.Log((1 + sinLat) / (1 - sinLat));
-         y = (int)Math.Round((earthHalfCirc - metersY) / arc);
-         //HACK - THIS HANDLES THE SKIPPING OF TILES THE FURTHER YOU GET FROM EQUATOR
-         //double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
-         //double metersY = earthRadius * DegToRad(lat);
-         //y = (int) Math.Round((earthHalfCirc - metersY) / arc);
-         return y;
-      }
+        private int LatitudeToYAtZoom(double lat, int zoom)
+        {
+            int y;
+            //code VE Mobile v1 - NO LONGER VALID
+            //double sinLat = Math.Sin(DegToRad(lat));
+            //double metersY = 6378137 / 2 * Math.Log((1 + sinLat) / (1 - sinLat));
+            //y = (int)Math.Round((20971520 - metersY) / MetersPerPixel(zoom));
+            //forum - SKIPS TILES THE FURTHER YOU GET FROM EQUATOR
+            double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
+            double sinLat = Math.Sin(DegToRad(lat));
+            double metersY = earthRadius / 2 * Math.Log((1 + sinLat) / (1 - sinLat));
+            y = (int)Math.Round((earthHalfCirc - metersY) / arc);
+            //HACK - THIS HANDLES THE SKIPPING OF TILES THE FURTHER YOU GET FROM EQUATOR
+            //double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
+            //double metersY = earthRadius * DegToRad(lat);
+            //y = (int) Math.Round((earthHalfCirc - metersY) / arc);
+            return y;
+        }
 
-      private int LongitudeToXAtZoom(double lon, int zoom)
-      {
-         int x;
-         double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
-         double metersX = earthRadius * DegToRad(lon);
-         x = (int)Math.Round((earthHalfCirc + metersX) / arc);
-         return x;
-      }*/
+        private int LongitudeToXAtZoom(double lon, int zoom)
+        {
+            int x;
+            double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
+            double metersX = earthRadius * DegToRad(lon);
+            x = (int)Math.Round((earthHalfCirc + metersX) / arc);
+            return x;
+        }
 
       /// <summary>
       /// Draws the layer
@@ -629,7 +657,22 @@ namespace bNb.Plugins_GD
                //{
                //	veTile.Render(drawArgs, disableZBuffer);
                //}
-               VeTile.Render(drawArgs, disableZBuffer, veTiles);
+
+                    // camera jitter fix
+                    drawArgs.device.Transform.World = Matrix.Translation(
+                           (float)-drawArgs.WorldCamera.ReferenceCenter.X,
+                        (float)-drawArgs.WorldCamera.ReferenceCenter.Y,
+                        (float)-drawArgs.WorldCamera.ReferenceCenter.Z
+                    );
+
+                    // Clear ZBuffer between layers (as in WW)
+                    drawArgs.device.Clear(ClearFlags.ZBuffer, 0, 1.0f, 0);
+
+                    // Render tiles
+                    VeTile.Render(drawArgs, disableZBuffer, veTiles);
+
+                    //camera jitter fix
+                    drawArgs.device.Transform.World = drawArgs.WorldCamera.WorldMatrix;
             }
          }
          catch (Exception ex)
@@ -884,8 +927,21 @@ namespace bNb.Plugins_GD
          }
          else //download it
          {
-            //"http://h1.ortho.tiles.virtualearth.net/tiles/h03022221001.jpeg?g=2"
-            //"http://h0.ortho.tiles.virtualearth.net/tiles/h300..jpeg?g=15"
+                    /*
+                    //use WebDownload instead
+                    downloader = new Downloader();
+                    downloader.drawArgs = drawArgs;
+                    downloader.textureName = textureName;
+                    downloader.textureUrl = textureUrl;
+                    downloader.veTile = this;
+                    downloader.mapType = _datasetName;
+
+                    ThreadStart ts = new ThreadStart(downloader.DownloadThread);
+                    Thread t = new Thread(ts);
+                    t.IsBackground = true;
+                    t.Start();
+                    */
+
             download = new WebDownload(textureUrl);
             download.DownloadType = DownloadType.Unspecified;
             download.SavedFilePath = textureName + ".tmp"; //?
@@ -1144,8 +1200,16 @@ namespace bNb.Plugins_GD
          //TODO refactor from the VeLayer class
       }
 
-      public CustomVertex.PositionColoredTextured[] vertices;
-      public short[] indices;
+        protected CustomVertex.PositionNormalTextured[] vertices;
+        public CustomVertex.PositionNormalTextured[] Vertices
+        {
+            get { return vertices; }
+        }
+        protected short[] indices;
+        public short[] Indices
+        {
+            get { return indices; }
+        }
       protected int meshPointCount = 64;
 
       private double North;
@@ -1161,7 +1225,10 @@ namespace bNb.Plugins_GD
          int opacityColor = System.Drawing.Color.FromArgb(opacity, 0, 0, 0).ToArgb();
 
          meshPointCount = 32; //64; //96 // How many vertices for each direction in mesh (total: n^2)
-         vertices = new CustomVertex.PositionColoredTextured[meshPointCount * meshPointCount];
+            //vertices = new CustomVertex.PositionColoredTextured[meshPointCount * meshPointCount];
+
+            // Build mesh with one extra row and col around the terrain for normal computation and struts
+            vertices = new CustomVertex.PositionNormalTextured[(meshPointCount + 2) * (meshPointCount + 2)];
 
          int upperBound = meshPointCount - 1;
          float scaleFactor = (float)1 / upperBound;
@@ -1169,7 +1236,7 @@ namespace bNb.Plugins_GD
          //{
          double uStep = (UR.U - UL.U) / upperBound;
          double vStep = (UL.V - LL.V) / upperBound;
-         UV curUnprojected = new UV(UL.U, UL.V);
+            UV curUnprojected = new UV(UL.U - uStep, UL.V + vStep);
 
          // figure out latrange (for terrain detail)
          UV geoUL = _proj.Inverse(m_ul);
@@ -1182,14 +1249,20 @@ namespace bNb.Plugins_GD
          East = geoLR.U * 180 / Math.PI;
 
          float meshBaseRadius = (float)_layerRadius;
-         TerrainTile tile = null;
-         if (_terrainAccessor != null)//&& _veForm.IsTerrainOn == true)
-         {
-            //does the +1 to help against tears between elevated tiles? - made it worse
-            //TODO not sure how to fix the tear between tiles caused by elevation?
-            tile = _terrainAccessor.GetElevationArray((float)North, (float)South, (float)West, (float)East, meshPointCount);
+            /*          float[,] heightData = null;
+                        if (_terrainAccessor != null && _veForm.IsTerrainOn == true)
+                        {
+                            //does the +1 to help against tears between elevated tiles? - made it worse
+                            //TODO not sure how to fix the tear between tiles caused by elevation?
 
-            /*
+                    // Get elevation data with one extra row and col all around the terrain
+                    double degreePerSample = Math.Abs(latRange / (meshPointCount - 1));
+                            TerrainTile tile = _terrainAccessor.GetElevationArray(North + degreePerSample, South - degreePerSample, West - degreePerSample, East + degreePerSample, meshPointCount + 2);
+                            heightData = tile.ElevationData;
+                            tile.Dispose();
+                            tile = null;
+
+                
             // Calculate mesh base radius (bottom vertices)
             float minimumElevation = float.MaxValue;
             float maximumElevation = float.MinValue;
@@ -1217,71 +1290,159 @@ namespace bNb.Plugins_GD
 			
             // Radius of mesh bottom grid
             meshBaseRadius = (float) _layerRadius + minimumElevation - overlap;
+                
+                        }
             */
-         }
-
-         UV geo;
-         Point3d pos;
-         double height = 0;
-         for (int i = 0; i < meshPointCount; i++)
-         {
-            for (int j = 0; j < meshPointCount; j++)
+            UV geo;
+            Point3d pos;
+            double height = 0;
+            for (int i = 0; i < meshPointCount + 2; i++)
             {
+                for (int j = 0; j < meshPointCount + 2; j++)
+                {
                geo = _proj.Inverse(curUnprojected);
 
                // Radians -> Degrees
                geo.U *= 180 / Math.PI;
                geo.V *= 180 / Math.PI;
 
-               if (tile != null)
-               {
-                  //if (_veForm.IsTerrainOn == true)
-                  //{
-                  height = tile.ElevationData[i + j * meshPointCount] * verticalExaggeration;
-                  //}
-                  //else
-                  //{
-                  //   //original
-                  //   height = verticalExaggeration * _terrainAccessor.GetElevationAt(geo.V, geo.U, upperBound / latRange);
-                  //}
-               }
+                    if (_terrainAccessor != null)
+                    {
+                        if (_veForm.IsTerrainOn == true)
+                        {
+                            //height = heightData[i, j] * verticalExaggeration;
+                            //original : need to fetch altitude on a per vertex basis (in VE space) to have matching tile borders (note PM)
+                            height = verticalExaggeration * _terrainAccessor.GetElevationAt(geo.V, geo.U, Math.Abs(upperBound / latRange));
+                        }
+                        else
+                        {
+                            height = 0;
+                        }
+                    }
 
-               pos = MathEngine.SphericalToCartesian(
-                  geo.V,
-                  geo.U,
-                  _layerRadius + height);
+                    pos = MathEngine.SphericalToCartesian(
+                        geo.V,
+                        geo.U,
+                        _layerRadius + height);
+                    int idx = i * (meshPointCount + 2) + j;
+                    vertices[idx].X = pos.X;
+                    vertices[idx].Y = pos.Y;
+                    vertices[idx].Z = pos.Z;
+                    //double sinLat = Math.Sin(geo.V);
+                    //vertices[idx].Z = (float) (pos.Z * sinLat);
 
-               vertices[i * meshPointCount + j].X = (float)pos.X;
-               vertices[i * meshPointCount + j].Y = (float)pos.Y;
-               vertices[i * meshPointCount + j].Z = (float)pos.Z;
-               //double sinLat = Math.Sin(geo.V);
-               //vertices[i*meshPointCount + j].Z = (float) (pos.Z * sinLat);
-
-               vertices[i * meshPointCount + j].Tu = j * scaleFactor;
-               vertices[i * meshPointCount + j].Tv = i * scaleFactor;
-               vertices[i * meshPointCount + j].Color = opacityColor;
-               curUnprojected.U += uStep;
-            }
-            curUnprojected.U = UL.U;
+                    vertices[idx].Tu = (j - 1) * scaleFactor;
+                    vertices[idx].Tv = (i - 1) * scaleFactor;
+                    //vertices[idx].Color = opacityColor;
+                    curUnprojected.U += uStep;
+                }
+                curUnprojected.U = UL.U - uStep;
             curUnprojected.V -= vStep;
          }
          //}
 
-         indices = new short[2 * upperBound * upperBound * 3];
-         for (int i = 0; i < upperBound; i++)
-         {
-            for (int j = 0; j < upperBound; j++)
+            int slices = meshPointCount + 1;
+            indices = new short[2 * slices * slices * 3];
+            for (int i = 0; i < slices; i++)
             {
-               indices[(2 * 3 * i * upperBound) + 6 * j] = (short)(i * meshPointCount + j);
-               indices[(2 * 3 * i * upperBound) + 6 * j + 1] = (short)((i + 1) * meshPointCount + j);
-               indices[(2 * 3 * i * upperBound) + 6 * j + 2] = (short)(i * meshPointCount + j + 1);
+                for (int j = 0; j < slices; j++)
+                {
+                    indices[(2 * 3 * i * slices) + 6 * j] = (short)(i * (meshPointCount + 2) + j);
+                    indices[(2 * 3 * i * slices) + 6 * j + 1] = (short)((i + 1) * (meshPointCount + 2) + j);
+                    indices[(2 * 3 * i * slices) + 6 * j + 2] = (short)(i * (meshPointCount + 2) + j + 1);
 
-               indices[(2 * 3 * i * upperBound) + 6 * j + 3] = (short)(i * meshPointCount + j + 1);
-               indices[(2 * 3 * i * upperBound) + 6 * j + 4] = (short)((i + 1) * meshPointCount + j);
-               indices[(2 * 3 * i * upperBound) + 6 * j + 5] = (short)((i + 1) * meshPointCount + j + 1);
+                    indices[(2 * 3 * i * slices) + 6 * j + 3] = (short)(i * (meshPointCount + 2) + j + 1);
+                    indices[(2 * 3 * i * slices) + 6 * j + 4] = (short)((i + 1) * (meshPointCount + 2) + j);
+                    indices[(2 * 3 * i * slices) + 6 * j + 5] = (short)((i + 1) * (meshPointCount + 2) + j + 1);
+                }
             }
-         }
+
+            // Compute normals and fold struts
+            calculate_normals();
+            fold_struts(false, meshBaseRadius);
       }
+
+        // Compute mesh normals and fold struts
+        private void calculate_normals()
+        {
+            System.Collections.ArrayList[] normal_buffer = new System.Collections.ArrayList[vertices.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                normal_buffer[i] = new System.Collections.ArrayList();
+            }
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                Vector3 p1 = vertices[indices[i + 0]].Position;
+                Vector3 p2 = vertices[indices[i + 1]].Position;
+                Vector3 p3 = vertices[indices[i + 2]].Position;
+
+                Vector3 v1 = p2 - p1;
+                Vector3 v2 = p3 - p1;
+                Vector3 normal = Vector3.Cross(v1, v2);
+
+                normal.Normalize();
+
+                // Store the face's normal for each of the vertices that make up the face.
+                normal_buffer[indices[i + 0]].Add(normal);
+                normal_buffer[indices[i + 1]].Add(normal);
+                normal_buffer[indices[i + 2]].Add(normal);
+            }
+
+            // Now loop through each vertex vector, and avarage out all the normals stored.
+            for (int i = 0; i < vertices.Length; ++i)
+            {
+                for (int j = 0; j < normal_buffer[i].Count; ++j)
+                {
+                    Vector3 curNormal = (Vector3)normal_buffer[i][j];
+
+                    if (vertices[i].Normal == Vector3.Empty)
+                        vertices[i].Normal = curNormal;
+                    else
+                        vertices[i].Normal += curNormal;
+                }
+
+                vertices[i].Normal.Multiply(1.0f / normal_buffer[i].Count);
+            }
+        }
+
+        // Adjust/Fold struts vertices using terrain border vertices positions
+        private void fold_struts(bool renderStruts, float meshBaseRadius)
+        {
+            short vertexDensity = (short)Math.Sqrt(vertices.Length);
+            for (int i = 0; i < vertexDensity; i++)
+            {
+                if (i == 0 || i == vertexDensity - 1)
+                {
+                    for (int j = 0; j < vertexDensity; j++)
+                    {
+                        int offset = (i == 0) ? vertexDensity : -vertexDensity;
+                        if (j == 0) offset++;
+                        if (j == vertexDensity - 1) offset--;
+                        Point3d p = new Point3d(vertices[i * vertexDensity + j + offset].Position.X, vertices[i * vertexDensity + j + offset].Position.Y, vertices[i * vertexDensity + j + offset].Position.Z);
+                        if (renderStruts) p = ProjectOnMeshBase(p, meshBaseRadius);
+                        vertices[i * vertexDensity + j].Position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
+                    }
+                }
+                else
+                {
+                    Point3d p = new Point3d(vertices[i * vertexDensity + 1].Position.X, vertices[i * vertexDensity + 1].Position.Y, vertices[i * vertexDensity + 1].Position.Z);
+                    if (renderStruts) p = ProjectOnMeshBase(p, meshBaseRadius);
+                    vertices[i * vertexDensity].Position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
+
+                    p = new Point3d(vertices[i * vertexDensity + vertexDensity - 2].Position.X, vertices[i * vertexDensity + vertexDensity - 2].Position.Y, vertices[i * vertexDensity + vertexDensity - 2].Position.Z);
+                    if (renderStruts) p = ProjectOnMeshBase(p, meshBaseRadius);
+                    vertices[i * vertexDensity + vertexDensity - 1].Position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
+                }
+            }
+        }
+
+        // Project an elevated mesh point to the mesh base
+        private Point3d ProjectOnMeshBase(Point3d p, float meshBaseRadius)
+        {
+            p = p.normalize();
+            p = p * meshBaseRadius;
+            return p;
+        }
 
       #region IDisposable Implementation
       protected virtual void Dispose(bool disposing)
@@ -1354,10 +1515,19 @@ namespace bNb.Plugins_GD
                   if (!drawArgs.device.RenderState.ZBufferEnable)
                      drawArgs.device.RenderState.ZBufferEnable = true;
                }
-               drawArgs.device.VertexFormat = CustomVertex.PositionColoredTextured.Format;
-               drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
-               drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Add;
-               drawArgs.device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+                    drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
+                    drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
+                    drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+                    drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+                    drawArgs.device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+
+                    // Set up for shading 
+                    if (World.Settings.EnableSunShading)
+                    {
+                        drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+                        drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
+                        drawArgs.device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
+                    }
 
                //save index to tiles not downloaded yet
                int notDownloadedIter = 0;
@@ -1376,15 +1546,15 @@ namespace bNb.Plugins_GD
                      notDownloadedIter++;
                      continue;
                   }
-                  else if (veTile.level == zoomLevel)
-                  {
-                     //NOTE to stop ripping?
-                     drawArgs.device.Clear(ClearFlags.ZBuffer, 0, 1.0f, 0);
+                        else
+                        {
+                            //NOTE to stop ripping?
+                            drawArgs.device.Clear(ClearFlags.ZBuffer, 0, 1.0f, 0);
 
-                     drawArgs.device.SetTexture(0, veTile.Texture);
+                            drawArgs.device.SetTexture(0, veTile.Texture);
 
-                     drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
-                        veTile.vertices.Length, veTile.indices.Length / 3, veTile.indices, true, veTile.vertices);
+                            drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
+                                veTile.Vertices.Length, veTile.Indices.Length / 3, veTile.Indices, true, veTile.Vertices);
                   }
                }
 
@@ -1405,6 +1575,13 @@ namespace bNb.Plugins_GD
                drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
                drawArgs.device.VertexFormat = CustomVertex.PositionTextured.Format;
                drawArgs.device.RenderState.ZBufferEnable = true;
+
+                    // Turn back light on if needed
+                    if (World.Settings.EnableSunShading)
+                    {
+                        drawArgs.device.RenderState.Lighting = true;
+                    }
+
             }
          }
          catch (Exception ex)
@@ -1478,7 +1655,18 @@ namespace bNb.Plugins_GD
 
       public void RenderDownloadRectangle(DrawArgs drawArgs)
       {
+
+            // camera jitter fix
+            drawArgs.device.Transform.World = Matrix.Translation(
+                   (float)-drawArgs.WorldCamera.ReferenceCenter.X,
+                (float)-drawArgs.WorldCamera.ReferenceCenter.Y,
+                (float)-drawArgs.WorldCamera.ReferenceCenter.Z
+            );
+
          drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, 4, downloadRectangle);
+
+            // camera jitter fix
+            drawArgs.device.Transform.World = drawArgs.WorldCamera.WorldMatrix;
       }
    }
    #endregion

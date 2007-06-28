@@ -322,7 +322,7 @@ namespace WorldWind.Net.Wms
 		/// <summary>
 		/// Bitmap width/height
 		/// </summary>
-		public int TextureSizePixels
+		public override int TextureSizePixels
 		{
 			get
 			{
@@ -333,6 +333,7 @@ namespace WorldWind.Net.Wms
 				m_textureSizePixels = value;
 			}
 		}
+ 
 
 		#endregion
 

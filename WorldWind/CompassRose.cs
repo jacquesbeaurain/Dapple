@@ -84,7 +84,7 @@ namespace Murris.Plugins
 //			if (m_ToolbarItem != null)
 //				m_Application.WorldWindow.MenuBar.RemoveToolsMenuButton(m_ToolbarItem);
 
-			WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
+			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
 		}
 
 		/// <summary>

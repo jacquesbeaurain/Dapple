@@ -50,7 +50,7 @@ namespace Geosoft.Dap.Common
          // Determine the needed levels (function of tile size and resolution if available)
          double dRes = GetResolution(oDapCommand, oDataset);
          if (dRes > 0) {
-            decimal dTileSize = LevelZeroTileSize(oDataset);
+            double dTileSize = LevelZeroTileSize(oDataset);
             iLevels = 1;
             while ((double)dTileSize / Convert.ToDouble(256) > dRes / 4.0) {
                iLevels++;
@@ -65,14 +65,14 @@ namespace Geosoft.Dap.Common
       /// </summary>
       /// <param name="oDataset"></param>
       /// <returns>default level zero tile size</returns>
-      public static double(DataSet oDataset)
+      public static double LevelZeroTileSize(DataSet oDataset)
       {
          // Round to ceiling of four decimals (>~ 10 meter resolution)
          // Empirically determined as pretty good tile size choice for small data sets
-         decimal dLevelZero = (decimal) (Math.Ceiling(10000.0 * Math.Max(oDataset.Boundary.MaxY - oDataset.Boundary.MinY, oDataset.Boundary.MaxX - oDataset.Boundary.MinX)) / 10000.0);
+         double dLevelZero = (Math.Ceiling(10000.0 * Math.Max(oDataset.Boundary.MaxY - oDataset.Boundary.MinY, oDataset.Boundary.MaxX - oDataset.Boundary.MinX)) / 10000.0);
          
          // Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
-         decimal dRet = (decimal) 22.5;
+         double dRet = 22.5;
          while (dLevelZero < dRet)
             dRet /= 2;
 
