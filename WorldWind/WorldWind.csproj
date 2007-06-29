@@ -123,6 +123,7 @@
     <Compile Include="BmngAboutDialog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Compass3D.cs" />
     <Compile Include="CompassRose.cs" />
     <Compile Include="NativeMethods.cs">
       <SubType>Code</SubType>

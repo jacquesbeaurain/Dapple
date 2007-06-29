@@ -66,10 +66,21 @@ namespace Dapple
 			  this.toolStripMenuItemadvancedSettings = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemoptions = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemshowGridLines = new System.Windows.Forms.ToolStripMenuItem();
+			  this.scaleBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripCrossHairs = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemcompass = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemshowPosition = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemtileActivity = new System.Windows.Forms.ToolStripMenuItem();
+			  this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
+			  this.sunshadingEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.enableSunShadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.syncSunShadingToTimeToolstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.disableSunShadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.atmosphereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.globalCloudsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.atmosphericEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
+			  this.measureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemhelp = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemabout = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
@@ -176,13 +187,7 @@ namespace Dapple
 			  this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			  this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			  this.timerNavigation = new System.Windows.Forms.Timer(this.components);
-			  this.scaleBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			  this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
-			  this.sunshadingEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			  this.atmosphericEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			  this.globalCloudsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			  this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
-			  this.measureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.showPlaceNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			  this.statusStrip.SuspendLayout();
 			  this.menuStrip.SuspendLayout();
 			  this.splitContainerMain.Panel1.SuspendLayout();
@@ -522,6 +527,7 @@ namespace Dapple
 			  // 
 			  this.toolStripMenuItemoptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemshowGridLines,
+            this.showPlaceNamesToolStripMenuItem,
             this.scaleBarToolStripMenuItem,
             this.toolStripCrossHairs,
             this.toolStripMenuItemcompass,
@@ -529,13 +535,13 @@ namespace Dapple
             this.toolStripMenuItemtileActivity,
             this.toolStripSeparator16,
             this.sunshadingEffectsToolStripMenuItem,
-            this.atmosphericEffectsToolStripMenuItem,
-            this.globalCloudsToolStripMenuItem,
+            this.atmosphereToolStripMenuItem,
             this.toolStripSeparator17,
             this.measureToolToolStripMenuItem});
 			  this.toolStripMenuItemoptions.Name = "toolStripMenuItemoptions";
 			  this.toolStripMenuItemoptions.Size = new System.Drawing.Size(41, 20);
 			  this.toolStripMenuItemoptions.Text = "View";
+			  this.toolStripMenuItemoptions.DropDownOpening += new System.EventHandler(this.toolStripMenuItemoptions_DropDownOpening);
 			  // 
 			  // toolStripMenuItemshowGridLines
 			  // 
@@ -544,6 +550,13 @@ namespace Dapple
 			  this.toolStripMenuItemshowGridLines.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemshowGridLines.Text = "Grid overlay";
 			  this.toolStripMenuItemshowGridLines.Click += new System.EventHandler(this.toolStripMenuItemshowGridLines_Click);
+			  // 
+			  // scaleBarToolStripMenuItem
+			  // 
+			  this.scaleBarToolStripMenuItem.Name = "scaleBarToolStripMenuItem";
+			  this.scaleBarToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.scaleBarToolStripMenuItem.Text = "Scale Bar";
+			  this.scaleBarToolStripMenuItem.Click += new System.EventHandler(this.scaleBarToolStripMenuItem_Click);
 			  // 
 			  // toolStripCrossHairs
 			  // 
@@ -576,6 +589,75 @@ namespace Dapple
 			  this.toolStripMenuItemtileActivity.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemtileActivity.Text = "Tile download activity";
 			  this.toolStripMenuItemtileActivity.Click += new System.EventHandler(this.toolStripMenuItemtileActivity_Click);
+			  // 
+			  // toolStripSeparator16
+			  // 
+			  this.toolStripSeparator16.Name = "toolStripSeparator16";
+			  this.toolStripSeparator16.Size = new System.Drawing.Size(174, 6);
+			  // 
+			  // sunshadingEffectsToolStripMenuItem
+			  // 
+			  this.sunshadingEffectsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.enableSunShadingToolStripMenuItem,
+            this.syncSunShadingToTimeToolstripMenuItem,
+            this.disableSunShadingToolStripMenuItem});
+			  this.sunshadingEffectsToolStripMenuItem.Name = "sunshadingEffectsToolStripMenuItem";
+			  this.sunshadingEffectsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.sunshadingEffectsToolStripMenuItem.Text = "Sunshading";
+			  // 
+			  // enableSunShadingToolStripMenuItem
+			  // 
+			  this.enableSunShadingToolStripMenuItem.Name = "enableSunShadingToolStripMenuItem";
+			  this.enableSunShadingToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			  this.enableSunShadingToolStripMenuItem.Text = "Dynamic (middle mouse button && drag)";
+			  this.enableSunShadingToolStripMenuItem.Click += new System.EventHandler(this.enableSunShadingToolStripMenuItem_Click);
+			  // 
+			  // syncSunShadingToTimeToolstripMenuItem
+			  // 
+			  this.syncSunShadingToTimeToolstripMenuItem.Name = "syncSunShadingToTimeToolstripMenuItem";
+			  this.syncSunShadingToTimeToolstripMenuItem.Size = new System.Drawing.Size(259, 22);
+			  this.syncSunShadingToTimeToolstripMenuItem.Text = "Synced to current time";
+			  this.syncSunShadingToTimeToolstripMenuItem.Click += new System.EventHandler(this.syncSunShadingToTimeToolstripMenuItem_Click);
+			  // 
+			  // disableSunShadingToolStripMenuItem
+			  // 
+			  this.disableSunShadingToolStripMenuItem.Name = "disableSunShadingToolStripMenuItem";
+			  this.disableSunShadingToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+			  this.disableSunShadingToolStripMenuItem.Text = "Disabled";
+			  this.disableSunShadingToolStripMenuItem.Click += new System.EventHandler(this.disableSunShadingToolStripMenuItem_Click);
+			  // 
+			  // atmosphereToolStripMenuItem
+			  // 
+			  this.atmosphereToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.globalCloudsToolStripMenuItem,
+            this.atmosphericEffectsToolStripMenuItem});
+			  this.atmosphereToolStripMenuItem.Name = "atmosphereToolStripMenuItem";
+			  this.atmosphereToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.atmosphereToolStripMenuItem.Text = "Atmosphere";
+			  // 
+			  // globalCloudsToolStripMenuItem
+			  // 
+			  this.globalCloudsToolStripMenuItem.Name = "globalCloudsToolStripMenuItem";
+			  this.globalCloudsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+			  this.globalCloudsToolStripMenuItem.Text = "Global Clouds";
+			  // 
+			  // atmosphericEffectsToolStripMenuItem
+			  // 
+			  this.atmosphericEffectsToolStripMenuItem.Name = "atmosphericEffectsToolStripMenuItem";
+			  this.atmosphericEffectsToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+			  this.atmosphericEffectsToolStripMenuItem.Text = "Atmospheric Scattering";
+			  // 
+			  // toolStripSeparator17
+			  // 
+			  this.toolStripSeparator17.Name = "toolStripSeparator17";
+			  this.toolStripSeparator17.Size = new System.Drawing.Size(174, 6);
+			  // 
+			  // measureToolToolStripMenuItem
+			  // 
+			  this.measureToolToolStripMenuItem.Name = "measureToolToolStripMenuItem";
+			  this.measureToolToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.measureToolToolStripMenuItem.Text = "Measure Tool";
+			  this.measureToolToolStripMenuItem.Click += new System.EventHandler(this.measureToolToolStripMenuItem_Click);
 			  // 
 			  // toolStripMenuItemhelp
 			  // 
@@ -1648,50 +1730,12 @@ namespace Dapple
 			  // 
 			  this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
 			  // 
-			  // scaleBarToolStripMenuItem
+			  // showPlaceNamesToolStripMenuItem
 			  // 
-			  this.scaleBarToolStripMenuItem.Name = "scaleBarToolStripMenuItem";
-			  this.scaleBarToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-			  this.scaleBarToolStripMenuItem.Text = "Scale Bar";
-			  this.scaleBarToolStripMenuItem.Click += new System.EventHandler(this.scaleBarToolStripMenuItem_Click);
-			  // 
-			  // toolStripSeparator16
-			  // 
-			  this.toolStripSeparator16.Name = "toolStripSeparator16";
-			  this.toolStripSeparator16.Size = new System.Drawing.Size(174, 6);
-			  // 
-			  // sunshadingEffectsToolStripMenuItem
-			  // 
-			  this.sunshadingEffectsToolStripMenuItem.Name = "sunshadingEffectsToolStripMenuItem";
-			  this.sunshadingEffectsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-			  this.sunshadingEffectsToolStripMenuItem.Text = "Sunshading Effects";
-			  this.sunshadingEffectsToolStripMenuItem.Click += new System.EventHandler(this.sunshadingEffectsToolStripMenuItem_Click);
-			  // 
-			  // atmosphericEffectsToolStripMenuItem
-			  // 
-			  this.atmosphericEffectsToolStripMenuItem.Name = "atmosphericEffectsToolStripMenuItem";
-			  this.atmosphericEffectsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-			  this.atmosphericEffectsToolStripMenuItem.Text = "Atmospheric Effects";
-			  this.atmosphericEffectsToolStripMenuItem.Click += new System.EventHandler(this.atmosphericEffectsToolStripMenuItem_Click);
-			  // 
-			  // globalCloudsToolStripMenuItem
-			  // 
-			  this.globalCloudsToolStripMenuItem.Name = "globalCloudsToolStripMenuItem";
-			  this.globalCloudsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-			  this.globalCloudsToolStripMenuItem.Text = "Global Clouds";
-			  this.globalCloudsToolStripMenuItem.Click += new System.EventHandler(this.globalCloudsToolStripMenuItem_Click);
-			  // 
-			  // toolStripSeparator17
-			  // 
-			  this.toolStripSeparator17.Name = "toolStripSeparator17";
-			  this.toolStripSeparator17.Size = new System.Drawing.Size(174, 6);
-			  // 
-			  // measureToolToolStripMenuItem
-			  // 
-			  this.measureToolToolStripMenuItem.Name = "measureToolToolStripMenuItem";
-			  this.measureToolToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-			  this.measureToolToolStripMenuItem.Text = "Measure Tool";
-			  this.measureToolToolStripMenuItem.Click += new System.EventHandler(this.measureToolToolStripMenuItem_Click);
+			  this.showPlaceNamesToolStripMenuItem.Name = "showPlaceNamesToolStripMenuItem";
+			  this.showPlaceNamesToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.showPlaceNamesToolStripMenuItem.Text = "Show place names";
+			  this.showPlaceNamesToolStripMenuItem.Click += new System.EventHandler(this.showPlaceNamesToolStripMenuItem_Click);
 			  // 
 			  // MainForm
 			  // 
@@ -1923,10 +1967,15 @@ namespace Dapple
 		 private System.Windows.Forms.ToolStripMenuItem scaleBarToolStripMenuItem;
 		 private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
 		 private System.Windows.Forms.ToolStripMenuItem sunshadingEffectsToolStripMenuItem;
-		 private System.Windows.Forms.ToolStripMenuItem atmosphericEffectsToolStripMenuItem;
-		 private System.Windows.Forms.ToolStripMenuItem globalCloudsToolStripMenuItem;
 		 private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
 		 private System.Windows.Forms.ToolStripMenuItem measureToolToolStripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem enableSunShadingToolStripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem syncSunShadingToTimeToolstripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem disableSunShadingToolStripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem atmosphereToolStripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem globalCloudsToolStripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem atmosphericEffectsToolStripMenuItem;
+		 private System.Windows.Forms.ToolStripMenuItem showPlaceNamesToolStripMenuItem;
     }
 }
 

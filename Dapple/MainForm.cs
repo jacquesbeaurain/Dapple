@@ -92,10 +92,13 @@ namespace Dapple
       private WorldWindow worldWindow = new WorldWindow();
       
 		private NASA.Plugins.BMNG bmngPlugin;
+		private NASA.Plugins.BmngLoader bmngLoader;
+		private NASA.Plugins.ScaleBarLegend scalebarPlugin;
+		
 		private Murris.Plugins.Compass compassPlugin;
 		private Murris.Plugins.GlobalClouds cloudsPlugin;
 		private Murris.Plugins.SkyGradient skyPlugin;
-		private NASA.Plugins.BmngLoader bmngLoader;
+		
 		private Stars3D.Plugin.Stars3D starsPlugin;
       private ThreeDconnexion.Plugin.TDxWWInput threeDConnPlugin;
 
@@ -391,6 +394,9 @@ namespace Dapple
 				this.bmngLoader.PluginLoad(this, Path.Combine(strPluginsDir, "BlueMarble"));
 				this.bmngPlugin = bmngLoader.BMNGForm;
 
+				this.scalebarPlugin = new NASA.Plugins.ScaleBarLegend();
+				this.scalebarPlugin.PluginLoad(this, strPluginsDir);
+
             this.starsPlugin = new Stars3D.Plugin.Stars3D();
 				this.starsPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "Stars3D"));
 
@@ -426,6 +432,19 @@ namespace Dapple
             this.toolStripCrossHairs.Checked = World.Settings.ShowCrosshairs;
             this.toolStripMenuItemshowPosition.Checked = World.Settings.ShowPosition;
             this.toolStripMenuItemshowGridLines.Checked = World.Settings.ShowLatLonLines;
+				this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
+				World.Settings.EnableSunShading = true;
+				World.Settings.SunSynchedWithTime = false;
+				if (World.Settings.EnableSunShading)
+				{
+					if (!World.Settings.SunSynchedWithTime)
+						this.enableSunShadingToolStripMenuItem.Checked = true;
+					else
+						this.syncSunShadingToTimeToolstripMenuItem.Checked = true;
+				}
+				else
+					this.disableSunShadingToolStripMenuItem.Checked = true;
+				this.atmosphericEffectsToolStripMenuItem.Checked = World.Settings.EnableAtmosphericScattering;
 
             this.toolStripMenuItemAskAtStartup.Checked = Settings.AskLastViewAtStartup;
             if (!Settings.AskLastViewAtStartup)
@@ -1771,19 +1790,49 @@ namespace Dapple
          File.Delete(tempViewFile);
       }
 
-		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
+		private void showPlaceNamesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			World.Settings.ShowPlacenames = !World.Settings.ShowPlacenames;
+			this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
 		}
 
-		private void sunshadingEffectsToolStripMenuItem_Click(object sender, EventArgs e)
+		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			this.scalebarPlugin.IsVisible = !this.scalebarPlugin.IsVisible;
+			scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
+		}
 
+		private void enableSunShadingToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableSunShading = true;
+			World.Settings.SunSynchedWithTime = false;
+			this.enableSunShadingToolStripMenuItem.Checked = true;
+			this.syncSunShadingToTimeToolstripMenuItem.Checked = false;
+			this.disableSunShadingToolStripMenuItem.Checked = false;
+		}
+
+		private void syncSunShadingToTimeToolstripMenuItem_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableSunShading = true;
+			World.Settings.SunSynchedWithTime = true;
+			this.enableSunShadingToolStripMenuItem.Checked = false;
+			this.syncSunShadingToTimeToolstripMenuItem.Checked = true;
+			this.disableSunShadingToolStripMenuItem.Checked = false;
+		}
+
+		private void disableSunShadingToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableSunShading = false;
+			World.Settings.SunSynchedWithTime = false;
+			this.enableSunShadingToolStripMenuItem.Checked = false;
+			this.syncSunShadingToTimeToolstripMenuItem.Checked = false;
+			this.disableSunShadingToolStripMenuItem.Checked = true;
 		}
 
 		private void atmosphericEffectsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			World.Settings.EnableAtmosphericScattering = !World.Settings.EnableAtmosphericScattering;
+			this.atmosphericEffectsToolStripMenuItem.Checked = World.Settings.EnableAtmosphericScattering;
 		}
 
 		private void globalCloudsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1800,6 +1849,11 @@ namespace Dapple
       {
          Close();
       }
+
+		private void toolStripMenuItemoptions_DropDownOpening(object sender, EventArgs e)
+		{
+			scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
+		}
 
       #endregion
 
@@ -3739,6 +3793,7 @@ namespace Dapple
 
 			Utility.AbortUtility.Abort(e.Exception, Thread.CurrentThread);
 		}
+
 #endif
    }
 }

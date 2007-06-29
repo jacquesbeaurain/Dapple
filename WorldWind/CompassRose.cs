@@ -204,11 +204,11 @@ namespace Murris.Plugins
 			bool origFog = device.RenderState.FogEnable;
 			device.RenderState.FogEnable = false;
 
-			if(drawArgs.device.RenderState.Lighting)
-			{
-				drawArgs.device.RenderState.Lighting = false;
-				drawArgs.device.RenderState.Ambient = World.Settings.StandardAmbientColor;
-			}
+			device.RenderState.ZBufferEnable = true;
+
+			// Turn off light
+			if (World.Settings.EnableSunShading) drawArgs.device.RenderState.Lighting = false; 
+
 			// Save original projection and change it to ortho
 			// Note: using pixels as units produce a 1:1 projection of textures
 			Matrix origProjection = device.Transform.Projection;
@@ -377,8 +377,8 @@ namespace Murris.Plugins
          device.Transform.World = origWorld;
 			device.Transform.Projection = origProjection;
 			device.Transform.View = origView;
-			device.RenderState.ZBufferEnable = true;
 			device.RenderState.FogEnable = origFog;
+			if (World.Settings.EnableSunShading) drawArgs.device.RenderState.Lighting = true;
 		}
 
 		public override bool IsOn

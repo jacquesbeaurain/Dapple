@@ -40,12 +40,12 @@ namespace Murris.Plugins
 	/// <summary>
 	/// The plugin (main class)
 	/// </summary>
-	public class GlobalClouds : WorldWind.PluginEngine.Plugin 
+	public class GlobalClouds : WorldWind.PluginEngine.Plugin
 	{
-        private WorldWind.WindowsControlMenuButton m_ToolbarItem;
-        private Control control = new Control();
-        private EventHandler evhand;
-        private GlobalCloudsLayer layer;
+		private WorldWind.WindowsControlMenuButton m_ToolbarItem;
+		private Control control = new Control();
+		private EventHandler evhand;
+		private GlobalCloudsLayer layer;
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
@@ -54,55 +54,55 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
 		/// </summary>
-        public override void Load()
-        {
-            if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
-            {
-                // Add layer visibility controller (and save it to make sure you can kill it later!)
-                control.Visible = true;
-                evhand = new EventHandler(control_VisibleChanged);
-                control.VisibleChanged += evhand;
-                // Add toolbar item
-                m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Global Clouds", Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Data\Icons\Interface\earth-eastern.png"), control);
-                //m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
+		public override void Load()
+		{
+			if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
+			{
+				// Add layer visibility controller (and save it to make sure you can kill it later!)
+				control.Visible = true;
+				evhand = new EventHandler(control_VisibleChanged);
+				control.VisibleChanged += evhand;
+				// Add toolbar item
+				m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Global Clouds", Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Data\Icons\Interface\earth-eastern.png"), control);
+				//m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
 
-                layer = new GlobalCloudsLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
+				layer = new GlobalCloudsLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
 				layer.IsOn = World.Settings.ShowClouds;
-                //ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
-                ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
+				//ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
+				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
 
 				m_ToolbarItem.SetPushed(World.Settings.ShowClouds);
-               
-            }
-        }
+
+			}
+		}
 
 		/// <summary>
 		/// Unloads our plugin
 		/// </summary>
-		public override void Unload() 
+		public override void Unload()
 		{
-            // Remove layer controller
-            control.VisibleChanged -= evhand;
-            control.Dispose();
+			// Remove layer controller
+			control.VisibleChanged -= evhand;
+			control.Dispose();
 
-            // Remove toolbar item
-            //if (m_ToolbarItem != null)
-                //m_Application.WorldWindow.MenuBar.RemoveToolsMenuButton(m_ToolbarItem);
+			// Remove toolbar item
+			//if (m_ToolbarItem != null)
+			//m_Application.WorldWindow.MenuBar.RemoveToolsMenuButton(m_ToolbarItem);
 
 			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
 		}
-        /// <summary>
-        /// Toggles visibility on the CompassLayer
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void control_VisibleChanged(object sender, EventArgs e)
-        {
-            if (control.Visible)
-                layer.IsOn = true;
-            else
-                layer.IsOn = false;
-        }
+		/// <summary>
+		/// Toggles visibility on the CompassLayer
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void control_VisibleChanged(object sender, EventArgs e)
+		{
+			if (control.Visible)
+				layer.IsOn = true;
+			else
+				layer.IsOn = false;
+		}
 	}
 
 	/// <summary>
@@ -131,7 +131,8 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public GlobalCloudsLayer(string LayerName, string pluginPath, WorldWindow worldWindow) : base(LayerName)
+		public GlobalCloudsLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
+			: base(LayerName)
 		{
 			this.pluginPath = pluginPath;
 			this.world = worldWindow.CurrentWorld;
@@ -141,11 +142,11 @@ namespace Murris.Plugins
 			CleanupJpg();
 			FindLatest();
 			ReadSettings();
-			if(textureFileName == "" && latestFileName != "") textureFileName = latestFileName;
+			if (textureFileName == "" && latestFileName != "") textureFileName = latestFileName;
 
 			//MessageBox.Show("Server url : " + GetServerUrl(),"Info.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 		}
-		
+
 		/// <summary>
 		/// Find which cloud map is the latest and at what date/time
 		/// </summary>
@@ -153,9 +154,9 @@ namespace Murris.Plugins
 		{
 			DirectoryInfo di = new DirectoryInfo(pluginPath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
-			for(int i = 0; i < imgFiles.Length; i++)
+			for (int i = 0; i < imgFiles.Length; i++)
 			{
-				if(imgFiles[i].LastWriteTime > latestTime)
+				if (imgFiles[i].LastWriteTime > latestTime)
 				{
 					latestFileName = imgFiles[i].Name;
 					latestTime = imgFiles[i].LastWriteTime;
@@ -185,9 +186,9 @@ namespace Murris.Plugins
 			DateTime oldest = DateTime.Now.AddDays(-historyDays);
 			DirectoryInfo di = new DirectoryInfo(pluginPath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
-			for(int i = 0; i < imgFiles.Length; i++)
+			for (int i = 0; i < imgFiles.Length; i++)
 			{
-				if(imgFiles[i].LastWriteTime < oldest)
+				if (imgFiles[i].LastWriteTime < oldest)
 				{
 					File.Delete(Path.Combine(pluginPath, imgFiles[i].Name));
 				}
@@ -200,7 +201,7 @@ namespace Murris.Plugins
 		{
 			DirectoryInfo di = new DirectoryInfo(pluginPath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.jpg");
-			for(int i = 0; i < imgFiles.Length; i++)
+			for (int i = 0; i < imgFiles.Length; i++)
 			{
 				File.Delete(Path.Combine(pluginPath, imgFiles[i].Name));
 			}
@@ -212,18 +213,18 @@ namespace Murris.Plugins
 		public void ReadSettings()
 		{
 			string line = "";
-			try 
+			try
 			{
 				TextReader tr = File.OpenText(Path.Combine(pluginPath, settingsFileName));
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch(Exception caught) {}
-			if(line != "")
+			catch (Exception caught) { }
+			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
 				string saveVersion = settingsList[0];	// version when settings where saved
-				if(settingsList[1] != null) textureFileName = settingsList[1];
+				if (settingsList[1] != null) textureFileName = settingsList[1];
 			}
 		}
 
@@ -239,7 +240,7 @@ namespace Murris.Plugins
 				sw.Write(line);
 				sw.Close();
 			}
-			catch(Exception caught) {}
+			catch (Exception caught) { }
 		}
 
 		#region RenderableObject
@@ -250,13 +251,13 @@ namespace Murris.Plugins
 		/// </summary>
 		public override void Render(DrawArgs drawArgs)
 		{
-			if(!isInitialized) return;
-			if(world.Name != "Earth") return;	// Earth only
+			if (!isInitialized) return;
+			if (world.Name != "Earth") return;	// Earth only
 
 			// Check for update
-			if(!isDownloading && DateTime.Now > latestTime.AddHours(refreshHours)) 
+			if (!isDownloading && DateTime.Now > latestTime.AddHours(refreshHours))
 			{
-				if(retryCount < maxRetry && DateTime.Now > lastDownloadTime.AddSeconds(retryDelaySeconds))
+				if (retryCount < maxRetry && DateTime.Now > lastDownloadTime.AddSeconds(retryDelaySeconds))
 				{
 					StartDownload(pluginPath, "clouds_" + DateTimeStamp(DateTime.Now) + ".jpg");
 				}
@@ -267,27 +268,27 @@ namespace Murris.Plugins
 			//Device device = drawArgs.device;
 
 			// Render cloud layer
-			if(texture != null)
+			if (texture != null)
 			{
 				double cloudAlt = 20e3; // clouds altitude in meters (20 x 10e3)
 
-				if(camera.Altitude < 4000e3) return;
+				if (camera.Altitude < 4000e3) return;
 
-				double sphereRadius = camera.WorldRadius + cloudAlt; 
-			
+				double sphereRadius = camera.WorldRadius + cloudAlt;
+
 				// Create sphere
-				if(layerMesh == null) 
+				if (layerMesh == null)
 					layerMesh = TexturedSphere(drawArgs.device, (float)sphereRadius, 64, 64);
-			
+
 				// set texture
-				drawArgs.device.SetTexture(0,texture);
-                drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Modulate;
-                drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
-                drawArgs.device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
-                drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
-                drawArgs.device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+				drawArgs.device.SetTexture(0, texture);
+				drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+				drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+				drawArgs.device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
+				drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+				drawArgs.device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
 				drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-			
+
 				// save world and projection transform
 				Matrix origWorld = drawArgs.device.Transform.World;
 				Matrix origProjection = drawArgs.device.Transform.Projection;
@@ -299,7 +300,7 @@ namespace Murris.Plugins
 				// Set new projection (to avoid being clipped) - probably better ways of doing this?
 				double aspectRatio = (double)drawArgs.device.Viewport.Width / drawArgs.device.Viewport.Height;
 				drawArgs.device.Transform.Projection = ConvertDX.FromMatrix4d(Matrix4d.PerspectiveFovRH(camera.Fov.Radians, aspectRatio, 1, double.MaxValue));
-				
+
 				//translate to the camera reference center
 				drawArgs.device.Transform.World = Matrix.Translation(
 					(float)-drawArgs.WorldCamera.ReferenceCenter.X,
@@ -319,9 +320,9 @@ namespace Murris.Plugins
 			}
 
 			// Render progress bar if downloading
-			if(isDownloading)
+			if (isDownloading)
 			{
-				if(progressBar == null) progressBar = new WorldWind.VisualControl.ProgressBar(40,4);
+				if (progressBar == null) progressBar = new WorldWind.VisualControl.ProgressBar(40, 4);
 				progressBar.Draw(drawArgs, drawArgs.screenWidth - 34, drawArgs.screenHeight - 10, ProgressPercent, downloadProgressColor);
 				drawArgs.device.RenderState.ZBufferEnable = true;
 			}
@@ -334,12 +335,12 @@ namespace Murris.Plugins
 		/// </summary>
 		public override void Initialize(DrawArgs drawArgs)
 		{
-			if(textureFileName != "")
+			if (textureFileName != "")
 			{
 				try
 				{
 					texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureFileName));
-					isInitialized = true;	
+					isInitialized = true;
 				}
 				catch
 				{
@@ -351,7 +352,7 @@ namespace Murris.Plugins
 			else
 			{
 				StartDownload(pluginPath, "clouds_" + DateTimeStamp(DateTime.Now) + ".jpg");
-				isInitialized = true;	
+				isInitialized = true;
 			}
 		}
 
@@ -361,7 +362,7 @@ namespace Murris.Plugins
 		/// </summary>
 		public override void Update(DrawArgs drawArgs)
 		{
-			if(!isInitialized)
+			if (!isInitialized)
 				Initialize(drawArgs);
 		}
 
@@ -372,13 +373,13 @@ namespace Murris.Plugins
 		public override void Dispose()
 		{
 			isInitialized = false;
-			if(texture!=null)
+			if (texture != null)
 			{
 				texture.Dispose();
 				texture = null;
 			}
 
-			if(layerMesh != null)
+			if (layerMesh != null)
 			{
 				layerMesh.Dispose();
 				layerMesh = null;
@@ -395,20 +396,20 @@ namespace Murris.Plugins
 			return false;
 		}
 
- 		/// <summary>
- 		/// Fills the context menu with menu items specific to the layer.
- 		/// </summary>
- 		public override void BuildContextMenu( ContextMenu menu )
- 		{
-  			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
- 		}
+		/// <summary>
+		/// Fills the context menu with menu items specific to the layer.
+		/// </summary>
+		public override void BuildContextMenu(ContextMenu menu)
+		{
+			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
+		}
 
- 		/// <summary>
- 		/// Properties context menu clicked.
- 		/// </summary>
- 		public new void OnPropertiesClick(object sender, EventArgs e)
- 		{
-			if(pDialog != null && ! pDialog.IsDisposed)
+		/// <summary>
+		/// Properties context menu clicked.
+		/// </summary>
+		public new void OnPropertiesClick(object sender, EventArgs e)
+		{
+			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open
 				return;
 
@@ -416,7 +417,7 @@ namespace Murris.Plugins
 			pDialog = new propertiesDialog(this);
 			pDialog.Show();
 
- 		}
+		}
 
 		/// <summary>
 		/// Properties Dialog
@@ -432,18 +433,18 @@ namespace Murris.Plugins
 			private GlobalCloudsLayer layer;
 			private string savedTextureFileName;
 
-			public propertiesDialog( GlobalCloudsLayer layer )
+			public propertiesDialog(GlobalCloudsLayer layer)
 			{
 				this.layer = layer;
 				InitializeComponent();
 				//this.Icon = WorldWind.PluginEngine.Plugin.Icon;
 				// Init texture list with *.jpg and/or *.png
 				DirectoryInfo di = new DirectoryInfo(layer.pluginPath);
-				FileInfo[] imgFiles = di.GetFiles("*.png");				
+				FileInfo[] imgFiles = di.GetFiles("*.png");
 				cboTexture.Items.AddRange(imgFiles);
 				// select current bitmap
 				int i = cboTexture.FindString(layer.textureFileName);
-				if(i != -1) cboTexture.SelectedIndex = i;
+				if (i != -1) cboTexture.SelectedIndex = i;
 				// Save current textureFileName
 				savedTextureFileName = layer.textureFileName;
 				//this.Text += layer.version;
@@ -546,9 +547,9 @@ namespace Murris.Plugins
 
 			private void btnOK_Click(object sender, System.EventArgs e)
 			{
-				if(cboTexture.SelectedItem != null) 
+				if (cboTexture.SelectedItem != null)
 				{
-					if(cboTexture.SelectedItem.ToString().IndexOf(".png") != -1) 
+					if (cboTexture.SelectedItem.ToString().IndexOf(".png") != -1)
 					{	// Update texture and save settings
 						layer.Dispose();
 						layer.textureFileName = cboTexture.SelectedItem.ToString();
@@ -562,7 +563,7 @@ namespace Murris.Plugins
 
 			private void btnCancel_Click(object sender, System.EventArgs e)
 			{
-				if(layer.textureFileName != savedTextureFileName)
+				if (layer.textureFileName != savedTextureFileName)
 				{	// Rreset texture if it has changed
 					layer.Dispose();
 					layer.textureFileName = savedTextureFileName;
@@ -577,7 +578,7 @@ namespace Murris.Plugins
 				layer.GotoPrevious();
 				// select current bitmap
 				int i = cboTexture.FindString(layer.textureFileName);
-				if(i != -1) cboTexture.SelectedIndex = i;
+				if (i != -1) cboTexture.SelectedIndex = i;
 			}
 
 			private void btnNext_Click(object sender, System.EventArgs e)
@@ -585,7 +586,7 @@ namespace Murris.Plugins
 				layer.GotoNext();
 				// select current bitmap
 				int i = cboTexture.FindString(layer.textureFileName);
-				if(i != -1) cboTexture.SelectedIndex = i;
+				if (i != -1) cboTexture.SelectedIndex = i;
 			}
 		}
 
@@ -598,7 +599,7 @@ namespace Murris.Plugins
 			historyList = new ArrayList();
 			DirectoryInfo di = new DirectoryInfo(pluginPath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
-			for(int i = 0; i < imgFiles.Length; i++)
+			for (int i = 0; i < imgFiles.Length; i++)
 			{
 				historyList.Add(imgFiles[i].Name);
 			}
@@ -608,11 +609,11 @@ namespace Murris.Plugins
 
 		public void GotoPrevious()
 		{
-			if(historyList == null) BuildHistoryList();
+			if (historyList == null) BuildHistoryList();
 			int i = historyList.IndexOf(textureFileName);
-			if(i != -1)
+			if (i != -1)
 			{
-				if(i > 0) i--;  else i = historyList.Count - 1;
+				if (i > 0) i--; else i = historyList.Count - 1;
 				textureFileName = (string)historyList[i];
 				Dispose();
 				Initialize(drawArgs);
@@ -621,11 +622,11 @@ namespace Murris.Plugins
 
 		public void GotoNext()
 		{
-			if(historyList == null) BuildHistoryList();
+			if (historyList == null) BuildHistoryList();
 			int i = historyList.IndexOf(textureFileName);
-			if(i != -1)
+			if (i != -1)
 			{
-				if(i < historyList.Count - 1) i++;  else i = 0;
+				if (i < historyList.Count - 1) i++; else i = 0;
 				textureFileName = (string)historyList[i];
 				Dispose();
 				Initialize(drawArgs);
@@ -640,12 +641,12 @@ namespace Murris.Plugins
 		public float ProgressPercent;
 		WebDownload download;
 		WorldWind.VisualControl.ProgressBar progressBar;
-		int downloadProgressColor = Color.FromArgb(180,200,200,200).ToArgb();
+		int downloadProgressColor = Color.FromArgb(180, 200, 200, 200).ToArgb();
 		int maxRetry = 3;
 		int retryCount = 0;
 		int retryDelaySeconds = 60;
 		DateTime lastDownloadTime = DateTime.MinValue;
-		
+
 		private void DownloadCloudMap(string filePath, string fileName) // NOT USED (synchronous)
 		{
 			string url = GetServerUrl();
@@ -672,22 +673,22 @@ namespace Murris.Plugins
 			ArrayList serverList = new ArrayList();
 			string line;
 			TextReader tr = File.OpenText(Path.Combine(pluginPath, serverListFileName));
-			while ((line = tr.ReadLine()) != null) 
+			while ((line = tr.ReadLine()) != null)
 			{
-				if(line.StartsWith("http://")) serverList.Add(line);
+				if (line.StartsWith("http://")) serverList.Add(line);
 			}
 			tr.Close();
 			string Url = (string)serverList[r.Next(serverList.Count - 1)];
 			return Url;
 		}
 
-		void UpdateProgress( int pos, int total )
+		void UpdateProgress(int pos, int total)
 		{
-			if(total==0)
+			if (total == 0)
 				// When server doesn't provide content-length, use this dummy value to at least show some progress.
-				total = 50*1024; 
-			pos = pos % (total+1);
-			ProgressPercent = (float)pos/total;
+				total = 50 * 1024;
+			pos = pos % (total + 1);
+			ProgressPercent = (float)pos / total;
 		}
 
 		// Download done: process image and update current texture (or deal with errors)
@@ -697,9 +698,9 @@ namespace Murris.Plugins
 			{
 				// Errors are annoying because they repeat
 				//downloadInfo.Verify();
-				
+
 				// To do : read original cloud date in comment info inside jpg
-			
+
 				// Process image and creat .png
 				MakeAlphaPng(downloadInfo.SavedFilePath);
 				//Delete jpg and cleanup history
@@ -715,26 +716,26 @@ namespace Murris.Plugins
 				retryCount = 0;
 
 			}
-			catch(System.Net.WebException caught) // This doesnt work ;(
+			catch (System.Net.WebException caught) // This doesnt work ;(
 			{
 				System.Net.HttpWebResponse response = caught.Response as System.Net.HttpWebResponse;
 				//if(response!=null && response.StatusCode==System.Net.HttpStatusCode.NotFound)
-				if(response!=null)
+				if (response != null)
 				{
 					// display response.StatusDescription;
 					//MessageBox.Show("Error downloading cloud map from " + downloadInfo.Url + " (" + response.StatusDescription + ").", "Download failed.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 					Utility.Log.Write(Utility.Log.Levels.Warning, "Error downloading cloud map from " + downloadInfo.Url + " (" + response.StatusDescription + ").");
-					
+
 					//return;
 				}
 				retryCount++;
 			}
-			catch(Exception caugth)
+			catch (Exception caugth)
 			{
 				//MessageBox.Show("Error downloading cloud map from " + downloadInfo.Url + " (" + caugth.Message + ").", "Download failed.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 				Utility.Log.Write(Utility.Log.Levels.Warning, "Error downloading cloud map from " + downloadInfo.Url + " (" + caugth.Message + ").");
 
-				if(File.Exists(downloadInfo.SavedFilePath))
+				if (File.Exists(downloadInfo.SavedFilePath))
 					File.Delete(downloadInfo.SavedFilePath);
 				retryCount++;
 			}
@@ -747,7 +748,7 @@ namespace Murris.Plugins
 		}
 
 		// Return a date formated as YYYYMMDD-HHMM
-		public string DateTimeStamp(DateTime d) 
+		public string DateTimeStamp(DateTime d)
 		{
 			return d.Year.ToString() + d.Month.ToString("d2") + d.Day.ToString("d2") + "-" + d.Hour.ToString("d2") + d.Minute.ToString("d2");
 
@@ -764,11 +765,11 @@ namespace Murris.Plugins
 			int x, y;
 			b1 = new Bitmap(filePath);
 			b2 = new Bitmap(b1.Width, b1.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			for(x = 0; x < b1.Width; x++)
+			for (x = 0; x < b1.Width; x++)
 			{
-				for(y = 0; y < b1.Height; y++)
+				for (y = 0; y < b1.Height; y++)
 				{
-					Color p = b1.GetPixel(x,y);
+					Color p = b1.GetPixel(x, y);
 					b2.SetPixel(x, y, Color.FromArgb(p.R, p.R, p.G, p.B));
 				}
 				//ProgressPercent = (float)(x / (b1.Width - 1));
@@ -796,60 +797,60 @@ namespace Murris.Plugins
 		/// </remarks>
 		private Mesh TexturedSphere(Device device, float radius, int slices, int stacks)
 		{
-			int numVertices = (slices+1)*(stacks+1);
-			int numFaces	= slices*stacks*2;
-			int indexCount	= numFaces * 3;
+			int numVertices = (slices + 1) * (stacks + 1);
+			int numFaces = slices * stacks * 2;
+			int indexCount = numFaces * 3;
 
-			Mesh mesh = new Mesh(numFaces,numVertices,MeshFlags.Managed,CustomVertex.PositionNormalTextured.Format,device);
+			Mesh mesh = new Mesh(numFaces, numVertices, MeshFlags.Managed, CustomVertex.PositionNormalTextured.Format, device);
 
 			// Get the original sphere's vertex buffer.
-			int [] ranks = new int[1];
+			int[] ranks = new int[1];
 			ranks[0] = mesh.NumberVertices;
-			System.Array arr = mesh.VertexBuffer.Lock(0,typeof(CustomVertex.PositionNormalTextured),LockFlags.None,ranks);
+			System.Array arr = mesh.VertexBuffer.Lock(0, typeof(CustomVertex.PositionNormalTextured), LockFlags.None, ranks);
 
 			// Set the vertex buffer
-			int vertIndex=0;
-			for(int stack=0;stack<=stacks;stack++)
+			int vertIndex = 0;
+			for (int stack = 0; stack <= stacks; stack++)
 			{
-				double latitude = -90 + ((float)stack/stacks*(float)180.0);
-				for(int slice=0;slice<=slices;slice++)
+				double latitude = -90 + ((float)stack / stacks * (float)180.0);
+				for (int slice = 0; slice <= slices; slice++)
 				{
 					CustomVertex.PositionNormalTextured pnt = new CustomVertex.PositionNormalTextured();
-					double longitude = 180 - ((float)slice/slices*(float)360);
-					Point3d v = MathEngine.SphericalToCartesian( latitude, longitude, radius);
+					double longitude = 180 - ((float)slice / slices * (float)360);
+					Point3d v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
 					pnt.X = (float)v.X;
 					pnt.Y = (float)v.Y;
 					pnt.Z = (float)v.Z;
-					pnt.Tu = 1.0f-(float)slice/slices;
-					pnt.Tv = 1.0f-(float)stack/stacks;
-					arr.SetValue(pnt,vertIndex++);
+					pnt.Tu = 1.0f - (float)slice / slices;
+					pnt.Tv = 1.0f - (float)stack / stacks;
+					arr.SetValue(pnt, vertIndex++);
 				}
 			}
 
 			mesh.VertexBuffer.Unlock();
-			ranks[0]=indexCount;
-			arr = mesh.LockIndexBuffer(typeof(short),LockFlags.None,ranks);
-			int i=0;
+			ranks[0] = indexCount;
+			arr = mesh.LockIndexBuffer(typeof(short), LockFlags.None, ranks);
+			int i = 0;
 			short bottomVertex = 0;
 			short topVertex = 0;
-			for(short x=0;x<stacks;x++)
+			for (short x = 0; x < stacks; x++)
 			{
-				bottomVertex = (short)((slices+1)*x);
+				bottomVertex = (short)((slices + 1) * x);
 				topVertex = (short)(bottomVertex + slices + 1);
-				for(int y=0;y<slices;y++)
+				for (int y = 0; y < slices; y++)
 				{
-					arr.SetValue(bottomVertex,i++);
-					arr.SetValue(topVertex,i++);		// outside text.
-					arr.SetValue((short)(topVertex+1),i++);	// outside text.
-					arr.SetValue(bottomVertex,i++);
-					arr.SetValue((short)(topVertex+1),i++);	// outside text.
-					arr.SetValue((short)(bottomVertex+1),i++); // outside text.
+					arr.SetValue(bottomVertex, i++);
+					arr.SetValue(topVertex, i++);		// outside text.
+					arr.SetValue((short)(topVertex + 1), i++);	// outside text.
+					arr.SetValue(bottomVertex, i++);
+					arr.SetValue((short)(topVertex + 1), i++);	// outside text.
+					arr.SetValue((short)(bottomVertex + 1), i++); // outside text.
 					bottomVertex++;
 					topVertex++;
 				}
 			}
-			mesh.IndexBuffer.SetData(arr,0,LockFlags.None);
-            mesh.IndexBuffer.Unlock();
+			mesh.IndexBuffer.SetData(arr, 0, LockFlags.None);
+			mesh.IndexBuffer.Unlock();
 			mesh.ComputeNormals();
 
 			return mesh;

@@ -630,6 +630,9 @@
     <None Include="System\mailer.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="World Wind Dings 1.04.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="version.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -677,8 +680,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>del /S /Q $(OutDir)System
-mkdir $(OutDir)System
-xcopy "$(ProjectDir)System\*.exe" $(OutDir)System\</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
