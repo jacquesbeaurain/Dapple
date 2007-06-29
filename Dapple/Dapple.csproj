@@ -328,9 +328,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\dapplesplash.png">
-      <Link>Resources\dapplesplash.png</Link>
-    </Content>
     <Content Include="app.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -537,7 +534,7 @@
     <Content Include="Resources\collapse.png" />
     <Content Include="Resources\dap-18x18.png" />
     <Content Include="Resources\dap.ico" />
-    <None Include="Resources\dapplesplash.bmp" />
+    <Content Include="Resources\dapplesplash.png" />
     <Content Include="Resources\dap_database.ico" />
     <Content Include="Resources\dap_document.ico" />
     <Content Include="Resources\dap_gray.ico" />
