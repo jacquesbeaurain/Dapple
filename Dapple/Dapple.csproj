@@ -70,9 +70,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="LayerGeneration\GeorefImageLayerBuilder.cs" />
-    <None Include="LayerGeneration\VEQuadLayerBuilder.cs">
+    <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
       <SubType>Code</SubType>
-    </None>
+    </Compile>
     <Compile Include="Plugins\3DConnexion\TDxWWInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -189,7 +189,7 @@
     </Compile>
     <Compile Include="LayerGeneration\LayerBuilderContainer.cs" />
     <Compile Include="LayerGeneration\TileSetBuilder.cs" />
-    <None Include="LayerGeneration\VETileSetBuilder.cs" />
+    <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
     <None Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
     <None Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
@@ -211,7 +211,7 @@
     <Compile Include="MetaDataForm.Designer.cs">
       <DependentUpon>MetaDataForm.cs</DependentUpon>
     </Compile>
-    <None Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
+    <Compile Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
     <Compile Include="PropertyBag.cs" />
     <Compile Include="SaveViewForm.cs">
       <SubType>Form</SubType>

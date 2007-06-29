@@ -6,6 +6,7 @@ using WorldWind;
 using WorldWind.Renderable;
 using System.Xml;
 using Dapple;
+using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
@@ -25,18 +26,21 @@ namespace Dapple.LayerGeneration
       VirtualEarthMapType m_mapType;
       bool IsOn = true;
       bool m_blnIsChanged = true;
+		MainApplication m_MainApp;
 
       WorldWindow m_oWW;
 
-      public VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, WorldWindow window, bool isOn, World World, string cacheDirectory, IBuilder parent)
+      public VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, MainApplication mainApp, bool isOn, IBuilder parent)
       {
          m_strName = name;
 
-         m_oWW = window;
+			m_MainApp = mainApp;
+			m_oWW = m_MainApp.WorldWindow;
+			m_oWorld = m_MainApp.WorldWindow.CurrentWorld;
 
          IsOn = isOn;
-         m_strCacheRoot = cacheDirectory;
-         m_oWorld = World;
+         m_strCacheRoot = MainApplication.Settings.CachePath;
+			
          m_Parent = parent;
          m_mapType = mapType;
       }
@@ -70,7 +74,7 @@ namespace Dapple.LayerGeneration
                }
             }
 
-            m_oVELayer = new bNb.Plugins_GD.VeReprojectTilesLayer("Virtual Earth", m_oWW, dataset, fileExtension, 0, GetCachePath());
+            m_oVELayer = new bNb.Plugins_GD.VeReprojectTilesLayer("Virtual Earth", m_MainApp, dataset, fileExtension, 0, GetCachePath());
             m_oVELayer.Opacity = m_bOpacity;
             m_oVELayer.IsOn = m_IsOn;
 
@@ -209,25 +213,22 @@ namespace Dapple.LayerGeneration
       }
 
          
-      public static VEQuadLayerBuilder GetBuilderFromURI(string uri, WorldWindow worldWindow, IBuilder parent)
+      public static VEQuadLayerBuilder GetBuilderFromURI(string uri, MainApplication mainApp, IBuilder parent)
       {
          uri = uri.Trim();
          if (String.Compare(uri, GetRoadURI(), true) == 0)
-            return new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, worldWindow, true, worldWindow.CurrentWorld,
-                                          worldWindow.WorldWindSettings.CachePath, parent);
+				return new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, mainApp, true, parent);
          else if (String.Compare(uri, GetArealURI(), true) == 0)
-            return new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, worldWindow, true, worldWindow.CurrentWorld,
-                                          worldWindow.WorldWindSettings.CachePath, parent);
+				return new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, mainApp, true, parent);
          else if (String.Compare(uri, GetHybridURI(), true) == 0)
-            return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, worldWindow, true, worldWindow.CurrentWorld,
-                                          worldWindow.WorldWindSettings.CachePath, parent);
+				return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, mainApp, true, parent);
          else
             return null;
       }
 
       public override object Clone()
       {
-         return new VEQuadLayerBuilder(m_strName, m_mapType, m_oWW, m_IsOn, m_oWorld, m_strCacheRoot, m_Parent);
+         return new VEQuadLayerBuilder(m_strName, m_mapType, m_MainApp, m_IsOn, m_Parent);
       }
 
       protected override void CleanUpLayer(bool bFinal)
@@ -246,7 +247,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override int ImagePixelSize
+		public override int TextureSizePixels
       {
          get
          {

@@ -28,17 +28,15 @@ namespace Dapple
 
       protected TreeNode m_hRootNode;
       protected TreeNode m_hTileRootNode;
-      //protected TreeNode m_hVERootNode;
+      protected TreeNode m_hVERootNode;
       //protected TreeNode m_hWMSRootNode;
 
       TreeNodeSorter m_TreeSorter;
 
-      /* JBTODO
       VEQuadLayerBuilder m_VEMapQTB;
       VEQuadLayerBuilder m_VESatQTB;
       VEQuadLayerBuilder m_VEMapAndSatQTB;
-      */
-
+      
       protected MainForm m_oParent;
       protected TriStateTreeView m_layerTree;
       protected LayerBuilderList m_activeLayers;
@@ -89,19 +87,20 @@ namespace Dapple
          m_hRootNode.Nodes.Add(m_hTileRootNode);
          BuilderDirectory tileDir = new BuilderDirectory("Image Tile Servers", null, false);
 
-         /* JBTODO:
          VETileSetBuilder veDir = new VETileSetBuilder("Virtual Earth", null, false);
          m_hVERootNode = m_hRootNode.Nodes.Add("Virtual Earth");
          m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = iImageListIndex("live");
          m_hVERootNode.Tag = veDir;
 
-         m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, m_oParent.WorldWindow, true, m_oParent.WorldWindow.CurrentWorld, m_oParent.WorldWindow.WorldWindSettings.CachePath, veDir);
-         m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, m_oParent.WorldWindow, true, m_oParent.WorldWindow.CurrentWorld, m_oParent.WorldWindow.WorldWindSettings.CachePath, veDir);
-         m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, m_oParent.WorldWindow, true, m_oParent.WorldWindow.CurrentWorld, m_oParent.WorldWindow.WorldWindSettings.CachePath, veDir);
+			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, m_oParent, true, veDir);
+			m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, m_oParent, true, veDir);
+			m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, m_oParent, true, veDir);
          veDir.LayerBuilders.Add(m_VEMapQTB);
          veDir.LayerBuilders.Add(m_VESatQTB);
          veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
 
+			/* JBTODO:
+         
          WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder(MainApplication.Settings.WorldWindDirectory, m_oParent.WorldWindow, "WMS Servers", null);
          wmsBuilder.LoadingCompleted += new WMSCatalogBuilder.LoadingCompletedCallbackHandler(OnWMSCatalogLoaded);
          wmsBuilder.LoadingFailed += new WMSCatalogBuilder.LoadingFailedCallbackHandler(OnWMSCatalogFailed);
@@ -143,7 +142,6 @@ namespace Dapple
          }
       }
 
-      /*
       /// <summary>
       /// The root node collection to use where Virtual Earth is kept
       /// </summary>
@@ -154,8 +152,7 @@ namespace Dapple
             return m_hVERootNode.Nodes;
          }
       }
-       */ 
-
+      
       public TreeNode RootNode
       {
          get
@@ -1018,8 +1015,8 @@ namespace Dapple
                   node.Nodes.Clear();
             }
          }
-         /* JBTODO:
-         if (!(treeNode.Tag is VEQuadLayerBuilder))
+         
+			if (!(treeNode.Tag is VEQuadLayerBuilder))
             m_hVERootNode.Nodes.Clear();
          if (treeNode.Tag is VETileSetBuilder)
          {
@@ -1031,8 +1028,8 @@ namespace Dapple
             treeSubNode.Tag = m_VEMapAndSatQTB;
             treeNode.ExpandAll();
          }
-          */ 
-         if (treeNode.Tag is builderdirectoryType || treeNode.Tag is tileserversetType)
+         
+			if (treeNode.Tag is builderdirectoryType || treeNode.Tag is tileserversetType)
          {
             if (treeNode != m_hTileRootNode)
             {
@@ -1159,24 +1156,24 @@ namespace Dapple
                return -2;
             if (tx.Nodes == m_ServerTree.TileRootNodes)
                return -1;
-            /* JBTODO:
             if (tx.Nodes == m_ServerTree.VERootNodes)
                return 1;
-            if (tx.Nodes == m_ServerTree.WMSRootNodes)
-               return 2;
-            */
+				/* JBTODO:
+				if (tx.Nodes == m_ServerTree.WMSRootNodes)
+					return 2;
+				*/
             if (ty.Nodes == m_ServerTree.DAPRootNodes)
                return 2;
             if (ty.Nodes == m_ServerTree.TileRootNodes)
                return 1;
-            /* JBTODO:
-            if (ty.Nodes == m_ServerTree.VERootNodes)
-               return -1;
-            if (ty.Nodes == m_ServerTree.WMSRootNodes)
-               return -2;
-             */ 
+				if (ty.Nodes == m_ServerTree.VERootNodes)
+					return -1;
+				/* JBTODO:
+				if (ty.Nodes == m_ServerTree.WMSRootNodes)
+					return -2;
+				 */
 
-            if (tx.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
+				if (tx.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
                return -1;
             else if (ty.Tag is BuilderDirectory && !(ty.Tag is BuilderDirectory))
                return 1;

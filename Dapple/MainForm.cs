@@ -2539,10 +2539,10 @@ namespace Dapple
             if (iImageIndex == -1)
                ImageListIndex("layer");
          }
-         else if (builder is VEQuadLayerBuilder)
+         else */ if (builder is VEQuadLayerBuilder)
             iImageIndex = ImageListIndex("live");
          else
-          */ iImageIndex = ImageListIndex("layer");
+            iImageIndex = ImageListIndex("layer");
          
          treeNode = parent.Nodes.Add(builder.Name, builder.Name, iImageIndex, iImageIndex);
          treeNode.Tag = builder;
