@@ -76,6 +76,12 @@
     <Compile Include="Plugins\3DConnexion\TDxWWInput.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Plugins\GlobalClouds\GlobalClouds.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Plugins\SkyGradient\SkyGradient.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -322,6 +328,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\dapplesplash.png">
+      <Link>Resources\dapplesplash.png</Link>
+    </Content>
     <Content Include="app.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -386,15 +395,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Plugins\3DConnexion\3dxicon.ico" />
-    <Content Include="Plugins\Atmosphere\Atmosphere.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Plugins\Atmosphere\Earth_Light.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Plugins\Atmosphere\Earth_Thick.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Plugins\BlueMarble\settings.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -440,6 +440,33 @@
     <Content Include="Plugins\Compass\tbcompass.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Plugins\GlobalClouds\clouds_20070627-1715.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\GlobalClouds\clouds_20070628-0944.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\GlobalClouds\GlobalCloudsServers.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\GlobalClouds\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Measure\linemode_multi_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Measure\linemode_single_button.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\Measure\rect.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\OgrVectorImporter\icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Plugins\SkyGradient\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Plugins\Stars3D\Flare.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -465,6 +492,42 @@
     <Content Include="Plugins\VirtualEarth\VirtualEarthPushPin.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Plugins\GlobalClouds\GlobalClouds.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\MovieRecorder\MovieRecorder.sc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Earth.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Earth_060km.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Earth_100km.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Earth_200km.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Earth_300km.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Mars.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Mars_Blue.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Mars_Orange.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Venus.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugins\SkyGradient\Venus.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\import.png" />
     <None Include="Resources\georef_image.ico" />
     <Content Include="Resources\addserver.png" />
@@ -474,6 +537,7 @@
     <Content Include="Resources\collapse.png" />
     <Content Include="Resources\dap-18x18.png" />
     <Content Include="Resources\dap.ico" />
+    <None Include="Resources\dapplesplash.bmp" />
     <Content Include="Resources\dap_database.ico" />
     <Content Include="Resources\dap_document.ico" />
     <Content Include="Resources\dap_gray.ico" />

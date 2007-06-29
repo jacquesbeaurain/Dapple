@@ -38,6 +38,7 @@ namespace WorldWind.Renderable
 		protected Quaternion4d orientation;
 		protected bool isOn = true;
 		protected byte m_opacity = 255;
+		protected RenderPriority m_renderPriority = RenderPriority.SurfaceImages;
 		protected Form m_propertyBrowser;
 
 		protected Image m_thumbnailImage;
@@ -197,29 +198,7 @@ namespace WorldWind.Renderable
 			if(obj == null)
 				return 1;
 
-         // This is a bit of a weak system for maintaining render order (but it currently works)
-         // Names are of form "#1 - #2" Or '#1 - Name'. #1 is the first level render order and
-         // #2 indicates the second. There are just 5 possible first levels and they will always
-         // be between 1-10 so it is safe to use string sort. The second level however should be 
-         // properly converted to numbers and then used otherwise 10 may compare less than 9 
-         // etc.
-
-         if (String.Compare(robj.Name, 0, this.name, 0, 3) == 0)
-         {
-            try
-            {
-               int iObj, iThis;
-
-               iThis = Convert.ToInt32(this.name.Substring(3));
-               iObj = Convert.ToInt32(robj.Name.Substring(3));
-
-               return iObj.CompareTo(iThis);
-            }
-            catch
-            {
-            }
-         }
-         return String.Compare(robj.Name, this.name);
+			return this.m_renderPriority.CompareTo(robj.RenderPriority);
 		}
 
 		/// <summary>
@@ -227,11 +206,65 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public virtual void Delete()
 		{
-			string namestring = name;
-			//TODO: Make the string absolute from the XML root so that we don't delete stuff we aren't supposed to...
-			string xmlConfigFile = (string)MetaData["XML Configuration File"];
+
+			RenderableObjectList list = this.ParentList;
+
+			string xmlConfigFile = (string)this.MetaData["XmlSource"];
+
+			if (this.ParentList.Name == "Earth" & xmlConfigFile != null)
+			{
+
+				string message = "Permanently delete layer '" + this.Name + "' and rename its .xml config file to .bak?";
+				if (DialogResult.Yes != MessageBox.Show(message, "Delete layer", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+					MessageBoxDefaultButton.Button2))
+					return;
+					//throw new Exception("Delete cancelled.");
+
+				//MessageBox.Show("Checking xml source of " + this.Name);
+
+				if (xmlConfigFile.Contains("http"))
+					throw new Exception("Can't delete network layers.");
+
+				//MessageBox.Show("Found " + xmlConfigFile);
+				if (File.Exists(xmlConfigFile.Replace(".xml", ".bak")))
+				{
+					//MessageBox.Show("Deleting old .bak");
+					File.Delete(xmlConfigFile.Replace(".xml", ".bak"));
+
+				}
+				//MessageBox.Show("Moving old .xml");
+				File.Move(xmlConfigFile, xmlConfigFile.Replace(".xml", ".bak"));
+
+				//MessageBox.Show("File backed up, now removing from LM");
+				this.ParentList.Remove(this);
+				//World.RenderableObjects.Remove(this);
+
+				//MessageBox.Show("Removed");
+			}
+			else if (xmlConfigFile == null)
+			{
+				string message = "Delete plugin layer '" + this.Name + "'?\n\nThis may cause problems for a running plugin that expects the layer to be\nthere.  Restart the plugin in question to replace the layer after deleting.";
+				if (DialogResult.Yes != MessageBox.Show(message, "Delete layer", MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+					MessageBoxDefaultButton.Button2))
+					return;
+					//throw new Exception("Delete cancelled.");
+
+				this.ParentList.Remove(this);
+			}
+			else
+			{
+				throw new Exception("Can't delete this sub-item from the layer manager.  Try deleting the top-level entry for this layer.");
+			}
+
+
+
+
+			// Needs re-thinking...
+			/*
+			string xmlConfigFile = (string)MetaData["XmlSource"];
+			//MessageBox.Show(xmlConfigFile);
 			if(xmlConfigFile == null)
-				xmlConfigFile = (string)ParentList.MetaData["XML Configuration File"];																					   
+				xmlConfigFile = (string)ParentList.MetaData["XmlSource"];																					   
 				
 			if(xmlConfigFile == null || !File.Exists(xmlConfigFile))
 				throw new ApplicationException("Error deleting layer.");
@@ -241,15 +274,30 @@ namespace WorldWind.Renderable
 
 			XmlNodeList list;
 			XmlElement root = doc.DocumentElement;
-			list = root.SelectNodes("//*[Name='" + namestring + "']");
+			list = root.SelectNodes("//ChildLayerSet[@Name='" + namestring + "'] || //*[Name='" + namestring + "']");
+			MessageBox.Show("Checked childlayersets, returned " + list[0].ToString());
 
 			ParentList.Remove(Name);
+			MessageBox.Show("Removed " + Name + ", now changing " + xmlConfigFile);
+
+			if (list != null)
+				MessageBox.Show("Removing " + list[0].ToString() + " from xml");
 
 			list[0].ParentNode.RemoveChild(list[0]);
-			if(File.Exists(xmlConfigFile.Replace(".xml", ".bak")))
+			MessageBox.Show("node removed, now saving file");
+
+			if (File.Exists(xmlConfigFile.Replace(".xml", ".bak")))
+			{
+				MessageBox.Show("Deleting old .bak");
 				File.Delete(xmlConfigFile.Replace(".xml", ".bak"));
+
+			}
+			MessageBox.Show("Moving old .xml");
 			File.Move(xmlConfigFile, xmlConfigFile.Replace(".xml",".bak"));
+
+			MessageBox.Show("Saving new xml");
 			doc.Save(xmlConfigFile);
+			*/
 		}
 
 		/// <summary>
@@ -258,9 +306,16 @@ namespace WorldWind.Renderable
 		/// <param name="menu">Pre-initialized context menu.</param>
 		public virtual void BuildContextMenu( ContextMenu menu )
 		{
-			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
-			menu.MenuItems.Add("Info", new System.EventHandler(OnInfoClick));
-			menu.MenuItems.Add("Delete", new System.EventHandler(OnDeleteClick));
+			menu.MenuItems.Add("Goto", new EventHandler(OnGotoClick));
+			menu.MenuItems.Add("Properties...", new EventHandler(OnPropertiesClick));
+			menu.MenuItems.Add("Info...", new EventHandler(OnInfoClick));
+			menu.MenuItems.Add("Delete...", new EventHandler(OnDeleteClick)); 
+
+			
+			if(dbfPath != "")
+				menu.MenuItems.Add("Dbf Info", new EventHandler(OnDbfInfo));
+			
+			
 		}
 
 		/// <summary>
@@ -272,6 +327,25 @@ namespace WorldWind.Renderable
 		}
 
 		#region Properties
+
+		/// <summary>
+		/// The object's render priority determining in what order it will be rendered
+		/// compared to the other objects.
+		/// </summary>
+		[Description("The object's render priority determining in what order it will be rendered compared to the other objects.")]
+		public virtual RenderPriority RenderPriority
+		{
+			get
+			{
+				return this.m_renderPriority;
+			}
+			set
+			{
+				this.m_renderPriority = value;
+				if(ParentList != null)
+					ParentList.SortChildren();
+			}
+		}
 
 		/// <summary>
 		/// How transparent this object should appear (0=invisible, 255=opaque)
@@ -286,11 +360,24 @@ namespace WorldWind.Renderable
 			set
 			{
 				this.m_opacity = value;
+/* Don't do this for Dapple, it frees the tiles
+				if(value == 0)
+				{
+					// invisible - turn off
+					if(this.isOn)
+						this.IsOn = false;
+				}
+				else
+				{
+					// visible - turn back on
+					if(!this.isOn)
+						this.IsOn = true;
+				} */
 			}
 		}
 
 		[Browsable(false)]
-		public virtual System.Collections.Hashtable MetaData
+		public virtual Hashtable MetaData
 		{
 			get
 			{
@@ -385,7 +472,6 @@ namespace WorldWind.Renderable
 		{
 			lock(this.ParentList.ChildObjects.SyncRoot)
 			{
-            /*
 				for(int i = 0; i < this.ParentList.ChildObjects.Count; i++)
 				{
 					RenderableObject ro = (RenderableObject)this.ParentList.ChildObjects[i];
@@ -423,7 +509,6 @@ namespace WorldWind.Renderable
                         }
 					}
 				}
-             */ 
 			}
 		}
 
@@ -501,5 +586,19 @@ namespace WorldWind.Renderable
       public virtual void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
       {
       }
+	}
+	/// <summary>
+	/// The render priority determines in what order objects are rendered.
+	/// Objects with higher priority number are rendered over lower priority objects.
+	/// </summary>
+	public enum RenderPriority
+	{
+		SurfaceImages = 0,
+		TerrainMappedImages = 100,
+		AtmosphericImages = 200,
+		LinePaths = 300,
+		Icons = 400,
+		Placenames = 500,
+		Custom = 600
 	}
 }

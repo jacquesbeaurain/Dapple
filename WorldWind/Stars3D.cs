@@ -28,7 +28,7 @@ namespace Stars3D.Plugin
 	/// <summary>
 	/// The plugin (main class)
 	/// </summary>
-	public class Stars3D : WorldWind.PluginEngine.Plugin 
+	public class Stars3D : WorldWind.PluginEngine.Plugin
 	{
 		/// <summary>
 		/// Name displayed in layer manager
@@ -38,18 +38,18 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
 		/// </summary>
-		public override void Load() 
+		public override void Load()
 		{
-			if(ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("SDSS") == -1)
+			if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("SDSS") == -1)
 			{
 				Stars3DLayer layer = new Stars3DLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
-				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
+				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0, layer);
 			}
 		}
 		/// <summary>
 		/// Unloads our plugin
 		/// </summary>
-		public override void Unload() 
+		public override void Unload()
 		{
 			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
 		}
@@ -71,7 +71,7 @@ namespace Stars3D.Plugin
 		private Mesh FlareMesh;
 		private int FlareCount = 0;
 		private bool showFlares = true;		// Default show bright stars flare
-		private int refWidth;		
+		private int refWidth;
 		private double sphereRadius;
 		private Texture texture;
 		public string textureFileName = "Flare.png";
@@ -82,34 +82,35 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName, worldWindow.CurrentWorld)
+		public Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow)
+			: base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\stars3d\");
 			this.drawArgs = worldWindow.DrawArgs;
-			//this.RenderPriority = RenderPriority.SurfaceImages;
+			this.RenderPriority = RenderPriority.SurfaceImages;
 			//this.sphereRadius = this.drawArgs.WorldCamera.WorldRadius * 20;
 			ReadSettings();
 		}
-		
+
 		/// <summary>
 		/// Read saved settings from ini file
 		/// </summary>
 		public void ReadSettings()
 		{
 			string line = "";
-			try 
+			try
 			{
 				TextReader tr = File.OpenText(Path.Combine(pluginPath, settingsFileName));
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch(Exception) {}
-			if(line != "")
+			catch (Exception) { }
+			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
 				string saveVersion = settingsList[0];	// version when settings where saved
-				if(settingsList[1] != null) catalogFileName = settingsList[1];
-				if(settingsList.Length >= 3) showFlares = (settingsList[2] == "False") ? false : true;
+				if (settingsList[1] != null) catalogFileName = settingsList[1];
+				if (settingsList.Length >= 3) showFlares = (settingsList[2] == "False") ? false : true;
 			}
 		}
 
@@ -125,7 +126,7 @@ namespace Stars3D.Plugin
 				sw.Write(line);
 				sw.Close();
 			}
-			catch(Exception caught) {}
+			catch (Exception caught) { }
 		}
 
 		#region RenderableObject
@@ -136,7 +137,7 @@ namespace Stars3D.Plugin
 		/// </summary>
 		public override void Render(DrawArgs drawArgs)
 		{
-			if(!isInitialized)
+			if (!isInitialized)
 				return;
 
 			// Camera & Device shortcuts ;)
@@ -144,21 +145,21 @@ namespace Stars3D.Plugin
 			Device device = drawArgs.device;
 
 			// Read star catalog and build vertex list if not done yet
-			if(StarListVB == null  || refWidth != device.Viewport.Width) 
+			if (StarListVB == null || refWidth != device.Viewport.Width)
 			{
-				if(StarListVB != null) StarListVB = null;
-				if(FlareMesh != null) {FlareMesh.Dispose(); FlareMesh = null;}
+				if (StarListVB != null) StarListVB = null;
+				if (FlareMesh != null) { FlareMesh.Dispose(); FlareMesh = null; }
 				LoadStars();
 			}
 
 
 			// if(camera.Altitude < 500e3) return;
-			if(drawArgs.device.RenderState.Lighting)
+			if (drawArgs.device.RenderState.Lighting)
 			{
 				drawArgs.device.RenderState.Lighting = false;
 				drawArgs.device.RenderState.Ambient = World.Settings.StandardAmbientColor;
 			}
-						
+
 			// save world and projection transform
 			Matrix origWorld = device.Transform.World;
 			Matrix origProjection = device.Transform.Projection;
@@ -168,8 +169,8 @@ namespace Stars3D.Plugin
 			device.RenderState.FogEnable = false;
 
 			// Set new projection (to avoid being clipped) - probably better ways of doing this?
-			float aspectRatio =  (float)device.Viewport.Width / device.Viewport.Height;
-            device.Transform.Projection = Matrix.PerspectiveFovRH((float)camera.Fov.Radians, aspectRatio, (float)(0.5f * sphereRadius), (float)(2.0f * sphereRadius));
+			double aspectRatio = (double)device.Viewport.Width / device.Viewport.Height;
+			device.Transform.Projection = ConvertDX.FromMatrix4d(Matrix4d.PerspectiveFovRH(camera.Fov.Radians, aspectRatio, (0.5 * sphereRadius), (2.0 * sphereRadius)));
 
 
 			// This is where we can rotate the star dome to acomodate time and seasons
@@ -179,36 +180,36 @@ namespace Stars3D.Plugin
 				(float)-drawArgs.WorldCamera.ReferenceCenter.Z
 				);
 
-			
+
 			drawArgs.device.Transform.World *= Matrix.RotationZ(
-				(float)(TimeKeeper.CurrentTimeUtc.Hour + 
+				(float)(TimeKeeper.CurrentTimeUtc.Hour +
 				TimeKeeper.CurrentTimeUtc.Minute / 60.0 +
-				TimeKeeper.CurrentTimeUtc.Second / 3600.0 + 
+				TimeKeeper.CurrentTimeUtc.Second / 3600.0 +
 				TimeKeeper.CurrentTimeUtc.Millisecond / 3600000.0) / 24.0f * (float)(-2 * Math.PI));
 
 			// Render textured flares if set
-			if(showFlares)
+			if (showFlares)
 			{
-				device.SetTexture(0,texture);
-                device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
-                device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+				device.SetTexture(0, texture);
+				device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+				device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
 				device.TextureState[0].ColorOperation = TextureOperation.Modulate;
-                device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
-                device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
+				device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+				device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
 				device.VertexFormat = CustomVertex.PositionTextured.Format;
 				FlareMesh.DrawSubset(0);
 			}
 
 			// draw StarListVB
-			device.SetTexture(0,null);
+			device.SetTexture(0, null);
 			device.VertexFormat = CustomVertex.PositionColored.Format;
-            device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
-            device.TextureState[0].AlphaArgument1 = TextureArgument.Diffuse;
-            device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
-            device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
-				
+			device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+			device.TextureState[0].AlphaArgument1 = TextureArgument.Diffuse;
+			device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
+			device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
+
 			device.SetStreamSource(0, StarListVB, 0);
-			device.DrawPrimitives(PrimitiveType.PointList, 0, StarCount );
+			device.DrawPrimitives(PrimitiveType.PointList, 0, StarCount);
 
 			// Restore device states
 			device.Transform.World = origWorld;
@@ -226,13 +227,13 @@ namespace Stars3D.Plugin
 			try
 			{
 				texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureFileName));
-				isInitialized = true;	
+				isInitialized = true;
 			}
 			catch
 			{
 				isOn = false;
-				MessageBox.Show("Error loading texture " + Path.Combine(pluginPath, textureFileName) + ".","Layer initialization failed.", MessageBoxButtons.OK, 
-					MessageBoxIcon.Error );
+				MessageBox.Show("Error loading texture " + Path.Combine(pluginPath, textureFileName) + ".", "Layer initialization failed.", MessageBoxButtons.OK,
+					MessageBoxIcon.Error);
 			}
 		}
 
@@ -253,23 +254,23 @@ namespace Stars3D.Plugin
 
 			// Count stars and flares
 			TextReader tr = File.OpenText(Path.Combine(pluginPath, catalogFileName));
-			while ((line = tr.ReadLine()) != null) 
+			while ((line = tr.ReadLine()) != null)
 			{
-				if(line.Length < 3) continue;
-				if(line.Substring(0, 1) == "#") continue;
-				if(isData == 0 && line.IndexOf("RA") != -1) // Field names here
+				if (line.Length < 3) continue;
+				if (line.Substring(0, 1) == "#") continue;
+				if (isData == 0 && line.IndexOf("RA") != -1) // Field names here
 				{
 					// Find out fields indices
 					string[] fieldData = line.Split(';');
-					for(int i = 0; i < fieldData.Length; i++) 
+					for (int i = 0; i < fieldData.Length; i++)
 					{
-						if(fieldData[i] == "RAhms") idxRAhms = i;
-						if(fieldData[i] == "DEdms") idxDEdms = i;
-						if(fieldData[i] == "Vmag") idxVmag = i;
-						if(fieldData[i] == "B-V") idxBV = i;
+						if (fieldData[i] == "RAhms") idxRAhms = i;
+						if (fieldData[i] == "DEdms") idxDEdms = i;
+						if (fieldData[i] == "Vmag") idxVmag = i;
+						if (fieldData[i] == "B-V") idxBV = i;
 					}
 				}
-				if(isData == 1) // Star data here
+				if (isData == 1) // Star data here
 				{
 					StarCount++; // just counting now...
 					// Data in ';' separated values
@@ -277,33 +278,33 @@ namespace Stars3D.Plugin
 					string Vmag = starData[idxVmag];	// Aparent magnitude	" 4.78"
 					// check magnitude -1.5 - 10 for flares
 					double VM = Convert.ToDouble(Vmag.Replace(".", DecSep));
-					if(VM < FlareMag) FlareCount++;
+					if (VM < FlareMag) FlareCount++;
 				}
-				if(line.Substring(0, 3) == "---") isData = 1;
+				if (line.Substring(0, 3) == "---") isData = 1;
 			}
 			tr.Close();
-			
+
 			// Create vertex buffer for stars
 			int idx = 0;
-			StarListVB = new VertexBuffer( typeof(CustomVertex.PositionColored),
+			StarListVB = new VertexBuffer(typeof(CustomVertex.PositionColored),
 				StarCount, drawArgs.device,
 				Usage.Points | Usage.WriteOnly,
 				CustomVertex.PositionColored.Format,
-				Pool.Managed );
+				Pool.Managed);
 			CustomVertex.PositionColored[] verts = new CustomVertex.PositionColored[StarCount];
-			
+
 			// Create mesh for flares
-			int vertIndex=0;
+			int vertIndex = 0;
 			CustomVertex.PositionTextured pnt;
 			Point3d v;
 			int numVertices = 4 * FlareCount;
-			int numFaces	= 2 * FlareCount;
+			int numFaces = 2 * FlareCount;
 			FlareMesh = new Mesh(numFaces, numVertices, MeshFlags.Managed, CustomVertex.PositionTextured.Format, drawArgs.device);
 			// Get the original mesh's vertex buffer.
-			int [] ranks = new int[1];
+			int[] ranks = new int[1];
 			ranks[0] = FlareMesh.NumberVertices;
-			System.Array arr = FlareMesh.VertexBuffer.Lock(0,typeof(CustomVertex.PositionTextured),LockFlags.None,ranks);
-			
+			System.Array arr = FlareMesh.VertexBuffer.Lock(0, typeof(CustomVertex.PositionTextured), LockFlags.None, ranks);
+
 			// Now process star data and build vertex list and flare mesh
 			double longitude = 0;
 			double latitude = 0;
@@ -312,11 +313,11 @@ namespace Stars3D.Plugin
 			double minBVdec = 99;
 			isData = 0;
 			tr = File.OpenText(Path.Combine(pluginPath, catalogFileName));
-			while ((line = tr.ReadLine()) != null) 
+			while ((line = tr.ReadLine()) != null)
 			{
-				if(line.Length < 3) continue;
-				if(line.Substring(0, 1) == "#") continue;
-				if(isData == 1) // Star data here
+				if (line.Length < 3) continue;
+				if (line.Substring(0, 1) == "#") continue;
+				if (isData == 1) // Star data here
 				{
 					// Data in ';' separated values
 					string[] starData = line.Split(';');
@@ -327,53 +328,53 @@ namespace Stars3D.Plugin
 					// compute RAhms into longitude
 					double RAh = Convert.ToDouble(RAhms.Substring(0, 2));
 					double RAm = Convert.ToDouble(RAhms.Substring(3, 2));
-					double RAs = Convert.ToDouble(RAhms.Substring(6, 5).Replace(".", DecSep)); 
+					double RAs = Convert.ToDouble(RAhms.Substring(6, 5).Replace(".", DecSep));
 					longitude = (RAh * 15) + (RAm * .25) + (RAs * 0.0041666) - 180;
 					// compute DEdms into latitude
 					string DEsign = DEdms.Substring(0, 1);
 					double DEd = Convert.ToDouble(DEdms.Substring(1, 2));
 					double DEm = Convert.ToDouble(DEdms.Substring(4, 2));
-					double DEs = Convert.ToDouble(DEdms.Substring(7, 4).Replace(".", DecSep)); 
+					double DEs = Convert.ToDouble(DEdms.Substring(7, 4).Replace(".", DecSep));
 					latitude = DEd + (DEm / 60) + (DEs / 3600);
-					if(DEsign == "-") latitude *= -1;
+					if (DEsign == "-") latitude *= -1;
 					// compute aparent magnitude -1.5 - 10 to grayscale 0 - 255
 					double VM = Convert.ToDouble(Vmag.Replace(".", DecSep));
 					double Vdec = 255 - ((VM + 1.5) * 255 / 10);
-					if(Vdec > maxVdec) maxVdec = Vdec;
+					if (Vdec > maxVdec) maxVdec = Vdec;
 					Vdec += 20; // boost luminosity
-					if(Vdec > 255) Vdec = 255;
+					if (Vdec > 255) Vdec = 255;
 					// convert B-V  -0.5 - 4 for rgb color select
 					double BVdec = 0;
-                    if (BV.Length > 0)
-                    {
-                        try { BVdec = Convert.ToDouble(BV.Replace(".", DecSep)); }
-                        catch { BVdec = 0; }
-                    }
-					if(BVdec > maxBVdec) maxBVdec = BVdec;
-					if(BVdec < minBVdec) minBVdec = BVdec;
-					
+					if (BV.Length > 0)
+					{
+						try { BVdec = Convert.ToDouble(BV.Replace(".", DecSep)); }
+						catch { BVdec = 0; }
+					}
+					if (BVdec > maxBVdec) maxBVdec = BVdec;
+					if (BVdec < minBVdec) minBVdec = BVdec;
+
 					// Place vertex for point star
-					v = MathEngine.SphericalToCartesian( latitude, longitude, sphereRadius);
-               verts[idx].Position = new Vector3((float)v.X, (float)v.Y, (float)v.Z);
+					v = MathEngine.SphericalToCartesian(latitude, longitude, sphereRadius);
+					verts[idx].Position = new Vector3((float)v.X, (float)v.Y, (float)v.Z);
 					// color based on B-V
 					verts[idx].Color = Color.FromArgb(255, (int)Vdec, (int)Vdec, (int)Vdec).ToArgb(); // gray scale default
-					if(BVdec < 4)   verts[idx].Color = Color.FromArgb(255, (int)(235*Vdec/255), (int)(96*Vdec/255), (int)(10*Vdec/255)).ToArgb(); // redish
-					if(BVdec < 1.5) verts[idx].Color = Color.FromArgb(255, (int)(246*Vdec/255), (int)(185*Vdec/255), (int)(20*Vdec/255)).ToArgb(); // orange
-					if(BVdec < 1)   verts[idx].Color = Color.FromArgb(255, (int)(255*Vdec/255), (int)(251*Vdec/255), (int)(68*Vdec/255)).ToArgb(); // yellow
-					if(BVdec < .5)  verts[idx].Color = Color.FromArgb(255, (int)(255*Vdec/255), (int)(255*Vdec/255), (int)(255*Vdec/255)).ToArgb(); // white
-					if(BVdec < 0)   verts[idx].Color = Color.FromArgb(255, (int)(162*Vdec/255), (int)(195*Vdec/255), (int)(237*Vdec/255)).ToArgb(); // light blue
+					if (BVdec < 4) verts[idx].Color = Color.FromArgb(255, (int)(235 * Vdec / 255), (int)(96 * Vdec / 255), (int)(10 * Vdec / 255)).ToArgb(); // redish
+					if (BVdec < 1.5) verts[idx].Color = Color.FromArgb(255, (int)(246 * Vdec / 255), (int)(185 * Vdec / 255), (int)(20 * Vdec / 255)).ToArgb(); // orange
+					if (BVdec < 1) verts[idx].Color = Color.FromArgb(255, (int)(255 * Vdec / 255), (int)(251 * Vdec / 255), (int)(68 * Vdec / 255)).ToArgb(); // yellow
+					if (BVdec < .5) verts[idx].Color = Color.FromArgb(255, (int)(255 * Vdec / 255), (int)(255 * Vdec / 255), (int)(255 * Vdec / 255)).ToArgb(); // white
+					if (BVdec < 0) verts[idx].Color = Color.FromArgb(255, (int)(162 * Vdec / 255), (int)(195 * Vdec / 255), (int)(237 * Vdec / 255)).ToArgb(); // light blue
 
 					// Next vertex
 					idx++;
 
 					// if flare add 4 vertex to mesh
-					if(VM < FlareMag) 
+					if (VM < FlareMag)
 					{
 						double flareFactor = sphereRadius * 5 / drawArgs.device.Viewport.Width;
 						double l = (VM + 1.5) / (FlareMag + 1.5) * flareFactor;	// Size of half flare texture in meter
 						// Calculate perp1 and perp2 so they form a plane perpendicular to the star vector and crossing earth center
-						Point3d perp1 = Point3d.cross( v, new Point3d(1,1,1) );
-						Point3d perp2 = Point3d.cross( perp1, v );
+						Point3d perp1 = Point3d.cross(v, new Point3d(1, 1, 1));
+						Point3d perp2 = Point3d.cross(perp1, v);
 						perp1.normalize();
 						perp2.normalize();
 						perp1 *= l;
@@ -383,61 +384,61 @@ namespace Stars3D.Plugin
 						//v = MathEngine.SphericalToCartesian( latitude + l, longitude - l, sphereRadius);			
 						v1 = v + perp1 - perp2;
 						pnt = new CustomVertex.PositionTextured();
-                  pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
+						pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
 						pnt.Tu = 0;
 						pnt.Tv = 0;
-						arr.SetValue(pnt,vertIndex++);
+						arr.SetValue(pnt, vertIndex++);
 						//v = MathEngine.SphericalToCartesian( latitude + l, longitude + l, sphereRadius);			
 						v1 = v + perp1 + perp2;
 						pnt = new CustomVertex.PositionTextured();
-                  pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
+						pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
 						pnt.Tu = 1;
 						pnt.Tv = 0;
-						arr.SetValue(pnt,vertIndex++);
+						arr.SetValue(pnt, vertIndex++);
 						//v = MathEngine.SphericalToCartesian( latitude - l, longitude - l, sphereRadius);			
 						v1 = v - perp1 - perp2;
 						pnt = new CustomVertex.PositionTextured();
-                  pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
+						pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
 						pnt.Tu = 0;
 						pnt.Tv = 1;
-						arr.SetValue(pnt,vertIndex++);
+						arr.SetValue(pnt, vertIndex++);
 						//v = MathEngine.SphericalToCartesian( latitude - l, longitude + l, sphereRadius);			
 						v1 = v - perp1 + perp2;
 						pnt = new CustomVertex.PositionTextured();
-                  pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
+						pnt.Position = new Vector3((float)v1.X, (float)v1.Y, (float)v1.Z);
 						pnt.Tu = 1;
 						pnt.Tv = 1;
-						arr.SetValue(pnt,vertIndex++);
+						arr.SetValue(pnt, vertIndex++);
 					}
-					
+
 
 				}
-				if(line.Substring(0, 3) == "---") isData = 1;
+				if (line.Substring(0, 3) == "---") isData = 1;
 			}
 			tr.Close();
 			//MessageBox.Show("FlareCount : " + FlareCount.ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Error );
 
 
 			// Set vertex buffer for stars
-			StarListVB.SetData( verts, 0, LockFlags.None );
+			StarListVB.SetData(verts, 0, LockFlags.None);
 
 			// Set flare mesh indices
 			FlareMesh.VertexBuffer.Unlock();
 			ranks[0] = numFaces * 3;
-			arr = FlareMesh.LockIndexBuffer(typeof(short),LockFlags.None,ranks);
+			arr = FlareMesh.LockIndexBuffer(typeof(short), LockFlags.None, ranks);
 			vertIndex = 0;
-			for(int flare = 0; flare < FlareCount; flare++)
+			for (int flare = 0; flare < FlareCount; flare++)
 			{
 				short v1 = (short)(flare * 4);
 				arr.SetValue(v1, vertIndex++);
 				arr.SetValue((short)(v1 + 1), vertIndex++);
-				arr.SetValue((short)(v1 + 2),vertIndex++);
+				arr.SetValue((short)(v1 + 2), vertIndex++);
 				arr.SetValue((short)(v1 + 1), vertIndex++);
 				arr.SetValue((short)(v1 + 3), vertIndex++);
-				arr.SetValue((short)(v1 + 2),vertIndex++);
+				arr.SetValue((short)(v1 + 2), vertIndex++);
 			}
-			FlareMesh.IndexBuffer.SetData(arr,0,LockFlags.None);
-            FlareMesh.UnlockIndexBuffer();
+			FlareMesh.IndexBuffer.SetData(arr, 0, LockFlags.None);
+			FlareMesh.UnlockIndexBuffer();
 		}
 
 		/// <summary>
@@ -446,27 +447,27 @@ namespace Stars3D.Plugin
 		/// </summary>
 		public override void Update(DrawArgs drawArgs)
 		{
-			if(!isInitialized)
+			if (!isInitialized)
 				Initialize(drawArgs);
 		}
 
-      /// <summary>
+		/// <summary>
 		/// RenderableObject abstract member (needed)
 		/// OBS: Worker thread (don't update UI directly from this thread)
 		/// </summary>
 		public override void Dispose()
 		{
 			isInitialized = false;
-			if(StarListVB != null)
+			if (StarListVB != null)
 			{
 				StarListVB = null;
 			}
-			if(texture != null)
+			if (texture != null)
 			{
 				texture.Dispose();
 				texture = null;
 			}
-			if(FlareMesh != null)
+			if (FlareMesh != null)
 			{
 				FlareMesh.Dispose();
 				FlareMesh = null;
@@ -486,7 +487,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Fills the context menu with menu items specific to the layer.
 		/// </summary>
-		public override void BuildContextMenu( ContextMenu menu )
+		public override void BuildContextMenu(ContextMenu menu)
 		{
 			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
 		}
@@ -496,7 +497,7 @@ namespace Stars3D.Plugin
 		/// </summary>
 		public new void OnPropertiesClick(object sender, EventArgs e)
 		{
-			if(pDialog != null && ! pDialog.IsDisposed)
+			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open
 				return;
 
@@ -519,7 +520,7 @@ namespace Stars3D.Plugin
 			private System.Windows.Forms.Button btnCancel;
 			private Stars3DLayer layer;
 
-			public propertiesDialog( Stars3DLayer layer )
+			public propertiesDialog(Stars3DLayer layer)
 			{
 				InitializeComponent();
 				//this.Icon = WorldWind.PluginEngine.Plugin.Icon;
@@ -530,7 +531,7 @@ namespace Stars3D.Plugin
 				cboTexture.Items.AddRange(imgFiles);
 				// select current catalog
 				int i = cboTexture.FindString(layer.catalogFileName);
-				if(i != -1) cboTexture.SelectedIndex = i;
+				if (i != -1) cboTexture.SelectedIndex = i;
 				// Flares
 				chkFlares.Checked = layer.showFlares;
 			}
@@ -632,7 +633,7 @@ namespace Stars3D.Plugin
 
 			private void btnOK_Click(object sender, System.EventArgs e)
 			{
-				if(cboTexture.SelectedItem != null) 
+				if (cboTexture.SelectedItem != null)
 				{
 					//System.Windows.Forms.MessageBox.Show("Texture : " + cboTexture.SelectedItem.ToString());
 					layer.Dispose();
@@ -675,60 +676,60 @@ namespace Stars3D.Plugin
 		/// </remarks>
 		private Mesh ColoredSphere(Device device, float radius, int slices, int stacks)
 		{
-			int numVertices = (slices+1)*(stacks+1);
-			int numFaces	= slices*stacks*2;
-			int indexCount	= numFaces * 3;
+			int numVertices = (slices + 1) * (stacks + 1);
+			int numFaces = slices * stacks * 2;
+			int indexCount = numFaces * 3;
 
-			Mesh mesh = new Mesh(numFaces,numVertices,MeshFlags.Managed,CustomVertex.PositionColored.Format,device);
+			Mesh mesh = new Mesh(numFaces, numVertices, MeshFlags.Managed, CustomVertex.PositionColored.Format, device);
 
 			// Get the original sphere's vertex buffer.
-			int [] ranks = new int[1];
+			int[] ranks = new int[1];
 			ranks[0] = mesh.NumberVertices;
-			System.Array arr = mesh.VertexBuffer.Lock(0,typeof(CustomVertex.PositionColored),LockFlags.None,ranks);
+			System.Array arr = mesh.VertexBuffer.Lock(0, typeof(CustomVertex.PositionColored), LockFlags.None, ranks);
 
 			// Set the vertex buffer
-			int vertIndex=0;
-			for(int stack=0;stack<=stacks;stack++)
+			int vertIndex = 0;
+			for (int stack = 0; stack <= stacks; stack++)
 			{
-				double latitude = -90 + ((float)stack/stacks*(float)180.0);
-				for(int slice=0;slice<=slices;slice++)
+				double latitude = -90 + ((float)stack / stacks * (float)180.0);
+				for (int slice = 0; slice <= slices; slice++)
 				{
 					CustomVertex.PositionColored pnt = new CustomVertex.PositionColored();
-					double longitude = 180 - ((float)slice/slices*(float)360);
-					Point3d v = MathEngine.SphericalToCartesian( latitude, longitude, radius);
-               pnt.X = (float)v.X;
-               pnt.Y = (float)v.Y;
-               pnt.Z = (float)v.Z;
+					double longitude = 180 - ((float)slice / slices * (float)360);
+					Point3d v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
+					pnt.X = (float)v.X;
+					pnt.Y = (float)v.Y;
+					pnt.Z = (float)v.Z;
 					pnt.Color = Color.Black.ToArgb();
 					//pnt.Tu = (float)slice/slices;
 					//pnt.Tv = 1.0f-(float)stack/stacks;
-					arr.SetValue(pnt,vertIndex++);
+					arr.SetValue(pnt, vertIndex++);
 				}
 			}
 
 			mesh.VertexBuffer.Unlock();
-			ranks[0]=indexCount;
-			arr = mesh.LockIndexBuffer(typeof(short),LockFlags.None,ranks);
-			int i=0;
+			ranks[0] = indexCount;
+			arr = mesh.LockIndexBuffer(typeof(short), LockFlags.None, ranks);
+			int i = 0;
 			short bottomVertex = 0;
 			short topVertex = 0;
-			for(short x=0;x<stacks;x++)
+			for (short x = 0; x < stacks; x++)
 			{
-				bottomVertex = (short)((slices+1)*x);
+				bottomVertex = (short)((slices + 1) * x);
 				topVertex = (short)(bottomVertex + slices + 1);
-				for(int y=0;y<slices;y++)
+				for (int y = 0; y < slices; y++)
 				{
-					arr.SetValue(bottomVertex,i++);
-					arr.SetValue((short)(topVertex+1),i++);
-					arr.SetValue(topVertex,i++);
-					arr.SetValue(bottomVertex,i++);
-					arr.SetValue((short)(bottomVertex+1),i++);
-					arr.SetValue((short)(topVertex+1),i++);
+					arr.SetValue(bottomVertex, i++);
+					arr.SetValue((short)(topVertex + 1), i++);
+					arr.SetValue(topVertex, i++);
+					arr.SetValue(bottomVertex, i++);
+					arr.SetValue((short)(bottomVertex + 1), i++);
+					arr.SetValue((short)(topVertex + 1), i++);
 					bottomVertex++;
 					topVertex++;
 				}
 			}
-			mesh.IndexBuffer.SetData(arr,0,LockFlags.None);
+			mesh.IndexBuffer.SetData(arr, 0, LockFlags.None);
 			//mesh.ComputeNormals();
 
 			return mesh;

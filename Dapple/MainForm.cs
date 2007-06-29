@@ -90,8 +90,16 @@ namespace Dapple
       //private List<TreeNode> triStateTreeViewLayerNodes = new List<TreeNode>();
       //private TreeNode lastLayerNode, firstLayerNode;
       private WorldWindow worldWindow = new WorldWindow();
-      private NASA.Plugins.BMNG bmngPlugin;
+      
+		private NASA.Plugins.BMNG bmngPlugin;
+		private Murris.Plugins.Compass compassPlugin;
+		private Murris.Plugins.GlobalClouds cloudsPlugin;
+		private Murris.Plugins.SkyGradient skyPlugin;
+		private NASA.Plugins.BmngLoader bmngLoader;
+		private Stars3D.Plugin.Stars3D starsPlugin;
       private ThreeDconnexion.Plugin.TDxWWInput threeDConnPlugin;
+
+
       private WorldWind.OverviewControl overviewCtl;
       private string openView = "";
       private string openGeoTiff = "";
@@ -107,8 +115,6 @@ namespace Dapple
       private LayerBuilderList activeLayers;
 
       Geosoft.GX.DAPGetData.GetDapError dapErrors;
-
-      Murris.Plugins.Compass compassPlugin;
 
       private int iLastTransparency = 255; // It breaks the message loop to access the actual property during paint
       private DappleToolStripRenderer toolStripRenderer;
@@ -380,21 +386,25 @@ namespace Dapple
 
             this.worldWindow.CurrentWorld = world;
 
-            NASA.Plugins.BmngLoader bmng = new NASA.Plugins.BmngLoader();
+				string strPluginsDir = Path.Combine(DirectoryPath, "Plugins");
+            this.bmngLoader = new NASA.Plugins.BmngLoader();
+				this.bmngLoader.PluginLoad(this, Path.Combine(strPluginsDir, "BlueMarble"));
+				this.bmngPlugin = bmngLoader.BMNGForm;
 
-            Atmosphere.Plugin.Atmosphere atmo = new Atmosphere.Plugin.Atmosphere();
-            Stars3D.Plugin.Stars3D stars = new Stars3D.Plugin.Stars3D();
+            this.starsPlugin = new Stars3D.Plugin.Stars3D();
+				this.starsPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "Stars3D"));
+
             this.compassPlugin = new Murris.Plugins.Compass();
+				this.compassPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "Compass"));
 
-            bmng.PluginLoad(this, DirectoryPath);
-            atmo.PluginLoad(this, DirectoryPath);
-            stars.PluginLoad(this, DirectoryPath);
-            compassPlugin.PluginLoad(this, DirectoryPath);
+				this.cloudsPlugin = new Murris.Plugins.GlobalClouds();
+				this.cloudsPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "GlobalClouds"));
 
-            this.bmngPlugin = bmng.BMNGForm;
+				this.skyPlugin = new Murris.Plugins.SkyGradient();
+				this.skyPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "SkyGradient"));
 
             this.threeDConnPlugin = new ThreeDconnexion.Plugin.TDxWWInput();
-            this.threeDConnPlugin.PluginLoad(this, DirectoryPath);
+				this.threeDConnPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "3DConnexion"));
 
             this.WorldResultsSplitPanel.Panel1.Controls.Add(this.worldWindow);
             this.worldWindow.Dock = DockStyle.Fill;
@@ -1761,6 +1771,30 @@ namespace Dapple
          File.Delete(tempViewFile);
       }
 
+		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void sunshadingEffectsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void atmosphericEffectsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void globalCloudsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void measureToolToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
 
       private void toolStripMenuItemexit_Click(object sender, EventArgs e)
       {
@@ -3330,57 +3364,7 @@ namespace Dapple
             return splashScreen;
          }
       }
-
-      /// <summary>
-      /// MainApplication's main menu (drop-down)
-      /// </summary>
-      public override MainMenu MainMenu
-      {
-         get
-         {
-            return null;
-         }
-      }
-
-      /// <summary>
-      /// MainApplication's Tools menu (drop-down)
-      /// </summary>
-      public override MenuItem ToolsMenu
-      {
-         get
-         {
-            return null;
-         }
-      }
-
-      /// <summary>
-      /// MainApplication's View menu (drop-down)
-      /// </summary>
-      public override MenuItem ViewMenu
-      {
-         get
-         {
-            return null;
-         }
-      }
-
-      /// <summary>
-      /// MainApplication's Plugins menu (drop-down)
-      /// </summary>
-      public override MenuItem PluginsMenu
-      {
-         get
-         {
-            return null;
-         }
-      }
-
       #endregion
-
-      private void toolStripNavButton_MouseRemoveCapture(object sender, MouseEventArgs e)
-      {
-
-      }
 
       #region DappleSearch code
 

@@ -19,7 +19,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Minimum distance from camera to label squared
 		/// </summary>
-		protected double m_minimumDistanceSq; 
+		protected double m_minimumDistanceSq;
 
 		/// <summary>
 		/// Maximum distance from camera to label squared
@@ -29,7 +29,7 @@ namespace WorldWind.Renderable
 
 		protected string m_iconFilePath;
 		protected Sprite m_sprite;
-		
+
 		protected Font m_drawingFont;
 		protected int m_color;
 		protected ArrayList m_placenameFileList = new ArrayList();
@@ -41,22 +41,22 @@ namespace WorldWind.Renderable
 		protected System.Drawing.Rectangle m_spriteSize;
 		protected FontDescription m_fontDescription;
 		protected DrawTextFormat m_textFormat = DrawTextFormat.None;
-		
+
 		protected static int IconWidth = 48;
 		protected static int IconHeight = 48;
 
 		public WorldWindPlacename[] PlaceNames
 		{
-			get{ return m_placeNames; }
+			get { return m_placeNames; }
 		}
 
 		public int Color
 		{
-			get{ return m_color; }
+			get { return m_color; }
 		}
 		public FontDescription FontDescription
 		{
-			get{ return m_fontDescription; }
+			get { return m_fontDescription; }
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace WorldWind.Renderable
 		/// <param name="color"></param>
 		/// <param name="iconFilePath"></param>
 		public TiledPlacenameSet(
-			string name, 
+			string name,
 			World parentWorld,
 			double altitude,
 			double maximumDisplayAltitude,
@@ -81,19 +81,20 @@ namespace WorldWind.Renderable
 			FontDescription fontDescription,
 			System.Drawing.Color color,
 			string iconFilePath
-			) : base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
+			)
+			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 			m_parentWorld = parentWorld;
 			m_altitude = altitude;
-			m_maximumDistanceSq = maximumDisplayAltitude*maximumDisplayAltitude;
-			m_minimumDistanceSq = minimumDisplayAltitude*minimumDisplayAltitude;
+			m_maximumDistanceSq = maximumDisplayAltitude * maximumDisplayAltitude;
+			m_minimumDistanceSq = minimumDisplayAltitude * minimumDisplayAltitude;
 			m_placenameListFilePath = placenameListFilePath;
 			m_fontDescription = fontDescription;
 			m_color = color.ToArgb();
 			m_iconFilePath = iconFilePath;
-			
+
 			// Set default render priority
-			//m_renderPriority = RenderPriority.Placenames;
+			m_renderPriority = RenderPriority.Placenames;
 		}
 
 		public override bool IsOn
@@ -104,12 +105,12 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
-				if(isOn && !value)
+				if (isOn && !value)
 					Dispose();
 				isOn = value;
-				
+
 				// HACK: We need a flag telling which layers are "Place names"
-				if(Name=="Placenames")
+				if (Name == "Placenames")
 					World.Settings.showPlacenames = value;
 			}
 		}
@@ -119,28 +120,28 @@ namespace WorldWind.Renderable
 			this.isInitialized = true;
 
 			m_drawingFont = drawArgs.CreateFont(m_fontDescription);
-			if(!File.Exists(m_placenameListFilePath))
+			if (!File.Exists(m_placenameListFilePath))
 			{
 				this.isInitialized = true;
 				Log.Write(Log.Levels.Error, "PLACE", m_placenameListFilePath + " not found.");
 				return;
 			}
 
-			if(m_iconFilePath!=null)
+			if (m_iconFilePath != null)
 			{
-				m_iconTexture = ImageHelper.LoadIconTexture( m_iconFilePath );
-			
-				using(Surface s = m_iconTexture.GetSurfaceLevel(0))
+				m_iconTexture = ImageHelper.LoadIconTexture(m_iconFilePath);
+
+				using (Surface s = m_iconTexture.GetSurfaceLevel(0))
 				{
 					SurfaceDescription desc = s.Description;
-					m_spriteSize = new System.Drawing.Rectangle(0,0, desc.Width, desc.Height);
+					m_spriteSize = new System.Drawing.Rectangle(0, 0, desc.Width, desc.Height);
 				}
 
 				m_sprite = new Sprite(drawArgs.device);
 			}
 
-			using( BufferedStream placenameFileListStream = new BufferedStream(File.Open(m_placenameListFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)))
-			using( BinaryReader placenameFileListReader = new BinaryReader(placenameFileListStream, System.Text.Encoding.ASCII))
+			using (BufferedStream placenameFileListStream = new BufferedStream(File.Open(m_placenameListFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)))
+			using (BinaryReader placenameFileListReader = new BinaryReader(placenameFileListStream, System.Text.Encoding.ASCII))
 			{
 				int count = placenameFileListReader.ReadInt32();
 				for (int i = 0; i < count; i++)
@@ -160,35 +161,35 @@ namespace WorldWind.Renderable
 		{
 			this.isInitialized = false;
 
-			if(m_placenameFileList != null)
+			if (m_placenameFileList != null)
 			{
-				lock(m_placenameFileList.SyncRoot)
+				lock (m_placenameFileList.SyncRoot)
 				{
 					m_placenameFileList.Clear();
 				}
 			}
 
-			if(m_placenameFiles != null)
+			if (m_placenameFiles != null)
 			{
-				lock(m_placenameFiles.SyncRoot)
+				lock (m_placenameFiles.SyncRoot)
 				{
 					m_placenameFiles.Clear();
 				}
 			}
 
-			if(m_placeNames != null)
+			if (m_placeNames != null)
 			{
-				lock(this)
+				lock (this)
 					m_placeNames = null;
 			}
 
-			if(m_iconTexture != null)
+			if (m_iconTexture != null)
 			{
 				m_iconTexture.Dispose();
 				m_iconTexture = null;
 			}
 
-			if(m_sprite != null)
+			if (m_sprite != null)
 			{
 				m_sprite.Dispose();
 				m_sprite = null;
@@ -203,7 +204,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// // Index into currently loaded array for already loaded test
 		/// </summary>
-		int curPlaceNameIndex; 
+		int curPlaceNameIndex;
 
 		Matrix4d lastView = Matrix4d.Identity;
 
@@ -211,23 +212,23 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(!this.isInitialized)
+				if (!this.isInitialized)
 					this.Initialize(drawArgs);
 
-				if(lastView != drawArgs.WorldCamera.ViewMatrix)
+				if (lastView != drawArgs.WorldCamera.ViewMatrix)
 				{
 					ArrayList tempPlacenames = new ArrayList();
-					if((m_minimumDistanceSq == 0 && m_maximumDistanceSq == 0) ||
-						drawArgs.WorldCamera.Altitude*drawArgs.WorldCamera.Altitude <= m_maximumDistanceSq)
+					if ((m_minimumDistanceSq == 0 && m_maximumDistanceSq == 0) ||
+						drawArgs.WorldCamera.Altitude * drawArgs.WorldCamera.Altitude <= m_maximumDistanceSq)
 					{
-						curPlaceNameIndex=0; 
-						foreach(WorldWindPlacenameFile placenameFileDescriptor in m_placenameFileList)
+						curPlaceNameIndex = 0;
+						foreach (WorldWindPlacenameFile placenameFileDescriptor in m_placenameFileList)
 						{
 							UpdateNames(placenameFileDescriptor, tempPlacenames, drawArgs);
 						}
 					}
 
-					lock(this)
+					lock (this)
 					{
 						m_placeNames = new WorldWindPlacename[tempPlacenames.Count];
 						tempPlacenames.CopyTo(m_placeNames);
@@ -252,19 +253,19 @@ namespace WorldWind.Renderable
 			double south = drawArgs.WorldCamera.Latitude.Degrees - viewRange;
 			double west = drawArgs.WorldCamera.Longitude.Degrees - viewRange;
 			double east = drawArgs.WorldCamera.Longitude.Degrees + viewRange;
-		
-			if(placenameFileDescriptor.north < south)
+
+			if (placenameFileDescriptor.north < south)
 				return;
-			if(placenameFileDescriptor.south > north)
+			if (placenameFileDescriptor.south > north)
 				return;
-			if(placenameFileDescriptor.east < west)
+			if (placenameFileDescriptor.east < west)
 				return;
-			if(placenameFileDescriptor.west > east)
+			if (placenameFileDescriptor.west > east)
 				return;
 
-			string dataFilePath = Path.Combine( Path.GetDirectoryName(m_placenameListFilePath), placenameFileDescriptor.dataFilename );
-			using( BufferedStream dataFileStream = new BufferedStream(File.Open(dataFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) )
-			using( BinaryReader dataFileReader = new BinaryReader(dataFileStream, System.Text.Encoding.ASCII) )
+			string dataFilePath = Path.Combine(Path.GetDirectoryName(m_placenameListFilePath), placenameFileDescriptor.dataFilename);
+			using (BufferedStream dataFileStream = new BufferedStream(File.Open(dataFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)))
+			using (BinaryReader dataFileReader = new BinaryReader(dataFileStream, System.Text.Encoding.ASCII))
 			{
 				WorldWindPlacenameFile dataFile = new WorldWindPlacenameFile();
 				dataFile.dataFilename = placenameFileDescriptor.dataFilename;
@@ -278,7 +279,7 @@ namespace WorldWind.Renderable
 				WorldWindPlacename curPlace = new WorldWindPlacename();
 				for (int i = 0; i < numberPlacenames; i++)
 				{
-					if(m_placeNames != null && curPlaceNameIndex<m_placeNames.Length)
+					if (m_placeNames != null && curPlaceNameIndex < m_placeNames.Length)
 						curPlace = m_placeNames[curPlaceNameIndex];
 
 					string name = dataFileReader.ReadString();
@@ -314,17 +315,17 @@ namespace WorldWind.Renderable
 					//pn.metaData = metaData;
 
 					double elevation = 0;
-					if(m_parentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 300000)
+					if (m_parentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 300000)
 						elevation = m_parentWorld.TerrainAccessor.GetElevationAt(lat, lon);
 					double altitude = (m_parentWorld.EquatorialRadius + World.Settings.VerticalExaggeration * m_altitude + World.Settings.VerticalExaggeration * elevation);
 					pn.cartesianPoint = MathEngine.SphericalToCartesian(lat, lon, altitude);
 					double distanceSq = (pn.cartesianPoint - drawArgs.WorldCamera.Position).LengthSq;
-					if(distanceSq > m_maximumDistanceSq)
+					if (distanceSq > m_maximumDistanceSq)
 						continue;
-					if(distanceSq < m_minimumDistanceSq)
+					if (distanceSq < m_minimumDistanceSq)
 						continue;
 
-					if(!drawArgs.WorldCamera.ViewFrustum.ContainsPoint(pn.cartesianPoint))
+					if (!drawArgs.WorldCamera.ViewFrustum.ContainsPoint(pn.cartesianPoint))
 						continue;
 
 					tempPlacenames.Add(pn);
@@ -336,47 +337,47 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				lock(this)
+				lock (this)
 				{
 					Point3d cameraPosition = drawArgs.WorldCamera.Position;
-					if(m_placeNames==null)
+					if (m_placeNames == null)
 						return;
 
 					// Black outline for light text, white outline for dark text
 					int outlineColor = unchecked((int)0x80ffffff);
-					int brightness = (m_color & 0xff) + 
-						((m_color >> 8) & 0xff) + 
+					int brightness = (m_color & 0xff) +
+						((m_color >> 8) & 0xff) +
 						((m_color >> 16) & 0xff);
-					if(brightness > 255*3/2)
+					if (brightness > 255 * 3 / 2)
 						outlineColor = unchecked((int)0x80000000);
 
-					if(m_sprite != null)
+					if (m_sprite != null)
 						m_sprite.Begin(SpriteFlags.AlphaBlend);
 					int count = 0;
-               Point3d referenceCenter = new Point3d(
+					Point3d referenceCenter = new Point3d(
 						drawArgs.WorldCamera.ReferenceCenter.X,
 						drawArgs.WorldCamera.ReferenceCenter.Y,
 						drawArgs.WorldCamera.ReferenceCenter.Z);
 
-					for(int index=0; index<m_placeNames.Length; index++)
+					for (int index = 0; index < m_placeNames.Length; index++)
 					{
 						Point3d v = m_placeNames[index].cartesianPoint;
-						double distanceSquared = (v-cameraPosition).LengthSq;
-						if(distanceSquared > m_maximumDistanceSq)
+						double distanceSquared = (v - cameraPosition).LengthSq;
+						if (distanceSquared > m_maximumDistanceSq)
 							continue;
 
-						if(distanceSquared < m_minimumDistanceSq)
+						if (distanceSquared < m_minimumDistanceSq)
 							continue;
-						
-						if(!drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v))
+
+						if (!drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v))
 							continue;
 
 						Point3d pv = drawArgs.WorldCamera.Project(v - referenceCenter);
 
 						// Render text only
 						string label = m_placeNames[index].Name;
-					
-						
+
+
 						/*
 						if(m_sprite != null && 1==0)
 						{
@@ -389,41 +390,41 @@ namespace WorldWind.Renderable
 						}
 						*/
 
-						System.Drawing.Rectangle rect = m_drawingFont.MeasureString(null, label, m_textFormat, m_color );
+						System.Drawing.Rectangle rect = m_drawingFont.MeasureString(null, label, m_textFormat, m_color);
 
-						pv.Y -= rect.Height/2;
-						if(m_sprite==null)
+						pv.Y -= rect.Height / 2;
+						if (m_sprite == null)
 							// Center horizontally
-							pv.X -= rect.Width/2;
+							pv.X -= rect.Width / 2;
 
-						rect.Inflate(3,1);
+						rect.Inflate(3, 1);
 						int x = (int)Math.Round(pv.X);
 						int y = (int)Math.Round(pv.Y);
 
-						rect.Offset(x,y);
+						rect.Offset(x, y);
 
-						if(World.Settings.outlineText)
+						if (World.Settings.outlineText)
 						{
-							m_drawingFont.DrawText(null,label, x-1, y-1, outlineColor );
-							m_drawingFont.DrawText(null,label, x-1, y+1, outlineColor );
-							m_drawingFont.DrawText(null,label, x+1, y-1, outlineColor );
-							m_drawingFont.DrawText(null,label, x+1, y+1, outlineColor );
+							m_drawingFont.DrawText(null, label, x - 1, y - 1, outlineColor);
+							m_drawingFont.DrawText(null, label, x - 1, y + 1, outlineColor);
+							m_drawingFont.DrawText(null, label, x + 1, y - 1, outlineColor);
+							m_drawingFont.DrawText(null, label, x + 1, y + 1, outlineColor);
 						}
 
-						m_drawingFont.DrawText(null,label, x, y, m_color );
+						m_drawingFont.DrawText(null, label, x, y, m_color);
 
 						count++;
-						if(count>30)
+						if (count > 30)
 							break;
 					}
 
-					if(m_sprite != null)
+					if (m_sprite != null)
 						m_sprite.End();
 				}
 			}
-			catch(Exception caught)
+			catch (Exception caught)
 			{
-				Log.Write( caught );
+				Log.Write(caught);
 			}
 		}
 	}
@@ -444,12 +445,12 @@ namespace WorldWind.Renderable
 
 		public void SavePlacenameList(string filename)
 		{
-			if(!Directory.Exists(Path.GetDirectoryName(filename)))
+			if (!Directory.Exists(Path.GetDirectoryName(filename)))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(filename));
 			}
 
-			using( FileStream fs = File.Open(filename, FileMode.Create) )
+			using (FileStream fs = File.Open(filename, FileMode.Create))
 			using (BinaryWriter bw = new BinaryWriter(fs, System.Text.Encoding.ASCII))
 			{
 				bw.Write(m_placenameFiles.Count);
@@ -461,8 +462,8 @@ namespace WorldWind.Renderable
 					bw.Write(pf.east);
 					bw.Write(pf.north);
 
-					string dataFilePath = Path.Combine( Path.GetDirectoryName(filename), pf.dataFilename );
-					using( FileStream placenameFileStream = File.Open(dataFilePath, FileMode.Create))
+					string dataFilePath = Path.Combine(Path.GetDirectoryName(filename), pf.dataFilename);
+					using (FileStream placenameFileStream = File.Open(dataFilePath, FileMode.Create))
 					using (BinaryWriter placenameFileWriter = new BinaryWriter(placenameFileStream, System.Text.Encoding.ASCII))
 					{
 						placenameFileWriter.Write(pf.m_placeNames.Count);
@@ -496,27 +497,27 @@ namespace WorldWind.Renderable
 		public void AddPlacename(string name, float lat, float lon, Hashtable metaData)
 		{
 			WorldWindPlacenameFile p = null;
-			foreach(WorldWindPlacenameFile tempFile in m_placenameFiles)
+			foreach (WorldWindPlacenameFile tempFile in m_placenameFiles)
 			{
-				if(lat < tempFile.north && lat >= tempFile.south && lon >= tempFile.west && lon < tempFile.east)
+				if (lat < tempFile.north && lat >= tempFile.south && lon >= tempFile.west && lon < tempFile.east)
 				{
 					p = tempFile;
 					break;
 				}
 			}
 
-			if(p == null)
+			if (p == null)
 				return;
-			
-			if(p.m_placeNames.Count == 50000)
+
+			if (p.m_placeNames.Count == 50000)
 			{
 				//split
 				WorldWindPlacenameFile[] splitFiles = p.SplitPlacenameFiles();
 				m_placenameFiles.Remove(p);
-				foreach(WorldWindPlacenameFile newFile in splitFiles)
+				foreach (WorldWindPlacenameFile newFile in splitFiles)
 					m_placenameFiles.Add(newFile);
 				this.AddPlacename(name, lat, lon, metaData);
-				
+
 			}
 			else
 				p.AddPlacename(name, lat, lon, metaData);
@@ -568,36 +569,36 @@ namespace WorldWind.Renderable
 			northWest.south = 0.5f * (this.north + this.south);
 			northWest.west = this.west;
 			northWest.east = 0.5f * (this.west + this.east);
-			northWest.dataFilename = GetRowFromLatitude(northWest.south, northWest.north - northWest.south).ToString().PadLeft(4,'0') + "_" + GetColFromLongitude(northWest.west, northWest.east - northWest.west).ToString().PadLeft(4,'0') + ".wwp";
+			northWest.dataFilename = GetRowFromLatitude(northWest.south, northWest.north - northWest.south).ToString().PadLeft(4, '0') + "_" + GetColFromLongitude(northWest.west, northWest.east - northWest.west).ToString().PadLeft(4, '0') + ".wwp";
 
 			WorldWindPlacenameFile northEast = new WorldWindPlacenameFile();
 			northEast.north = this.north;
 			northEast.south = 0.5f * (this.north + this.south);
 			northEast.west = 0.5f * (this.west + this.east);
 			northEast.east = this.east;
-			northEast.dataFilename = GetRowFromLatitude(northEast.south, northEast.north - northEast.south).ToString().PadLeft(4,'0') + "_" + GetColFromLongitude(northEast.west, northEast.east - northEast.west).ToString().PadLeft(4,'0') + ".wwp";
+			northEast.dataFilename = GetRowFromLatitude(northEast.south, northEast.north - northEast.south).ToString().PadLeft(4, '0') + "_" + GetColFromLongitude(northEast.west, northEast.east - northEast.west).ToString().PadLeft(4, '0') + ".wwp";
 
 			WorldWindPlacenameFile southWest = new WorldWindPlacenameFile();
 			southWest.north = 0.5f * (this.north + this.south);
 			southWest.south = this.south;
 			southWest.west = this.west;
 			southWest.east = 0.5f * (this.west + this.east);
-			southWest.dataFilename = GetRowFromLatitude(southWest.south, southWest.north - southWest.south).ToString().PadLeft(4,'0') + "_" + GetColFromLongitude(southWest.west, southWest.east - southWest.west).ToString().PadLeft(4,'0') + ".wwp";
+			southWest.dataFilename = GetRowFromLatitude(southWest.south, southWest.north - southWest.south).ToString().PadLeft(4, '0') + "_" + GetColFromLongitude(southWest.west, southWest.east - southWest.west).ToString().PadLeft(4, '0') + ".wwp";
 
 			WorldWindPlacenameFile southEast = new WorldWindPlacenameFile();
 			southEast.north = 0.5f * (this.north + this.south);
 			southEast.south = this.south;
 			southEast.west = 0.5f * (this.west + this.east);
 			southEast.east = this.east;
-			southEast.dataFilename = GetRowFromLatitude(southEast.south, southEast.north - southEast.south).ToString().PadLeft(4,'0') + "_" + GetColFromLongitude(southEast.west, southEast.east - southEast.west).ToString().PadLeft(4,'0') + ".wwp";
+			southEast.dataFilename = GetRowFromLatitude(southEast.south, southEast.north - southEast.south).ToString().PadLeft(4, '0') + "_" + GetColFromLongitude(southEast.west, southEast.east - southEast.west).ToString().PadLeft(4, '0') + ".wwp";
 
-			foreach(WorldWindPlacename p in m_placeNames)
+			foreach (WorldWindPlacename p in m_placeNames)
 			{
-				if(p.Lat >= 0.5f * (this.north + this.south))
+				if (p.Lat >= 0.5f * (this.north + this.south))
 				{
-					if(p.Lon >= 0.5 * (this.west + this.east))
+					if (p.Lon >= 0.5 * (this.west + this.east))
 					{
-						northEast.AddPlacename(p.Name, p.Lat, p.Lon, p.metaData);	
+						northEast.AddPlacename(p.Name, p.Lat, p.Lon, p.metaData);
 					}
 					else
 					{
@@ -606,7 +607,7 @@ namespace WorldWind.Renderable
 				}
 				else
 				{
-					if(p.Lon >= 0.5 * (this.west + this.east))
+					if (p.Lon >= 0.5 * (this.west + this.east))
 					{
 						southEast.AddPlacename(p.Name, p.Lat, p.Lon, p.metaData);
 
@@ -618,19 +619,19 @@ namespace WorldWind.Renderable
 				}
 			}
 
-			WorldWindPlacenameFile[] returnArray = new WorldWindPlacenameFile[] {northWest, northEast, southWest, southEast};
+			WorldWindPlacenameFile[] returnArray = new WorldWindPlacenameFile[] { northWest, northEast, southWest, southEast };
 			return returnArray;
 		}
 
-		
+
 		public static int GetRowFromLatitude(float latitude, float tileSize)
 		{
-			return (int)System.Math.Round((System.Math.Abs(-90.0 - latitude)%180)/tileSize);
+			return (int)System.Math.Round((System.Math.Abs(-90.0 - latitude) % 180) / tileSize);
 		}
-			
+
 		public static int GetColFromLongitude(float longitude, float tileSize)
 		{
-			return (int)System.Math.Round((System.Math.Abs(-180.0 - longitude)%360)/tileSize);
+			return (int)System.Math.Round((System.Math.Abs(-180.0 - longitude) % 360) / tileSize);
 		}
 	}
 

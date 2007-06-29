@@ -303,7 +303,7 @@ namespace WorldWind.Camera
       {
          m_absoluteWorldMatrix = Matrix4d.Identity;
 
-         double aspectRatio = viewPort.Width / viewPort.Height;
+			double aspectRatio = (double)viewPort.Width / viewPort.Height;
          double zNear = Math.Max(this._altitude - TerrainElevationUnderCamera, minimumAltitude) * 0.1f;
          double distToCenterOfPlanet = (this._altitude + this.WorldRadius);
          double tangentalDistance = Math.Sqrt(distToCenterOfPlanet * distToCenterOfPlanet - _worldRadius * _worldRadius);

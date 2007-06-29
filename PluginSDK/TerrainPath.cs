@@ -31,10 +31,10 @@ namespace WorldWind.Renderable
 		public bool isLoaded;
 		Point3d lastUpdatedPosition;
 		float verticalExaggeration = 1.0f;
-		
-		double _minDisplayAltitude, _maxDisplayAltitude; 
+
+		double _minDisplayAltitude, _maxDisplayAltitude;
 		bool m_enableLighting = false;
-	
+
 		int lineColor;
 		public CustomVertex.PositionColored[] linePoints;
 
@@ -42,18 +42,18 @@ namespace WorldWind.Renderable
 
 		public int LineColor
 		{
-			get{ return lineColor; }
+			get { return lineColor; }
 		}
 
-	        public bool EnableLighting
-	        {
-	            get { return m_enableLighting; }
-	            set { m_enableLighting = value; }
-	        }
+		public bool EnableLighting
+		{
+			get { return m_enableLighting; }
+			set { m_enableLighting = value; }
+		}
 
 		public Vector3[] SphericalCoordinates
 		{
-			get{ return sphericalCoordinates; }
+			get { return sphericalCoordinates; }
 		}
 
 		/// <summary>
@@ -68,15 +68,15 @@ namespace WorldWind.Renderable
 		/// <param name="lineColor"></param>
 		/// <param name="terrainAccessor"></param>
 		public TerrainPath(
-			string name, 
-			World parentWorld, 
-			double minDisplayAltitude, 
-			double maxDisplayAltitude, 
-			string terrainFileName, 
-			float heightAboveSurface, 
+			string name,
+			World parentWorld,
+			double minDisplayAltitude,
+			double maxDisplayAltitude,
+			string terrainFileName,
+			float heightAboveSurface,
 			System.Drawing.Color lineColor,
-			TerrainAccessor terrainAccessor) 
-			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
+			TerrainAccessor terrainAccessor)
+			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 			this._parentWorld = parentWorld;
 			this._minDisplayAltitude = minDisplayAltitude;
@@ -86,7 +86,7 @@ namespace WorldWind.Renderable
 			//this.terrainMapped = terrainMapped;
 			this.lineColor = lineColor.ToArgb();
 			this._terrainAccessor = terrainAccessor;
-			//this.RenderPriority = RenderPriority.LinePaths;
+			this.RenderPriority = RenderPriority.LinePaths;
 		}
 
 		/// <summary>
@@ -107,7 +107,7 @@ namespace WorldWind.Renderable
 		/// <param name="lineColor"></param>
 		/// <param name="terrainAccessor"></param>
 		public TerrainPath(
-			string name, 
+			string name,
 			World parentWorld, 
 			double minDisplayAltitude, 
 			double maxDisplayAltitude, 
@@ -118,10 +118,10 @@ namespace WorldWind.Renderable
 			double south,
 			double east, 
 			double west,
-			float heightAboveSurface, 
+			float heightAboveSurface,
 			System.Drawing.Color lineColor,
-			TerrainAccessor terrainAccessor) 
-			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
+			TerrainAccessor terrainAccessor)
+			: base (name, parentWorld.Position, Quaternion4d .RotationYawPitchRoll(0, 0, 0))
 		{
 			this._parentWorld = parentWorld;
 			this._minDisplayAltitude = minDisplayAltitude;
@@ -133,16 +133,16 @@ namespace WorldWind.Renderable
 			//this.terrainMapped = terrainMapped;
 			this.lineColor = lineColor.ToArgb();
 			this._terrainAccessor = terrainAccessor;
-			
+
 			this.north = (float)north;
 			this.south = (float)south;
 			this.west = (float)west;
 			this.east = (float)east;
 
-			//this.RenderPriority = RenderPriority.LinePaths;
+			this.RenderPriority = RenderPriority.LinePaths;
 
-			this.boundingBox = new BoundingBox( this.south, this.north, this.west, this.east, 
-				(float)this._parentWorld.EquatorialRadius, 
+			this.boundingBox = new BoundingBox(this.south, this.north, this.west, this.east,
+				(float)this._parentWorld.EquatorialRadius,
 				(float)(this._parentWorld.EquatorialRadius + this.verticalExaggeration * heightAboveSurface));
 		}
 
@@ -164,11 +164,11 @@ namespace WorldWind.Renderable
 
 		public Vector3[] GetSphericalCoordinates(ref float northExtent, ref float southExtent, ref float westExtent, ref float eastExtent)
 		{
-			if(this._dataArchiveReader == null)
+			if (this._dataArchiveReader == null)
 			{
 				FileInfo file = new FileInfo(this.terrainFileName);
 
-				if(!file.Exists)
+				if (!file.Exists)
 				{
 					northExtent = 0;
 					southExtent = 0;
@@ -176,8 +176,8 @@ namespace WorldWind.Renderable
 					eastExtent = 0;
 					return null;
 				}
-				using( BufferedStream fs = new BufferedStream(file.OpenRead()) )
-				using( BinaryReader br = new BinaryReader(fs) )
+				using (BufferedStream fs = new BufferedStream(file.OpenRead()))
+				using (BinaryReader br = new BinaryReader(fs))
 				{
 					int numCoords = br.ReadInt32();
 
@@ -211,15 +211,15 @@ namespace WorldWind.Renderable
 			else
 			{
 				this._dataArchiveReader.BaseStream.Seek(this._fileOffset, SeekOrigin.Begin);
-				
+
 				int numCoords = this._dataArchiveReader.ReadInt32();
-					
+
 				byte numElements = this._dataArchiveReader.ReadByte();
 				Vector3[] coordinates = new Vector3[numCoords];
-				
+
 				coordinates[0].X = (float)this._dataArchiveReader.ReadDouble();
 				coordinates[0].Y = (float)this._dataArchiveReader.ReadDouble();
-				if(numElements == 3)
+				if (numElements == 3)
 					coordinates[0].Z = this._dataArchiveReader.ReadInt16();
 
 				northExtent = coordinates[0].X;
@@ -227,11 +227,11 @@ namespace WorldWind.Renderable
 				westExtent = coordinates[0].Y;
 				eastExtent = coordinates[0].Y;
 
-				for(int i = 1; i < numCoords; i++)
-				{	
+				for (int i = 1; i < numCoords; i++)
+				{
 					coordinates[i].X = (float)this._dataArchiveReader.ReadDouble();
 					coordinates[i].Y = (float)this._dataArchiveReader.ReadDouble();
-					if(numElements == 3)
+					if (numElements == 3)
 						coordinates[i].Z = this._dataArchiveReader.ReadInt16();
 
 					if (northExtent < coordinates[i].X)
@@ -252,7 +252,7 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(this.terrainFileName == null && this._dataArchiveReader == null)
+				if (this.terrainFileName == null && this._dataArchiveReader == null)
 				{
 					this.isInitialized = true;
 					return;
@@ -260,16 +260,16 @@ namespace WorldWind.Renderable
 
 				sphericalCoordinates = GetSphericalCoordinates(ref north, ref south, ref west, ref east);
 
-				this.boundingBox = new BoundingBox( this.south, this.north, this.west, this.east, 
+				this.boundingBox = new BoundingBox(this.south, this.north, this.west, this.east,
 					(float)this._parentWorld.EquatorialRadius,
 					(float)(this._parentWorld.EquatorialRadius + this.verticalExaggeration * heightAboveSurface));
 
 			}
-			catch(Exception caught)
+			catch (Exception caught)
 			{
-				Log.Write( caught );
+				Log.Write(caught);
 			}
-			
+
 			this.isLoaded = true;
 		}
 
@@ -296,56 +296,56 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(!drawArgs.WorldCamera.ViewFrustum.Intersects(boundingBox))
+				if (!drawArgs.WorldCamera.ViewFrustum.Intersects(boundingBox))
 				{
 					Dispose();
 					return;
 				}
 
-				if(!isLoaded)
+				if (!isLoaded)
 					Load();
 
-				if(linePoints != null)
-					if((lastUpdatedPosition - drawArgs.WorldCamera.Position).LengthSq < 10*10) // Update if camera moved more than 10 meters
-						if(Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration) < 0.01)
+				if (linePoints != null)
+					if ((lastUpdatedPosition - drawArgs.WorldCamera.Position).LengthSq < 10 * 10) // Update if camera moved more than 10 meters
+						if (Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration) < 0.01)
 							// Already loaded and up-to-date
 							return;
 
 				verticalExaggeration = World.Settings.VerticalExaggeration;
 
 				ArrayList renderablePoints = new ArrayList();
-            Point3d lastPointProjected = Point3d.Empty;
-            Point3d currentPointProjected;
-            Point3d currentPointXyz = Point3d.Empty;
+				Point3d lastPointProjected = Point3d.Empty;
+				Point3d currentPointProjected;
+				Point3d currentPointXyz = Point3d.Empty;
 
-            Point3d rc = new Point3d(
-                    drawArgs.WorldCamera.ReferenceCenter.X,
-                    drawArgs.WorldCamera.ReferenceCenter.Y,
-                    drawArgs.WorldCamera.ReferenceCenter.Z
-                    );
+				Point3d rc = new Point3d(
+						  drawArgs.WorldCamera.ReferenceCenter.X,
+						  drawArgs.WorldCamera.ReferenceCenter.Y,
+						  drawArgs.WorldCamera.ReferenceCenter.Z
+						  );
 
-				for(int i = 0; i < sphericalCoordinates.Length; i++)
+				for (int i = 0; i < sphericalCoordinates.Length; i++)
 				{
 					double altitude = 0;
-					if(_parentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 3000000)
+					if (_parentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 3000000)
 						altitude = _terrainAccessor.GetElevationAt(
-							sphericalCoordinates[i].X, 
+							sphericalCoordinates[i].X,
 							sphericalCoordinates[i].Y,
 							(100.0 / drawArgs.WorldCamera.ViewRange.Degrees));
 
 					currentPointXyz = MathEngine.SphericalToCartesian(
-						this.sphericalCoordinates[i].X, 
-						this.sphericalCoordinates[i].Y, 
-						this._parentWorld.EquatorialRadius + this.heightAboveSurface + 
-						this.verticalExaggeration * altitude );
+						this.sphericalCoordinates[i].X,
+						this.sphericalCoordinates[i].Y,
+						this._parentWorld.EquatorialRadius + this.heightAboveSurface +
+						this.verticalExaggeration * altitude);
 
 					currentPointProjected = drawArgs.WorldCamera.Project(currentPointXyz - rc);
 
 					double dx = lastPointProjected.X - currentPointProjected.X;
-               double dy = lastPointProjected.Y - currentPointProjected.Y;
-               double distanceSquared = dx * dx + dy * dy;
-               const double minimumPointSpacingSquaredPixels = 2 * 2;
-					if(distanceSquared > minimumPointSpacingSquaredPixels)
+					double dy = lastPointProjected.Y - currentPointProjected.Y;
+					double distanceSquared = dx * dx + dy * dy;
+					const double minimumPointSpacingSquaredPixels = 2 * 2;
+					if (distanceSquared > minimumPointSpacingSquaredPixels)
 					{
 						renderablePoints.Add(currentPointXyz);
 						lastPointProjected = currentPointProjected;
@@ -354,19 +354,19 @@ namespace WorldWind.Renderable
 
 				// Add the last point if it's not already in there
 				int pointCount = renderablePoints.Count;
-				if(pointCount>0 && (Point3d)renderablePoints[pointCount-1] != currentPointXyz)
+				if (pointCount > 0 && (Point3d)renderablePoints[pointCount - 1] != currentPointXyz)
 				{
 					renderablePoints.Add(currentPointXyz);
 					pointCount++;
 				}
 
 				CustomVertex.PositionColored[] newLinePoints = new CustomVertex.PositionColored[pointCount];
-				for(int i = 0; i < pointCount; i++)
+				for (int i = 0; i < pointCount; i++)
 				{
 					currentPointXyz = (Point3d)renderablePoints[i];
 					newLinePoints[i].X = (float)currentPointXyz.X;
-               newLinePoints[i].Y = (float)currentPointXyz.Y;
-               newLinePoints[i].Z = (float)currentPointXyz.Z;
+					newLinePoints[i].Y = (float)currentPointXyz.Y;
+					newLinePoints[i].Z = (float)currentPointXyz.Z;
 
 					newLinePoints[i].Color = this.lineColor;
 				}
@@ -390,18 +390,18 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(!this.isLoaded)
+				if (!this.isLoaded)
 					return;
 
-				if(drawArgs.WorldCamera.Altitude > _maxDisplayAltitude)
+				if (drawArgs.WorldCamera.Altitude > _maxDisplayAltitude)
 					return;
-				if(drawArgs.WorldCamera.Altitude < _minDisplayAltitude)
-					return;
-
-				if(this.linePoints == null)
+				if (drawArgs.WorldCamera.Altitude < _minDisplayAltitude)
 					return;
 
-				if(!drawArgs.WorldCamera.ViewFrustum.Intersects(this.boundingBox))
+				if (this.linePoints == null)
+					return;
+
+				if (!drawArgs.WorldCamera.ViewFrustum.Intersects(this.boundingBox))
 					return;
 
 				drawArgs.numBoundaryPointsRendered += this.linePoints.Length;
@@ -417,12 +417,12 @@ namespace WorldWind.Renderable
 					(float)-drawArgs.WorldCamera.ReferenceCenter.Z
 					);
 
-				
-				//Fix for sunshading screwing with everything
-		                bool lighting = drawArgs.device.RenderState.Lighting;
-			        drawArgs.device.RenderState.Lighting = m_enableLighting;
 
-				drawArgs.device.DrawUserPrimitives( PrimitiveType.LineStrip, this.linePoints.Length - 1, this.linePoints );
+				//Fix for sunshading screwing with everything
+				bool lighting = drawArgs.device.RenderState.Lighting;
+				drawArgs.device.RenderState.Lighting = m_enableLighting;
+
+				drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, this.linePoints.Length - 1, this.linePoints);
 				drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 
 				//put lighting back like it was (see above fix)

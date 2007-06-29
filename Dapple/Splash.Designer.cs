@@ -28,14 +28,13 @@ namespace Dapple
       /// </summary>
       private void InitializeComponent()
       {
-         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Splash));
          this.SuspendLayout();
          // 
          // Splash
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+         this.BackgroundImage = global::Dapple.Properties.Resources.dapplesplash;
          this.ClientSize = new System.Drawing.Size(620, 300);
          this.Name = "Splash";
          this.ResumeLayout(false);

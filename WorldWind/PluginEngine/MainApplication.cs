@@ -8,7 +8,7 @@ using Utility;
 
 namespace WorldWind.PluginEngine
 {
-   public abstract class MainApplication : Form
+   public class MainApplication : Form
    {
       // The value of Release should be set in constructor
       public static string Release;
@@ -19,57 +19,78 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// MainApplication's System.Windows.Forms.Form
       /// </summary>
-      public abstract System.Windows.Forms.Form Form
+      public virtual System.Windows.Forms.Form Form
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
       /// <summary>
       /// MainApplication's globe window
       /// </summary>
-      public abstract WorldWindow WorldWindow
+      public virtual WorldWindow WorldWindow
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
       /// <summary>
       /// The splash screen dialog.
       /// </summary>
-      public abstract Splash SplashScreen
+      public virtual Splash SplashScreen
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
       /// <summary>
       /// MainApplication's main menu (drop-down)
       /// </summary>
-      public abstract MainMenu MainMenu
+      public virtual MainMenu MainMenu
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
       /// <summary>
       /// MainApplication's Tools menu (drop-down)
       /// </summary>
-      public abstract MenuItem ToolsMenu
+      public virtual MenuItem ToolsMenu
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
       /// <summary>
       /// MainApplication's View menu (drop-down)
       /// </summary>
-      public abstract MenuItem ViewMenu
+      public virtual MenuItem ViewMenu
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
       /// <summary>
       /// MainApplication's Plugins menu (drop-down)
       /// </summary>
-      public abstract MenuItem PluginsMenu
+      public virtual MenuItem PluginsMenu
       {
-         get;
+			get
+			{
+				return null;
+			}
       }
 
 

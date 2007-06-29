@@ -35,11 +35,11 @@ namespace WorldWind
 
 		public System.Collections.IList OnScreenMessages
 		{
-			get 
+			get
 			{
 				return this.onScreenMessages;
 			}
-			set 
+			set
 			{
 				this.onScreenMessages = value;
 			}
@@ -55,17 +55,17 @@ namespace WorldWind
 				return m_WorldSurfaceRenderer;
 			}
 		}
-/*		public string DataDirectory
-		{
-			get
-			{
-				return this._dataDirectory;
-			}
-			set
-			{
-				this._dataDirectory = value;
-			}
-		} */
+		/*		public string DataDirectory
+				{
+					get
+					{
+						return this._dataDirectory;
+					}
+					set
+					{
+						this._dataDirectory = value;
+					}
+				} */
 
 		/// <summary>
 		/// Whether this world is planet Earth.
@@ -75,7 +75,7 @@ namespace WorldWind
 			get
 			{
 				// HACK
-				return this.Name=="Earth";
+				return this.Name == "Earth";
 			}
 		}
 		#endregion
@@ -83,9 +83,9 @@ namespace WorldWind
 		ProjectedVectorRenderer m_projectedVectorRenderer = null;
 		public ProjectedVectorRenderer ProjectedVectorRenderer
 		{
-			get{ return m_projectedVectorRenderer; }
+			get { return m_projectedVectorRenderer; }
 		}
-		
+
 		static World()
 		{
 			// Don't load settings here - use LoadSettings explicitly
@@ -113,9 +113,9 @@ namespace WorldWind
 			this._renderableObjects = new RenderableObjectList(this.Name);
 			this.MetaData.Add("CacheDirectory", cacheDirectory);
 
-		//	this.m_WorldSurfaceRenderer = new WorldSurfaceRenderer(32, 0, this);
+			//	this.m_WorldSurfaceRenderer = new WorldSurfaceRenderer(32, 0, this);
 			this.m_projectedVectorRenderer = new ProjectedVectorRenderer(this);
-			
+
 			m_outerSphere = new AtmosphericScatteringSphere();
 			AtmosphericScatteringSphere.m_fInnerRadius = (float)equatorialRadius;
 			AtmosphericScatteringSphere.m_fOuterRadius = (float)equatorialRadius * 1.025f;
@@ -131,7 +131,7 @@ namespace WorldWind
 
 		private static string getRenderablePathString(RenderableObject renderable)
 		{
-			if(renderable.ParentList == null)
+			if (renderable.ParentList == null)
 			{
 				return renderable.Name;
 			}
@@ -143,11 +143,11 @@ namespace WorldWind
 
 		private void setLayerOpacity(RenderableObject ro, string category, string name, float opacity)
 		{
-			foreach(string key in ro.MetaData.Keys)
+			foreach (string key in ro.MetaData.Keys)
 			{
 				if (String.Compare(key, category, true, System.Globalization.CultureInfo.InvariantCulture) == 0)
 				{
-					if(ro.MetaData[key].GetType() == typeof(String))
+					if (ro.MetaData[key].GetType() == typeof(String))
 					{
 						string curValue = ro.MetaData[key] as string;
 						if (String.Compare(curValue, name, true, System.Globalization.CultureInfo.InvariantCulture) == 0)
@@ -174,9 +174,9 @@ namespace WorldWind
 		{
 			try
 			{
-				Settings = (WorldSettings) SettingsBase.Load(Settings);
+				Settings = (WorldSettings)SettingsBase.Load(Settings);
 			}
-			catch(Exception caught)
+			catch (Exception caught)
 			{
 				Log.Write(caught);
 			}
@@ -188,9 +188,9 @@ namespace WorldWind
 		{
 			try
 			{
-				Settings = (WorldSettings) SettingsBase.LoadFromPath(Settings, directory);
+				Settings = (WorldSettings)SettingsBase.LoadFromPath(Settings, directory);
 			}
-			catch(Exception caught)
+			catch (Exception caught)
 			{
 				Log.Write(caught);
 			}
@@ -232,7 +232,7 @@ namespace WorldWind
 		{
 			try
 			{
-				if(this.isInitialized)
+				if (this.isInitialized)
 					return;
 
 				this.RenderableObjects.Initialize(drawArgs);
@@ -250,17 +250,17 @@ namespace WorldWind
 		private void DrawAxis(DrawArgs drawArgs)
 		{
 			CustomVertex.PositionColored[] axis = new CustomVertex.PositionColored[2];
-			Point3d topV = MathEngine.SphericalToCartesian(90,0,this.EquatorialRadius + 0.15f*this.EquatorialRadius);
-         axis[0].X = (float)topV.X;
-         axis[0].Y = (float)topV.Y;
-         axis[0].Z = (float)topV.Z;
+			Point3d topV = MathEngine.SphericalToCartesian(90, 0, this.EquatorialRadius + 0.15f * this.EquatorialRadius);
+			axis[0].X = (float)topV.X;
+			axis[0].Y = (float)topV.Y;
+			axis[0].Z = (float)topV.Z;
 
 			axis[0].Color = System.Drawing.Color.Pink.ToArgb();
 
-			Point3d botV = MathEngine.SphericalToCartesian(-90,0,this.EquatorialRadius + 0.15f*this.EquatorialRadius);
-         axis[1].X = (float)botV.X;
-         axis[1].Y = (float)botV.Y;
-         axis[1].Z = (float)botV.Z;
+			Point3d botV = MathEngine.SphericalToCartesian(-90, 0, this.EquatorialRadius + 0.15f * this.EquatorialRadius);
+			axis[1].X = (float)botV.X;
+			axis[1].Y = (float)botV.Y;
+			axis[1].Z = (float)botV.Z;
 			axis[1].Color = System.Drawing.Color.Pink.ToArgb();
 
 			drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
@@ -278,12 +278,12 @@ namespace WorldWind
 
 		public override void Update(DrawArgs drawArgs)
 		{
-			if(!this.isInitialized)
+			if (!this.isInitialized)
 			{
 				this.Initialize(drawArgs);
 			}
 
-			if(this.RenderableObjects != null)
+			if (this.RenderableObjects != null)
 			{
 				this.RenderableObjects.Update(drawArgs);
 			}
@@ -296,14 +296,14 @@ namespace WorldWind
 			{
 				this.m_projectedVectorRenderer.Update(drawArgs);
 			}
-            // Update camera terrain elevation
-            // drawArgs.WorldCamera.UpdateTerrainElevation(this.TerrainAccessor); // Moved to WorldWindow.Render()
+			// Update camera terrain elevation
+			// drawArgs.WorldCamera.UpdateTerrainElevation(this.TerrainAccessor); // Moved to WorldWindow.Render()
 
 			if (World.Settings.EnableAtmosphericScattering && m_outerSphere != null)
 				m_outerSphere.Update(drawArgs);
 		}
 
-      public override bool PerformSelectionAction(DrawArgs drawArgs)
+		public override bool PerformSelectionAction(DrawArgs drawArgs)
 		{
 			return this._renderableObjects.PerformSelectionAction(drawArgs);
 		}
@@ -318,7 +318,7 @@ namespace WorldWind
 				Angle.FromRadians(sunSpherical.Z),
 				150000000000);
 
-         Point3d sunVector = new Point3d(sunPosition.X, sunPosition.Y, sunPosition.Z);
+			Point3d sunVector = new Point3d(sunPosition.X, sunPosition.Y, sunPosition.Z);
 
 			Frustum viewFrustum = new Frustum();
 
@@ -333,12 +333,12 @@ namespace WorldWind
 			if (!viewFrustum.ContainsPoint(sunVector))
 				return;
 
-         Point3d translationVector = new Point3d(
+			Point3d translationVector = new Point3d(
 				(sunPosition.X - drawArgs.WorldCamera.ReferenceCenter.X),
 				(sunPosition.Y - drawArgs.WorldCamera.ReferenceCenter.Y),
 				(sunPosition.Z - drawArgs.WorldCamera.ReferenceCenter.Z));
 
-         Point3d projectedPoint = drawArgs.WorldCamera.Project(translationVector);
+			Point3d projectedPoint = drawArgs.WorldCamera.Project(translationVector);
 
 			if (m_sunTexture == null)
 			{
@@ -358,7 +358,7 @@ namespace WorldWind
 			float yscale = (float)m_sunHeight / m_sunSurfaceDescription.Height;
 			m_sprite.Transform = Matrix.Scaling(xscale, yscale, 0);
 
-         m_sprite.Transform *= Matrix.Translation((float)projectedPoint.X, (float)projectedPoint.Y, 0);
+			m_sprite.Transform *= Matrix.Translation((float)projectedPoint.X, (float)projectedPoint.Y, 0);
 			m_sprite.Draw(m_sunTexture,
 				new Vector3(m_sunSurfaceDescription.Width >> 1, m_sunSurfaceDescription.Height >> 1, 0),
 				Vector3.Empty,
@@ -378,88 +378,88 @@ namespace WorldWind
 
 		public override void Render(DrawArgs drawArgs)
 		{
-            using(new DirectXProfilerEvent("World::Render"))
-            {
-			try
+			using (new DirectXProfilerEvent("World::Render"))
 			{
-				if (m_WorldSurfaceRenderer != null && World.Settings.UseWorldSurfaceRenderer)
+				try
 				{
-					m_WorldSurfaceRenderer.RenderSurfaceImages(drawArgs);
+					if (m_WorldSurfaceRenderer != null && World.Settings.UseWorldSurfaceRenderer)
+					{
+						m_WorldSurfaceRenderer.RenderSurfaceImages(drawArgs);
+					}
+
+					//  Old method -- problems with RenderPriority sorting
+					//RenderableObjects.Render(drawArgs);
+
+					// allow fog and other renderstate setup changers to get in front of everything else
+					Render(RenderableObjects, (WorldWind.Renderable.RenderPriority)(-1), drawArgs);
+
+					RenderStars(drawArgs, RenderableObjects);
+
+					if (drawArgs.CurrentWorld.IsEarth && World.Settings.EnableAtmosphericScattering)
+					{
+						// Render atmospheric scattering
+						bool origFog = drawArgs.device.RenderState.FogEnable;
+						drawArgs.device.RenderState.FogEnable = false;
+						float aspectRatio = (float)drawArgs.WorldCamera.Viewport.Width / drawArgs.WorldCamera.Viewport.Height;
+						float zNear = (float)drawArgs.WorldCamera.Altitude * 0.1f;
+						double distToCenterOfPlanet = (drawArgs.WorldCamera.Altitude + equatorialRadius);
+						double tangentalDistance = Math.Sqrt(distToCenterOfPlanet * distToCenterOfPlanet - equatorialRadius * equatorialRadius);
+						double amosphereThickness = Math.Sqrt(m_outerSphere.m_radius * m_outerSphere.m_radius + equatorialRadius * equatorialRadius);
+						Matrix proj = drawArgs.device.Transform.Projection;
+						drawArgs.device.Transform.Projection = ConvertDX.FromMatrix4d(Matrix4d.PerspectiveFovRH(drawArgs.WorldCamera.Fov.Radians, aspectRatio, zNear, tangentalDistance + amosphereThickness));
+						drawArgs.device.RenderState.ZBufferEnable = false;
+						drawArgs.device.RenderState.CullMode = Cull.CounterClockwise;
+						m_outerSphere.Render(drawArgs);
+						drawArgs.device.RenderState.CullMode = Cull.Clockwise;
+						drawArgs.device.RenderState.ZBufferEnable = true;
+						drawArgs.device.Transform.Projection = proj;
+						drawArgs.device.RenderState.FogEnable = origFog;
+					}
+
+					if (World.Settings.EnableSunShading)
+						RenderSun(drawArgs);
+
+					DirectXProfiler.BeginEvent("render surface images");
+					//render SurfaceImages
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.TerrainMappedImages, drawArgs);
+					DirectXProfiler.EndEvent();
+
+					if (m_projectedVectorRenderer != null)
+						m_projectedVectorRenderer.Render(drawArgs);
+
+					DirectXProfiler.BeginEvent("render atmospheric images");
+					//render AtmosphericImages
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.AtmosphericImages, drawArgs);
+					DirectXProfiler.EndEvent();
+
+					DirectXProfiler.BeginEvent("render line paths");
+					//render LinePaths
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.LinePaths, drawArgs);
+					DirectXProfiler.EndEvent();
+
+					DirectXProfiler.BeginEvent("render placenames");
+					//render Placenames
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Placenames, drawArgs);
+					DirectXProfiler.EndEvent();
+
+					DirectXProfiler.BeginEvent("render icons");
+					//render Icons
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Icons, drawArgs);
+					DirectXProfiler.EndEvent();
+
+					DirectXProfiler.BeginEvent("render custom");
+					//render Custom
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Custom, drawArgs);
+					DirectXProfiler.EndEvent();
+
+					if (Settings.showPlanetAxis)
+						this.DrawAxis(drawArgs);
 				}
-
-				//  Old method -- problems with RenderPriority sorting
-				RenderableObjects.Render(drawArgs);
-            /* JBTODO : Investigate
-                // allow fog and other renderstate setup changers to get in front of everything else
-                Render(RenderableObjects, (WorldWind.Renderable.RenderPriority)(-1), drawArgs);
-
-				RenderStars(drawArgs, RenderableObjects);
-
-                if (drawArgs.CurrentWorld.IsEarth && World.Settings.EnableAtmosphericScattering)
-                {
-                    // Render atmospheric scattering
-                    bool origFog = drawArgs.device.RenderState.FogEnable;
-                    drawArgs.device.RenderState.FogEnable = false;
-                    float aspectRatio = (float)drawArgs.WorldCamera.Viewport.Width / drawArgs.WorldCamera.Viewport.Height;
-                    float zNear = (float)drawArgs.WorldCamera.Altitude * 0.1f;
-                    double distToCenterOfPlanet = (drawArgs.WorldCamera.Altitude + equatorialRadius);
-                    double tangentalDistance = Math.Sqrt(distToCenterOfPlanet * distToCenterOfPlanet - equatorialRadius * equatorialRadius);
-                    double amosphereThickness = Math.Sqrt(m_outerSphere.m_radius * m_outerSphere.m_radius + equatorialRadius * equatorialRadius);
-                    Matrix proj = drawArgs.device.Transform.Projection;
-                    drawArgs.device.Transform.Projection = Matrix.PerspectiveFovRH((float)drawArgs.WorldCamera.Fov.Radians, aspectRatio, zNear, (float)(tangentalDistance + amosphereThickness));
-                    drawArgs.device.RenderState.ZBufferEnable = false;
-                    drawArgs.device.RenderState.CullMode = Cull.CounterClockwise;
-                    m_outerSphere.Render(drawArgs);
-                    drawArgs.device.RenderState.CullMode = Cull.Clockwise;
-                    drawArgs.device.RenderState.ZBufferEnable = true;
-                    drawArgs.device.Transform.Projection = proj;
-                    drawArgs.device.RenderState.FogEnable = origFog;
-                }
-
-				if (World.Settings.EnableSunShading)
-					RenderSun(drawArgs);
-
-                DirectXProfiler.BeginEvent("render surface images");
-                //render SurfaceImages
-				Render(RenderableObjects, WorldWind.Renderable.RenderPriority.TerrainMappedImages, drawArgs);
-                DirectXProfiler.EndEvent();
-
-				if (m_projectedVectorRenderer != null)
-					m_projectedVectorRenderer.Render(drawArgs);
-
-                DirectXProfiler.BeginEvent("render atmospheric images");
-                //render AtmosphericImages
-				Render(RenderableObjects, WorldWind.Renderable.RenderPriority.AtmosphericImages, drawArgs);
-                DirectXProfiler.EndEvent();
-
-                DirectXProfiler.BeginEvent("render line paths");
-                //render LinePaths
-                Render(RenderableObjects, WorldWind.Renderable.RenderPriority.LinePaths, drawArgs);
-                DirectXProfiler.EndEvent();
-
-                DirectXProfiler.BeginEvent("render placenames");
-				//render Placenames
-				Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Placenames, drawArgs);
-                DirectXProfiler.EndEvent();
-
-                DirectXProfiler.BeginEvent("render icons");
-				//render Icons
-				Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Icons, drawArgs);
-                DirectXProfiler.EndEvent();
-
-                DirectXProfiler.BeginEvent("render custom");
-                //render Custom
-				Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Custom, drawArgs);
-                DirectXProfiler.EndEvent();
-            */
-				if (Settings.showPlanetAxis)
-				this.DrawAxis(drawArgs);
+				catch (Exception ex)
+				{
+					Log.Write(ex);
+				}
 			}
-			catch (Exception ex)
-			{
-				Log.Write(ex);
-			}
-            }
 		}
 
 		private void RenderStars(DrawArgs drawArgs, WorldWind.Renderable.RenderableObject renderable)
@@ -484,7 +484,7 @@ namespace WorldWind
 				}
 			}
 		}
-      /* JBTODO : Investigate
+
 		private void Render(WorldWind.Renderable.RenderableObject renderable, WorldWind.Renderable.RenderPriority priority, DrawArgs drawArgs)
 		{
 			if (!renderable.IsOn || (renderable.Name != null && renderable.Name.Equals("Starfield")))
@@ -522,7 +522,7 @@ namespace WorldWind
 				Log.Write(ex);
 			}
 		}
-      */
+
 		private void saveRenderableState(RenderableObject ro)
 		{
 			string path = getRenderablePathString(ro);
@@ -569,14 +569,14 @@ namespace WorldWind
 			}
 		}
 
-      public override void Dispose()
+		public override void Dispose()
 		{
 			saveRenderableStates(RenderableObjects);
 
-			if(this.RenderableObjects!=null)
+			if (this.RenderableObjects != null)
 			{
-            this.RenderableObjects.Dispose();
-				this.RenderableObjects=null;
+				this.RenderableObjects.Dispose();
+				this.RenderableObjects = null;
 			}
 
 			if (m_WorldSurfaceRenderer != null)
@@ -594,23 +594,23 @@ namespace WorldWind
 		/// Computes the great circle distance between two pairs of lat/longs.
 		/// TODO: Compute distance using ellipsoid.
 		/// </summary>
-		public static Angle ApproxAngularDistance(Angle latA, Angle lonA, Angle latB, Angle lonB )
+		public static Angle ApproxAngularDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
 		{
 			Angle dlon = lonB - lonA;
 			Angle dlat = latB - latA;
-			double k = Math.Sin(dlat.Radians*0.5);
-			double l = Math.Sin(dlon.Radians*0.5);
-			double a = k*k + Math.Cos(latA.Radians) * Math.Cos(latB.Radians) * l*l;
-			double c = 2 * Math.Asin(Math.Min(1,Math.Sqrt(a)));
+			double k = Math.Sin(dlat.Radians * 0.5);
+			double l = Math.Sin(dlon.Radians * 0.5);
+			double a = k * k + Math.Cos(latA.Radians) * Math.Cos(latB.Radians) * l * l;
+			double c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 			return Angle.FromRadians(c);
 		}
 
 		/// <summary>
 		/// Computes the distance between two pairs of lat/longs in meters.
 		/// </summary>
-		public double ApproxDistance(Angle latA, Angle lonA, Angle latB, Angle lonB )
+		public double ApproxDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
 		{
-			double distance = equatorialRadius * ApproxAngularDistance(latA,lonA,latB,lonB).Radians;
+			double distance = equatorialRadius * ApproxAngularDistance(latA, lonA, latB, lonB).Radians;
 			return distance;
 		}
 
@@ -624,19 +624,19 @@ namespace WorldWind
 		/// abs(lon1-lon2)=pi) because then the route is undefined.
 		/// </summary>
 		/// <param name="f">Fraction of the distance for intermediate point (0..1)</param>
-		public static void IntermediateGCPoint( float f, Angle lat1, Angle lon1, Angle lat2, Angle lon2, Angle d,
-			out Angle lat, out Angle lon )
+		public static void IntermediateGCPoint(float f, Angle lat1, Angle lon1, Angle lat2, Angle lon2, Angle d,
+			out Angle lat, out Angle lon)
 		{
 			double sind = Math.Sin(d.Radians);
 			double cosLat1 = Math.Cos(lat1.Radians);
 			double cosLat2 = Math.Cos(lat2.Radians);
-			double A=Math.Sin((1-f)*d.Radians)/sind;
-			double B=Math.Sin(f*d.Radians)/sind;
-			double x = A*cosLat1*Math.Cos(lon1.Radians) +  B*cosLat2*Math.Cos(lon2.Radians);
-			double y = A*cosLat1*Math.Sin(lon1.Radians) +  B*cosLat2*Math.Sin(lon2.Radians);
-			double z = A*Math.Sin(lat1.Radians) +  B*Math.Sin(lat2.Radians);
-			lat = Angle.FromRadians(Math.Atan2(z,Math.Sqrt(x*x+y*y)));
-			lon = Angle.FromRadians(Math.Atan2(y,x));
+			double A = Math.Sin((1 - f) * d.Radians) / sind;
+			double B = Math.Sin(f * d.Radians) / sind;
+			double x = A * cosLat1 * Math.Cos(lon1.Radians) + B * cosLat2 * Math.Cos(lon2.Radians);
+			double y = A * cosLat1 * Math.Sin(lon1.Radians) + B * cosLat2 * Math.Sin(lon2.Radians);
+			double z = A * Math.Sin(lat1.Radians) + B * Math.Sin(lat2.Radians);
+			lat = Angle.FromRadians(Math.Atan2(z, Math.Sqrt(x * x + y * y)));
+			lon = Angle.FromRadians(Math.Atan2(y, x));
 		}
 
 		/// <summary>
@@ -654,15 +654,15 @@ namespace WorldWind
 			double sind = Math.Sin(d.Radians);
 			double cosLat1 = Math.Cos(lat1.Radians);
 			double cosLat2 = Math.Cos(lat2.Radians);
-			double A=Math.Sin((1-f)*d.Radians)/sind;
-			double B=Math.Sin(f*d.Radians)/sind;
-			double x = A*cosLat1*Math.Cos(lon1.Radians) +  B*cosLat2*Math.Cos(lon2.Radians);
-			double y = A*cosLat1*Math.Sin(lon1.Radians) +  B*cosLat2*Math.Sin(lon2.Radians);
-			double z = A*Math.Sin(lat1.Radians) +  B*Math.Sin(lat2.Radians);
-			Angle lat=Angle.FromRadians(Math.Atan2(z,Math.Sqrt(x*x+y*y)));
-			Angle lon=Angle.FromRadians(Math.Atan2(y,x));
+			double A = Math.Sin((1 - f) * d.Radians) / sind;
+			double B = Math.Sin(f * d.Radians) / sind;
+			double x = A * cosLat1 * Math.Cos(lon1.Radians) + B * cosLat2 * Math.Cos(lon2.Radians);
+			double y = A * cosLat1 * Math.Sin(lon1.Radians) + B * cosLat2 * Math.Sin(lon2.Radians);
+			double z = A * Math.Sin(lat1.Radians) + B * Math.Sin(lat2.Radians);
+			Angle lat = Angle.FromRadians(Math.Atan2(z, Math.Sqrt(x * x + y * y)));
+			Angle lon = Angle.FromRadians(Math.Atan2(y, x));
 
-			Point3d v = MathEngine.SphericalToCartesian(lat,lon,equatorialRadius);
+			Point3d v = MathEngine.SphericalToCartesian(lat, lon, equatorialRadius);
 			return v;
 		}
 	}
@@ -687,7 +687,7 @@ namespace WorldWind
 				m_numberSections = sections;
 
 				Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
-            Point3d sunVector = new Point3d(
+				Point3d sunVector = new Point3d(
 					-sunPosition.X,
 					-sunPosition.Y,
 					-sunPosition.Z);
@@ -886,8 +886,8 @@ namespace WorldWind
 						m_radius);
 
 					vertices[i * meshPointCount + j].X = (float)pos.X;
-               vertices[i * meshPointCount + j].Y = (float)pos.Y;
-               vertices[i * meshPointCount + j].Z = (float)pos.Z;
+					vertices[i * meshPointCount + j].Y = (float)pos.Y;
+					vertices[i * meshPointCount + j].Z = (float)pos.Z;
 				}
 			}
 
@@ -922,9 +922,9 @@ namespace WorldWind
 		float[] fSampleDepth = new float[4];
 		float[] fRayleighSum = new float[] { 0, 0, 0 };
 		float[] fMieSum = new float[] { 0, 0, 0 };
-      Point3d vPos = new Point3d();
+		Point3d vPos = new Point3d();
 		float[] fAttenuation = new float[3];
-      Point3d vCamera = new Point3d();
+		Point3d vCamera = new Point3d();
 
 		public void SetColor(ref CustomVertex.PositionColored pVertex, DrawArgs drawArgs)
 		{
@@ -963,7 +963,7 @@ namespace WorldWind
 			{
 				// If the near point is behind the camera, it means the camera is inside the atmosphere
 				fNear = 0;
-            float fCameraHeight = (float)vCamera.Length;
+				float fCameraHeight = (float)vCamera.Length;
 				float fCameraAltitude = (fCameraHeight - m_fInnerRadius) * m_fScale;
 				bCameraAbove = fCameraHeight >= vPos.Length;
 				float fCameraAngle = (float)Point3d.dot((bCameraAbove ? -vRay : vRay), vCamera) / fCameraHeight;
@@ -992,13 +992,13 @@ namespace WorldWind
 
 			float fSampleLength = fFar / m_nSamples;
 			float fScaledLength = fSampleLength * m_fScale;
-         Point3d vSampleRay = vRay * fSampleLength;
+			Point3d vSampleRay = vRay * fSampleLength;
 
 			// Start at the center of the first sample ray, and loop through each of the others
 			vPos = vCamera + vSampleRay * 0.5f;
 			for (int i = 0; i < m_nSamples; i++)
 			{
-            float fHeight = (float)vPos.Length;
+				float fHeight = (float)vPos.Length;
 
 				// Start by looking up the optical depth coming from the light source to this point
 				float fLightAngle = (float)Point3d.dot(m_vLightDirection, vPos) / fHeight;
@@ -1134,7 +1134,7 @@ namespace WorldWind
 		float m_g;
 
 		Point3d m_vLight;
-      Point3d m_vLightDirection;
+		Point3d m_vLightDirection;
 
 		private void UpdateColor(DrawArgs drawArgs, MeshSubset meshSubset, bool doHighResolution)
 		{
@@ -1154,7 +1154,7 @@ namespace WorldWind
 			{
 				for (int i = 0; i < meshSubset.Vertices.Length; i++)
 				{
-               if (Point3d.dot(drawArgs.WorldCamera.Position, new Point3d(meshSubset.Vertices[i].X, meshSubset.Vertices[i].Y, meshSubset.Vertices[i].Z)) > 0)
+					if (Point3d.dot(drawArgs.WorldCamera.Position, new Point3d(meshSubset.Vertices[i].X, meshSubset.Vertices[i].Y, meshSubset.Vertices[i].Z)) > 0)
 						SetColor(ref meshSubset.Vertices[i], drawArgs);
 					else
 						meshSubset.Vertices[i].Color = blank;
@@ -1227,9 +1227,9 @@ namespace WorldWind
 			WorldWind.Camera.CameraBase camera = drawArgs.WorldCamera;
 			Point3d cameraPos = camera.Position;
 			double distToCenterOfPlanet = (camera.Altitude + camera.WorldRadius);
-         Point3d cameraCoord = MathEngine.CartesianToSpherical(cameraPos.X, cameraPos.Y, cameraPos.Z);
+			Point3d cameraCoord = MathEngine.CartesianToSpherical(cameraPos.X, cameraPos.Y, cameraPos.Z);
 			double camLat = cameraCoord.Y;
-         double camLon = cameraCoord.Z;
+			double camLon = cameraCoord.Z;
 			Matrix4d SkyGradientTrans = Matrix4d.Identity;
 			SkyGradientTrans *= Matrix4d.Translation(0, 0, distToCenterOfPlanet);
 			SkyGradientTrans *= Matrix4d.RotationY(-camLat + Math.PI / 2);
@@ -1264,9 +1264,9 @@ namespace WorldWind
 				double longitude = startLon - ((float)slice / slices * lonSpan);
 				v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
 				v.TransformCoordinate(SkyGradientTrans);
-            pnt.X = (float)v.X;
-            pnt.Y = (float)v.Y;
-            pnt.Z = (float)v.Z;
+				pnt.X = (float)v.X;
+				pnt.Y = (float)v.Y;
+				pnt.Z = (float)v.Z;
 				pnt.Color = System.Drawing.Color.FromArgb(0, 0, 0, 0).ToArgb();
 				arr.SetValue(pnt, vertIndex++);
 			}
@@ -1288,9 +1288,9 @@ namespace WorldWind
 					double longitude = startLon - ((float)slice / slices * lonSpan);
 					v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
 					v.TransformCoordinate(SkyGradientTrans);
-               pnt.X = (float)v.X;
-               pnt.Y = (float)v.Y;
-               pnt.Z = (float)v.Z;
+					pnt.X = (float)v.X;
+					pnt.Y = (float)v.Y;
+					pnt.Z = (float)v.Z;
 					pnt.Color = getAtmosphereColor(drawArgs, pnt);
 					arr.SetValue(pnt, vertIndex++);
 				}
@@ -1303,9 +1303,9 @@ namespace WorldWind
 				double longitude = startLon - ((float)slice / slices * lonSpan);
 				v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
 				v.TransformCoordinate(SkyGradientTrans);
-            pnt.X = (float)v.X;
-            pnt.Y = (float)v.Y;
-            pnt.Z = (float)v.Z;
+				pnt.X = (float)v.X;
+				pnt.Y = (float)v.Y;
+				pnt.Z = (float)v.Z;
 				pnt.Color = System.Drawing.Color.FromArgb(0, 0, 0, 0).ToArgb();
 				arr.SetValue(pnt, vertIndex++);
 			}
@@ -1335,8 +1335,8 @@ namespace WorldWind
 				}
 			}
 
-            mesh.UnlockIndexBuffer();
-            mesh.IndexBuffer.SetData(arr, 0, LockFlags.None);
+			mesh.UnlockIndexBuffer();
+			mesh.IndexBuffer.SetData(arr, 0, LockFlags.None);
 
 			return mesh;
 		}
@@ -1355,16 +1355,16 @@ namespace WorldWind
 
 			// Get the ray from the camera to the vertex
 			//Vector3 vCamera = new Vector3();
-         vCamera.X = (float)drawArgs.WorldCamera.Position.X;
-         vCamera.Y = (float)drawArgs.WorldCamera.Position.Y;
-         vCamera.Z = (float)drawArgs.WorldCamera.Position.Z;
+			vCamera.X = (float)drawArgs.WorldCamera.Position.X;
+			vCamera.Y = (float)drawArgs.WorldCamera.Position.Y;
+			vCamera.Z = (float)drawArgs.WorldCamera.Position.Z;
 
 			Point3d vRay = vPos - vCamera;
 			vRay.normalize();
 
 			// Calculate the closest intersection of the ray with the outer atmosphere 
-			float B = (float) (2.0 * Point3d.dot(vCamera, vRay));
-         float C = (float) (Point3d.dot(vCamera, vCamera) - m_radius * m_radius);
+			float B = (float)(2.0 * Point3d.dot(vCamera, vRay));
+			float C = (float)(Point3d.dot(vCamera, vCamera) - m_radius * m_radius);
 			float fDet = B * B - 4.0f * C;
 
 			p2.Color = System.Drawing.Color.FromArgb(0, 0, 0, 0).ToArgb();
@@ -1378,9 +1378,9 @@ namespace WorldWind
 					// biggest distance - not sure why...
 					float fNear = (float)Math.Max(fNear1, fNear2);
 					vPos = vCamera + vRay * fNear;
-               p2.X = (float)vPos.X;
-               p2.Y = (float)vPos.Y;
-               p2.Z = (float)vPos.Z;
+					p2.X = (float)vPos.X;
+					p2.Y = (float)vPos.Y;
+					p2.Z = (float)vPos.Z;
 					SetColor(ref p2, drawArgs);
 				}
 			}
@@ -1407,8 +1407,8 @@ namespace WorldWind
 					}
 
 					vCamera.X = (float)drawArgs.WorldCamera.Position.X;
-               vCamera.Y = (float)drawArgs.WorldCamera.Position.Y;
-               vCamera.Z = (float)drawArgs.WorldCamera.Position.Z;
+					vCamera.Y = (float)drawArgs.WorldCamera.Position.Y;
+					vCamera.Z = (float)drawArgs.WorldCamera.Position.Z;
 
 					drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
 					drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
@@ -1440,12 +1440,12 @@ namespace WorldWind
 							shader = skyFromAtmosphere;
 
 						shader.Technique = "Sky";
-                  shader.SetValue("v3CameraPos", new Vector4((float)vCamera.X, (float)vCamera.Y, (float)vCamera.Z, 0));
-                  shader.SetValue("v3LightPos", Vector4.Normalize(new Vector4((float)m_vLightDirection.X, (float)m_vLightDirection.Y, (float)m_vLightDirection.Z, 0)));
+						shader.SetValue("v3CameraPos", new Vector4((float)vCamera.X, (float)vCamera.Y, (float)vCamera.Z, 0));
+						shader.SetValue("v3LightPos", Vector4.Normalize(new Vector4((float)m_vLightDirection.X, (float)m_vLightDirection.Y, (float)m_vLightDirection.Z, 0)));
 						shader.SetValue("WorldViewProj", Matrix.Multiply(drawArgs.device.Transform.World, Matrix.Multiply(drawArgs.device.Transform.View, drawArgs.device.Transform.Projection)));
 						shader.SetValue("v3InvWavelength", new Vector4(1.0f / m_fWavelength4[0], 1.0f / m_fWavelength4[1], 1.0f / m_fWavelength4[2], 0));
 						shader.SetValue("fCameraHeight", (float)vCamera.Length);
-                  shader.SetValue("fCameraHeight2", (float)vCamera.LengthSq);
+						shader.SetValue("fCameraHeight2", (float)vCamera.LengthSq);
 						shader.SetValue("fInnerRadius", m_fInnerRadius);
 						shader.SetValue("fInnerRadius2", m_fInnerRadius * m_fInnerRadius);
 						shader.SetValue("fOuterRadius", m_fOuterRadius);
@@ -1603,13 +1603,13 @@ namespace WorldWind
 		{
 			System.DateTime currentTime = TimeKeeper.CurrentTimeUtc;
 			Point3d sunPosition = SunCalculator.GetGeocentricPosition(currentTime);
-         Point3d sunVector = new Point3d(
+			Point3d sunVector = new Point3d(
 				-sunPosition.X,
 				-sunPosition.Y,
 				-sunPosition.Z);
 
 			m_vLight = sunVector * 100000000.0;
-         m_vLightDirection = new Point3d(
+			m_vLightDirection = new Point3d(
 				m_vLight.X / m_vLight.Length,
 				m_vLight.Y / m_vLight.Length,
 				m_vLight.Z / m_vLight.Length
@@ -1656,17 +1656,17 @@ namespace WorldWind
 				float fCos = 1.0f - (nAngle + nAngle) / (float)nSize;
 				float fAngle = (float)Math.Acos(fCos);
 
-            Point3d vRay = new Point3d(Math.Sin(fAngle), Math.Cos(fAngle), 0);	// Ray pointing to the viewpoint
+				Point3d vRay = new Point3d(Math.Sin(fAngle), Math.Cos(fAngle), 0);	// Ray pointing to the viewpoint
 				for (int nHeight = 0; nHeight < nSize; nHeight++)
 				{
 					// As the x tex coord goes from 0 to 1, the height goes from the bottom of the atmosphere to the top
 					float fHeight = DELTA + fInnerRadius + ((fOuterRadius - fInnerRadius) * nHeight) / nSize;
-               Point3d vPos = new Point3d(0, fHeight, 0);				// The position of the camera
+					Point3d vPos = new Point3d(0, fHeight, 0);				// The position of the camera
 
 					// If the ray from vPos heading in the vRay direction intersects the inner radius (i.e. the planet), then this spot is not visible from the viewpoint
-               float B = 2.0f * (float)Point3d.dot(vPos, vRay);
+					float B = 2.0f * (float)Point3d.dot(vPos, vRay);
 					float Bsq = B * B;
-               float Cpart = (float)Point3d.dot(vPos, vPos);
+					float Cpart = (float)Point3d.dot(vPos, vPos);
 					float C = Cpart - fInnerRadius * fInnerRadius;
 					float fDet = Bsq - 4.0f * C;
 					bool bVisible = (fDet < 0 || (0.5f * (-B - (float)Math.Sqrt(fDet)) <= 0) && (0.5f * (-B + (float)Math.Sqrt(fDet)) <= 0));
@@ -1703,7 +1703,7 @@ namespace WorldWind
 					// Next determine the length of each sample, scale the sample ray, and make sure position checks are at the center of a sample ray
 					float fSampleLength = fFar / nSamples;
 					float fScaledLength = fSampleLength * fScale;
-               Point3d vSampleRay = vRay * fSampleLength;
+					Point3d vSampleRay = vRay * fSampleLength;
 					vPos += vSampleRay * 0.5f;
 
 					// Iterate through the samples to sum up the optical depth for the distance the ray travels through the atmosphere
@@ -1711,7 +1711,7 @@ namespace WorldWind
 					float fMieDepth = 0;
 					for (int i = 0; i < nSamples; i++)
 					{
-                  fHeight = (float)vPos.Length;
+						fHeight = (float)vPos.Length;
 						float fAltitude = (fHeight - fInnerRadius) * fScale;
 						fAltitude = (float)Math.Max(fAltitude, 0.0f);
 						fRayleighDepth += (float)Math.Exp(-fAltitude / fRayleighScaleHeight);

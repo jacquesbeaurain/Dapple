@@ -82,7 +82,7 @@ namespace jhuapl.util
 		};
 
 		#region private members
-		
+
 		private const int distanceFromRight = 65;
 		private const int distanceFromBottom = 5;
 
@@ -97,10 +97,11 @@ namespace jhuapl.util
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public JHU_Banner() : base("Banner", Point3d.Empty, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
+		public JHU_Banner()
+			: base("Banner", Point3d.Empty, Quaternion4d.RotationYawPitchRoll(0, 0, 0))
 		{
 			// draw with icons (on top)
-			//this.RenderPriority = RenderPriority.Icons;
+			this.RenderPriority = RenderPriority.Icons;
 
 			// enable this layer
 			this.IsOn = true;
@@ -143,13 +144,13 @@ namespace jhuapl.util
 		public override void Render(DrawArgs drawArgs)
 		{
 			// Draw the current time using default font in lower right corner
-			string text = ClassificationString[(int) Classification] + " - " + DateTime.Now.ToString();
+			string text = ClassificationString[(int)Classification] + " - " + DateTime.Now.ToString();
 			Rectangle bounds = drawArgs.defaultDrawingFont.MeasureString(null, text, DrawTextFormat.None, 0);
-			drawArgs.defaultDrawingFont.DrawText(null, text, 
-				(drawArgs.screenWidth-bounds.Width)/2, drawArgs.screenHeight-bounds.Height-distanceFromBottom,
-				ClassificationColor[(int) Classification] );
+			drawArgs.defaultDrawingFont.DrawText(null, text,
+				(drawArgs.screenWidth - bounds.Width) / 2, drawArgs.screenHeight - bounds.Height - distanceFromBottom,
+				ClassificationColor[(int)Classification]);
 		}
-		
+
 		/// <summary>
 		/// RenderableObject abstract member (needed)
 		/// OBS: Worker thread (don't update UI directly from this thread)

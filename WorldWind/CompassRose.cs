@@ -132,7 +132,7 @@ namespace Murris.Plugins
 		/// </summary>
 		public CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow) : base(LayerName, worldWindow.CurrentWorld)
 		{
-			this.pluginPath = Path.Combine(pluginPath, @"Plugins\Compass\");
+			this.pluginPath = pluginPath;
 			this.drawArgs = worldWindow.DrawArgs;
 			ReadSettings();
 		}
@@ -217,7 +217,8 @@ namespace Murris.Plugins
 			
 			Matrix origWorld = device.Transform.World;
 
-         device.Transform.Projection = Matrix.OrthoRH((float)device.Viewport.Width, (float)device.Viewport.Height, -(float)4e3, (float)4e3 );
+			// WorldWind uses 4e3 here, this causes the ViewFrustrum to clip the tilted texture of the compass
+         device.Transform.Projection = Matrix.OrthoRH((float)device.Viewport.Width, (float)device.Viewport.Height, -(float)4e6, (float)4e6 );
 
 			// Note: the compass is centered on origin, the camera view moves.
 			float offsetY = 0;

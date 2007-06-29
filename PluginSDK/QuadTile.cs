@@ -459,7 +459,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      private bool renderStruts = true;
+      private bool renderStruts = false;
 
       /// <summary>
       /// Builds flat or terrain mesh for current tile

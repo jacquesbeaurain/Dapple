@@ -22,53 +22,53 @@ namespace WorldWind.Renderable
 	/// One icon in an icon layer
 	/// </summary>
 	public class Icon : RenderableObject
-    {
-        # region private variables
+	{
+		# region private variables
 
-        protected bool m_isUpdated = false;
-        protected bool m_newTexture = false;
+		protected bool m_isUpdated = false;
+		protected bool m_newTexture = false;
 
-        protected Point3d m_groundPoint;
-        protected Line m_groundStick;
-        protected Vector2[] m_groundStickVector;
+		protected Point3d m_groundPoint;
+		protected Line m_groundStick;
+		protected Vector2[] m_groundStickVector;
 
-        protected static int hotColor = Color.White.ToArgb();
-        protected static int normalColor = Color.FromArgb(150, 255, 255, 255).ToArgb();
-        protected static int nameColor = Color.White.ToArgb();
-        protected static int descriptionColor = Color.White.ToArgb();
+		protected static int hotColor = Color.White.ToArgb();
+		protected static int normalColor = Color.FromArgb(150, 255, 255, 255).ToArgb();
+		protected static int nameColor = Color.White.ToArgb();
+		protected static int descriptionColor = Color.White.ToArgb();
 
-        protected const int minIconZoomAltitude = 2500000;
+		protected const int minIconZoomAltitude = 2500000;
 
-        // used only in default render
-        protected Sprite m_sprite;
+		// used only in default render
+		protected Sprite m_sprite;
 
-        // used only in default render
-        protected List<Rectangle> m_labelRectangles;
+		// used only in default render
+		protected List<Rectangle> m_labelRectangles;
 
-        protected Matrix4d lastView = Matrix4d.Identity;
+		protected Matrix4d lastView = Matrix4d.Identity;
 
-        /// <summary>
-        /// The context menu for this icon
-        /// </summary>
-        protected ContextMenu m_contextMenu = null;
+		/// <summary>
+		/// The context menu for this icon
+		/// </summary>
+		protected ContextMenu m_contextMenu = null;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        /// <summary>
+		/// <summary>
 		/// Whether the name of this icon should always be rendered
 		/// </summary>
 		public bool NameAlwaysVisible
 		{
-			get{ return m_nameAlwaysVisible; }
-			set{ m_nameAlwaysVisible = value; }
+			get { return m_nameAlwaysVisible; }
+			set { m_nameAlwaysVisible = value; }
 		}
-        protected bool m_nameAlwaysVisible = false;
+		protected bool m_nameAlwaysVisible = false;
 
-        /// <summary>
-        /// Whether or not this icon should be rotated.
-        /// </summary>
+		/// <summary>
+		/// Whether or not this icon should be rotated.
+		/// </summary>
 		public bool IsRotated
 		{
 			get
@@ -80,11 +80,11 @@ namespace WorldWind.Renderable
 				m_isRotated = value;
 			}
 		}
-        protected bool m_isRotated = false;
-	
-        /// <summary>
-        /// The angle of rotation to display the icon's texture in degrees.
-        /// </summary>
+		protected bool m_isRotated = false;
+
+		/// <summary>
+		/// The angle of rotation to display the icon's texture in degrees.
+		/// </summary>
 		public Angle Rotation
 		{
 			get
@@ -96,185 +96,185 @@ namespace WorldWind.Renderable
 				m_rotation = value;
 			}
 		}
-        protected Angle m_rotation = Angle.Zero;
+		protected Angle m_rotation = Angle.Zero;
 
-        /// <summary>
-        /// Latitude (North/South) in decimal degrees
-        /// </summary>
-        public double Latitude
-        {
-            get { return m_latitude; }
-            set
-            {
-                m_latitude = value;
-                m_isUpdated = false;
-            }
-        }
-        protected double m_latitude = 0.0;
+		/// <summary>
+		/// Latitude (North/South) in decimal degrees
+		/// </summary>
+		public double Latitude
+		{
+			get { return m_latitude; }
+			set
+			{
+				m_latitude = value;
+				m_isUpdated = false;
+			}
+		}
+		protected double m_latitude = 0.0;
 
-        /// <summary>
-        /// Longitude (East/West) in decimal degrees
-        /// </summary>
-        public double Longitude
-        {
-            get { return m_longitude; }
-            set
-            {
-                m_longitude = value;
-                m_isUpdated = false;
-            }
+		/// <summary>
+		/// Longitude (East/West) in decimal degrees
+		/// </summary>
+		public double Longitude
+		{
+			get { return m_longitude; }
+			set
+			{
+				m_longitude = value;
+				m_isUpdated = false;
+			}
 
-        }
-        protected double m_longitude = 0.0;
+		}
+		protected double m_longitude = 0.0;
 
-        /// <summary>
-        /// The icon altitude above the surface 
-        /// </summary>
-        public double Altitude
-        {
-            get { return m_altitude; }
-            set
-            {
-                m_altitude = value;
-                m_isUpdated = false;
-            }
-        }
-        protected double m_altitude = 0.0;
+		/// <summary>
+		/// The icon altitude above the surface 
+		/// </summary>
+		public double Altitude
+		{
+			get { return m_altitude; }
+			set
+			{
+				m_altitude = value;
+				m_isUpdated = false;
+			}
+		}
+		protected double m_altitude = 0.0;
 
-        /// <summary>
-        /// The cartesian coordinates of this icon.  
-        /// Used to be settable but never actually updated the position of the icon.
-        /// </summary>
-        public Point3d PositionD
-        {
-            get { return m_positionD; }
-        }
-        protected Point3d m_positionD = new Point3d();
+		/// <summary>
+		/// The cartesian coordinates of this icon.  
+		/// Used to be settable but never actually updated the position of the icon.
+		/// </summary>
+		public Point3d PositionD
+		{
+			get { return m_positionD; }
+		}
+		protected Point3d m_positionD = new Point3d();
 
-        /// <summary>
-        /// Icon bitmap path. (Overrides Image)
-        /// </summary>
-        public string TextureFileName
-        {
-            get { return m_textureFileName; }
-            set
-            {
-                m_textureFileName = value;
-                m_newTexture = true;
-                m_isUpdated = false;
-            }
-        }
-        protected string m_textureFileName;
+		/// <summary>
+		/// Icon bitmap path. (Overrides Image)
+		/// </summary>
+		public string TextureFileName
+		{
+			get { return m_textureFileName; }
+			set
+			{
+				m_textureFileName = value;
+				m_newTexture = true;
+				m_isUpdated = false;
+			}
+		}
+		protected string m_textureFileName;
 
-        /// <summary>
-        /// The icon's texture
-        /// </summary>
-        public IconTexture IconTexture
-        {
-            get { return m_iconTexture; }
-        }
-        protected IconTexture m_iconTexture;
+		/// <summary>
+		/// The icon's texture
+		/// </summary>
+		public IconTexture IconTexture
+		{
+			get { return m_iconTexture; }
+		}
+		protected IconTexture m_iconTexture;
 
-        /// <summary>
-        /// On-Click browse to location
-        /// </summary>
-        public string ClickableActionURL
-        {
-            get
-            {
-                return m_clickableActionURL;
-            }
-            set
-            {
-                isSelectable = value != null;
-                m_clickableActionURL = value;
-            }
-        }
-        protected string m_clickableActionURL;
+		/// <summary>
+		/// On-Click browse to location
+		/// </summary>
+		public string ClickableActionURL
+		{
+			get
+			{
+				return m_clickableActionURL;
+			}
+			set
+			{
+				isSelectable = value != null;
+				m_clickableActionURL = value;
+			}
+		}
+		protected string m_clickableActionURL;
 
-        /// <summary>
-        /// Whether or not a groundstick should be drawn
-        /// </summary>
-        public bool DrawGroundStick
-        {
-            get { return m_drawGroundStick; }
-            set
-            {
-                m_drawGroundStick = value;
-                m_isUpdated = false;
-            }
-        }
-        protected bool m_drawGroundStick;
+		/// <summary>
+		/// Whether or not a groundstick should be drawn
+		/// </summary>
+		public bool DrawGroundStick
+		{
+			get { return m_drawGroundStick; }
+			set
+			{
+				m_drawGroundStick = value;
+				m_isUpdated = false;
+			}
+		}
+		protected bool m_drawGroundStick;
 
-        /// <summary>
-        /// Whether or not the labels should be decluttered
-        /// </summary>
-        public bool Declutter
-        {
-            get { return m_declutter; }
-            set { m_declutter = value; }
-        }
-        private bool m_declutter = false;
+		/// <summary>
+		/// Whether or not the labels should be decluttered
+		/// </summary>
+		public bool Declutter
+		{
+			get { return m_declutter; }
+			set { m_declutter = value; }
+		}
+		private bool m_declutter = false;
 
-        /// <summary>
-        /// An ID for this icon.  Depends on the plugin to assign but can be used to uniquely identify this icon
-        /// without having an incomprehensible name.
-        /// 
-        /// TODO: Name is not always unique...determine if this is a problem since it may be used as a key in things.
-        /// </summary>
-        public object Id
-        {
-            get { return m_id; }
-            set { m_id = value; }
-        }
-        protected object m_id;
+		/// <summary>
+		/// An ID for this icon.  Depends on the plugin to assign but can be used to uniquely identify this icon
+		/// without having an incomprehensible name.
+		/// 
+		/// TODO: Name is not always unique...determine if this is a problem since it may be used as a key in things.
+		/// </summary>
+		public object Id
+		{
+			get { return m_id; }
+			set { m_id = value; }
+		}
+		protected object m_id;
 
-        /// <summary>
-        /// Any user defined icon related data to hang onto.
-        /// 
-        /// TODO:  Should this be in RO?
-        /// </summary>
-        public object Tag
-        {
-            get { return m_tag; }
-            set { m_tag = value; }
-        }
-        protected object m_tag;
+		/// <summary>
+		/// Any user defined icon related data to hang onto.
+		/// 
+		/// TODO:  Should this be in RO?
+		/// </summary>
+		public object Tag
+		{
+			get { return m_tag; }
+			set { m_tag = value; }
+		}
+		protected object m_tag;
 
-        /// <summary>
-        /// If true the icon will autoscale based on altitude
-        /// </summary>
-        public bool AutoScaleIcon
-        {
-            get { return m_autoScaleIcon; }
-            set { m_autoScaleIcon = value; }
-        }
-        protected bool m_autoScaleIcon = false;
+		/// <summary>
+		/// If true the icon will autoscale based on altitude
+		/// </summary>
+		public bool AutoScaleIcon
+		{
+			get { return m_autoScaleIcon; }
+			set { m_autoScaleIcon = value; }
+		}
+		protected bool m_autoScaleIcon = false;
 
-        #endregion
+		#endregion
 
-        public double OnClickZoomAltitude = double.NaN;
-        public double OnClickZoomHeading = double.NaN;
-        public double OnClickZoomTilt = double.NaN;
-        public string SaveFilePath = null;
-        public System.DateTime LastRefresh = System.DateTime.MinValue;
-        public System.TimeSpan RefreshInterval = System.TimeSpan.MaxValue;
+		public double OnClickZoomAltitude = double.NaN;
+		public double OnClickZoomHeading = double.NaN;
+		public double OnClickZoomTilt = double.NaN;
+		public string SaveFilePath = null;
+		public System.DateTime LastRefresh = System.DateTime.MinValue;
+		public System.TimeSpan RefreshInterval = System.TimeSpan.MaxValue;
 
 		System.Collections.ArrayList overlays = new ArrayList();
-		
+
 		//not a good way to handle this
 		public void OverlayOnOpen(object o, EventArgs e)
 		{
 			System.Windows.Forms.MenuItem mi = (System.Windows.Forms.MenuItem)o;
 
-			foreach(ScreenOverlay overlay in overlays)
+			foreach (ScreenOverlay overlay in overlays)
 			{
-				if(overlay == null)
+				if (overlay == null)
 					continue;
 
-				if(overlay.Name.Equals(mi.Text))
+				if (overlay.Name.Equals(mi.Text))
 				{
-					if(!overlay.IsOn)
+					if (!overlay.IsOn)
 						overlay.IsOn = true;
 				}
 			}
@@ -284,7 +284,7 @@ namespace WorldWind.Renderable
 		{
 			get
 			{
-				if(overlays == null)
+				if (overlays == null)
 				{
 					return null;
 				}
@@ -297,16 +297,16 @@ namespace WorldWind.Renderable
 
 		public void AddOverlay(ScreenOverlay overlay)
 		{
-			if(overlay != null)
+			if (overlay != null)
 				overlays.Add(overlay);
 		}
 
 		public void RemoveOverlay(ScreenOverlay overlay)
 		{
-			for(int i = 0; i < overlays.Count; i++)
+			for (int i = 0; i < overlays.Count; i++)
 			{
 				ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
-				if(curOverlay.IconImagePath == overlay.IconImagePath && overlay.Name == curOverlay.Name)
+				if (curOverlay.IconImagePath == overlay.IconImagePath && overlay.Name == curOverlay.Name)
 				{
 					overlays.RemoveAt(i);
 				}
@@ -323,17 +323,17 @@ namespace WorldWind.Renderable
 		/// Caller is responsible for disposing the Bitmap when the layer is removed, 
 		/// either by calling Dispose on Icon or on the Image directly.
 		/// </summary>
-        public Bitmap Image
-        {
-            get { return m_image; }
-            set 
-            { 
-                m_image = value;
-                m_newTexture = true;
-                m_isUpdated = false;
-            }
-        }
-        private Bitmap m_image;
+		public Bitmap Image
+		{
+			get { return m_image; }
+			set
+			{
+				m_image = value;
+				m_newTexture = true;
+				m_isUpdated = false;
+			}
+		}
+		private Bitmap m_image;
 
 		/// <summary>
 		/// Icon on-screen rendered width (pixels).  Defaults to icon image width.  
@@ -347,15 +347,15 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public int Height;
 
-        /// <summary>
-        ///  Icon X scaling computed by dividing icon width by texture width
-        /// </summary>
-        public float XScale;
+		/// <summary>
+		///  Icon X scaling computed by dividing icon width by texture width
+		/// </summary>
+		public float XScale;
 
-        /// <summary>
-        ///  Icon Y scaling computed by dividing icon height by texture height 
-        /// </summary>
-        public float YScale;
+		/// <summary>
+		///  Icon Y scaling computed by dividing icon height by texture height 
+		/// </summary>
+		public float YScale;
 
 		/// <summary>
 		/// The maximum distance (meters) the icon will be visible from
@@ -379,12 +379,13 @@ namespace WorldWind.Renderable
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		public Icon(string name,
-			double latitude, 
-			double longitude) : base( name )
+			double latitude,
+			double longitude)
+			: base(name)
 		{
 			m_latitude = latitude;
 			m_longitude = longitude;
-			//this.RenderPriority = RenderPriority.Icons;
+			this.RenderPriority = RenderPriority.Icons;
 		}
 
 		/// <summary>
@@ -397,40 +398,42 @@ namespace WorldWind.Renderable
 		public Icon(string name,
 			double latitude, 
 			double longitude,
-            double heightAboveSurface) : this(name, latitude, longitude)
+            double heightAboveSurface)
+			: this(name, latitude, longitude)
 		{
 			m_altitude = heightAboveSurface;
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="description"></param>
-        /// <param name="latitude"></param>
-        /// <param name="longitude"></param>
-        /// <param name="heightAboveSurface"></param>
-        /// <param name="TextureFileName"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="actionURL"></param>
-        public Icon(string name, 
-			string description,
+		/// <summary>
+		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="description"></param>
+		/// <param name="latitude"></param>
+		/// <param name="longitude"></param>
+		/// <param name="heightAboveSurface"></param>
+		/// <param name="TextureFileName"></param>
+		/// <param name="width"></param>
+		/// <param name="height"></param>
+		/// <param name="actionURL"></param>
+		public Icon(string name,
+		 string description,
 			double latitude, 
 			double longitude, 
 			double heightAboveSurface,
 			string TextureFileName,
 			int width,
 			int height,
-			string actionURL) : this( name, latitude, longitude, heightAboveSurface )
+			string actionURL)
+			: this (name, latitude, longitude, heightAboveSurface)
 		{
 			this.Description = description;
 
 			this.TextureFileName = TextureFileName;
 			this.Width = width;
 			this.Height = height;
-            m_clickableActionURL = actionURL;
-            isSelectable = actionURL != null;
+			m_clickableActionURL = actionURL;
+			isSelectable = actionURL != null;
 		}
 
 		#region Obsolete
@@ -447,12 +450,13 @@ namespace WorldWind.Renderable
 			double latitude, 
 			double longitude,
 			double heightAboveSurface, 
-			World parentWorld ) : base( name )
+			World parentWorld)
+			: base(name)
 		{
 			m_latitude = latitude;
 			m_longitude = longitude;
 			this.Altitude = heightAboveSurface;
-			//this.RenderPriority = RenderPriority.Icons;
+			this.RenderPriority = RenderPriority.Icons;
 		}
 
 		/// <summary>
@@ -463,7 +467,7 @@ namespace WorldWind.Renderable
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
 		[Obsolete]
-		public Icon(string name, 
+		public Icon(string name,
 			string description,
 			double latitude, 
 			double longitude, 
@@ -472,7 +476,8 @@ namespace WorldWind.Renderable
 			Bitmap image,
 			int width,
 			int height,
-			string actionURL) : base( name )
+			string actionURL)
+			: base(name)
 		{
 			this.Description = description;
 			m_latitude = latitude;
@@ -482,8 +487,8 @@ namespace WorldWind.Renderable
 			this.Width = width;
 			this.Height = height;
 			ClickableActionURL = actionURL;
-			//this.RenderPriority = RenderPriority.Icons;
-         isSelectable = actionURL != null;
+			this.RenderPriority = RenderPriority.Icons;
+			isSelectable = actionURL != null;
 		}
 
 		/// <summary>
@@ -500,7 +505,7 @@ namespace WorldWind.Renderable
 		/// <param name="height"></param>
 		/// <param name="actionURL"></param>
 		[Obsolete]
-		public Icon(string name, 
+		public Icon(string name,
 			string description,
 			double latitude, 
 			double longitude, 
@@ -509,7 +514,8 @@ namespace WorldWind.Renderable
 			string TextureFileName,
 			int width,
 			int height,
-			string actionURL) : base( name )
+			string actionURL)
+			: base(name)
 		{
 			this.Description = description;
 			m_latitude = latitude;
@@ -519,8 +525,8 @@ namespace WorldWind.Renderable
 			this.Width = width;
 			this.Height = height;
 			ClickableActionURL = actionURL;
-			//this.RenderPriority = RenderPriority.Icons;
-         isSelectable = actionURL != null;
+			this.RenderPriority = RenderPriority.Icons;
+			isSelectable = actionURL != null;
 
 		}
 
@@ -531,14 +537,14 @@ namespace WorldWind.Renderable
 		/// </summary>
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
-        public virtual void SetPosition(double latitude, double longitude)
+		public virtual void SetPosition(double latitude, double longitude)
 		{
 			m_latitude = latitude;
 			m_longitude = longitude;
 
 			// Recalculate XYZ coordinates
-            m_isUpdated = false;
-        }
+			m_isUpdated = false;
+		}
 
 		/// <summary>
 		/// Sets the geographic position of the icon.
@@ -546,36 +552,36 @@ namespace WorldWind.Renderable
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="altitude">The icon altitude above sea level.</param>
-        public virtual void SetPosition(double latitude, double longitude, double altitude)
+		public virtual void SetPosition(double latitude, double longitude, double altitude)
 		{
 			m_latitude = latitude;
 			m_longitude = longitude;
 			m_altitude = altitude;
 
 			// Recalculate XYZ coordinates
-            m_isUpdated = false;
-        }
+			m_isUpdated = false;
+		}
 
 		#region RenderableObject methods
 
 		public override void Initialize(DrawArgs drawArgs)
 		{
-            // get icon texture
-            m_iconTexture = null;
+			// get icon texture
+			m_iconTexture = null;
 
-            BuildIconTexture(drawArgs);
+			BuildIconTexture(drawArgs);
 
-            if (m_drawGroundStick)
-            {
-                if (m_groundStick == null)
-                    m_groundStick = new Line(drawArgs.device);
+			if (m_drawGroundStick)
+			{
+				if (m_groundStick == null)
+					m_groundStick = new Line(drawArgs.device);
 
-                if (m_groundStickVector == null)
-                    m_groundStickVector = new Vector2[2];
-            }
+				if (m_groundStickVector == null)
+					m_groundStickVector = new Vector2[2];
+			}
 
-            m_isUpdated = false;
-            Update(drawArgs);
+			m_isUpdated = false;
+			Update(drawArgs);
 
 			isInitialized = true;
 		}
@@ -585,677 +591,677 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public override void Dispose()
 		{
-            try
-            {
-                IconTexture iconTexture = null;
-                // decrement our count from textures - the icons class will clean up
-                if ((TextureFileName != null) && (TextureFileName.Trim() != String.Empty))
-                    iconTexture = (IconTexture)DrawArgs.Textures[TextureFileName];
-                else if (m_image != null)
-                    iconTexture = (IconTexture)DrawArgs.Textures[m_image];
+			try
+			{
+				IconTexture iconTexture = null;
+				// decrement our count from textures - the icons class will clean up
+				if ((TextureFileName != null) && (TextureFileName.Trim() != String.Empty))
+					iconTexture = (IconTexture)DrawArgs.Textures[TextureFileName];
+				else if (m_image != null)
+					iconTexture = (IconTexture)DrawArgs.Textures[m_image];
 
-                if (iconTexture != null)
-                {
-                    iconTexture.ReferenceCount--;
-                }
+				if (iconTexture != null)
+				{
+					iconTexture.ReferenceCount--;
+				}
 
-                if (m_sprite != null)
-                {
-                    m_sprite.Dispose();
-                    m_sprite = null;
-                }
+				if (m_sprite != null)
+				{
+					m_sprite.Dispose();
+					m_sprite = null;
+				}
 
-                isInitialized = false;
+				isInitialized = false;
 
-            }
-            finally
-            {
-                // base.Dispose();
-            }
+			}
+			finally
+			{
+				// base.Dispose();
+			}
 
 		}
 
-        /// <summary>
-        /// If LMB pressed calls PerformLMBAction, if RMB pressed calls PerformRMBAction
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <returns></returns>
+		/// <summary>
+		/// If LMB pressed calls PerformLMBAction, if RMB pressed calls PerformRMBAction
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <returns></returns>
 		public override bool PerformSelectionAction(DrawArgs drawArgs)
 		{
-            if (DrawArgs.IsLeftMouseButtonDown)
-                return PerformLMBAction(drawArgs);
+			if (DrawArgs.IsLeftMouseButtonDown)
+				return PerformLMBAction(drawArgs);
 
-            if (DrawArgs.IsRightMouseButtonDown)
-                return PerformRMBAction(drawArgs);
+			if (DrawArgs.IsRightMouseButtonDown)
+				return PerformRMBAction(drawArgs);
 
 			return false;
 		}
 
-        /// <summary>
-        /// Goes to icon if camera positions set.  Also opens URL if it exists
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <returns></returns>
-        protected virtual bool PerformLMBAction(DrawArgs drawArgs)
-        {
-            try
-            {
-                // Goto icon
-                if (OnClickZoomAltitude != double.NaN || OnClickZoomHeading != double.NaN || OnClickZoomTilt != double.NaN)
-                {
-                    drawArgs.WorldCamera.SetPosition(
-                        Latitude,
-                        Longitude,
-                        OnClickZoomHeading,
-                        OnClickZoomAltitude,
-                        OnClickZoomTilt);
-                }
+		/// <summary>
+		/// Goes to icon if camera positions set.  Also opens URL if it exists
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <returns></returns>
+		protected virtual bool PerformLMBAction(DrawArgs drawArgs)
+		{
+			try
+			{
+				// Goto icon
+				if (OnClickZoomAltitude != double.NaN || OnClickZoomHeading != double.NaN || OnClickZoomTilt != double.NaN)
+				{
+					drawArgs.WorldCamera.SetPosition(
+						 Latitude,
+						 Longitude,
+						 OnClickZoomHeading,
+						 OnClickZoomAltitude,
+						 OnClickZoomTilt);
+				}
 
-                // Goto to URL if we have one
-                if (!ClickableActionURL.Contains(@"worldwind://"))
-                {
-                    if (World.Settings.UseInternalBrowser && ClickableActionURL.StartsWith("http"))
-                    {
-                        SplitContainer sc = (SplitContainer)drawArgs.parentControl.Parent.Parent;
-                        InternalWebBrowserPanel browser = (InternalWebBrowserPanel)sc.Panel1.Controls[0];
-                        browser.NavigateTo(ClickableActionURL);
-                    }
-                    else
-                    {
-                        ProcessStartInfo psi = new ProcessStartInfo();
-                        psi.FileName = ClickableActionURL;
-                        psi.Verb = "open";
-                        psi.UseShellExecute = true;
+				// Goto to URL if we have one
+				if (!ClickableActionURL.Contains(@"worldwind://"))
+				{
+					if (World.Settings.UseInternalBrowser && ClickableActionURL.StartsWith("http"))
+					{
+						SplitContainer sc = (SplitContainer)drawArgs.parentControl.Parent.Parent;
+						InternalWebBrowserPanel browser = (InternalWebBrowserPanel)sc.Panel1.Controls[0];
+						browser.NavigateTo(ClickableActionURL);
+					}
+					else
+					{
+						ProcessStartInfo psi = new ProcessStartInfo();
+						psi.FileName = ClickableActionURL;
+						psi.Verb = "open";
+						psi.UseShellExecute = true;
 
-                        psi.CreateNoWindow = true;
-                        Process.Start(psi);
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message.ToString());
-            }
-            return false;
-        }
+						psi.CreateNoWindow = true;
+						Process.Start(psi);
+					}
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine(ex.Message.ToString());
+			}
+			return false;
+		}
 
-        /// <summary>
-        /// Does something with overlays...
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <returns></returns>
-        protected virtual bool PerformRMBAction(DrawArgs drawArgs)
-        {
-            try
-            {
-                if (m_contextMenu == null)
-                {
-                    m_contextMenu = new ContextMenu();
-                    BuildContextMenu(m_contextMenu);
-                }
+		/// <summary>
+		/// Does something with overlays...
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <returns></returns>
+		protected virtual bool PerformRMBAction(DrawArgs drawArgs)
+		{
+			try
+			{
+				if (m_contextMenu == null)
+				{
+					m_contextMenu = new ContextMenu();
+					BuildContextMenu(m_contextMenu);
+				}
 
-                m_contextMenu.Show(DrawArgs.ParentControl, DrawArgs.LastMousePosition);
+				m_contextMenu.Show(DrawArgs.ParentControl, DrawArgs.LastMousePosition);
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message.ToString());
-            }
-            return false;
-        }
+				return true;
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine(ex.Message.ToString());
+			}
+			return false;
+		}
 
-        /// <summary>
-        /// Adds to the default context menu any screen overlays and user defined context menus
-        /// </summary>
-        /// <param name="menu"></param>
-        public override void BuildContextMenu(ContextMenu menu)
-        {
-            base.BuildContextMenu(menu);
+		/// <summary>
+		/// Adds to the default context menu any screen overlays and user defined context menus
+		/// </summary>
+		/// <param name="menu"></param>
+		public override void BuildContextMenu(ContextMenu menu)
+		{
+			base.BuildContextMenu(menu);
 
-            // Add screen overlay items
-            ScreenOverlay[] overlays = Overlays;
-            if (overlays != null && overlays.Length > 0)
-            {
-                foreach (ScreenOverlay curOverlay in overlays)
-                {
-                    menu.MenuItems.Add(curOverlay.Name, new System.EventHandler(OverlayOnOpen));
-                }
-            }
-        }
+			// Add screen overlay items
+			ScreenOverlay[] overlays = Overlays;
+			if (overlays != null && overlays.Length > 0)
+			{
+				foreach (ScreenOverlay curOverlay in overlays)
+				{
+					menu.MenuItems.Add(curOverlay.Name, new System.EventHandler(OverlayOnOpen));
+				}
+			}
+		}
 
-        /// <summary>
-        /// Adds a new context menu item to this icon.
-        /// </summary>
-        /// <param name="newItem">The menu item to add</param>
-        public void AddContextMenuItem(MenuItem newItem)
-        {
-            if (m_contextMenu == null)
-            {
-                m_contextMenu = new ContextMenu();
-                this.BuildContextMenu(m_contextMenu);
-            }
+		/// <summary>
+		/// Adds a new context menu item to this icon.
+		/// </summary>
+		/// <param name="newItem">The menu item to add</param>
+		public void AddContextMenuItem(MenuItem newItem)
+		{
+			if (m_contextMenu == null)
+			{
+				m_contextMenu = new ContextMenu();
+				this.BuildContextMenu(m_contextMenu);
+			}
 
-            m_contextMenu.MenuItems.Add(newItem);
-        }
+			m_contextMenu.MenuItems.Add(newItem);
+		}
 
-        /// <summary>
-        /// Updates where we are if the camera has changed position (and thereby might be using higher resolution terrain
-        /// </summary>
-        /// <param name="drawArgs"></param>
+		/// <summary>
+		/// Updates where we are if the camera has changed position (and thereby might be using higher resolution terrain
+		/// </summary>
+		/// <param name="drawArgs"></param>
 		public override void Update(DrawArgs drawArgs)
 		{
-			if ( !m_isUpdated || (drawArgs.WorldCamera.ViewMatrix != lastView) )
-            {
-                double elevation = drawArgs.WorldCamera.WorldRadius;
-                double altitude = World.Settings.VerticalExaggeration * Altitude;
+			if (!m_isUpdated || (drawArgs.WorldCamera.ViewMatrix != lastView))
+			{
+				double elevation = drawArgs.WorldCamera.WorldRadius;
+				double altitude = World.Settings.VerticalExaggeration * Altitude;
 
-                if (drawArgs.CurrentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 300000)
-                {
-                    double samplesPerDegree = 50.0 / drawArgs.WorldCamera.ViewRange.Degrees;
-                    elevation += drawArgs.CurrentWorld.TerrainAccessor.GetElevationAt(m_latitude, m_longitude, samplesPerDegree) * World.Settings.VerticalExaggeration;
-                }
+				if (drawArgs.CurrentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 300000)
+				{
+					double samplesPerDegree = 50.0 / drawArgs.WorldCamera.ViewRange.Degrees;
+					elevation += drawArgs.CurrentWorld.TerrainAccessor.GetElevationAt(m_latitude, m_longitude, samplesPerDegree) * World.Settings.VerticalExaggeration;
+				}
 
-				Position = MathEngine.SphericalToCartesian(m_latitude, m_longitude, 
+				Position = MathEngine.SphericalToCartesian(m_latitude, m_longitude,
 					altitude + elevation);
 
-                m_positionD = MathEngine.SphericalToCartesian(
-                    Angle.FromDegrees(m_latitude),
-                    Angle.FromDegrees(m_longitude),
-                    altitude + elevation);
+				m_positionD = MathEngine.SphericalToCartesian(
+					 Angle.FromDegrees(m_latitude),
+					 Angle.FromDegrees(m_longitude),
+					 altitude + elevation);
 
-                if (m_drawGroundStick)
-                {
-                    if (m_groundStick == null)
-                        m_groundStick = new Line(drawArgs.device);
+				if (m_drawGroundStick)
+				{
+					if (m_groundStick == null)
+						m_groundStick = new Line(drawArgs.device);
 
-                    if (m_groundStickVector == null)
-                        m_groundStickVector = new Vector2[2];
+					if (m_groundStickVector == null)
+						m_groundStickVector = new Vector2[2];
 
-                    m_groundPoint = MathEngine.SphericalToCartesian(Latitude, Longitude, elevation);
-                }
+					m_groundPoint = MathEngine.SphericalToCartesian(Latitude, Longitude, elevation);
+				}
 
 				lastView = drawArgs.WorldCamera.ViewMatrix;
 			}
 
-            // should overlays update every time?
-			if(overlays != null)
+			// should overlays update every time?
+			if (overlays != null)
 			{
-				for(int i = 0; i < overlays.Count; i++)
+				for (int i = 0; i < overlays.Count; i++)
 				{
 					ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
-					if(curOverlay != null)
+					if (curOverlay != null)
 					{
 						curOverlay.Update(drawArgs);
 					}
 				}
 			}
 
-            if (m_newTexture)
-            {
-                BuildIconTexture(drawArgs);
-            }
+			if (m_newTexture)
+			{
+				BuildIconTexture(drawArgs);
+			}
 
-            m_isUpdated = true;
+			m_isUpdated = true;
 		}
 
 
-        /// <summary>
-        /// Builds the icon texture based on the saved texturefile name
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        protected virtual void BuildIconTexture(DrawArgs drawArgs)
-        {
-            try
-            {
-                object key = null;
+		/// <summary>
+		/// Builds the icon texture based on the saved texturefile name
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		protected virtual void BuildIconTexture(DrawArgs drawArgs)
+		{
+			try
+			{
+				object key = null;
 
-                if (m_iconTexture != null)
-                {
-                    m_iconTexture.ReferenceCount--;
-                }
+				if (m_iconTexture != null)
+				{
+					m_iconTexture.ReferenceCount--;
+				}
 
-                if ((TextureFileName != null) && (TextureFileName.Trim() != String.Empty))
-                {
-                    // Icon image from file
-                    m_iconTexture = (IconTexture)DrawArgs.Textures[TextureFileName];
-                    if (m_iconTexture == null)
-                    {
-                        key = TextureFileName;
-                        m_iconTexture = new IconTexture(drawArgs.device, TextureFileName);
-                    }
-                }
-                else
-                {
-                    // Icon image from bitmap
-                    if (this.m_image != null)
-                    {
-                        m_iconTexture = (IconTexture)DrawArgs.Textures[this.m_image];
-                        if (m_iconTexture == null)
-                        {
-                            // Create new texture from image
-                            key = this.m_image;
-                            m_iconTexture = new IconTexture(drawArgs.device, this.m_image);
-                        }
-                    }
-                }
+				if ((TextureFileName != null) && (TextureFileName.Trim() != String.Empty))
+				{
+					// Icon image from file
+					m_iconTexture = (IconTexture)DrawArgs.Textures[TextureFileName];
+					if (m_iconTexture == null)
+					{
+						key = TextureFileName;
+						m_iconTexture = new IconTexture(drawArgs.device, TextureFileName);
+					}
+				}
+				else
+				{
+					// Icon image from bitmap
+					if (this.m_image != null)
+					{
+						m_iconTexture = (IconTexture)DrawArgs.Textures[this.m_image];
+						if (m_iconTexture == null)
+						{
+							// Create new texture from image
+							key = this.m_image;
+							m_iconTexture = new IconTexture(drawArgs.device, this.m_image);
+						}
+					}
+				}
 
-                if (m_iconTexture != null)
-                {
-                    m_iconTexture.ReferenceCount++;
+				if (m_iconTexture != null)
+				{
+					m_iconTexture.ReferenceCount++;
 
-                    if (key != null)
-                    {
-                        // New texture, cache it
-                        DrawArgs.Textures.Add(key, m_iconTexture);
-                    }
+					if (key != null)
+					{
+						// New texture, cache it
+						DrawArgs.Textures.Add(key, m_iconTexture);
+					}
 
-                    // Use default dimensions if not set
-                    if (this.Width == 0)
-                        this.Width = m_iconTexture.Width;
-                    if (this.Height == 0)
-                        this.Height = m_iconTexture.Height;
-                }
+					// Use default dimensions if not set
+					if (this.Width == 0)
+						this.Width = m_iconTexture.Width;
+					if (this.Height == 0)
+						this.Height = m_iconTexture.Height;
+				}
 
-                // Compute mouse over bounding boxes
-                if (m_iconTexture == null)
-                {
-                    // Label only 
-                    this.SelectionRectangle = drawArgs.defaultDrawingFont.MeasureString(null, this.Name, DrawTextFormat.None, 0);
-                }
-                else
-                {
-                    // Icon only
-                    this.SelectionRectangle = new Rectangle(0, 0, this.Width, this.Height);
-                }
+				// Compute mouse over bounding boxes
+				if (m_iconTexture == null)
+				{
+					// Label only 
+					this.SelectionRectangle = drawArgs.defaultDrawingFont.MeasureString(null, this.Name, DrawTextFormat.None, 0);
+				}
+				else
+				{
+					// Icon only
+					this.SelectionRectangle = new Rectangle(0, 0, this.Width, this.Height);
+				}
 
-                // Center the box at (0,0)
-                this.SelectionRectangle.Offset(-this.SelectionRectangle.Width / 2, -this.SelectionRectangle.Height / 2);
+				// Center the box at (0,0)
+				this.SelectionRectangle.Offset(-this.SelectionRectangle.Width / 2, -this.SelectionRectangle.Height / 2);
 
-                if (m_iconTexture != null)
-                {
-                    this.XScale = (float)this.Width / m_iconTexture.Width;
-                    this.YScale = (float)this.Height / m_iconTexture.Height;
+				if (m_iconTexture != null)
+				{
+					this.XScale = (float)this.Width / m_iconTexture.Width;
+					this.YScale = (float)this.Height / m_iconTexture.Height;
 
-                }
-                else
-                {
-                    this.XScale = 1.0f;
-                    this.YScale = 1.0f;
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message.ToString());
-            }
+				}
+				else
+				{
+					this.XScale = 1.0f;
+					this.YScale = 1.0f;
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine(ex.Message.ToString());
+			}
 
-            m_newTexture = false;
+			m_newTexture = false;
 
-        }
+		}
 
-        /// <summary>
-        /// Render the icon.  This can be pretty slow so you should only stick an Icon on an Icons layer.
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        public override void Render(DrawArgs drawArgs)
-        {
-            // Do whatever pre-rendering we have to do
-            PreRender(drawArgs);
+		/// <summary>
+		/// Render the icon.  This can be pretty slow so you should only stick an Icon on an Icons layer.
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		public override void Render(DrawArgs drawArgs)
+		{
+			// Do whatever pre-rendering we have to do
+			PreRender(drawArgs);
 
-            // If we're in view render
-            if (drawArgs.WorldCamera.ViewFrustum.ContainsPoint(this.Position))
-            {
-               Point3d translationVector = new Point3d(
-                    (PositionD.X - drawArgs.WorldCamera.ReferenceCenter.X),
-                    (PositionD.Y - drawArgs.WorldCamera.ReferenceCenter.Y),
-                    (PositionD.Z - drawArgs.WorldCamera.ReferenceCenter.Z));
+			// If we're in view render
+			if (drawArgs.WorldCamera.ViewFrustum.ContainsPoint(this.Position))
+			{
+				Point3d translationVector = new Point3d(
+					  (PositionD.X - drawArgs.WorldCamera.ReferenceCenter.X),
+					  (PositionD.Y - drawArgs.WorldCamera.ReferenceCenter.Y),
+					  (PositionD.Z - drawArgs.WorldCamera.ReferenceCenter.Z));
 
-                Point3d projectedPoint = drawArgs.WorldCamera.Project(translationVector);
-                
-                if (m_sprite == null)
-                    m_sprite = new Sprite(drawArgs.device);
+				Point3d projectedPoint = drawArgs.WorldCamera.Project(translationVector);
 
-                if (m_labelRectangles == null)
-                    m_labelRectangles = new List<Rectangle>();
+				if (m_sprite == null)
+					m_sprite = new Sprite(drawArgs.device);
 
-                // Clear or we never redraw our label
-                m_labelRectangles.Clear();
+				if (m_labelRectangles == null)
+					m_labelRectangles = new List<Rectangle>();
 
-                m_sprite.Begin(SpriteFlags.AlphaBlend);
+				// Clear or we never redraw our label
+				m_labelRectangles.Clear();
 
-                FastRender(drawArgs, m_sprite, projectedPoint, false, m_labelRectangles);
+				m_sprite.Begin(SpriteFlags.AlphaBlend);
 
-                m_sprite.End();
-            }
+				FastRender(drawArgs, m_sprite, projectedPoint, false, m_labelRectangles);
 
-            // do whatever post rendering stuff we have to do
-            PostRender(drawArgs);
-        }
+				m_sprite.End();
+			}
 
-        /// <summary>
-        /// Fast render is used to batch the renders of all icons on a layer into a single Sprite.Begin and End block.
-        /// </summary>
-        /// <param name="drawArgs">The drawing arguments</param>
-        /// <param name="sprite">The sprite to use for drawing</param>
-        /// <param name="projectedPoint">Where we are</param>
-        /// <param name="isMouseOver">Whether we should render as a mouseover icon</param>
-      public virtual void FastRender(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, bool isMouseOver, List<Rectangle> labelRectangles)
-        {
-            // Check icons for within "visual" range
-            double distanceToIcon = (this.Position - drawArgs.WorldCamera.Position).Length;
-            if (distanceToIcon > this.MaximumDisplayDistance)
-                return;
-            if (distanceToIcon < this.MinimumDisplayDistance)
-                return;
+			// do whatever post rendering stuff we have to do
+			PostRender(drawArgs);
+		}
 
-            if (!this.isInitialized)
-                this.Initialize(drawArgs);
+		/// <summary>
+		/// Fast render is used to batch the renders of all icons on a layer into a single Sprite.Begin and End block.
+		/// </summary>
+		/// <param name="drawArgs">The drawing arguments</param>
+		/// <param name="sprite">The sprite to use for drawing</param>
+		/// <param name="projectedPoint">Where we are</param>
+		/// <param name="isMouseOver">Whether we should render as a mouseover icon</param>
+		public virtual void FastRender(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, bool isMouseOver, List<Rectangle> labelRectangles)
+		{
+			// Check icons for within "visual" range
+			double distanceToIcon = (this.Position - drawArgs.WorldCamera.Position).Length;
+			if (distanceToIcon > this.MaximumDisplayDistance)
+				return;
+			if (distanceToIcon < this.MinimumDisplayDistance)
+				return;
 
-            if ((!this.m_isUpdated) || (drawArgs.WorldCamera.Altitude < 300000))
-            {
-                this.Update(drawArgs);
-            }
+			if (!this.isInitialized)
+				this.Initialize(drawArgs);
 
-            int color = isMouseOver ? hotColor : normalColor;
+			if ((!this.m_isUpdated) || (drawArgs.WorldCamera.Altitude < 300000))
+			{
+				this.Update(drawArgs);
+			}
 
-            // Render the label if necessary
-            if (m_iconTexture == null || isMouseOver || NameAlwaysVisible)
-            {
-                RenderLabel(drawArgs, sprite, projectedPoint, color, labelRectangles);
-            }
-            
-            // render the icon image
-            if (m_iconTexture != null)
-            {
-                RenderTexture(drawArgs, sprite, projectedPoint, color);
-            }
+			int color = isMouseOver ? hotColor : normalColor;
 
-            // Depending on JIT to correctly inline (or not) these calls
-            RenderGroundStick(drawArgs, sprite, projectedPoint, color);
+			// Render the label if necessary
+			if (m_iconTexture == null || isMouseOver || NameAlwaysVisible)
+			{
+				RenderLabel(drawArgs, sprite, projectedPoint, color, labelRectangles);
+			}
 
-            if (isMouseOver)
-                RenderDescription(drawArgs, sprite, projectedPoint, color);
+			// render the icon image
+			if (m_iconTexture != null)
+			{
+				RenderTexture(drawArgs, sprite, projectedPoint, color);
+			}
 
-        }
+			// Depending on JIT to correctly inline (or not) these calls
+			RenderGroundStick(drawArgs, sprite, projectedPoint, color);
 
-        /// <summary>
-        /// Renders the overlays for this icon
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        public virtual void RenderOverlay(DrawArgs drawArgs)
-        {
-            if (overlays != null)
-            {
-                for (int i = 0; i < overlays.Count; i++)
-                {
-                    ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
-                    if (curOverlay != null && curOverlay.IsOn)
-                    {
-                        curOverlay.Render(drawArgs);
-                    }
-                }
-            }
-        }
+			if (isMouseOver)
+				RenderDescription(drawArgs, sprite, projectedPoint, color);
 
-        /// <summary>
-        /// Helper function to render icon label.  Broken out so that child classes can override this behavior.
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <param name="sprite"></param>
-        /// <param name="projectedPoint"></param>
-        /// <param name="color"></param>
-      protected virtual void RenderLabel(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color, List<Rectangle> labelRectangles)
-        {
-            if (this.Name != null)
-            {
-                if (m_iconTexture == null)
-                {
-                    // Original Icon Label Render code
+		}
 
-                    // KML Label Render Code with Declutter
+		/// <summary>
+		/// Renders the overlays for this icon
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		public virtual void RenderOverlay(DrawArgs drawArgs)
+		{
+			if (overlays != null)
+			{
+				for (int i = 0; i < overlays.Count; i++)
+				{
+					ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
+					if (curOverlay != null && curOverlay.IsOn)
+					{
+						curOverlay.Render(drawArgs);
+					}
+				}
+			}
+		}
 
-                    // Center over target as we have no bitmap
-                    Rectangle realrect = drawArgs.defaultDrawingFont.MeasureString(m_sprite, Name, DrawTextFormat.WordBreak, color);
-                    realrect.X = (int)projectedPoint.X - (realrect.Width >> 1);
-                    realrect.Y = (int)(projectedPoint.Y - (drawArgs.defaultDrawingFont.Description.Height >> 1));
+		/// <summary>
+		/// Helper function to render icon label.  Broken out so that child classes can override this behavior.
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <param name="sprite"></param>
+		/// <param name="projectedPoint"></param>
+		/// <param name="color"></param>
+		protected virtual void RenderLabel(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color, List<Rectangle> labelRectangles)
+		{
+			if (this.Name != null)
+			{
+				if (m_iconTexture == null)
+				{
+					// Original Icon Label Render code
 
-                    bool bDraw = true;
+					// KML Label Render Code with Declutter
 
-                    // Only not show if declutter is turned on and we aren't always supposed to be seen
-                    if (Declutter && !NameAlwaysVisible)
-                    {
-                        foreach (Rectangle drawnrect in labelRectangles)
-                        {
-                            if (realrect.IntersectsWith(drawnrect))
-                            {
-                                bDraw = false;
-                                break;
-                            }
-                        }
-                    }
+					// Center over target as we have no bitmap
+					Rectangle realrect = drawArgs.defaultDrawingFont.MeasureString(m_sprite, Name, DrawTextFormat.WordBreak, color);
+					realrect.X = (int)projectedPoint.X - (realrect.Width >> 1);
+					realrect.Y = (int)(projectedPoint.Y - (drawArgs.defaultDrawingFont.Description.Height >> 1));
 
-                    if (bDraw)
-                    {
-                        labelRectangles.Add(realrect);
+					bool bDraw = true;
 
-                        drawArgs.defaultDrawingFont.DrawText(m_sprite, Name, realrect, DrawTextFormat.WordBreak, color);
-                    }
-                }
-                else
-                {
-                    // KML Label Render Code with Declutter
+					// Only not show if declutter is turned on and we aren't always supposed to be seen
+					if (Declutter && !NameAlwaysVisible)
+					{
+						foreach (Rectangle drawnrect in labelRectangles)
+						{
+							if (realrect.IntersectsWith(drawnrect))
+							{
+								bDraw = false;
+								break;
+							}
+						}
+					}
 
-                    // Adjust text to make room for icon
-                    int spacing = (int)(Width * 0.3f);
-                    if (spacing > 5)
-                        spacing = 5;
-                    int offsetForIcon = (Width >> 1) + spacing;
+					if (bDraw)
+					{
+						labelRectangles.Add(realrect);
 
-                    // Text to the right
-                    Rectangle rightrect = drawArgs.defaultDrawingFont.MeasureString(m_sprite, Name, DrawTextFormat.WordBreak, color);
-                    rightrect.X = (int)projectedPoint.X + offsetForIcon;
-                    rightrect.Y = (int)(projectedPoint.Y - (drawArgs.defaultDrawingFont.Description.Height >> 1));
+						drawArgs.defaultDrawingFont.DrawText(m_sprite, Name, realrect, DrawTextFormat.WordBreak, color);
+					}
+				}
+				else
+				{
+					// KML Label Render Code with Declutter
 
-                    // Text to the left
-                    Rectangle leftrect = drawArgs.defaultDrawingFont.MeasureString(m_sprite, Name, DrawTextFormat.WordBreak, color);
-                    leftrect.X = (int)projectedPoint.X - offsetForIcon - rightrect.Width;
-                    leftrect.Y = (int)(projectedPoint.Y - (drawArgs.defaultDrawingFont.Description.Height >> 1));
+					// Adjust text to make room for icon
+					int spacing = (int)(Width * 0.3f);
+					if (spacing > 5)
+						spacing = 5;
+					int offsetForIcon = (Width >> 1) + spacing;
 
-                    bool bDrawRight = true;
-                    bool bDrawLeft = true;
+					// Text to the right
+					Rectangle rightrect = drawArgs.defaultDrawingFont.MeasureString(m_sprite, Name, DrawTextFormat.WordBreak, color);
+					rightrect.X = (int)projectedPoint.X + offsetForIcon;
+					rightrect.Y = (int)(projectedPoint.Y - (drawArgs.defaultDrawingFont.Description.Height >> 1));
 
-                    // Only not show if declutter is turned on and we aren't always supposed to be seen
-                    if (Declutter && !NameAlwaysVisible)
-                    {
-                        foreach (Rectangle drawnrect in labelRectangles)
-                        {
-                            if (rightrect.IntersectsWith(drawnrect))
-                            {
-                                bDrawRight = false;
-                            }
-                            if (leftrect.IntersectsWith(drawnrect))
-                            {
-                                bDrawLeft = false;
-                            }
-                            if (!bDrawRight && !bDrawLeft)
-                            {
-                                break;
-                            }
-                        }
-                    }
+					// Text to the left
+					Rectangle leftrect = drawArgs.defaultDrawingFont.MeasureString(m_sprite, Name, DrawTextFormat.WordBreak, color);
+					leftrect.X = (int)projectedPoint.X - offsetForIcon - rightrect.Width;
+					leftrect.Y = (int)(projectedPoint.Y - (drawArgs.defaultDrawingFont.Description.Height >> 1));
 
-                    // draw either right or left if we have space.  If we don't too bad.
-                    if (bDrawRight)
-                    {
-                        labelRectangles.Add(rightrect);
-                        drawArgs.defaultDrawingFont.DrawText(m_sprite, Name, rightrect, DrawTextFormat.WordBreak, color);
-                    }
-                    else if (bDrawLeft)
-                    {
-                        labelRectangles.Add(leftrect);
-                        drawArgs.defaultDrawingFont.DrawText(m_sprite, Name, leftrect, DrawTextFormat.WordBreak, color);
-                    }
-                }
-            }
-        }
+					bool bDrawRight = true;
+					bool bDrawLeft = true;
 
-        /// <summary>
-        /// Helper function to render icon texture.  Broken out so that child classes can override this behavior.
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <param name="sprite"></param>
-        /// <param name="projectedPoint"></param>
-        /// <param name="color">the color to render the icon</param>
-      protected virtual void RenderTexture(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
-        {
-            Matrix4d scaleTransform;
-            Matrix4d rotationTransform;
+					// Only not show if declutter is turned on and we aren't always supposed to be seen
+					if (Declutter && !NameAlwaysVisible)
+					{
+						foreach (Rectangle drawnrect in labelRectangles)
+						{
+							if (rightrect.IntersectsWith(drawnrect))
+							{
+								bDrawRight = false;
+							}
+							if (leftrect.IntersectsWith(drawnrect))
+							{
+								bDrawLeft = false;
+							}
+							if (!bDrawRight && !bDrawLeft)
+							{
+								break;
+							}
+						}
+					}
 
-            //Do Altitude depedent scaling for KMLIcons
-            if (AutoScaleIcon)
-            {
-                float factor = 1;
-                if (drawArgs.WorldCamera.Altitude > minIconZoomAltitude)
-                    factor -= (float)((drawArgs.WorldCamera.Altitude - minIconZoomAltitude) / drawArgs.WorldCamera.Altitude);
-                if (factor < 0.20) factor = 0.20F;
-                
-                XScale = factor * ((float)Width / m_iconTexture.Width);
-                YScale = factor * ((float)Height / m_iconTexture.Height);
-            }
+					// draw either right or left if we have space.  If we don't too bad.
+					if (bDrawRight)
+					{
+						labelRectangles.Add(rightrect);
+						drawArgs.defaultDrawingFont.DrawText(m_sprite, Name, rightrect, DrawTextFormat.WordBreak, color);
+					}
+					else if (bDrawLeft)
+					{
+						labelRectangles.Add(leftrect);
+						drawArgs.defaultDrawingFont.DrawText(m_sprite, Name, leftrect, DrawTextFormat.WordBreak, color);
+					}
+				}
+			}
+		}
 
-            //scale and rotate image
-            scaleTransform = Matrix4d.Scaling(this.XScale, this.YScale, 0);
+		/// <summary>
+		/// Helper function to render icon texture.  Broken out so that child classes can override this behavior.
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <param name="sprite"></param>
+		/// <param name="projectedPoint"></param>
+		/// <param name="color">the color to render the icon</param>
+		protected virtual void RenderTexture(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
+		{
+			Matrix4d scaleTransform;
+			Matrix4d rotationTransform;
 
-            if (m_isRotated)
-                rotationTransform = Matrix4d.RotationZ((float)m_rotation.Radians - (float)drawArgs.WorldCamera.Heading.Radians);
-            else
-                rotationTransform = Matrix4d.Identity;
+			//Do Altitude depedent scaling for KMLIcons
+			if (AutoScaleIcon)
+			{
+				float factor = 1;
+				if (drawArgs.WorldCamera.Altitude > minIconZoomAltitude)
+					factor -= (float)((drawArgs.WorldCamera.Altitude - minIconZoomAltitude) / drawArgs.WorldCamera.Altitude);
+				if (factor < 0.20) factor = 0.20F;
 
-            sprite.Transform = ConvertDX.FromMatrix4d(scaleTransform * rotationTransform * Matrix4d.Translation(projectedPoint.X, projectedPoint.Y, 0));
-            sprite.Draw(m_iconTexture.Texture,
-                new Vector3(m_iconTexture.Width >> 1, m_iconTexture.Height >> 1, 0),
-                Vector3.Empty,
-                color);
+				XScale = factor * ((float)Width / m_iconTexture.Width);
+				YScale = factor * ((float)Height / m_iconTexture.Height);
+			}
 
-            // Reset transform to prepare for text rendering later
-            sprite.Transform = Matrix.Identity;
-        }
+			//scale and rotate image
+			scaleTransform = Matrix4d.Scaling(this.XScale, this.YScale, 0);
 
-        /// <summary>
-        /// Helper function to render the groundstick
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <param name="projectedPoint"></param>
-      protected virtual void RenderGroundStick(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
-        {
-            if (m_drawGroundStick)
-            {
-                Point3d referenceCenter = new Point3d(
-                    drawArgs.WorldCamera.ReferenceCenter.X,
-                    drawArgs.WorldCamera.ReferenceCenter.Y,
-                    drawArgs.WorldCamera.ReferenceCenter.Z);
+			if (m_isRotated)
+				rotationTransform = Matrix4d.RotationZ((float)m_rotation.Radians - (float)drawArgs.WorldCamera.Heading.Radians);
+			else
+				rotationTransform = Matrix4d.Identity;
 
-                Point3d projectedGroundPoint = drawArgs.WorldCamera.Project(m_groundPoint - referenceCenter);
+			sprite.Transform = ConvertDX.FromMatrix4d(scaleTransform * rotationTransform * Matrix4d.Translation(projectedPoint.X, projectedPoint.Y, 0));
+			sprite.Draw(m_iconTexture.Texture,
+				 new Vector3(m_iconTexture.Width >> 1, m_iconTexture.Height >> 1, 0),
+				 Vector3.Empty,
+				 color);
 
-                m_groundStick.Begin();
-                m_groundStickVector[0].X = (float)projectedPoint.X;
-                m_groundStickVector[0].Y = (float)projectedPoint.Y;
-                m_groundStickVector[1].X = (float)projectedGroundPoint.X;
-                m_groundStickVector[1].Y = (float)projectedGroundPoint.Y;
+			// Reset transform to prepare for text rendering later
+			sprite.Transform = Matrix.Identity;
+		}
 
-                m_groundStick.Draw(m_groundStickVector, color);
-                m_groundStick.End();
-            }
-        }
+		/// <summary>
+		/// Helper function to render the groundstick
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <param name="projectedPoint"></param>
+		protected virtual void RenderGroundStick(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
+		{
+			if (m_drawGroundStick)
+			{
+				Point3d referenceCenter = new Point3d(
+					 drawArgs.WorldCamera.ReferenceCenter.X,
+					 drawArgs.WorldCamera.ReferenceCenter.Y,
+					 drawArgs.WorldCamera.ReferenceCenter.Z);
 
-        /// <summary>
-        /// Helper function to render icon description.  Broken out so that child classes can override this behavior.
-        /// </summary>
-        /// <param name="drawArgs"></param>
-      protected virtual void RenderDescription(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
-        {
-            string description = this.Description;
+				Point3d projectedGroundPoint = drawArgs.WorldCamera.Project(m_groundPoint - referenceCenter);
 
-            if (description == null)
-                description = ClickableActionURL;
+				m_groundStick.Begin();
+				m_groundStickVector[0].X = (float)projectedPoint.X;
+				m_groundStickVector[0].Y = (float)projectedPoint.Y;
+				m_groundStickVector[1].X = (float)projectedGroundPoint.X;
+				m_groundStickVector[1].Y = (float)projectedGroundPoint.Y;
 
-            if (description != null)
-            {
-                // Render description field
-                DrawTextFormat format = DrawTextFormat.NoClip | DrawTextFormat.WordBreak | DrawTextFormat.Bottom;
-                int left = 10;
-                if (World.Settings.showLayerManager)
-                    left += World.Settings.layerManagerWidth;
-                Rectangle rect = Rectangle.FromLTRB(left, 10, drawArgs.screenWidth - 10, drawArgs.screenHeight - 10);
+				m_groundStick.Draw(m_groundStickVector, color);
+				m_groundStick.End();
+			}
+		}
 
-                // Draw outline
-                drawArgs.defaultDrawingFont.DrawText(
-                    sprite, description,
-                    rect,
-                    format, 0xb0 << 24);
+		/// <summary>
+		/// Helper function to render icon description.  Broken out so that child classes can override this behavior.
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		protected virtual void RenderDescription(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
+		{
+			string description = this.Description;
 
-                rect.Offset(2, 0);
-                drawArgs.defaultDrawingFont.DrawText(
-                    sprite, description,
-                    rect,
-                    format, 0xb0 << 24);
+			if (description == null)
+				description = ClickableActionURL;
 
-                rect.Offset(0, 2);
-                drawArgs.defaultDrawingFont.DrawText(
-                    sprite, description,
-                    rect,
-                    format, 0xb0 << 24);
+			if (description != null)
+			{
+				// Render description field
+				DrawTextFormat format = DrawTextFormat.NoClip | DrawTextFormat.WordBreak | DrawTextFormat.Bottom;
+				int left = 10;
+				if (World.Settings.showLayerManager)
+					left += World.Settings.layerManagerWidth;
+				Rectangle rect = Rectangle.FromLTRB(left, 10, drawArgs.screenWidth - 10, drawArgs.screenHeight - 10);
 
-                rect.Offset(-2, 0);
-                drawArgs.defaultDrawingFont.DrawText(
-                    sprite, description,
-                    rect,
-                    format, 0xb0 << 24);
+				// Draw outline
+				drawArgs.defaultDrawingFont.DrawText(
+					 sprite, description,
+					 rect,
+					 format, 0xb0 << 24);
 
-                // Draw description
-                rect.Offset(1, -1);
-                drawArgs.defaultDrawingFont.DrawText(
-                    sprite, description,
-                    rect,
-                    format, descriptionColor);
-            }
-        }
+				rect.Offset(2, 0);
+				drawArgs.defaultDrawingFont.DrawText(
+					 sprite, description,
+					 rect,
+					 format, 0xb0 << 24);
 
-        /// <summary>
-        /// Does whatever you need to do before you render the icon.  Occurs even if the icon isn't visible!
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <param name="sprite"></param>
-        /// <param name="projectedPoint"></param>
-        /// <param name="color"></param>
-        public virtual void PreRender(DrawArgs drawArgs)
-        {
-            RenderOverlay(drawArgs);
-        }
+				rect.Offset(0, 2);
+				drawArgs.defaultDrawingFont.DrawText(
+					 sprite, description,
+					 rect,
+					 format, 0xb0 << 24);
 
-        /// <summary>
-        /// Does whatever you need to do after you render the icon.  Occurs even if the icon isn't visible!
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        /// <param name="sprite"></param>
-        /// <param name="projectedPoint"></param>
-        /// <param name="color"></param>
-        public virtual void PostRender(DrawArgs drawArgs)
-        {
-        }
+				rect.Offset(-2, 0);
+				drawArgs.defaultDrawingFont.DrawText(
+					 sprite, description,
+					 rect,
+					 format, 0xb0 << 24);
 
-        /// <summary>
-        /// Do this if we don't actually get rendered (not in view, too far, etc)
-        /// </summary>
-        /// <param name="drawArgs"></param>
-        public virtual void NoRender(DrawArgs drawArgs)
-        {
-        }
+				// Draw description
+				rect.Offset(1, -1);
+				drawArgs.defaultDrawingFont.DrawText(
+					 sprite, description,
+					 rect,
+					 format, descriptionColor);
+			}
+		}
+
+		/// <summary>
+		/// Does whatever you need to do before you render the icon.  Occurs even if the icon isn't visible!
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <param name="sprite"></param>
+		/// <param name="projectedPoint"></param>
+		/// <param name="color"></param>
+		public virtual void PreRender(DrawArgs drawArgs)
+		{
+			RenderOverlay(drawArgs);
+		}
+
+		/// <summary>
+		/// Does whatever you need to do after you render the icon.  Occurs even if the icon isn't visible!
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		/// <param name="sprite"></param>
+		/// <param name="projectedPoint"></param>
+		/// <param name="color"></param>
+		public virtual void PostRender(DrawArgs drawArgs)
+		{
+		}
+
+		/// <summary>
+		/// Do this if we don't actually get rendered (not in view, too far, etc)
+		/// </summary>
+		/// <param name="drawArgs"></param>
+		public virtual void NoRender(DrawArgs drawArgs)
+		{
+		}
 
 		#endregion
 
-        protected void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		protected void RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 		}
 	}

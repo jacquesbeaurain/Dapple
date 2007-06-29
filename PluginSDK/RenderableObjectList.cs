@@ -42,7 +42,7 @@ namespace WorldWind.Renderable
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.RenderableObjectList"/> class.
 		/// </summary>
 		/// <param name="name"></param>
-		public RenderableObjectList(string name) : base(name, new Point3d(0,0,0), Quaternion4d.RotationYawPitchRoll(0, 0, 0))
+		public RenderableObjectList(string name) : base(name, new Point3d(0,0,0), new Quaternion4d())
 		{
 			this.isSelectable = true;
 		}
@@ -53,7 +53,7 @@ namespace WorldWind.Renderable
 			TimeSpan refreshInterval,
 			World parentWorld,
 			Cache cache
-			) : base(name, new Point3d(0,0,0), Quaternion4d.RotationYawPitchRoll(0, 0, 0))
+			) : base(name, new Point3d(0,0,0), new Quaternion4d())
 		{
 			isSelectable = true;
 			m_DataSource = dataSource;
@@ -502,7 +502,7 @@ namespace WorldWind.Renderable
 			{
 				RenderableObject a = (RenderableObject)m_children[index];
 				RenderableObject b = (RenderableObject)m_children[index+1];
-            if (a.CompareTo(b) > 0)
+				if(a.RenderPriority > b.RenderPriority)
 				{
 					// Swap
 					m_children[index] = b;
