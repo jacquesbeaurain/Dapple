@@ -60,6 +60,16 @@ namespace WorldWind.Camera
 			this.Bank = Angle.FromDegrees(bank);
 		}
 
+		public override Angle Heading
+		{
+			get { return _heading; }
+			set
+			{
+				_heading = value;
+				_targetHeading = value;
+			}
+		}
+
 		Angle angle = new Angle();
 		protected void SlerpToTargetOrientation(double percent)
 		{
@@ -72,32 +82,18 @@ namespace WorldWind.Camera
 
 			angle = Angle.FromRadians(Math.Acos(c));
 
-			m_Orientation = Quaternion4d.Slerp(m_Orientation, this._targetOrientation, percent);
+			m_Orientation = Quaternion4d.Slerp(m_Orientation, _targetOrientation, percent);
 		
-			Point3d v = Quaternion4d.QuaternionToEuler(m_Orientation);
-			if(!double.IsNaN(v.Y))
-			{
-				this._latitude.Radians = v.Y;
-				this._longitude.Radians = v.X;
-				this._heading.Radians = v.Z;
-			}
-			this._tilt += (this._targetTilt-this._tilt)*percent;
-			this._bank += (this._targetBank-this._bank)*percent;
-			this._distance += (this._targetDistance-this._distance)*percent;
-			ComputeAltitude(this._distance, this._tilt);
-			this._fov += (this._targetFov-this._fov)*percent;
+			_tilt += (_targetTilt - _tilt)*percent;
+			_bank += (_targetBank - _bank)*percent;
+			_distance += (_targetDistance - _distance)*percent;
+			ComputeAltitude(_distance, _tilt);
+			_fov += (_targetFov - _fov)*percent;
 		}
 
       protected void NoSlerpToTargetOrientation()
       {
          m_Orientation = this._targetOrientation;
-         Point3d v = Quaternion4d.QuaternionToEuler(m_Orientation);
-         if (!double.IsNaN(v.Y))
-         {
-            this._latitude.Radians = v.Y;
-            this._longitude.Radians = v.X;
-            this._heading.Radians = v.Z;
-         }
          this._tilt = this._targetTilt;
          this._bank = this._targetBank;
          this._distance = this._targetDistance;
@@ -140,10 +136,10 @@ namespace WorldWind.Camera
 			}
 			set
 			{
-				if(value< _terrainElevation*World.Settings.VerticalExaggeration+100)
-					value= _terrainElevation*World.Settings.VerticalExaggeration+100;
-				if(value> 7*this._worldRadius)
-					value= 7*this._worldRadius;
+				if(value < _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude)
+                    value = _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude;
+				if(value > maximumAltitude)
+                    value = maximumAltitude;
 				this._targetAltitude = value;
 				ComputeTargetDistance(this._targetAltitude, this._targetTilt);
 			}
@@ -195,21 +191,27 @@ namespace WorldWind.Camera
 
 		public override void Update(Device device)
 		{
-         if (_altitude < _terrainElevation * World.Settings.VerticalExaggeration + minimumAltitude)
-         {
-            _targetAltitude = _terrainElevation * World.Settings.VerticalExaggeration + minimumAltitude;
-            ComputeTargetDistance(_targetAltitude, _targetTilt);
-         }
-
-         /*if (_slerpPercentage >= 1.0 || EpsilonTest())
-            NoSlerpToTargetOrientation();
-         else
-            SlerpToTargetOrientation(_slerpPercentage);
-         */
+            // Move camera
          if (EpsilonTest())
             NoSlerpToTargetOrientation();
          else
-            SlerpToTargetOrientation(World.Settings.CameraSlerpInertia);
+            SlerpToTargetOrientation(World.Settings.cameraSlerpPercentage);
+            // Check for terrain collision
+            if (_altitude < _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude)
+         {
+                _targetAltitude = _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude;
+                _altitude = _targetAltitude;
+				//ComputeTargetDistance( _targetAltitude, _targetTilt );
+                ComputeTargetTilt(_targetAltitude, _distance);
+                if (Angle.IsNaN(_targetTilt))
+                {
+                    _targetTilt.Degrees = 0;
+                    ComputeTargetDistance(_targetAltitude, _targetTilt);
+                    _distance = _targetDistance;
+                }
+                _tilt = _targetTilt;
+			}
+            // Update camera base
          base.Update(device);
       }
 
@@ -226,18 +228,8 @@ namespace WorldWind.Camera
 	
 		public override void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)
 		{
-			if(!World.Settings.cameraSmooth)
-			{
-				base.RotationYawPitchRoll(yaw,pitch,roll);
-
-				this._targetOrientation = m_Orientation;
-				this._targetLatitude = _latitude;
-				this._targetLongitude = _longitude;
-				this._targetHeading = _heading;
-				return;
-			}
-
 			_targetOrientation = Quaternion4d.RotationYawPitchRoll(yaw.Radians, pitch.Radians, roll.Radians) * _targetOrientation;
+			
 			Point3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
 			if(!double.IsNaN(v.Y))
 				this._targetLatitude.Radians = v.Y;
@@ -286,8 +278,8 @@ namespace WorldWind.Camera
 			}
 			set
 			{
-				if(value<minimumAltitude+_terrainElevation*World.Settings.VerticalExaggeration)
-					value=minimumAltitude+TerrainElevation*World.Settings.VerticalExaggeration;
+				if(value < minimumAltitude)
+					value = minimumAltitude;
 				if(value>maximumAltitude)
 					value = maximumAltitude;
 				_targetDistance = value;
@@ -310,17 +302,17 @@ namespace WorldWind.Camera
 			{
 				// In
 				double factor = 1.0 + percent;
-				TargetAltitude /= factor;
+				TargetDistance /= factor;
 			}
 			else
 			{
 				// Out
 				double factor = 1.0 - percent;
-				TargetAltitude *= factor;
+                TargetDistance *= factor;
 			}
 		}
 
-		protected void ComputeTargetDistance( double altitude, Angle tilt )
+		protected void ComputeTargetDistanceOld( double altitude, Angle tilt )
 		{
 			double cos = Math.Cos(Math.PI-tilt.Radians);
 			double x = _worldRadius*cos;
@@ -332,17 +324,32 @@ namespace WorldWind.Camera
 			_targetDistance = res;
 		}
 
+        protected void ComputeTargetDistance(double altitude, Angle tilt)
+        {
+            double hyp = _worldRadius + altitude;
+            double a = (_worldRadius + curCameraElevation) * Math.Sin(tilt.Radians);
+            double b = Math.Sqrt(hyp * hyp - a * a);
+            double c = (_worldRadius + curCameraElevation) * Math.Cos(tilt.Radians);
+            _targetDistance = b - c;
+        }
+
 		protected void ComputeTargetAltitude( double distance, Angle tilt )
 		{
-			double dfromeq = Math.Sqrt(_worldRadius*_worldRadius + distance*distance - 
-				2 * _worldRadius*distance*Math.Cos(Math.PI-tilt.Radians));
+            double radius = _worldRadius + this.curCameraElevation;
+            double dfromeq = Math.Sqrt(radius * radius + distance * distance -
+                2 * radius * distance * Math.Cos(Math.PI - tilt.Radians));
 			double alt = dfromeq - _worldRadius;
-			if(alt<minimumAltitude + _terrainElevation*World.Settings.VerticalExaggeration)
-				alt = minimumAltitude + _terrainElevation*World.Settings.VerticalExaggeration;
-			else if(alt>maximumAltitude)
-				alt = maximumAltitude;
 			_targetAltitude = alt;
 		}
+
+        protected void ComputeTargetTilt(double alt, double distance)
+        {
+            double a = _worldRadius + alt;
+            double b = distance;
+            double c = _worldRadius + curCameraElevation;
+            _targetTilt.Radians = Math.PI - Math.Acos((c * c + b * b - a * a) / (2 * c * b));
+        }
+
 	}
 
 	/// <summary>

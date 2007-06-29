@@ -346,8 +346,10 @@ namespace WorldWind.Renderable
 
 		public override void Render(DrawArgs drawArgs)
 		{
+#if !DEBUG
 			try
 			{
+#endif
 				if(!this.IsOn)
 					return;
 
@@ -359,11 +361,13 @@ namespace WorldWind.Renderable
 							ro.Render(drawArgs);
 					}
 				}
+#if !DEBUG
 			}
 			catch
 			{
 			}
-		}
+#endif
+        }
 
 		public override void Dispose()
 		{

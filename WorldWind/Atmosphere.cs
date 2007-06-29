@@ -60,7 +60,6 @@ namespace Atmosphere.Plugin
 		static string version = "1.0";
 		string settingsFileName = "Atmosphere.ini";
 		string pluginPath;
-		World world;
 		public DrawArgs drawArgs;
 		CustomVertex.PositionTextured[] borderVertices = new CustomVertex.PositionTextured[4];
 		Texture texture;
@@ -72,10 +71,9 @@ namespace Atmosphere.Plugin
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public AtmosphereLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName)
+		public AtmosphereLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\Atmosphere\");
-			this.world = worldWindow.CurrentWorld;
 			this.drawArgs = worldWindow.DrawArgs;
 			//this.RenderPriority = RenderPriority.SurfaceImages;
 			ReadSettings();
@@ -147,7 +145,7 @@ namespace Atmosphere.Plugin
 			perp2 *= radius;
 
 			// Move the plane towards us so it lies on the horizon
-         double distHorizon = Math.Sqrt(camera.Position.LengthSq - world.EquatorialRadius * world.EquatorialRadius);
+         double distHorizon = Math.Sqrt(camera.Position.LengthSq - World.EquatorialRadius * World.EquatorialRadius);
          Point3d cameraDir = Point3d.normalize(camera.Position);
          Point3d offset = cameraDir * (camera.Position.Length - distHorizon);
 

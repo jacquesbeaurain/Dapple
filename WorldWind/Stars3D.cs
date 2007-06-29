@@ -63,7 +63,6 @@ namespace Stars3D.Plugin
 		static string version = "1.1";
 		string settingsFileName = "Stars3D.ini";
 		string pluginPath;
-		public World world;
 		public DrawArgs drawArgs;
 		Form pDialog;
 		private VertexBuffer StarListVB = null;
@@ -83,10 +82,9 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName)
+		public Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow) : base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\stars3d\");
-			this.world = worldWindow.CurrentWorld;
 			this.drawArgs = worldWindow.DrawArgs;
 			//this.RenderPriority = RenderPriority.SurfaceImages;
 			//this.sphereRadius = this.drawArgs.WorldCamera.WorldRadius * 20;

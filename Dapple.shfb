@@ -1,0 +1,119 @@
+﻿<project schemaVersion="1.4.0.0">
+    <assemblies>
+        <assembly assemblyPath=".\bin\Debug\WorldWind.exe" xmlCommentsPath=".\WorldWind\WorldWind.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\PluginSDK\bin\Debug\PluginSDK.dll" xmlCommentsPath=".\PluginSDK\PluginSDK.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\Utilities\bin\Debug\Utilities.dll" xmlCommentsPath=".\Utilities\Utilities.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\WebDownload\bin\Debug\WebDownload.dll" xmlCommentsPath=".\WebDownload\WebDownload.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\WorldWindow\bin\Debug\WorldWindow.dll" xmlCommentsPath=".\WorldWindow\WorldWindow.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\bin\Debug\Timeline.dll" xmlCommentsPath=".\Timeline\Timeline.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\bin\Debug\ConfigurationWizard.dll" xmlCommentsPath=".\ConfigurationWizard\ConfigurationWizard.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\bin\Debug\Collab.dll" xmlCommentsPath=".\bin\Debug\Collab.xml" commentsOnly="False" />
+        <assembly assemblyPath=".\bin\Debug\JhuaplWorldWind.dll" xmlCommentsPath=".\bin\Debug\JhuaplWorldWind.xml" commentsOnly="False" />
+    </assemblies>
+    <namespaceSummaries>
+        <namespaceSummaryItem name="" isDocumented="False" />
+        <namespaceSummaryItem name="Apogee.MovieCreator" isDocumented="True" />
+        <namespaceSummaryItem name="Atmosphere.Plugin" isDocumented="True" />
+        <namespaceSummaryItem name="ConfigurationWizard" isDocumented="True" />
+        <namespaceSummaryItem name="ConfigurationWizard.Properties" isDocumented="True" />
+        <namespaceSummaryItem name="GeometryUtility" isDocumented="True" />
+        <namespaceSummaryItem name="GpsTracker" isDocumented="True" />
+        <namespaceSummaryItem name="KMLPlugin" isDocumented="True" />
+        <namespaceSummaryItem name="MapTools" isDocumented="True" />
+        <namespaceSummaryItem name="Mashi.Stereo" isDocumented="True" />
+        <namespaceSummaryItem name="Mashiharu.Sample" isDocumented="True" />
+        <namespaceSummaryItem name="MeasureTool.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="MeasureToolNewgen.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="Murris.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="NASA.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="NLT.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="PolygonCuttingEar" isDocumented="True" />
+        <namespaceSummaryItem name="Stars3D.Plugin" isDocumented="True" />
+        <namespaceSummaryItem name="Timeline" isDocumented="True" />
+        <namespaceSummaryItem name="Utility" isDocumented="True" />
+        <namespaceSummaryItem name="Withak.Plugin" isDocumented="True" />
+        <namespaceSummaryItem name="Withak.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Camera" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.CMPlugins.ExternalLayerManager" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.CMPlugins.OverviewForm" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Configuration" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.DataSource" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Interop" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Menu" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Net" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Net.Monitor" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Net.Wms" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.NewWidgets" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.PluginEngine" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Properties" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Renderable" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Terrain" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.VisualControl" isDocumented="True" />
+        <namespaceSummaryItem name="WorldWind.Widgets" isDocumented="True" />
+        <namespaceSummaryItem name="YahooFlickr.Plugins" isDocumented="True" />
+    </namespaceSummaries>
+    <dependencies>
+        <dependencyItem depPath=".\bin\Debug\APRSParser.dll" />
+        <dependencyItem depPath=".\bin\Debug\AviFile.dll" />
+        <dependencyItem depPath=".\bin\Debug\CarbonTools.Controls.dll" />
+        <dependencyItem depPath=".\bin\Debug\CarbonTools.Core.dll" />
+        <dependencyItem depPath=".\bin\Debug\gdal_wrap.dll" />
+        <dependencyItem depPath=".\bin\Debug\gdalconst_csharp.dll" />
+        <dependencyItem depPath=".\bin\Debug\gdalconst_wrap.dll" />
+        <dependencyItem depPath=".\bin\Debug\IronMath.dll" />
+        <dependencyItem depPath=".\bin\Debug\IronPython.dll" />
+        <dependencyItem depPath=".\bin\Debug\ogr_csharp.dll" />
+        <dependencyItem depPath=".\bin\Debug\ogr_wrap.dll" />
+        <dependencyItem depPath=".\bin\Debug\Org.Mentalis.Security.dll" />
+        <dependencyItem depPath=".\bin\Debug\osr_csharp.dll" />
+        <dependencyItem depPath=".\bin\Debug\osr_wrap.dll" />
+        <dependencyItem depPath=".\bin\Debug\proj.dll" />
+        <dependencyItem depPath=".\bin\Debug\shapelib.dll" />
+        <dependencyItem depPath=".\bin\Debug\Tao.OpenGl.dll" />
+        <dependencyItem depPath=".\bin\Debug\Tao.OpenGl.ExtensionLoader.dll" />
+        <dependencyItem depPath=".\bin\Debug\Tao.OpenGl.Glu.dll" />
+        <dependencyItem depPath=".\bin\Debug\ZedGraph.dll" />
+        <dependencyItem depPath=".\bin\Debug\Altova.dll" />
+        <dependencyItem depPath=".\bin\Debug\Altova.XML.dll" />
+        <dependencyItem depPath=".\bin\Debug\wms_server_list.dll" />
+        <dependencyItem depPath=".\bin\Debug\capabilities_1_1_1.dll" />
+        <dependencyItem depPath=".\bin\Debug\capabilities_1_3_0.dll" />
+        <dependencyItem depPath=".\bin\Debug\LayerSet.dll" />
+        <dependencyItem depPath=".\bin\Debug\WorldXmlDescriptor.dll" />
+        <dependencyItem depPath=".\bin\Debug\FlickrNet.dll" />
+        <dependencyItem depPath=".\bin\Debug\ICSharpCode.SharpZipLib.dll" />
+    </dependencies>
+    <ProjectSummary>API documentation for NASA WorldWind 1.4.0.</ProjectSummary>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors</MissingTags>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath path="" />
+    <HtmlHelp2xCompilerPath path="" />
+    <OutputPath>.\Help\</OutputPath>
+    <SandcastlePath path="" />
+    <WorkingPath path="" />
+    <CleanIntermediates>True</CleanIntermediates>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
+    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <FrameworkVersion>2.0.50727</FrameworkVersion>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>False</IncludeFavorites>
+    <Preliminary>False</Preliminary>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <RootNamespaceTitle />
+    <HelpTitle>NASA WorldWind 1.4.1 API documentation (3811)</HelpTitle>
+    <HtmlHelpName>NASAWorldWindHelp</HtmlHelpName>
+    <Language>en-US</Language>
+    <CopyrightHref>http://opensource.arc.nasa.gov/pdf/NASA_Open_Source_Agreement_1.3.txt</CopyrightHref>
+    <CopyrightText>NASA Open Source Agreement 1.3</CopyrightText>
+    <FeedbackEMailAddress>ghcfilter@gmail.com</FeedbackEMailAddress>
+    <HeaderText>NASA WorldWind</HeaderText>
+    <FooterText />
+    <ProjectLinkType>Local</ProjectLinkType>
+    <SdkLinkType>Msdn</SdkLinkType>
+    <PresentationStyle>Prototype</PresentationStyle>
+    <NamingMethod>MemberName</NamingMethod>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+</project>

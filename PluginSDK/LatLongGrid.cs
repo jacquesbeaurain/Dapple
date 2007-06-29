@@ -77,11 +77,14 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.LatLongGrid"/> class.
 		/// </summary>
-		public LatLongGrid(World world) : base("1 - Grid Lines")
+		public LatLongGrid(World world) : base("1 - Grid Lines", world)
 		{
 			WorldRadius = world.EquatorialRadius;
 
 			IsEarth = world.Name == "Earth";
+
+            // Render grid lines on top of imagery
+            //m_renderPriority = RenderPriority.LinePaths;
 		}
 
 		#region RenderableObject
@@ -98,11 +101,23 @@ namespace WorldWind.Renderable
 
 			float offsetDegrees = (float)drawArgs.WorldCamera.TrueViewRange.Degrees / 6;
 
-			if(!useZBuffer)
-				drawArgs.device.RenderState.ZBufferEnable = false;
+            drawArgs.device.RenderState.ZBufferEnable = useZBuffer;
 
 			drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
 			drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
+            drawArgs.device.Transform.World = Matrix.Translation(
+                    (float)-drawArgs.WorldCamera.ReferenceCenter.X,
+                    (float)-drawArgs.WorldCamera.ReferenceCenter.Y,
+                    (float)-drawArgs.WorldCamera.ReferenceCenter.Z
+                    );
+
+            Point3d referenceCenter = new Point3d(
+                    drawArgs.WorldCamera.ReferenceCenter.X,
+                    drawArgs.WorldCamera.ReferenceCenter.Y,
+                    drawArgs.WorldCamera.ReferenceCenter.Z);
+
+            // Turn off light
+            if (World.Settings.EnableSunShading) drawArgs.device.RenderState.Lighting = false;
 
 			// Draw longitudes
 			for(float longitude = MinVisibleLongitude; longitude < MaxVisibleLongitude; longitude += LongitudeInterval)
@@ -140,7 +155,7 @@ namespace WorldWind.Renderable
 					else if(longitudeRanged > 0 && longitudeRanged < 180)
 						s += "E";
 
-					v = drawArgs.WorldCamera.Project(v);
+                    v = drawArgs.WorldCamera.Project(v - referenceCenter);
 					System.Drawing.Rectangle rect = new System.Drawing.Rectangle((int)v.X+2, (int)v.Y, 10, 10);
 					drawArgs.defaultDrawingFont.DrawText(null,s,rect.Left, rect.Top, World.Settings.latLonLinesColor);
 				}
@@ -155,7 +170,7 @@ namespace WorldWind.Renderable
 				Point3d v = MathEngine.SphericalToCartesian(latitude, longitude, radius);
 				if(drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v))
 				{
-					v = drawArgs.WorldCamera.Project(v);
+                    v = drawArgs.WorldCamera.Project(v - referenceCenter);
 					float latLabel = latitude;
 					if(latLabel>90)
 						latLabel=180-latLabel;
@@ -192,10 +207,12 @@ namespace WorldWind.Renderable
 			if (World.Settings.showTropicLines && IsEarth)
 				RenderTropicLines(drawArgs);
 
-			// Restore state
+            // Restore state
+            drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 			if(!useZBuffer)
 				// Reset Z buffer setting
 				drawArgs.device.RenderState.ZBufferEnable = true;		
+            if (World.Settings.EnableSunShading) drawArgs.device.RenderState.Lighting = true;
 		}
 
 		public override void Initialize(DrawArgs drawArgs)
@@ -248,6 +265,11 @@ namespace WorldWind.Renderable
 		void RenderTropicLine(DrawArgs drawArgs, float latitude, string label)
 		{
 			int vertexIndex = 0;
+            Point3d referenceCenter = new Point3d(
+                    drawArgs.WorldCamera.ReferenceCenter.X,
+                    drawArgs.WorldCamera.ReferenceCenter.Y,
+                    drawArgs.WorldCamera.ReferenceCenter.Z);
+
 			for(float longitude = MinVisibleLongitude; longitude <= MaxVisibleLongitude; longitude = longitude + LongitudeInterval)
 			{
 				Point3d pointXyz = MathEngine.SphericalToCartesian(latitude,longitude,radius);
@@ -264,7 +286,7 @@ namespace WorldWind.Renderable
 				drawArgs.WorldCamera.Longitude - drawArgs.WorldCamera.TrueViewRange*0.3f*0.5f, radius);
 			if(drawArgs.WorldCamera.ViewFrustum.ContainsPoint(t1))
 			{
-				t1 = drawArgs.WorldCamera.Project(t1);
+                t1 = drawArgs.WorldCamera.Project(t1 - referenceCenter);
 				drawArgs.defaultDrawingFont.DrawText(null, label, new System.Drawing.Rectangle((int)t1.X, (int)t1.Y, drawArgs.screenWidth, drawArgs.screenHeight), DrawTextFormat.NoClip, World.Settings.tropicLinesColor);
 			}
 		}

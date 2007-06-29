@@ -109,7 +109,6 @@ namespace Murris.Plugins
 		static string version = "0.5";
 		string settingsFileName = "Compass.ini";
 		string pluginPath;
-		World world;
 		public DrawArgs drawArgs;
 		CustomVertex.PositionTextured[] borderVertices = new CustomVertex.PositionTextured[4];
 		Texture texture;
@@ -131,10 +130,9 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow) : base(LayerName)
+		public CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow) : base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = Path.Combine(pluginPath, @"Plugins\Compass\");
-			this.world = worldWindow.CurrentWorld;
 			this.drawArgs = worldWindow.DrawArgs;
 			ReadSettings();
 		}

@@ -37,8 +37,8 @@ namespace WorldWind.Camera
       protected static readonly double minimumAltitude = 100;
       protected static double maximumAltitude = double.MaxValue;
 
-      protected Matrix4d m_ProjectionMatrix = Matrix4d.Identity; // Projection matrix used in last render.
-      protected Matrix4d m_ViewMatrix = Matrix4d.Identity; // View matrix used in last render.
+      protected Matrix4d m_ProjectionMatrix = Matrix4d.Empty; // Projection matrix used in last render.
+      protected Matrix4d m_ViewMatrix = Matrix4d.Empty; // View matrix used in last render.
       protected Matrix4d m_WorldMatrix = Matrix4d.Identity;
 
       protected Angle viewRange;
@@ -303,14 +303,14 @@ namespace WorldWind.Camera
       {
          m_absoluteWorldMatrix = Matrix4d.Identity;
 
-         float aspectRatio = (float)viewPort.Width / viewPort.Height;
-         float zNear = (float)Math.Max(this._altitude - TerrainElevationUnderCamera, minimumAltitude) * 0.1f;
+         double aspectRatio = viewPort.Width / viewPort.Height;
+         double zNear = Math.Max(this._altitude - TerrainElevationUnderCamera, minimumAltitude) * 0.1f;
          double distToCenterOfPlanet = (this._altitude + this.WorldRadius);
          double tangentalDistance = Math.Sqrt(distToCenterOfPlanet * distToCenterOfPlanet - _worldRadius * _worldRadius);
          if (tangentalDistance < 1000000 || double.IsNaN(tangentalDistance))
             tangentalDistance = 1000000;
 
-         m_absoluteProjectionMatrix = Matrix4d.PerspectiveFovRH((float)_fov.Radians, aspectRatio, zNear, (float)tangentalDistance);
+         m_absoluteProjectionMatrix = Matrix4d.PerspectiveFovRH(_fov.Radians, aspectRatio, zNear, tangentalDistance);
 
          m_absoluteViewMatrix = Matrix4d.LookAtRH(
             MathEngine.SphericalToCartesian(
@@ -322,11 +322,11 @@ namespace WorldWind.Camera
 
          m_absoluteViewMatrix *= Matrix4d.RotationYawPitchRoll(
             0,
-            (float)-_tilt.Radians,
-            (float)this._heading.Radians);
-         //m_absoluteViewMatrix *= Matrix4d.Translation(0, 0, (float)(-this._distance + curCameraElevation));
-         m_absoluteViewMatrix *= Matrix4d.Translation(0, 0, (float)(-this._distance));
-         m_absoluteViewMatrix *= Matrix4d.RotationZ((float)this._bank.Radians);
+            -_tilt.Radians,
+            this._heading.Radians);
+         //m_absoluteViewMatrix *= Matrix4d.Translation(0, 0, (-this._distance + curCameraElevation));
+         m_absoluteViewMatrix *= Matrix4d.Translation(0, 0, (-this._distance));
+         m_absoluteViewMatrix *= Matrix4d.RotationZ(this._bank.Radians);
       }
 
       public virtual void ComputeViewMatrix()
@@ -394,13 +394,13 @@ namespace WorldWind.Camera
          m_ViewMatrix[1, 2] = zAxis.Y;
          m_ViewMatrix[2, 2] = zAxis.Z;
 
-         m_ViewMatrix[0, 3] = -(xAxis.X * relCameraPos.X + xAxis.Y * relCameraPos.Y + xAxis.Z * relCameraPos.Z);
-         m_ViewMatrix[1, 3] = -(yAxis.X * relCameraPos.X + yAxis.Y * relCameraPos.Y + yAxis.Z * relCameraPos.Z);
-         m_ViewMatrix[2, 3] = -(zAxis.X * relCameraPos.X + zAxis.Y * relCameraPos.Y + zAxis.Z * relCameraPos.Z);
+         m_ViewMatrix[3, 0] = -(xAxis.X * relCameraPos.X + xAxis.Y * relCameraPos.Y + xAxis.Z * relCameraPos.Z);
+         m_ViewMatrix[3, 1] = -(yAxis.X * relCameraPos.X + yAxis.Y * relCameraPos.Y + yAxis.Z * relCameraPos.Z);
+         m_ViewMatrix[3, 2] = -(zAxis.X * relCameraPos.X + zAxis.Y * relCameraPos.Y + zAxis.Z * relCameraPos.Z);
 
-         m_ViewMatrix[3, 0] = 0.0;
-         m_ViewMatrix[3, 1] = 0.0;
-         m_ViewMatrix[3, 2] = 0.0;
+         m_ViewMatrix[0, 3] = 0.0;
+         m_ViewMatrix[1, 3] = 0.0;
+         m_ViewMatrix[2, 3] = 0.0;
          m_ViewMatrix[3, 3] = 1.0;
 
          double cameraDisplacement = _distance;
@@ -409,11 +409,11 @@ namespace WorldWind.Camera
 
          m_ViewMatrix *= Matrix4d.RotationYawPitchRoll(
           0,
-          (float)-_tilt.Radians,
-          (float)_heading.Radians);
-         //m_ViewMatrix *= Matrix4d.Translation(0, 0, (float)(-cameraDisplacement + curCameraElevation));
-         m_ViewMatrix *= Matrix4d.Translation(0, 0, (float)(-cameraDisplacement));
-         m_ViewMatrix *= Matrix4d.RotationZ((float)_bank.Radians);
+          -_tilt.Radians,
+          _heading.Radians);
+         //m_ViewMatrix *= Matrix4d.Translation(0, 0, (-cameraDisplacement + curCameraElevation));
+         m_ViewMatrix *= Matrix4d.Translation(0, 0, (-cameraDisplacement));
+         m_ViewMatrix *= Matrix4d.RotationZ(_bank.Radians);
 
          // Extract camera position
          Matrix4d cam = Matrix4d.Invert(m_absoluteViewMatrix);

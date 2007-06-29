@@ -3323,11 +3323,11 @@ namespace Dapple
       /// <summary>
       /// The splash screen dialog.
       /// </summary>
-      public override Splash SplashScreen
+      public override WorldWind.Splash SplashScreen
       {
          get
          {
-            return null;
+            return splashScreen;
          }
       }
 

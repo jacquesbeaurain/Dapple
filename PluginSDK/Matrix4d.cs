@@ -48,6 +48,18 @@ namespace WorldWind
       #endregion
 
       #region Math
+       public static Matrix4d Empty
+       {
+           get
+           {
+               return new Matrix4d(new Matrix(new double[][] {
+               new double[] { 0, 0, 0, 0 } ,
+               new double[] { 0, 0, 0, 0 } ,
+               new double[] { 0, 0, 0, 0 } ,
+               new double[] { 0, 0, 0, 0 } 
+               }));
+           }
+       }
       public static Matrix4d Identity
       {
          get
