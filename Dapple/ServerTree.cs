@@ -92,9 +92,9 @@ namespace Dapple
          m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = iImageListIndex("live");
          m_hVERootNode.Tag = veDir;
 
-			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, m_oParent, true, veDir);
-			m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, m_oParent, true, veDir);
-			m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, m_oParent, true, veDir);
+			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.road, m_oParent, true, veDir);
+			m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.aerial, m_oParent, true, veDir);
+			m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.hybrid, m_oParent, true, veDir);
          veDir.LayerBuilders.Add(m_VEMapQTB);
          veDir.LayerBuilders.Add(m_VESatQTB);
          veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
@@ -443,7 +443,6 @@ namespace Dapple
 
       public void AddCurrentDataset()
       {
-         /* JBTODO:
          if (this.SelectedDAPDataset != null)
          {
             if (!m_oParent.bContainsDAPLayer(m_oCurServer, this.SelectedDAPDataset))
@@ -452,9 +451,7 @@ namespace Dapple
                m_oParent.AddLayerBuilder(layerBuilder);
             }
          }
-         else 
-          */
-         if (this.SelectedNode != null && SelectedNode.Tag is LayerBuilder)
+         else if (this.SelectedNode != null && SelectedNode.Tag is LayerBuilder)
             m_oParent.AddLayerBuilder(SelectedNode.Tag as LayerBuilder);
       }
 
@@ -695,7 +692,6 @@ namespace Dapple
          builderdirectoryType dir;
          serversType servers = oView.View.Newservers();
 
-         /* JBTODO:
          entry = servers.Newbuilderentry();
          dir = entry.Newbuilderdirectory();
          dir.Addname(new SchemaString(m_hDAPRootNode.Text));
@@ -710,8 +706,8 @@ namespace Dapple
          }
          entry.Addbuilderdirectory(dir);
          servers.Addbuilderentry(entry);
-         */
-         entry = servers.Newbuilderentry();
+         
+			entry = servers.Newbuilderentry();
          entry.Addbuilderdirectory(m_hTileRootNode.Tag as builderdirectoryType);
          servers.Addbuilderentry(entry);
          /* JBTODO:
@@ -768,7 +764,7 @@ namespace Dapple
                int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
                int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
                QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tile.url.Value,
-                                                       tile.dataset.Value, tile.imageextension.Value, 255, m_oParent.WorldWindow.CurrentWorld, MainApplication.Settings.CachePath, MainApplication.Settings.CachePath, tileDir);
+                                                       tile.dataset.Value, tile.imageextension.Value, 255, m_oParent.WorldWindow.CurrentWorld, MainApplication.Settings.CachePath, tileDir);
                newServerChildNode.Tag = quadBuilder;
             }
          }

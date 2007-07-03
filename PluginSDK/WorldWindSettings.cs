@@ -127,7 +127,7 @@ namespace WorldWind
 		#region Cache
 
 		// Cache settings
-		private string cachePath = "Cache";
+		private string cachePath = "";
       private string newCachePath = "";
 		private int cacheSizeGigaBytes = 10;
 		private TimeSpan cacheCleanupInterval = TimeSpan.FromMinutes(60);

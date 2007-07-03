@@ -49,12 +49,12 @@ namespace WorldWind
             m_formatString = formatString;
         }
 
-        protected override string GetDownloadUrl(QuadTile qt)
+        protected override string GetDownloadUrl(IGeoSpatialDownloadTile tile)
         {
             return string.Format(CultureInfo.InvariantCulture,
                 m_formatString, m_serverUri,
-                m_dataSetName, qt.Level, qt.Col, qt.Row,
-                qt.West, qt.South, qt.East, qt.North);
+					 m_dataSetName, tile.Level, tile.Col, tile.Row,
+					 tile.West, tile.South, tile.East, tile.North);
         }
 
        public string ServerUri

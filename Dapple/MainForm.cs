@@ -1106,7 +1106,6 @@ namespace Dapple
 
       public bool bContainsDAPLayer(Geosoft.GX.DAPGetData.Server oServer, Geosoft.Dap.Common.DataSet oDataset)
       {
-         /* JBTODO:
          foreach (LayerBuilderContainer container in this.activeLayers)
          {
             if (container.Builder is DAPQuadLayerBuilder)
@@ -1117,7 +1116,6 @@ namespace Dapple
                   return true;
             }
          }
-          */
          return false;
       }
 
@@ -1138,7 +1136,6 @@ namespace Dapple
 
       private void AddDAPServer()
       {
-         /* JBTODO:
          AddDAP dlg = new AddDAP();
          if (dlg.ShowDialog(this) == DialogResult.OK)
          {
@@ -1153,7 +1150,6 @@ namespace Dapple
             }
             SaveLastView();
          }
-          */ 
       }
 
       private void AddWMSServer()
@@ -1192,12 +1188,12 @@ namespace Dapple
 
       void toolStripMenuItemaddServer_Click(object sender, EventArgs e)
       {
-         /* JBTODO:
          if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
             AddDAPServer();
-         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
-            AddWMSServer();
-          */ 
+			/* JBTODO:
+			else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
+				AddWMSServer();
+			 */ 
       }
 
       #endregion
@@ -2530,7 +2526,6 @@ namespace Dapple
       {
          int iImageIndex;
          TreeNode treeNode = null;
-         /* JBTODO:
          if (builder is DAPQuadLayerBuilder)
          {
             DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)builder;
@@ -2539,7 +2534,7 @@ namespace Dapple
             if (iImageIndex == -1)
                ImageListIndex("layer");
          }
-         else */ if (builder is VEQuadLayerBuilder)
+         else if (builder is VEQuadLayerBuilder)
             iImageIndex = ImageListIndex("live");
          else
             iImageIndex = ImageListIndex("layer");

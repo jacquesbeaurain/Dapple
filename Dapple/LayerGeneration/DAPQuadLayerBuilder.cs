@@ -3,13 +3,17 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
+
 using WorldWind;
 using WorldWind.Renderable;
+
 using Geosoft;
 using Geosoft.Dap.Common;
 using Geosoft.GX.DAPGetData;
-using System.Xml;
-using System.Xml.XPath;
+
+using Dapple.DAP;
 
 namespace Dapple.LayerGeneration
 {
@@ -21,7 +25,7 @@ namespace Dapple.LayerGeneration
 
       public static readonly string TypeName = "DAPQuadLayer";
 
-      public static readonly string CacheSubDir = "DAP Tile Cache";
+      public static readonly string CacheSubDir = "DAPImages";
 
       public static DAPQuadLayerBuilder GetBuilderFromURI(string strURI, Dapple.ServerTree oServerTree, string strCacheDir, WorldWindow worldWindow, ref bool bOldView)
       {
@@ -70,7 +74,7 @@ namespace Dapple.LayerGeneration
             hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(east, north, west, south);
 
             int levels = Convert.ToInt32(queryColl.Get("levels"));
-            decimal lvl0tilesize = Convert.ToDecimal(queryColl.Get("lvl0tilesize"), System.Globalization.CultureInfo.InvariantCulture);
+            double lvl0tilesize = Convert.ToDouble(queryColl.Get("lvl0tilesize"), System.Globalization.CultureInfo.InvariantCulture);
 
             if (hDataSet != null)
                return new DAPQuadLayerBuilder(hDataSet, worldWindow.CurrentWorld, strCacheDir, oServer, null, height, size, lvl0tilesize, levels);
@@ -86,20 +90,20 @@ namespace Dapple.LayerGeneration
 
       private QuadTileSet m_layer;
       public int m_iHeight;
-      public int m_iTileImageSize;
+		public int m_iTextureSizePixels;
       public DataSet m_hDataSet;
       private string m_strDAPType;
       private string m_strCacheRoot;
       private Server m_oServer;
       private int m_iLevels;
-      private decimal m_dLevelZeroTileSizeDegrees;
+      private double m_dLevelZeroTileSizeDegrees;
 
       public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent) :
          this(dataSet, world, cacheDirectory, server, parent, 0, 256, 0, 0)
       {
       }
 
-      public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent, int height, int size, decimal lvl0tilesize, int levels)
+      public DAPQuadLayerBuilder(DataSet dataSet, World world, string cacheDirectory, Server server, IBuilder parent, int height, int size, double lvl0tilesize, int levels)
       {
          m_strName = dataSet.Title;
          m_strDAPType = dataSet.Type;
@@ -110,7 +114,7 @@ namespace Dapple.LayerGeneration
          m_Parent = parent;
          
          m_iHeight = height;
-         m_iTileImageSize = size;
+			m_iTextureSizePixels = size;
          this.LevelZeroTileSize = lvl0tilesize;
          this.Levels = levels;                  
       }
@@ -208,7 +212,10 @@ namespace Dapple.LayerGeneration
          {
             if (m_layer != null)
             {
-               return m_layer.QuadTileArgs.Boundary;
+					return new GeographicBoundingBox(m_layer.North,
+                m_layer.South,
+                m_layer.West,
+					 m_layer.East);
             }
             return new GeographicBoundingBox(m_hDataSet.Boundary.MaxY,
                 m_hDataSet.Boundary.MinY,
@@ -217,20 +224,20 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override int ImagePixelSize
+		public override int TextureSizePixels
       {
          get
          {
-            return m_iTileImageSize;
+				return m_iTextureSizePixels;
          }
          set
          {
-            if (m_iTileImageSize != value)
+				if (m_iTextureSizePixels != value)
             {
                if (m_layer != null)
                   m_layer.Dispose();
                m_layer = null;
-               m_iTileImageSize = value;
+					m_iTextureSizePixels = value;
             }
          }
       }
@@ -345,19 +352,23 @@ namespace Dapple.LayerGeneration
                m_iLevels = 15;
             }
 
-            GeosoftPlugin.New.DAPImageAccessor imgAccessor = new GeosoftPlugin.New.DAPImageAccessor(
-                m_hDataSet.Name, m_oServer,
-                 strCachePath,
-                 m_iTileImageSize,
-                 LevelZeroTileSize,
-                 m_iLevels, ".png", strCachePath);
+				ImageStore[] imageStores = new ImageStore[1];
+				imageStores[0] = new DAPImageStore(m_hDataSet.Name, m_oServer);
+				imageStores[0].DataDirectory = null;
+				imageStores[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
+				imageStores[0].LevelCount = m_iLevels;
+				imageStores[0].ImageExtension = ".png";
+				imageStores[0].CacheDirectory = strCachePath;
+				imageStores[0].TextureFormat = World.Settings.TextureFormat;
+				imageStores[0].TextureSizePixels = m_iTextureSizePixels;
 
             GeographicBoundingBox box = new WorldWind.GeographicBoundingBox(m_hDataSet.Boundary.MaxY,
                 m_hDataSet.Boundary.MinY, m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX);
 
-            m_layer = new QuadTileSet(m_hDataSet.Title, box, m_oWorld, 0,
-                m_oWorld.TerrainAccessor,
-                imgAccessor, m_bOpacity, true);
+				m_layer = new QuadTileSet(m_hDataSet.Title, m_oWorld, 0, m_hDataSet.Boundary.MaxY, m_hDataSet.Boundary.MinY,
+					m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX,true,imageStores);
+				m_layer.AlwaysRenderBaseTiles = true;
+				m_layer.Opacity = m_bOpacity;
 
             m_layer.IsOn = m_IsOn;
          }
@@ -375,7 +386,7 @@ namespace Dapple.LayerGeneration
 
          queryColl.Add("datasetname", m_hDataSet.Name);
          queryColl.Add("height", m_iHeight.ToString());
-         queryColl.Add("size", m_iTileImageSize.ToString());
+			queryColl.Add("size", m_iTextureSizePixels.ToString());
          queryColl.Add("type", m_hDataSet.Type);
          queryColl.Add("title", m_hDataSet.Title);
          queryColl.Add("edition", m_hDataSet.Edition);
@@ -405,7 +416,7 @@ namespace Dapple.LayerGeneration
          hDSCopy.Type = m_hDataSet.Type;
          hDSCopy.Url = m_hDataSet.Url;
 
-         return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_strCacheRoot, m_oServer, m_Parent, m_iHeight, m_iTileImageSize, this.LevelZeroTileSize, this.Levels);
+			return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_strCacheRoot, m_oServer, m_Parent, m_iHeight, m_iTextureSizePixels, this.LevelZeroTileSize, this.Levels);
       }
 
       protected override void CleanUpLayer(bool bFinal)

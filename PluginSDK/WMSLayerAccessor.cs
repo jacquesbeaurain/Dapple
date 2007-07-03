@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Utility;
+using WorldWind.Renderable;
 
 namespace WorldWind.Net.Wms
 {
@@ -339,7 +340,7 @@ namespace WorldWind.Net.Wms
 
 		#region Public Methods
 
-		protected override string GetDownloadUrl(WorldWind.Renderable.QuadTile qt)
+        protected override string GetDownloadUrl(IGeoSpatialDownloadTile tile)
 		{
 			if(m_serverGetMapUrl.IndexOf('?')>=0)
 			{
@@ -348,10 +349,10 @@ namespace WorldWind.Net.Wms
 				string url = m_serverGetMapUrl;
 				url = url.Replace("{WIDTH}", m_textureSizePixels.ToString(CultureInfo.InvariantCulture));
 				url = url.Replace("{HEIGHT}", m_textureSizePixels.ToString(CultureInfo.InvariantCulture));
-				url = url.Replace("{WEST}", qt.West.ToString(CultureInfo.InvariantCulture));
-				url = url.Replace("{EAST}", qt.East.ToString(CultureInfo.InvariantCulture));
-				url = url.Replace("{NORTH}", qt.North.ToString(CultureInfo.InvariantCulture));
-				url = url.Replace("{SOUTH}", qt.South.ToString(CultureInfo.InvariantCulture));
+				url = url.Replace("{WEST}", tile.West.ToString(CultureInfo.InvariantCulture));
+				url = url.Replace("{EAST}", tile.East.ToString(CultureInfo.InvariantCulture));
+				url = url.Replace("{NORTH}", tile.North.ToString(CultureInfo.InvariantCulture));
+				url = url.Replace("{SOUTH}", tile.South.ToString(CultureInfo.InvariantCulture));
 
 				return url;
 			}
@@ -362,8 +363,8 @@ namespace WorldWind.Net.Wms
 					m_serverGetMapUrl,
 					m_wmsLayerName, 
 					m_textureSizePixels, 
-					m_textureSizePixels, 
-					qt.West, qt.South, qt.East, qt.North,  
+					m_textureSizePixels,
+					tile.West, tile.South, tile.East, tile.North,  
 					m_imageFormat, 
 					m_version,  
 					m_wmsLayerStyle );

@@ -1192,6 +1192,55 @@ namespace Geosoft.Dap
          return GetImage(hFormat, hBoundingBox, hResolution, bBaseMap, bIndexMap, hArrayList, null);
       }
 
+		/// <summary>
+		/// Get the image request document for a particular dataset from the catalog item element
+		/// </summary>
+		/// <param name="hFormat">The format to retrieve the image in</param>
+		/// <param name="hBoundingBox">The bounding box of the image</param>
+		/// <param name="hResolution">The resolution to retrive the image at</param>
+		/// <param name="bBaseMap">Draw the base map</param>
+		/// <param name="bIndexMap">Draw the index map</param>
+		/// <param name="hArrayList">The list of dataset server names</param>
+		/// <param name="progressCallBack">Progress handler (may be null)</param>
+		/// <param name="szUrl">URL to use to retrieve image</param>
+		/// <returns>The image request in GeosoftXML</returns>
+		/// <remarks>
+		/// This will acquire a reader lock assuming some communication will be initiated with server. Be sure to match this call
+		/// with ReleaseImageRequestDocument to release this lock.
+		/// </remarks>
+		public System.Xml.XmlDocument GetImageRequestDocument(Format hFormat, BoundingBox hBoundingBox, Resolution hResolution, bool bBaseMap, bool bIndexMap, System.Collections.ArrayList hArrayList, out string szUrl) 
+		{
+			System.Xml.XmlDocument hRequestDocument = null;
+
+			try
+			{
+				m_oLock.AcquireReaderLock(-1);
+				szUrl = CreateUrl(Constant.Request.IMAGE);
+
+				hRequestDocument = m_hEncodeRequest.Image(null, hFormat, hBoundingBox, hResolution, bBaseMap, bIndexMap, hArrayList);
+			}
+			catch (Exception e)
+			{
+				m_oLock.ReleaseReaderLock();
+				hRequestDocument = null;
+				throw e;
+			}
+			return hRequestDocument;
+		}
+
+
+		/// <summary>
+		/// Releases the lock caused by a call to GetImageRequestDocument
+		/// </summary>
+		/// <param name="hRequestDocument"></param>
+		public void ReleaseImageRequestDocument(System.Xml.XmlDocument hRequestDocument)
+		{
+			if (hRequestDocument != null)
+				m_oLock.ReleaseReaderLock();
+		}
+
+
+
       /// <summary>
       /// Get an image from a list of dataset server names
       /// </summary>

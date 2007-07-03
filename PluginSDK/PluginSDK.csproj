@@ -337,9 +337,6 @@
     <Compile Include="WorldWindUri.cs">
       <SubType>Code</SubType>
     </Compile>
-    <None Include="ImageTileRequest.cs">
-      <SubType>Code</SubType>
-    </None>
     <EmbeddedResource Include="DataSource\QueueMonitor.resx">
       <DependentUpon>QueueMonitor.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -391,9 +388,6 @@
     <Content Include="buttons\go.gif" />
     <Content Include="buttons\outline.gif" />
     <Content Include="buttons\stop.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Layers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

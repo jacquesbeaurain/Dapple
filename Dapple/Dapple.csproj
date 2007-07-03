@@ -82,6 +82,9 @@
     <Compile Include="Plugins\SkyGradient\SkyGradient.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Plugins\VirtualEarth\VEImageStore.cs" />
+    <Compile Include="Plugins\VirtualEarth\VEQuadTile.cs" />
+    <Compile Include="Plugins\VirtualEarth\VEQuadTileSet.cs" />
     <Compile Include="ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -159,8 +162,8 @@
     <Compile Include="DAP\DAPGetData\CatalogCollection.cs" />
     <Compile Include="DAP\DAPGetData\Constant.cs" />
     <Compile Include="DAP\DAPGetData\GetDapError.cs" />
-    <None Include="DAP\DAPQuadLayer Impl\DapDownload.cs" />
-    <None Include="DAP\DAPQuadLayer Impl\DAPImageAccessor.cs" />
+    <Compile Include="DAP\DapDownload.cs" />
+    <Compile Include="DAP\DAPImageStore.cs" />
     <Compile Include="DAP\DAPGetData\Server.cs" />
     <Compile Include="DAP\DAPGetData\ServerList.cs" />
     <Compile Include="DAP\ErrorLogger\ErrorLogger.cs">
@@ -191,7 +194,7 @@
     <Compile Include="LayerGeneration\TileSetBuilder.cs" />
     <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
     <None Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
-    <None Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
     <Compile Include="LayerGeneration\LayerBuilderProvider.cs" />
     <Compile Include="LayerGeneration\QuadLayerBuilder.cs" />
@@ -211,7 +214,7 @@
     <Compile Include="MetaDataForm.Designer.cs">
       <DependentUpon>MetaDataForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
+    <None Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
     <Compile Include="PropertyBag.cs" />
     <Compile Include="SaveViewForm.cs">
       <SubType>Form</SubType>
@@ -298,12 +301,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Servers\AddDAP.cs">
+    <Compile Include="Servers\AddDAP.cs">
       <SubType>Form</SubType>
-    </None>
-    <None Include="Servers\AddDAP.designer.cs">
+    </Compile>
+    <Compile Include="Servers\AddDAP.designer.cs">
       <DependentUpon>AddDAP.cs</DependentUpon>
-    </None>
+    </Compile>
     <None Include="Servers\AddWMS.cs">
       <SubType>Form</SubType>
     </None>
@@ -479,10 +482,7 @@
     <Content Include="Plugins\Stars3D\Stars3D.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Plugins\VirtualEarth\nodata.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Plugins\VirtualEarth\proj.dll">
+    <Content Include="proj.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Plugins\VirtualEarth\VirtualEarthPlugin.png" />

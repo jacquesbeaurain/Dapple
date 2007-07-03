@@ -32,7 +32,7 @@ namespace Dapple.LayerGeneration
       int distAboveSurface = 0;
       bool terrainMapped = false;
       GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
-      ImageAccessor m_oImageAccessor = null;
+      WmsImageStore[] m_oImageStores = null;
       private decimal m_dLevelZeroTileSizeDegrees = 0;
 
       WMSServerBuilder m_Server;
@@ -329,6 +329,8 @@ namespace Dapple.LayerGeneration
             if (string.Compare(m_oWMSLayerAccessor.ImageFormat, "image/jpeg", true, System.Globalization.CultureInfo.InvariantCulture) == 0 ||
                String.Compare(m_oWMSLayerAccessor.ImageFormat, "image/jpg", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
                strExt = ".jpg";
+
+				WmsImageStore = 
 
             m_oImageAccessor = new ImageAccessor(strCachePath,
                 m_intTextureSizePixels,

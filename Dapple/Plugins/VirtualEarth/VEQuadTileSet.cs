@@ -1,44 +1,53 @@
+using System;
+using System.IO;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Drawing;
+
+using System.Security.Cryptography;
+
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using WorldWind;
 using WorldWind.Camera;
 using WorldWind.Configuration;
 using WorldWind.Net;
-using WorldWind.Terrain;
 using WorldWind.VisualControl;
-using System;
-using System.IO;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Drawing;
+using WorldWind.Renderable;
+using WorldWind.PluginEngine;
+
 using Utility;
 
-namespace WorldWind.Renderable
+
+namespace Dapple.Plugins.VirtualEarth
 {
+	public enum VirtualEarthMapType
+	{
+		aerial = 0,
+		road,
+		hybrid
+	}
+
 	/// <summary>
 	/// Main class for image tile rendering.  Uses the Terrain Manager to query height values for 3D 
 	/// terrain rendering.
 	/// Relies on an Update thread to refresh the "tiles" based on lat/lon/view range
 	/// </summary>
-    public class QuadTileSet : RenderableObject, IGeoSpatialDownloadTileSet
+	public class VEQuadTileSet : RenderableObject, IGeoSpatialDownloadTileSet
 	{
 		#region Private Members
 
+		private Projection proj;
+
 		bool m_RenderStruts = false;
+
 		protected string m_ServerLogoFilePath;
 		protected Image m_ServerLogoImage;
 
-		Dictionary<long, QuadTile> m_updateTiles = new Dictionary<long, QuadTile>();
+		Dictionary<long, VEQuadTile> m_updateTiles = new Dictionary<long, VEQuadTile>();
 		List<long> m_deleteTiles = new List<long>();
-        protected Dictionary<long, QuadTile> m_topmostTiles = new Dictionary<long, QuadTile>();
+		protected Dictionary<long, VEQuadTile> m_topmostTiles = new Dictionary<long, VEQuadTile>();
 
-        protected double m_north;
-		protected double m_south;
-		protected double m_west;
-		protected double m_east;
-		
-        protected DateTime m_earlisettime = DateTime.MinValue;
-		protected DateTime m_latesttime = DateTime.MaxValue;
 		bool renderFileNames = false;
 
 		protected Texture m_iconTexture;
@@ -59,11 +68,11 @@ namespace WorldWind.Renderable
 		protected float m_tileDrawDistance;
 		protected bool m_isDownloadingElevation;
 		protected int m_numberRetries;
-        protected Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> m_downloadRequests = new Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest>();
+		protected Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> m_downloadRequests = new Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest>();
 		protected int m_maxQueueSize = 400;
 		protected bool m_terrainMapped;
-		protected ImageStore[] m_imageStores;
-		protected Camera.CameraBase m_camera;
+		protected VEImageStore m_imageStore;
+		protected CameraBase m_camera;
 		protected GeoSpatialDownloadRequest[] m_activeDownloads = new GeoSpatialDownloadRequest[20];
 		protected DateTime[] m_downloadStarted = new DateTime[20];
 		protected TimeSpan m_connectionWaitTime = TimeSpan.FromMinutes(2);
@@ -101,41 +110,47 @@ namespace WorldWind.Renderable
 		public static Texture DownloadTerrainTexture;
 
 
-		private int colorKey; 
-        private int colorKeyMax;
+		private int colorKey;
+		private int colorKeyMax;
 
 		/// <summary>
 		/// If a color range is to be transparent this specifies the brightest transparent color.
 		/// The darkest transparent color is set using ColorKey.
 		/// </summary>
-        public int ColorKey
-        {
-            get
-            {
-                return colorKey;
-            }
-            set
-            {
-                colorKey = value;
-            }
-        }
+		public int ColorKey
+		{
+			get
+			{
+				return colorKey;
+			}
+			set
+			{
+				colorKey = value;
+			}
+		}
 
-        /// <summary>
-        /// default: 100% transparent black = transparent
-        /// </summary>
-        public int ColorKeyMax
-        {
-            get
-            {
-                return colorKeyMax;
-            }
-            set
-            {
-                colorKeyMax = value;
-            }
-        }
-		
+		/// <summary>
+		/// default: 100% transparent black = transparent
+		/// </summary>
+		public int ColorKeyMax
+		{
+			get
+			{
+				return colorKeyMax;
+			}
+			set
+			{
+				colorKeyMax = value;
+			}
+		}
 
+		public Projection Proj
+		{
+			get
+			{
+				return proj;
+			}
+		}
 		#endregion
 
 		bool m_renderGrayscale = false;
@@ -159,7 +174,7 @@ namespace WorldWind.Renderable
 			set { m_RenderStruts = value; }
 		}
 		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.QuadTileSet"/> class.
+		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.VEQuadTileSet"/> class.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="parentWorld"></param>
@@ -170,83 +185,29 @@ namespace WorldWind.Renderable
 		/// <param name="east"></param>
 		/// <param name="terrainAccessor"></param>
 		/// <param name="imageAccessor"></param>
-		public QuadTileSet(
-				string name,
+		public VEQuadTileSet(string name,
+				VirtualEarthMapType mapType,
 				World parentWorld,
 				double distanceAboveSurface,
-				double north,
-				double south,
-				double west,
-				double east,
-			DateTime earliesttime,
-			DateTime latesttime,
-				bool terrainMapped,
-										ImageStore[] imageStores)
+				bool terrainMapped)
 			: base(name, parentWorld)
 		{
 			float layerRadius = (float)(parentWorld.EquatorialRadius + distanceAboveSurface);
-			m_north = north;
-			m_south = south;
-			m_west = west;
-			m_east = east;
-			m_earlisettime = earliesttime;
-			m_latesttime = latesttime;
-
-			// Layer center position
-			Position = MathEngine.SphericalToCartesian(
-					(north + south) * 0.5f,
-					(west + east) * 0.5f,
-					layerRadius);
 
 			m_layerRadius = layerRadius;
 			m_tileDrawDistance = 3.5f;
 			m_tileDrawSpread = 2.9f;
-			m_imageStores = imageStores;
+			m_imageStore = new VEImageStore(mapType);
 			m_terrainMapped = terrainMapped;
 
-		}
+			//NOTE tiles did not line up properly with ellps=WGS84
+			//string [] projectionParameters = new string[]{"proj=merc", "ellps=WGS84", "no.defs"};
+			//+proj=longlat +ellps=sphere +a=6370997.0 +es=0.0
+			string[] projectionParameters = new string[] { "proj=merc", "ellps=sphere", "a=" + m_layerRadius.ToString(), "es=0.0", "no.defs" };
+			proj = new Projection(projectionParameters);
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.QuadTileSet"/> class.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="parentWorld"></param>
-		/// <param name="distanceAboveSurface"></param>
-		/// <param name="north"></param>
-		/// <param name="south"></param>
-		/// <param name="west"></param>
-		/// <param name="east"></param>
-		/// <param name="terrainAccessor"></param>
-		/// <param name="imageAccessor"></param>
-		public QuadTileSet(
-			string name,
-			World parentWorld,
-			double distanceAboveSurface,
-			double north,
-			double south,
-			double west,
-			double east,
-			bool terrainMapped,
-						ImageStore[] imageStores)
-			: base(name, parentWorld)
-		{
-			float layerRadius = (float)(parentWorld.EquatorialRadius + distanceAboveSurface);
-			m_north = north;
-			m_south = south;
-			m_west = west;
-			m_east = east;
-
-			// Layer center position
-			Position = MathEngine.SphericalToCartesian(
-				(north + south) * 0.5f,
-				(west + east) * 0.5f,
-				layerRadius);
-
-			m_layerRadius = layerRadius;
-			m_tileDrawDistance = 3.5f;
-			m_tileDrawSpread = 2.9f;
-			m_imageStores = imageStores;
-			m_terrainMapped = terrainMapped;
+			//static
+			VEQuadTile.Init();
 		}
 
 		#region Public properties
@@ -357,50 +318,6 @@ namespace WorldWind.Renderable
 			set
 			{
 				m_destinationBlend = value;
-			}
-		}
-
-		/// <summary>
-		/// North bound for this QuadTileSet
-		/// </summary>
-		public double North
-		{
-			get
-			{
-				return m_north;
-			}
-		}
-
-		/// <summary>
-		/// West bound for this QuadTileSet
-		/// </summary>
-		public double West
-		{
-			get
-			{
-				return m_west;
-			}
-		}
-
-		/// <summary>
-		/// South bound for this QuadTileSet
-		/// </summary>
-		public double South
-		{
-			get
-			{
-				return m_south;
-			}
-		}
-
-		/// <summary>
-		/// East bound for this QuadTileSet
-		/// </summary>
-		public double East
-		{
-			get
-			{
-				return m_east;
 			}
 		}
 
@@ -516,23 +433,22 @@ namespace WorldWind.Renderable
 			set { m_terrainMapped = value; }
 		}
 
-		public ImageStore[] ImageStores
+		public VEImageStore ImageStore
 		{
 			get
 			{
-				return m_imageStores;
+				return m_imageStore;
 			}
 			set
 			{
-				m_imageStores = value;
+				m_imageStore = value;
 			}
-
 		}
 
 		/// <summary>
 		/// Tiles in the request for download queue
 		/// </summary>
-        public Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
+		public Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
 		{
 			get
 			{
@@ -603,7 +519,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public Dictionary<string, EffectHandle> EffectParameters
+		public Dictionary<string, EffectHandle> EffectParameters
 		{
 			get
 			{
@@ -632,7 +548,7 @@ namespace WorldWind.Renderable
 			{
 				lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 				{
-					foreach (QuadTile qt in m_topmostTiles.Values)
+					foreach (VEQuadTile qt in m_topmostTiles.Values)
 						qt.Initialize();
 				}
 			}
@@ -720,24 +636,12 @@ namespace WorldWind.Renderable
 				}
 			}
 
-			if (ImageStores[0].LevelZeroTileSizeDegrees < 180)
-			{
-				// Check for layer outside view
-				double vrd = DrawArgs.Camera.ViewRange.Degrees;
-				double latitudeMax = DrawArgs.Camera.Latitude.Degrees + vrd;
-				double latitudeMin = DrawArgs.Camera.Latitude.Degrees - vrd;
-				double longitudeMax = DrawArgs.Camera.Longitude.Degrees + vrd;
-				double longitudeMin = DrawArgs.Camera.Longitude.Degrees - vrd;
-				if (latitudeMax < m_south || latitudeMin > m_north || longitudeMax < m_west || longitudeMin > m_east)
-					return;
-			}
-
 			if (DrawArgs.Camera.ViewRange * 0.5f >
-					Angle.FromDegrees(TileDrawDistance * ImageStores[0].LevelZeroTileSizeDegrees))
+					Angle.FromDegrees(TileDrawDistance * ImageStore.LevelZeroTileSizeDegrees))
 			{
-                lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+				lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 				{
-					foreach (QuadTile qt in m_topmostTiles.Values)
+					foreach (VEQuadTile qt in m_topmostTiles.Values)
 						qt.Dispose();
 					m_topmostTiles.Clear();
 					ClearDownloadRequests();
@@ -752,26 +656,18 @@ namespace WorldWind.Renderable
 				// Defer the updates to after the loop to prevent tiles from updating twice
 				// If the tilespread is huge we are likely looking at a small dataset in the view 
 				// so just test all the tiles in the dataset.
-				int tileSpread = Math.Max(5, (int)Math.Ceiling(drawArgs.WorldCamera.TrueViewRange.Degrees / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
+				int tileSpread = Math.Max(5, (int)Math.Ceiling(drawArgs.WorldCamera.TrueViewRange.Degrees / (2.0 * ImageStore.LevelZeroTileSizeDegrees)));
 
 				int middleRow;
 				int middleCol;
 
-				if (tileSpread > 10)
-				{
-					tileSpread = Math.Max(5, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
-					middleRow = MathEngine.GetRowFromLatitude(South + (North - South) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
-					middleCol = MathEngine.GetColFromLongitude(West + (East - West) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
-				}
-				else
-				{
-					middleRow = MathEngine.GetRowFromLatitude(drawArgs.WorldCamera.Latitude, ImageStores[0].LevelZeroTileSizeDegrees);
-					middleCol = MathEngine.GetColFromLongitude(drawArgs.WorldCamera.Longitude, ImageStores[0].LevelZeroTileSizeDegrees);
-				}
-				double middleSouth = -90.0f + middleRow * ImageStores[0].LevelZeroTileSizeDegrees;
-				double middleNorth = -90.0f + middleRow * ImageStores[0].LevelZeroTileSizeDegrees + ImageStores[0].LevelZeroTileSizeDegrees;
-				double middleWest = -180.0f + middleCol * ImageStores[0].LevelZeroTileSizeDegrees;
-				double middleEast = -180.0f + middleCol * ImageStores[0].LevelZeroTileSizeDegrees + ImageStores[0].LevelZeroTileSizeDegrees;
+				middleRow = MathEngine.GetRowFromLatitude(drawArgs.WorldCamera.Latitude, ImageStore.LevelZeroTileSizeDegrees);
+				middleCol = MathEngine.GetColFromLongitude(drawArgs.WorldCamera.Longitude, ImageStore.LevelZeroTileSizeDegrees);
+
+				double middleSouth = -90.0f + middleRow * ImageStore.LevelZeroTileSizeDegrees;
+				double middleNorth = -90.0f + middleRow * ImageStore.LevelZeroTileSizeDegrees + ImageStore.LevelZeroTileSizeDegrees;
+				double middleWest = -180.0f + middleCol * ImageStore.LevelZeroTileSizeDegrees;
+				double middleEast = -180.0f + middleCol * ImageStore.LevelZeroTileSizeDegrees + ImageStore.LevelZeroTileSizeDegrees;
 
 				double middleCenterLat = 0.5f * (middleNorth + middleSouth);
 				double middleCenterLon = 0.5f * (middleWest + middleEast);
@@ -779,44 +675,53 @@ namespace WorldWind.Renderable
 				m_updateTiles.Clear();
 				for (int i = 0; i < tileSpread; i++)
 				{
-					for (double j = middleCenterLat - i * ImageStores[0].LevelZeroTileSizeDegrees; j < middleCenterLat + i * ImageStores[0].LevelZeroTileSizeDegrees; j += ImageStores[0].LevelZeroTileSizeDegrees)
+					for (double j = middleCenterLat - i * ImageStore.LevelZeroTileSizeDegrees; j < middleCenterLat + i * ImageStore.LevelZeroTileSizeDegrees; j += ImageStore.LevelZeroTileSizeDegrees)
 					{
-						for (double k = middleCenterLon - i * ImageStores[0].LevelZeroTileSizeDegrees; k < middleCenterLon + i * ImageStores[0].LevelZeroTileSizeDegrees; k += ImageStores[0].LevelZeroTileSizeDegrees)
+						for (double k = middleCenterLon - i * ImageStore.LevelZeroTileSizeDegrees; k < middleCenterLon + i * ImageStore.LevelZeroTileSizeDegrees; k += ImageStore.LevelZeroTileSizeDegrees)
 						{
-                            QuadTile qt;
-							int curRow = MathEngine.GetRowFromLatitude(Angle.FromDegrees(j), ImageStores[0].LevelZeroTileSizeDegrees);
-							int curCol = MathEngine.GetColFromLongitude(Angle.FromDegrees(k), ImageStores[0].LevelZeroTileSizeDegrees);
+							VEQuadTile qt;
+
+							double lat = drawArgs.WorldCamera.Latitude.Degrees;
+							double lon = drawArgs.WorldCamera.Longitude.Degrees;
+							
+							//VE tiles
+							double metersY;
+							double yMeters;
+							int yMetersPerPixel;
+							
+							//The VE QuadTileSet is always at level 0 (3 (180/2^3 level zero) in equations from previous plugin)
+
+							double earthCircum = m_layerRadius * 2.0 * Math.PI; //40075016.685578488
+							double earthHalfCirc = earthCircum / 2; //20037508.
+
+							double metersX = m_layerRadius * MathEngine.DegreesToRadians(lon); //0
+							double xMeters = earthHalfCirc + metersX; //20037508.342789244
+							int xMetersPerPixel = (int)Math.Round(xMeters / VEQuadTile.MetersPerPixel(m_layerRadius, 3));
+							int curCol = xMetersPerPixel / VEQuadTile.textureSizePixels;
+
+							//reproject - overrides row above
+							//this correctly keeps me on the current tile that is being viewed
+							UV uvCurrent = new UV(MathEngine.DegreesToRadians(lon), MathEngine.DegreesToRadians(lat));
+							uvCurrent = proj.Forward(uvCurrent);
+							metersY = uvCurrent.V;
+							yMeters = earthHalfCirc - metersY;
+							yMetersPerPixel = (int)Math.Round(yMeters / VEQuadTile.MetersPerPixel(m_layerRadius, 3));
+							int curRow = yMetersPerPixel / VEQuadTile.textureSizePixels;
+
 							long key = ((long)curRow << 32) + curCol;
 
 							if (m_topmostTiles.ContainsKey(key))
 							{
-                                qt = (QuadTile)m_topmostTiles[key];
+								qt = (VEQuadTile)m_topmostTiles[key];
 								if (!m_updateTiles.ContainsKey(key))
 									m_updateTiles.Add(key, qt);
 								continue;
 							}
 
-							// Check for tile outside layer boundaries
-							double west = -180.0 + curCol * ImageStores[0].LevelZeroTileSizeDegrees;
-							if (west > m_east)
-								continue;
-
-							double east = west + ImageStores[0].LevelZeroTileSizeDegrees;
-							if (east < m_west)
-								continue;
-
-							double south = -90.0 + curRow * ImageStores[0].LevelZeroTileSizeDegrees;
-							if (south > m_north)
-								continue;
-
-							double north = south + ImageStores[0].LevelZeroTileSizeDegrees;
-							if (north < m_south)
-								continue;
-
-                     qt = new QuadTile(south, north, west, east, 0, this);
+							qt = new VEQuadTile(curRow, curCol, 3, this);
 							if (DrawArgs.Camera.ViewFrustum.Intersects(qt.BoundingBox))
 							{
-                                lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+								lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 									m_topmostTiles.Add(key, qt);
 								m_updateTiles.Add(key, qt);
 							}
@@ -825,11 +730,11 @@ namespace WorldWind.Renderable
 				}
 
 				m_deleteTiles.Clear();
-                lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+				lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 				{
 					foreach (long key in m_topmostTiles.Keys)
 					{
-						QuadTile qt = (QuadTile)m_topmostTiles[key];
+						VEQuadTile qt = (VEQuadTile)m_topmostTiles[key];
 						if (!drawArgs.WorldCamera.ViewFrustum.Intersects(qt.BoundingBox))
 						{
 							if (m_updateTiles.ContainsKey(key))
@@ -841,14 +746,14 @@ namespace WorldWind.Renderable
 
 				// Do updates before cleanup for performance reasons.
 				foreach (long key in m_updateTiles.Keys)
-					((QuadTile)m_topmostTiles[key]).Update(drawArgs);
-                lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+					((VEQuadTile)m_topmostTiles[key]).Update(drawArgs);
+				lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 				{
 					foreach (long key in m_deleteTiles)
 					{
-                        if (m_topmostTiles.ContainsKey(key))
-                        {
-                            QuadTile qt = (QuadTile)m_topmostTiles[key];
+						if (m_topmostTiles.ContainsKey(key))
+						{
+							VEQuadTile qt = (VEQuadTile)m_topmostTiles[key];
 							m_topmostTiles.Remove(key);
 							qt.Dispose();
 						}
@@ -869,7 +774,7 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-                lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+				lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 				{
 					if (m_topmostTiles.Count <= 0)
 					{
@@ -922,7 +827,7 @@ namespace WorldWind.Renderable
 						device.SetTextureStageState(1, TextureStageStates.TextureCoordinateIndex, 0);
 					}
 					device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-					foreach (QuadTile qt in m_topmostTiles.Values)
+					foreach (VEQuadTile qt in m_topmostTiles.Values)
 						qt.Render(drawArgs);
 
 					// Restore device states
@@ -1026,7 +931,7 @@ namespace WorldWind.Renderable
 				}
 			}
 
-			foreach (QuadTile qt in m_topmostTiles.Values)
+			foreach (VEQuadTile qt in m_topmostTiles.Values)
 				qt.Dispose();
 			m_topmostTiles.Clear();
 			if (m_iconTexture != null)
@@ -1047,13 +952,13 @@ namespace WorldWind.Renderable
 			//					  if (!ImageStore.IsDownloadableLayer)
 			//							  return;
 
-            List<long> deletionList = new List<long>();
+			List<long> deletionList = new List<long>();
 			//reset "root" tiles that intersect current view
-            lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+			lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 			{
 				foreach (long key in m_topmostTiles.Keys)
 				{
-					QuadTile qt = (QuadTile)m_topmostTiles[key];
+					VEQuadTile qt = (VEQuadTile)m_topmostTiles[key];
 					if (camera.ViewFrustum.Intersects(qt.BoundingBox))
 					{
 						qt.ResetCache();
@@ -1068,18 +973,18 @@ namespace WorldWind.Renderable
 
 		public void ClearDownloadRequests()
 		{
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
-                lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
-			{
-				m_downloadRequests.Clear();
-			}
+			lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+				lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+				{
+					m_downloadRequests.Clear();
+				}
 		}
 
 		public virtual void AddToDownloadQueue(CameraBase camera, GeoSpatialDownloadRequest newRequest)
 		{
-            IGeoSpatialDownloadTile key = newRequest.Tile;
+			IGeoSpatialDownloadTile key = newRequest.Tile;
 			key.WaitingForDownload = true;
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+			lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
 			{
 				if (m_downloadRequests.ContainsKey(key))
 					return;
@@ -1119,9 +1024,9 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Removes a request from the download queue.
 		/// </summary>
-        public virtual void RemoveFromDownloadQueue(GeoSpatialDownloadRequest removeRequest, bool serviceQueue)
+		public virtual void RemoveFromDownloadQueue(GeoSpatialDownloadRequest removeRequest, bool serviceQueue)
 		{
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+			lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
 			{
 				IGeoSpatialDownloadTile key = removeRequest.Tile;
 				GeoSpatialDownloadRequest request = m_downloadRequests[key];
@@ -1130,9 +1035,9 @@ namespace WorldWind.Renderable
 					m_downloadRequests.Remove(key);
 					request.Tile.DownloadRequests.Remove(request);
 				}
-                
-                if (serviceQueue)
-                    ServiceDownloadQueue();
+
+				if (serviceQueue)
+					ServiceDownloadQueue();
 			}
 		}
 
@@ -1144,7 +1049,7 @@ namespace WorldWind.Renderable
 			if (m_downloadRequests.Count > 0)
 				Log.Write(Log.Levels.Verbose, "QTS", "ServiceDownloadQueue: " + m_downloadRequests.Count + " requests waiting");
 
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+			lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
 			{
 				for (int i = 0; i < World.Settings.MaxSimultaneousDownloads; i++)
 				{
@@ -1203,14 +1108,14 @@ namespace WorldWind.Renderable
 			GeoSpatialDownloadRequest closestRequest = null;
 			double largestArea = double.MinValue;
 
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+			lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
 			{
 				foreach (GeoSpatialDownloadRequest curRequest in m_downloadRequests.Values)
 				{
 					if (curRequest.IsDownloading)
 						continue;
 
-					QuadTile qt = (QuadTile)curRequest.Tile;
+					VEQuadTile qt = (VEQuadTile)curRequest.Tile;
 					if (!m_camera.ViewFrustum.Intersects(qt.BoundingBox))
 						continue;
 
@@ -1268,11 +1173,11 @@ namespace WorldWind.Renderable
 		public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
 		{
 			Update(drawArgs);
-            lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+			lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 			{
 				foreach (long key in m_topmostTiles.Keys)
 				{
-					QuadTile qt = (QuadTile)m_topmostTiles[key];
+					VEQuadTile qt = (VEQuadTile)m_topmostTiles[key];
 					qt.InitExportInfo(drawArgs, info);
 				}
 			}
@@ -1281,11 +1186,11 @@ namespace WorldWind.Renderable
 		public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
 		{
 			Update(drawArgs);
-            lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+			lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 			{
 				foreach (long key in m_topmostTiles.Keys)
 				{
-					QuadTile qt = (QuadTile)m_topmostTiles[key];
+					VEQuadTile qt = (VEQuadTile)m_topmostTiles[key];
 					qt.ExportProcess(drawArgs, expInfo);
 				}
 			}

@@ -15,7 +15,7 @@ namespace Dapple.LayerGeneration
 
       public static readonly string URLProtocolName = "gxtile://";
 
-      public static readonly string CacheSubDir = "Tile Server Cache";
+      public static readonly string CacheSubDir = "Images";
 
       public static string TypeName
       {
@@ -52,7 +52,7 @@ namespace Dapple.LayerGeneration
       bool m_blnIsChanged = true;
 
       private QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
-         ImageStore[] imageStores, byte opacity, World World, string cacheDirectory, IBuilder parent)
+         ImageStore[] imageStores, byte opacity, World world, string cacheRoot, IBuilder parent)
       {
          m_strName = name;
          distAboveSurface = height;
@@ -60,15 +60,28 @@ namespace Dapple.LayerGeneration
          m_hBoundary = boundary;
          m_oImageStores = imageStores;
          m_bOpacity = opacity;
-         m_strCacheRoot = cacheDirectory;
-         m_oWorld = World;
+			m_strCacheRoot = String.Format("{0}{1}{2}", cacheRoot, Path.DirectorySeparatorChar, world.Name);
+         m_oWorld = world;
          m_Parent = parent;
       }
 
+
+		private static string getRenderablePathString(RenderableObject renderable)
+		{
+			if (renderable.ParentList == null)
+			{
+				return renderable.Name;
+			}
+			else
+			{
+				return getRenderablePathString(renderable.ParentList) + Path.DirectorySeparatorChar + renderable.Name;
+			}
+		}
+
       public QuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
          double levelZeroTileSize, int levels, int textureSize, string serverURL, string dataSetName, string imageExtension,
-         byte opacity, World world, string textureDirectory, string cacheDirectory, IBuilder parent)
-         : this(name, height, isTerrainMapped, boundary, null, opacity, world, cacheDirectory, parent)
+         byte opacity, World world, string cacheRoot, IBuilder parent)
+         : this(name, height, isTerrainMapped, boundary, null, opacity, world, cacheRoot, parent)
       {
          m_oImageStores = new ImageStore[1];
          m_oImageStores[0] = new NltImageStore(dataSetName, serverURL);
@@ -76,8 +89,7 @@ namespace Dapple.LayerGeneration
          m_oImageStores[0].LevelZeroTileSizeDegrees = levelZeroTileSize;
          m_oImageStores[0].LevelCount = levels;
          m_oImageStores[0].ImageExtension = imageExtension;
-         m_oImageStores[0].CacheDirectory = textureDirectory;
-         //ia.ServerLogo = serverLogoFilePath;
+         m_oImageStores[0].CacheDirectory = GetCachePath();
          m_oImageStores[0].TextureFormat = World.Settings.TextureFormat;
          m_oImageStores[0].TextureSizePixels = textureSize;
       }
@@ -289,14 +301,27 @@ namespace Dapple.LayerGeneration
             return "";
       }
 
+		private static string GetBuilderPathString(IBuilder builder)
+		{
+			if(builder.Parent == null)
+			{
+				string strRet = builder.Name;
+				foreach (char cInvalid in Path.GetInvalidPathChars())
+					strRet.Replace(cInvalid, '_');
+				return strRet;
+			}
+			else
+			{
+				return GetBuilderPathString(builder.Parent) + Path.DirectorySeparatorChar + builder.Name;
+			}
+		}
+
       public override string GetCachePath()
       {
-         // JBTODO:
-         return string.Empty;
-         //return Path.Combine(Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), GetServerFileNameFromUrl(m_strServerUrl)), Utility.StringHash.GetBase64HashForPath(m_strDataSetName)), m_oImageStores[0].LevelZeroTileSizeDegrees.GetHashCode().ToString());
+			return String.Format("{0}{1}{2}{1}{3}", m_strCacheRoot, Path.DirectorySeparatorChar, CacheSubDir, GetBuilderPathString(this));
       }
 
-      public static QuadLayerBuilder GetQuadLayerBuilderFromURI(string uri, string textureDir, string cacheDir, World world, IBuilder parent)
+      public static QuadLayerBuilder GetQuadLayerBuilderFromURI(string uri, string cacheRoot, World world, IBuilder parent)
       {
          try
          {
@@ -318,7 +343,7 @@ namespace Dapple.LayerGeneration
 
             return new QuadLayerBuilder(name.Replace('+', ' '), height, terrainMapped, new GeographicBoundingBox(north, south, west, east),
                lvl0tilesize, levels, size, serverUrl, datasetname, fileExt, 255,
-               world, textureDir, cacheDir, parent);
+               world, cacheRoot, parent);
          }
          catch { }
 

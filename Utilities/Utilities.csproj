@@ -129,6 +129,7 @@
     <Compile Include="ProgressWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Projection.cs" />
     <Compile Include="Segment.cs" />
     <Compile Include="SharedMemory.cs" />
     <Compile Include="StringHash.cs" />

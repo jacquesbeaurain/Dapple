@@ -1,31 +1,174 @@
 using WorldWind.Net;
 using System;
 using System.IO;
+using System.Collections.Generic;
+using WorldWind.Camera;
 using Utility;
 
 namespace WorldWind.Renderable
 {
+	public interface IGeoSpatialDownloadTileSet
+	{
+		/// <summary>
+		/// Tiles in the request for download queue
+		/// </summary>
+		Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
+		{
+			get;
+		}
+
+		int NumberRetries
+		{
+			get;
+			set;
+		}
+
+		void AddToDownloadQueue(CameraBase camera, GeoSpatialDownloadRequest newRequest);
+		void RemoveFromDownloadQueue(GeoSpatialDownloadRequest request, bool serviceQueue);
+		void ServiceDownloadQueue();
+
+		int ColorKey
+		{
+			get;
+			set;
+		}
+
+		int ColorKeyMax
+		{
+			get;
+			set;
+		}
+
+		TimeSpan CacheExpirationTime
+		{
+			get;
+		}
+
+		CameraBase Camera
+		{
+			get;
+		}
+	}
+
+	public interface IGeoSpatialDownloadTile
+	{
+		void Initialize();
+
+		Angle CenterLatitude
+		{
+			get;
+		}
+
+		Angle CenterLongitude
+		{
+			get;
+		}
+
+		int Level
+		{
+			get;
+		}
+
+		int Row
+		{
+			get;
+		}
+
+		int Col
+		{
+			get;
+		}
+
+		/// <summary>
+		/// North bound for this Tile
+		/// </summary>
+		double North
+		{
+			get;
+		}
+
+		/// <summary>
+		/// West bound for this Tile
+		/// </summary>
+		double West
+		{
+			get;
+		}
+
+		/// <summary>
+		/// South bound for this Tile
+		/// </summary>
+		double South
+		{
+			get;
+		}
+
+		/// <summary>
+		/// East bound for this Tile
+		/// </summary>
+		double East
+		{
+			get;
+		}
+
+		int TextureSizePixels
+		{
+			get;
+			set;
+		}
+
+		IGeoSpatialDownloadTileSet TileSet
+		{
+			get;
+		}
+
+		List<GeoSpatialDownloadRequest> DownloadRequests
+		{
+			get;
+		}
+
+		string ImageFilePath
+		{
+			get;
+			set;
+		}
+
+		bool IsDownloadingImage
+		{
+			get;
+			set;
+		}
+
+		bool WaitingForDownload
+		{
+			get;
+			set;
+		}
+
+		bool IsValidTile(string strFile);
+	}
+
 	public class GeoSpatialDownloadRequest : IDisposable
 	{
 		public float ProgressPercent;
-      public int DownloadPos;
-      public int DownloadTotal;
-		WebDownload download;
-		string m_localFilePath;
-		string m_url;
-		QuadTile m_quadTile;
-        ImageStore m_imageStore;
+		public int DownloadPos;
+		public int DownloadTotal;
+		protected WebDownload download;
+		protected string m_localFilePath;
+		protected string m_url;
+		protected IGeoSpatialDownloadTile m_tile;
+		protected ImageStore m_imageStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.GeoSpatialDownloadRequest"/> class.
 		/// </summary>
-		/// <param name="quadTile"></param>
-		public GeoSpatialDownloadRequest(QuadTile quadTile, ImageStore imageStore, string localFilePath, string downloadUrl)
+		/// <param name="tile"></param>
+		public GeoSpatialDownloadRequest(IGeoSpatialDownloadTile tile, ImageStore imageStore, string localFilePath, string downloadUrl)
 		{
-			m_quadTile = quadTile;
+			m_tile = tile;
 			m_url = downloadUrl;
 			m_localFilePath = localFilePath;
-            m_imageStore = imageStore;
+			m_imageStore = imageStore;
 		}
 
 		/// <summary>
@@ -43,90 +186,100 @@ namespace WorldWind.Renderable
 		{
 			get
 			{
-				if(download==null)
+				if (download == null)
 					return true;
 				return download.IsComplete;
 			}
 		}
 
-		public QuadTile QuadTile
+		public IGeoSpatialDownloadTile Tile
 		{
 			get
 			{
-				return m_quadTile;
+				return m_tile;
 			}
 		}
 
-		public double TileWidth 
+		protected virtual void DownloadComplete(WebDownload downloadInfo)
 		{
-			get
-			{
-				return m_quadTile.East - m_quadTile.West;
-			}
-		}
-
-		private void DownloadComplete(WebDownload downloadInfo)
-		{
-            Log.Write(Log.Levels.Debug+1, "GSDR", "Download completed for " + downloadInfo.Url);
-            try
+			Log.Write(Log.Levels.Debug + 1, "GSDR", "Download completed for " + downloadInfo.Url);
+			try
 			{
 				downloadInfo.Verify();
 
-				m_quadTile.QuadTileSet.NumberRetries = 0;
+				m_tile.TileSet.NumberRetries = 0;
 
-				// Rename temp file to real name
-				File.Delete(m_localFilePath);
-				File.Move(downloadInfo.SavedFilePath, m_localFilePath);
+				if (m_tile.IsValidTile(downloadInfo.SavedFilePath))
+				{
+					// Rename temp file to real name
+					File.Delete(m_localFilePath);
+					File.Move(downloadInfo.SavedFilePath, m_localFilePath);
 
-				// Make the quad tile reload the new image
-				m_quadTile.DownloadRequests.Remove(this);
-				m_quadTile.Initialize();
+					// Make the tile reload the new image
+					m_tile.DownloadRequests.Remove(this);
+					m_tile.Initialize();
+				}
+				else
+				{
+					using (File.Create(m_localFilePath + ".txt"))
+					{ }
+					if (File.Exists(downloadInfo.SavedFilePath))
+					{
+						try
+						{
+							File.Delete(downloadInfo.SavedFilePath);
+						}
+						catch (Exception e)
+						{
+							Log.Write(Log.Levels.Error, "GSDR", "could not delete file " + downloadInfo.SavedFilePath + ":");
+							Log.Write(e);
+						}
+					}
+				}
 			}
-			catch(System.Net.WebException caught)
+			catch (System.Net.WebException caught)
 			{
 				System.Net.HttpWebResponse response = caught.Response as System.Net.HttpWebResponse;
-				if(response!=null && response.StatusCode==System.Net.HttpStatusCode.NotFound)
+				if (response != null && response.StatusCode == System.Net.HttpStatusCode.NotFound)
 				{
-					using(File.Create(m_localFilePath + ".txt"))
-					{}
+					using (File.Create(m_localFilePath + ".txt"))
+					{ }
 					return;
 				}
-				m_quadTile.QuadTileSet.NumberRetries++;
+				m_tile.TileSet.NumberRetries++;
 			}
 			catch
 			{
-				using(File.Create(m_localFilePath + ".txt"))
-				{}
-                if (File.Exists(downloadInfo.SavedFilePath))
-                {
-                    try
-                    {
-                        File.Delete(downloadInfo.SavedFilePath);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Write(Log.Levels.Error, "GSDR", "could not delete file " + downloadInfo.SavedFilePath + ":");
-                        Log.Write(e);
-                    }
-                }
+				using (File.Create(m_localFilePath + ".txt"))
+				{ }
+				if (File.Exists(downloadInfo.SavedFilePath))
+				{
+					try
+					{
+						File.Delete(downloadInfo.SavedFilePath);
+					}
+					catch (Exception e)
+					{
+						Log.Write(Log.Levels.Error, "GSDR", "could not delete file " + downloadInfo.SavedFilePath + ":");
+						Log.Write(e);
+					}
+				}
 			}
 			finally
 			{
-                if(download != null)
-    				download.IsComplete = true;
-				m_quadTile.QuadTileSet.RemoveFromDownloadQueue(this);
+				if (download != null)
+					download.IsComplete = true;
 
-                // potential deadlock! -step
-                // Immediately queue next download
-                m_quadTile.QuadTileSet.ServiceDownloadQueue();
+				// Immediately queue next download
+				m_tile.TileSet.RemoveFromDownloadQueue(this, true);
 			}
 		}
 
 		public virtual void StartDownload()
 		{
-            Log.Write(Log.Levels.Debug, "GSDR", "Starting download for " + m_url);
-			Log.Write(Log.Levels.Debug, "GSDR", "to be stored in "+this.m_imageStore.GetLocalPath(QuadTile));
-            QuadTile.IsDownloadingImage = true;
+			Log.Write(Log.Levels.Debug, "GSDR", "Starting download for " + m_url);
+			Log.Write(Log.Levels.Debug, "GSDR", "to be stored in " + this.m_imageStore.GetLocalPath(Tile));
+			Tile.IsDownloadingImage = true;
 			download = new WebDownload(m_url);
 			download.DownloadType = DownloadType.Wms;
 			download.SavedFilePath = m_localFilePath + ".tmp";
@@ -135,36 +288,36 @@ namespace WorldWind.Renderable
 			download.BackgroundDownloadFile();
 		}
 
-		void UpdateProgress(int pos, int total)
+		protected void UpdateProgress(int pos, int total)
 		{
-			if(total==0)
+			if (total == 0)
 				// When server doesn't provide content-length, use this dummy value to at least show some progress.
-				total = 50*1024; 
-			pos = pos % (total+1);
-         DownloadPos = pos;
-         DownloadTotal = total;
-			ProgressPercent = (float)pos/total;
+				total = 50 * 1024;
+			pos = pos % (total + 1);
+			DownloadPos = pos;
+			DownloadTotal = total;
+			ProgressPercent = (float)pos / total;
 		}
 
 		public virtual void Cancel()
 		{
-			if (download!=null)
+			if (download != null)
 				download.Cancel();
 		}
 
 		public override string ToString()
 		{
-			return m_imageStore.GetLocalPath(QuadTile);
+			return m_imageStore.GetLocalPath(Tile);
 		}
 
 		#region IDisposable Members
 
 		public virtual void Dispose()
 		{
-			if(download!=null)
+			if (download != null)
 			{
 				download.Dispose();
-				download=null;
+				download = null;
 			}
 			GC.SuppressFinalize(this);
 		}

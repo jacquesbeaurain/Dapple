@@ -228,14 +228,14 @@ namespace WorldWind
 
       #endregion
 
-      public virtual string GetLocalPath(QuadTile qt)
+      public virtual string GetLocalPath(IGeoSpatialDownloadTile tile)
       {
-         if (qt.Level >= m_levelCount)
+         if (tile.Level >= m_levelCount)
             throw new ArgumentException(string.Format("Level {0} not available.",
-               qt.Level));
+               tile.Level));
 
          string relativePath = String.Format(@"{0}\{1:D4}\{1:D4}_{2:D4}.{3}",
-            qt.Level, qt.Row, qt.Col, m_imageFileExtension);
+            tile.Level, tile.Row, tile.Col, m_imageFileExtension);
 
          if (m_dataDirectory != null)
          {
@@ -280,7 +280,7 @@ namespace WorldWind
       /// TODO: Allow subclasses to have control over how images are downloaded, 
       /// not just the download url.
       /// </summary>
-      protected virtual string GetDownloadUrl(QuadTile qt)
+      protected virtual string GetDownloadUrl(IGeoSpatialDownloadTile tile)
       {
          // No local image, return our "duplicate" tile if any
          if (m_duplicateTexturePath != null && File.Exists(m_duplicateTexturePath))
@@ -293,10 +293,10 @@ namespace WorldWind
       /// <summary>
       /// Deletes the cached copy of the tile.
       /// </summary>
-      /// <param name="qt"></param>
-      public virtual void DeleteLocalCopy(QuadTile qt)
+      /// <param name="tile"></param>
+      public virtual void DeleteLocalCopy(IGeoSpatialDownloadTile tile)
       {
-         string filename = GetLocalPath(qt);
+         string filename = GetLocalPath(tile);
          if (File.Exists(filename))
             File.Delete(filename);
       }
@@ -328,10 +328,10 @@ namespace WorldWind
          }
       }
 
-      public Texture LoadFile(QuadTile qt)
+      public Texture LoadFile(IGeoSpatialDownloadTile tile)
       {
-         string filePath = GetLocalPath(qt);
-         qt.ImageFilePath = filePath;
+         string filePath = GetLocalPath(tile);
+         tile.ImageFilePath = filePath;
          if (!File.Exists(filePath))
          {
             string badFlag = filePath + ".txt";
@@ -348,7 +348,7 @@ namespace WorldWind
 
             if (IsDownloadableLayer)
             {
-               QueueDownload(qt, filePath);
+               QueueDownload(tile, filePath);
                return null;
             }
 
@@ -361,28 +361,28 @@ namespace WorldWind
 
          // Use color key
          Texture texture = null;
-         if (qt.QuadTileSet.HasTransparentRange)
+         if (tile.TileSet.ColorKeyMax != 0)
          {
-            texture = ImageHelper.LoadTexture(filePath, qt.QuadTileSet.ColorKey,
-               qt.QuadTileSet.ColorKeyMax);
+            texture = ImageHelper.LoadTexture(filePath, tile.TileSet.ColorKey,
+               tile.TileSet.ColorKeyMax);
          }
          else
          {
-            texture = ImageHelper.LoadTexture(filePath, qt.QuadTileSet.ColorKey,
+            texture = ImageHelper.LoadTexture(filePath, tile.TileSet.ColorKey,
                TextureFormat);
          }
          
          SurfaceDescription sd = texture.GetLevelDescription(0);
          if (sd.Width != sd.Height)
             Log.Write(Log.Levels.Error, "ISTOR", "non-square texture in file " + filePath + "may cause export issues :");
-         qt.TextureSizePixels = sd.Width;
+         tile.TextureSizePixels = sd.Width;
 
-         if (qt.QuadTileSet.CacheExpirationTime != TimeSpan.MaxValue)
+         if (tile.TileSet.CacheExpirationTime != TimeSpan.MaxValue)
          {
             FileInfo fi = new FileInfo(filePath);
-            DateTime expiry = fi.LastWriteTimeUtc.Add(qt.QuadTileSet.CacheExpirationTime);
+            DateTime expiry = fi.LastWriteTimeUtc.Add(tile.TileSet.CacheExpirationTime);
             if (DateTime.UtcNow > expiry)
-               QueueDownload(qt, filePath);
+               QueueDownload(tile, filePath);
          }
 
          // Only convert images that are downloadable (don't mess with things the user put here!)
@@ -392,11 +392,11 @@ namespace WorldWind
          return texture;
       }
 
-      void QueueDownload(QuadTile qt, string filePath)
+      protected virtual void QueueDownload(IGeoSpatialDownloadTile tile, string filePath)
       {
-         string url = GetDownloadUrl(qt);
-         qt.QuadTileSet.AddToDownloadQueue(qt.QuadTileSet.Camera,
-            new GeoSpatialDownloadRequest(qt, this, filePath, url));
+         string url = GetDownloadUrl(tile);
+         tile.TileSet.AddToDownloadQueue(tile.TileSet.Camera,
+            new GeoSpatialDownloadRequest(tile, this, filePath, url));
       }
    }
 }

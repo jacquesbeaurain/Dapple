@@ -6,7 +6,10 @@ using WorldWind;
 using WorldWind.Renderable;
 using System.Xml;
 using Dapple;
+using Dapple.Plugins;
 using WorldWind.PluginEngine;
+
+using Dapple.Plugins.VirtualEarth;
 
 namespace Dapple.LayerGeneration
 {
@@ -14,14 +17,8 @@ namespace Dapple.LayerGeneration
    {
       public static readonly string URLProtocolName = "gxve://";
       public static readonly string CacheSubDir = "Virtual Earth Cache";
-      public enum VirtualEarthMapType
-      {
-         aerial = 0,
-         road,
-         hybrid
-      }
 
-      bNb.Plugins_GD.VeReprojectTilesLayer m_oVELayer;
+      VEQuadTileSet m_oVEQTS;
       string m_strCacheRoot;
       VirtualEarthMapType m_mapType;
       bool IsOn = true;
@@ -47,57 +44,25 @@ namespace Dapple.LayerGeneration
 
       public override RenderableObject GetLayer()
       {
-         return GetVELayer();
-      }
-
-      public bNb.Plugins_GD.VeReprojectTilesLayer GetVELayer()
-      {
-         if (m_blnIsChanged)
+			if (m_blnIsChanged)
          {
-            string fileExtension;
-            string dataset;
-            if (m_mapType == VirtualEarthMapType.road)
-            {
-               fileExtension = "png";
-               dataset = "r";
-            }
-            else
-            {
-               fileExtension = "jpeg";
-               if (m_mapType == VirtualEarthMapType.aerial)
-               {
-                  dataset = "a";
-               }
-               else
-               {
-                  dataset = "h";
-               }
-            }
-
-            m_oVELayer = new bNb.Plugins_GD.VeReprojectTilesLayer("Virtual Earth", m_MainApp, dataset, fileExtension, 0, GetCachePath());
-            m_oVELayer.Opacity = m_bOpacity;
-            m_oVELayer.IsOn = m_IsOn;
-
-            //m_oQuadTileSet = new QuadTileSet("Virtual Earth",
-            //   new GeographicBoundingBox(90, -90, -180, 180),
-            //   m_oWorld,
-            //   0,
-            //   m_oWorld.TerrainAccessor,
-            //   new VEImageAccessor(m_oWW));
-
+				m_oVEQTS = new VEQuadTileSet(m_strName, m_mapType, m_oWorld, 0, true);
+				m_oVEQTS.Opacity = m_bOpacity;
+				m_oVEQTS.IsOn = m_IsOn;
             m_blnIsChanged = false;
          }
-         return m_oVELayer;
+         return m_oVEQTS;
       }
 
+      
       #region IBuilder Members
 
       public override byte Opacity
       {
          get
          {
-            if (m_oVELayer != null)
-               return m_oVELayer.Opacity;
+				if (m_oVEQTS != null)
+					return m_oVEQTS.Opacity;
             return m_bOpacity;
          }
          set
@@ -108,9 +73,9 @@ namespace Dapple.LayerGeneration
                m_bOpacity = value;
                bChanged = true;
             }
-            if (m_oVELayer != null && m_oVELayer.Opacity != value)
+				if (m_oVEQTS != null && m_oVEQTS.Opacity != value)
             {
-               m_oVELayer.Opacity = value;
+					m_oVEQTS.Opacity = value;
                bChanged = true;
             }
             if (bChanged)
@@ -122,8 +87,8 @@ namespace Dapple.LayerGeneration
       {
          get
          {
-            if (m_oVELayer != null)
-               return m_oVELayer.IsOn;
+            if (m_oVEQTS != null)
+               return m_oVEQTS.IsOn;
             return m_IsOn;
          }
          set
@@ -134,9 +99,9 @@ namespace Dapple.LayerGeneration
                m_IsOn = value;
                bChanged = true;
             }
-            if (m_oVELayer != null && m_oVELayer.IsOn != value)
+            if (m_oVEQTS != null && m_oVEQTS.IsOn != value)
             {
-               m_oVELayer.IsOn = value;
+               m_oVEQTS.IsOn = value;
                bChanged = true;
             }
 
@@ -162,8 +127,8 @@ namespace Dapple.LayerGeneration
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
-         if (m_oVELayer != null)
-            return m_oVELayer.bIsDownloading(out iBytesRead, out iTotalBytes);
+         if (m_oVEQTS != null)
+            return m_oVEQTS.bIsDownloading(out iBytesRead, out iTotalBytes);
          else
          {
             iBytesRead = 0;
@@ -199,17 +164,17 @@ namespace Dapple.LayerGeneration
 
       public static string GetRoadURI()
       {
-         return URLProtocolName + VEQuadLayerBuilder.VirtualEarthMapType.road.ToString();
+			return URLProtocolName + Dapple.Plugins.VirtualEarth.VirtualEarthMapType.road.ToString();
       }
 
       public static string GetArealURI()
       {
-         return URLProtocolName + VEQuadLayerBuilder.VirtualEarthMapType.aerial.ToString();
+			return URLProtocolName + Dapple.Plugins.VirtualEarth.VirtualEarthMapType.aerial.ToString();
       }
 
       public static string GetHybridURI()
       {
-         return URLProtocolName + VEQuadLayerBuilder.VirtualEarthMapType.hybrid.ToString();
+			return URLProtocolName + Dapple.Plugins.VirtualEarth.VirtualEarthMapType.hybrid.ToString();
       }
 
          
@@ -217,11 +182,11 @@ namespace Dapple.LayerGeneration
       {
          uri = uri.Trim();
          if (String.Compare(uri, GetRoadURI(), true) == 0)
-				return new VEQuadLayerBuilder("Virtual Earth Map", VEQuadLayerBuilder.VirtualEarthMapType.road, mainApp, true, parent);
+				return new VEQuadLayerBuilder("Virtual Earth Map", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.road, mainApp, true, parent);
          else if (String.Compare(uri, GetArealURI(), true) == 0)
-				return new VEQuadLayerBuilder("Virtual Earth Satellite", VEQuadLayerBuilder.VirtualEarthMapType.aerial, mainApp, true, parent);
+				return new VEQuadLayerBuilder("Virtual Earth Satellite", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.aerial, mainApp, true, parent);
          else if (String.Compare(uri, GetHybridURI(), true) == 0)
-				return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VEQuadLayerBuilder.VirtualEarthMapType.hybrid, mainApp, true, parent);
+				return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.hybrid, mainApp, true, parent);
          else
             return null;
       }
@@ -233,9 +198,9 @@ namespace Dapple.LayerGeneration
 
       protected override void CleanUpLayer(bool bFinal)
       {
-         if (m_oVELayer != null)
-            m_oVELayer.Dispose();
-         m_oVELayer = null;
+         if (m_oVEQTS != null)
+            m_oVEQTS.Dispose();
+         m_oVEQTS = null;
          m_blnIsChanged = true;
       }
 
