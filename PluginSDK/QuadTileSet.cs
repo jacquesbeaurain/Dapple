@@ -732,14 +732,18 @@ namespace WorldWind.Renderable
 					return;
 			}
 
-			if (DrawArgs.Camera.ViewRange * 0.5f >
+			if (!m_alwaysRenderBaseTiles && DrawArgs.Camera.ViewRange * 0.5f >
 					Angle.FromDegrees(TileDrawDistance * ImageStores[0].LevelZeroTileSizeDegrees))
 			{
                 lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 				{
+					// Don't dispose of the quadtiles like WorldWind does here (they may be nice to look at)
+					// Do however clear the download requests
+					/*
 					foreach (QuadTile qt in m_topmostTiles.Values)
 						qt.Dispose();
 					m_topmostTiles.Clear();
+					 */
 					ClearDownloadRequests();
 				}
 

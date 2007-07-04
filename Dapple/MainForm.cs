@@ -678,13 +678,11 @@ namespace Dapple
             this.toolStripMenuItemaddServer.Text = "Add DAP Server";
             this.toolStripMenuItemaddServer.Tag = true;
          }
-         /* JBTODO:
          else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
          {
             this.toolStripMenuItemaddServer.Text = "Add WMS Server";
             this.toolStripMenuItemaddServer.Tag = true;
          }
-          */ 
          else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
             this.toolStripMenuItemRefreshCatalog.Tag = true;
@@ -706,10 +704,8 @@ namespace Dapple
                this.toolStripMenuItemgoToServer.Tag = true;
             }
 
-            /* JBTODO:
             if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
                this.toolStripMenuItemremoveServer.Tag = true;
-            */
 
             if (builder != null)
             {
@@ -718,10 +714,8 @@ namespace Dapple
                this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
                this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
 
-               /* JBTODO:
                if (builder is WMSServerBuilder)
                   this.toolStripMenuItemRefreshCatalog.Tag = true;
-                */
             }
 
             if (dapDataset != null)
@@ -3750,13 +3744,11 @@ namespace Dapple
                   MessageBox.Show("Unable to view layer: an error occurred while retrieving server configuration.  Refresh the server named \"" + sb.Builder.Name + "\", and then try viewing the layer again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                else
                {
-                  /* JBTODO:
                   LayerBuilder builder = ((WMSServerBuilder)sb.Builder).GetLayerBuilderByName(layerTitle);
                   if (builder != null)
                      activeLayers.Add(layerTitle, builder, true, 255, true);
                   else
                      MessageBox.Show("Unable to view layer: server does not provide a layer named " + layerName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                   */ 
                }
             }
             else

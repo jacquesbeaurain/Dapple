@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
+
 using WorldWind;
 using WorldWind.Net;
 using WorldWind.Renderable;
 using WorldWind.Net.Wms;
+
+using WorldWind.PluginEngine;
+
 using Geosoft.DotNetTools;
 
 namespace Dapple.LayerGeneration
@@ -73,7 +77,7 @@ namespace Dapple.LayerGeneration
          TrimCapabilitiesURL(ref serverUrl);
 
          // create the cache directory
-         string savePath = Path.Combine(Path.Combine(m_WorldWindow.WorldWindSettings.CachePath, CATALOG_CACHE), WMSQuadLayerBuilder.GetServerFileNameFromUrl(serverUrl));
+         string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), WMSQuadLayerBuilder.GetServerFileNameFromUrl(serverUrl));
          Directory.CreateDirectory(savePath);
 
          // download the catalog
@@ -199,36 +203,12 @@ namespace Dapple.LayerGeneration
          }
          else
          {
-            string imageFormat = "image/png";
-            if (layer.ImageFormats != null)
-            {
-               foreach (string curFormat in layer.ImageFormats)
-               {
-                  if (string.Compare(curFormat, "image/png", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
-                  {
-                     imageFormat = curFormat;
-                     break;
-                  }
-                  if (string.Compare(curFormat, "image/jpeg", true, System.Globalization.CultureInfo.InvariantCulture) == 0 ||
-                     String.Compare(curFormat, "image/jpg", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
-                  {
-                     imageFormat = curFormat;
-                  }
-               }
-            }
-
-            WMSLayerAccessor accessor = new WMSLayerAccessor(imageFormat, true, layer.ParentWMSList.ServerGetMapUrl,
-               layer.ParentWMSList.Version, layer.Name, string.Empty, layer.SRS, layer.CRS);
-
             IBuilder parentServer = directory;
             while (parentServer != null && !(parentServer is WMSServerBuilder))
                parentServer = parentServer.Parent;
 
-            WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer,
-               0, true, new GeographicBoundingBox(Convert.ToDouble(layer.North), Convert.ToDouble(layer.South)
-               , Convert.ToDouble(layer.West), Convert.ToDouble(layer.East)), accessor, true, m_WorldWindow.CurrentWorld,
-               m_WorldWindow.WorldWindSettings.CachePath, parentServer as WMSServerBuilder, directory);
-            //WMSZoomBuilder builder = new WMSZoomBuilder(layer, m_WorldWindow.WorldWindSettings.CachePath, m_WorldWindow, directory);
+            WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer, m_WorldWindow.CurrentWorld,
+               MainApplication.Settings.CachePath, parentServer as WMSServerBuilder, directory);
             sem.WaitOne();
             directory.LayerBuilders.Add(builder);
             sem.Release();

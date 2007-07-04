@@ -363,11 +363,11 @@ namespace WorldWind.Renderable
 
 				if (!isInitialized)
 				{
-					if (DrawArgs.Camera.ViewRange * 0.5f < Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize)
-				 && MathEngine.SphericalDistance(centerLatitude, centerLongitude,
-																	DrawArgs.Camera.Latitude, DrawArgs.Camera.Longitude) <
+					if ((DrawArgs.Camera.ViewRange * 0.5f < Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize)
+							&& MathEngine.SphericalDistance(centerLatitude, centerLongitude, DrawArgs.Camera.Latitude, DrawArgs.Camera.Longitude) <
 							 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize * 1.25f)
-						 && DrawArgs.Camera.ViewFrustum.Intersects(BoundingBox)
+						 && DrawArgs.Camera.ViewFrustum.Intersects(BoundingBox)) 
+						|| (level == 0 && quadTileSet.AlwaysRenderBaseTiles)
 						 )
 						Initialize();
 				}

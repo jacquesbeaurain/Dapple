@@ -193,12 +193,12 @@
     <Compile Include="LayerGeneration\LayerBuilderContainer.cs" />
     <Compile Include="LayerGeneration\TileSetBuilder.cs" />
     <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
-    <None Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
     <Compile Include="LayerGeneration\LayerBuilderProvider.cs" />
     <Compile Include="LayerGeneration\QuadLayerBuilder.cs" />
-    <None Include="LayerGeneration\WMSCatalogBuilder.cs" />
+    <Compile Include="LayerGeneration\WMSCatalogBuilder.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
