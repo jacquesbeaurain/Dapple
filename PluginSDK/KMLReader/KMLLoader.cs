@@ -12,7 +12,16 @@ namespace WorldWind.KMLReader
 {
     public class KMLLoader
     {
-        static string KmlDirectory = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "kml");
+        private string m_realkmlpath;
+
+        public string RealKMLPath
+        {
+            get
+            {
+                return m_realkmlpath;
+            }
+        }
+
 
         public string LoadKML(string filename)
         {
@@ -22,11 +31,12 @@ namespace WorldWind.KMLReader
                 string ExtractedKMLPath = ExtractKMZ(filename, out shouldReturn);
                 if (shouldReturn)
                     return null;
-
+                m_realkmlpath = ExtractedKMLPath;
                 return LoadKMLFile(ExtractedKMLPath);
             }
             else
             {
+                m_realkmlpath = filename;
                 return LoadKMLFile(filename);
             }
         }
@@ -37,7 +47,7 @@ namespace WorldWind.KMLReader
 
             FileInfo fileInfo = new FileInfo(filename);
             // Create a folder 'kmz' to extract the kmz file to
-            string ExtractPath = Path.Combine(KmlDirectory, "kmz\\" + fileInfo.Name);
+            string ExtractPath = Path.Combine(KMLParser.KmlCacheDirectory, "kmz\\" + fileInfo.Name);
             if (!Directory.Exists(ExtractPath))
                 Directory.CreateDirectory(ExtractPath);
 

@@ -85,6 +85,10 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtAssemblies\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.DirectX.Direct3DX, Version=1.0.2910.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
@@ -125,14 +129,17 @@
     </Compile>
     <Compile Include="Compass3D.cs" />
     <Compile Include="CompassRose.cs" />
+    <Compile Include="KMLImporter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PluginEngine\MainApplication.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="NativeMethods.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="OverviewControl.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="PluginEngine\MainApplication.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="PluginEngine\NativeMethods.cs" />
     <Compile Include="PluginEngine\Plugin.cs" />

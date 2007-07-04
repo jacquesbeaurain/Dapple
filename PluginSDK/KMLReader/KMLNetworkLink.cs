@@ -133,13 +133,13 @@ namespace WorldWind.KMLReader
                     if (saveFile == null || saveFile.Length == 0)
                         saveFile = "temp.kml";
 
-                    saveFile = Path.Combine(KMLParser.KmlDirectory + "\\temp\\", saveFile);
+                    saveFile = Path.Combine(KMLParser.KmlCacheDirectory + "\\temp\\", saveFile);
 
                     FileInfo saveFileInfo = new FileInfo(saveFile);
                     if (!saveFileInfo.Directory.Exists)
                         saveFileInfo.Directory.Create();
 
-                     WebDownload myClient = new WebDownload(fullurl);
+                    WebDownload myClient = new WebDownload(fullurl);
                     myClient.DownloadFile(saveFile);
 
                     // Extract the file if it is a kmz file
