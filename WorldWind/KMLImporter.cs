@@ -43,6 +43,7 @@ namespace KMLPlugin
 		// private const int IconSizeConstant = 32;			// The default icon size used for scaling
 
 		private Icons m_KMLIcons;							// Main Icon container
+		private Delegate m_KMLLoaded;						// To notify main app when loading is complete
 
 		private MenuItem tempMenu = new MenuItem();			// Temp menu item for storing file MenuItems
 		private MenuItem aboutMenuItem = new MenuItem();	// About menu item
@@ -76,13 +77,15 @@ namespace KMLPlugin
 			m_KMLIcons.IsOn = false;
 
 			// Setup Drag&Drop functionality
-			m_Application.WorldWindow.DragEnter += new DragEventHandler(WorldWindow_DragEnter);
-			m_Application.WorldWindow.DragDrop += new DragEventHandler(WorldWindow_DragDrop);
+			//m_Application.WorldWindow.DragEnter += new DragEventHandler(WorldWindow_DragEnter);
+			//m_Application.WorldWindow.DragDrop += new DragEventHandler(WorldWindow_DragDrop);
 
+			/*
 			// Add a menu item to the File menu and the Help menu
 			MenuItem loadMenuItem = new MenuItem();
 			loadMenuItem.Text = "Import KML/KMZ file...";
 			loadMenuItem.Click += new EventHandler(loadMenu_Click);
+			
 			aboutMenuItem.Text = "About KMLImporter";
 			aboutMenuItem.Click += new EventHandler(aboutMenu_Click);
 			int mergeOrder = 0;
@@ -154,6 +157,7 @@ namespace KMLPlugin
 					}
 				}
 			}
+			 */
 
 			// Add the main Icons layer to the globe
 			m_Application.WorldWindow.CurrentWorld.RenderableObjects.Add(m_KMLIcons);
@@ -181,9 +185,10 @@ namespace KMLPlugin
 			m_Application.WorldWindow.CurrentWorld.RenderableObjects.Remove(m_KMLIcons);
 
 			// Disable Drag&Drop functionality
-			this.ParentApplication.WorldWindow.DragEnter -= new DragEventHandler(WorldWindow_DragEnter);
-			this.ParentApplication.WorldWindow.DragDrop -= new DragEventHandler(WorldWindow_DragDrop);
+			//this.ParentApplication.WorldWindow.DragEnter -= new DragEventHandler(WorldWindow_DragEnter);
+			//this.ParentApplication.WorldWindow.DragDrop -= new DragEventHandler(WorldWindow_DragDrop);
 
+			/*
 			// Remove the menu items
 			foreach (MenuItem menuItem in m_Application.MainMenu.MenuItems)
 			{
@@ -206,7 +211,7 @@ namespace KMLPlugin
 			tempMenu.MenuItems.Clear();
 			//m_Application.PluginsMenu.MenuItems.Remove(napalmMenuItem);
 			m_Application.PluginsMenu.MenuItems.Remove(pluginMenuItem);
-
+			*/
 			try
 			{
 				// Delete the temp kmz extract directory
@@ -241,12 +246,22 @@ namespace KMLPlugin
 		#endregion
 
 		#region KMx loading methods
+
+		public Icons KMLIcons
+		{
+			get
+			{
+				return m_KMLIcons;
+			}
+		}
+
 		/// <summary>
 		/// Loads either a KML or KMZ file from disk
 		/// </summary>
 		/// <param name="filename"></param>
-		private void LoadDiskKM(string filename)
+		public void LoadDiskKM(string filename, Delegate kmlLoaded)
 		{
+			m_KMLLoaded = kmlLoaded;
 			Spawn_LoadKML(filename);
 			m_KMLIcons.IsOn = true;
 		}
@@ -280,6 +295,7 @@ namespace KMLPlugin
 			m_parser.Cleanup();
 
 			WaitMessage waitMessage = new WaitMessage();
+			waitMessage.IsOn = false;
 			m_KMLIcons.ChildObjects.Add(waitMessage);
 
 			// Create a reader to read the file
@@ -322,6 +338,9 @@ namespace KMLPlugin
 			// Cleanup
 			m_KMLIcons.ChildObjects.Remove(waitMessage);
 			KMLPath = null;
+			if (m_KMLLoaded != null)
+				ParentApplication.BeginInvoke(m_KMLLoaded);
+			m_KMLLoaded = null;
 		}
 
 
@@ -347,7 +366,7 @@ namespace KMLPlugin
 
 				if (files.Length > 0 && File.Exists(files[0]))
 				{
-					LoadDiskKM(files[0]);
+					LoadDiskKM(files[0], null);
 				}
 			}
 		}
@@ -385,7 +404,7 @@ namespace KMLPlugin
 
 			if (result == DialogResult.OK)
 			{
-				LoadDiskKM(fileDialog.FileName);
+				LoadDiskKM(fileDialog.FileName, null);
 			}
 		}
 
@@ -749,7 +768,7 @@ namespace KMLPlugin
 	/// <summary>
 	/// Renders a message to the lower right corner
 	/// </summary>
-	class WaitMessage : RenderableObject
+	public class WaitMessage : RenderableObject
 	{
 		#region Private members
 		private string _Text = "Please wait, loading KML file.";

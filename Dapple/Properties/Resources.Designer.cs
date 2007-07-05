@@ -312,6 +312,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon kml {
+            get {
+                object obj = ResourceManager.GetObject("kml", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon layer {
             get {
                 object obj = ResourceManager.GetObject("layer", resourceCulture);

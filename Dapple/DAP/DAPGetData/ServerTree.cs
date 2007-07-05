@@ -149,6 +149,7 @@ namespace Geosoft.GX.DAPGetData
          base.ImageList.Images.Add("folder", Resources.folder);
          base.ImageList.Images.Add("folder_open", Resources.folder_open);
          base.ImageList.Images.Add("loading", Resources.loading);
+		 base.ImageList.Images.Add("kml", Resources.kml);
 
          this.ImageIndex = this.SelectedImageIndex = iImageListIndex("folder");
          this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);

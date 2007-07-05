@@ -572,6 +572,7 @@
     <Content Include="Resources\help.png" />
     <Content Include="Resources\home.png" />
     <Content Include="Resources\image-server-18x18.png" />
+    <None Include="Resources\kml.ico" />
     <Content Include="Resources\layer.ico" />
     <Content Include="Resources\layers-bottom.png" />
     <Content Include="Resources\layers-down.png" />
