@@ -252,7 +252,7 @@ namespace WorldWind
       #region Private Methods
       private void load_version_1_1_1(string capabilitiesFilePath)
       {
-         capabilities_1_1_1.capabilities_1_1_1Doc doc = new capabilities_1_1_1.capabilities_1_1_1Doc();
+         WMS_MS_Capabilities.WMS_MS_CapabilitiesDoc doc = new WMS_MS_Capabilities.WMS_MS_CapabilitiesDoc();
          XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
          oSettings.IgnoreWhitespace = true;
          oSettings.ProhibitDtd = false;
@@ -260,7 +260,7 @@ namespace WorldWind
          oSettings.ValidationType = ValidationType.None;
          using (XmlReader oResponseXmlStream = XmlReader.Create(capabilitiesFilePath, oSettings))
          {
-            capabilities_1_1_1.WMT_MS_CapabilitiesType root = new capabilities_1_1_1.WMT_MS_CapabilitiesType(doc.Load(oResponseXmlStream));
+            WMS_MS_Capabilities.WMT_MS_CapabilitiesType root = new WMS_MS_Capabilities.WMT_MS_CapabilitiesType(doc.Load(oResponseXmlStream));
 
             this._version = "1.1.1";
             this._name = root.Service.Title.Value.Value;
@@ -303,13 +303,13 @@ namespace WorldWind
 
             for (int i = 0; i < root.Capability.LayerCount; i++)
             {
-               capabilities_1_1_1.LayerType curLayer = (capabilities_1_1_1.LayerType)root.Capability.GetLayerAt(i);
+               WMS_MS_Capabilities.LayerType curLayer = (WMS_MS_Capabilities.LayerType)root.Capability.GetLayerAt(i);
                this.Layers[i] = this.getWMSLayer(curLayer, null, imageFormats);
             }
          }
       }
 
-      private WMSLayer getWMSLayer(capabilities_1_1_1.LayerType layer, capabilities_1_1_1.LatLonBoundingBoxType parentLatLonBoundingBox, string[] imageFormats)
+      private WMSLayer getWMSLayer(WMS_MS_Capabilities.LayerType layer, WMS_MS_Capabilities.LatLonBoundingBoxType parentLatLonBoundingBox, string[] imageFormats)
       {
          WMSLayer wmsLayer = new WMSLayer();
          wmsLayer.ParentWMSList = this;
@@ -329,9 +329,9 @@ namespace WorldWind
 
          if (layer.HasExtent())
          {
-            for (int i = capabilities_1_1_1.LayerType.ExtentMinCount; i < layer.ExtentCount; i++)
+            for (int i = WMS_MS_Capabilities.LayerType.ExtentMinCount; i < layer.ExtentCount; i++)
             {
-               capabilities_1_1_1.ExtentType curExtent = layer.GetExtentAt(i);
+               WMS_MS_Capabilities.ExtentType curExtent = layer.GetExtentAt(i);
                if (curExtent.Hasname())
                {
                   if (String.Compare(curExtent.name.Value, "time", true) == 0)
@@ -368,7 +368,7 @@ namespace WorldWind
             wmsLayer.Styles = new WMSLayerStyle[layer.StyleCount];
             for (int i = 0; i < layer.StyleCount; i++)
             {
-               capabilities_1_1_1.StyleType curStyle = layer.GetStyleAt(i);
+               WMS_MS_Capabilities.StyleType curStyle = layer.GetStyleAt(i);
 
                wmsLayer.Styles[i] = new WMSLayerStyle();
 
@@ -387,7 +387,7 @@ namespace WorldWind
 
                   for (int j = 0; j < curStyle.LegendURLCount; j++)
                   {
-                     capabilities_1_1_1.LegendURLType curLegend = curStyle.GetLegendURLAt(j);
+                     WMS_MS_Capabilities.LegendURLType curLegend = curStyle.GetLegendURLAt(j);
 
                      wmsLayer.Styles[i].legendURL[j] = new WMSLayerStyleLegendURL();
                      if (curLegend.HasFormat())
@@ -421,7 +421,7 @@ namespace WorldWind
             wmsLayer.ChildLayers = new WMSLayer[layer.LayerCount];
             for (int i = 0; i < layer.LayerCount; i++)
             {
-               wmsLayer.ChildLayers[i] = this.getWMSLayer((capabilities_1_1_1.LayerType)layer.GetLayerAt(i), parentLatLonBoundingBox, imageFormats);
+               wmsLayer.ChildLayers[i] = this.getWMSLayer((WMS_MS_Capabilities.LayerType)layer.GetLayerAt(i), parentLatLonBoundingBox, imageFormats);
             }
          }
 

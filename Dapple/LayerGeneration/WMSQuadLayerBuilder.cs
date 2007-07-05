@@ -25,12 +25,10 @@ namespace Dapple.LayerGeneration
 		int distAboveSurface = 0;
 		bool terrainMapped = false;
 		GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
-		WmsImageStore[] m_oImageStores = null;
 		private double m_dLevelZeroTileSizeDegrees = 0;
 
 		WMSServerBuilder m_Server;
 
-		bool IsOn = true;
 		bool m_blnIsChanged = true;
 		#endregion
 
@@ -149,7 +147,6 @@ namespace Dapple.LayerGeneration
 
 		public WMSQuadLayerBuilder(WMSLayer layer, World world, string cacheDirectory, WMSServerBuilder server, IBuilder parent)
 		{
-			IsOn = true;
 			terrainMapped = true;
 
 			m_Server = server;

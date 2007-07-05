@@ -1625,9 +1625,9 @@ namespace Dapple
 
 
 			// Check for updates daily
-			if (Settings.UpdateCheckDate.Date != DateTime.Now.Date)
+			if (Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
 				CheckForUpdates(false);
-			Settings.UpdateCheckDate = DateTime.Now;
+			Settings.UpdateCheckDate = System.DateTime.Now;
 
 			foreach (RenderableObject oRO in this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
 			{
@@ -3798,12 +3798,23 @@ namespace Dapple
 
 					extents = new GeographicBoundingBox(imageLayer.MaxLat, imageLayer.MinLat, imageLayer.MinLon, imageLayer.MaxLon);
 				}
+				else if (node.Tag is LineFeature)
+				{
+					LineFeature line = node.Tag as LineFeature;
+					extents = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+					foreach (Point3d p in line.Points)
+					{
+						extents.North = Math.Max(p.Y, extents.North);
+						extents.South = Math.Min(p.Y, extents.South);
+						extents.East = Math.Max(p.X, extents.East);
+						extents.West = Math.Min(p.X, extents.West);
+					}
+				} 
 				else if (node.Tag is PolygonFeature)
 				{
 					Point3d pSph;
 					PolygonFeature pFeat = node.Tag as PolygonFeature;
 					extents = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
-					//pFeat.BoundingBox.
 					foreach (Point3d p in pFeat.BoundingBox.corners)
 					{
 						pSph = MathEngine.CartesianToSpherical(p.X, p.Y, p.Z);

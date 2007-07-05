@@ -386,7 +386,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
-		public void OnPropertiesClick(object sender, EventArgs e)
+		protected override void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open

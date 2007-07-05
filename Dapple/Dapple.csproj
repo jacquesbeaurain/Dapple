@@ -502,6 +502,15 @@
     <Content Include="Plugins\VirtualEarth\VirtualEarthPushPin.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Data\LayerSet.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Data\wms_server_list.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Data\xlinks.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Plugins\GlobalClouds\GlobalClouds.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
