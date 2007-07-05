@@ -181,7 +181,7 @@ namespace Dapple.LayerGeneration
 				LayerBuilder lbuilder = builder as LayerBuilder;
 				foreach (TreeNode treenode in m_treeList.Nodes)
 				{
-					if ((treenode.Tag as LayerBuilderContainer).Builder == lbuilder)
+					if (treenode.Tag is LayerBuilderContainer && (treenode.Tag as LayerBuilderContainer).Builder == lbuilder)
 					{
 						LayerBuilderContainer container = treenode.Tag as LayerBuilderContainer;
 
@@ -515,7 +515,7 @@ namespace Dapple.LayerGeneration
 		{
 			foreach (TreeNode treenode in m_treeList.Nodes)
 			{
-				if ((treenode.Tag as LayerBuilderContainer).Builder == builder)
+				if (treenode.Tag is LayerBuilderContainer && (treenode.Tag as LayerBuilderContainer).Builder == builder)
 				{
 					treenode.ImageIndex = treenode.SelectedImageIndex = m_mainWnd.ImageListIndex("time");
 					builder.RefreshLayer();

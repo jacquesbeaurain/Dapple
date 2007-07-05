@@ -500,6 +500,7 @@ namespace Dapple
 				this.tvLayers.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tvLayers_KeyUp);
 				this.tvLayers.TreeNodeChecked += new Geosoft.DotNetTools.TreeNodeCheckedEventHandler(this.tvLayers_TreeNodeChecked);
 				this.tvLayers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tvLayers_MouseDown);
+				this.tvLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tvLayers_MouseDoubleClick);
 
 				this.activeLayers = new LayerBuilderList(this, this.tvLayers, this.worldWindow);
 
@@ -3774,6 +3775,52 @@ namespace Dapple
 
 		#endregion
 
+		#region Temporary KML Code
+
+		private void tvLayers_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				GeographicBoundingBox extents = null;
+				TreeNode node = this.tvLayers.HitTest(e.Location).Node;
+
+				Type tp = node.Tag.GetType();
+
+				if (node.Tag is WorldWind.Renderable.Icon)
+				{
+					WorldWind.Renderable.Icon icon = node.Tag as WorldWind.Renderable.Icon;
+
+					this.worldWindow.GotoLatLon(icon.Latitude, icon.Longitude);
+				}
+				else if (node.Tag is ImageLayer)
+				{
+					ImageLayer imageLayer = node.Tag as ImageLayer;
+
+					extents = new GeographicBoundingBox(imageLayer.MaxLat, imageLayer.MinLat, imageLayer.MinLon, imageLayer.MaxLon);
+				}
+				else if (node.Tag is PolygonFeature)
+				{
+					Point3d pSph;
+					PolygonFeature pFeat = node.Tag as PolygonFeature;
+					extents = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+					//pFeat.BoundingBox.
+					foreach (Point3d p in pFeat.BoundingBox.corners)
+					{
+						pSph = MathEngine.CartesianToSpherical(p.X, p.Y, p.Z);
+						pSph.Y = MathEngine.RadiansToDegrees(pSph.Y);
+						pSph.Z = MathEngine.RadiansToDegrees(pSph.Z);
+						extents.North = Math.Max(pSph.Y, extents.North);
+						extents.South = Math.Min(pSph.Y, extents.South);
+						extents.East = Math.Max(pSph.Z, extents.East);
+						extents.West = Math.Min(pSph.Z, extents.West);
+					}
+				}
+
+				if (extents != null)
+					GoTo(extents, -1.0);
+			}
+		}
+
 		void UpdateKMLNodes(TreeNode parentNode, RenderableObjectList objectList)
 		{
 			TreeNode node;
@@ -3823,6 +3870,8 @@ namespace Dapple
 				this.kmlPlugin.LoadDiskKM(fileDialog.FileName, new MethodInvoker(UpdateKMLIcons));
 			}
 		}
+
+		#endregion
 
 		private void toolStripMenuItemOpenGeosoftMap_Click(object sender, EventArgs e)
 		{
