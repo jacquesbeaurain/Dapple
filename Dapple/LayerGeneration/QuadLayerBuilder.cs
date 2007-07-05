@@ -210,7 +210,7 @@ namespace Dapple.LayerGeneration
          }
          set
          {
-            // JBTODO: Shouldn't we just allow this for DAP and WMS?
+				// JBTODO: Shouldn't we allow this just for DAP and WMS?
             if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
             {
                m_blnIsChanged = true;
@@ -230,7 +230,7 @@ namespace Dapple.LayerGeneration
          }
          set
          {
-            // JBTODO: Shouldn't we just allow this for DAP and WMS?
+				// JBTODO: Shouldn't we allow this just for DAP and WMS?
             if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
             {
                m_blnIsChanged = true;
@@ -259,7 +259,7 @@ namespace Dapple.LayerGeneration
          }
          set
          {
-            // JBTODO: Shouldn't we just allow this for DAP and WMS?
+				// JBTODO: Shouldn't we allow this just for DAP and WMS?
             if (m_oImageStores != null && m_oImageStores.Length > 0 && m_oImageStores[0] != null)
             {
                m_blnIsChanged = true;

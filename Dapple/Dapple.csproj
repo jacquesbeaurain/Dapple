@@ -307,12 +307,12 @@
     <Compile Include="Servers\AddDAP.designer.cs">
       <DependentUpon>AddDAP.cs</DependentUpon>
     </Compile>
-    <None Include="Servers\AddWMS.cs">
+    <Compile Include="Servers\AddWMS.cs">
       <SubType>Form</SubType>
-    </None>
-    <None Include="Servers\AddWMS.designer.cs">
+    </Compile>
+    <Compile Include="Servers\AddWMS.designer.cs">
       <DependentUpon>AddWMS.cs</DependentUpon>
-    </None>
+    </Compile>
     <None Include="Servers\AddImageTile.cs">
       <SubType>Form</SubType>
     </None>

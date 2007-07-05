@@ -1153,7 +1153,6 @@ namespace Dapple
 
 		private void AddWMSServer()
 		{
-			/* JBTODO:
 			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.tvServers.Nodes);
 
 			if (treeNode != null)
@@ -1172,7 +1171,6 @@ namespace Dapple
 				  SaveLastView();
 			   }
 			}
-			 */
 		}
 
 		private void toolStripMenuItemAddDAP_Click(object sender, EventArgs e)
@@ -1189,10 +1187,8 @@ namespace Dapple
 		{
 			if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
 				AddDAPServer();
-			/* JBTODO:
 			else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
 				AddWMSServer();
-			 */
 		}
 
 		#endregion
