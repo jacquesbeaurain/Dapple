@@ -70,7 +70,7 @@ namespace WorldWind.Net.Wms
 			string wmsQuery = string.Format(
 			   CultureInfo.InvariantCulture,
 			   "{0}" + (m_serverGetMapUrl.IndexOf("?") == -1 ? "?" : "") +
-			   "service=WMS&version={1}&request=GetMap&layers={2}&format={3}&width={4}&height={5}&{6}&bbox={7},{8},{9},{10}&styles={11}",
+			   "service=WMS&version={1}&request=GetMap&layers={2}&format={3}&width={4}&height={5}&{6}&bbox={7},{8},{9},{10}&styles={11}&transparent=TRUE",
 			   m_serverGetMapUrl,
 			   m_version,
 			   m_wmsLayerName,
