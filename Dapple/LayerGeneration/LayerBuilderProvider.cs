@@ -432,11 +432,5 @@ namespace Dapple.LayerGeneration
 		{
 			get;
 		}
-
-		public abstract int TextureSizePixels
-		{
-			get;
-			set;
-		}
 	}
 }

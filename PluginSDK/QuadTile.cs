@@ -40,6 +40,10 @@ namespace WorldWind.Renderable
 		private double east;
 		private double north;
 		private double south;
+
+		// These are the projected coordinate extents for the tile (for image storesa containing projections
+		public UV UL, UR, LL, LR;
+
 		private int row;
 		private int col;
 
@@ -137,8 +141,13 @@ namespace WorldWind.Renderable
 			localOrigin.Y = (float)(Math.Round(localOrigin.Y / 10000) * 10000);
 			localOrigin.Z = (float)(Math.Round(localOrigin.Z / 10000) * 10000);
 
-			row = MathEngine.GetRowFromLatitude(south, north - south);
-			col = MathEngine.GetColFromLongitude(west, north - south);
+
+			// VE Tiles are rectangular with respect to WW and top left is 0, 0
+			if (quadTileSet.ImageStores[0] is VEImageStore)
+				row = MathEngine.GetRowFromLatitude(-north, north - south);
+			else
+				row = MathEngine.GetRowFromLatitude(south, north - south);
+			col = MathEngine.GetColFromLongitude(west, east - west);
 
 			downloadRequests = new List<GeoSpatialDownloadRequest>();
 
@@ -148,6 +157,8 @@ namespace WorldWind.Renderable
 					+ string.Format("{0,4}", this.row)
 					+ this.quadTileSet.Name
 					+ this.quadTileSet.ParentList.Name;
+
+			quadTileSet.ImageStores[0].GetProjectionCorners(this, out UL, out UR, out LL, out LR);
 		}
 
 		public virtual void ResetCache()
@@ -1688,7 +1699,10 @@ namespace WorldWind.Renderable
 
 		public bool IsValidTile(string strFile)
 		{
-			return true;
+			if (quadTileSet.ImageStores[0] is VEImageStore)
+				return (quadTileSet.ImageStores[0] as VEImageStore).IsValidTile(strFile);
+			else
+				return true;
 		}
 		#endregion
 	}

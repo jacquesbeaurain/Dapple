@@ -225,7 +225,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override int TextureSizePixels
+		public int TextureSizePixels
 		{
 			get
 			{
@@ -338,7 +338,7 @@ namespace Dapple.LayerGeneration
 		{
 			if (m_layer == null)
 			{
-				string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.GetHashCode().ToString());
+				string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString());
 				System.IO.Directory.CreateDirectory(strCachePath);
 
 				// Determine the needed levels (function of tile size and resolution if available)
@@ -369,8 +369,8 @@ namespace Dapple.LayerGeneration
 				m_layer = new QuadTileSet(m_hDataSet.Title, m_oWorld, 0, m_hDataSet.Boundary.MaxY, m_hDataSet.Boundary.MinY,
 					m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX, true, imageStores);
 				m_layer.AlwaysRenderBaseTiles = true;
-				m_layer.Opacity = m_bOpacity;
 				m_layer.IsOn = m_IsOn;
+				m_layer.Opacity = m_bOpacity;
 			}
 			return m_layer;
 		}

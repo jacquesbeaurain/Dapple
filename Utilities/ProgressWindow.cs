@@ -214,7 +214,7 @@ namespace MWA.Progress
 		/// </summary>
 		private void UpdateStatusText()
 		{
-			Text = titleRoot + String.Format( " - {0}% complete", (progressBar.Value * 100 ) / (progressBar.Maximum - progressBar.Minimum) );
+			Text = titleRoot + String.Format( " - {0}% complete", (progressBar.Maximum - progressBar.Minimum) > 0 ? (progressBar.Value * 100 ) / (progressBar.Maximum - progressBar.Minimum) : 0);
 		}
 		
 		/// <summary>

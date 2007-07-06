@@ -219,7 +219,7 @@ namespace Murris.Plugins
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch (Exception caught) { }
+			catch { }
 			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
@@ -240,7 +240,7 @@ namespace Murris.Plugins
 				sw.Write(line);
 				sw.Close();
 			}
-			catch (Exception caught) { }
+			catch { }
 		}
 
 		#region RenderableObject

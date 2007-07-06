@@ -130,7 +130,7 @@ namespace Murris.Plugins
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch (Exception caught) { }
+			catch { }
 			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
@@ -153,7 +153,7 @@ namespace Murris.Plugins
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch (Exception caught)
+			catch 
 			{
 				MessageBox.Show("Error reading " + Path.Combine(pluginPath, presetFileName), "Presets loading failed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -185,7 +185,7 @@ namespace Murris.Plugins
 				sw.Write(line);
 				sw.Close();
 			}
-			catch (Exception caught) { }
+			catch { }
 		}
 
 		/// <summary>
@@ -203,7 +203,7 @@ namespace Murris.Plugins
 				sw.Write(line);
 				sw.Close();
 			}
-			catch (Exception caught) { }
+			catch { }
 		}
 
 		#region RenderableObject

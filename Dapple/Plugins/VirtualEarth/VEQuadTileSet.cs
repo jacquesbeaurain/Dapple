@@ -21,13 +21,6 @@ using Utility;
 
 namespace Dapple.Plugins.VirtualEarth
 {
-	public enum VirtualEarthMapType
-	{
-		aerial = 0,
-		road,
-		hybrid
-	}
-
 	/// <summary>
 	/// Main class for image tile rendering.  Uses the Terrain Manager to query height values for 3D 
 	/// terrain rendering.

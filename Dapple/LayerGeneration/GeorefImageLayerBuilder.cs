@@ -369,16 +369,5 @@ namespace Dapple.LayerGeneration
             return new GeographicBoundingBox(m_Layer.MaxLat, m_Layer.MinLat, m_Layer.MinLon, m_Layer.MaxLon);
          }
       }
-
-      public override int TextureSizePixels
-      {
-         get
-         {
-            return 256; // TODO Not relevant
-         }
-         set
-         {
-         }
-      }
    }
 }

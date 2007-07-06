@@ -37,7 +37,7 @@ namespace Dapple.LayerGeneration
 
 		public static readonly string TypeName = "WMSQuadLayer";
 
-		public static readonly string CacheSubDir = "WMS Image Cache";
+		public static readonly string CacheSubDir = "WMSImages";
 
 		public static string GetServerFileNameFromUrl(string strurl)
 		{
@@ -333,24 +333,23 @@ namespace Dapple.LayerGeneration
 				   string.Compare(imageFormat, "image/jpg", true, System.Globalization.CultureInfo.InvariantCulture) == 0)
 					strExt = ".jpg";
 
-				ImageStore[] imageStores = new ImageStore[1];
-				WmsImageStoreDapple wmsImageStore = new WmsImageStoreDapple(imageFormat, m_wmsLayer.ParentWMSList.ServerGetMapUrl,
+				WmsImageStoreDapple[] imageStores = new WmsImageStoreDapple[1];
+				imageStores[0] = new WmsImageStoreDapple(imageFormat, m_wmsLayer.ParentWMSList.ServerGetMapUrl,
 					m_wmsLayer.ParentWMSList.Version, m_wmsLayer.Name, string.Empty, m_wmsLayer.SRS, m_wmsLayer.CRS);
-				wmsImageStore.DataDirectory = null;
-				wmsImageStore.LevelZeroTileSizeDegrees = LevelZeroTileSize;
-				wmsImageStore.LevelCount = m_iLevels;
-				wmsImageStore.ImageExtension = strExt;
-				wmsImageStore.CacheDirectory = strCachePath;
-				wmsImageStore.TextureFormat = World.Settings.TextureFormat;
-				wmsImageStore.TextureSizePixels = m_iTextureSizePixels;
-				imageStores[0] = wmsImageStore;
-
+				imageStores[0].DataDirectory = null;
+				imageStores[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
+				imageStores[0].LevelCount = m_iLevels;
+				imageStores[0].ImageExtension = strExt;
+				imageStores[0].CacheDirectory = strCachePath;
+				imageStores[0].TextureFormat = World.Settings.TextureFormat;
+				imageStores[0].TextureSizePixels = m_iTextureSizePixels;
+				
 				m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorld, distAboveSurface,
 					(double)m_wmsLayer.North, (double)m_wmsLayer.South, (double)m_wmsLayer.West, (double)m_wmsLayer.East, 
 					terrainMapped, imageStores);
 				m_oQuadTileSet.AlwaysRenderBaseTiles = true;
 				m_oQuadTileSet.IsOn = m_IsOn;
-				m_oQuadTileSet.Opacity = Opacity;
+				m_oQuadTileSet.Opacity = m_bOpacity;
 				m_blnIsChanged = false;
 			}
 			return m_oQuadTileSet;
@@ -462,7 +461,18 @@ namespace Dapple.LayerGeneration
 
 		public int Levels
 		{
-			get { return m_iLevels; }
+			get 
+			{ 
+				return m_iLevels; 
+			}
+			set
+			{
+				if (m_iLevels != value)
+				{
+					m_blnIsChanged = true;
+					m_iLevels = value;
+				}
+			}
 		}
 
 		#region ImageBuilder Members
@@ -472,7 +482,7 @@ namespace Dapple.LayerGeneration
 			get { return m_hBoundary; }
 		}
 
-		public override int TextureSizePixels
+		public int TextureSizePixels
 		{
 			get { return m_iTextureSizePixels; }
 			set

@@ -280,6 +280,7 @@
     <Compile Include="TimeKeeper.cs" />
     <Compile Include="Units.cs" />
     <Compile Include="Point3d.cs" />
+    <Compile Include="VEImageStore.cs" />
     <Compile Include="ViewFrustum.cs">
       <SubType>Code</SubType>
     </Compile>

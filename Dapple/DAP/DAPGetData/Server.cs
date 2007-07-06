@@ -526,7 +526,7 @@ namespace Geosoft.GX.DAPGetData
          strDir = m_strUrl.Substring(7);
          foreach (char c in System.IO.Path.GetInvalidPathChars())
          {
-            strDir.Replace(c, '_');
+			 strDir = strDir.Replace(c, '_');
          }
 
          m_strCacheDir = System.IO.Path.Combine(m_strCacheDir, strDir);

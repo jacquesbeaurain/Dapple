@@ -469,8 +469,8 @@ namespace Dapple.LayerGeneration
                builder = GeorefImageLayerBuilder.GetBuilderFromURI(strUri, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
             else if (strUri.StartsWith(VEQuadLayerBuilder.URLProtocolName))
                builder = VEQuadLayerBuilder.GetBuilderFromURI(strUri, m_mainWnd, null);
-            else if (strUri.StartsWith(QuadLayerBuilder.URLProtocolName))
-               builder = QuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
+            else if (strUri.StartsWith(NltQuadLayerBuilder.URLProtocolName))
+               builder = NltQuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
             else if (strUri.StartsWith(DAPQuadLayerBuilder.URISchemeName))
                builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, MainApplication.Settings.CachePath, m_worldWindow, ref bOldView);
          }

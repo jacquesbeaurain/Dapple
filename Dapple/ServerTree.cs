@@ -92,9 +92,9 @@ namespace Dapple
 			m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = iImageListIndex("live");
 			m_hVERootNode.Tag = veDir;
 
-			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.road, m_oParent, true, veDir);
-			m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.aerial, m_oParent, true, veDir);
-			m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", Dapple.Plugins.VirtualEarth.VirtualEarthMapType.hybrid, m_oParent, true, veDir);
+			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", WorldWind.VirtualEarthMapType.road, m_oParent, true, veDir);
+			m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", WorldWind.VirtualEarthMapType.aerial, m_oParent, true, veDir);
+			m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", WorldWind.VirtualEarthMapType.hybrid, m_oParent, true, veDir);
 			veDir.LayerBuilders.Add(m_VEMapQTB);
 			veDir.LayerBuilders.Add(m_VESatQTB);
 			veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
@@ -767,7 +767,7 @@ namespace Dapple
 
 					int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
 					int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
-					QuadLayerBuilder quadBuilder = new QuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tile.url.Value,
+					NltQuadLayerBuilder quadBuilder = new NltQuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tile.url.Value,
 															tile.dataset.Value, tile.imageextension.Value, 255, m_oParent.WorldWindow.CurrentWorld, MainApplication.Settings.CachePath, tileDir);
 					newServerChildNode.Tag = quadBuilder;
 				}

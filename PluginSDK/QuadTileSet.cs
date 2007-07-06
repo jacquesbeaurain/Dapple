@@ -752,6 +752,11 @@ namespace WorldWind.Renderable
 
 			try
 			{
+				// VE Tiles are rectangular with respect to WW and top left is 0, 0
+				// For the purposes of the spiral algorithm the 0,0 row/col at the 
+				// bottom left is fine though, just increase the tilesize in longitude
+				bool bVEQTS = ImageStores[0] is VEImageStore;
+
 				// 'Spiral' from the centre tile outward adding tiles that's in the view
 				// Defer the updates to after the loop to prevent tiles from updating twice
 				// If the tilespread is huge we are likely looking at a small dataset in the view 
@@ -760,8 +765,9 @@ namespace WorldWind.Renderable
 
 				int middleRow;
 				int middleCol;
+				double dRowInc, dColInc;
 
-				if (tileSpread > 10)
+				if (!bVEQTS && tileSpread > 10)
 				{
 					tileSpread = Math.Max(5, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
 					middleRow = MathEngine.GetRowFromLatitude(South + (North - South) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
@@ -772,10 +778,14 @@ namespace WorldWind.Renderable
 					middleRow = MathEngine.GetRowFromLatitude(drawArgs.WorldCamera.Latitude, ImageStores[0].LevelZeroTileSizeDegrees);
 					middleCol = MathEngine.GetColFromLongitude(drawArgs.WorldCamera.Longitude, ImageStores[0].LevelZeroTileSizeDegrees);
 				}
-				double middleSouth = -90.0f + middleRow * ImageStores[0].LevelZeroTileSizeDegrees;
-				double middleNorth = -90.0f + middleRow * ImageStores[0].LevelZeroTileSizeDegrees + ImageStores[0].LevelZeroTileSizeDegrees;
-				double middleWest = -180.0f + middleCol * ImageStores[0].LevelZeroTileSizeDegrees;
-				double middleEast = -180.0f + middleCol * ImageStores[0].LevelZeroTileSizeDegrees + ImageStores[0].LevelZeroTileSizeDegrees;
+				dColInc = dRowInc = ImageStores[0].LevelZeroTileSizeDegrees;
+				if (bVEQTS)
+					dColInc *= 2.0;
+
+				double middleSouth = -90.0f + middleRow * dRowInc;
+				double middleNorth = -90.0f + middleRow * dRowInc + dRowInc;
+				double middleWest = -180.0f + middleCol * dColInc;
+				double middleEast = -180.0f + middleCol * dColInc + dColInc;
 
 				double middleCenterLat = 0.5f * (middleNorth + middleSouth);
 				double middleCenterLon = 0.5f * (middleWest + middleEast);
@@ -783,13 +793,14 @@ namespace WorldWind.Renderable
 				m_updateTiles.Clear();
 				for (int i = 0; i < tileSpread; i++)
 				{
-					for (double j = middleCenterLat - i * ImageStores[0].LevelZeroTileSizeDegrees; j < middleCenterLat + i * ImageStores[0].LevelZeroTileSizeDegrees; j += ImageStores[0].LevelZeroTileSizeDegrees)
+					for (double j = middleCenterLat - i * dRowInc; j < middleCenterLat + i * dRowInc; j += dRowInc)
 					{
-						for (double k = middleCenterLon - i * ImageStores[0].LevelZeroTileSizeDegrees; k < middleCenterLon + i * ImageStores[0].LevelZeroTileSizeDegrees; k += ImageStores[0].LevelZeroTileSizeDegrees)
+						for (double k = middleCenterLon - i * dColInc; k < middleCenterLon + i * dColInc; k += dColInc)
 						{
                             QuadTile qt;
-							int curRow = MathEngine.GetRowFromLatitude(Angle.FromDegrees(j), ImageStores[0].LevelZeroTileSizeDegrees);
-							int curCol = MathEngine.GetColFromLongitude(Angle.FromDegrees(k), ImageStores[0].LevelZeroTileSizeDegrees);
+							int curRow = MathEngine.GetRowFromLatitude(Angle.FromDegrees(j), dRowInc);
+							int curCol = MathEngine.GetColFromLongitude(Angle.FromDegrees(k), dColInc);
+
 							long key = ((long)curRow << 32) + curCol;
 
 							if (m_topmostTiles.ContainsKey(key))
@@ -801,28 +812,33 @@ namespace WorldWind.Renderable
 							}
 
 							// Check for tile outside layer boundaries
-							double west = -180.0 + curCol * ImageStores[0].LevelZeroTileSizeDegrees;
+							double west = -180.0 + curCol * dColInc;
 							if (west > m_east)
 								continue;
 
-							double east = west + ImageStores[0].LevelZeroTileSizeDegrees;
+							double east = west + dColInc;
 							if (east < m_west)
 								continue;
 
-							double south = -90.0 + curRow * ImageStores[0].LevelZeroTileSizeDegrees;
+							double south = -90.0 + curRow * dRowInc;
 							if (south > m_north)
 								continue;
 
-							double north = south + ImageStores[0].LevelZeroTileSizeDegrees;
+							double north = south + dRowInc;
 							if (north < m_south)
 								continue;
 
-                     qt = new QuadTile(south, north, west, east, 0, this);
+							qt = new QuadTile(south, north, west, east, 0, this);
 							if (DrawArgs.Camera.ViewFrustum.Intersects(qt.BoundingBox))
 							{
-                                lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+								lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
 									m_topmostTiles.Add(key, qt);
 								m_updateTiles.Add(key, qt);
+							}
+							else
+							{
+								if (north < m_south)
+									continue;
 							}
 						}
 					}

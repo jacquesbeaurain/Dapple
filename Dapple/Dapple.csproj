@@ -82,9 +82,8 @@
     <Compile Include="Plugins\SkyGradient\SkyGradient.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="Plugins\VirtualEarth\VEImageStore.cs" />
-    <Compile Include="Plugins\VirtualEarth\VEQuadTile.cs" />
-    <Compile Include="Plugins\VirtualEarth\VEQuadTileSet.cs" />
+    <None Include="Plugins\VirtualEarth\VEQuadTile.cs" />
+    <None Include="Plugins\VirtualEarth\VEQuadTileSet.cs" />
     <Compile Include="ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -197,7 +196,7 @@
     <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
     <Compile Include="LayerGeneration\LayerBuilderProvider.cs" />
-    <Compile Include="LayerGeneration\QuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\NltQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\WMSCatalogBuilder.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

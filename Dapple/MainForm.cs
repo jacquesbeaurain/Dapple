@@ -710,7 +710,7 @@ namespace Dapple
 					this.toolStripMenuItemgoToServer.Tag = true;
 				}
 
-				if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is QuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
+				if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is NltQuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
 					this.toolStripMenuItemremoveServer.Tag = true;
 
 				if (builder != null)
@@ -1267,7 +1267,7 @@ namespace Dapple
 
 		void GoTo(ImageBuilder builder)
 		{
-			GoTo(builder.Extents, (builder is QuadLayerBuilder) ? (builder as QuadLayerBuilder).LevelZeroTileSizeDegrees : -1.0);
+			GoTo(builder.Extents, (builder is NltQuadLayerBuilder) ? (builder as NltQuadLayerBuilder).LevelZeroTileSize : -1.0);
 		}
 
 		void GoTo(GeographicBoundingBox extents, double dLevelZeroTileSize)
