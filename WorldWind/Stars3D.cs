@@ -87,7 +87,7 @@ namespace Stars3D.Plugin
 		{
 			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\stars3d\");
 			this.drawArgs = worldWindow.DrawArgs;
-			this.RenderPriority = RenderPriority.SurfaceImages;
+			this.RenderPriority = RenderPriority.Stars;
 			//this.sphereRadius = this.drawArgs.WorldCamera.WorldRadius * 20;
 			ReadSettings();
 		}

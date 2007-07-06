@@ -497,20 +497,35 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public virtual void SortChildren()
 		{
-			int index = 0;
-			while(index+1 < m_children.Count)
+			lock (this.m_children.SyncRoot)
 			{
-				RenderableObject a = (RenderableObject)m_children[index];
-				RenderableObject b = (RenderableObject)m_children[index+1];
-				if(a.RenderPriority > b.RenderPriority)
+				int index = 0;
+				while (index + 1 < m_children.Count)
 				{
-					// Swap
-					m_children[index] = b;
-					m_children[index+1] = a;
-					index = 0;
-					continue;
+					RenderableObject a = (RenderableObject)m_children[index];
+					RenderableObject b = (RenderableObject)m_children[index + 1];
+
+					if (a.RenderPriority == b.RenderPriority && (a.RenderPriority == RenderPriority.SurfaceImages || a.RenderPriority == RenderPriority.TerrainMappedImages))
+					{
+						if (b.Name.CompareTo(a.Name) > 0)
+						{
+							// Sort by name (Dapple names the layers according to their render priority)
+							m_children[index] = b;
+							m_children[index + 1] = a;
+							index = 0;
+							continue;
+						}
+					}
+					else if (a.RenderPriority > b.RenderPriority)
+					{
+						// Swap
+						m_children[index] = b;
+						m_children[index + 1] = a;
+						index = 0;
+						continue;
+					}
+					index++;
 				}
-				index++;
 			}
 		}
 

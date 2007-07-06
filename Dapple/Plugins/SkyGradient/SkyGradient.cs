@@ -113,8 +113,7 @@ namespace Murris.Plugins
 			this.world = worldWindow.CurrentWorld;
 			this.settingsFileName = this.world.Name + ".ini";
 			this.drawArgs = worldWindow.DrawArgs;
-			//this.RenderPriority = RenderPriority.AtmosphericImages;
-			this.RenderPriority = RenderPriority.SurfaceImages;
+			this.RenderPriority = RenderPriority.AtmosphericImages;
 			ReadSettings();
 		}
 

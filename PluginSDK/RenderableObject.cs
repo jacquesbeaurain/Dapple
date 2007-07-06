@@ -593,6 +593,7 @@ namespace WorldWind.Renderable
 	/// </summary>
 	public enum RenderPriority
 	{
+		Stars = -100,
 		SurfaceImages = 0,
 		TerrainMappedImages = 100,
 		AtmosphericImages = 200,

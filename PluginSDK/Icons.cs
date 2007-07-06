@@ -60,6 +60,7 @@ namespace WorldWind.Renderable
             isInitialized = false;
             m_needToInitChildren = true;
             m_childrenToInit = new List<RenderableObject>();
+			this.RenderPriority = RenderPriority.Icons;
 		}
 
         /// <summary>

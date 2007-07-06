@@ -434,6 +434,7 @@ namespace WorldWind.Renderable
 			this.Height = height;
 			m_clickableActionURL = actionURL;
 			isSelectable = actionURL != null;
+			this.RenderPriority = RenderPriority.Icons;
 		}
 
 		#region Obsolete

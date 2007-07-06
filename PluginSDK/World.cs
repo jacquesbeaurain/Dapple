@@ -393,7 +393,7 @@ namespace WorldWind
 					// allow fog and other renderstate setup changers to get in front of everything else
 					Render(RenderableObjects, (WorldWind.Renderable.RenderPriority)(-1), drawArgs);
 
-					RenderStars(drawArgs, RenderableObjects);
+					//RenderStars(drawArgs, RenderableObjects);
 
 					if (drawArgs.CurrentWorld.IsEarth && World.Settings.EnableAtmosphericScattering)
 					{
@@ -415,6 +415,11 @@ namespace WorldWind
 						drawArgs.device.Transform.Projection = proj;
 						drawArgs.device.RenderState.FogEnable = origFog;
 					}
+
+					DirectXProfiler.BeginEvent("render stars");
+					//render SurfaceImages
+					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Stars, drawArgs);
+					DirectXProfiler.EndEvent();
 
 					if (World.Settings.EnableSunShading)
 						RenderSun(drawArgs);

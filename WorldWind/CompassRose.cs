@@ -32,7 +32,7 @@ namespace Murris.Plugins
 	/// </summary>
 	public class Compass : WorldWind.PluginEngine.Plugin
 	{
-//		private WorldWind.WindowsControlMenuButton m_ToolbarItem;
+		//		private WorldWind.WindowsControlMenuButton m_ToolbarItem;
 		private Control control = new Control();
 		private EventHandler evhand;
 		private CompassLayer layer;
@@ -42,33 +42,33 @@ namespace Murris.Plugins
 		/// </summary>
 		public static string LayerName = "0 - Compass rose";
 
-      public RenderableObject Layer
-      {
-         get
-         {
-            return layer;
-         }
-      }
+		public RenderableObject Layer
+		{
+			get
+			{
+				return layer;
+			}
+		}
 
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
 		/// </summary>
-		public override void Load() 
+		public override void Load()
 		{
 			// Add layer visibility controller (and save it to make sure you can kill it later!)
 			control.Visible = true;
 			evhand = new EventHandler(control_VisibleChanged);
 			control.VisibleChanged += evhand;
 			// Add toolbar item
-//			m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Compass", Path.Combine(this.PluginDirectory, @"Plugins\Compass\tbcompass.png"), control);
-//			m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
+			//			m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Compass", Path.Combine(this.PluginDirectory, @"Plugins\Compass\tbcompass.png"), control);
+			//			m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
 
-         layer = new CompassLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
+			layer = new CompassLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
 			layer.IsOn = World.Settings.ShowCompass;
 			//ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
-         ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
-//			m_ToolbarItem.SetPushed(World.Settings.ShowCompass);
-			
+			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
+			//			m_ToolbarItem.SetPushed(World.Settings.ShowCompass);
+
 		}
 
 		/// <summary>
@@ -81,8 +81,8 @@ namespace Murris.Plugins
 			control.Dispose();
 
 			// Remove toolbar item
-//			if (m_ToolbarItem != null)
-//				m_Application.WorldWindow.MenuBar.RemoveToolsMenuButton(m_ToolbarItem);
+			//			if (m_ToolbarItem != null)
+			//				m_Application.WorldWindow.MenuBar.RemoveToolsMenuButton(m_ToolbarItem);
 
 			ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Remove(LayerName);
 		}
@@ -114,9 +114,9 @@ namespace Murris.Plugins
 		Texture texture;
 		Rectangle spriteSize;
 		Point spriteOffset;
-      Texture textureTilt;
-      Rectangle spriteTiltSize;
-      Point spriteTiltOffset;
+		Texture textureTilt;
+		Rectangle spriteTiltSize;
+		Point spriteTiltOffset;
 		bool tilt = true;
 		string spritePos = "Bottom-Left";
 		ArrayList svgList;
@@ -125,16 +125,19 @@ namespace Murris.Plugins
 
 		// default texture bitmap
 		public string textureFileName = "Compass_Rose_Classic.png";
-      public string textureTiltFileName = "";
+		public string textureTiltFileName = "";
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow) : base(LayerName, worldWindow.CurrentWorld)
+		public CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
+			: base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = pluginPath;
 			this.drawArgs = worldWindow.DrawArgs;
 			ReadSettings();
+
+			this.RenderPriority = RenderPriority.Icons;
 		}
 		/// <summary>
 		/// Read saved settings from ini file
@@ -142,26 +145,26 @@ namespace Murris.Plugins
 		public void ReadSettings()
 		{
 			string line = "";
-			try 
+			try
 			{
 				TextReader tr = File.OpenText(Path.Combine(pluginPath, settingsFileName));
 				line = tr.ReadLine();
 				tr.Close();
 			}
-			catch(Exception) {}
-			if(line != "")
+			catch (Exception) { }
+			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
 				string saveVersion = settingsList[1];	// version when settings were saved
-				if(settingsList[1] != null) textureFileName = settingsList[1];
-            if (settingsList.Length >= 3)
-            {
-               if (settingsList[2] == "False")
-                  tilt = false;
-               else
-                  textureTiltFileName = settingsList[2];
-            }
-				if(settingsList.Length >= 4) spritePos = settingsList[3];
+				if (settingsList[1] != null) textureFileName = settingsList[1];
+				if (settingsList.Length >= 3)
+				{
+					if (settingsList[2] == "False")
+						tilt = false;
+					else
+						textureTiltFileName = settingsList[2];
+				}
+				if (settingsList.Length >= 4) spritePos = settingsList[3];
 			}
 		}
 
@@ -172,17 +175,17 @@ namespace Murris.Plugins
 		{
 			string line;
 
-         if (textureTiltFileName.Length > 0)
-            line = version + ";" + textureFileName + ";" + textureTiltFileName + ";" + spritePos;
-         else
-            line = version + ";" + textureFileName + ";" + tilt.ToString() + ";" + spritePos;
+			if (textureTiltFileName.Length > 0)
+				line = version + ";" + textureFileName + ";" + textureTiltFileName + ";" + spritePos;
+			else
+				line = version + ";" + textureFileName + ";" + tilt.ToString() + ";" + spritePos;
 			try
 			{
 				StreamWriter sw = new StreamWriter(Path.Combine(pluginPath, settingsFileName));
 				sw.Write(line);
 				sw.Close();
 			}
-			catch(Exception) {}
+			catch (Exception) { }
 		}
 
 		#region RenderableObject
@@ -193,77 +196,77 @@ namespace Murris.Plugins
 		/// </summary>
 		public override void Render(DrawArgs drawArgs)
 		{
-			if(!isInitialized)
+			if (!isInitialized)
 				return;
 
 			// Camera shortcut ;)
 			CameraBase camera = drawArgs.WorldCamera;
 			Device device = drawArgs.device;
 
-         // Save fog status
+			// Save fog status
 			bool origFog = device.RenderState.FogEnable;
 			device.RenderState.FogEnable = false;
 
 			device.RenderState.ZBufferEnable = true;
 
 			// Turn off light
-			if (World.Settings.EnableSunShading) drawArgs.device.RenderState.Lighting = false; 
+			if (World.Settings.EnableSunShading) drawArgs.device.RenderState.Lighting = false;
 
 			// Save original projection and change it to ortho
 			// Note: using pixels as units produce a 1:1 projection of textures
 			Matrix origProjection = device.Transform.Projection;
 			// Save original View and change it to place compass
 			Matrix origView = device.Transform.View;
-			
+
 			Matrix origWorld = device.Transform.World;
 
 			// WorldWind uses 4e3 here, this causes the ViewFrustrum to clip the tilted texture of the compass
-         device.Transform.Projection = Matrix.OrthoRH((float)device.Viewport.Width, (float)device.Viewport.Height, -(float)4e6, (float)4e6 );
+			device.Transform.Projection = Matrix.OrthoRH((float)device.Viewport.Width, (float)device.Viewport.Height, -(float)4e6, (float)4e6);
 
 			// Note: the compass is centered on origin, the camera view moves.
 			float offsetY = 0;
 			float offsetZ = 0;
 			switch (spritePos)
 			{
-				case "Bottom-Left" :
+				case "Bottom-Left":
 					// lower left corner
-					offsetY = (float)device.Viewport.Width/2 - spriteSize.Width/2 - 10;
-					offsetZ = (float)device.Viewport.Height/2 - spriteSize.Height/2 - 10;
+					offsetY = (float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 10;
+					offsetZ = (float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10;
 					break;
-				case "Bottom-Center" :
+				case "Bottom-Center":
 					// bottom centered
 					offsetY = 0;
-					offsetZ = (float)device.Viewport.Height/2 - spriteSize.Height/2 - 10;
+					offsetZ = (float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10;
 					break;
-				case "Screen-Center" :
+				case "Screen-Center":
 					// plain centered
 					offsetY = 0;
 					offsetZ = 0;
 					break;
-				case "Top-Right" :
+				case "Top-Right":
 					// upper right corner
-					offsetY = -((float)device.Viewport.Width/2 - spriteSize.Width/2 - 10);
-					offsetZ = -((float)device.Viewport.Height/2 - spriteSize.Height/2 - 10);
-					if(World.Settings.ShowToolbar) offsetZ += 50;
-					if(World.Settings.ShowPosition) offsetZ += 140;
+					offsetY = -((float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 10);
+					offsetZ = -((float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10);
+					if (World.Settings.ShowToolbar) offsetZ += 50;
+					if (World.Settings.ShowPosition) offsetZ += 140;
 					break;
-				case "Top-Center" :
+				case "Top-Center":
 					// up center
 					offsetY = 0;
-					offsetZ = -((float)device.Viewport.Height/2 - spriteSize.Height/2 - 10);
-					if(World.Settings.ShowToolbar) offsetZ += 50;
+					offsetZ = -((float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10);
+					if (World.Settings.ShowToolbar) offsetZ += 50;
 					break;
-				case "Top-Left" :
+				case "Top-Left":
 					// upper left corner
-					offsetY = ((float)device.Viewport.Width/2 - spriteSize.Width/2 - 6);
-					offsetZ = -((float)device.Viewport.Height/2 - spriteSize.Height/2 - 4);
-					if(World.Settings.ShowToolbar) offsetZ += 40;
+					offsetY = ((float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 6);
+					offsetZ = -((float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 4);
+					if (World.Settings.ShowToolbar) offsetZ += 40;
 					break;
-            case "Bottom-Right":
-               // bottom right corner
-               offsetY = -((float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 10);
-               offsetZ = (float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10;
-               break;
+				case "Bottom-Right":
+					// bottom right corner
+					offsetY = -((float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 10);
+					offsetZ = (float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10;
+					break;
 			}
 			//offsetY += spriteOffset.X;
 			//offsetZ += -spriteOffset.Y;
@@ -275,25 +278,25 @@ namespace Murris.Plugins
 			// Offset, rotate and tilt
 			Matrix trans = Matrix.Translation(0, -(float)spriteOffset.X, (float)spriteOffset.Y);
 			trans *= Matrix.RotationX((float)camera.Heading.Radians);
-			if(tilt && textureTilt == null) trans *= Matrix.RotationY((float)camera.Tilt.Radians);
+			if (tilt && textureTilt == null) trans *= Matrix.RotationY((float)camera.Tilt.Radians);
 			device.Transform.World = trans;
 
 			// Render Compass here
-			if(svgList != null)				// ** SVG
+			if (svgList != null)				// ** SVG
 			{
-				for(int i = 0; i < svgList.Count; i++) 
+				for (int i = 0; i < svgList.Count; i++)
 				{
 					SvgShape s = (SvgShape)svgList[i];
 					s.Render(drawArgs);
 				}
 			}
 
-			if(texture != null)			// ** Bitmap
+			if (texture != null)			// ** Bitmap
 			{
 				// Calculate the triangle vertices (triangle 1)
 				// Note: use pixels as unit for 1:1 ortho projection
-				float y = (float)spriteSize.Width/2;
-				float z = (float)spriteSize.Height/2;
+				float y = (float)spriteSize.Width / 2;
+				float z = (float)spriteSize.Height / 2;
 
 				borderVertices[0].X = 0;
 				borderVertices[0].Y = -y;
@@ -322,59 +325,59 @@ namespace Murris.Plugins
 
 				// Draw our 2 triangles
 				device.VertexFormat = CustomVertex.PositionTextured.Format;
-				device.SetTexture(0,texture);
+				device.SetTexture(0, texture);
 				device.TextureState[0].ColorOperation = TextureOperation.BlendCurrentAlpha;
-            device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
+				device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
 
-         }
+			}
 
-         // Draw tilted icon next 
-         if (textureTilt != null)
-         {
-            trans = Matrix.Translation(0, -(float)spriteTiltOffset.X, (float)spriteTiltOffset.Y);
-            trans *= Matrix.RotationX((float)camera.Heading.Radians);
-            trans *= Matrix.RotationY((float)camera.Tilt.Radians);
-            device.Transform.World = trans;
+			// Draw tilted icon next 
+			if (textureTilt != null)
+			{
+				trans = Matrix.Translation(0, -(float)spriteTiltOffset.X, (float)spriteTiltOffset.Y);
+				trans *= Matrix.RotationX((float)camera.Heading.Radians);
+				trans *= Matrix.RotationY((float)camera.Tilt.Radians);
+				device.Transform.World = trans;
 
-            // Calculate the triangle vertices (triangle 1)
-            // Note: use pixels as unit for 1:1 ortho projection
-            float y = (float)spriteTiltSize.Width / 2;
-            float z = (float)spriteTiltSize.Height / 2;
+				// Calculate the triangle vertices (triangle 1)
+				// Note: use pixels as unit for 1:1 ortho projection
+				float y = (float)spriteTiltSize.Width / 2;
+				float z = (float)spriteTiltSize.Height / 2;
 
-            borderVertices[0].X = 0;
-            borderVertices[0].Y = -y;
-            borderVertices[0].Z = -z;
-            borderVertices[0].Tu = 0;
-            borderVertices[0].Tv = 1;
+				borderVertices[0].X = 0;
+				borderVertices[0].Y = -y;
+				borderVertices[0].Z = -z;
+				borderVertices[0].Tu = 0;
+				borderVertices[0].Tv = 1;
 
-            borderVertices[1].X = 0;
-            borderVertices[1].Y = y;
-            borderVertices[1].Z = -z;
-            borderVertices[1].Tu = 1;
-            borderVertices[1].Tv = 1;
+				borderVertices[1].X = 0;
+				borderVertices[1].Y = y;
+				borderVertices[1].Z = -z;
+				borderVertices[1].Tu = 1;
+				borderVertices[1].Tv = 1;
 
-            borderVertices[2].X = 0;
-            borderVertices[2].Y = -y;
-            borderVertices[2].Z = z;
-            borderVertices[2].Tu = 0;
-            borderVertices[2].Tv = 0;
+				borderVertices[2].X = 0;
+				borderVertices[2].Y = -y;
+				borderVertices[2].Z = z;
+				borderVertices[2].Tu = 0;
+				borderVertices[2].Tv = 0;
 
-            // Triangle 2 (uses previous 2 vertices as first 2 points (TriangleStrip))
-            borderVertices[3].X = 0;
-            borderVertices[3].Y = y;
-            borderVertices[3].Z = z;
-            borderVertices[3].Tu = 1;
-            borderVertices[3].Tv = 0;
+				// Triangle 2 (uses previous 2 vertices as first 2 points (TriangleStrip))
+				borderVertices[3].X = 0;
+				borderVertices[3].Y = y;
+				borderVertices[3].Z = z;
+				borderVertices[3].Tu = 1;
+				borderVertices[3].Tv = 0;
 
-            // Draw our 2 triangles
-            device.VertexFormat = CustomVertex.PositionTextured.Format;
-            device.SetTexture(0, textureTilt);
-            device.TextureState[0].ColorOperation = TextureOperation.BlendCurrentAlpha;
-            device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
-         }
+				// Draw our 2 triangles
+				device.VertexFormat = CustomVertex.PositionTextured.Format;
+				device.SetTexture(0, textureTilt);
+				device.TextureState[0].ColorOperation = TextureOperation.BlendCurrentAlpha;
+				device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
+			}
 			// Restore device states
-         // Restore device states
-         device.Transform.World = origWorld;
+			// Restore device states
+			device.Transform.World = origWorld;
 			device.Transform.Projection = origProjection;
 			device.Transform.View = origView;
 			device.RenderState.FogEnable = origFog;
@@ -400,10 +403,10 @@ namespace Murris.Plugins
 		/// </summary>
 		public override void Initialize(DrawArgs drawArgs)
 		{
-			if(isInitializing) return;
+			if (isInitializing) return;
 			isInitializing = true;
 
-			if(textureFileName.IndexOf(".svg") != -1)		// SVG
+			if (textureFileName.IndexOf(".svg") != -1)		// SVG
 			{
 				try
 				{
@@ -414,8 +417,8 @@ namespace Murris.Plugins
 				catch
 				{
 					isOn = false;
-					MessageBox.Show("Error loading SVG file " + Path.Combine(pluginPath, textureFileName) + ".","Layer initialization failed.", MessageBoxButtons.OK, 
-						MessageBoxIcon.Error );
+					MessageBox.Show("Error loading SVG file " + Path.Combine(pluginPath, textureFileName) + ".", "Layer initialization failed.", MessageBoxButtons.OK,
+						MessageBoxIcon.Error);
 				}
 			}
 			else											// Bitmap
@@ -423,33 +426,33 @@ namespace Murris.Plugins
 				try
 				{
 					//texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureFileName));
-					texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureFileName), 0, 0, 1,Usage.None, 
-						Format.Dxt5, Pool.Managed, Filter.Box, Filter.Box, 0 );
-					using(Surface s = texture.GetSurfaceLevel(0))
+					texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureFileName), 0, 0, 1, Usage.None,
+						Format.Dxt5, Pool.Managed, Filter.Box, Filter.Box, 0);
+					using (Surface s = texture.GetSurfaceLevel(0))
 					{
 						SurfaceDescription desc = s.Description;
-						spriteSize = new Rectangle(0,0, desc.Width, desc.Height);
+						spriteSize = new Rectangle(0, 0, desc.Width, desc.Height);
 					}
 					spriteOffset = new Point(0, 0);
 
-               if (textureTiltFileName.Length > 0)
-               {
-                  textureTilt = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureTiltFileName), 0, 0, 1, Usage.None,
-                     Format.Dxt5, Pool.Managed, Filter.Box, Filter.Box, 0);
-                  using (Surface s = texture.GetSurfaceLevel(0))
-                  {
-                     SurfaceDescription desc = s.Description;
-                     spriteTiltSize = new Rectangle(0, 0, desc.Width, desc.Height);
-                  }
-                  spriteTiltOffset = new Point(0, 0);
-               }
-					isInitialized = true;	
+					if (textureTiltFileName.Length > 0)
+					{
+						textureTilt = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureTiltFileName), 0, 0, 1, Usage.None,
+						   Format.Dxt5, Pool.Managed, Filter.Box, Filter.Box, 0);
+						using (Surface s = texture.GetSurfaceLevel(0))
+						{
+							SurfaceDescription desc = s.Description;
+							spriteTiltSize = new Rectangle(0, 0, desc.Width, desc.Height);
+						}
+						spriteTiltOffset = new Point(0, 0);
+					}
+					isInitialized = true;
 				}
 				catch
 				{
 					isOn = false;
-					MessageBox.Show("Error loading texture " + Path.Combine(pluginPath, textureFileName) + ".","Layer initialization failed.", MessageBoxButtons.OK, 
-						MessageBoxIcon.Error );
+					MessageBox.Show("Error loading texture " + Path.Combine(pluginPath, textureFileName) + ".", "Layer initialization failed.", MessageBoxButtons.OK,
+						MessageBoxIcon.Error);
 				}
 			}
 			isInitializing = false;
@@ -459,8 +462,8 @@ namespace Murris.Plugins
 		{
 			XmlTextReader reader = null;
 			string debugMsg = "";
-			Point min = new System.Drawing.Point(int.MaxValue,int.MaxValue);
-			Point max = new System.Drawing.Point(int.MinValue,int.MinValue);
+			Point min = new System.Drawing.Point(int.MaxValue, int.MaxValue);
+			Point max = new System.Drawing.Point(int.MinValue, int.MinValue);
 
 			// Load the reader with the data file and ignore all white space nodes.         
 			reader = new XmlTextReader(filePath);
@@ -468,30 +471,30 @@ namespace Murris.Plugins
 
 			// Parse the file.
 			svgList = new ArrayList();
-			while (reader.Read()) 
+			while (reader.Read())
 			{
-				switch (reader.NodeType) 
+				switch (reader.NodeType)
 				{
 					case XmlNodeType.Element:
-					switch(reader.Name)
-					{
-						case "rect" :
-						case "circle" :
-						case "line" :
-						case "polyline" :
-						case "polygon" :
-							SvgShape s = new SvgShape(reader);
-							svgList.Add(s);
-							min.X = Math.Min(min.X, s.min.X);
-							min.Y = Math.Min(min.Y, s.min.Y);
-							max.X = Math.Max(max.X, s.max.X);
-							max.Y = Math.Max(max.Y, s.max.Y);
-							debugMsg += s.debugMsg + " ";
-							break;
-					}
+						switch (reader.Name)
+						{
+							case "rect":
+							case "circle":
+							case "line":
+							case "polyline":
+							case "polygon":
+								SvgShape s = new SvgShape(reader);
+								svgList.Add(s);
+								min.X = Math.Min(min.X, s.min.X);
+								min.Y = Math.Min(min.Y, s.min.Y);
+								max.X = Math.Max(max.X, s.max.X);
+								max.Y = Math.Max(max.Y, s.max.Y);
+								debugMsg += s.debugMsg + " ";
+								break;
+						}
 						break;
-				}       
-			}  
+				}
+			}
 			reader.Close();
 			// compute size and offset
 			int maxDimension = Math.Max(max.X - min.X, max.Y - min.Y);
@@ -507,23 +510,23 @@ namespace Murris.Plugins
 		/// </summary>
 		public override void Update(DrawArgs drawArgs)
 		{
-			if(!isInitialized)
+			if (!isInitialized)
 				Initialize(drawArgs);
 		}
 
-      /// <summary>
+		/// <summary>
 		/// RenderableObject abstract member (needed)
 		/// OBS: Worker thread (don't update UI directly from this thread)
 		/// </summary>
 		public override void Dispose()
 		{
 			isInitialized = false;
-			if(texture!=null)
+			if (texture != null)
 			{
 				texture.Dispose();
 				texture = null;
 			}
-			if(svgList != null)
+			if (svgList != null)
 			{
 				svgList = null;
 			}
@@ -543,7 +546,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Fills the context menu with menu items specific to the layer.
 		/// </summary>
-		public override void BuildContextMenu( ContextMenu menu )
+		public override void BuildContextMenu(ContextMenu menu)
 		{
 			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
 		}
@@ -553,7 +556,7 @@ namespace Murris.Plugins
 		/// </summary>
 		public new void OnPropertiesClick(object sender, EventArgs e)
 		{
-			if(pDialog != null && ! pDialog.IsDisposed)
+			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open
 				return;
 
@@ -578,7 +581,7 @@ namespace Murris.Plugins
 			private System.Windows.Forms.Button btnCancel;
 			private CompassLayer layer;
 
-			public propertiesDialog( CompassLayer layer )
+			public propertiesDialog(CompassLayer layer)
 			{
 				InitializeComponent();
 				//this.Icon = WorldWind.PluginEngine.Plugin.Icon;
@@ -591,7 +594,7 @@ namespace Murris.Plugins
 				cboTexture.Items.AddRange(imgFiles);
 				// select current bitmap
 				int i = cboTexture.FindString(layer.textureFileName);
-				if(i != -1) cboTexture.SelectedIndex = i;
+				if (i != -1) cboTexture.SelectedIndex = i;
 				// Tilt
 				chkTilt.Checked = layer.tilt;
 				// Positions
@@ -602,7 +605,7 @@ namespace Murris.Plugins
 				cboPosition.Items.Add("Bottom-Center");
 				cboPosition.Items.Add("Screen-Center");
 				i = cboPosition.FindString(layer.spritePos);
-				if(i != -1) cboPosition.SelectedIndex = i;
+				if (i != -1) cboPosition.SelectedIndex = i;
 			}
 
 			#region Windows Form Designer generated code
@@ -725,7 +728,7 @@ namespace Murris.Plugins
 
 			private void btnOK_Click(object sender, System.EventArgs e)
 			{
-				if(cboTexture.SelectedItem != null) 
+				if (cboTexture.SelectedItem != null)
 				{
 					//System.Windows.Forms.MessageBox.Show("Texture : " + cboTexture.SelectedItem.ToString());
 					layer.Dispose();
@@ -761,29 +764,29 @@ namespace Murris.Plugins
 			string[] points;
 			float x1, y1, x2, y2;
 			string DecSep = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-			
+
 			public string debugMsg = "";
-			public Point min = new System.Drawing.Point(int.MaxValue,int.MaxValue);
-			public Point max = new System.Drawing.Point(int.MinValue,int.MinValue);
+			public Point min = new System.Drawing.Point(int.MaxValue, int.MaxValue);
+			public Point max = new System.Drawing.Point(int.MinValue, int.MinValue);
 
 			public SvgShape(XmlTextReader reader)
 			{
 				// Catch color
-				if(reader["stroke"] != null)
+				if (reader["stroke"] != null)
 				{
-					if(reader["stroke"].StartsWith("#"))	// color #rrggbb
+					if (reader["stroke"].StartsWith("#"))	// color #rrggbb
 					{
 
 					}
 					else									// color by name
 					{
-						try {color = Color.FromName(reader["stroke"]).ToArgb();} 
-						catch {}
+						try { color = Color.FromName(reader["stroke"]).ToArgb(); }
+						catch { }
 					}
 				}
 				// Process points
 				lineVertices = new CustomVertex.PositionColored[100];
-				switch(reader.Name)
+				switch (reader.Name)
 				{
 					case "rect":
 						debugMsg += reader.Name + ":";
@@ -803,12 +806,12 @@ namespace Murris.Plugins
 						this.lineVertices[this.verticeCount].Y = x1;
 						this.lineVertices[this.verticeCount].Z = -y1;
 						this.lineVertices[this.verticeCount].Color = this.color;
-						this.verticeCount++;						
+						this.verticeCount++;
 						this.lineVertices[this.verticeCount].X = 0;
 						this.lineVertices[this.verticeCount].Y = x2;
 						this.lineVertices[this.verticeCount].Z = -y1;
 						this.lineVertices[this.verticeCount].Color = this.color;
-						this.verticeCount++;						
+						this.verticeCount++;
 						this.lineVertices[this.verticeCount].X = 0;
 						this.lineVertices[this.verticeCount].Y = x2;
 						this.lineVertices[this.verticeCount].Z = -y2;
@@ -825,14 +828,14 @@ namespace Murris.Plugins
 						this.lineVertices[this.verticeCount].Color = this.color;
 						this.verticeCount++;
 						break;
-					case "circle" :
+					case "circle":
 						debugMsg += "circle:";
 						x1 = Convert.ToSingle(reader["cx"], CultureInfo.InvariantCulture);
 						y1 = Convert.ToSingle(reader["cy"], CultureInfo.InvariantCulture);
 						float r = Convert.ToSingle(reader["r"], CultureInfo.InvariantCulture);
 						double twoPI = Math.PI * 2;
-						double step = twoPI/32;
-						for(double a = 0; a < twoPI; a += step)
+						double step = twoPI / 32;
+						for (double a = 0; a < twoPI; a += step)
 						{
 							float x = (float)(x1 + Math.Sin(a) * r);
 							float y = (float)(y1 + Math.Cos(a) * r);
@@ -848,10 +851,10 @@ namespace Murris.Plugins
 						this.lineVertices[this.verticeCount].Z = this.lineVertices[0].Z;
 						this.lineVertices[this.verticeCount].Color = this.color;
 						this.verticeCount++;
-						min.X = Math.Min((int)(x1-r), min.X);
-						min.Y = Math.Min((int)(y1-r), min.Y);
-						max.X = Math.Max((int)(x1+r), max.X);
-						max.Y = Math.Max((int)(y1+r), max.Y);						
+						min.X = Math.Min((int)(x1 - r), min.X);
+						min.Y = Math.Min((int)(y1 - r), min.Y);
+						max.X = Math.Max((int)(x1 + r), max.X);
+						max.Y = Math.Max((int)(y1 + r), max.Y);
 						break;
 					case "line":
 						debugMsg += reader.Name + ":";
@@ -878,12 +881,12 @@ namespace Murris.Plugins
 						this.lineVertices[this.verticeCount].Color = this.color;
 						this.verticeCount++;
 						break;
-					case "polyline" :
+					case "polyline":
 						debugMsg += reader.Name + ":";
 						points = reader["points"].Split(' ');
-						for(int i = 0; i < points.Length; i++) 
+						for (int i = 0; i < points.Length; i++)
 						{
-							if(points[i].IndexOf(",") != -1)
+							if (points[i].IndexOf(",") != -1)
 							{
 								points[i].Replace("\n", "");
 								points[i].Replace("\r", "");
@@ -903,12 +906,12 @@ namespace Murris.Plugins
 							}
 						}
 						break;
-					case "polygon" :
+					case "polygon":
 						debugMsg += reader.Name + ":";
 						points = reader["points"].Split(' ');
-						for(int i = 0; i < points.Length; i++) 
+						for (int i = 0; i < points.Length; i++)
 						{
-							if(points[i].IndexOf(",") != -1)
+							if (points[i].IndexOf(",") != -1)
 							{
 								points[i].Replace("\n", "");
 								points[i].Replace("\r", "");
@@ -938,11 +941,11 @@ namespace Murris.Plugins
 
 			}
 
-         public void Render(DrawArgs drawArgs)
+			public void Render(DrawArgs drawArgs)
 			{
 				drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
 				drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
-				drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, verticeCount-1, lineVertices);
+				drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, verticeCount - 1, lineVertices);
 			}
 
 		}
