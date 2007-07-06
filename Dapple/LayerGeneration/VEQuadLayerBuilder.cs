@@ -8,6 +8,12 @@ using System.Xml;
 
 using Dapple;
 
+//#define USE_NEW_VE_QTS
+
+#if !USE_NEW_VE_QTS
+using bNb.Plugins_GD;
+#endif
+
 using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
@@ -17,7 +23,12 @@ namespace Dapple.LayerGeneration
 		public static readonly string URLProtocolName = "gxve://";
 		public static readonly string CacheSubDir = "VEImages";
 
+#if USE_NEW_VE_QTS
 		QuadTileSet m_oVEQTS;
+#else
+		VeReprojectTilesLayer m_oVEQTS;
+#endif
+
 		string m_strCacheRoot;
 		VirtualEarthMapType m_mapType;
 		bool IsOn = true;
@@ -48,6 +59,7 @@ namespace Dapple.LayerGeneration
 			{
 				double distanceAboveSurface = 0.0;
 
+#if USE_NEW_VE_QTS
 				VEImageStore[] imageStores = null;
 				imageStores = new VEImageStore[1];
 				imageStores[0] = new VEImageStore(m_mapType, m_oWorld.EquatorialRadius + distanceAboveSurface);
@@ -56,6 +68,28 @@ namespace Dapple.LayerGeneration
 
 				m_oVEQTS = new QuadTileSet(m_strName, m_oWorld, distanceAboveSurface, 90, -90, -180, 180, true, imageStores);
 				m_oVEQTS.AlwaysRenderBaseTiles = true;
+#else
+				string fileExt, dataset;
+				if (m_mapType == VirtualEarthMapType.road)
+				{
+					fileExt = "png";
+					dataset = "r";
+				}
+				else
+				{
+					fileExt = "jpeg";
+					if (m_mapType == VirtualEarthMapType.aerial)
+					{
+						dataset = "a";
+					}
+					else
+					{
+						dataset = "h";
+					}
+				}
+
+				m_oVEQTS = new VeReprojectTilesLayer(m_strName, m_MainApp, dataset, fileExt, 0, GetCachePath());
+#endif
 				m_oVEQTS.IsOn = m_IsOn;
 				m_oVEQTS.Opacity = m_bOpacity;
 				m_blnIsChanged = false;

@@ -76,10 +76,12 @@ namespace WorldWind
 			LevelCount = 16;
 
 			//NOTE tiles did not line up properly with ellps=WGS84
-			//string [] projectionParameters = new string[]{"proj=merc", "ellps=WGS84", "no.defs"};
+			
 			//+proj=longlat +ellps=sphere +a=6370997.0 +es=0.0
 			m_dLayerRadius = dLayerRadius;
+
 			string[] projectionParameters = new string[] { "proj=merc", "ellps=sphere", "a=" + m_dLayerRadius.ToString(), "es=0.0", "no.defs" };
+			//projectionParameters = new string[] { "proj=merc", "ellps=WGS84", "no.defs" };
 			m_proj = new Projection(projectionParameters);
 
 			// To check for no more tiles images

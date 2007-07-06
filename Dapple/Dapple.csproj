@@ -211,7 +211,7 @@
     <Compile Include="MetaDataForm.Designer.cs">
       <DependentUpon>MetaDataForm.cs</DependentUpon>
     </Compile>
-    <None Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
+    <Compile Include="Plugins\VirtualEarth\VEPluginLayer.cs" />
     <Compile Include="PropertyBag.cs" />
     <Compile Include="SaveViewForm.cs">
       <SubType>Form</SubType>
