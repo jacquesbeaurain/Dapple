@@ -505,6 +505,9 @@ namespace WorldWind.Renderable
 			m_CurrentOpacity = quadTileSet.Opacity;
 			renderStruts = quadTileSet.RenderStruts;
 
+			// JBTODO: Have the projection in flat working with some level of success
+			// Need to fix accuracy and then implement elevated and posssibly optimize
+			Projection proj = quadTileSet.ImageStores[0].Projection;
 			if (quadTileSet.TerrainMapped && Math.Abs(verticalExaggeration) > 1e-3)
 				CreateElevatedMesh();
 			else
@@ -561,10 +564,14 @@ namespace WorldWind.Renderable
 		/// </summary>
 		protected virtual void CreateFlatMesh()
 		{
+			int baseIndex;
 			double layerRadius = (double)quadTileSet.LayerRadius;
 			double scaleFactor = 1.0 / (double)vertexCount;
 			int thisVertexCount = vertexCount / 2 + (vertexCount % 2);
 			int thisVertexCountPlus1 = thisVertexCount + 1;
+
+			const double Degrees2Radians = Math.PI / 180.0;
+
 
 			int totalVertexCount = thisVertexCountPlus1 * thisVertexCountPlus1;
 			northWestVertices = new CustomVertex.PositionNormalTextured[totalVertexCount];
@@ -572,141 +579,287 @@ namespace WorldWind.Renderable
 			northEastVertices = new CustomVertex.PositionNormalTextured[totalVertexCount];
 			southEastVertices = new CustomVertex.PositionNormalTextured[totalVertexCount];
 
-			const double Degrees2Radians = Math.PI / 180.0;
-
-			// Cache western sin/cos of longitude values
-			double[] sinLon = new double[thisVertexCountPlus1];
-			double[] cosLon = new double[thisVertexCountPlus1];
-
-			int baseIndex;
-			double angle = west * Degrees2Radians;
-			double angleConst;
-			double deltaAngle = scaleFactor * LongitudeSpan * Degrees2Radians;
-
-			angleConst = west * Degrees2Radians;
-			for (int i = 0; i < thisVertexCountPlus1; i++)
+			Projection proj = quadTileSet.ImageStores[0].Projection;
+			if (proj != null)
 			{
-				angle = angleConst + i * deltaAngle;
-				sinLon[i] = Math.Sin(angle);
-				cosLon[i] = Math.Cos(angle);
-				//angle += deltaAngle;
-			}
-
-			baseIndex = 0;
-			angleConst = north * Degrees2Radians;
-			deltaAngle = -scaleFactor * LatitudeSpan * Degrees2Radians;
-			for (int i = 0; i < thisVertexCountPlus1; i++)
-			{
-				angle = angleConst + i * deltaAngle;
-				double sinLat = Math.Sin(angle);
-				double radCosLat = Math.Cos(angle) * layerRadius;
-
-				for (int j = 0; j < thisVertexCountPlus1; j++)
+				UV geo;
+				double sinLat, cosLat, sinLon, cosLon;
+				double uStep = (UR.U - UL.U) * scaleFactor;
+				double vStep = (UL.V - LL.V) * scaleFactor;
+				
+				baseIndex = 0;
+				UV curUnprojected = new UV(UL.U - uStep, UL.V + vStep);
+				for (int i = 0; i < thisVertexCountPlus1; i++)
 				{
-					northWestVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
-					northWestVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
-					northWestVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
-					northWestVertices[baseIndex].Tu = (float)(j * scaleFactor);
-					northWestVertices[baseIndex].Tv = (float)(i * scaleFactor);
-					northWestVertices[baseIndex].Normal =
-						 new Vector3(northWestVertices[baseIndex].X + (float)localOrigin.X,
-										 northWestVertices[baseIndex].Y + (float)localOrigin.Y,
-										 northWestVertices[baseIndex].Z + (float)localOrigin.Z);
-					northWestVertices[baseIndex].Normal.Normalize();
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						Point3d pos;
+						geo = proj.Inverse(curUnprojected);
 
-					baseIndex += 1;
+						sinLat = Math.Sin(geo.V);
+						sinLon = Math.Sin(geo.U);
+						cosLat = Math.Cos(geo.V);
+						cosLon = Math.Cos(geo.U);
+
+						northWestVertices[baseIndex].X = (float)(layerRadius * cosLat * cosLon - localOrigin.X);
+						northWestVertices[baseIndex].Y = (float)(layerRadius * cosLat * sinLon - localOrigin.Y);
+						northWestVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						northWestVertices[baseIndex].Tu = (float)(j * scaleFactor);
+						northWestVertices[baseIndex].Tv = (float)(i * scaleFactor);
+						northWestVertices[baseIndex].Normal =
+							 new Vector3(northWestVertices[baseIndex].X + (float)localOrigin.X,
+											 northWestVertices[baseIndex].Y + (float)localOrigin.Y,
+											 northWestVertices[baseIndex].Z + (float)localOrigin.Z);
+						northWestVertices[baseIndex].Normal.Normalize();
+
+						// Radians -> Degrees
+						geo.U *= 180 / Math.PI;
+						geo.V *= 180 / Math.PI;
+						pos = MathEngine.SphericalToCartesian(
+						 geo.V,
+						 geo.U,
+						 layerRadius);
+
+						pos.X -= localOrigin.X;
+						pos.Y -= localOrigin.Y;
+						pos.Z -= localOrigin.Z;
+
+						baseIndex += 1;
+
+						curUnprojected.U += uStep;
+					}
+					curUnprojected.U = UL.U - uStep;
+					curUnprojected.V -= vStep;
 				}
-				//angle += deltaAngle;
-			}
 
-			baseIndex = 0;
-			angleConst = 0.5 * (north + south) * Degrees2Radians;
-			for (int i = 0; i < thisVertexCountPlus1; i++)
-			{
-				angle = angleConst + i * deltaAngle;
-				double sinLat = Math.Sin(angle);
-				double radCosLat = Math.Cos(angle) * layerRadius;
-
-				for (int j = 0; j < thisVertexCountPlus1; j++)
+				baseIndex = 0;
+				curUnprojected = new UV(UL.U - uStep, UL.V + vStep - (UL.V - LL.V)/2.0);
+				for (int i = 0; i < thisVertexCountPlus1; i++)
 				{
-					southWestVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
-					southWestVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
-					southWestVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
-					southWestVertices[baseIndex].Tu = (float)(j * scaleFactor);
-					southWestVertices[baseIndex].Tv = (float)((i + thisVertexCount) * scaleFactor);
-					southWestVertices[baseIndex].Normal =
-						 new Vector3(southWestVertices[baseIndex].X + (float)localOrigin.X,
-										 southWestVertices[baseIndex].Y + (float)localOrigin.Y,
-										 southWestVertices[baseIndex].Z + (float)localOrigin.Z);
-					southWestVertices[baseIndex].Normal.Normalize();
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						geo = proj.Inverse(curUnprojected);
 
-					baseIndex += 1;
+						sinLat = Math.Sin(geo.V);
+						sinLon = Math.Sin(geo.U);
+						cosLat = Math.Cos(geo.V);
+						cosLon = Math.Cos(geo.U);
+
+						southWestVertices[baseIndex].X = (float)(layerRadius * cosLat * cosLon - localOrigin.X);
+						southWestVertices[baseIndex].Y = (float)(layerRadius * cosLat * sinLon - localOrigin.Y);
+						southWestVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						southWestVertices[baseIndex].Tu = (float)(j * scaleFactor);
+						southWestVertices[baseIndex].Tv = (float)((i + thisVertexCount) * scaleFactor);
+						southWestVertices[baseIndex].Normal =
+							 new Vector3(southWestVertices[baseIndex].X + (float)localOrigin.X,
+											 southWestVertices[baseIndex].Y + (float)localOrigin.Y,
+											 southWestVertices[baseIndex].Z + (float)localOrigin.Z);
+						southWestVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+						curUnprojected.U += uStep;
+					}
+					curUnprojected.U = UL.U - uStep;
+					curUnprojected.V -= vStep;
 				}
-				//angle += deltaAngle;
-			}
 
-			// Cache eastern sin/cos of longitude values
-			angleConst = 0.5 * (west + east) * Degrees2Radians;
-			deltaAngle = scaleFactor * LongitudeSpan * Degrees2Radians;
-			for (int i = 0; i < thisVertexCountPlus1; i++)
-			{
-				angle = angleConst + i * deltaAngle;
-				sinLon[i] = Math.Sin(angle);
-				cosLon[i] = Math.Cos(angle);
-				//angle += deltaAngle;
-			}
-
-			baseIndex = 0;
-			angleConst = north * Degrees2Radians;
-			deltaAngle = -scaleFactor * LatitudeSpan * Degrees2Radians;
-			for (int i = 0; i < thisVertexCountPlus1; i++)
-			{
-				angle = angleConst + i * deltaAngle;
-				double sinLat = Math.Sin(angle);
-				double radCosLat = Math.Cos(angle) * layerRadius;
-
-				for (int j = 0; j < thisVertexCountPlus1; j++)
+				baseIndex = 0;
+				curUnprojected = new UV(UL.U - uStep + (UR.U - UL.U)/2.0, UL.V + vStep);
+				for (int i = 0; i < thisVertexCountPlus1; i++)
 				{
-					northEastVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
-					northEastVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
-					northEastVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
-					northEastVertices[baseIndex].Tu = (float)((j + thisVertexCount) * scaleFactor);
-					northEastVertices[baseIndex].Tv = (float)(i * scaleFactor);
-					northEastVertices[baseIndex].Normal =
-						 new Vector3(northEastVertices[baseIndex].X + (float)localOrigin.X,
-										 northEastVertices[baseIndex].Y + (float)localOrigin.Y,
-										 northEastVertices[baseIndex].Z + (float)localOrigin.Z);
-					northEastVertices[baseIndex].Normal.Normalize();
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						geo = proj.Inverse(curUnprojected);
 
-					baseIndex += 1;
+						sinLat = Math.Sin(geo.V);
+						sinLon = Math.Sin(geo.U);
+						cosLat = Math.Cos(geo.V);
+						cosLon = Math.Cos(geo.U);
+
+						northEastVertices[baseIndex].X = (float)(layerRadius * cosLat * cosLon - localOrigin.X);
+						northEastVertices[baseIndex].Y = (float)(layerRadius * cosLat * sinLon - localOrigin.Y);
+						northEastVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						northEastVertices[baseIndex].Tu = (float)((j + thisVertexCount) * scaleFactor);
+						northEastVertices[baseIndex].Tv = (float)(i * scaleFactor);
+						northEastVertices[baseIndex].Normal =
+							 new Vector3(northEastVertices[baseIndex].X + (float)localOrigin.X,
+											 northEastVertices[baseIndex].Y + (float)localOrigin.Y,
+											 northEastVertices[baseIndex].Z + (float)localOrigin.Z);
+						northEastVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+						curUnprojected.U += uStep;
+					}
+					curUnprojected.U = UL.U - uStep + (UR.U - UL.U) / 2.0;
+					curUnprojected.V -= vStep;
 				}
-				//angle += deltaAngle;
-			}
 
-			baseIndex = 0;
-			angleConst = 0.5f * (north + south) * Degrees2Radians;
-			for (int i = 0; i < thisVertexCountPlus1; i++)
-			{
-				angle = angleConst + i * deltaAngle;
-				double sinLat = Math.Sin(angle);
-				double radCosLat = Math.Cos(angle) * layerRadius;
-
-				for (int j = 0; j < thisVertexCountPlus1; j++)
+				baseIndex = 0;
+				curUnprojected = new UV(UL.U - uStep + (UR.U - UL.U) / 2.0, UL.V + vStep - (UL.V - LL.V) / 2.0);
+				for (int i = 0; i < thisVertexCountPlus1; i++)
 				{
-					southEastVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
-					southEastVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
-					southEastVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
-					southEastVertices[baseIndex].Tu = (float)((j + thisVertexCount) * scaleFactor);
-					southEastVertices[baseIndex].Tv = (float)((i + thisVertexCount) * scaleFactor);
-					southEastVertices[baseIndex].Normal =
-						 new Vector3(southEastVertices[baseIndex].X + (float)localOrigin.X,
-										 southEastVertices[baseIndex].Y + (float)localOrigin.Y,
-										 southEastVertices[baseIndex].Z + (float)localOrigin.Z);
-					southEastVertices[baseIndex].Normal.Normalize();
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						geo = proj.Inverse(curUnprojected);
 
-					baseIndex += 1;
+						sinLat = Math.Sin(geo.V);
+						sinLon = Math.Sin(geo.U);
+						cosLat = Math.Cos(geo.V);
+						cosLon = Math.Cos(geo.U);
+
+						southEastVertices[baseIndex].X = (float)(layerRadius * cosLat * cosLon - localOrigin.X);
+						southEastVertices[baseIndex].Y = (float)(layerRadius * cosLat * sinLon - localOrigin.Y);
+						southEastVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						southEastVertices[baseIndex].Tu = (float)((j + thisVertexCount) * scaleFactor);
+						southEastVertices[baseIndex].Tv = (float)((i + thisVertexCount) * scaleFactor);
+						southEastVertices[baseIndex].Normal =
+							 new Vector3(southEastVertices[baseIndex].X + (float)localOrigin.X,
+											 southEastVertices[baseIndex].Y + (float)localOrigin.Y,
+											 southEastVertices[baseIndex].Z + (float)localOrigin.Z);
+						southEastVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+						curUnprojected.U += uStep;
+					}
+					curUnprojected.U = UL.U - uStep + (UR.U - UL.U) / 2.0;
+					curUnprojected.V -= vStep;
 				}
-				//angle += deltaAngle;
+			}
+			else
+			{
+				// Cache western sin/cos of longitude values
+				double[] sinLon = new double[thisVertexCountPlus1];
+				double[] cosLon = new double[thisVertexCountPlus1];
+
+				double angle = west * Degrees2Radians;
+				double angleConst;
+				double deltaAngle = scaleFactor * LongitudeSpan * Degrees2Radians;
+
+				angleConst = west * Degrees2Radians;
+				for (int i = 0; i < thisVertexCountPlus1; i++)
+				{
+					angle = angleConst + i * deltaAngle;
+					sinLon[i] = Math.Sin(angle);
+					cosLon[i] = Math.Cos(angle);
+					//angle += deltaAngle;
+				}
+
+				baseIndex = 0;
+				angleConst = north * Degrees2Radians;
+				deltaAngle = -scaleFactor * LatitudeSpan * Degrees2Radians;
+				for (int i = 0; i < thisVertexCountPlus1; i++)
+				{
+					angle = angleConst + i * deltaAngle;
+					double sinLat = Math.Sin(angle);
+					double radCosLat = Math.Cos(angle) * layerRadius;
+
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						northWestVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
+						northWestVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
+						northWestVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						northWestVertices[baseIndex].Tu = (float)(j * scaleFactor);
+						northWestVertices[baseIndex].Tv = (float)(i * scaleFactor);
+						northWestVertices[baseIndex].Normal =
+							 new Vector3(northWestVertices[baseIndex].X + (float)localOrigin.X,
+											 northWestVertices[baseIndex].Y + (float)localOrigin.Y,
+											 northWestVertices[baseIndex].Z + (float)localOrigin.Z);
+						northWestVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+					}
+					//angle += deltaAngle;
+				}
+
+				baseIndex = 0;
+				angleConst = 0.5 * (north + south) * Degrees2Radians;
+				for (int i = 0; i < thisVertexCountPlus1; i++)
+				{
+					angle = angleConst + i * deltaAngle;
+					double sinLat = Math.Sin(angle);
+					double radCosLat = Math.Cos(angle) * layerRadius;
+
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						southWestVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
+						southWestVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
+						southWestVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						southWestVertices[baseIndex].Tu = (float)(j * scaleFactor);
+						southWestVertices[baseIndex].Tv = (float)((i + thisVertexCount) * scaleFactor);
+						southWestVertices[baseIndex].Normal =
+							 new Vector3(southWestVertices[baseIndex].X + (float)localOrigin.X,
+											 southWestVertices[baseIndex].Y + (float)localOrigin.Y,
+											 southWestVertices[baseIndex].Z + (float)localOrigin.Z);
+						southWestVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+					}
+					//angle += deltaAngle;
+				}
+
+				// Cache eastern sin/cos of longitude values
+				angleConst = 0.5 * (west + east) * Degrees2Radians;
+				deltaAngle = scaleFactor * LongitudeSpan * Degrees2Radians;
+				for (int i = 0; i < thisVertexCountPlus1; i++)
+				{
+					angle = angleConst + i * deltaAngle;
+					sinLon[i] = Math.Sin(angle);
+					cosLon[i] = Math.Cos(angle);
+					//angle += deltaAngle;
+				}
+
+				baseIndex = 0;
+				angleConst = north * Degrees2Radians;
+				deltaAngle = -scaleFactor * LatitudeSpan * Degrees2Radians;
+				for (int i = 0; i < thisVertexCountPlus1; i++)
+				{
+					angle = angleConst + i * deltaAngle;
+					double sinLat = Math.Sin(angle);
+					double radCosLat = Math.Cos(angle) * layerRadius;
+
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						northEastVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
+						northEastVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
+						northEastVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						northEastVertices[baseIndex].Tu = (float)((j + thisVertexCount) * scaleFactor);
+						northEastVertices[baseIndex].Tv = (float)(i * scaleFactor);
+						northEastVertices[baseIndex].Normal =
+							 new Vector3(northEastVertices[baseIndex].X + (float)localOrigin.X,
+											 northEastVertices[baseIndex].Y + (float)localOrigin.Y,
+											 northEastVertices[baseIndex].Z + (float)localOrigin.Z);
+						northEastVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+					}
+					//angle += deltaAngle;
+				}
+
+				baseIndex = 0;
+				angleConst = 0.5f * (north + south) * Degrees2Radians;
+				for (int i = 0; i < thisVertexCountPlus1; i++)
+				{
+					angle = angleConst + i * deltaAngle;
+					double sinLat = Math.Sin(angle);
+					double radCosLat = Math.Cos(angle) * layerRadius;
+
+					for (int j = 0; j < thisVertexCountPlus1; j++)
+					{
+						southEastVertices[baseIndex].X = (float)(radCosLat * cosLon[j] - localOrigin.X);
+						southEastVertices[baseIndex].Y = (float)(radCosLat * sinLon[j] - localOrigin.Y);
+						southEastVertices[baseIndex].Z = (float)(layerRadius * sinLat - localOrigin.Z);
+						southEastVertices[baseIndex].Tu = (float)((j + thisVertexCount) * scaleFactor);
+						southEastVertices[baseIndex].Tv = (float)((i + thisVertexCount) * scaleFactor);
+						southEastVertices[baseIndex].Normal =
+							 new Vector3(southEastVertices[baseIndex].X + (float)localOrigin.X,
+											 southEastVertices[baseIndex].Y + (float)localOrigin.Y,
+											 southEastVertices[baseIndex].Z + (float)localOrigin.Z);
+						southEastVertices[baseIndex].Normal.Normalize();
+
+						baseIndex += 1;
+					}
+					//angle += deltaAngle;
+				}
 			}
 
 			vertexIndexes = new short[2 * thisVertexCount * thisVertexCount * 3];

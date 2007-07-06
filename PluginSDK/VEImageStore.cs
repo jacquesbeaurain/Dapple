@@ -134,11 +134,21 @@ namespace WorldWind
 			}
 		}
 
+		public override int TextureSizePixels
+		{
+			get
+			{
+				return 256;
+			}
+			set
+			{
+			}
+		}
 
 		double MetersPerPixel(double layerRadius, int zoom)
 		{
 			double arc;
-			arc = layerRadius / ((1 << zoom) * TextureSizePixels);
+			arc = layerRadius * 2.0 * Math.PI / ((1 << zoom) * TextureSizePixels);
 			return arc;
 		}
 
@@ -149,8 +159,9 @@ namespace WorldWind
 		public override void GetProjectionCorners(IGeoSpatialDownloadTile tile, out UV ul, out UV ur, out UV ll, out UV lr)
 		{
 			//handle the diff projection
-			double metersPerPixel = MetersPerPixel(m_dLayerRadius, tile.Level);
-			double totalTilesPerEdge = Math.Pow(2, tile.Level);
+			//We start the VE QuadTileSet at level 3 (8x8 tiles at 45x22.5 degrees) 
+			double metersPerPixel = MetersPerPixel(m_dLayerRadius, tile.Level + 3);
+			double totalTilesPerEdge = Math.Pow(2, tile.Level + 3);
 			double totalMeters = totalTilesPerEdge * TextureSizePixels * metersPerPixel;
 			double halfMeters = totalMeters / 2;
 
@@ -202,7 +213,7 @@ namespace WorldWind
 				}
 			}
 
-			return bBadTile;
+			return !bBadTile;
 		}
 	}
 }

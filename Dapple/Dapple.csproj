@@ -82,8 +82,6 @@
     <Compile Include="Plugins\SkyGradient\SkyGradient.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <None Include="Plugins\VirtualEarth\VEQuadTile.cs" />
-    <None Include="Plugins\VirtualEarth\VEQuadTileSet.cs" />
     <Compile Include="ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
