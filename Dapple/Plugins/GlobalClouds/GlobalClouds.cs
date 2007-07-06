@@ -42,10 +42,10 @@ namespace Murris.Plugins
 	/// </summary>
 	public class GlobalClouds : WorldWind.PluginEngine.Plugin
 	{
-		private WorldWind.WindowsControlMenuButton m_ToolbarItem;
-		private Control control = new Control();
-		private EventHandler evhand;
-		private GlobalCloudsLayer layer;
+		//private WorldWind.WindowsControlMenuButton m_ToolbarItem;
+		//private Control control = new Control();
+		//private EventHandler evhand;
+		public GlobalCloudsLayer layer;
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
@@ -59,11 +59,11 @@ namespace Murris.Plugins
 			if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
 			{
 				// Add layer visibility controller (and save it to make sure you can kill it later!)
-				control.Visible = true;
-				evhand = new EventHandler(control_VisibleChanged);
-				control.VisibleChanged += evhand;
+				//control.Visible = true;
+				//evhand = new EventHandler(control_VisibleChanged);
+				//control.VisibleChanged += evhand;
 				// Add toolbar item
-				m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Global Clouds", Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Data\Icons\Interface\earth-eastern.png"), control);
+				//m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Global Clouds", Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Data\Icons\Interface\earth-eastern.png"), control);
 				//m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
 
 				layer = new GlobalCloudsLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
@@ -71,7 +71,7 @@ namespace Murris.Plugins
 				//ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
 				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
 
-				m_ToolbarItem.SetPushed(World.Settings.ShowClouds);
+				//m_ToolbarItem.SetPushed(World.Settings.ShowClouds);
 
 			}
 		}
@@ -82,8 +82,8 @@ namespace Murris.Plugins
 		public override void Unload()
 		{
 			// Remove layer controller
-			control.VisibleChanged -= evhand;
-			control.Dispose();
+			//control.VisibleChanged -= evhand;
+			//control.Dispose();
 
 			// Remove toolbar item
 			//if (m_ToolbarItem != null)
@@ -96,13 +96,13 @@ namespace Murris.Plugins
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void control_VisibleChanged(object sender, EventArgs e)
+		/*private void control_VisibleChanged(object sender, EventArgs e)
 		{
 			if (control.Visible)
 				layer.IsOn = true;
 			else
 				layer.IsOn = false;
-		}
+		}*/
 	}
 
 	/// <summary>

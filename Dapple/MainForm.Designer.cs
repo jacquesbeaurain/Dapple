@@ -52,6 +52,8 @@ namespace Dapple
 			this.toolStripMenuItemsend = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripMenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItemOpenKML = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripMenuItemExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripMenuItemAddDAP = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,9 +190,6 @@ namespace Dapple
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.timerNavigation = new System.Windows.Forms.Timer(this.components);
-			this.toolStripMenuItemOpenKML = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItemOpenGeosoftMap = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
 			this.statusStrip.SuspendLayout();
 			this.menuStrip.SuspendLayout();
 			this.splitContainerMain.Panel1.SuspendLayout();
@@ -368,7 +367,6 @@ namespace Dapple
             this.toolStripSeparator10,
             this.toolStripMenuItemOpen,
             this.toolStripMenuItemOpenKML,
-            this.toolStripMenuItemOpenGeosoftMap,
             this.toolStripSeparator18,
             this.toolStripMenuItemExport,
             this.toolStripSeparator12,
@@ -434,6 +432,18 @@ namespace Dapple
 			this.toolStripMenuItemOpen.Size = new System.Drawing.Size(187, 22);
 			this.toolStripMenuItemOpen.Text = "Open Image...";
 			this.toolStripMenuItemOpen.Click += new System.EventHandler(this.toolStripMenuItemOpen_Click);
+			// 
+			// toolStripMenuItemOpenKML
+			// 
+			this.toolStripMenuItemOpenKML.Name = "toolStripMenuItemOpenKML";
+			this.toolStripMenuItemOpenKML.Size = new System.Drawing.Size(187, 22);
+			this.toolStripMenuItemOpenKML.Text = "Open KML/KMZ file...";
+			this.toolStripMenuItemOpenKML.Click += new System.EventHandler(this.toolStripMenuItemOpenKML_Click);
+			// 
+			// toolStripSeparator18
+			// 
+			this.toolStripSeparator18.Name = "toolStripSeparator18";
+			this.toolStripSeparator18.Size = new System.Drawing.Size(184, 6);
 			// 
 			// toolStripMenuItemExport
 			// 
@@ -653,12 +663,14 @@ namespace Dapple
 			this.globalCloudsToolStripMenuItem.Name = "globalCloudsToolStripMenuItem";
 			this.globalCloudsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
 			this.globalCloudsToolStripMenuItem.Text = "Global Clouds";
+			this.globalCloudsToolStripMenuItem.Click += new System.EventHandler(this.globalCloudsToolStripMenuItem_Click);
 			// 
 			// atmosphericEffectsToolStripMenuItem
 			// 
 			this.atmosphericEffectsToolStripMenuItem.Name = "atmosphericEffectsToolStripMenuItem";
 			this.atmosphericEffectsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
 			this.atmosphericEffectsToolStripMenuItem.Text = "Atmospheric Scattering";
+			this.atmosphericEffectsToolStripMenuItem.Click += new System.EventHandler(this.atmosphericEffectsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator17
 			// 
@@ -1743,25 +1755,6 @@ namespace Dapple
 			// 
 			this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
 			// 
-			// toolStripMenuItemOpenKML
-			// 
-			this.toolStripMenuItemOpenKML.Name = "toolStripMenuItemOpenKML";
-			this.toolStripMenuItemOpenKML.Size = new System.Drawing.Size(187, 22);
-			this.toolStripMenuItemOpenKML.Text = "Open KML/KMZ file...";
-			this.toolStripMenuItemOpenKML.Click += new System.EventHandler(this.toolStripMenuItemOpenKML_Click);
-			// 
-			// toolStripMenuItemOpenGeosoftMap
-			// 
-			this.toolStripMenuItemOpenGeosoftMap.Name = "toolStripMenuItemOpenGeosoftMap";
-			this.toolStripMenuItemOpenGeosoftMap.Size = new System.Drawing.Size(187, 22);
-			this.toolStripMenuItemOpenGeosoftMap.Text = "Open Geosoft map...";
-			this.toolStripMenuItemOpenGeosoftMap.Click += new System.EventHandler(this.toolStripMenuItemOpenGeosoftMap_Click);
-			// 
-			// toolStripSeparator18
-			// 
-			this.toolStripSeparator18.Name = "toolStripSeparator18";
-			this.toolStripSeparator18.Size = new System.Drawing.Size(184, 6);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2002,7 +1995,6 @@ namespace Dapple
 		 private System.Windows.Forms.ToolStripMenuItem atmosphericEffectsToolStripMenuItem;
 		 private System.Windows.Forms.ToolStripMenuItem showPlaceNamesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemOpenKML;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemOpenGeosoftMap;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator18;
     }
 }

@@ -1048,7 +1048,7 @@ namespace WorldWind
          }
       }
 
-      private bool m_sunSynchedWithTime = true;
+      private bool m_sunSynchedWithTime = false;
       [Browsable(true), Category("3D settings")]
       [Description("Sun position is computed according to time.")]
       public bool SunSynchedWithTime

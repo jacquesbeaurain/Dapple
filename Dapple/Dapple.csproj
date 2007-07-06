@@ -331,9 +331,14 @@
     <Content Include="app.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\KMLImporter.xml" />
+    <Content Include="Config\KMLImporter.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\WorldWind.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\^Placenames.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Earth\BmngBathy\world.topo.bathy.200401.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

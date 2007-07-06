@@ -105,6 +105,8 @@ namespace Dapple
 		private TreeNode kmlNode;
 		private KMLPlugin.KMLImporter kmlPlugin;
 
+		private RenderableObjectList placeNames;
+
 		private WorldWind.OverviewControl overviewCtl;
 		private string openView = "";
 		private string openGeoTiff = "";
@@ -417,6 +419,23 @@ namespace Dapple
 				this.kmlPlugin = new KMLPlugin.KMLImporter();
 				this.kmlPlugin.PluginLoad(this, strPluginsDir); 
 
+				try
+				{
+					this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
+				}
+				catch
+				{
+					this.placeNames = null;
+					this.showPlaceNamesToolStripMenuItem.Visible = false;
+				}
+				finally
+				{
+					this.placeNames.IsOn = World.Settings.ShowPlacenames;
+					this.placeNames.RenderPriority = RenderPriority.Placenames;
+					this.worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
+					this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
+				}
+
 				this.WorldResultsSplitPanel.Panel1.Controls.Add(this.worldWindow);
 				this.worldWindow.Dock = DockStyle.Fill;
 
@@ -437,9 +456,7 @@ namespace Dapple
 				this.toolStripCrossHairs.Checked = World.Settings.ShowCrosshairs;
 				this.toolStripMenuItemshowPosition.Checked = World.Settings.ShowPosition;
 				this.toolStripMenuItemshowGridLines.Checked = World.Settings.ShowLatLonLines;
-				this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
-				World.Settings.EnableSunShading = true;
-				World.Settings.SunSynchedWithTime = false;
+				this.globalCloudsToolStripMenuItem.Checked = World.Settings.ShowClouds;
 				if (World.Settings.EnableSunShading)
 				{
 					if (!World.Settings.SunSynchedWithTime)
@@ -1786,6 +1803,7 @@ namespace Dapple
 		{
 			World.Settings.ShowPlacenames = !World.Settings.ShowPlacenames;
 			this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
+			this.placeNames.IsOn = World.Settings.ShowPlacenames;
 		}
 
 		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1829,7 +1847,9 @@ namespace Dapple
 
 		private void globalCloudsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			World.Settings.ShowClouds = !World.Settings.ShowClouds;
+			this.globalCloudsToolStripMenuItem.Checked = World.Settings.ShowClouds;
+			this.cloudsPlugin.layer.IsOn = World.Settings.ShowClouds;
 		}
 
 		private void measureToolToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3883,10 +3903,6 @@ namespace Dapple
 		}
 
 		#endregion
-
-		private void toolStripMenuItemOpenGeosoftMap_Click(object sender, EventArgs e)
-		{
-		}
 
 #if !DEBUG
       /// <summary>

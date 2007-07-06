@@ -57,9 +57,9 @@ namespace Dapple.LayerGeneration
 		{
 			if (m_blnIsChanged)
 			{
+#if USE_NEW_VE_QTS
 				double distanceAboveSurface = 0.0;
 
-#if USE_NEW_VE_QTS
 				VEImageStore[] imageStores = null;
 				imageStores = new VEImageStore[1];
 				imageStores[0] = new VEImageStore(m_mapType, m_oWorld.EquatorialRadius + distanceAboveSurface);
