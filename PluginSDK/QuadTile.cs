@@ -508,7 +508,7 @@ namespace WorldWind.Renderable
 			// JBTODO: Have the projection in flat working with some level of success
 			// Need to fix accuracy and then implement elevated and posssibly optimize
 			Projection proj = quadTileSet.ImageStores[0].Projection;
-			if (quadTileSet.TerrainMapped && Math.Abs(verticalExaggeration) > 1e-3)
+			if (proj == null && quadTileSet.TerrainMapped && Math.Abs(verticalExaggeration) > 1e-3)
 				CreateElevatedMesh();
 			else
 				CreateFlatMesh();
