@@ -319,6 +319,26 @@ namespace Dapple
 							{
 								if (entry.Builder == treeWMSNode.Tag && (entry.Loading || entry.Error))
 								{
+									if (entry.Error)
+									{
+										treeWMSNode.Nodes.Clear();
+										if (entry.ErrorString != string.Empty)
+											treeWMSNode.Text = entry.Builder.Name + " (" + entry.ErrorString + ")";
+										treeWMSNode.SelectedImageIndex = treeWMSNode.ImageIndex = iImageListIndex("offline");
+									}
+									else
+									{
+										treeWMSNode.SelectedImageIndex = treeWMSNode.ImageIndex = iImageListIndex("disserver");
+
+										// --- updating in progress ---
+
+										TreeNode hTempNode;
+										hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
+										hTempNode.Tag = null;
+										treeWMSNode.Text = entry.Builder.Name;
+										treeWMSNode.Nodes.Add(hTempNode);
+									}
+
 									bLoadingOrError = true;
 									break;
 								}
@@ -383,7 +403,7 @@ namespace Dapple
 								if (entry.Error)
 								{
 									if (entry.ErrorString != string.Empty)
-										treeNode.Text += " (" + entry.ErrorString + ")";
+										treeNode.Text = entry.Builder.Name + " (" + entry.ErrorString + ")";
 									treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("offline");
 								}
 								else
@@ -464,6 +484,7 @@ namespace Dapple
 			hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
 			hTempNode.Tag = null;
 			treeNodeSel.Nodes.Add(hTempNode);
+			treeNodeSel.ExpandAll();
 			this.Refresh();
 
 			if (treeNodeSel.Tag is WMSServerBuilder)
@@ -495,9 +516,10 @@ namespace Dapple
 					{
 						WMSCatalogBuilder wmsBuilder = parentCatalog as WMSCatalogBuilder;
 						wmsBuilder.RemoveServer(serverBuilder.URL);
-						treeNodeSel.SelectedImageIndex = treeNodeSel.ImageIndex = iImageListIndex("disserver");
 						wmsBuilder.SubList.Remove(builderEntry.Builder as BuilderDirectory);
 						treeNodeSel.Tag = builderEntry.Builder = wmsBuilder.AddServer(serverBuilder.URL, serverBuilder.Parent as BuilderDirectory);
+						treeNodeSel.Text = builderEntry.Builder.Name;
+						treeNodeSel.SelectedImageIndex = treeNodeSel.ImageIndex = iImageListIndex("disserver");
 					}
 				}
 			}
