@@ -105,6 +105,8 @@ namespace Dapple
 		private TreeNode kmlNode;
 		private KMLPlugin.KMLImporter kmlPlugin;
 
+		//private MeasureToolNewgen.Plugins.MeasureToolNG measurePlugin;
+
 		private RenderableObjectList placeNames;
 
 		private WorldWind.OverviewControl overviewCtl;
@@ -417,8 +419,11 @@ namespace Dapple
 				this.threeDConnPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "3DConnexion"));
 
 				this.kmlPlugin = new KMLPlugin.KMLImporter();
-				this.kmlPlugin.PluginLoad(this, strPluginsDir); 
+				this.kmlPlugin.PluginLoad(this, strPluginsDir);
 
+				//this.measurePlugin = new MeasureToolNewgen.Plugins.MeasureToolNG();
+				//this.measurePlugin.PluginLoad(this, strPluginsDir); 
+				
 				try
 				{
 					this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
@@ -1809,7 +1814,7 @@ namespace Dapple
 		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.scalebarPlugin.IsVisible = !this.scalebarPlugin.IsVisible;
-			scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
+			this.scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
 		}
 
 		private void enableSunShadingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1854,7 +1859,8 @@ namespace Dapple
 
 		private void measureToolToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			//this.measurePlugin.layer.IsOn = !this.measurePlugin.layer.IsOn;
+			//this.measureToolToolStripMenuItem.Checked = this.measurePlugin.layer.IsOn;
 		}
 
 		private void toolStripMenuItemexit_Click(object sender, EventArgs e)
@@ -1864,7 +1870,8 @@ namespace Dapple
 
 		private void toolStripMenuItemoptions_DropDownOpening(object sender, EventArgs e)
 		{
-			scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
+			this.scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
+			//this.measureToolToolStripMenuItem.Checked = this.measurePlugin.layer.IsOn;
 		}
 
 		#endregion

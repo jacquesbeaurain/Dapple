@@ -132,6 +132,10 @@
     <Compile Include="KMLImporter.cs">
       <SubType>Form</SubType>
     </Compile>
+    <None Include="MeasureTool.cs" />
+    <None Include="MeasureToolNG.cs">
+      <SubType>Form</SubType>
+    </None>
     <Compile Include="PluginEngine\MainApplication.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -161,6 +165,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ScaleBarLegend.cs" />
+    <Compile Include="shapelib.cs" />
     <Compile Include="Splash.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -175,6 +180,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BmngAboutDialog.resx">
       <DependentUpon>BmngAboutDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MeasureToolNG.resx">
+      <DependentUpon>MeasureToolNG.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="OverviewControl.resx">

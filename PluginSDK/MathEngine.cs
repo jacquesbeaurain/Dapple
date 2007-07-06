@@ -147,6 +147,26 @@ namespace WorldWind
 				Math.Cos(radLatA)*Math.Cos(radLatB)*Math.Cos(radLonA-radLonB)+
 				Math.Sin(radLatA)*Math.Sin(radLatB)) );
 		}
+
+		/// <summary>
+		/// Calculates the azimuth from latA/lonA to latB/lonB
+		/// Borrowed from http://williams.best.vwh.net/avform.htm
+		/// </summary>
+		public static Angle Azimuth( Angle latA, Angle lonA, Angle latB, Angle lonB )
+		{
+			double cosLatB = Math.Cos(latB.Radians);
+			Angle tcA = Angle.FromRadians( Math.Atan2(
+				Math.Sin(lonA.Radians - lonB.Radians) * cosLatB,
+				Math.Cos(latA.Radians) * Math.Sin(latB.Radians) - 
+				Math.Sin(latA.Radians) * cosLatB * 
+				Math.Cos(lonA.Radians - lonB.Radians)));
+			if(tcA.Radians < 0) 
+				tcA.Radians = tcA.Radians + Math.PI*2;
+			tcA.Radians = Math.PI*2 - tcA.Radians;
+
+			return tcA;
+		}
+
 		/// Compute the tile number (used in file names) for given latitude and tile size.
 		/// </summary>
 		/// <param name="latitude">Latitude (decimal degrees)</param>

@@ -82,8 +82,6 @@ namespace Dapple
 			this.atmosphereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.globalCloudsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.atmosphericEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
-			this.measureToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemhelp = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItemabout = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
@@ -551,9 +549,7 @@ namespace Dapple
             this.toolStripMenuItemtileActivity,
             this.toolStripSeparator16,
             this.sunshadingEffectsToolStripMenuItem,
-            this.atmosphereToolStripMenuItem,
-            this.toolStripSeparator17,
-            this.measureToolToolStripMenuItem});
+            this.atmosphereToolStripMenuItem});
 			this.toolStripMenuItemoptions.Name = "toolStripMenuItemoptions";
 			this.toolStripMenuItemoptions.Size = new System.Drawing.Size(41, 20);
 			this.toolStripMenuItemoptions.Text = "View";
@@ -671,18 +667,6 @@ namespace Dapple
 			this.atmosphericEffectsToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
 			this.atmosphericEffectsToolStripMenuItem.Text = "Atmospheric Scattering";
 			this.atmosphericEffectsToolStripMenuItem.Click += new System.EventHandler(this.atmosphericEffectsToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator17
-			// 
-			this.toolStripSeparator17.Name = "toolStripSeparator17";
-			this.toolStripSeparator17.Size = new System.Drawing.Size(185, 6);
-			// 
-			// measureToolToolStripMenuItem
-			// 
-			this.measureToolToolStripMenuItem.Name = "measureToolToolStripMenuItem";
-			this.measureToolToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-			this.measureToolToolStripMenuItem.Text = "Measure Tool";
-			this.measureToolToolStripMenuItem.Click += new System.EventHandler(this.measureToolToolStripMenuItem_Click);
 			// 
 			// toolStripMenuItemhelp
 			// 
@@ -1984,9 +1968,7 @@ namespace Dapple
        private System.Windows.Forms.ToolStripButton DappleSearchBasicGoButton;
 		 private System.Windows.Forms.ToolStripMenuItem scaleBarToolStripMenuItem;
 		 private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
-		 private System.Windows.Forms.ToolStripMenuItem sunshadingEffectsToolStripMenuItem;
-		 private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
-		 private System.Windows.Forms.ToolStripMenuItem measureToolToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem sunshadingEffectsToolStripMenuItem;
 		 private System.Windows.Forms.ToolStripMenuItem enableSunShadingToolStripMenuItem;
 		 private System.Windows.Forms.ToolStripMenuItem syncSunShadingToTimeToolstripMenuItem;
 		 private System.Windows.Forms.ToolStripMenuItem disableSunShadingToolStripMenuItem;
