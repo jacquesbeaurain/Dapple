@@ -100,6 +100,7 @@
     <Compile Include="capabilities_1_3_0\StyleURLType.cs" />
     <Compile Include="capabilities_1_3_0\WMS_CapabilitiesType.cs" />
     <Compile Include="dappleview\activelayersType.cs" />
+    <Compile Include="dappleview\arcimscatalogType.cs" />
     <Compile Include="dappleview\boundingboxType.cs" />
     <Compile Include="dappleview\builderdirectoryBaseType.cs" />
     <Compile Include="dappleview\builderdirectoryType.cs" />

@@ -90,6 +90,15 @@ namespace dappleview
 				InternalAdjustPrefix(DOMNode, true);
 				new virtualearthType(DOMNode).AdjustPrefix();
 			}
+
+		    for (	XmlNode DOMNode = GetDomFirstChild( NodeType.Element, "", "arcimscatalog" );
+					DOMNode != null; 
+					DOMNode = GetDomNextChild( NodeType.Element, "", "arcimscatalog", DOMNode )
+				)
+			{
+				InternalAdjustPrefix(DOMNode, true);
+				new arcimscatalogType(DOMNode).AdjustPrefix();
+			}
 		}
 
 		public void SetXsiType()
@@ -1203,6 +1212,190 @@ namespace dappleview
 
         #endregion // virtualearth collection
 
+		#region arcimscatalog Documentation
+		public static string GetarcimscatalogAnnoDocumentation()
+		{
+			return "";		
+		}
+		public static string GetarcimscatalogDefault()
+		{
+			return "";		
+		}
+		#endregion
+
+		#region arcimscatalog accessor methods
+		public static int GetarcimscatalogMinCount()
+		{
+			return 1;
+		}
+
+		public static int arcimscatalogMinCount
+		{
+			get
+			{
+				return 1;
+			}
+		}
+
+		public static int GetarcimscatalogMaxCount()
+		{
+			return 1;
+		}
+
+		public static int arcimscatalogMaxCount
+		{
+			get
+			{
+				return 1;
+			}
+		}
+
+		public int GetarcimscatalogCount()
+		{
+			return DomChildCount(NodeType.Element, "", "arcimscatalog");
+		}
+
+		public int arcimscatalogCount
+		{
+			get
+			{
+				return DomChildCount(NodeType.Element, "", "arcimscatalog");
+			}
+		}
+
+		public bool Hasarcimscatalog()
+		{
+			return HasDomChild(NodeType.Element, "", "arcimscatalog");
+		}
+
+		public arcimscatalogType Newarcimscatalog()
+		{
+			return new arcimscatalogType(domNode.OwnerDocument.CreateElement("arcimscatalog", ""));
+		}
+
+		public arcimscatalogType GetarcimscatalogAt(int index)
+		{
+			return new arcimscatalogType(GetDomChildAt(NodeType.Element, "", "arcimscatalog", index));
+		}
+
+		public XmlNode GetStartingarcimscatalogCursor()
+		{
+			return GetDomFirstChild( NodeType.Element, "", "arcimscatalog" );
+		}
+
+		public XmlNode GetAdvancedarcimscatalogCursor( XmlNode curNode )
+		{
+			return GetDomNextChild( NodeType.Element, "", "arcimscatalog", curNode );
+		}
+
+		public arcimscatalogType GetarcimscatalogValueAtCursor( XmlNode curNode )
+		{
+			if( curNode == null )
+				  throw new Altova.Xml.XmlException("Out of range");
+			else
+				return new arcimscatalogType( curNode );
+		}
+
+
+		public arcimscatalogType Getarcimscatalog()
+		{
+			return GetarcimscatalogAt(0);
+		}
+
+		public arcimscatalogType arcimscatalog
+		{
+			get
+			{
+				return GetarcimscatalogAt(0);
+			}
+		}
+
+		public void RemovearcimscatalogAt(int index)
+		{
+			RemoveDomChildAt(NodeType.Element, "", "arcimscatalog", index);
+		}
+
+		public void Removearcimscatalog()
+		{
+			RemovearcimscatalogAt(0);
+		}
+
+		public XmlNode Addarcimscatalog(arcimscatalogType newValue)
+		{
+			return AppendDomElement("", "arcimscatalog", newValue);
+		}
+
+		public void InsertarcimscatalogAt(arcimscatalogType newValue, int index)
+		{
+			InsertDomElementAt("", "arcimscatalog", index, newValue);
+		}
+
+		public void ReplacearcimscatalogAt(arcimscatalogType newValue, int index)
+		{
+			ReplaceDomElementAt("", "arcimscatalog", index, newValue);
+		}
+		#endregion // arcimscatalog accessor methods
+
+		#region arcimscatalog collection
+        public arcimscatalogCollection	Myarcimscatalogs = new arcimscatalogCollection( );
+
+        public class arcimscatalogCollection: IEnumerable
+        {
+            builderentryType parent;
+            public builderentryType Parent
+			{
+				set
+				{
+					parent = value;
+				}
+			}
+			public arcimscatalogEnumerator GetEnumerator() 
+			{
+				return new arcimscatalogEnumerator(parent);
+			}
+		
+			IEnumerator IEnumerable.GetEnumerator() 
+			{
+				return GetEnumerator();
+			}
+        }
+
+        public class arcimscatalogEnumerator: IEnumerator 
+        {
+			int nIndex;
+			builderentryType parent;
+			public arcimscatalogEnumerator(builderentryType par) 
+			{
+				parent = par;
+				nIndex = -1;
+			}
+			public void Reset() 
+			{
+				nIndex = -1;
+			}
+			public bool MoveNext() 
+			{
+				nIndex++;
+				return(nIndex < parent.arcimscatalogCount );
+			}
+			public arcimscatalogType  Current 
+			{
+				get 
+				{
+					return(parent.GetarcimscatalogAt(nIndex));
+				}
+			}
+			object IEnumerator.Current 
+			{
+				get 
+				{
+					return(Current);
+				}
+			}
+    	}
+
+        #endregion // arcimscatalog collection
+
         private void SetCollectionParents()
         {
             Mybuilderdirectorys.Parent = this; 
@@ -1211,6 +1404,7 @@ namespace dappleview
             Mylocalfilesystems.Parent = this; 
             Mytileserversets.Parent = this; 
             Myvirtualearths.Parent = this; 
+            Myarcimscatalogs.Parent = this; 
 	}
 }
 }
