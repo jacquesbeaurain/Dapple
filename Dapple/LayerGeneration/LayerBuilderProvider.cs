@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using WorldWind;
 using WorldWind.Renderable;
+using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
@@ -64,6 +65,8 @@ namespace Dapple.LayerGeneration
 
 		void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler);
 		void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler);
+
+      TreeNode[] getChildTreeNodes();
 	}
 
 	public delegate void LayerLoadedCallback(IBuilder builder);
@@ -81,21 +84,6 @@ namespace Dapple.LayerGeneration
 		VisibilityChanged
 	}
 
-	public class BuilderEntry
-	{
-		public IBuilder Builder;
-		public bool Error;
-		public bool Loading;
-		public string ErrorString;
-
-		public BuilderEntry(IBuilder builder, bool bError, bool bLoading, string strErr)
-		{
-			Builder = builder;
-			Error = bError;
-			Loading = bLoading;
-			ErrorString = strErr;
-		}
-	}
 
 	public abstract class LayerBuilder : IBuilder
 	{
@@ -105,6 +93,7 @@ namespace Dapple.LayerGeneration
 		protected byte m_bOpacity = 255;
 		private bool m_blnIsLoading = false;
 		protected bool m_IsOn = true;
+      protected static String m_strCacheRoot = MainApplication.Settings.CachePath;
 		private int m_intRenderPriority = 0;
 		protected bool m_blnFailed = false;
 		private bool m_blnIsAdded = false;
@@ -114,6 +103,13 @@ namespace Dapple.LayerGeneration
 		private static int intObjectsRendered = 0;
 
 		private event BuilderChangedHandler BuilderChanged;
+
+      public LayerBuilder(String strName, World oWorld, IBuilder oParent)
+      {
+         m_strName = strName;
+         m_Parent = oParent;
+         m_oWorld = oWorld;
+      }
 
 		public string Name
 		{
@@ -423,11 +419,26 @@ namespace Dapple.LayerGeneration
 		public abstract object Clone();
 
 		#endregion
-	}
+
+      #region IBuilder Members
+
+
+      public TreeNode[] getChildTreeNodes()
+      {
+         return new TreeNode[0];
+      }
+
+      #endregion
+   }
 
 
 	public abstract class ImageBuilder : LayerBuilder
 	{
+      public ImageBuilder(String strName, World oWorld, IBuilder oParent)
+         : base(strName, oWorld, oParent)
+      {
+      }
+
 		public abstract GeographicBoundingBox Extents
 		{
 			get;

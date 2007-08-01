@@ -10,12 +10,12 @@ using Dapple.LayerGeneration;
 
 namespace Dapple
 {
-   public partial class AddWMS : Form
+   public partial class AddArcIMS : Form
    {
       WorldWindow m_worldWind;
-      WMSCatalogBuilder m_oParent;
+      ArcIMSCatalogBuilder m_oParent;
 
-      public AddWMS(WorldWind.WorldWindow worldWindow, WMSCatalogBuilder oParent)
+      public AddArcIMS(WorldWind.WorldWindow worldWindow, ArcIMSCatalogBuilder oParent)
       {
          m_worldWind = worldWindow;
          m_oParent = oParent;
@@ -23,7 +23,7 @@ namespace Dapple
          this.Icon = new System.Drawing.Icon(@"app.ico");
       }
 
-      public string WmsURL
+      public string URL
       {
          get
          {
@@ -33,9 +33,6 @@ namespace Dapple
 
       private void butOK_Click(object sender, EventArgs e)
       {
-         /*m_WmsURL = txtWmsURL.Text;
-         WMSCatalogBuilder.TrimCapabilitiesURL(ref m_WmsURL);*/
-
          if (!txtWmsURL.Text.StartsWith("http://") || txtWmsURL.Text.Length <= "http://".Length)
          {
             MessageBox.Show(this, "Please enter a valid URL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -43,21 +40,15 @@ namespace Dapple
             return;
          }
 
-         //WMSList oServer = m_oParent.FindServer(m_WmsURL);
-         if (m_oParent.ContainsServer(new WMSServerUri(txtWmsURL.Text)))
+         if (m_oParent.ContainsServer(new ArcIMSServerUri(txtWmsURL.Text)))
          {
-            MessageBox.Show(this, "This WMS Server has already been added", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            MessageBox.Show(this, "This ArcIMS Server has already been added", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             DialogResult = DialogResult.None;
             return;
          }        
       }
 
-      private void linkLabelHelpWMS_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-      {
-         MainForm.BrowseTo(MainForm.WMSWebsiteHelpUrl);
-      }
-
-      private void AddWMS_Load(object sender, EventArgs e)
+      private void AddArcIMS_Load(object sender, EventArgs e)
       {
          this.txtWmsURL.SelectionStart = this.txtWmsURL.Text.Length;
       }

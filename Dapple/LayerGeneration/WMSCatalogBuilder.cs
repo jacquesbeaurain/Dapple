@@ -18,174 +18,131 @@ namespace Dapple.LayerGeneration
 {
    public class WMSCatalogBuilder : BuilderDirectory
    {
-      #region Delegates
-      public delegate void LoadingCompletedCallbackHandler(WMSServerBuilder builder);
-      public delegate void LoadingFailedCallbackHandler(WMSServerBuilder builder, string message);
-      #endregion
-
       #region Constants
       protected const string CATALOG_CACHE = "WMS Catalog Cache";
       #endregion
 
       private WorldWindow m_WorldWindow;
-      private System.Collections.Hashtable m_oTable = new System.Collections.Hashtable();
-      private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
-      private System.Threading.Semaphore sem = new System.Threading.Semaphore(1, 1, "builderList");
+      private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable(); //<WebDownload, WMSServerBuilder>>
+      private System.Collections.Hashtable m_oWMSListCache = new System.Collections.Hashtable(); //<WMSUri, WMSList>>
 
-      public LoadingCompletedCallbackHandler LoadingCompleted = null;
-      public LoadingFailedCallbackHandler LoadingFailed = null;
+      public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
-      public static void TrimCapabilitiesURL(ref string serverUrl)
-      {
-         // Clean up URL first (URL is case sensitive on some servers)
-         int iIndex;
-         
-         string strTemp = serverUrl.ToLower();
-         iIndex = strTemp.IndexOf("request=getcapabilities");
-         
-         if (iIndex != -1)
-            serverUrl = serverUrl.Substring(0, iIndex) + serverUrl.Substring(iIndex + "request=getcapabilities".Length);
+      private int m_iServerLayerImageIndex, m_iServerDirImageIndex;
 
-         strTemp = serverUrl.ToLower();
-         iIndex = strTemp.IndexOf("service=wms");
-         if (iIndex != -1)
-            serverUrl = serverUrl.Substring(0, iIndex) + serverUrl.Substring(iIndex + "service=wms".Length);
-
-         while (serverUrl.IndexOf("&&") != -1)
-            serverUrl = serverUrl.Replace("&&", "&");
-         serverUrl = serverUrl.TrimEnd(new char[] { '?' });
-         serverUrl = serverUrl.TrimEnd(new char[] { '&' });
-         serverUrl = serverUrl.Trim();
-      }
-
-      public WMSCatalogBuilder(string appDir, WorldWindow worldWindow, string strName, IBuilder parent)
-         : base(strName, parent, false)
+      public WMSCatalogBuilder(String strName, WorldWindow worldWindow, IBuilder parent, int iLayerImageIndex, int iDirectoryImageIndex, int iSLI, int iSDI)
+         : base(strName, parent, false, iLayerImageIndex, iDirectoryImageIndex)
       {
          m_WorldWindow = worldWindow;
+         m_iServerDirImageIndex = iSDI;
+         m_iServerLayerImageIndex = iSLI;
       }
 
-      public bool IsFinishedLoading
+      /// <summary>
+      /// Add a WMS server to this catalog builder.
+      /// </summary>
+      /// <param name="oUri">The URI of the server.</param>
+      /// <returns>A WMSServerBuilder for the server added.</returns>
+      public BuilderDirectory AddServer(WMSServerUri oUri)
       {
-         get
-         {
-            return m_oTable.Count == 0;
-         }
-      }
-
-      public BuilderDirectory AddServer(string serverUrl, BuilderDirectory builderdir)
-      {
-         TrimCapabilitiesURL(ref serverUrl);
-
          // create the cache directory
-         string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), WMSQuadLayerBuilder.GetServerFileNameFromUrl(serverUrl));
+         string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);
 
-         // download the catalog
+         // queue up capabilities download
          string xmlPath = Path.Combine(savePath, "capabilities.xml");
-         string url = serverUrl +
-            (serverUrl.IndexOf("?") > 0 ? "&" : "?") + "request=GetCapabilities&service=WMS";
 
-         WebDownload download = new WebDownload(url, true);
+         WebDownload download = new WebDownload(oUri.ToCapabilitiesUri(), true);
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         WMSServerBuilder dir = new WMSServerBuilder(this, serverUrl, xmlPath);
+         // add a child node
+         WMSServerBuilder dir = new WMSServerBuilder(this, oUri, xmlPath, m_iServerLayerImageIndex, m_iServerDirImageIndex);
          SubList.Add(dir);
          
-         m_oTable.Add(download, dir);
+         m_oCatalogDownloadsInProgress.Add(download, dir);
          download.BackgroundDownloadFile();
 
          return dir;
       }
 
-      public WMSList FindServer(string url)
+      public bool ContainsServer(WMSServerUri oUri)
       {
-         return m_oServers[url.ToLower()] as WMSList;
-      }
-
-      public bool IsServerAdded(string url)
-      {
-         if (m_oServers.ContainsKey(url.ToLower())) return true;
-
-         foreach (WMSServerBuilder builder in m_oTable.Values)
+         foreach (WMSServerBuilder iter in m_colSublist)
          {
-            if (builder.URL.ToLower().Equals(url.ToLower())) return true;
+            if (iter.Uri.Equals(oUri))
+               return true;
          }
          return false;
       }
 
-      public void RemoveServer(string url)
+      public WMSServerBuilder GetServer(WMSServerUri oUri)
       {
-         WMSList oServer = m_oServers[url.ToLower()] as WMSList;
-         if (oServer != null)
-            m_oServers.Remove(url.ToLower());
+         foreach (WMSServerBuilder iter in m_colSublist)
+         {
+            if (iter.Uri.Equals(oUri))
+               return iter;
+         }
+         return null;
+      }
+
+      public void UncacheServer(WMSServerUri oUri)
+      {
+         m_oWMSListCache.Remove(oUri);
       }
 
       private void CatalogDownloadCompleteCallback(WebDownload download)
       {
-         WMSServerBuilder serverDir = m_oTable[download] as WMSServerBuilder;
-
-         if (!File.Exists(serverDir.CapabilitiesFilePath))
-         {
-            LoadFailed(serverDir.Name, "Could not retrieve configuration");
-            return;
-         }
-
-         WMSList oServer = null;
          try
          {
-            oServer = new WMSList(serverDir.URL,
-                 serverDir.CapabilitiesFilePath);
-            serverDir.ChangeName(oServer.Name);
-         }
-         catch(Exception e)
-         {
-            LoadFailed(serverDir.Name, e.Message);
-            return;
-         }
+            WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[download] as WMSServerBuilder;
 
-         if (oServer.Layers == null)
-         {
-            LoadFailed(serverDir.Name, "Could not retrieve the catalog.");
-            return;
-         }
-
-         foreach (WMSLayer layer in oServer.Layers)
-         {
-            ProcessWMSLayer(layer, serverDir);
-         }
-
-         if (!m_oServers.Contains(serverDir.URL.ToLower()))
-            m_oServers.Add(serverDir.URL.ToLower(), oServer);
-         else
-            oServer = m_oServers[serverDir.URL.ToLower()] as WMSList;
-
-         lock (m_oTable.SyncRoot)
-         {
-            m_oTable.Remove(download);
-         }
-         if (LoadingCompleted != null)
-         {
-            LoadingCompleted(serverDir);
-         }
-         if (LoadingCompleted != null)
-         {
-            LoadingCompleted(serverDir);
-         }
-      }
-
-      private void LoadFailed(string serverName, string message)
-      {
-         if (LoadingFailed != null)
-         {
-            foreach (WMSServerBuilder dir in SubList)
+            if (!File.Exists(serverDir.CapabilitiesFilePath))
             {
-               if (dir.Name == serverName)
-               {
-                  LoadingFailed(dir, message);
-                  break;
-               }
-            }            
+               serverDir.SetLoadFailed("Could not retrieve configuration");
+               return;
+            }
+
+            WMSList oServer = null;
+            try
+            {
+               oServer = new WMSList(serverDir.Uri.ToBaseUri(), serverDir.CapabilitiesFilePath);
+               serverDir.ChangeName(oServer.Name);
+            }
+            catch (Exception e)
+            {
+               serverDir.SetLoadFailed(e.Message);
+               return;
+            }
+
+            if (oServer.Layers == null)
+            {
+               serverDir.SetLoadFailed("Could not retrieve the catalog.");
+               return;
+            }
+
+            foreach (WMSLayer layer in oServer.Layers)
+            {
+               // Each server's layers are compacted into one root parent layer; don't add that root to the tree
+               foreach (WMSLayer actualLayer in layer.ChildLayers)
+                  ProcessWMSLayer(actualLayer, serverDir);
+            }
+            if (!m_oWMSListCache.Contains(serverDir.Uri as WMSServerUri))
+               m_oWMSListCache.Add(serverDir.Uri, oServer);
+
+            serverDir.List = oServer;
+
+            lock (m_oCatalogDownloadsInProgress.SyncRoot)
+            {
+               m_oCatalogDownloadsInProgress.Remove(download);
+            }
+
+            serverDir.SetLoadSuccessful();
+         }
+         finally
+         {
+            if (LoadFinished != null)
+               LoadFinished();
          }
       }
 
@@ -193,7 +150,7 @@ namespace Dapple.LayerGeneration
       {
          if (layer.ChildLayers != null)
          {
-            BuilderDirectory childDir = new BuilderDirectory(layer.Title, directory, false);
+            BuilderDirectory childDir = new BuilderDirectory(layer.Title, directory, false, m_iServerLayerImageIndex, m_iServerDirImageIndex);
             directory.SubList.Add(childDir);
 
             foreach (WMSLayer childLayer in layer.ChildLayers)
@@ -207,22 +164,19 @@ namespace Dapple.LayerGeneration
             while (parentServer != null && !(parentServer is WMSServerBuilder))
                parentServer = parentServer.Parent;
 
-            WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer, m_WorldWindow.CurrentWorld,
-               MainApplication.Settings.CachePath, parentServer as WMSServerBuilder, directory);
-            sem.WaitOne();
+            WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer, m_WorldWindow.CurrentWorld, parentServer as WMSServerBuilder, directory);
             directory.LayerBuilders.Add(builder);
-            sem.Release();
          }
-
       }
    }
 
    public class WMSServerBuilder : ServerBuilder
    {
       string m_strCapabilitiesFilePath;
+      WMSList m_oList;
 
-      public WMSServerBuilder(IBuilder parent, string url, string CapabilitiesFilePath)
-         : base(url, parent, url)
+      public WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath, int iLayerImageIndex, int iDirectoryImageIndex)
+         : base(oUri.ToBaseUri(), parent, oUri, iLayerImageIndex, iDirectoryImageIndex)
       {
          m_strCapabilitiesFilePath = CapabilitiesFilePath;
       }
@@ -273,27 +227,10 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public WMSQuadLayerBuilder FindLayerBuilder(WMSLayer layer, BuilderDirectory dir)
+      public WMSList List
       {
-         foreach (WMSQuadLayerBuilder layerBuilder in dir.LayerBuilders)
-         {
-            if (layerBuilder.m_wmsLayer == layer)
-               return layerBuilder;
-         }
-
-         foreach (BuilderDirectory subdir in dir.SubList)
-         {
-            WMSQuadLayerBuilder layerBuilderSub = FindLayerBuilder(layer, subdir);
-            if (layerBuilderSub != null)
-               return layerBuilderSub;
-         }
-
-         return null;
-      }
-
-      public WMSQuadLayerBuilder FindLayerBuilder(WMSLayer layer)
-      {
-         return FindLayerBuilder(layer, this);
+         get { return m_oList; }
+         set { m_oList = value; }
       }
    }
 }

@@ -14,14 +14,192 @@ namespace Dapple.LayerGeneration
 {
    public class GeorefImageLayerBuilder : ImageBuilder
    {
+      #region Statics
+
       public static readonly string URLProtocolName = "gxtif:///";
       public static readonly string CacheSubDir = "Local Image Cache";
+
+      #endregion
+
+      #region Constructor
+
+      public GeorefImageLayerBuilder(string strFileName, bool bTmp, World World, IBuilder parent)
+         : base(Path.GetFileName(strFileName), World, parent)
+      {
+         m_strFileName = strFileName;
+         m_bIsTmp = bTmp;
+         m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
+      }
+
+      #endregion
+
+      #region Member Variables
+
       ImageLayer m_Layer;
-      string m_strCacheRoot;
       string m_strFileName;
       string m_strCacheFileName;
       bool m_bIsTmp;
       bool m_blnIsChanged = true;
+
+      #endregion
+
+      #region ImageBuilder Implementations
+
+      public override GeographicBoundingBox Extents
+      {
+         get
+         {
+            if (m_Layer == null)
+               GetLayer();
+            return new GeographicBoundingBox(m_Layer.MaxLat, m_Layer.MinLat, m_Layer.MinLon, m_Layer.MaxLon);
+         }
+      }
+
+      public override byte Opacity
+      {
+         get
+         {
+            if (m_Layer != null)
+               return m_Layer.Opacity;
+            return m_bOpacity;
+         }
+         set
+         {
+            bool bChanged = false;
+            if (m_bOpacity != value)
+            {
+               m_bOpacity = value;
+               bChanged = true;
+            }
+            if (m_Layer != null && m_Layer.Opacity != value)
+            {
+               m_Layer.Opacity = value;
+               bChanged = true;
+            }
+            if (bChanged)
+               SendBuilderChanged(BuilderChangeType.OpacityChanged);
+         }
+      }
+
+      public override bool Visible
+      {
+         get
+         {
+            if (m_Layer != null)
+               return m_Layer.IsOn;
+            return m_IsOn;
+         }
+         set
+         {
+            bool bChanged = false;
+            if (m_IsOn != value)
+            {
+               m_IsOn = value;
+               bChanged = true;
+            }
+            if (m_Layer != null && m_Layer.IsOn != value)
+            {
+               m_Layer.IsOn = value;
+               bChanged = true;
+            }
+
+            if (bChanged)
+               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
+         }
+      }
+
+      public override string Type
+      {
+         get { return "GeoTif"; }
+      }
+
+      public override bool IsChanged
+      {
+         get { return m_blnIsChanged; }
+      }
+
+      public override string LogoKey
+      {
+         get { return "georef_image"; }
+      }
+
+      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+      {
+         iBytesRead = 0;
+         iTotalBytes = 0;
+         return false;
+      }
+
+      public override string ServiceType
+      {
+         get { return "GeoTif Image Layer"; }
+      }
+
+      public override RenderableObject GetLayer()
+      {
+         if (m_blnIsChanged)
+         {
+            try
+            {
+               GeographicBoundingBox extents = GeorefImageLayerBuilder.GetExtentsFromGeotif(m_strFileName);
+               if (extents != null)
+               {
+                  // Convert Geotif right here to save lockup in update thread due to slow GDI+ to DirectX texture stream
+                  if (!File.Exists(m_strCacheFileName) || File.GetLastWriteTime(m_strCacheFileName) < File.GetLastWriteTime(m_strFileName))
+                  {
+                     using (Image img = Image.FromFile(m_strFileName))
+                     {
+                        Directory.CreateDirectory(Path.GetDirectoryName(m_strCacheFileName));
+                        img.Save(m_strCacheFileName, System.Drawing.Imaging.ImageFormat.Png);
+                     }
+                  }
+
+                  m_Layer = new ImageLayer(m_strName, m_oWorld, 0.0, m_strCacheFileName, extents.South, extents.North, extents.West, extents.East, m_bOpacity, m_oWorld.TerrainAccessor);
+                  m_Layer.IsOn = m_IsOn;
+                  m_Layer.Opacity = m_bOpacity;
+               }
+            }
+            catch
+            {
+               if (File.Exists(m_strCacheFileName))
+                  File.Delete(m_strCacheFileName);
+               m_Layer = null;
+            }
+            m_blnIsChanged = false;
+         }
+         return m_Layer;
+      }
+
+      public override string GetURI()
+      {
+         return URLProtocolName + m_strFileName.Replace(Path.DirectorySeparatorChar, '/');
+      }
+
+      public override string GetCachePath()
+      {
+         return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_strFileName.GetHashCode().ToString());
+      }
+
+      protected override void CleanUpLayer(bool bFinal)
+      {
+         if (m_Layer != null)
+            m_Layer.Dispose();
+         if (File.Exists(m_strCacheFileName))
+            File.Delete(m_strCacheFileName);
+         if (bFinal && m_bIsTmp && File.Exists(m_strFileName))
+            File.Delete(m_strFileName);
+         m_Layer = null;
+         m_blnIsChanged = true;
+      }
+
+      public override object Clone()
+      {
+         return new GeorefImageLayerBuilder(m_strFileName, m_bIsTmp, m_oWorld, m_Parent);
+      }
+
+      #endregion
+
+      #region Other Public Methods
 
       /// <summary>
       /// Obtain geographic extents from GeoTIF file
@@ -170,204 +348,11 @@ namespace Dapple.LayerGeneration
          return strReturn;
       }
 
-      public GeorefImageLayerBuilder(string strCacheRoot, string strFileName, bool bTmp, World World, IBuilder parent)
-      {
-         m_strCacheRoot = strCacheRoot;
-         m_strName = Path.GetFileName(strFileName);
-         m_strFileName = strFileName;
-         m_bIsTmp = bTmp;
-         m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
-         m_oWorld = World;
-         m_Parent = parent;
-      }
-
-      public override RenderableObject GetLayer()
-      {
-         if (m_blnIsChanged)
-         {
-            try
-            {
-               GeographicBoundingBox extents = GeorefImageLayerBuilder.GetExtentsFromGeotif(m_strFileName);
-               if (extents != null)
-               {
-                  // Convert Geotif right here to save lockup in update thread due to slow GDI+ to DirectX texture stream
-                  if (!File.Exists(m_strCacheFileName) || File.GetLastWriteTime(m_strCacheFileName) < File.GetLastWriteTime(m_strFileName))
-                  {
-                     using (Image img = Image.FromFile(m_strFileName))
-                     {
-                        Directory.CreateDirectory(Path.GetDirectoryName(m_strCacheFileName));
-                        img.Save(m_strCacheFileName, System.Drawing.Imaging.ImageFormat.Png);
-                     }
-                  }
-
-                  m_Layer = new ImageLayer(m_strName, m_oWorld, 0.0, m_strCacheFileName, extents.South, extents.North, extents.West, extents.East, m_bOpacity, m_oWorld.TerrainAccessor);
-                  m_Layer.IsOn = m_IsOn;
-                  m_Layer.Opacity = m_bOpacity;
-               }
-            }
-            catch
-            {
-               if (File.Exists(m_strCacheFileName))
-                  File.Delete(m_strCacheFileName);
-               m_Layer = null;
-            }
-            m_blnIsChanged = false;
-         }
-         return m_Layer;
-      }
-
-      #region IBuilder Members
-
-      public override byte Opacity
-      {
-         get
-         {
-            if (m_Layer != null)
-               return m_Layer.Opacity;
-            return m_bOpacity;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_bOpacity != value)
-            {
-               m_bOpacity = value;
-               bChanged = true;
-            }
-            if (m_Layer != null && m_Layer.Opacity != value)
-            {
-               m_Layer.Opacity = value;
-               bChanged = true;
-            }
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.OpacityChanged);
-         }
-      }
-
-      public override bool Visible
-      {
-         get
-         {
-            if (m_Layer != null)
-               return m_Layer.IsOn;
-            return m_IsOn;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_IsOn != value)
-            {
-               m_IsOn = value;
-               bChanged = true;
-            }
-            if (m_Layer != null && m_Layer.IsOn != value)
-            {
-               m_Layer.IsOn = value;
-               bChanged = true;
-            }
-
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
-         }
-      }
-
-      public override string Type
-      {
-         get { return TypeName; }
-      }
-
-      public override bool IsChanged
-      {
-         get { return m_blnIsChanged; }
-      }
-
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
-      {
-         iBytesRead = 0;
-         iTotalBytes = 0;
-         return false;
-      }
-
-      public override string LogoKey
-      {
-         get { return "georef_image"; }
-      }
-
-      #endregion
-
       public string FileName
       {
          get { return m_strFileName; }
       }
 
-      public override string ServiceType
-      {
-         get { return "GeoTif Image Layer"; }
-      }
-
-      public static string TypeName
-      {
-         get
-         {
-            return "GeoTif";
-         }
-      }
-
-      public override string GetCachePath()
-      {
-         return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_strFileName.GetHashCode().ToString());
-      }
-
-
-      public override string GetURI()
-      {
-         return URLProtocolName + m_strFileName.Replace(Path.DirectorySeparatorChar, '/');
-      }
-
-      public static GeorefImageLayerBuilder GetBuilderFromURI(string uri, string strCacheRoot, World world, IBuilder parent)
-      {
-         try
-         {
-            uri = uri.Trim();
-            string strFile = uri.Replace(URLProtocolName, "").Replace('/', Path.DirectorySeparatorChar);
-
-            // See if we have a valid geotif first
-            GeographicBoundingBox extents = GeorefImageLayerBuilder.GetExtentsFromGeotif(strFile);
-
-            if (extents != null)
-               return new GeorefImageLayerBuilder(strCacheRoot, strFile, false, world, parent);
-         }
-         catch
-         {
-         }
-         return null;
-      }
-
-      public override object Clone()
-      {
-         return new GeorefImageLayerBuilder(m_strCacheRoot, m_strFileName, m_bIsTmp, m_oWorld, m_Parent);
-      }
-
-      protected override void CleanUpLayer(bool bFinal)
-      {
-         if (m_Layer != null)
-            m_Layer.Dispose();
-         if (File.Exists(m_strCacheFileName))
-            File.Delete(m_strCacheFileName);
-         if (bFinal && m_bIsTmp && File.Exists(m_strFileName))
-            File.Delete(m_strFileName);
-         m_Layer = null;
-         m_blnIsChanged = true;
-      }
-
-      public override GeographicBoundingBox Extents
-      {
-         get
-         {
-            if (m_Layer == null)
-               GetLayer();
-            return new GeographicBoundingBox(m_Layer.MaxLat, m_Layer.MinLat, m_Layer.MinLon, m_Layer.MaxLon);
-         }
-      }
+      #endregion
    }
 }

@@ -732,7 +732,7 @@ namespace WorldWind.Net
 
 				BuildContentStream();
 				request = BuildRequest();
-				request.Timeout = 1000;
+				request.Timeout = 5000;
 
 				readBuffer = new byte[1500];
 

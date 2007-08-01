@@ -1,0 +1,168 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using WorldWind;
+using Utility;
+using WorldWind.Net;
+using System.IO;
+using WorldWind.PluginEngine;
+using System.Xml;
+
+namespace Dapple.LayerGeneration
+{
+   public class ArcIMSCatalogBuilder : BuilderDirectory
+   {
+      #region Constants
+      protected const string CATALOG_CACHE = "ArcIMS Catalog Cache";
+      #endregion
+
+      private WorldWindow m_oWorldWindow;
+      private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable();
+      private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
+
+      public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
+
+      private int m_iServerLayerImageIndex, m_iServerDirImageIndex;
+
+      public ArcIMSCatalogBuilder(String strName, WorldWindow oWorldWindow, IBuilder parent, int iLayerImageIndex, int iDirectoryImageIndex, int iSLI, int iSDI)
+         : base(strName, parent, false, iLayerImageIndex, iDirectoryImageIndex)
+      {
+         m_iServerDirImageIndex = iSDI;
+         m_iServerLayerImageIndex = iSLI;
+         m_oWorldWindow = oWorldWindow;
+      }
+
+      public BuilderDirectory AddServer(ArcIMSServerUri oUri)
+      {
+         // create the cache directory
+         String savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
+         Directory.CreateDirectory(savePath);
+
+         // download the catalog
+         String xmlPath = Path.Combine(savePath, "__catalog.xml");
+
+         WebDownload download = new ArcIMSCatalogDownload(oUri);
+         download.SavedFilePath = xmlPath;
+         download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
+
+         BuilderDirectory dir = new ArcIMSServerBuilder(this, oUri, xmlPath, m_iServerLayerImageIndex, m_iServerDirImageIndex);
+         SubList.Add(dir);
+
+         m_oCatalogDownloadsInProgress.Add(download, dir);
+         download.BackgroundDownloadFile();
+
+         return dir;
+      }
+
+      public bool ContainsServer(ArcIMSServerUri oUri)
+      {
+         foreach (ArcIMSServerBuilder builder in m_colSublist)
+         {
+            if (builder.Uri.Equals(oUri))
+               return true;
+         }
+         return false;
+      }
+
+      public void UncacheServer(ArcIMSServerUri oUri)
+      {
+         m_oServers.Remove(oUri);
+      }
+
+      private void CatalogDownloadCompleteCallback(WebDownload download)
+      {
+         try
+         {
+            ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[download] as ArcIMSServerBuilder;
+
+            if (!File.Exists(serverDir.CatalogFilename))
+            {
+               serverDir.SetLoadFailed("Could not retrieve catalog");
+               return;
+            }
+
+            if (new FileInfo(serverDir.CatalogFilename).Length == 0)
+            {
+               serverDir.SetLoadFailed("Could not retrieve catalog");
+               File.Delete(serverDir.CatalogFilename);
+               return;
+            }
+
+            XmlDocument hCatalog = new XmlDocument();
+            try
+            {
+               hCatalog.Load(serverDir.CatalogFilename);
+            }
+            catch (XmlException)
+            {
+               serverDir.SetLoadFailed("Could not retrieve catalog");
+               return;
+            }
+
+            XmlNodeList oNodeList = hCatalog.SelectNodes("/ARCXML/RESPONSE/SERVICES/SERVICE[@type=\"ImageServer\" and @access=\"PUBLIC\" and @status=\"ENABLED\"]");
+            if (oNodeList.Count == 0)
+            {
+               serverDir.SetLoadFailed("Server has no image services");
+               return;
+            }
+
+            foreach (XmlNode nServiceNode in oNodeList)
+            {
+               ProcessArcIMSService(serverDir.Uri as ArcIMSServerUri, nServiceNode as XmlElement, serverDir);
+            }
+
+            serverDir.SetLoadSuccessful();
+         }
+         finally
+         {
+            if (LoadFinished != null) LoadFinished();
+         }
+      }
+
+      private void ProcessArcIMSService(ArcIMSServerUri serviceUri, XmlElement nServiceNode, BuilderDirectory directory)
+      {
+         // TODO: Get acutal layer bounds, not placeholder ones
+         ArcIMSQuadLayerBuilder builder = new ArcIMSQuadLayerBuilder(serviceUri, nServiceNode.GetAttribute("name"), new GeographicBoundingBox(90, -90, -180, 180), m_oWorldWindow.CurrentWorld, directory);
+         directory.LayerBuilders.Add(builder);
+      }
+   }
+
+   public class ArcIMSServerBuilder : ServerBuilder
+   {
+      string m_strCatalogPathname;
+
+      public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname, int iLayerImageIndex, int iDirectoryImageIndex)
+         : base(oUri.ToBaseUri(), parent, oUri, iLayerImageIndex, iDirectoryImageIndex)
+      {
+         m_strCatalogPathname = strCatalogPathname;
+      }
+
+      public string CatalogFilename
+      {
+         get
+         {
+            return m_strCatalogPathname;
+         }
+         set
+         {
+            m_strCatalogPathname = value;
+         }
+      }
+
+      public override bool SupportsMetaData
+      {
+         get
+         {
+            return false;
+         }
+      }
+
+      public override string StyleSheetName
+      {
+         get
+         {
+            return String.Empty;
+         }
+      }
+   }
+}

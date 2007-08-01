@@ -69,7 +69,12 @@
     <Compile Include="DAP\DAPGetData\ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="LayerGeneration\ArcIMSDownloading.cs" />
+    <Compile Include="LayerGeneration\ArcIMSQuadLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\ArcIMSCatalogBuilder.cs" />
+    <Compile Include="LayerGeneration\ArcIMSServiceBuilder.cs" />
     <Compile Include="LayerGeneration\GeorefImageLayerBuilder.cs" />
+    <Compile Include="LayerGeneration\Uris.cs" />
     <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -81,6 +86,12 @@
     </Compile>
     <Compile Include="Plugins\SkyGradient\SkyGradient.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Servers\AddArcIMS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Servers\AddArcIMS.designer.cs">
+      <DependentUpon>AddArcIMS.cs</DependentUpon>
     </Compile>
     <Compile Include="ServerTree.cs">
       <SubType>Component</SubType>
@@ -100,6 +111,10 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Servers\AddArcIMS.resx">
+      <DependentUpon>AddArcIMS.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Splash.resx">
       <SubType>Designer</SubType>
@@ -188,7 +203,6 @@
       <DependentUpon>frmProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="LayerGeneration\LayerBuilderContainer.cs" />
-    <Compile Include="LayerGeneration\TileSetBuilder.cs" />
     <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
     <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
@@ -552,6 +566,7 @@
     <None Include="Resources\import.png" />
     <None Include="Resources\georef_image.ico" />
     <Content Include="Resources\addserver.png" />
+    <None Include="Resources\arcims.bmp" />
     <Content Include="Resources\blue-marble.png" />
     <Content Include="Resources\blue-marble_checked.png" />
     <Content Include="Resources\blue-marble_unchecked.png" />
@@ -582,6 +597,7 @@
     <Content Include="Resources\folder_open.png" />
     <Content Include="Resources\help.png" />
     <Content Include="Resources\home.png" />
+    <Content Include="Resources\arcims.ico" />
     <Content Include="Resources\image-server-18x18.png" />
     <None Include="Resources\kml.ico" />
     <Content Include="Resources\layer.ico" />

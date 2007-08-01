@@ -465,14 +465,11 @@ namespace Dapple.LayerGeneration
 
          try
          {
-            if (strUri.StartsWith(GeorefImageLayerBuilder.URLProtocolName))
-               builder = GeorefImageLayerBuilder.GetBuilderFromURI(strUri, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
-            else if (strUri.StartsWith(VEQuadLayerBuilder.URLProtocolName))
-               builder = VEQuadLayerBuilder.GetBuilderFromURI(strUri, m_mainWnd, null);
-            else if (strUri.StartsWith(NltQuadLayerBuilder.URLProtocolName))
-               builder = NltQuadLayerBuilder.GetQuadLayerBuilderFromURI(strUri, MainApplication.Settings.CachePath, m_worldWindow.CurrentWorld, null);
-            else if (strUri.StartsWith(DAPQuadLayerBuilder.URISchemeName))
-               builder = DAPQuadLayerBuilder.GetBuilderFromURI(strUri, serverTree, MainApplication.Settings.CachePath, m_worldWindow, ref bOldView);
+            LayerUri oUri = LayerUri.create(strUri);
+            if (!oUri.IsValid)
+               throw new Exception("Invalid layer URI format");
+
+            builder = oUri.getBuilder( m_mainWnd, serverTree);
          }
          catch (Exception e)
          {
@@ -499,12 +496,12 @@ namespace Dapple.LayerGeneration
                if (front)
                {
                   Insert(0, container);
-                  treeNode = m_treeList.AddTop(null, strName, iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+                  treeNode = m_treeList.AddTop(null, strName + "[" + strError + "]", iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
                }
                else
                {
                   Add(container);
-                  treeNode = m_treeList.Add(null, strName, iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+                  treeNode = m_treeList.Add(null, strName + "[" + strError + "]", iImage, iImage, container.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
                }
                treeNode.Tag = container;
             }

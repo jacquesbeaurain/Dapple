@@ -380,7 +380,8 @@ namespace Dapple
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\" + LinkExt, "", "Dapple DataSetLink");
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink", "", "Geosoft Dapple Dataset Link XML");
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open", "", "Open Dapple Dataset Link");
-				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open\\Command", "", "\"" + DirectoryPath + "\" -datasetlink=\"%1\"");
+				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open\\Command", "", "\"" + AppDomain.CurrentDomain.BaseDirectory + "Dapple.exe\" -datasetlink=\"%1\"");
+            Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
 
 				this.dapErrors = new Geosoft.GX.DAPGetData.GetDapError(Path.Combine(Settings.CachePath, "DapErrors.log"));
 
@@ -706,52 +707,57 @@ namespace Dapple
 				this.toolStripMenuItemaddServer.Text = "Add DAP Server";
 				this.toolStripMenuItemaddServer.Tag = true;
 			}
-			else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
 			{
 				this.toolStripMenuItemaddServer.Text = "Add WMS Server";
 				this.toolStripMenuItemaddServer.Tag = true;
 			}
-			else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
-			{
-				this.toolStripMenuItemRefreshCatalog.Tag = true;
-				this.toolStripMenuItemremoveServer.Tag = true;
-			}
-			else if (this.tvServers.SelectedNode.Tag != null)
-			{
-				IBuilder builder = null;
-				Geosoft.Dap.Common.DataSet dapDataset = null;
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.ArcIMSRootNodes)
+         {
+            this.toolStripMenuItemaddServer.Text = "Add ArcIMS Server";
+            this.toolStripMenuItemaddServer.Tag = true;
+         }
+         else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+         {
+            this.toolStripMenuItemRefreshCatalog.Tag = true;
+            this.toolStripMenuItemremoveServer.Tag = true;
+         }
+         else if (this.tvServers.SelectedNode.Tag != null)
+         {
+            IBuilder builder = null;
+            Geosoft.Dap.Common.DataSet dapDataset = null;
 
-				if (this.tvServers.SelectedNode.Tag is IBuilder)
-					builder = this.tvServers.SelectedNode.Tag as IBuilder;
-				if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
-					dapDataset = this.tvServers.SelectedDAPDataset;
+            if (this.tvServers.SelectedNode.Tag is IBuilder)
+               builder = this.tvServers.SelectedNode.Tag as IBuilder;
+            if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
+               dapDataset = this.tvServers.SelectedDAPDataset;
 
-				if (builder is LayerBuilder || dapDataset != null)
-				{
-					this.toolStripMenuItemAddLayer.Tag = true;
-					this.toolStripMenuItemgoToServer.Tag = true;
-				}
+            if (builder is LayerBuilder || dapDataset != null)
+            {
+               this.toolStripMenuItemAddLayer.Tag = true;
+               this.toolStripMenuItemgoToServer.Tag = true;
+            }
 
-				if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is NltQuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
-					this.toolStripMenuItemremoveServer.Tag = true;
+            if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is NltQuadLayerBuilder || builder is ArcIMSQuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
+               this.toolStripMenuItemremoveServer.Tag = true;
 
-				if (builder != null)
-				{
-					this.toolStripMenuItemviewMetadataServer.Tag = builder.SupportsMetaData || builder is LayerBuilder;
-					this.toolStripMenuItemServerLegend.Tag = builder is LayerBuilder;
-					this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
-					this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
+            if (builder != null)
+            {
+               this.toolStripMenuItemviewMetadataServer.Tag = builder.SupportsMetaData || builder is LayerBuilder;
+               this.toolStripMenuItemServerLegend.Tag = builder is LayerBuilder;
+               this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
+               this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
 
-					if (builder is WMSServerBuilder)
-						this.toolStripMenuItemRefreshCatalog.Tag = true;
-				}
+               if (builder is WMSServerBuilder || builder is ArcIMSServerBuilder)
+                  this.toolStripMenuItemRefreshCatalog.Tag = true;
+            }
 
-				if (dapDataset != null)
-				{
-					this.toolStripMenuItemviewMetadataServer.Tag = true;
-					this.toolStripMenuItemviewMetadataServer.Enabled = true;
-				}
-			}
+            if (dapDataset != null)
+            {
+               this.toolStripMenuItemviewMetadataServer.Tag = true;
+               this.toolStripMenuItemviewMetadataServer.Enabled = true;
+            }
+         }
 
 			// Filter Separators
 			bool bAnyVisible = false;
@@ -1056,7 +1062,7 @@ namespace Dapple
 
 		void AddGeoTiff(string strGeoTiff, string strGeoTiffName, bool bTmp, bool bGoto)
 		{
-			LayerBuilder builder = new GeorefImageLayerBuilder(Settings.CachePath, strGeoTiff, bTmp, this.worldWindow.CurrentWorld, null);
+			LayerBuilder builder = new GeorefImageLayerBuilder(/*Settings.CachePath,*/ strGeoTiff, bTmp, this.worldWindow.CurrentWorld, null);
 
 			Cursor = Cursors.WaitCursor;
 			if (builder.GetLayer() != null)
@@ -1164,7 +1170,12 @@ namespace Dapple
 				Geosoft.GX.DAPGetData.Server oServer;
 				try
 				{
-					this.tvServers.AddDAPServer(dlg.Url, out oServer);
+               if (this.tvServers.AddDAPServer(dlg.Url, out oServer))
+               {
+                  Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
+                  t.Name = "Background add server thread";
+                  t.Start(new String[] { dlg.Url, "DAP" });
+               }
 				}
 				catch (Exception except)
 				{
@@ -1185,7 +1196,12 @@ namespace Dapple
 			   {
 				  try
 				  {
-					 this.tvServers.AddWMSServer(dlg.WmsURL, true);
+                 if (this.tvServers.AddWMSServer(dlg.WmsURL, true))
+                 {
+                    Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
+                    t.Name = "Background add server thread";
+                    t.Start(new String[] { dlg.WmsURL, "WMS" });
+                 }
 				  }
 				  catch (Exception except)
 				  {
@@ -1195,6 +1211,33 @@ namespace Dapple
 			   }
 			}
 		}
+
+      private void AddArcIMSServer()
+      {
+         TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(ArcIMSCatalogBuilder), this.tvServers.Nodes);
+
+         if (treeNode != null)
+         {
+            AddArcIMS dlg = new AddArcIMS(this.worldWindow, treeNode.Tag as ArcIMSCatalogBuilder);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+               try
+               {
+                  if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true))
+                  {
+                     Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
+                     t.Name = "Background add server thread";
+                     t.Start(new String[] { dlg.URL, "ArcIMS" });
+                  }
+               }
+               catch (Exception except)
+               {
+                  MessageBox.Show(this, "Error adding server \"" + dlg.URL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+               }
+               SaveLastView();
+            }
+         }         
+      }
 
 		private void toolStripMenuItemAddDAP_Click(object sender, EventArgs e)
 		{
@@ -1206,12 +1249,19 @@ namespace Dapple
 			AddWMSServer();
 		}
 
+      private void addAnArcIMSServerToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         AddArcIMSServer();
+      }
+
 		void toolStripMenuItemaddServer_Click(object sender, EventArgs e)
 		{
-			if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
-				AddDAPServer();
-			else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
-				AddWMSServer();
+         if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
+            AddDAPServer();
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
+            AddWMSServer();
+         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.ArcIMSRootNodes)
+            AddArcIMSServer();
 		}
 
 		#endregion
@@ -2780,7 +2830,7 @@ namespace Dapple
 					bFinishUpdate = true;
 					this.activeLayers.RemoveAll();
 
-					this.tvServers.LoadFromView(Path.GetFileNameWithoutExtension(filename), view);
+					this.tvServers.LoadFromView(view);
 
 					if (bLoadLayers && view.View.Hasactivelayers())
 					{
@@ -2837,7 +2887,7 @@ namespace Dapple
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			this.toolStripButtonFilterText.Enabled = false;
+         this.toolStripButtonFilterText.Enabled = false;
 			this.toolStripButtonClearFilter.Enabled = false;
 
 			this.worldWindow.IsRenderDisabled = false;
@@ -2872,13 +2922,13 @@ namespace Dapple
 			this.tvServers.Load();
 
 			// --- Configure DappleSearch if it's enabled ---
-			if (!Settings.DappleSearchURL.Equals(String.Empty) && Settings.DappleSearchURL != null)
+			if (Settings.DappleSearchURL != null && !Settings.DappleSearchURL.Equals(String.Empty))
 			{
-				//m_strDappleSearchServerURL = Settings.DappleSearchURL;
-				//DappleSearchToolbar.Visible = true;
-				//Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
-				//t.Name = "Background search thread";
-				//t.Start();
+				m_strDappleSearchServerURL = Settings.DappleSearchURL;
+				DappleSearchToolbar.Visible = true;
+				Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
+				t.Name = "Background search thread";
+				t.Start();
 			}
 		}
 
@@ -3450,6 +3500,7 @@ namespace Dapple
 		private enum SearchMode { Text, ROI, Dual };
 		private SearchMode searchMode = SearchMode.Dual;
 		private String SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
+      private String NEW_SERVER_GATEWAY = "AddNewServer.aspx";
 		private String SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
 		private String m_strDappleSearchServerURL = null;
 
@@ -3564,11 +3615,16 @@ namespace Dapple
 				catch (ThreadAbortException) { return; }
 				catch (ThreadInterruptedException) { return; }
 
+            if (this.IsDisposed) return;
+
 				try
 				{
 					currentAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
 				}
-				catch (NullReferenceException) { return; } // Assume because program is shutting down, so thread does too.
+				catch (NullReferenceException)
+            {
+               return;// Assume because program is shutting down, so thread does too.
+            } 
 
 				if (
 				   searchMode == mode
@@ -3728,6 +3784,7 @@ namespace Dapple
 
 			String serverType = displayMapElement.GetAttribute("type");
 			String serverURL = displayMapElement.GetAttribute("server");
+         if (!serverURL.Contains("?")) serverURL += "?";
 			String layerTitle = displayMapElement.GetAttribute("layertitle");
 			float minx = Single.Parse(displayMapElement.GetAttribute("minx"));
 			float miny = Single.Parse(displayMapElement.GetAttribute("miny"));
@@ -3746,7 +3803,7 @@ namespace Dapple
 				String strLevelZeroTilesize = displayMapElement.GetAttribute("levelzerotilesize");
 
 				String uri = "gxdap://" + serverURL +
-				   "?datasetname=" + HttpUtility.UrlEncode(layerName) +
+				   "&datasetname=" + HttpUtility.UrlEncode(layerName) +
 				   "&height=" + strHeight +
 				   "&size=" + strSize +
 				   "&type=" + datasetType +
@@ -3765,40 +3822,53 @@ namespace Dapple
 			}
 			else if (serverType.Equals("WMS"))
 			{
-				String layerName = displayMapElement.GetAttribute("layername");
+            String layerName = displayMapElement.GetAttribute("layername");
+            String strUri = "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256";
 
-				BuilderEntry sb = this.tvServers.GetWMSBuilderByURL(serverURL);
-				if (sb == null)
-				{
-					this.tvServers.AddWMSServer("http://" + serverURL, true);
-					bool oldView = false;
-					activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, true, this.tvServers, ref oldView);
-				}
-				else if (sb.Loading == false)
-				{
-					if (sb.Error)
-						MessageBox.Show("Unable to view layer: an error occurred while retrieving server configuration.  Refresh the server named \"" + sb.Builder.Name + "\", and then try viewing the layer again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					else
-					{
-						LayerBuilder builder = ((WMSServerBuilder)sb.Builder).GetLayerBuilderByName(layerTitle);
-						if (builder != null)
-							activeLayers.Add(layerTitle, builder, true, 255, true);
-						else
-							MessageBox.Show("Unable to view layer: server does not provide a layer named " + layerName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-				}
-				else
-				{
-					//If this thread is preempted here, and the layerbuilder loads, then this layer will never get loaded.
-					bool oldView = false;
-					activeLayers.AddUsingUri(layerTitle, "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256", true, 255, true, this.tvServers, ref oldView);
-				}
+            bool oldView = false;
+            activeLayers.AddUsingUri(layerTitle, strUri, true, 255, true, this.tvServers, ref oldView);
 			}
-			else
-			{
-				MessageBox.Show("Unable to view layer: unknown server type '" + serverType + "'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
+         else if (serverType.Equals("ArcIMS"))
+         {
+            String serviceName = displayMapElement.GetAttribute("servicename");
+            String strUri = "gxarcims://" + serverURL +
+               "&servicename=" + serviceName +
+               "&minx=" + minx.ToString() +
+               "&miny=" + miny.ToString() +
+               "&maxx=" + maxx.ToString() +
+               "&maxy=" + maxy.ToString();
+
+            bool oldView = false;
+            activeLayers.AddUsingUri(layerTitle, strUri, true, 255, true, this.tvServers, ref oldView);
+         }
+         else
+         {
+            MessageBox.Show("Unable to view layer: unknown server type '" + serverType + "'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+         }
 		}
+
+      private void submitServerToSearchEngine(object param)
+      {
+         try
+         {
+            XmlDocument query = new XmlDocument();
+            XmlElement geoRoot = query.CreateElement("geosoft_xml");
+            query.AppendChild(geoRoot);
+            XmlElement root = query.CreateElement("add_server");
+            root.SetAttribute("url", ((String[])param)[0]);
+            root.SetAttribute("type", ((String[])param)[1]);
+            geoRoot.AppendChild(root);
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_strDappleSearchServerURL + NEW_SERVER_GATEWAY);
+            request.Headers["GeosoftAddServerRequest"] = query.InnerXml;
+            WebResponse response = request.GetResponse();
+            response.Close();
+         }
+         catch (Exception e)
+         {
+            // Never crash, just silently fail to send the data to the server.
+         }
+      }
 
 		#endregion
 
