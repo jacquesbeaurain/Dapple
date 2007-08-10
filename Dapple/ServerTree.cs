@@ -23,7 +23,7 @@ namespace Dapple
 	public class ServerTree : Geosoft.GX.DAPGetData.ServerTree
 	{
 		#region Members
-		protected string m_strSearch;
+		protected string m_strSearch = String.Empty;
 		protected WorldWind.GeographicBoundingBox m_filterExtents;
 
 		protected TreeNode m_hRootNode;
@@ -374,7 +374,11 @@ namespace Dapple
 				m_hWMSRootNode.Tag = wmsBuilder;
 				wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
-            // CMTODO: Handle ArcIMS catalog
+            ArcIMSCatalogBuilder arcIMSBuilder = m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder;
+            arcIMSBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
+            arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
+            m_hArcIMSRootNode.Tag = arcIMSBuilder;
+            arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
 				foreach (TreeNode node in m_hRootNode.Nodes)
 					node.Nodes.Clear();

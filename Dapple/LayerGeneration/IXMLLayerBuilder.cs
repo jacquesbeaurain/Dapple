@@ -186,8 +186,10 @@ namespace Dapple.LayerGeneration
 
       #region Search
 
-      public void GetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText, ref int iCount)
+      private void GetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText, ref int iCount)
       {
+         if (strText == null) throw new ArgumentNullException("strText");
+
          foreach (IBuilder builder in SubList)
             (builder as BuilderDirectory).GetLayerCount(bInterSect, extents, strText, ref iCount);
          foreach (IBuilder builder in LayerBuilders)
@@ -208,6 +210,7 @@ namespace Dapple.LayerGeneration
       public int iGetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText)
       {
          int iCount = 0;
+         if (strText == null) strText = String.Empty;
 
          GetLayerCount(bInterSect, extents, strText, ref iCount);
 

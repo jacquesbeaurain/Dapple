@@ -132,17 +132,18 @@ namespace Dapple.LayerGeneration
 
             serverDir.List = oServer;
 
-            lock (m_oCatalogDownloadsInProgress.SyncRoot)
-            {
-               m_oCatalogDownloadsInProgress.Remove(download);
-            }
-
             serverDir.SetLoadSuccessful();
          }
          finally
          {
-            if (LoadFinished != null)
-               LoadFinished();
+            if (LoadFinished != null) LoadFinished();
+
+            lock (m_oCatalogDownloadsInProgress.SyncRoot)
+            {
+               m_oCatalogDownloadsInProgress.Remove(download);
+               // dispose the download to release the catalog file's lock
+               download.Dispose();
+            }
          }
       }
 
