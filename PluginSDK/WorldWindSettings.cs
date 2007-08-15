@@ -274,7 +274,7 @@ namespace WorldWind
 		#endregion
 
       #region DappleSearch settings
-      private String dappleSearchURL = String.Empty;
+      private String dappleSearchURL = "http://dapplesearch.geosoft.com/";
 
       public string DappleSearchURL
       {
@@ -285,6 +285,18 @@ namespace WorldWind
          set
          {
             dappleSearchURL = value;
+
+            if (dappleSearchURL.Trim().Equals(String.Empty)) dappleSearchURL = String.Empty;
+
+            if (!Uri.IsWellFormedUriString(dappleSearchURL, UriKind.Absolute))
+            {
+               dappleSearchURL = String.Empty;
+            }
+            else
+            {
+               Uri parse = new Uri(dappleSearchURL);
+               dappleSearchURL = "http://" + parse.Authority + "/";
+            }
          }
       }
       #endregion

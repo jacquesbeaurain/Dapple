@@ -2922,7 +2922,10 @@ namespace Dapple
 			this.tvServers.Load();
 
 			// --- Configure DappleSearch if it's enabled ---
-			if (Settings.DappleSearchURL != null && !Settings.DappleSearchURL.Equals(String.Empty))
+
+         if (Settings.DappleSearchURL == null) Settings.DappleSearchURL = "http://dapplesearch.geosoft.com/";
+
+			if (!Settings.DappleSearchURL.Equals(String.Empty))
 			{
 				m_strDappleSearchServerURL = Settings.DappleSearchURL;
 				DappleSearchToolbar.Visible = true;
