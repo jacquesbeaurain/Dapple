@@ -74,6 +74,23 @@ namespace Dapple.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Name,Minimum X,Minimum Y,Maximum X,Maximum Y,Coordinate System
+        ///Afghanistan,60.549075,29.40106,74.916112,38.401673,WGS 84
+        ///Albania,19.291174,39.658327,21.08184,42.665859,WGS 84
+        ///Algeria,-8.668257,19.149833,11.981782,36.917518,WGS 84
+        ///American Samoa,-170.15314,-14.433602,-169.871949,-14.290644,WGS 84
+        ///Andorra,1.427511,42.437628,1.725324,42.66056,WGS 84
+        ///Angola,11.756476,-17.952889,23.998623,-4.485261,WGS 84
+        ///Anguilla,-63.168392,18.163797,-62.970062,18.276025,WGS 84
+        ///Antarctica,-179.9854,-89.901447,180.823514 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string aoi_region {
+            get {
+                return ResourceManager.GetString("aoi_region", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Icon arcims {
             get {
                 object obj = ResourceManager.GetObject("arcims", resourceCulture);

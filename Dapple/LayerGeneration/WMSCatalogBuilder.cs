@@ -25,6 +25,7 @@ namespace Dapple.LayerGeneration
       private WorldWindow m_WorldWindow;
       private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable(); //<WebDownload, WMSServerBuilder>>
       private System.Collections.Hashtable m_oWMSListCache = new System.Collections.Hashtable(); //<WMSUri, WMSList>>
+      private int m_iDownloadIndex = 0;
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
@@ -52,7 +53,8 @@ namespace Dapple.LayerGeneration
          // queue up capabilities download
          string xmlPath = Path.Combine(savePath, "capabilities.xml");
 
-         WebDownload download = new WebDownload(oUri.ToCapabilitiesUri(), true);
+         IndexedWebDownload download = new IndexedWebDownload(oUri.ToCapabilitiesUri(), true, m_iDownloadIndex);
+         m_iDownloadIndex++;
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
@@ -60,7 +62,7 @@ namespace Dapple.LayerGeneration
          WMSServerBuilder dir = new WMSServerBuilder(this, oUri, xmlPath, m_iServerLayerImageIndex, m_iServerDirImageIndex);
          SubList.Add(dir);
          
-         m_oCatalogDownloadsInProgress.Add(download, dir);
+         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, dir);
          download.BackgroundDownloadFile();
 
          return dir;
@@ -95,7 +97,7 @@ namespace Dapple.LayerGeneration
       {
          try
          {
-            WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[download] as WMSServerBuilder;
+            WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[((IndexedWebDownload)download).IndexNumber] as WMSServerBuilder;
 
             if (!File.Exists(serverDir.CapabilitiesFilePath))
             {
@@ -140,8 +142,9 @@ namespace Dapple.LayerGeneration
 
             lock (m_oCatalogDownloadsInProgress.SyncRoot)
             {
-               m_oCatalogDownloadsInProgress.Remove(download);
+               m_oCatalogDownloadsInProgress.Remove(((IndexedWebDownload)download).IndexNumber);
                // dispose the download to release the catalog file's lock
+               download.IsComplete = true;
                download.Dispose();
             }
          }

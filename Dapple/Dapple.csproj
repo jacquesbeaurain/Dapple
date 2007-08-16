@@ -11,6 +11,24 @@
     <AssemblyName>Dapple</AssemblyName>
     <StartupObject>
     </StartupObject>
+    <ManifestCertificateThumbprint>90ED3252828314F7A9CE17A65EAE4693BEA5CA54</ManifestCertificateThumbprint>
+    <ManifestKeyFile>Dapple_TemporaryKey.pfx</ManifestKeyFile>
+    <GenerateManifests>false</GenerateManifests>
+    <SignManifests>true</SignManifests>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>http://gna-tec-cm/Dapple/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationVersion>1.9.0.%2a</ApplicationVersion>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -518,6 +536,7 @@
     <Content Include="Plugins\VirtualEarth\VirtualEarthPushPin.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Dapple_TemporaryKey.pfx" />
     <None Include="Data\LayerSet.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -563,10 +582,11 @@
     <None Include="Plugins\SkyGradient\Venus.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <BaseApplicationManifest Include="Properties\app.manifest" />
+    <None Include="Resources\aoi_region.csv" />
     <None Include="Resources\import.png" />
     <None Include="Resources\georef_image.ico" />
     <Content Include="Resources\addserver.png" />
-    <None Include="Resources\arcims.bmp" />
     <Content Include="Resources\blue-marble.png" />
     <Content Include="Resources\blue-marble_checked.png" />
     <Content Include="Resources\blue-marble_unchecked.png" />
@@ -711,6 +731,69 @@
       <Project>{394E6BC1-62F8-4776-9FC5-25633A239433}</Project>
       <Name>WorldWind</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PublishFile Include="Config\KMLImporter.xml">
+      <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Config\World.xml">
+      <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Config\WorldWind.xml">
+      <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Config\^Placenames.xml">
+      <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Scripts\AroundTheEquator.xml">
+      <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="Scripts\DisplayMessageTest01.xml">
+      <Visible>False</Visible>
+      <PublishState>Include</PublishState>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <FileType>File</FileType>
+    </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

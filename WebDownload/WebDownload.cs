@@ -864,4 +864,21 @@ namespace WorldWind.Net
 		}
 		#endregion
 	}
+
+   /// <summary>
+   /// A WebDownload with an index that's guaranteed unique because you set it yourself!
+   /// </summary>
+   public class IndexedWebDownload : WebDownload
+   {
+      private int m_iIndexNumber;
+
+      public IndexedWebDownload(int iIndexNumber) : base() { m_iIndexNumber = iIndexNumber; }
+      public IndexedWebDownload(String strUrl, int iIndexNumber) : base(strUrl) { m_iIndexNumber = iIndexNumber; }
+      public IndexedWebDownload(String strUrl, bool bXML, int iIndexNumber) : base(strUrl, bXML) { m_iIndexNumber = iIndexNumber; }
+
+      public int IndexNumber
+      {
+         get { return m_iIndexNumber; }
+      }
+   }
 }

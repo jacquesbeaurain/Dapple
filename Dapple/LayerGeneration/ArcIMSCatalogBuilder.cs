@@ -19,6 +19,7 @@ namespace Dapple.LayerGeneration
       private WorldWindow m_oWorldWindow;
       private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable();
       private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
+      private int m_iIndexGenerator = 0;
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
@@ -41,14 +42,15 @@ namespace Dapple.LayerGeneration
          // download the catalog
          String xmlPath = Path.Combine(savePath, "__catalog.xml");
 
-         WebDownload download = new ArcIMSCatalogDownload(oUri);
+         ArcIMSCatalogDownload download = new ArcIMSCatalogDownload(oUri, m_iIndexGenerator);
+         m_iIndexGenerator++;
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
          BuilderDirectory dir = new ArcIMSServerBuilder(this, oUri, xmlPath, m_iServerLayerImageIndex, m_iServerDirImageIndex);
          SubList.Add(dir);
 
-         m_oCatalogDownloadsInProgress.Add(download, dir);
+         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, dir);
          download.BackgroundDownloadFile();
 
          return dir;
@@ -73,7 +75,7 @@ namespace Dapple.LayerGeneration
       {
          try
          {
-            ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[download] as ArcIMSServerBuilder;
+            ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[((ArcIMSCatalogDownload)download).IndexNumber] as ArcIMSServerBuilder;
 
             if (!File.Exists(serverDir.CatalogFilename))
             {
@@ -119,8 +121,9 @@ namespace Dapple.LayerGeneration
 
             lock (m_oCatalogDownloadsInProgress.SyncRoot)
             {
-               m_oCatalogDownloadsInProgress.Remove(download);
+               m_oCatalogDownloadsInProgress.Remove(((ArcIMSCatalogDownload)download).IndexNumber);
                // dispose the download to release the catalog file's lock
+               download.IsComplete = true;
                download.Dispose();
             }
          }

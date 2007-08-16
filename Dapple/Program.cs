@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DM.SharedMemory;
 using Utility;
+using WorldWind;
 
 namespace Dapple
 {
@@ -27,6 +28,8 @@ namespace Dapple
             bool bAbort = false;
             string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "";
             bool bGeotiffTmp = false;
+            int iMontajPort = 0;
+            GeographicBoundingBox oAoi = null;
 
             // Command line parsing
             CommandLineArguments cmdl = new CommandLineArguments(args);
@@ -87,6 +90,46 @@ namespace Dapple
 
             if (cmdl["datasetlink"] != null)
                strDatasetLink = Path.GetFullPath(cmdl["datasetlink"]);
+
+            if (cmdl["montajport"] != null)
+            {
+               iMontajPort = int.Parse(cmdl["montajport"]);
+               MessageBox.Show("I've been invoked by Oasis Montaj, and I have to call home on port " + iMontajPort, "Remoting notification");
+               return;
+            }
+
+            if (cmdl["aoi"] != null)
+            {
+               String[] strValues = cmdl["aoi"].Split(new char[] { ',' });
+               if (strValues.Length != 4)
+               {
+                  MessageBox.Show("Error in AOI command-line argument: incorrect number of components");
+                  return;
+               }
+
+               try
+               {
+                  double dMinX = double.Parse(strValues[0]);
+                  double dMinY = double.Parse(strValues[1]);
+                  double dMaxX = double.Parse(strValues[2]);
+                  double dMaxY = double.Parse(strValues[3]);
+
+                  oAoi = new GeographicBoundingBox(dMaxY, dMinY, dMinX, dMaxX);
+               }
+               catch (FormatException)
+               {
+                  MessageBox.Show("Error in AOI command-line argument: number format incorrect");
+                  return;
+               }
+
+               if (oAoi.North < oAoi.South || oAoi.East < oAoi.West ||
+                  oAoi.North < -90  || oAoi.East < -180 || oAoi.South < -90 || oAoi.West < -180 ||
+                  oAoi.North > 90 || oAoi.East > 180 || oAoi.South > 90 || oAoi.West > 180)
+               {
+                  MessageBox.Show("Error in AOI command-line argument: invalid bounding box");
+                  return;
+               }
+            }
          
             // From now on in own path please and free the console
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
@@ -120,7 +163,7 @@ namespace Dapple
 
                if (RunningInstance() == null)
                {
-                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink));
+                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, iMontajPort, oAoi));
                }
                else
                {

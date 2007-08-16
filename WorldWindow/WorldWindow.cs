@@ -561,6 +561,12 @@ namespace WorldWind
 
          // Maximum visibility
          double dMaxAngle = Math.Acos(dRadius / (dRadius + dAlt)) * Rad2Deg;
+         
+         // If the angle is large enough, just say we're looking at the whole world
+         if (dMaxAngle > 67)
+         {
+            return new GeographicQuad(-180.0, -90.0, 180.0, -90.0, 180.0, 90.0, -180.0, 90.0);
+         }
 
          double H_Range, D_Range;
          double dHRatio = (dAlt + dRadius) * Math.Sin(HVangle * Deg2Rad) / dRadius;

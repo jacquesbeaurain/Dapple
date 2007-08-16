@@ -170,6 +170,7 @@ namespace WorldWind
 		private void RenderViewBox(Graphics g)
 		{
          Point[] pts = new Point[4];
+
          GeographicQuad viewBox = m_WorldWindow.GetViewBox(false);
          double halfVr = m_WorldWindow.DrawArgs.WorldCamera.ViewRange.Degrees * 0.5;
 

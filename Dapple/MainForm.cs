@@ -29,6 +29,7 @@ using System.Net;
 using WorldWind.Configuration;
 using WorldWind.PluginEngine;
 using Utility;
+using Dapple.Properties;
 
 namespace Dapple
 {
@@ -132,6 +133,10 @@ namespace Dapple
 		private int iOverviewPanelLastMinSize, iOverviewPanelLastPos;
       
 		*/
+
+      private int m_iMontajPort;
+      private GeographicBoundingBox m_oAoi;
+      private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
 		#endregion
 
 		#region Properties
@@ -223,11 +228,16 @@ namespace Dapple
 			}
 		}
 
+      private bool IsMontajChildProcess
+      {
+         get { return m_iMontajPort != 0; }
+      }
+
 		#endregion
 
 		#region Constructor
 
-		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink)
+		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, int iMontajPort, GeographicBoundingBox oAoi)
 		{
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
 				this.openView = strView;
@@ -235,6 +245,7 @@ namespace Dapple
 			this.openGeoTiffName = strGeotiffName;
 			this.openGeoTiffTmp = bGeotiffTmp;
 			this.lastView = strLastView;
+         this.m_iMontajPort = iMontajPort;
 
 			// Establish the version number string used for user display,
 			// such as the Splash and Help->About screens.
@@ -316,10 +327,7 @@ namespace Dapple
 				//	   and so that XML file on disk matches in-memory settings?
 			}
 
-
-#if !DEBUG
          Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
-#endif
 
 			using (this.splashScreen = new Splash())
 			{
@@ -563,7 +571,21 @@ namespace Dapple
 				// Force initial render to avoid showing random contents of frame buffer to user.
 				worldWindow.Render();
 				WorldWindow.Focus();
-			}
+
+            #region OM Forked Process configuration
+
+            if (IsMontajChildProcess)
+            {
+               cExtractButton.Visible = true;
+               this.Text = "Oasis Montaj get data dialog";
+               m_oAoi = oAoi;
+            }
+
+            #endregion
+
+            loadCountryList();
+            populateAoiComboBox();
+         }
 		}
 		#endregion
 
@@ -1378,7 +1400,7 @@ namespace Dapple
 
 		#region Render Order
 
-		private void toolStripMenuItemButtonAtBottom_Click(object sender, EventArgs e)
+		/*private void toolStripMenuItemButtonAtBottom_Click(object sender, EventArgs e)
 		{
 			if (LayerBuilderItem != null && !this.activeLayers.IsBottom(LayerBuilderItem))
 			{
@@ -1424,7 +1446,7 @@ namespace Dapple
 				else
 					LayerBuilderItem = null;
 			}
-		}
+		}*/
 
 		#endregion
 
@@ -2623,6 +2645,48 @@ namespace Dapple
 			treeNode.Tag = builder;
 		}
 
+      private void loadCountryList()
+      {
+         if (m_oCountryAOIs == null)
+         {
+            m_oCountryAOIs = new Dictionary<string, GeographicBoundingBox>();
+            String[] straCountries = Resources.aoi_region.Split(new String[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            for (int count = 1; count < straCountries.Length - 1; count++)
+            {
+               String[] data = straCountries[count].Split(new char[] { ',' });
+               m_oCountryAOIs.Add(data[0], new GeographicBoundingBox(double.Parse(data[4]), double.Parse(data[2]), double.Parse(data[1]), double.Parse(data[3])));
+            }
+         }
+      }
+
+      private void populateAoiComboBox()
+      {
+         cAoiList.BeginUpdate();
+
+         cAoiList.Items.Clear();
+         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Go to specific AOI", null));
+         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Whole world", new GeographicBoundingBox()));
+         if (IsMontajChildProcess && m_oAoi != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Area of interest", m_oAoi));
+
+         foreach (KeyValuePair<String, GeographicBoundingBox> country in m_oCountryAOIs)
+         {
+            cAoiList.Items.Add(country);
+         }
+
+         cAoiList.SelectedIndex = 0;
+         cAoiList.DisplayMember = "Key";
+
+         cAoiList.EndUpdate();
+      }
+
+      private void cAoiList_SelectedIndexChanged(object sender, EventArgs e)
+      {
+         if (cAoiList.SelectedIndex == 0) return;
+
+         GoTo(((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value, 0.0);
+         cAoiList.SelectedIndex = 0;
+      }
+
 		#endregion
 
 		#region Open/Save View Methods
@@ -2923,16 +2987,19 @@ namespace Dapple
 
 			// --- Configure DappleSearch if it's enabled ---
 
-         if (Settings.DappleSearchURL == null) Settings.DappleSearchURL = "http://dapplesearch.geosoft.com/";
+         if (!IsMontajChildProcess)
+         {
+            if (Settings.DappleSearchURL == null) Settings.DappleSearchURL = "http://dapplesearch.geosoft.com/";
 
-			if (!Settings.DappleSearchURL.Equals(String.Empty))
-			{
-				m_strDappleSearchServerURL = Settings.DappleSearchURL;
-				DappleSearchToolbar.Visible = true;
-				Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
-				t.Name = "Background search thread";
-				t.Start();
-			}
+            if (!Settings.DappleSearchURL.Equals(String.Empty))
+            {
+               m_strDappleSearchServerURL = Settings.DappleSearchURL;
+               DappleSearchToolbar.Visible = true;
+               Thread t = new Thread(new ThreadStart(BackgroundSearchThreadMain));
+               t.Name = "Background search thread";
+               t.Start();
+            }
+         }
 		}
 
 		void MainForm_Closing(object sender, CancelEventArgs e)
@@ -3509,7 +3576,7 @@ namespace Dapple
 
 		private void DappleSearchKeyword_KeyPress(object sender, KeyPressEventArgs e)
 		{
-			if (((ushort)e.KeyChar) == 13) ViewSearchResults(); // return key pressed
+			if (((ushort)e.KeyChar) == 13) ViewSearchResults(); // enter key pressed
 		}
 
 		private void textToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3639,7 +3706,7 @@ namespace Dapple
 				{
 					if (!searchCompleted)
 					{
-						DappleSearchResultsLabel.Text = "Hits: <searching...>";
+						setDappleSearchResultsLabelTextGlobal("Hits: <searching...>");
 						int hits, error;
 
 						doBackgroundSearch(out hits,
@@ -3648,12 +3715,12 @@ namespace Dapple
 							searchMode == SearchMode.Text ? null : currentAoI);
 
 						if (error == 0)
-							DappleSearchResultsLabel.Text = "Hits: " + hits;
+							setDappleSearchResultsLabelTextGlobal("Hits: " + hits);
 						else if (error > 0)
-							DappleSearchResultsLabel.Text = "Hits: <ERROR " + error + ">";
+							setDappleSearchResultsLabelTextGlobal("Hits: <ERROR " + error + ">");
 						else
 						{
-							DappleSearchResultsLabel.Text = "ERROR CONTACTING SEARCH SERVER";
+							setDappleSearchResultsLabelTextGlobal("ERROR CONTACTING SEARCH SERVER");
 							DappleSearchGoButton.Enabled = false;
 						}
 						searchCompleted = true;
@@ -3662,13 +3729,31 @@ namespace Dapple
 				else
 				{
 					searchCompleted = false;
-					DappleSearchResultsLabel.Text = "Hits: <waiting...>";
+					setDappleSearchResultsLabelTextGlobal("Hits: <waiting...>");
 					lastAoI = currentAoI;
 					keyword = DappleSearchKeyword.Text;
 					mode = searchMode;
 				}
 			}
 		}
+
+      private void setDappleSearchResultsLabelTextGlobal(String text)
+      {
+         if (InvokeRequired)
+         {
+            Invoke(new UpdateTextDelegate(setDappleSearchResultsLabelTextLocal), new Object[] { text });
+         }
+         else
+         {
+            setDappleSearchResultsLabelTextLocal(text);
+         }
+      }
+
+      delegate void UpdateTextDelegate(String text);
+      private void setDappleSearchResultsLabelTextLocal(String text)
+      {
+         DappleSearchResultsLabel.Text = text;
+      }
 
 		private void doBackgroundSearch(out int hits, out int error, String keywords, GeographicBoundingBox ROI)
 		{
@@ -3702,32 +3787,53 @@ namespace Dapple
 
 			// --- Do the request ---
 
-			try
-			{
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_strDappleSearchServerURL + SEARCH_XML_GATEWAY);
-				request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;
-				WebResponse response = request.GetResponse();
+         try
+         {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_strDappleSearchServerURL + SEARCH_XML_GATEWAY);
+            request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;
+            WebResponse response = request.GetResponse();
 
-				XmlDocument responseXML = new XmlDocument();
-				responseXML.Load(response.GetResponseStream());
+            XmlDocument responseXML = new XmlDocument();
+            responseXML.Load(response.GetResponseStream());
 
-				System.Xml.XPath.XPathNavigator navcom = responseXML.CreateNavigator();
-				if (navcom.MoveToFollowing("error", ""))
-				{
-					String errorString = navcom.GetAttribute("code", "");
-					hits = -1;
-					error = Int32.Parse(errorString);
-				}
-				else
-				{
-					navcom.MoveToFollowing("search_result", "");
-					String countString = navcom.GetAttribute("totalcount", "");
-					hits = Int32.Parse(countString);
-					error = 0;
-				}
-			}
-			catch (WebException) { hits = 0; error = -1; return; }
-			catch (IOException) { hits = 0; error = -2; return; }
+            System.Xml.XPath.XPathNavigator navcom = responseXML.CreateNavigator();
+            if (navcom.MoveToFollowing("error", ""))
+            {
+               String errorString = navcom.GetAttribute("code", "");
+               hits = -1;
+               error = Int32.Parse(errorString);
+            }
+            else
+            {
+               navcom.MoveToFollowing("search_result", "");
+               String countString = navcom.GetAttribute("totalcount", "");
+               hits = Int32.Parse(countString);
+               error = 0;
+            }
+         }
+         catch (Exception e)
+         {
+            StringBuilder dump = new StringBuilder();
+            dump.Append("================================================================================" + Environment.NewLine);
+            dump.Append("Exception caused by background search thread at " + System.DateTime.Now + Environment.NewLine);
+            Exception iter = e;
+            while (e != null)
+            {
+               dump.Append("--------------------------------------------------------------------------------" + Environment.NewLine);
+               dump.Append("Type: " + e.GetType().ToString() + Environment.NewLine);
+               dump.Append("Message: " + e.Message + Environment.NewLine);
+               dump.Append("StackTrace:" + Environment.NewLine);
+               dump.Append(e.StackTrace + Environment.NewLine);
+
+               e = e.InnerException;
+            }
+
+            dump.Append("================================================================================" + Environment.NewLine);
+
+            File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "errordump.txt"), dump.ToString());
+
+            hits = 0; error = -1; return;
+         }
 		}
 
 		private void WorldResultsSplitPanel_SplitterMoving(object sender, SplitterCancelEventArgs e)
@@ -3984,12 +4090,14 @@ namespace Dapple
 
 		#endregion
 
-#if !DEBUG
       /// <summary>
 		/// Occurs when an un-trapped thread exception is thrown, typically in UI event handlers.
 		/// </summary>
 		private static void Application_ThreadException( object sender, System.Threading.ThreadExceptionEventArgs e )
 		{
+#if DEBUG
+         Log.Write(e.Exception);
+#else
 			Log.Write( e.Exception );
 
 			//HACK
@@ -3997,8 +4105,12 @@ namespace Dapple
 				return;
 
 			Utility.AbortUtility.Abort(e.Exception, Thread.CurrentThread);
+#endif
 		}
 
-#endif
+      private void cExtractButton_Click(object sender, EventArgs e)
+      {
+         MessageBox.Show("I'm Ryan's fancy dialog!", "Dialog++", MessageBoxButtons.OK);
+      }
 	}
 }

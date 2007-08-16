@@ -29,7 +29,7 @@ namespace Dapple.LayerGeneration
          Tile.IsDownloadingImage = true;
 
          Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
-         download = new ArcIMSImageDownload(m_imageStore as ArcIMSImageStore, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South));
+         download = new ArcIMSImageDownload(m_imageStore as ArcIMSImageStore, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), 0);
          download.DownloadType = DownloadType.Unspecified;
          download.SavedFilePath = m_localFilePath + ".tmp";
          download.ProgressCallback += new DownloadProgressHandler(UpdateProgress);
@@ -182,14 +182,14 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public abstract class ArcIMSDownload : WebDownload
+   public abstract class ArcIMSDownload : IndexedWebDownload
    {
       protected ArcIMSServerUri m_oUri;
 
       protected abstract XmlDocument RequestDocument { get; }
       protected abstract String TargetUrl { get; }
 
-      protected ArcIMSDownload(ArcIMSServerUri oUri) : base(oUri.ToBaseUri())
+      protected ArcIMSDownload(ArcIMSServerUri oUri, int iIndexNumber) : base(oUri.ToBaseUri(), iIndexNumber)
       {
          m_oUri = oUri;
       }
@@ -252,8 +252,8 @@ namespace Dapple.LayerGeneration
       private ArcIMSImageStore m_oImageStore;
       private Geosoft.Dap.Common.BoundingBox m_oEnvelope;
 
-      public ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope)
-         :base(oImageStore.ServerUri)
+      public ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber)
+         :base(oImageStore.ServerUri, iIndexNumber)
       {
          m_oImageStore = oImageStore;
          m_oEnvelope = oEnvelope;
@@ -314,8 +314,8 @@ namespace Dapple.LayerGeneration
 
    public class ArcIMSCatalogDownload : ArcIMSDownload
    {
-      public ArcIMSCatalogDownload(ArcIMSServerUri serverUri)
-         :base(serverUri)
+      public ArcIMSCatalogDownload(ArcIMSServerUri serverUri, int iIndexNumber)
+         :base(serverUri, iIndexNumber)
       {
       }
 
@@ -344,8 +344,8 @@ namespace Dapple.LayerGeneration
    {
       private String m_strServiceName;
 
-      public ArcIMSServiceDownload(ArcIMSServerUri oUri, String serviceName)
-         : base(oUri)
+      public ArcIMSServiceDownload(ArcIMSServerUri oUri, String serviceName, int iIndexNumber)
+         : base(oUri, iIndexNumber)
       {
          m_strServiceName = serviceName;
       }
