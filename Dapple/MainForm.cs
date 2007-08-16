@@ -30,6 +30,7 @@ using WorldWind.Configuration;
 using WorldWind.PluginEngine;
 using Utility;
 using Dapple.Properties;
+using MontajRemote;
 
 namespace Dapple
 {
@@ -134,7 +135,7 @@ namespace Dapple
       
 		*/
 
-      private int m_iMontajPort;
+      private RemoteInterface m_oMontajRemoteInterface;
       private GeographicBoundingBox m_oAoi;
       private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
 		#endregion
@@ -230,14 +231,14 @@ namespace Dapple
 
       private bool IsMontajChildProcess
       {
-         get { return m_iMontajPort != 0; }
+         get { return m_oMontajRemoteInterface != null; }
       }
 
 		#endregion
 
 		#region Constructor
 
-		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, int iMontajPort, GeographicBoundingBox oAoi)
+		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, RemoteInterface oMRI, GeographicBoundingBox oAoi)
 		{
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
 				this.openView = strView;
@@ -245,7 +246,7 @@ namespace Dapple
 			this.openGeoTiffName = strGeotiffName;
 			this.openGeoTiffTmp = bGeotiffTmp;
 			this.lastView = strLastView;
-         this.m_iMontajPort = iMontajPort;
+         this.m_oMontajRemoteInterface = oMRI;
 
 			// Establish the version number string used for user display,
 			// such as the Splash and Help->About screens.

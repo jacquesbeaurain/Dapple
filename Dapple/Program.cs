@@ -28,7 +28,7 @@ namespace Dapple
             bool bAbort = false;
             string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "";
             bool bGeotiffTmp = false;
-            int iMontajPort = 0;
+            MontajRemote.RemoteInterface oRemoteInterface = null;
             GeographicBoundingBox oAoi = null;
 
             // Command line parsing
@@ -93,9 +93,39 @@ namespace Dapple
 
             if (cmdl["montajport"] != null)
             {
-               iMontajPort = int.Parse(cmdl["montajport"]);
-               MessageBox.Show("I've been invoked by Oasis Montaj, and I have to call home on port " + iMontajPort, "Remoting notification");
-               return;
+               int iMontajPort = int.Parse(cmdl["montajport"]);
+
+               int iPort = 2501;
+
+               if (cmdl["dummyserver"] != null)
+               {
+                  System.Runtime.Remoting.Channels.Ipc.IpcChannel oClientChannel = new System.Runtime.Remoting.Channels.Ipc.IpcChannel(String.Format("localhost:{0}", iPort));
+                  System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(oClientChannel, true);
+                  System.Runtime.Remoting.RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+               }
+               else
+               {
+                  System.Runtime.Remoting.Channels.Ipc.IpcChannel oClientChannel = new System.Runtime.Remoting.Channels.Ipc.IpcChannel();
+                  System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(oClientChannel, true);
+               }
+
+               oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iPort));
+               try
+               {
+                  bool ok = oRemoteInterface.CheckRequirements(318845779);
+               }
+               catch (System.Runtime.Remoting.RemotingException e)
+               {
+                  ErrorDisplay errorDialog = new ErrorDisplay();
+                  errorDialog.errorMessages
+                     (
+                     "Error initializing IPC:\n" + Environment.NewLine +
+                     "Exception: " + e.GetType().ToString() + Environment.NewLine +
+                     "Message: " + e.Message
+                     );
+                  Application.Run(errorDialog);
+                  return;
+               }
             }
 
             if (cmdl["aoi"] != null)
@@ -163,7 +193,7 @@ namespace Dapple
 
                if (RunningInstance() == null)
                {
-                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, iMontajPort, oAoi));
+                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, oRemoteInterface, oAoi));
                }
                else
                {
