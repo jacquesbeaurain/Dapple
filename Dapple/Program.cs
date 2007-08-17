@@ -22,13 +22,16 @@ namespace Dapple
       {
 #if !DEBUG
          bool aborting = false;
-         try
 #endif
+
+         MontajRemote.RemoteInterface oRemoteInterface = null;
+
+         try
          {
             bool bAbort = false;
             string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "";
             bool bGeotiffTmp = false;
-            MontajRemote.RemoteInterface oRemoteInterface = null;
+            
             GeographicBoundingBox oAoi = null;
 
             // Command line parsing
@@ -112,7 +115,7 @@ namespace Dapple
                oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iPort));
                try
                {
-                  bool ok = oRemoteInterface.CheckRequirements(318845779);
+                  oRemoteInterface.StartConnection();
                }
                catch (System.Runtime.Remoting.RemotingException e)
                {
@@ -126,6 +129,7 @@ namespace Dapple
                   Application.Run(errorDialog);
                   return;
                }
+               MessageBox.Show("I've connected to OM");
             }
 
             if (cmdl["aoi"] != null)
@@ -153,14 +157,14 @@ namespace Dapple
                }
 
                if (oAoi.North < oAoi.South || oAoi.East < oAoi.West ||
-                  oAoi.North < -90  || oAoi.East < -180 || oAoi.South < -90 || oAoi.West < -180 ||
+                  oAoi.North < -90 || oAoi.East < -180 || oAoi.South < -90 || oAoi.West < -180 ||
                   oAoi.North > 90 || oAoi.East > 180 || oAoi.South > 90 || oAoi.West > 180)
                {
                   MessageBox.Show("Error in AOI command-line argument: invalid bounding box");
                   return;
                }
             }
-         
+
             // From now on in own path please and free the console
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
             Application.EnableVisualStyles();
@@ -230,6 +234,10 @@ namespace Dapple
                Utility.AbortUtility.Abort(caught, Thread.CurrentThread);
          }
 #endif
+         finally
+         {
+            if (oRemoteInterface != null) oRemoteInterface.EndConnection();
+         }
       }
 
       public static void PrintUsage()
