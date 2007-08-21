@@ -13,8 +13,8 @@
     </StartupObject>
     <ManifestCertificateThumbprint>90ED3252828314F7A9CE17A65EAE4693BEA5CA54</ManifestCertificateThumbprint>
     <ManifestKeyFile>Dapple_TemporaryKey.pfx</ManifestKeyFile>
-    <GenerateManifests>false</GenerateManifests>
-    <SignManifests>false</SignManifests>
+    <GenerateManifests>true</GenerateManifests>
+    <SignManifests>true</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <TargetZone>LocalIntranet</TargetZone>
     <PublishUrl>http://gna-tec-cm/Dapple/</PublishUrl>
@@ -598,7 +598,6 @@
     <None Include="Plugins\SkyGradient\Venus.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="Resources\aoi_region.csv" />
     <None Include="Resources\import.png" />
     <None Include="Resources\georef_image.ico" />
