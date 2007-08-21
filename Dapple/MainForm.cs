@@ -31,6 +31,7 @@ using WorldWind.PluginEngine;
 using Utility;
 using Dapple.Properties;
 using MontajRemote;
+using System.Collections;
 
 namespace Dapple
 {
@@ -535,8 +536,14 @@ namespace Dapple
 				this.tvLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tvLayers_MouseDoubleClick);
 
 				this.activeLayers = new LayerBuilderList(this, this.tvLayers, this.worldWindow);
+            this.tvLayers.DragOver += new DragEventHandler(this.activeLayers.HandleDragOver);
+            this.tvLayers.DragDrop += new DragEventHandler(this.activeLayers.HandleDragDrop);
+            this.tvLayers.AllowDrop = true;
+            this.tvLayers.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.LayerSelected);
 
 				this.tvServers = new ServerTree(Settings.CachePath, this, this.tvLayers, this.activeLayers);
+            this.tvServers.AfterSelect += new TreeViewEventHandler(this.ServerTreeAfterSelected);
+            this.activeLayers.ServerTree = this.tvServers;
 				this.tvServers.RMBContextMenuStrip = this.contextMenuStripServers;
 				this.tvServers.Dock = System.Windows.Forms.DockStyle.Fill;
 				this.tvServers.ImageIndex = 0;
@@ -548,16 +555,16 @@ namespace Dapple
 
 				this.tvLayers.ImageList = this.tvServers.ImageList;
 
-				this.panelServer.SuspendLayout();
+				this.cServerTreeView.SuspendLayout();
 				this.panelLayers.SuspendLayout();
 
-				this.panelServer.Controls.Add(this.tvServers);
+            this.cServerTreeView.Controls.Add(this.tvServers);
 				this.panelLayers.Controls.Add(this.tvLayers);
 
-				this.panelServer.ResumeLayout(false);
+            this.cServerTreeView.ResumeLayout(false);
 				this.panelLayers.ResumeLayout(false);
 				this.ResumeLayout(false);
-				this.panelServer.PerformLayout();
+            this.cServerTreeView.PerformLayout();
 				this.panelLayers.PerformLayout();
 
 				#endregion
@@ -1736,6 +1743,9 @@ namespace Dapple
 			// Load datasetlink, now that everything is laid out
 			if (strLayerToLoad.Length > 0)
 				OpenDatasetLink(strLayerToLoad);
+
+         if (m_oAoi != null)
+            GoTo(m_oAoi, 0);
 		}
 
 		bool m_bSizing = false;
@@ -1781,6 +1791,22 @@ namespace Dapple
 					this.overviewCtl.Refresh();
 			}
 		}
+
+      private void cWorldMetadataSplitter_SplitterMoving(object sender, SplitterCancelEventArgs e)
+      {
+         this.worldWindow.Visible = false;
+      }
+
+      private void cWorldMetadataSplitter_SplitterMoved(object sender, SplitterEventArgs e)
+      {
+         this.worldWindow.Visible = true;
+         this.worldWindow.SafeRender();
+      }
+
+      private void WorldResultsSplitPanel_Panel1_Resize(object sender, EventArgs e)
+      {
+         CenterNavigationToolStrip();
+      }
 
 
 		private void toolStripMenuItemeditBlueMarble_Click(object sender, EventArgs e)
@@ -1946,6 +1972,11 @@ namespace Dapple
 			this.scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
 			//this.measureToolToolStripMenuItem.Checked = this.measurePlugin.layer.IsOn;
 		}
+
+      void ServerTreeAfterSelected(object sender, TreeViewEventArgs e)
+      {
+         populateAoiComboBox();
+      }
 
 		#endregion
 
@@ -2665,13 +2696,33 @@ namespace Dapple
          cAoiList.BeginUpdate();
 
          cAoiList.Items.Clear();
-         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Go to specific AOI", null));
+         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Go to specific AOI ---", null));
          cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Whole world", new GeographicBoundingBox()));
          if (IsMontajChildProcess && m_oAoi != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Area of interest", m_oAoi));
 
-         foreach (KeyValuePair<String, GeographicBoundingBox> country in m_oCountryAOIs)
+         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
-            cAoiList.Items.Add(country);
+            cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- AOIs from DAP Server ---", null));
+            ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetAreaList();
+            foreach (String strAOI in aAOIs)
+            {
+               double minX, minY, maxX, maxY;
+               String strCoord;
+               ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetBoundingBox(strAOI, out minX, out minY, out maxX, out maxY, out strCoord);
+               if (strCoord.Equals("WGS 84"))
+               {
+                  GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
+                  cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
+               }
+            }
+         }
+         else
+         {
+            cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Countries of the World ---", null));
+            foreach (KeyValuePair<String, GeographicBoundingBox> country in m_oCountryAOIs)
+            {
+               cAoiList.Items.Add(country);
+            }
          }
 
          cAoiList.SelectedIndex = 0;
@@ -2682,10 +2733,10 @@ namespace Dapple
 
       private void cAoiList_SelectedIndexChanged(object sender, EventArgs e)
       {
-         if (cAoiList.SelectedIndex == 0) return;
-
-         GoTo(((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value, 0.0);
-         cAoiList.SelectedIndex = 0;
+         if (((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value != null)
+         {
+            GoTo(((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value, 0.0);
+         }
       }
 
 		#endregion
@@ -2923,9 +2974,6 @@ namespace Dapple
 				this.tvLayers.EndUpdate();
 			if (bOldView)
 				MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			this.toolStripButtonClearFilter.Enabled = false;
-			m_strLastSearchText = "";
-			this.toolStripFilterText.ForeColor = SystemColors.GrayText;
 			return true;
 		}
 
@@ -2952,8 +3000,6 @@ namespace Dapple
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-         this.toolStripButtonFilterText.Enabled = false;
-			this.toolStripButtonClearFilter.Enabled = false;
 
 			this.worldWindow.IsRenderDisabled = false;
 
@@ -3040,7 +3086,7 @@ namespace Dapple
 
 			this.worldWindow.Dispose();
 
-			this.panelServer.Controls.Remove(this.tvServers);
+			this.cServerTreeView.Controls.Remove(this.tvServers);
 			this.tvServers.Dispose();
 		}
 
@@ -3376,7 +3422,7 @@ namespace Dapple
 		#endregion
 
 		#region Spatial and Text Filtering
-
+/*
 		private string m_strLastSearchText = "";
 		private GeographicBoundingBox m_extentsLastSearch = null;
 		public static void CountTreeNodeDatasets(TreeNodeCollection col, ref int iDatasets)
@@ -3443,7 +3489,7 @@ namespace Dapple
 			else
 				this.toolStripFilterText.ForeColor = SystemColors.GrayText;
 		}
-
+      */
 		#endregion
 
 		#region Blue Marble
@@ -4112,6 +4158,129 @@ namespace Dapple
       private void cExtractButton_Click(object sender, EventArgs e)
       {
          MessageBox.Show("I'm Ryan's fancy dialog!", "Dialog++", MessageBoxButtons.OK);
+      }
+
+      private void cSearchTextComboBox_KeyPress(object sender, KeyPressEventArgs e)
+      {
+         if (e.KeyChar.Equals((char)13))
+         {
+            doSearch();
+         }
+      }
+
+      private void cSearchButton_Click(object sender, EventArgs e)
+      {
+         doSearch();
+      }
+
+      private void doSearch()
+      {
+         cSearchTextComboBox.Text = cSearchTextComboBox.Text.Trim();
+         if (cSearchTextComboBox.Text.Equals(String.Empty)) return;
+
+         if (!cSearchTextComboBox.Items.Contains(cSearchTextComboBox.Text))
+         {
+            cSearchTextComboBox.Items.Add(cSearchTextComboBox.Text);
+         }
+
+         MessageBox.Show("Search'd");
+      }
+
+      private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
+      {
+         if (cServerTabControl.SelectedIndex == 1)
+         {
+            RepopulateList();
+         }
+      }
+
+      private void RepopulateList()
+      {
+         Console.WriteLine("The server list has been displayed");
+      }
+
+      private void CenterNavigationToolStrip()
+      {
+         Point newLocation = new Point((WorldResultsSplitPanel.Panel1.Width - toolStripNavigation.Width) / 2, WorldResultsSplitPanel.Height - toolStripNavigation.Height);
+         toolStripNavigation.Location = newLocation;
+      }
+
+      private void LayerSelected(Object oSender, TreeNodeMouseClickEventArgs oArgs)
+      {
+         try
+         {
+            XmlDocument oDoc = new XmlDocument();
+            oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
+            XmlNode oNode = null;
+            string strStyleSheet = null;
+            LayerBuilderContainer oContainer = oArgs.Node.Tag as LayerBuilderContainer;
+            LayerBuilder oBuilder = oContainer.Builder;
+
+            if (oBuilder.SupportsMetaData)
+            {
+               oNode = oBuilder.GetMetaData(oDoc);
+               strStyleSheet = oBuilder.StyleSheetName;
+            }
+            else
+            {
+               cMetadataBrowser.Url = new Uri(Path.Combine(this.metaviewerDir, "unsupported.html"));
+               return;
+            }
+
+            if (oNode is XmlDocument)
+            {
+               oDoc = oNode as XmlDocument;
+            }
+            else if (oNode is XmlElement)
+            {
+               oDoc.AppendChild(oNode);
+            }
+            if (strStyleSheet != null)
+            {
+               XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, strStyleSheet) + "'");
+               oDoc.InsertBefore(oRef, oDoc.DocumentElement);
+            }
+
+            string filePath = Path.Combine(this.metaviewerDir, "currentlayer.xml");
+            oDoc.Save(filePath);
+            cMetadataBrowser.Url = new Uri(filePath);
+         }
+         catch (Exception)
+         {
+            cMetadataBrowser.Url = new Uri(Path.Combine(this.metaviewerDir, "error.html"));
+         }
+      }
+
+      private void cAddLayerButton_Click(object sender, EventArgs e)
+      {
+         this.tvServers.AddCurrentDataset();
+      }
+
+      private void DumpServerTree()
+      {
+         DumpTreeNode(this.tvServers.RootNode, String.Empty);
+      }
+
+      private void DumpTreeNode(TreeNode oNode, String strPrepend)
+      {
+         Console.Write(strPrepend + oNode.Text);
+         if (oNode.Tag != null)
+            Console.Write(" (" + oNode.Tag.GetType() + ")");
+         else
+            Console.Write(" (null)");
+         Console.WriteLine();
+
+         foreach (TreeNode oChild in oNode.Nodes)
+         {
+            DumpTreeNode(oChild, strPrepend + "  -");
+         }
+      }
+
+      private void toolStripLabel5_Click(object sender, EventArgs e)
+      {
+#if DEBUG
+         DumpServerTree();
+#endif
       }
 	}
 }

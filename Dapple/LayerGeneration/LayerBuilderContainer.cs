@@ -18,7 +18,7 @@ namespace Dapple.LayerGeneration
 		private string m_uri;
 		private bool m_visible;
 		private bool m_temporary;
-		private byte m_opacity;
+      private byte m_opacity;
 
 		public LayerBuilderContainer(string strName, string strUri, bool visible, byte opacity)
 		{
@@ -150,10 +150,12 @@ namespace Dapple.LayerGeneration
 		MainForm m_mainWnd;
 		TriStateTreeView m_treeList;
 		WorldWindow m_worldWindow;
+      ServerTree m_oServerTree;
 
 		public LayerBuilderList(MainForm mainWnd, TriStateTreeView tree, WorldWindow worldWindow)
 		{
 			m_mainWnd = mainWnd;
+         m_oServerTree = null;
 			m_treeList = tree;
 			m_worldWindow = worldWindow;
 		}
@@ -560,5 +562,37 @@ namespace Dapple.LayerGeneration
 				}
 			}
 		}
+
+      public ServerTree ServerTree
+      {
+         set { m_oServerTree = value; }
+      }
+
+      public void HandleDragOver(Object oSender, DragEventArgs oArgs)
+      {
+         if (!oArgs.Data.GetDataPresent(typeof(LayerDragData)))
+         {
+            oArgs.Effect = DragDropEffects.None;
+            return;
+         }
+
+         oArgs.Effect = DragDropEffects.Copy;
+      }
+
+      public void HandleDragDrop(Object oSender, DragEventArgs oArgs)
+      {
+         if (oArgs.Data.GetDataPresent(typeof(LayerDragData)))
+         {
+            LayerDragData oData = oArgs.Data.GetData(typeof(LayerDragData)) as LayerDragData;
+            try
+            {
+               this.Add(oData.Name, oData.Builder, false, 255, true);
+            }
+            catch (ArgumentException)
+            {
+               return;
+            }
+         }
+      }
 	}
 }

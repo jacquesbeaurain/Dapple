@@ -221,7 +221,7 @@ namespace Dapple.LayerGeneration
          String result = m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl;
          if (!result.Contains("?")) result += "?";
          result += "&layer=" + m_wmsLayer.Name + "&pixelsize=" + m_iTextureSizePixels.ToString();
-         result.Replace("http://", URLProtocolName);
+         result = result.Replace("http://", URLProtocolName);
          return result;
       }
 

@@ -43,8 +43,6 @@ namespace Dapple
 		protected LayerBuilderList m_activeLayers;
 		protected List<ServerBuilder> m_wmsServers = new List<ServerBuilder>();
       protected List<ServerBuilder> m_oArcIMSServers = new List<ServerBuilder>();
-
-      TreeNode m_oLastSelectedTreeNode;
 		#endregion
 
       #region Delegates
@@ -125,7 +123,9 @@ namespace Dapple
 			//m_TreeSorter = new TreeNodeSorter(this);
          this.TreeViewNodeSorter = new TreeNodeSorter(this);
 
-         m_oLastSelectedTreeNode = RootNode;
+         this.MouseMove += new MouseEventHandler(this.HandleMouseMove);
+         this.MouseDown += new MouseEventHandler(this.HandleMouseDown);
+         this.AllowDrop = false;
 		}
 		protected override void Dispose(bool disposing)
 		{
@@ -133,7 +133,45 @@ namespace Dapple
 		}
 		#endregion
 
-		#region Properties
+      #region Event Handlers
+
+      private bool m_bDragEnabled = false;
+      private void HandleMouseDown(Object oSender, MouseEventArgs oArgs)
+      {
+         m_bDragEnabled = true;
+      }
+
+      private void HandleMouseMove(Object oSender, MouseEventArgs oArgs)
+      {
+         if ((oArgs.Button & MouseButtons.Left) == MouseButtons.Left)
+         {
+            if (!m_bDragEnabled) return;
+
+            TreeNode oClickedNode = this.GetNodeAt(oArgs.X, oArgs.Y);
+            if (oClickedNode == null) return;
+
+            if (oClickedNode.Tag is LayerBuilder)
+            {
+               DragDropEffects dropEffect = this.DoDragDrop(new LayerDragData(oClickedNode.Text, oClickedNode.Tag as LayerBuilder), DragDropEffects.All);
+               this.SelectedNode = oClickedNode;
+            }
+            else if (oClickedNode.Tag is DataSet)
+            {
+               // --- Get the DataSet's Server parent node ---
+               TreeNode oServerNode = this.SelectedNode;
+               while (!(oServerNode.Tag is Server)) oServerNode = oServerNode.Parent;
+
+               DragDropEffects dropEffect = this.DoDragDrop(new LayerDragData(oClickedNode.Text, new DAPQuadLayerBuilder(oClickedNode.Tag as DataSet, m_oParent.WorldWindow.CurrentWorld, oServerNode.Tag as Server, null)), DragDropEffects.All);
+               this.SelectedNode = oClickedNode;
+            }
+
+            m_bDragEnabled = false;
+         }
+      }
+
+      #endregion
+
+      #region Properties
 
       public WMSCatalogBuilder WMSCatalog
       {
@@ -213,6 +251,9 @@ namespace Dapple
 
       void LoadFinished()
       {
+         // Rebuild the tree, only the selected node hasn't changed
+         oPreNode = SelectedOrRoot;
+         oPostNode = SelectedOrRoot;
          CMRebuildTree();
       }
 
@@ -729,52 +770,106 @@ namespace Dapple
 
       public void CMRebuildTree()
       {
-         if (m_oLastSelectedTreeNode == null) throw new ArgumentNullException("oSelectedNode");
+         if (oPreNode == null) throw new ArgumentNullException("Preselect node unset");
+         if (oPostNode == null) throw new ArgumentNullException("Postselect node unset");
 
          this.BeginUpdate();
 
-         // Get the list of TreeNodes in the path from m_hRootNode to the currently selected node
-         List<TreeNode> oSelectedPath = new List<TreeNode>();
-         TreeNode oWalker = m_oLastSelectedTreeNode;
-         if (oWalker == null) oWalker = m_hRootNode; // Never clear the children of the root node
-         do
+         if (!(oPostNode.Tag is LayerBuilder))
          {
-            oSelectedPath.Add(oWalker);
-            oWalker = oWalker.Parent;
-         } while (oWalker != null);
+            TreeNode iterator = oPreNode;
+            while (iterator != RootNode)
+            {
+               if (iterator == oPostNode.Parent)
+               {
+                  if (!PruneChildNodes(iterator)) iterator.Nodes.Add(oPostNode);
+                  break;
+               }
+               if (iterator == oPostNode)
+               {
+                  PruneChildNodes(oPostNode);
+                  break;
+               }
 
-         // Remove all the children of nodes not in the path
-         PruneClosedNodes(m_hRootNode, oSelectedPath);
+               PruneChildNodes(iterator);
+               iterator = iterator.Parent;
+            }
+         }
 
-         // Add the new children of the selected node
-         if (m_oLastSelectedTreeNode.Tag is IBuilder)
-            m_oLastSelectedTreeNode.Nodes.AddRange(((IBuilder)m_oLastSelectedTreeNode.Tag).getChildTreeNodes());
-         else if (m_oLastSelectedTreeNode.Tag is builderdirectoryType)
-            for (int i = 0; i < ((builderdirectoryType)m_oLastSelectedTreeNode.Tag).builderentryCount; i++)
-               LoadBuilderEntryIntoNode(((builderdirectoryType)m_oLastSelectedTreeNode.Tag).GetbuilderentryAt(i), m_oLastSelectedTreeNode);
-         else if (m_oLastSelectedTreeNode.Tag is tileserversetType)
-            LoadTileServerSetIntoNode(m_oLastSelectedTreeNode.Tag as tileserversetType, m_oLastSelectedTreeNode);
+         if (oPostNode.Tag is IBuilder)
+            oPostNode.Nodes.AddRange(((IBuilder)oPostNode.Tag).getChildTreeNodes());
+         else if (oPostNode.Tag is builderdirectoryType)
+            for (int i = 0; i < ((builderdirectoryType)oPostNode.Tag).builderentryCount; i++)
+               LoadBuilderEntryIntoNode(((builderdirectoryType)oPostNode.Tag).GetbuilderentryAt(i), oPostNode);
+         else if (oPostNode.Tag is tileserversetType)
+            LoadTileServerSetIntoNode(oPostNode.Tag as tileserversetType, oPostNode);
 
-         m_oLastSelectedTreeNode.Expand();
+         oPostNode.Expand();
          RefreshTreeNodeText();
-         this.FilterTreeNodes(m_oLastSelectedTreeNode);
-         this.Sort();
+         this.FilterTreeNodes(oPostNode);
+         //this.Sort();
          this.EndUpdate();
+      }
+
+      /// <summary>
+      /// Removes all the children of a node in a safe way (doesn't demolish DAP branch, doesn't do anything
+      /// to the root node)
+      /// </summary>
+      /// <param name="oNode">The node to prune.</param>
+      /// <returns>True if the node is "special"</returns>
+      private bool PruneChildNodes(TreeNode oNode)
+      {
+         if (oNode != RootNode)
+         {
+            if (oNode == m_hDAPRootNode)
+            {
+               oNode.Collapse();
+               foreach (TreeNode oSubNode in oNode.Nodes)
+                  oSubNode.Nodes.Clear();
+
+               return true;
+            }
+            else
+            {
+               oNode.Nodes.Clear();
+               return false;
+            }
+         }
+         return true;
+      }
+
+      TreeNode oPreNode = null;
+      TreeNode oPostNode = null;
+
+      private TreeNode SelectedOrRoot
+      {
+         get
+         {
+            if (this.SelectedNode == null) return this.RootNode;
+            return this.SelectedNode;
+         }
+      }
+
+      protected override void OnBeforeSelect(TreeViewCancelEventArgs e)
+      {
+         base.OnBeforeSelect(e);
+
+         oPreNode = SelectedOrRoot;
       }
 
 		/// <summary>
 		/// Modify catalog browsing tree
 		/// </summary>
 		/// <param name="node">The currently selected node.</param>
-		protected override void AfterSelected(TreeNode oSelectedNode)
+      protected override void AfterSelected(TreeNode oSelectedNode)
 		{
          base.AfterSelected(oSelectedNode);
 
-         m_oLastSelectedTreeNode = oSelectedNode;
+         oPostNode = SelectedOrRoot;
          CMRebuildTree();
 		}
 
-		TreeNode m_nodeLastCollapsed = null;
+		TreeNode m_nodeLastCollapsed = null; // I'm never used?
 		protected void OnAfterCollapse(object sender, TreeViewEventArgs e)
 		{
 			// Never collapse root
@@ -884,4 +979,19 @@ namespace Dapple
 		#endregion
 
 	}
+
+   class LayerDragData
+   {
+      private String m_strName;
+      private LayerBuilder m_oBuilder;
+
+      public LayerDragData(String strName, LayerBuilder oBuilder)
+      {
+         m_strName = strName;
+         m_oBuilder = oBuilder;
+      }
+
+      public String Name { get { return m_strName; } }
+      public LayerBuilder Builder { get { return m_oBuilder; } }
+   }
 }

@@ -110,6 +110,12 @@
     <Compile Include="Plugins\SkyGradient\SkyGradient.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="ServerList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ServerList.Designer.cs">
+      <DependentUpon>ServerList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Servers\AddArcIMS.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -134,6 +140,10 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServerList.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ServerList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Servers\AddArcIMS.resx">
       <DependentUpon>AddArcIMS.cs</DependentUpon>
@@ -419,6 +429,7 @@
     <Content Include="Data\MetaViewer\dap_dataset.xsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\MetaViewer\error.html" />
     <Content Include="Data\MetaViewer\expanded.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -428,6 +439,7 @@
     <Content Include="Data\MetaViewer\geosoft.meta.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\MetaViewer\unsupported.html" />
     <Content Include="Data\MetaViewer\wms_cap_meta.xslt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -739,56 +751,56 @@
   <ItemGroup>
     <PublishFile Include="Config\KMLImporter.xml">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Config\World.xml">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Config\WorldWind.xml">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Config\^Placenames.xml">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Scripts\AroundTheEquator.xml">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Scripts\DisplayMessageTest01.xml">
       <Visible>False</Visible>
-      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
+      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>

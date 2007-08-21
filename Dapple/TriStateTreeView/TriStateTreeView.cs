@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using Dapple.LayerGeneration;
 
 namespace Geosoft.DotNetTools
 {
@@ -446,6 +448,7 @@ namespace Geosoft.DotNetTools
          if (GetNodeAtCheckBox(pt.X, pt.Y) != null)
             e.Cancel = true;
       }
+
       #endregion
 	}
 

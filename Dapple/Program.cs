@@ -98,11 +98,9 @@ namespace Dapple
             {
                int iMontajPort = int.Parse(cmdl["montajport"]);
 
-               int iPort = 2501;
-
                if (cmdl["dummyserver"] != null)
                {
-                  System.Runtime.Remoting.Channels.Ipc.IpcChannel oClientChannel = new System.Runtime.Remoting.Channels.Ipc.IpcChannel(String.Format("localhost:{0}", iPort));
+                  System.Runtime.Remoting.Channels.Ipc.IpcChannel oClientChannel = new System.Runtime.Remoting.Channels.Ipc.IpcChannel(String.Format("localhost:{0}", iMontajPort));
                   System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(oClientChannel, true);
                   System.Runtime.Remoting.RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
                }
@@ -112,7 +110,7 @@ namespace Dapple
                   System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(oClientChannel, true);
                }
 
-               oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iPort));
+               oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iMontajPort));
                try
                {
                   oRemoteInterface.StartConnection();
@@ -129,7 +127,7 @@ namespace Dapple
                   Application.Run(errorDialog);
                   return;
                }
-               MessageBox.Show("I've connected to OM");
+               //MessageBox.Show("I've connected to OM");
             }
 
             if (cmdl["aoi"] != null)
