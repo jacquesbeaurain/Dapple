@@ -244,6 +244,16 @@ namespace Dapple.LayerGeneration
          return new WMSQuadLayerBuilder(m_wmsLayer, m_oWorld, m_Server, m_Parent);
       }
 
+      public override bool Equals(object obj)
+      {
+         if (!(obj is WMSQuadLayerBuilder)) return false;
+         WMSQuadLayerBuilder castObj = obj as WMSQuadLayerBuilder;
+
+         // -- Equal if the same server serves the same layer --
+         return this.m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl.Equals(castObj.m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl) &&
+            this.m_wmsLayer.Name.Equals(castObj.m_wmsLayer.Name);
+      }
+
       #endregion
 
       #region ImageBuilder Overrides

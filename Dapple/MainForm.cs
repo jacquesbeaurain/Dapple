@@ -587,6 +587,15 @@ namespace Dapple
                cExtractButton.Visible = true;
                this.Text = "Oasis Montaj get data dialog";
                m_oAoi = oAoi;
+
+               // Put the view menu after the first two
+               menuStrip.Items.Remove(this.toolStripMenuItemoptions);
+               menuStrip.Items.Add(this.toolStripMenuItemoptions);
+               cOMToolsMenu.Visible = true;
+               cOMServerMenu.Visible = true;
+               toolStripMenuItemfile.Visible = false;
+               toolStripMenuItemedit.Visible = false;
+               toolStripMenuItemhelp.Visible = false;
             }
 
             #endregion
@@ -1159,7 +1168,7 @@ namespace Dapple
 
 		private void toolStripMenuItemAddLayer_Click(object sender, EventArgs e)
 		{
-			this.tvServers.AddCurrentDataset();
+         AddDatasetAction();
 		}
 
 		public bool bContainsDAPLayer(Geosoft.GX.DAPGetData.Server oServer, Geosoft.Dap.Common.DataSet oDataset)
@@ -4176,14 +4185,17 @@ namespace Dapple
       private void doSearch()
       {
          cSearchTextComboBox.Text = cSearchTextComboBox.Text.Trim();
-         if (cSearchTextComboBox.Text.Equals(String.Empty)) return;
 
-         if (!cSearchTextComboBox.Items.Contains(cSearchTextComboBox.Text))
+         if (!cSearchTextComboBox.Text.Equals(String.Empty) && !cSearchTextComboBox.Items.Contains(cSearchTextComboBox.Text))
          {
             cSearchTextComboBox.Items.Add(cSearchTextComboBox.Text);
          }
 
-         MessageBox.Show("Search'd");
+         GeographicBoundingBox oAoi = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
+         String strText = cSearchTextComboBox.Text;
+         this.tvServers.Search(oAoi, strText);
+
+         MessageBox.Show("Search for " + strText + " around " + oAoi.ToString());
       }
 
       private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -4253,7 +4265,7 @@ namespace Dapple
 
       private void cAddLayerButton_Click(object sender, EventArgs e)
       {
-         this.tvServers.AddCurrentDataset();
+         AddDatasetAction();
       }
 
       private void DumpServerTree()
@@ -4276,11 +4288,23 @@ namespace Dapple
          }
       }
 
-      private void toolStripLabel5_Click(object sender, EventArgs e)
+      #region UI Actions
+
+      private void AddDatasetAction()
       {
-#if DEBUG
-         DumpServerTree();
-#endif
+         this.tvServers.AddCurrentDataset();
       }
-	}
+
+      #endregion
+
+      private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         Close();
+      }
+
+      private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         AddDatasetAction();
+      }
+   }
 }

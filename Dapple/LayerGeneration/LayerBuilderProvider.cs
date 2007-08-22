@@ -414,6 +414,8 @@ namespace Dapple.LayerGeneration
 
 		protected abstract void CleanUpLayer(bool bFinal);
 
+      public abstract override bool Equals(object obj);
+
 		#region ICloneable Members
 
 		public abstract object Clone();

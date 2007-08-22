@@ -197,6 +197,15 @@ namespace Dapple.LayerGeneration
          return new GeorefImageLayerBuilder(m_strFileName, m_bIsTmp, m_oWorld, m_Parent);
       }
 
+      public override bool Equals(object obj)
+      {
+         if (!(obj is GeorefImageLayerBuilder)) return false;
+         GeorefImageLayerBuilder castObj = obj as GeorefImageLayerBuilder;
+
+         // -- Equal if they're the same local file --
+         return this.m_Layer.ImagePath.Equals(castObj.m_Layer.ImagePath);
+      }
+
       #endregion
 
       #region Other Public Methods

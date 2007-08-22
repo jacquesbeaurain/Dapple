@@ -215,6 +215,15 @@ namespace Dapple.LayerGeneration
          return new VEQuadLayerBuilder(m_strName, m_mapType, m_oMainApp, m_IsOn, m_Parent);
       }
 
+      public override bool Equals(object obj)
+      {
+         if (!(obj is VEQuadLayerBuilder)) return false;
+         VEQuadLayerBuilder castObj = obj as VEQuadLayerBuilder;
+
+         // -- Equal if they're the same VE map type --
+         return m_mapType == castObj.m_mapType;
+      }
+
       #endregion
 	}
 }

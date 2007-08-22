@@ -120,11 +120,19 @@ namespace Geosoft.DotNetTools
       private const Int32 IMG_CHECKBOX_INDETERMINATE = 3;
       #endregion
 
-      #region Member Functions
+      #region Member Variables
       /// <summary>
       /// Checkbox image list
       /// </summary>
       protected System.Windows.Forms.ImageList  m_hCheckboxImageList;
+      /// <summary>
+      /// Whether the user hase MouseDown'd atop a draggable item.
+      /// </summary>
+      protected bool m_bDragDropEnabled = false;
+      /// <summary>
+      /// Where the mouse position is during a drag and drop (screen 
+      /// </summary>
+      protected System.Drawing.Point m_oLastDragOver = new System.Drawing.Point(-1, -1);
       #endregion
 
       #region Constructor
@@ -166,6 +174,8 @@ namespace Geosoft.DotNetTools
          m_hCheckboxImageList.Images.Add(hIndeterminate);    
 
          SendMessage(Handle, TVM_SETIMAGELIST, TVSIL_STATE, m_hCheckboxImageList.Handle);
+
+         this.AllowDrop = true;
       }      
       #endregion
 
@@ -403,7 +413,146 @@ namespace Geosoft.DotNetTools
 
          hNode = GetNodeAtCheckBox(e.X, e.Y);
          if (hNode != null)
-            ToggleState(hNode);      
+            ToggleState(hNode);
+         else
+         {
+            hNode = GetNodeAt(e.X, e.Y);
+            if (hNode != null)
+            {
+               m_bDragDropEnabled = true;
+            }
+         }
+      }
+
+      /// <summary>
+      /// Start a drag and drop when the selected node moves.
+      /// </summary>
+      /// <param name="e"></param>
+      protected override void OnMouseMove(MouseEventArgs e)
+      {
+         TreeNode hNode;
+
+         base.OnMouseMove(e);
+
+         if (m_bDragDropEnabled)
+         {
+            hNode = GetNodeAt(e.X, e.Y);
+            this.Nodes.IndexOf(hNode);
+            if (hNode != null)
+            {
+               DragDropEffects oEffects = DoDragDrop(hNode, DragDropEffects.Move);
+            }
+            m_bDragDropEnabled = false;
+         }
+      }
+
+      /// <summary>
+      /// Sets the insert location when the user drags something onto this control.
+      /// </summary>
+      /// <param name="drgevent"></param>
+      protected override void OnDragEnter(DragEventArgs drgevent)
+      {
+         base.OnDragEnter(drgevent);
+
+         setInsertLocation(drgevent.X, drgevent.Y);
+      }
+
+      /// <summary>
+      /// Resets the insert location when the user keeps dragging something onto this control.
+      /// </summary>
+      /// <param name="drgevent"></param>
+      protected override void OnDragOver(DragEventArgs drgevent)
+      {
+         base.OnDragOver(drgevent);
+
+         setInsertLocation(drgevent.X, drgevent.Y);
+      }
+
+      /// <summary>
+      /// Clears the insert location when the user stops dragging something onto this control.
+      /// </summary>
+      /// <param name="e"></param>
+      protected override void OnDragLeave(EventArgs e)
+      {
+         base.OnDragLeave(e);
+
+         clearInsertLocation();
+      }
+
+      /// <summary>
+      /// Clears the insert location when the user drops something onto this control.
+      /// </summary>
+      /// <param name="drgevent"></param>
+      protected override void OnDragDrop(DragEventArgs drgevent)
+      {
+         base.OnDragDrop(drgevent);
+
+         clearInsertLocation();
+      }
+
+      /// <summary>
+      /// Store the last known mouse position (for a drag/drop operation).
+      /// </summary>
+      /// <param name="iX"></param>
+      /// <param name="iY"></param>
+      private void setInsertLocation(int iX, int iY)
+      {
+         m_oLastDragOver.X = iX;
+         m_oLastDragOver.Y = iY;
+         this.Refresh();
+         drawInsertLocationHint();
+      }
+
+      /// <summary>
+      /// Clear the stored last known drag/drop mouse position.
+      /// </summary>
+      private void clearInsertLocation()
+      {
+         m_oLastDragOver.X = -1;
+         m_oLastDragOver.Y = -1;
+         this.Refresh();
+      }
+
+      /// <summary>
+      /// Draw a line where an item dropped into this control will appear.
+      /// </summary>
+      private void drawInsertLocationHint()
+      {
+         System.Drawing.Graphics G = this.CreateGraphics();
+
+         System.Drawing.Point oMouseInClientCoords = PointToClient(m_oLastDragOver);
+         if (!G.VisibleClipBounds.Contains(oMouseInClientCoords)) return;
+         int iLineWidth = (int)G.VisibleClipBounds.Width;
+         int iLineY = 0;
+
+         if (Nodes.Count == 0)
+         {
+            iLineY = 0;
+         }
+         else
+         {
+            TreeNode oNodeMouseIsOver = GetNodeAt(oMouseInClientCoords);
+
+            if (oNodeMouseIsOver != null)
+            {
+               // Draw above current node
+               iLineY = oNodeMouseIsOver.Bounds.Top;
+            }
+            else
+            {
+               // Draw below last node
+               oNodeMouseIsOver = Nodes[Nodes.Count - 1];
+               while (oNodeMouseIsOver.Nodes.Count != 0)
+               {
+                  oNodeMouseIsOver = oNodeMouseIsOver.Nodes[oNodeMouseIsOver.Nodes.Count - 1];
+               }
+               iLineY = oNodeMouseIsOver.Bounds.Bottom;
+            }
+         }
+
+         G.DrawLine(new System.Drawing.Pen(System.Drawing.Brushes.Black, 3.0f), new System.Drawing.Point(0, iLineY), new System.Drawing.Point(iLineWidth, iLineY));
+
+         G.Dispose();
       }
 
       /// <summary>

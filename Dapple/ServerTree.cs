@@ -138,7 +138,12 @@ namespace Dapple
       private bool m_bDragEnabled = false;
       private void HandleMouseDown(Object oSender, MouseEventArgs oArgs)
       {
-         m_bDragEnabled = true;
+         TreeNode oNodeOver = this.GetNodeAt(oArgs.X, oArgs.Y);
+
+         if (oNodeOver != null && (oNodeOver.Tag is DataSet || oNodeOver.Tag is LayerBuilder))
+         {
+            m_bDragEnabled = true;
+         }
       }
 
       private void HandleMouseMove(Object oSender, MouseEventArgs oArgs)
@@ -631,6 +636,12 @@ namespace Dapple
 
 			this.EndUpdate();
 		}
+
+      public void Search(WorldWind.GeographicBoundingBox extents, string strSearch)
+      {
+         Search(extents != null, extents, strSearch);
+      }
+
 		public void Search(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strSearch)
 		{
 			this.BeginUpdate();
@@ -812,30 +823,36 @@ namespace Dapple
       }
 
       /// <summary>
-      /// Removes all the children of a node in a safe way (doesn't demolish DAP branch, doesn't do anything
-      /// to the root node)
+      /// Removes all the children of a node in a safe way (doesn't touch DAP branch or root)
       /// </summary>
       /// <param name="oNode">The node to prune.</param>
       /// <returns>True if the node is "special"</returns>
       private bool PruneChildNodes(TreeNode oNode)
       {
-         if (oNode != RootNode)
-         {
-            if (oNode == m_hDAPRootNode)
-            {
-               oNode.Collapse();
-               foreach (TreeNode oSubNode in oNode.Nodes)
-                  oSubNode.Nodes.Clear();
+         // --- Don't nerf the root node ---
+         if (oNode == RootNode) return true;
 
-               return true;
-            }
-            else
-            {
-               oNode.Nodes.Clear();
-               return false;
-            }
+         // --- Only collapse the DAP root node ---
+         if (oNode == m_hDAPRootNode)
+         {
+            oNode.Collapse();
+            foreach (TreeNode oSubNode in oNode.Nodes)
+               oSubNode.Nodes.Clear();
+
+            return true;
          }
-         return true;
+
+         // --- If I'm in the DAP branch, don't touch anything ---
+         TreeNode iterator = oNode.Parent;
+         while (iterator != RootNode)
+         {
+            if (iterator == m_hDAPRootNode) return true;
+            iterator = iterator.Parent;
+         }
+
+         // --- Ok to nerf it ---
+         oNode.Nodes.Clear();
+         return false;
       }
 
       TreeNode oPreNode = null;

@@ -164,7 +164,7 @@ namespace Dapple.LayerGeneration
 		{
 			foreach (LayerBuilderContainer container in this)
 			{
-				if (container.SourceBuilder == builder)
+				if (container.SourceBuilder.Equals(builder))
 					return true;
 			}
 			return false;
@@ -460,6 +460,33 @@ namespace Dapple.LayerGeneration
 			RefreshLayersAndOrder();
 		}
 
+      /// <summary>
+      /// Move an LBC to a new position in the list.
+      /// </summary>
+      /// <param name="iOldIndex">The old position in the list.</param>
+      /// <param name="iNewIndex">The new position in the list.</param>
+      public void Reorder(int iOldIndex, int iNewIndex)
+      {
+         if (iOldIndex < 0 || iOldIndex > this.Count) throw new ArgumentOutOfRangeException("iOldIndex");
+         if (iNewIndex < 0 || iNewIndex > this.Count) throw new ArgumentOutOfRangeException("iNewIndex");
+
+         LayerBuilderContainer oLBCToMove = this[iOldIndex];
+
+         while (iOldIndex != iNewIndex)
+         {
+            if (iOldIndex < iNewIndex)
+            {
+               this.MoveDown(oLBCToMove);
+               iOldIndex++;
+            }
+            else
+            {
+               this.MoveUp(oLBCToMove);
+               iOldIndex--;
+            }
+         }
+      }
+
 		public void AddUsingUri(string strName, string strUri, bool visible, byte opacity, bool front, ServerTree serverTree, ref bool bOldView)
       {
          string strError = string.Empty;
@@ -570,13 +597,18 @@ namespace Dapple.LayerGeneration
 
       public void HandleDragOver(Object oSender, DragEventArgs oArgs)
       {
-         if (!oArgs.Data.GetDataPresent(typeof(LayerDragData)))
+         if (oArgs.Data.GetDataPresent(typeof(LayerDragData)))
+         {
+            oArgs.Effect = DragDropEffects.Copy;
+         }
+         else if (oArgs.Data.GetDataPresent(typeof(TreeNode)))
+         {
+            oArgs.Effect = DragDropEffects.Move;
+         }
+         else
          {
             oArgs.Effect = DragDropEffects.None;
-            return;
          }
-
-         oArgs.Effect = DragDropEffects.Copy;
       }
 
       public void HandleDragDrop(Object oSender, DragEventArgs oArgs)
@@ -584,14 +616,60 @@ namespace Dapple.LayerGeneration
          if (oArgs.Data.GetDataPresent(typeof(LayerDragData)))
          {
             LayerDragData oData = oArgs.Data.GetData(typeof(LayerDragData)) as LayerDragData;
-            try
+
+            // --- Check that the layer isn't already present ---
+
+            if (this.ContainsSource(oData.Builder)) return;
+
+            // --- Figure out where in the tree the user dropped the layer ---
+
+            int newIndex;
+            TreeNode oDropTarget = this.m_treeList.GetNodeAt(m_treeList.PointToClient(new System.Drawing.Point(oArgs.X, oArgs.Y)));
+            if (oDropTarget == null)
+            {
+               newIndex = this.Count;
+            }
+            else
+            {
+               newIndex = this.IndexOf(oDropTarget.Tag as LayerBuilderContainer);
+            }
+
+            // --- Add to top or bottom, depending on which requires more moves afterwards to position ---
+            if (this.Count == 0)
             {
                this.Add(oData.Name, oData.Builder, false, 255, true);
             }
-            catch (ArgumentException)
+            else if (newIndex < Count - newIndex)
             {
-               return;
+               this.Add(oData.Name, oData.Builder, true, 255, true);
+               Reorder(0, newIndex);
             }
+            else
+            {
+               this.Add(oData.Name, oData.Builder, false, 255, true);
+               Reorder(this.Count - 1, newIndex);
+            }
+         }
+
+         if (oArgs.Data.GetDataPresent(typeof(TreeNode)))
+         {
+            TreeNode oNodeToMove = oArgs.Data.GetData(typeof(TreeNode)) as TreeNode;
+            if (!this.Contains(oNodeToMove.Tag as LayerBuilderContainer)) return;
+
+            int oldIndex = this.IndexOf(oNodeToMove.Tag as LayerBuilderContainer);
+
+            int newIndex;
+            TreeNode oDropTarget = this.m_treeList.GetNodeAt(m_treeList.PointToClient(new System.Drawing.Point(oArgs.X, oArgs.Y)));
+            if (oDropTarget == null)
+            {
+               newIndex = this.Count-1;
+            }
+            else
+            {
+               newIndex = this.IndexOf(oDropTarget.Tag as LayerBuilderContainer);
+            }
+
+            Reorder(oldIndex, newIndex);
          }
       }
 	}

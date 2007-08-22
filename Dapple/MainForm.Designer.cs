@@ -91,6 +91,18 @@ namespace Dapple
            this.toolStripMenuItemWebDoc = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.cOMToolsMenu = new System.Windows.Forms.ToolStripMenuItem();
+           this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.addToLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.removeFromLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.cOMServerMenu = new System.Windows.Forms.ToolStripMenuItem();
+           this.addDAPServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.enableDisableDAPServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.setAsDAPServerAsDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.refreshDAPServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.removeDAPServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.splitContainerMain = new System.Windows.Forms.SplitContainer();
            this.splitContainerLeft = new System.Windows.Forms.SplitContainer();
            this.splitContainerLeftMain = new System.Windows.Forms.SplitContainer();
@@ -359,7 +371,9 @@ namespace Dapple
             this.toolStripMenuItemfile,
             this.toolStripMenuItemedit,
             this.toolStripMenuItemoptions,
-            this.toolStripMenuItemhelp});
+            this.toolStripMenuItemhelp,
+            this.cOMToolsMenu,
+            this.cOMServerMenu});
            this.menuStrip.Location = new System.Drawing.Point(0, 0);
            this.menuStrip.Name = "menuStrip";
            this.menuStrip.Size = new System.Drawing.Size(899, 24);
@@ -746,6 +760,102 @@ namespace Dapple
            this.checkForUpdatesToolStripMenuItem.Text = "Check for updates...";
            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
            // 
+           // cOMToolsMenu
+           // 
+           this.cOMToolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.searchToolStripMenuItem,
+            this.addToLayersToolStripMenuItem,
+            this.removeFromLayersToolStripMenuItem,
+            this.extractToolStripMenuItem,
+            this.exitToolStripMenuItem});
+           this.cOMToolsMenu.Name = "cOMToolsMenu";
+           this.cOMToolsMenu.Size = new System.Drawing.Size(71, 20);
+           this.cOMToolsMenu.Text = "NOT Tools";
+           this.cOMToolsMenu.Visible = false;
+           // 
+           // searchToolStripMenuItem
+           // 
+           this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+           this.searchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+           this.searchToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+           this.searchToolStripMenuItem.Text = "Search";
+           // 
+           // addToLayersToolStripMenuItem
+           // 
+           this.addToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
+           this.addToLayersToolStripMenuItem.Name = "addToLayersToolStripMenuItem";
+           this.addToLayersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+           this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+           this.addToLayersToolStripMenuItem.Text = "Add to Layers";
+           this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
+           // 
+           // removeFromLayersToolStripMenuItem
+           // 
+           this.removeFromLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_remove;
+           this.removeFromLayersToolStripMenuItem.Name = "removeFromLayersToolStripMenuItem";
+           this.removeFromLayersToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+           this.removeFromLayersToolStripMenuItem.Text = "Remove from Layers";
+           // 
+           // extractToolStripMenuItem
+           // 
+           this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
+           this.extractToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+           this.extractToolStripMenuItem.Text = "Extract";
+           // 
+           // exitToolStripMenuItem
+           // 
+           this.exitToolStripMenuItem.Image = global::Dapple.Properties.Resources.exit;
+           this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+           this.exitToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+           this.exitToolStripMenuItem.Text = "Exit";
+           this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+           // 
+           // cOMServerMenu
+           // 
+           this.cOMServerMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addDAPServerToolStripMenuItem,
+            this.enableDisableDAPServerToolStripMenuItem,
+            this.setAsDAPServerAsDefaultToolStripMenuItem,
+            this.refreshDAPServerToolStripMenuItem,
+            this.removeDAPServerToolStripMenuItem});
+           this.cOMServerMenu.Name = "cOMServerMenu";
+           this.cOMServerMenu.Size = new System.Drawing.Size(55, 20);
+           this.cOMServerMenu.Text = "Servers";
+           this.cOMServerMenu.Visible = false;
+           // 
+           // addDAPServerToolStripMenuItem
+           // 
+           this.addDAPServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.addserver;
+           this.addDAPServerToolStripMenuItem.Name = "addDAPServerToolStripMenuItem";
+           this.addDAPServerToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+           this.addDAPServerToolStripMenuItem.Text = "Add DAP Server";
+           // 
+           // enableDisableDAPServerToolStripMenuItem
+           // 
+           this.enableDisableDAPServerToolStripMenuItem.Name = "enableDisableDAPServerToolStripMenuItem";
+           this.enableDisableDAPServerToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+           this.enableDisableDAPServerToolStripMenuItem.Text = "Enable/Disable DAP Server";
+           // 
+           // setAsDAPServerAsDefaultToolStripMenuItem
+           // 
+           this.setAsDAPServerAsDefaultToolStripMenuItem.Name = "setAsDAPServerAsDefaultToolStripMenuItem";
+           this.setAsDAPServerAsDefaultToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+           this.setAsDAPServerAsDefaultToolStripMenuItem.Text = "Set as DAP Server as Default";
+           // 
+           // refreshDAPServerToolStripMenuItem
+           // 
+           this.refreshDAPServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.refresh;
+           this.refreshDAPServerToolStripMenuItem.Name = "refreshDAPServerToolStripMenuItem";
+           this.refreshDAPServerToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+           this.refreshDAPServerToolStripMenuItem.Text = "Refresh DAP Server";
+           // 
+           // removeDAPServerToolStripMenuItem
+           // 
+           this.removeDAPServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.removeserver;
+           this.removeDAPServerToolStripMenuItem.Name = "removeDAPServerToolStripMenuItem";
+           this.removeDAPServerToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
+           this.removeDAPServerToolStripMenuItem.Text = "Remove DAP Server";
+           // 
            // splitContainerMain
            // 
            this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -930,7 +1040,6 @@ namespace Dapple
            this.toolStripLabel5.Name = "toolStripLabel5";
            this.toolStripLabel5.Size = new System.Drawing.Size(51, 22);
            this.toolStripLabel5.Text = "Servers";
-           this.toolStripLabel5.Click += new System.EventHandler(this.toolStripLabel5_Click);
            // 
            // splitContainerLayers
            // 
@@ -2083,6 +2192,18 @@ namespace Dapple
        private System.Windows.Forms.ToolStrip cToolStripMetadata;
        private System.Windows.Forms.ToolStripLabel toolStripLabel6;
        private System.Windows.Forms.WebBrowser cMetadataBrowser;
+       private System.Windows.Forms.ToolStripMenuItem cOMToolsMenu;
+       private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem addToLayersToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem removeFromLayersToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem cOMServerMenu;
+       private System.Windows.Forms.ToolStripMenuItem addDAPServerToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem enableDisableDAPServerToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem setAsDAPServerAsDefaultToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem refreshDAPServerToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem removeDAPServerToolStripMenuItem;
     }
 }
 

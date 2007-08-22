@@ -82,5 +82,10 @@ namespace WorldWind
       {
          return (test.West >= this.West && test.East <= this.East && test.South >= this.South && test.North < this.North);
       }
+
+      public override string ToString()
+      {
+         return String.Format("({0:F2} W,{1:F2} S) -> ({2:F2} E,{3:F2} N)", West, South, East, North);
+      }
    }
 }

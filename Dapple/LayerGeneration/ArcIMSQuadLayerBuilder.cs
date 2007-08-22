@@ -193,6 +193,15 @@ namespace Dapple.LayerGeneration
          return new ArcIMSQuadLayerBuilder(m_oUri, m_strName, m_oEnvelope, m_oWorld, m_Parent);
       }
 
+      public override bool Equals(object obj)
+      {
+         if (!(obj is ArcIMSQuadLayerBuilder)) return false;
+         ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
+
+         // -- Equal if they're the same service from the same server --
+         return m_oUri.Equals(castObj.m_oUri) && m_strName.Equals(castObj.m_strName);
+      }
+
       #endregion
 
       #region Private Members

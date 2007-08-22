@@ -199,6 +199,15 @@ namespace Dapple.LayerGeneration
          return new NltQuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees, m_iLevels, m_iTextureSizePixels, m_strServerUrl, m_strDatasetName, m_strImageExt, Opacity, m_oWorld, m_Parent);
       }
 
+      public override bool Equals(object obj)
+      {
+         if (!(obj is NltQuadLayerBuilder)) return false;
+         NltQuadLayerBuilder castObj = obj as NltQuadLayerBuilder;
+
+         // -- Equal if they're the same dataset from the same server --
+         return this.m_strServerUrl.Equals(castObj.m_strServerUrl) && this.m_strDatasetName.Equals(castObj.m_strDatasetName);
+      }
+
       #endregion
 
       #region Other Public Members

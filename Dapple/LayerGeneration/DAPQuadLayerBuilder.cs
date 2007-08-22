@@ -225,6 +225,15 @@ namespace Dapple.LayerGeneration
          return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_oServer, m_Parent, m_iHeight, m_iTextureSizePixels, this.LevelZeroTileSize, m_iLevels);
       }
 
+      public override bool Equals(object obj)
+      {
+         if (!(obj is DAPQuadLayerBuilder)) return false;
+         DAPQuadLayerBuilder castObj = obj as DAPQuadLayerBuilder;
+
+         // -- Equal if their unique names are --
+         return this.m_hDataSet.UniqueName.Equals(castObj.m_hDataSet.UniqueName);
+      }
+
       #endregion
 
       #region ImageBuilder Overrides
