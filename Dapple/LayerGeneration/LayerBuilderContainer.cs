@@ -669,6 +669,9 @@ namespace Dapple.LayerGeneration
                newIndex = this.IndexOf(oDropTarget.Tag as LayerBuilderContainer);
             }
 
+            // Trying to move a layer above the layer below it does nothing
+            if (oldIndex + 1 == newIndex && oDropTarget != null) return;
+
             Reorder(oldIndex, newIndex);
          }
       }
