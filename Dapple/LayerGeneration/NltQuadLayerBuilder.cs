@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace Dapple.LayerGeneration
 {
-	public class NltQuadLayerBuilder : ImageBuilder
+   public class NltQuadLayerBuilder : LayerBuilder
 	{
 		#region Statics
 

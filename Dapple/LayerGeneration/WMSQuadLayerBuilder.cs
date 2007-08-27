@@ -10,7 +10,7 @@ using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
-	public class WMSQuadLayerBuilder : ImageBuilder
+   public class WMSQuadLayerBuilder : LayerBuilder
 	{
 		#region Private Members
 

@@ -7,6 +7,7 @@ using WorldWind.Net;
 using System.IO;
 using WorldWind.PluginEngine;
 using System.Xml;
+using System.Collections;
 
 namespace Dapple.LayerGeneration
 {
@@ -71,6 +72,19 @@ namespace Dapple.LayerGeneration
          m_oServers.Remove(oUri);
       }
 
+      public ArrayList GetServers()
+      {
+         ArrayList result = new ArrayList();
+
+         foreach (ArcIMSServerBuilder iter in m_colSublist)
+         {
+            if (iter.IsLoadedSuccessfully)
+               result.Add(iter);
+         }
+
+         return result;
+      }
+
       private void CatalogDownloadCompleteCallback(WebDownload download)
       {
          try
@@ -104,7 +118,7 @@ namespace Dapple.LayerGeneration
             XmlNodeList oNodeList = hCatalog.SelectNodes("/ARCXML/RESPONSE/SERVICES/SERVICE[@type=\"ImageServer\" and @access=\"PUBLIC\" and @status=\"ENABLED\"]");
             if (oNodeList.Count == 0)
             {
-               serverDir.SetLoadFailed("Server has no image services");
+               serverDir.SetLoadFailed("Server has no public, enabled image services.");
                return;
             }
 
@@ -137,7 +151,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class ArcIMSServerBuilder : ServerBuilder
+   public class ArcIMSServerBuilder : AsyncServerBuilder
    {
       string m_strCatalogPathname;
 
@@ -173,6 +187,11 @@ namespace Dapple.LayerGeneration
          {
             return String.Empty;
          }
+      }
+
+      public override string Type
+      {
+         get { return "ArcIMS"; }
       }
    }
 }

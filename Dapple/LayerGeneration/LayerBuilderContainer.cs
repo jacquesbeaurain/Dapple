@@ -469,25 +469,85 @@ namespace Dapple.LayerGeneration
       {
          if (iOldIndex < 0 || iOldIndex > this.Count) throw new ArgumentOutOfRangeException("iOldIndex");
          if (iNewIndex < 0 || iNewIndex > this.Count) throw new ArgumentOutOfRangeException("iNewIndex");
+         if (iOldIndex == iNewIndex) return;
+
+         int iInsertShim = iNewIndex < iOldIndex ? 1 : 0;
+
+         // --- Reorder the layer in the layer list ---
 
          LayerBuilderContainer oLBCToMove = this[iOldIndex];
 
-         while (iOldIndex != iNewIndex)
-         {
-            if (iOldIndex < iNewIndex)
-            {
-               this.MoveDown(oLBCToMove);
-               iOldIndex++;
-            }
-            else
-            {
-               this.MoveUp(oLBCToMove);
-               iOldIndex--;
-            }
-         }
+         this.Insert(iNewIndex, oLBCToMove);
+         this.RemoveAt(iOldIndex + iInsertShim);
+
+         // --- Reorder the layer in the view ---
+
+         m_treeList.BeginUpdate();
+         
+         TreeNode oTNToMove = m_treeList.Nodes[iOldIndex];
+         
+         m_treeList.Nodes.Insert(iNewIndex, oTNToMove.Text);
+         m_treeList.Nodes[iNewIndex].Tag = oTNToMove.Tag;
+         m_treeList.SetState(m_treeList.Nodes[iNewIndex], oLBCToMove.Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+         m_treeList.SelectedNode = m_treeList.Nodes[iNewIndex];
+         m_treeList.Nodes.RemoveAt(iOldIndex + iInsertShim);
+
+         m_treeList.EndUpdate();
+
+         // --- Reorder the layer on the globe ---
+
+         RefreshLayersAndOrder();
       }
 
-		public void AddUsingUri(string strName, string strUri, bool visible, byte opacity, bool front, ServerTree serverTree, ref bool bOldView)
+      public void AddMultiple(int iNewIndex, List<LayerBuilder> oLayers)
+      {
+         if (iNewIndex < 0 || iNewIndex > this.Count) throw new ArgumentOutOfRangeException("iNewIndex");
+         if (oLayers == null) throw new ArgumentNullException("oLayers");
+         if (oLayers.Count == 0) return;
+
+         // --- Add the layers to the list ---
+
+         for (int count = 0; count < oLayers.Count; count++)
+         {
+            this.Insert(iNewIndex + count, new LayerBuilderContainer(oLayers[count], true));
+         }
+
+         // --- Add the layers to the tree ---
+
+         m_treeList.BeginUpdate();
+
+         for (int count = 0; count < oLayers.Count; count++)
+         {
+            m_treeList.Nodes.Insert(iNewIndex + count, this[iNewIndex + count].Name);
+            m_treeList.Nodes[iNewIndex + count].Tag = this[iNewIndex + count];
+            m_treeList.SetState(m_treeList.Nodes[iNewIndex + count], this[iNewIndex + count].Visible ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+         }
+
+         m_treeList.EndUpdate();
+
+         for (int count = 0; count < oLayers.Count; count++)
+         {
+            this[count].Builder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+
+            if (this[count].Builder is GeorefImageLayerBuilder)
+            {
+               if (this[count].Builder.GetLayer() == null)
+                  m_treeList.Nodes[iNewIndex + count].ImageIndex = m_treeList.Nodes[iNewIndex + count].SelectedImageIndex = m_mainWnd.ImageListIndex("error");
+               else
+                  this[count].Builder.SyncAddLayer(true);
+               m_treeList.Nodes[iNewIndex + count].ToolTipText = (this[count].Builder as GeorefImageLayerBuilder).FileName;
+               RefreshLayersAndOrder();
+            }
+            else
+               this[count].Builder.AsyncAddLayer();
+         }
+
+         // --- Reorder the layers on the globe ---
+
+         RefreshLayersAndOrder();
+      }
+
+      public void AddUsingUri(string strName, string strUri, bool visible, byte opacity, bool front, ServerTree serverTree, ref bool bOldView)
       {
          string strError = string.Empty;
          LayerBuilder builder = null;
@@ -597,7 +657,7 @@ namespace Dapple.LayerGeneration
 
       public void HandleDragOver(Object oSender, DragEventArgs oArgs)
       {
-         if (oArgs.Data.GetDataPresent(typeof(LayerDragData)))
+         if (oArgs.Data.GetDataPresent(typeof(List<LayerBuilder>)))
          {
             oArgs.Effect = DragDropEffects.Copy;
          }
@@ -613,14 +673,8 @@ namespace Dapple.LayerGeneration
 
       public void HandleDragDrop(Object oSender, DragEventArgs oArgs)
       {
-         if (oArgs.Data.GetDataPresent(typeof(LayerDragData)))
+         if (oArgs.Data.GetDataPresent(typeof(List<LayerBuilder>)))
          {
-            LayerDragData oData = oArgs.Data.GetData(typeof(LayerDragData)) as LayerDragData;
-
-            // --- Check that the layer isn't already present ---
-
-            if (this.ContainsSource(oData.Builder)) return;
-
             // --- Figure out where in the tree the user dropped the layer ---
 
             int newIndex;
@@ -634,21 +688,42 @@ namespace Dapple.LayerGeneration
                newIndex = this.IndexOf(oDropTarget.Tag as LayerBuilderContainer);
             }
 
-            // --- Add to top or bottom, depending on which requires more moves afterwards to position ---
-            if (this.Count == 0)
+            // --- Get the layer list, remove layers already in the tree ---
+
+            List<LayerBuilder> oLayers = oArgs.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
+            for (int count = oLayers.Count - 1; count >= 0; count--)
             {
-               this.Add(oData.Name, oData.Builder, false, 255, true);
+               if (this.ContainsSource(oLayers[count])) oLayers.RemoveAt(count);
             }
-            else if (newIndex < Count - newIndex)
+
+            AddMultiple(newIndex, oLayers);
+
+            /*int iOffset = 0;
+            m_treeList.BeginUpdate();
+            foreach (LayerBuilder oLayer in oLayers)
             {
-               this.Add(oData.Name, oData.Builder, true, 255, true);
-               Reorder(0, newIndex);
+               // --- Check that the layer isn't already present ---
+
+               if (this.ContainsSource(oLayer)) return;
+
+               // --- Add to top or bottom, depending on which requires more moves afterwards to position ---
+               if (this.Count == 0)
+               {
+                  this.Add(oLayer.Name, oLayer, false, 255, true);
+               }
+               else if (newIndex < Count - newIndex)
+               {
+                  this.Add(oLayer.Name, oLayer, true, 255, true);
+                  Reorder(0, newIndex + iOffset);
+               }
+               else
+               {
+                  this.Add(oLayer.Name, oLayer, false, 255, true);
+                  Reorder(this.Count - 1, newIndex + iOffset);
+               }
+               iOffset++;
             }
-            else
-            {
-               this.Add(oData.Name, oData.Builder, false, 255, true);
-               Reorder(this.Count - 1, newIndex);
-            }
+            m_treeList.EndUpdate();*/
          }
 
          if (oArgs.Data.GetDataPresent(typeof(TreeNode)))
@@ -662,15 +737,12 @@ namespace Dapple.LayerGeneration
             TreeNode oDropTarget = this.m_treeList.GetNodeAt(m_treeList.PointToClient(new System.Drawing.Point(oArgs.X, oArgs.Y)));
             if (oDropTarget == null)
             {
-               newIndex = this.Count-1;
+               newIndex = this.Count;
             }
             else
             {
                newIndex = this.IndexOf(oDropTarget.Tag as LayerBuilderContainer);
             }
-
-            // Trying to move a layer above the layer below it does nothing
-            if (oldIndex + 1 == newIndex && oDropTarget != null) return;
 
             Reorder(oldIndex, newIndex);
          }

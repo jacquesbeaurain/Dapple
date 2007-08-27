@@ -91,7 +91,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public string Type
+      public virtual string Type
       {
          get { return TypeName; }
       }
@@ -104,30 +104,6 @@ namespace Dapple.LayerGeneration
       public IBuilder Parent
       {
          get { return m_Parent; }
-      }
-
-      public bool IsParent
-      {
-         get { return true; }
-      }
-
-      public bool IsChildAdded()
-      {
-         foreach (LayerBuilder builder in LayerBuilders)
-         {
-            if (builder.IsAdded)
-            {
-               return true;
-            }
-         }
-         foreach (BuilderDirectory dir in SubList)
-         {
-            if (dir.IsChildAdded())
-            {
-               return true;
-            }
-         }
-         return false;
       }
 
       /// <summary>
@@ -192,18 +168,13 @@ namespace Dapple.LayerGeneration
 
          foreach (IBuilder builder in SubList)
             (builder as BuilderDirectory).GetLayerCount(bInterSect, extents, strText, ref iCount);
-         foreach (IBuilder builder in LayerBuilders)
+         foreach (LayerBuilder builder in LayerBuilders)
          {
-            if (builder is ImageBuilder)
-            {
-               ImageBuilder imgBuilder = builder as ImageBuilder;
+            if ((strText != string.Empty && builder.Name.IndexOf(strText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
+                (extents != null && bInterSect && !extents.Intersects(builder.Extents) && !extents.Contains(builder.Extents)))
+               continue;
 
-               if ((strText != string.Empty && imgBuilder.Name.IndexOf(strText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
-                   (extents != null && bInterSect && !extents.Intersects(imgBuilder.Extents) && !extents.Contains(imgBuilder.Extents)))
-                  continue;
-
-               iCount++;
-            }
+            iCount++;
          }
       }
 
@@ -287,23 +258,57 @@ namespace Dapple.LayerGeneration
       }
 
       #endregion
+
+      /// <summary>
+      /// Get all of the LayerBuilders throughout the tree.
+      /// </summary>
+      /// <param name="result">The ArrayList to fill with the LayerBuilders.</param>
+      public void getLayerBuilders(ref System.Collections.ArrayList result)
+      {
+         foreach (LayerBuilder oBuilder in m_colChildren)
+            result.Add(oBuilder);
+         foreach (BuilderDirectory oDirectory in m_colSublist)
+            oDirectory.getLayerBuilders(ref result);
+      }
+   }
+
+   public abstract class ServerBuilder : BuilderDirectory
+   {
+      protected ServerUri m_oUri;
+
+      public ServerBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
+         : base(name, parent, true, iLII, iDII)
+      {
+         m_oUri = oUri;
+      }
+
+      /// <summary>
+      /// The URL of this server.
+      /// </summary>
+      public ServerUri Uri
+      {
+         get { return m_oUri; }
+      }
+
+      public abstract override string Type
+      {
+         get;
+      }
    }
 
    /// <summary>
    /// A BuilderDirectory representing a server type (WMS, ArcIMS) that has asynchronous loading and thus may
    /// not be loaded immediately upon addition to a ServerTree.
    /// </summary>
-   public abstract class ServerBuilder : BuilderDirectory
+   public abstract class AsyncServerBuilder : ServerBuilder
    {
-      protected ServerUri m_oUri;
       protected string m_strErrorMessage = String.Empty;
       protected bool m_blnIsLoading = true;
       private ManualResetEvent m_oLoadBlock = new ManualResetEvent(false);
       
-      public ServerBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
-         : base(name, parent, true, iLII, iDII)
+      public AsyncServerBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
+         : base(name, parent, oUri, iLII, iDII)
       {
-         m_oUri = oUri;
       }
 
       #region Properties
@@ -337,14 +342,6 @@ namespace Dapple.LayerGeneration
       public bool IsLoading
       {
          get { return m_blnIsLoading; }
-      }
-
-      /// <summary>
-      /// The URL of this server.
-      /// </summary>
-      public ServerUri Uri
-      {
-         get { return m_oUri; }
       }
 
       /// <summary>

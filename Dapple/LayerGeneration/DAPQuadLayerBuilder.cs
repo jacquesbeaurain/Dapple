@@ -17,7 +17,7 @@ using Dapple.DAP;
 
 namespace Dapple.LayerGeneration
 {
-	public class DAPQuadLayerBuilder : ImageBuilder
+   public class DAPQuadLayerBuilder : LayerBuilder
 	{
 		#region Static
 
@@ -35,7 +35,6 @@ namespace Dapple.LayerGeneration
 		public int m_iHeight;
 		public int m_iTextureSizePixels;
 		public DataSet m_hDataSet;
-		private string m_strDAPType;
 		private Server m_oServer;
 		private int m_iLevels;
 		private double m_dLevelZeroTileSizeDegrees;
@@ -51,7 +50,6 @@ namespace Dapple.LayerGeneration
 		public DAPQuadLayerBuilder(DataSet dataSet, World world, Server server, IBuilder parent, int height, int size, double lvl0tilesize, int levels)
          :base(dataSet.Title, world, parent)
 		{
-			m_strDAPType = dataSet.Type;
 			m_hDataSet = dataSet;
 			m_oServer = server;
 
@@ -292,7 +290,7 @@ namespace Dapple.LayerGeneration
 		{
 			get
 			{
-				return m_strDAPType;
+				return m_hDataSet.Type;
 			}
       }
 

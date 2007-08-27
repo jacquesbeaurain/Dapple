@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Dapple.LayerGeneration;
+using System.Collections.Generic;
 
 namespace Geosoft.DotNetTools
 {
@@ -126,11 +127,11 @@ namespace Geosoft.DotNetTools
       /// </summary>
       protected System.Windows.Forms.ImageList  m_hCheckboxImageList;
       /// <summary>
-      /// Whether the user hase MouseDown'd atop a draggable item.
+      /// The node that the user mouse downed on last; will be the node dragged on a drag and drop.
       /// </summary>
-      protected bool m_bDragDropEnabled = false;
+      protected TreeNode m_hDragDropSource = null;
       /// <summary>
-      /// Where the mouse position is during a drag and drop (screen 
+      /// Where the mouse position is during a drag and drop (screen coordinates)
       /// </summary>
       protected System.Drawing.Point m_oLastDragOver = new System.Drawing.Point(-1, -1);
       #endregion
@@ -419,7 +420,7 @@ namespace Geosoft.DotNetTools
             hNode = GetNodeAt(e.X, e.Y);
             if (hNode != null)
             {
-               m_bDragDropEnabled = true;
+               m_hDragDropSource = hNode;
             }
          }
       }
@@ -430,19 +431,15 @@ namespace Geosoft.DotNetTools
       /// <param name="e"></param>
       protected override void OnMouseMove(MouseEventArgs e)
       {
-         TreeNode hNode;
-
          base.OnMouseMove(e);
 
-         if (m_bDragDropEnabled)
+         if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
          {
-            hNode = GetNodeAt(e.X, e.Y);
-            this.Nodes.IndexOf(hNode);
-            if (hNode != null)
+            if (m_hDragDropSource != null)
             {
-               DragDropEffects oEffects = DoDragDrop(hNode, DragDropEffects.Move);
+               DragDropEffects oEffects = DoDragDrop(m_hDragDropSource, DragDropEffects.Move);
             }
-            m_bDragDropEnabled = false;
+            m_hDragDropSource = null;
          }
       }
 
@@ -582,6 +579,8 @@ namespace Geosoft.DotNetTools
 
          if (GetNodeAtCheckBox(pt.X, pt.Y) != null)
             e.Cancel = true;
+         else
+            base.OnBeforeExpand(e);
       }
 
       /// <summary>
@@ -589,13 +588,15 @@ namespace Geosoft.DotNetTools
       /// </summary>
       /// <param name="e"></param>
       protected override void OnBeforeCollapse(System.Windows.Forms.TreeViewCancelEventArgs e)
-      {         
+      {
          System.Drawing.Point pt;
  
          pt = PointToClient(new System.Drawing.Point(MousePosition.X, MousePosition.Y));
 
          if (GetNodeAtCheckBox(pt.X, pt.Y) != null)
             e.Cancel = true;
+         else
+            base.OnBeforeCollapse(e);
       }
 
       #endregion

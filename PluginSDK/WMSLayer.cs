@@ -22,10 +22,10 @@ namespace WorldWind
       #region Private Members
       WMSList _parentWMSList;
       private string[] _imageFormats;
-      private decimal _north;
-      private decimal _south;
-      private decimal _east;
-      private decimal _west;
+      private decimal _north = 90;
+      private decimal _south = -90;
+      private decimal _east = 180;
+      private decimal _west = -180;
       private string _title;
       private string _description;
       private string _name;

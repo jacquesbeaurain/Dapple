@@ -12,7 +12,7 @@ using Dapple;
 
 namespace Dapple.LayerGeneration
 {
-   public class GeorefImageLayerBuilder : ImageBuilder
+   public class GeorefImageLayerBuilder : LayerBuilder
    {
       #region Statics
 

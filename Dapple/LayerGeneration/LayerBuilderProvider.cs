@@ -38,11 +38,6 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
-		bool IsParent
-		{
-			get;
-		}
-
 		[System.ComponentModel.Browsable(false)]
 		bool SupportsOpacity
 		{
@@ -146,6 +141,11 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
+      public abstract GeographicBoundingBox Extents
+      {
+         get;
+      }
+
 		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
 
 		/// <summary>
@@ -162,14 +162,6 @@ namespace Dapple.LayerGeneration
 			get
 			{
 				return m_Parent;
-			}
-		}
-
-		public bool IsParent
-		{
-			get
-			{
-				return false;
 			}
 		}
 
@@ -432,18 +424,4 @@ namespace Dapple.LayerGeneration
 
       #endregion
    }
-
-
-	public abstract class ImageBuilder : LayerBuilder
-	{
-      public ImageBuilder(String strName, World oWorld, IBuilder oParent)
-         : base(strName, oWorld, oParent)
-      {
-      }
-
-		public abstract GeographicBoundingBox Extents
-		{
-			get;
-		}
-	}
 }

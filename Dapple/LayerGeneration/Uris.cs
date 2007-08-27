@@ -312,8 +312,7 @@ namespace Dapple.LayerGeneration
          ArcIMSCatalogBuilder oCatalog = oTree.ArcIMSCatalog;
          if (!oCatalog.ContainsServer(m_oServer as ArcIMSServerUri))
          {
-            oTree.AddArcIMSServer(m_oServer as ArcIMSServerUri, false);
-            oTree.CMRebuildTree();
+            oTree.AddArcIMSServer(m_oServer as ArcIMSServerUri, true);
          }
 
          return new ArcIMSQuadLayerBuilder(
@@ -367,9 +366,8 @@ namespace Dapple.LayerGeneration
          {
             /*oServerBuilder = oTree.WMSCatalog.AddServer(m_oServer as WMSServerUri) as WMSServerBuilder;
             oTree.UpdateTreeChange();*/
-            oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), false);
+            oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true);
             oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
-            oTree.CMRebuildTree();
          }
 
          oServerBuilder.WaitUntilLoaded();

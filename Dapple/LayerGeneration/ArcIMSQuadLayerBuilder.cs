@@ -8,7 +8,7 @@ using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
-   class ArcIMSQuadLayerBuilder : ImageBuilder
+   class ArcIMSQuadLayerBuilder : LayerBuilder
    {
       #region Member variables
 

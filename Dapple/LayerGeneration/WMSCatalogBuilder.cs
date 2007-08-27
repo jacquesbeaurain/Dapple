@@ -13,6 +13,7 @@ using WorldWind.Net.Wms;
 using WorldWind.PluginEngine;
 
 using Geosoft.DotNetTools;
+using System.Collections;
 
 namespace Dapple.LayerGeneration
 {
@@ -86,6 +87,19 @@ namespace Dapple.LayerGeneration
                return iter;
          }
          return null;
+      }
+
+      public ArrayList GetServers()
+      {
+         ArrayList result = new ArrayList();
+
+         foreach (WMSServerBuilder iter in m_colSublist)
+         {
+            if (iter.IsLoadedSuccessfully)
+               result.Add(iter);
+         }
+
+         return result;
       }
 
       public void UncacheServer(WMSServerUri oUri)
@@ -174,7 +188,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class WMSServerBuilder : ServerBuilder
+   public class WMSServerBuilder : AsyncServerBuilder
    {
       string m_strCapabilitiesFilePath;
       WMSList m_oList;
@@ -203,6 +217,11 @@ namespace Dapple.LayerGeneration
          {
             return File.Exists(m_strCapabilitiesFilePath);
          }
+      }
+
+      public override string Type
+      {
+         get { return "WMS"; }
       }
 
       public override XmlNode GetMetaData(XmlDocument oDoc)

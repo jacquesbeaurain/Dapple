@@ -18,7 +18,7 @@ using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
-	public class VEQuadLayerBuilder : ImageBuilder
+   public class VEQuadLayerBuilder : LayerBuilder
    {
       #region Statics
 

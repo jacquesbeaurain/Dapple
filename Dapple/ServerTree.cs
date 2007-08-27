@@ -14,6 +14,7 @@ using Geosoft.Dap.Common;
 using Geosoft.DotNetTools;
 
 using WorldWind.PluginEngine;
+using System.Collections;
 
 namespace Dapple
 {
@@ -41,8 +42,8 @@ namespace Dapple
 		protected MainForm m_oParent;
 		protected TriStateTreeView m_layerTree;
 		protected LayerBuilderList m_activeLayers;
-		protected List<ServerBuilder> m_wmsServers = new List<ServerBuilder>();
-      protected List<ServerBuilder> m_oArcIMSServers = new List<ServerBuilder>();
+		protected List<AsyncServerBuilder> m_wmsServers = new List<AsyncServerBuilder>();
+      protected List<AsyncServerBuilder> m_oArcIMSServers = new List<AsyncServerBuilder>();
 		#endregion
 
       #region Delegates
@@ -135,14 +136,14 @@ namespace Dapple
 
       #region Event Handlers
 
-      private bool m_bDragEnabled = false;
+      private TreeNode m_oDragSource = null;
       private void HandleMouseDown(Object oSender, MouseEventArgs oArgs)
       {
          TreeNode oNodeOver = this.GetNodeAt(oArgs.X, oArgs.Y);
 
          if (oNodeOver != null && (oNodeOver.Tag is DataSet || oNodeOver.Tag is LayerBuilder))
          {
-            m_bDragEnabled = true;
+            m_oDragSource = oNodeOver;
          }
       }
 
@@ -150,27 +151,29 @@ namespace Dapple
       {
          if ((oArgs.Button & MouseButtons.Left) == MouseButtons.Left)
          {
-            if (!m_bDragEnabled) return;
+            if (m_oDragSource == null) return;
+            List<LayerBuilder> oDragData = new List<LayerBuilder>();
 
-            TreeNode oClickedNode = this.GetNodeAt(oArgs.X, oArgs.Y);
-            if (oClickedNode == null) return;
-
-            if (oClickedNode.Tag is LayerBuilder)
+            if (m_oDragSource.Tag is LayerBuilder)
             {
-               DragDropEffects dropEffect = this.DoDragDrop(new LayerDragData(oClickedNode.Text, oClickedNode.Tag as LayerBuilder), DragDropEffects.All);
-               this.SelectedNode = oClickedNode;
+               oDragData.Add(m_oDragSource.Tag as LayerBuilder);
             }
-            else if (oClickedNode.Tag is DataSet)
+            else if (m_oDragSource.Tag is DataSet)
             {
                // --- Get the DataSet's Server parent node ---
                TreeNode oServerNode = this.SelectedNode;
                while (!(oServerNode.Tag is Server)) oServerNode = oServerNode.Parent;
 
-               DragDropEffects dropEffect = this.DoDragDrop(new LayerDragData(oClickedNode.Text, new DAPQuadLayerBuilder(oClickedNode.Tag as DataSet, m_oParent.WorldWindow.CurrentWorld, oServerNode.Tag as Server, null)), DragDropEffects.All);
-               this.SelectedNode = oClickedNode;
+               oDragData.Add(new DAPQuadLayerBuilder(m_oDragSource.Tag as DataSet, m_oParent.WorldWindow.CurrentWorld, oServerNode.Tag as Server, null));
             }
 
-            m_bDragEnabled = false;
+            if (oDragData.Count > 0)
+            {
+            DragDropEffects dropEffect = this.DoDragDrop(oDragData, DragDropEffects.All);
+            this.SelectedNode = m_oDragSource;
+            }
+
+            m_oDragSource = null;
          }
       }
 
@@ -520,7 +523,7 @@ namespace Dapple
 			dir = entry.Newbuilderdirectory();
 			dir.Addname(new SchemaString(m_hWMSRootNode.Text));
 			dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
-			foreach (ServerBuilder builderEntry in m_wmsServers)
+			foreach (AsyncServerBuilder builderEntry in m_wmsServers)
 			{
 				builderentryType subentry = servers.Newbuilderentry();
 				wmscatalogType wms = subentry.Newwmscatalog();
@@ -528,7 +531,7 @@ namespace Dapple
 				subentry.Addwmscatalog(wms);
 				dir.Addbuilderentry(subentry);
 			}
-         foreach (ServerBuilder builderEntry in m_oArcIMSServers)
+         foreach (AsyncServerBuilder builderEntry in m_oArcIMSServers)
          {
             builderentryType subentry = servers.Newbuilderentry();
             arcimscatalogType arcims = subentry.Newarcimscatalog();
@@ -693,7 +696,7 @@ namespace Dapple
          // Annotate the tree for loading WMS servers.
          foreach (TreeNode treeNode in m_hWMSRootNode.Nodes)
          {
-            ((ServerBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
+            ((AsyncServerBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
          }
 
          iCount = 0;
@@ -707,7 +710,7 @@ namespace Dapple
          // Annotate tree for loading ArcIMS servers.
          foreach (TreeNode treeNode in m_hArcIMSRootNode.Nodes)
          {
-            ((ServerBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
+            ((AsyncServerBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
          }
 		}
 
@@ -722,9 +725,9 @@ namespace Dapple
 
 			foreach (TreeNode treeNode in nodeList)
 			{
-				if (treeNode.Tag is ImageBuilder)
+				if (treeNode.Tag is LayerBuilder)
 				{
-					ImageBuilder builder = treeNode.Tag as ImageBuilder;
+					LayerBuilder builder = treeNode.Tag as LayerBuilder;
 					if ((m_strSearch != string.Empty && treeNode.Text.IndexOf(m_strSearch, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
 					  (m_filterExtents != null && m_bAOIFilter && !m_filterExtents.Intersects(builder.Extents) && !m_filterExtents.Contains(builder.Extents)))
 						treeNode.Remove();
@@ -733,7 +736,7 @@ namespace Dapple
 				  (treeNode.Tag as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) == 0)
 				{
                // Don't remove loading or busted servers
-               if (treeNode.Tag is ServerBuilder && !((ServerBuilder)treeNode.Tag).IsLoadedSuccessfully)
+               if (treeNode.Tag is AsyncServerBuilder && !((AsyncServerBuilder)treeNode.Tag).IsLoadedSuccessfully)
                   continue;
 					
 					treeNode.Remove();
@@ -779,7 +782,7 @@ namespace Dapple
          if (focus != m_hRootNode && focus != m_hDAPRootNode) openNodes[0].Nodes.Clear();
       }
 
-      public void CMRebuildTree()
+      private void CMRebuildTree()
       {
          if (oPreNode == null) throw new ArgumentNullException("Preselect node unset");
          if (oPostNode == null) throw new ArgumentNullException("Postselect node unset");
@@ -995,9 +998,41 @@ namespace Dapple
 		}
 		#endregion
 
+
+      /// <summary>
+      /// Get a list of all the servers currently in the tree.
+      /// </summary>
+      /// <returns></returns>
+      public ArrayList getServerList()
+      {
+         ArrayList result = new ArrayList();
+
+         // --- Dap servers ---
+         foreach (TreeNode oNode in m_hDAPRootNode.Nodes)
+         {
+            if (((Server)oNode.Tag).Status == Server.ServerStatus.OnLine)
+               result.Add(oNode.Tag);
+         }
+
+         // --- WMS servers ---
+         foreach (WMSServerBuilder oServer in ((WMSCatalogBuilder)m_hWMSRootNode.Tag).GetServers())
+         {
+            if (oServer.IsLoadedSuccessfully)
+               result.Add(oServer);
+         }
+
+         // --- ArcIMS servers ---
+         foreach (ArcIMSServerBuilder oServer in ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).GetServers())
+         {
+            if (oServer.IsLoadedSuccessfully)
+               result.Add(oServer);
+         }
+
+         return result;
+      }
 	}
 
-   class LayerDragData
+   /*class LayerDragData
    {
       private String m_strName;
       private LayerBuilder m_oBuilder;
@@ -1010,5 +1045,5 @@ namespace Dapple
 
       public String Name { get { return m_strName; } }
       public LayerBuilder Builder { get { return m_oBuilder; } }
-   }
+   }*/
 }

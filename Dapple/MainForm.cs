@@ -92,7 +92,12 @@ namespace Dapple
 		private TriStateTreeView tvLayers;
 		//private List<TreeNode> triStateTreeViewLayerNodes = new List<TreeNode>();
 		//private TreeNode lastLayerNode, firstLayerNode;
-		private WorldWindow worldWindow = new WorldWindow();
+		private static WorldWindow worldWindow;
+
+      public static WorldWindow WorldWindowSingleton
+      {
+         get { return worldWindow; }
+      }
 
 		private NASA.Plugins.BMNG bmngPlugin;
 		private NASA.Plugins.BmngLoader bmngLoader;
@@ -125,6 +130,8 @@ namespace Dapple
 		private bool checked_context = false;
 
 		private LayerBuilderList activeLayers;
+
+      private MetadataDisplayThread m_oMetadataDisplay;
 
 		Geosoft.GX.DAPGetData.GetDapError dapErrors;
 
@@ -241,6 +248,7 @@ namespace Dapple
 
 		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, RemoteInterface oMRI, GeographicBoundingBox oAoi)
 		{
+         worldWindow = new WorldWindow();
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
 				this.openView = strView;
 			this.openGeoTiff = strGeoTiff;
@@ -401,10 +409,10 @@ namespace Dapple
 				WorldWind.World world = new WorldWind.World("Earth",
 					new Point3d(0, 0, 0), Quaternion4d.RotationYawPitchRoll(0, 0, 0),
 					(float)6378137,
-					System.IO.Path.Combine(this.worldWindow.Cache.CacheDirectory, "Earth"),
+					System.IO.Path.Combine(worldWindow.Cache.CacheDirectory, "Earth"),
 					terrainAccessor);
 
-				this.worldWindow.CurrentWorld = world;
+				worldWindow.CurrentWorld = world;
 
 				string strPluginsDir = Path.Combine(DirectoryPath, "Plugins");
 				this.bmngLoader = new NASA.Plugins.BmngLoader();
@@ -448,12 +456,12 @@ namespace Dapple
 				{
 					this.placeNames.IsOn = World.Settings.ShowPlacenames;
 					this.placeNames.RenderPriority = RenderPriority.Placenames;
-					this.worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
+					worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
 					this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
 				}
 
-				this.WorldResultsSplitPanel.Panel1.Controls.Add(this.worldWindow);
-				this.worldWindow.Dock = DockStyle.Fill;
+				this.WorldResultsSplitPanel.Panel1.Controls.Add(worldWindow);
+				worldWindow.Dock = DockStyle.Fill;
 
 				#endregion
 
@@ -492,23 +500,23 @@ namespace Dapple
 				#region OverviewPanel
 
 				int i;
-				for (i = 0; i < this.worldWindow.CurrentWorld.RenderableObjects.Count; i++)
+				for (i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
 				{
-					if (((RenderableObject)this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
+					if (((RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
 						break;
 				}
 
-				this.overviewCtl = new OverviewControl(Settings.DataPath + @"\Earth\BmngBathy\world.topo.bathy.200407.jpg", this.worldWindow, panelOverview);
+				this.overviewCtl = new OverviewControl(Settings.DataPath + @"\Earth\BmngBathy\world.topo.bathy.200407.jpg", worldWindow, panelOverview);
 				this.overviewCtl.Dock = DockStyle.Fill;
 				this.panelOverview.Controls.Add(this.overviewCtl);
 
 				#endregion
 
 
-				this.worldWindow.MouseEnter += new EventHandler(this.worldWindow_MouseEnter);
-				this.worldWindow.MouseLeave += new EventHandler(this.worldWindow_MouseLeave);
+				worldWindow.MouseEnter += new EventHandler(this.worldWindow_MouseEnter);
+				worldWindow.MouseLeave += new EventHandler(this.worldWindow_MouseLeave);
 
-				this.worldWindow.ClearDevice();
+				worldWindow.ClearDevice();
 
 
 				#region Tree Views
@@ -535,13 +543,15 @@ namespace Dapple
 				this.tvLayers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tvLayers_MouseDown);
 				this.tvLayers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tvLayers_MouseDoubleClick);
 
-				this.activeLayers = new LayerBuilderList(this, this.tvLayers, this.worldWindow);
+				this.activeLayers = new LayerBuilderList(this, this.tvLayers, worldWindow);
             this.tvLayers.DragOver += new DragEventHandler(this.activeLayers.HandleDragOver);
             this.tvLayers.DragDrop += new DragEventHandler(this.activeLayers.HandleDragDrop);
             this.tvLayers.AllowDrop = true;
-            this.tvLayers.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.LayerSelected);
+            //this.tvLayers.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.LayerSelected);
+            this.tvLayers.AfterSelect += new TreeViewEventHandler(this.LayerSelected);
 
 				this.tvServers = new ServerTree(Settings.CachePath, this, this.tvLayers, this.activeLayers);
+            cServerListControl.ImageList = this.tvServers.ImageList;
             this.tvServers.AfterSelect += new TreeViewEventHandler(this.ServerTreeAfterSelected);
             this.activeLayers.ServerTree = this.tvServers;
 				this.tvServers.RMBContextMenuStrip = this.contextMenuStripServers;
@@ -602,6 +612,8 @@ namespace Dapple
 
             loadCountryList();
             populateAoiComboBox();
+
+            m_oMetadataDisplay = new MetadataDisplayThread(this);
          }
 		}
 		#endregion
@@ -702,7 +714,7 @@ namespace Dapple
 
 		void worldWindow_MouseEnter(object sender, EventArgs e)
 		{
-			this.worldWindow.Select();
+			worldWindow.Select();
 		}
 
 		#endregion
@@ -868,61 +880,61 @@ namespace Dapple
 
 		private void toolStripButtonRestoreTilt_Click(object sender, EventArgs e)
 		{
-			this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			this.worldWindow.DrawArgs.WorldCamera.SetPosition(
-					 this.worldWindow.Latitude,
-					 this.worldWindow.Longitude,
-					  this.worldWindow.DrawArgs.WorldCamera.Heading.Degrees,
-					  this.worldWindow.DrawArgs.WorldCamera.Altitude,
+			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			worldWindow.DrawArgs.WorldCamera.SetPosition(
+					 worldWindow.Latitude,
+					 worldWindow.Longitude,
+					  worldWindow.DrawArgs.WorldCamera.Heading.Degrees,
+					  worldWindow.DrawArgs.WorldCamera.Altitude,
 					  0);
 
 		}
 
 		private void toolStripButtonRestoreNorth_Click(object sender, EventArgs e)
 		{
-			this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			this.worldWindow.DrawArgs.WorldCamera.SetPosition(
-					 this.worldWindow.Latitude,
-					 this.worldWindow.Longitude,
+			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			worldWindow.DrawArgs.WorldCamera.SetPosition(
+					 worldWindow.Latitude,
+					 worldWindow.Longitude,
 					  0,
-					  this.worldWindow.DrawArgs.WorldCamera.Altitude,
-					  this.worldWindow.DrawArgs.WorldCamera.Tilt.Degrees);
+					  worldWindow.DrawArgs.WorldCamera.Altitude,
+					  worldWindow.DrawArgs.WorldCamera.Tilt.Degrees);
 		}
 
 		private void toolStripButtonResetCamera_Click(object sender, EventArgs e)
 		{
-			this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			this.worldWindow.DrawArgs.WorldCamera.Reset();
+			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			worldWindow.DrawArgs.WorldCamera.Reset();
 		}
 
 
 		private void timerNavigation_Tick(object sender, EventArgs e)
 		{
 			this.bNavTimer = true;
-			this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = 1.0;
+			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = 1.0;
 			switch (this.eNavMode)
 			{
 				case NavMode.ZoomIn:
-					this.worldWindow.DrawArgs.WorldCamera.Zoom(0.2f);
+					worldWindow.DrawArgs.WorldCamera.Zoom(0.2f);
 					return;
 				case NavMode.ZoomOut:
-					this.worldWindow.DrawArgs.WorldCamera.Zoom(-0.2f);
+					worldWindow.DrawArgs.WorldCamera.Zoom(-0.2f);
 					return;
 				case NavMode.RotateLeft:
 					Angle rotateClockwise = Angle.FromRadians(-0.01f);
-					this.worldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
-					this.worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
+					worldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
+					worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
 					return;
 				case NavMode.RotateRight:
 					Angle rotateCounterclockwise = Angle.FromRadians(0.01f);
-					this.worldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
-					this.worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
+					worldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
+					worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
 					return;
 				case NavMode.TiltUp:
-					this.worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
+					worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
 					return;
 				case NavMode.TiltDown:
-					this.worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(1.0f);
+					worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(1.0f);
 					return;
 				default:
 					return;
@@ -983,8 +995,8 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				this.worldWindow.DrawArgs.WorldCamera.Zoom(2.0f);
+				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				worldWindow.DrawArgs.WorldCamera.Zoom(2.0f);
 			}
 			else
 				this.bNavTimer = false;
@@ -995,8 +1007,8 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				this.worldWindow.DrawArgs.WorldCamera.Zoom(-2.0f);
+				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				worldWindow.DrawArgs.WorldCamera.Zoom(-2.0f);
 			}
 			else
 				this.bNavTimer = false;
@@ -1008,9 +1020,9 @@ namespace Dapple
 			if (!this.bNavTimer)
 			{
 				Angle rotateClockwise = Angle.FromRadians(-0.2f);
-				this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				this.worldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
-				this.worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
+				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				worldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
+				worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
 			}
 			else
 				this.bNavTimer = false;
@@ -1022,9 +1034,9 @@ namespace Dapple
 			if (!this.bNavTimer)
 			{
 				Angle rotateCounterclockwise = Angle.FromRadians(0.2f);
-				this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				this.worldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
-				this.worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
+				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				worldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
+				worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
 			}
 			else
 				this.bNavTimer = false;
@@ -1035,8 +1047,8 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				this.worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-10.0f);
+				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-10.0f);
 			}
 			else
 				this.bNavTimer = false;
@@ -1047,8 +1059,8 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				this.worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(10.0f);
+				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(10.0f);
 			}
 			else
 				this.bNavTimer = false;
@@ -1101,7 +1113,7 @@ namespace Dapple
 
 		void AddGeoTiff(string strGeoTiff, string strGeoTiffName, bool bTmp, bool bGoto)
 		{
-			LayerBuilder builder = new GeorefImageLayerBuilder(/*Settings.CachePath,*/ strGeoTiff, bTmp, this.worldWindow.CurrentWorld, null);
+			LayerBuilder builder = new GeorefImageLayerBuilder(/*Settings.CachePath,*/ strGeoTiff, bTmp, worldWindow.CurrentWorld, null);
 
 			Cursor = Cursors.WaitCursor;
 			if (builder.GetLayer() != null)
@@ -1153,7 +1165,7 @@ namespace Dapple
 				else
 					this.activeLayers.Add(builder.Name, builder, true, 255, true, bTmp);
 				if (bGoto)
-					GoTo(builder as ImageBuilder);
+					GoTo(builder);
 			}
 			else
 			{
@@ -1230,7 +1242,7 @@ namespace Dapple
 
 			if (treeNode != null)
 			{
-			   AddWMS dlg = new AddWMS(this.worldWindow, treeNode.Tag as WMSCatalogBuilder);
+			   AddWMS dlg = new AddWMS(worldWindow, treeNode.Tag as WMSCatalogBuilder);
 			   if (dlg.ShowDialog(this) == DialogResult.OK)
 			   {
 				  try
@@ -1257,7 +1269,7 @@ namespace Dapple
 
          if (treeNode != null)
          {
-            AddArcIMS dlg = new AddArcIMS(this.worldWindow, treeNode.Tag as ArcIMSCatalogBuilder);
+            AddArcIMS dlg = new AddArcIMS(worldWindow, treeNode.Tag as ArcIMSCatalogBuilder);
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
                try
@@ -1354,15 +1366,14 @@ namespace Dapple
 
 		private void toolStripMenuButtonItemGoTo_Click(object sender, EventArgs e)
 		{
-			if (LayerBuilderItem.Builder is ImageBuilder)
-				GoTo(LayerBuilderItem.Builder as ImageBuilder);
+			GoTo(LayerBuilderItem.Builder);
 		}
 		private void toolStripMenuItemgoToServer_Click(object sender, EventArgs e)
 		{
 			if (this.tvServers.SelectedNode != null)
 			{
-				if (this.tvServers.SelectedNode.Tag is ImageBuilder)
-					GoTo(this.tvServers.SelectedNode.Tag as ImageBuilder);
+				if (this.tvServers.SelectedNode.Tag is LayerBuilder)
+					GoTo(this.tvServers.SelectedNode.Tag as LayerBuilder);
 				if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
 				{
 					Geosoft.Dap.Common.DataSet dataSet = this.tvServers.SelectedNode.Tag as Geosoft.Dap.Common.DataSet;
@@ -1376,7 +1387,7 @@ namespace Dapple
 			}
 		}
 
-		void GoTo(ImageBuilder builder)
+      void GoTo(LayerBuilder builder)
 		{
 			GoTo(builder.Extents, (builder is NltQuadLayerBuilder) ? (builder as NltQuadLayerBuilder).LevelZeroTileSize : -1.0);
 		}
@@ -1391,8 +1402,8 @@ namespace Dapple
 			   extents.West < -179 &&
 			   extents.East > 179)
 			{
-				latitude = this.worldWindow.Latitude;
-				longitude = this.worldWindow.Longitude;
+				latitude = worldWindow.Latitude;
+				longitude = worldWindow.Longitude;
 			}
 			else
 			{
@@ -1406,10 +1417,10 @@ namespace Dapple
 			if (dLevelZeroTileSize > 0.0)
 				fov = Math.Min(fov, 2 * dLevelZeroTileSize);
 			if (fov < 180.0)
-				this.worldWindow.GotoLatLonHeadingViewRange(latitude, longitude, 0, fov);
+				worldWindow.GotoLatLonHeadingViewRange(latitude, longitude, 0, fov);
 			else
 			{
-				this.worldWindow.GotoLatLonAltitude(latitude, longitude, overviewCameraAlt);
+				worldWindow.GotoLatLonAltitude(latitude, longitude, overviewCameraAlt);
 			}
 		}
 
@@ -1661,7 +1672,7 @@ namespace Dapple
 					World.Settings.VerticalExaggeration = Convert.ToSingle(item.Text.Replace("x", string.Empty));
 				}
 			}
-			this.worldWindow.Invalidate();
+			worldWindow.Invalidate();
 		}
 
 		private void toolStripMenuItemcompass_Click(object sender, EventArgs e)
@@ -1702,7 +1713,7 @@ namespace Dapple
 			LayerBuilderItem = null;
 
 			// Render once to not just show the atmosphere at startup (looks better) ---
-			this.worldWindow.SafeRender();
+			worldWindow.SafeRender();
 
 			if (this.openView.Length > 0)
 				OpenView(openView, this.openGeoTiff.Length == 0);
@@ -1740,7 +1751,7 @@ namespace Dapple
 				CheckForUpdates(false);
 			Settings.UpdateCheckDate = System.DateTime.Now;
 
-			foreach (RenderableObject oRO in this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
+			foreach (RenderableObject oRO in worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
 			{
 				if (oRO.Name == "1 - Grid Lines")
 				{
@@ -1761,41 +1772,41 @@ namespace Dapple
 		private void MainForm_ResizeBegin(object sender, EventArgs e)
 		{
 			m_bSizing = true;
-			this.worldWindow.Visible = false;
+			worldWindow.Visible = false;
 		}
 
 		private void MainForm_ResizeEnd(object sender, EventArgs e)
 		{
 			m_bSizing = false;
-			this.worldWindow.Visible = true;
-			this.worldWindow.SafeRender();
+			worldWindow.Visible = true;
+			worldWindow.SafeRender();
 		}
 
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
-			this.worldWindow.Visible = false;
+			worldWindow.Visible = false;
 		}
 
 		private void MainForm_SizeChanged(object sender, EventArgs e)
 		{
 			if (!m_bSizing)
 			{
-				this.worldWindow.Visible = true;
-				this.worldWindow.SafeRender();
+				worldWindow.Visible = true;
+				worldWindow.SafeRender();
 			}
 		}
 
 		private void splitContainerMain_SplitterMoving(object sender, SplitterCancelEventArgs e)
 		{
-			this.worldWindow.Visible = false;
+			worldWindow.Visible = false;
 		}
 
 		private void splitContainerMain_SplitterMoved(object sender, SplitterEventArgs e)
 		{
 			if (!m_bSizing)
 			{
-				this.worldWindow.Visible = true;
-				this.worldWindow.SafeRender();
+				worldWindow.Visible = true;
+				worldWindow.SafeRender();
 				if (this.overviewCtl != null)
 					this.overviewCtl.Refresh();
 			}
@@ -1803,13 +1814,13 @@ namespace Dapple
 
       private void cWorldMetadataSplitter_SplitterMoving(object sender, SplitterCancelEventArgs e)
       {
-         this.worldWindow.Visible = false;
+         worldWindow.Visible = false;
       }
 
       private void cWorldMetadataSplitter_SplitterMoved(object sender, SplitterEventArgs e)
       {
-         this.worldWindow.Visible = true;
-         this.worldWindow.SafeRender();
+         worldWindow.Visible = true;
+         worldWindow.SafeRender();
       }
 
       private void WorldResultsSplitPanel_Panel1_Resize(object sender, EventArgs e)
@@ -1826,7 +1837,7 @@ namespace Dapple
 		private void toolStripMenuItemshowGridLines_Click(object sender, EventArgs e)
 		{
 			World.Settings.ShowLatLonLines = toolStripMenuItemshowGridLines.Checked;
-			foreach (RenderableObject oRO in this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
+			foreach (RenderableObject oRO in worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
 			{
 				if (oRO.Name == "1 - Grid Lines")
 				{
@@ -1839,7 +1850,7 @@ namespace Dapple
 		private void toolStripMenuItemshowPosition_Click(object sender, EventArgs e)
 		{
 			World.Settings.ShowPosition = toolStripMenuItemshowPosition.Checked;
-			this.worldWindow.Invalidate();
+			worldWindow.Invalidate();
 		}
 
 		private void toolStripMenuItemsave_Click(object sender, EventArgs e)
@@ -2434,7 +2445,7 @@ namespace Dapple
 					if (ro != null)
 					{
 						RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
-						ro.InitExportInfo(this.worldWindow.DrawArgs, expinfo);
+						ro.InitExportInfo(worldWindow.DrawArgs, expinfo);
 
 						if (expinfo.iPixelsX > 0 && expinfo.iPixelsY > 0)
 							expList.Add(new ExportEntry(container, ro, expinfo));
@@ -2444,7 +2455,7 @@ namespace Dapple
 			if (roBMNG != null && roBMNG.IsOn)
 			{
 				RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
-				roBMNG.InitExportInfo(this.worldWindow.DrawArgs, expinfo);
+				roBMNG.InitExportInfo(worldWindow.DrawArgs, expinfo);
 				expList.Add(new ExportEntry(null, roBMNG, expinfo));
 			}
 
@@ -2463,7 +2474,7 @@ namespace Dapple
 				return;
 			}
 
-			WorldWind.Camera.MomentumCamera camera = this.worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
+			WorldWind.Camera.MomentumCamera camera = worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
 			if (camera.Tilt.Degrees > 5.0)
 			{
 				MessageBox.Show(this, "It is not possible to export a tilted view. Reset the tilt using the navigation buttons\nor by using Right-Mouse-Button and drag and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2481,7 +2492,7 @@ namespace Dapple
 					camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
 
 					// Determine output parameters
-					GeographicBoundingBox geoExtent = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(true));
+					GeographicBoundingBox geoExtent = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(true));
 					int iResolution = dlg.Resolution;
 					int iExportPixelsX, iExportPixelsY;
 
@@ -2579,7 +2590,7 @@ namespace Dapple
 									int iWidth, iHeight;
 
 									using (exp.Info.gr = Graphics.FromImage(bitMap))
-										exp.RO.ExportProcess(this.worldWindow.DrawArgs, exp.Info);
+										exp.RO.ExportProcess(worldWindow.DrawArgs, exp.Info);
 
 									iOffsetX = (int)Math.Round((exp.Info.dMinLon - geoExtent.West) * (double)iExportPixelsX / (geoExtent.East - geoExtent.West));
 									iOffsetY = (int)Math.Round((geoExtent.North - exp.Info.dMaxLat) * (double)iExportPixelsY / (geoExtent.North - geoExtent.South));
@@ -2711,17 +2722,20 @@ namespace Dapple
 
          if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
-            cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- AOIs from DAP Server ---", null));
-            ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetAreaList();
-            foreach (String strAOI in aAOIs)
+            if (((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine)
             {
-               double minX, minY, maxX, maxY;
-               String strCoord;
-               ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetBoundingBox(strAOI, out minX, out minY, out maxX, out maxY, out strCoord);
-               if (strCoord.Equals("WGS 84"))
+               cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- AOIs from DAP Server ---", null));
+               ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetAreaList();
+               foreach (String strAOI in aAOIs)
                {
-                  GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
-                  cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
+                  double minX, minY, maxX, maxY;
+                  String strCoord;
+                  ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetBoundingBox(strAOI, out minX, out minY, out maxX, out maxY, out strCoord);
+                  if (strCoord.Equals("WGS 84"))
+                  {
+                     GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
+                     cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
+                  }
                }
             }
          }
@@ -2777,7 +2791,7 @@ namespace Dapple
 			if (roBMNG != null)
 				view.View.Addshowbluemarble(new SchemaBoolean(roBMNG.IsOn));
 
-			WorldWind.Camera.MomentumCamera camera = this.worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
+			WorldWind.Camera.MomentumCamera camera = worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
 
 			//stop the camera
 			camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
@@ -2822,7 +2836,7 @@ namespace Dapple
 			//this.worldWindow.SaveScreenshot(picFileName);
 			//this.worldWindow.Render();
 
-			using (Image img = TakeSnapshot(this.worldWindow.Handle))
+			using (Image img = TakeSnapshot(worldWindow.Handle))
 				img.Save(picFileName, System.Drawing.Imaging.ImageFormat.Jpeg);
 
 			FileStream fs = new FileStream(picFileName, FileMode.Open);
@@ -2947,8 +2961,8 @@ namespace Dapple
 					if (bGoto && view.View.Hascameraorientation())
 					{
 						cameraorientationType orient = view.View.cameraorientation;
-						this.worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-						this.worldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
+						worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+						worldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
 					}
 
 					this.tvLayers.BeginUpdate();
@@ -3010,7 +3024,7 @@ namespace Dapple
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 
-			this.worldWindow.IsRenderDisabled = false;
+			worldWindow.IsRenderDisabled = false;
 
 			this.toolStripProgressBar.Visible = false;
 			this.toolStripStatusLabel1.Visible = false;
@@ -3037,7 +3051,7 @@ namespace Dapple
 			this.toolStripStatusSpin5.Alignment = ToolStripItemAlignment.Right;
 			this.toolStripStatusSpin6.Visible = false;
 			this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right;
-			this.worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
+			worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
 
 			this.tvServers.Load();
 
@@ -3071,9 +3085,9 @@ namespace Dapple
 
 			// Ensure cleanup
 			this.activeLayers.RemoveAll();
-			for (int i = 0; i < this.worldWindow.CurrentWorld.RenderableObjects.Count; i++)
+			for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
 			{
-				RenderableObject oRO = (RenderableObject)this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i];
+				RenderableObject oRO = (RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i];
 				oRO.IsOn = false;
 				oRO.Dispose();
 			}
@@ -3093,20 +3107,25 @@ namespace Dapple
 
 			FinalizeSettings();
 
-			this.worldWindow.Dispose();
+			worldWindow.Dispose();
 
 			this.cServerTreeView.Controls.Remove(this.tvServers);
 			this.tvServers.Dispose();
+
+         if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
+         {
+            File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
+         }
 		}
 
 		private void MainForm_Deactivate(object sender, EventArgs e)
 		{
-			this.worldWindow.IsRenderDisabled = true;
+			worldWindow.IsRenderDisabled = true;
 		}
 
 		private void MainForm_Activated(object sender, EventArgs e)
 		{
-			this.worldWindow.IsRenderDisabled = false;
+			worldWindow.IsRenderDisabled = false;
 		}
 
 		#endregion
@@ -3520,10 +3539,10 @@ namespace Dapple
 
 		private RenderableObject GetBMNG()
 		{
-			for (int i = 0; i < this.worldWindow.CurrentWorld.RenderableObjects.Count; i++)
+			for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
 			{
-				if (((RenderableObject)this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
-					return this.worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i] as RenderableObject;
+				if (((RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
+					return worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i] as RenderableObject;
 			}
 			return null;
 		}
@@ -3681,20 +3700,20 @@ namespace Dapple
 		private void displayResultsPanel()
 		{
 			CloseSearchResultsButton.Enabled = true;
-			this.worldWindow.Visible = false;
+			worldWindow.Visible = false;
 			WorldResultsSplitPanel.SplitterDistance = WorldResultsSplitPanel.Width - 400;
 			WorldResultsSplitPanel.Panel2Collapsed = false;
-			this.worldWindow.Visible = true;
-			this.worldWindow.SafeRender();
+			worldWindow.Visible = true;
+			worldWindow.SafeRender();
 		}
 
 		private void hideSearchResults()
 		{
 			CloseSearchResultsButton.Enabled = false;
-			this.worldWindow.Visible = false;
+			worldWindow.Visible = false;
 			WorldResultsSplitPanel.Panel2Collapsed = true;
-			this.worldWindow.Visible = true;
-			this.worldWindow.SafeRender();
+			worldWindow.Visible = true;
+			worldWindow.SafeRender();
 		}
 
 		private void openSearchResults()
@@ -3709,7 +3728,7 @@ namespace Dapple
 			}
 			if (searchMode != SearchMode.Text)
 			{
-				GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
+				GeographicBoundingBox AoI = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(false));
 				resultsURL.Append("&usebbox=true");
 				resultsURL.Append("&minx=");
 				resultsURL.Append(AoI.West);
@@ -3728,7 +3747,7 @@ namespace Dapple
 		{
 			if (m_strDappleSearchServerURL == null) return;
 
-			GeographicBoundingBox lastAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
+			GeographicBoundingBox lastAoI = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(false));
 			GeographicBoundingBox currentAoI = null;
 			String keyword = DappleSearchKeyword.Text;
 			SearchMode mode = searchMode;
@@ -3745,7 +3764,7 @@ namespace Dapple
 
 				try
 				{
-					currentAoI = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
+					currentAoI = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(false));
 				}
 				catch (NullReferenceException)
             {
@@ -3762,7 +3781,7 @@ namespace Dapple
 				{
 					if (!searchCompleted)
 					{
-						setDappleSearchResultsLabelTextGlobal("Hits: <searching...>");
+						setDappleSearchResultsLabelText("Hits: <searching...>");
 						int hits, error;
 
 						doBackgroundSearch(out hits,
@@ -3771,12 +3790,12 @@ namespace Dapple
 							searchMode == SearchMode.Text ? null : currentAoI);
 
 						if (error == 0)
-							setDappleSearchResultsLabelTextGlobal("Hits: " + hits);
+							setDappleSearchResultsLabelText("Hits: " + hits);
 						else if (error > 0)
-							setDappleSearchResultsLabelTextGlobal("Hits: <ERROR " + error + ">");
+							setDappleSearchResultsLabelText("Hits: <ERROR " + error + ">");
 						else
 						{
-							setDappleSearchResultsLabelTextGlobal("ERROR CONTACTING SEARCH SERVER");
+							setDappleSearchResultsLabelText("ERROR CONTACTING SEARCH SERVER");
 							DappleSearchGoButton.Enabled = false;
 						}
 						searchCompleted = true;
@@ -3785,7 +3804,7 @@ namespace Dapple
 				else
 				{
 					searchCompleted = false;
-					setDappleSearchResultsLabelTextGlobal("Hits: <waiting...>");
+					setDappleSearchResultsLabelText("Hits: <waiting...>");
 					lastAoI = currentAoI;
 					keyword = DappleSearchKeyword.Text;
 					mode = searchMode;
@@ -3793,20 +3812,24 @@ namespace Dapple
 			}
 		}
 
-      private void setDappleSearchResultsLabelTextGlobal(String text)
+      private void setDappleSearchResultsLabelText(String text)
       {
          if (InvokeRequired)
          {
-            Invoke(new UpdateTextDelegate(setDappleSearchResultsLabelTextLocal), new Object[] { text });
+            Invoke(new UpdateTextDelegate(__setDappleSearchResultsLabelText), new Object[] { text });
          }
          else
          {
-            setDappleSearchResultsLabelTextLocal(text);
+            __setDappleSearchResultsLabelText(text);
          }
       }
 
       delegate void UpdateTextDelegate(String text);
-      private void setDappleSearchResultsLabelTextLocal(String text)
+      /// <summary>
+      /// DO NOT CALL THIS METHOD DIRECTLY.  Call the non-underscored one instead.  It is event-thread-safe.
+      /// </summary>
+      /// <param name="text"></param>
+      private void __setDappleSearchResultsLabelText(String text)
       {
          DappleSearchResultsLabel.Text = text;
       }
@@ -4029,7 +4052,7 @@ namespace Dapple
             WebResponse response = request.GetResponse();
             response.Close();
          }
-         catch (Exception e)
+         catch (Exception)
          {
             // Never crash, just silently fail to send the data to the server.
          }
@@ -4052,7 +4075,7 @@ namespace Dapple
 				{
 					WorldWind.Renderable.Icon icon = node.Tag as WorldWind.Renderable.Icon;
 
-					this.worldWindow.GotoLatLon(icon.Latitude, icon.Longitude);
+					worldWindow.GotoLatLon(icon.Latitude, icon.Longitude);
 				}
 				else if (node.Tag is ImageLayer)
 				{
@@ -4191,11 +4214,10 @@ namespace Dapple
             cSearchTextComboBox.Items.Add(cSearchTextComboBox.Text);
          }
 
-         GeographicBoundingBox oAoi = GeographicBoundingBox.FromQuad(this.worldWindow.GetViewBox(false));
+         GeographicBoundingBox oAoi = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(false));
          String strText = cSearchTextComboBox.Text;
          this.tvServers.Search(oAoi, strText);
-
-         MessageBox.Show("Search for " + strText + " around " + oAoi.ToString());
+         this.cServerListControl.setSearchCriteria(strText, oAoi);
       }
 
       private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -4208,7 +4230,7 @@ namespace Dapple
 
       private void RepopulateList()
       {
-         Console.WriteLine("The server list has been displayed");
+         cServerListControl.Servers = this.tvServers.getServerList();
       }
 
       private void CenterNavigationToolStrip()
@@ -4217,25 +4239,73 @@ namespace Dapple
          toolStripNavigation.Location = newLocation;
       }
 
-      private void LayerSelected(Object oSender, TreeNodeMouseClickEventArgs oArgs)
+      private void DisplayMetadataMessage(String szMessage)
       {
+         if (InvokeRequired) this.Invoke(new UpdateTextDelegate(__DisplayMetadataMessage), new Object[] { szMessage });
+         else __DisplayMetadataMessage(szMessage);
+      }
+
+      private void DisplayMetadataDocument(String szMessage)
+      {
+         if (InvokeRequired) this.Invoke(new UpdateTextDelegate(__DisplayMetadataDocument), new Object[] { szMessage });
+         else __DisplayMetadataDocument(szMessage);
+      }
+
+      private void __DisplayMetadataMessage(String szMessage)
+      {
+         cMetadataBrowser.Visible = false;
+         cMetadataLoadingLabel.Text = szMessage;
+         cWorldMetadataSplitter.Panel2.Refresh();
+      }
+
+      private void __DisplayMetadataDocument(String szUri)
+      {
+         lock (cMetadataBrowser)
+         {
+            cMetadataBrowser.Visible = true;
+            Uri metaUri = new Uri(szUri);
+            if (!metaUri.Equals(cMetadataBrowser.Url))
+            {
+               // --- Delete the file we were pointing to before ---
+               if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
+               {
+                  File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
+               }
+               cMetadataBrowser.Url = metaUri;
+               cMetadataBrowser.Refresh(WebBrowserRefreshOption.Completely);
+            }
+            cWorldMetadataSplitter.Panel2.Refresh();
+         }
+      }
+
+      private void LayerSelected(Object oSender, TreeViewEventArgs oArgs)
+      {
+         LayerBuilderContainer oContainer = oArgs.Node.Tag as LayerBuilderContainer;
+         LayerBuilder oBuilder = oContainer.Builder;
+
+         m_oMetadataDisplay.addBuilder(oBuilder);
+      }
+
+      public void LoadMetadata(Object oParams)
+      {
+         LayerBuilder oBuilder = ((Object[])oParams)[0] as LayerBuilder;
+
          try
          {
             XmlDocument oDoc = new XmlDocument();
             oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
             XmlNode oNode = null;
             string strStyleSheet = null;
-            LayerBuilderContainer oContainer = oArgs.Node.Tag as LayerBuilderContainer;
-            LayerBuilder oBuilder = oContainer.Builder;
 
             if (oBuilder.SupportsMetaData)
             {
                oNode = oBuilder.GetMetaData(oDoc);
                strStyleSheet = oBuilder.StyleSheetName;
+               DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Name);
             }
             else
             {
-               cMetadataBrowser.Url = new Uri(Path.Combine(this.metaviewerDir, "unsupported.html"));
+               DisplayMetadataMessage("Metadata for the selected layer type is unsupported");
                return;
             }
 
@@ -4253,13 +4323,14 @@ namespace Dapple
                oDoc.InsertBefore(oRef, oDoc.DocumentElement);
             }
 
-            string filePath = Path.Combine(this.metaviewerDir, "currentlayer.xml");
+            string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
+            filePath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".xml");
             oDoc.Save(filePath);
-            cMetadataBrowser.Url = new Uri(filePath);
+            DisplayMetadataDocument(filePath);
          }
-         catch (Exception)
+         catch (Exception e)
          {
-            cMetadataBrowser.Url = new Uri(Path.Combine(this.metaviewerDir, "error.html"));
+            DisplayMetadataMessage("An error occurred while accessing metadata: " + e.Message);
          }
       }
 
@@ -4292,7 +4363,17 @@ namespace Dapple
 
       private void AddDatasetAction()
       {
-         this.tvServers.AddCurrentDataset();
+         if (cServerTabControl.SelectedIndex == 0)
+         {
+            this.tvServers.AddCurrentDataset();
+         }
+         else
+         {
+            List<LayerBuilder> oBuilderList = cServerListControl.SelectedLayers;
+            oBuilderList.Reverse();
+            foreach (LayerBuilder oBuilder in oBuilderList)
+               this.activeLayers.Add(oBuilder.Name, oBuilder, true, 255, true);
+         }
       }
 
       #endregion
@@ -4305,6 +4386,62 @@ namespace Dapple
       private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
       {
          AddDatasetAction();
+      }
+   }
+
+   /// <summary>
+   /// Synchronization class which handles displaying the metadata for a layer.  Prevents loading a layer
+   /// multiple times, and supresses multiple loads when more than one layer change occurs in a short
+   /// time period.
+   /// </summary>
+   class MetadataDisplayThread
+   {
+      private Object LOCK = new Object();
+      private ManualResetEvent m_oSignaller = new ManualResetEvent(false);
+      private List<LayerBuilder> m_hLayerToLoad = new List<LayerBuilder>();
+      private Thread m_hThread;
+      private MainForm m_hOwner;
+
+      public MetadataDisplayThread(MainForm hOwner)
+      {
+         m_hOwner = hOwner;
+
+         m_hThread = new Thread(new ThreadStart(ThreadMain));
+         m_hThread.IsBackground = true;
+         m_hThread.Start();
+      }
+
+      public void addBuilder(LayerBuilder oBuilder)
+      {
+         lock (LOCK)
+         {
+            m_hLayerToLoad.Add(oBuilder);
+            m_oSignaller.Set();
+         }
+      }
+
+      private void ThreadMain()
+      {
+         LayerBuilder oCurrentBuilder = null;
+         LayerBuilder oLastBuilder = null;
+
+         while (true)
+         {
+            m_oSignaller.WaitOne();
+
+            lock (LOCK)
+            {
+               oCurrentBuilder = m_hLayerToLoad[m_hLayerToLoad.Count - 1];
+               m_hLayerToLoad.Clear();
+               m_oSignaller.Reset();
+            }
+
+            if (!oCurrentBuilder.Equals(oLastBuilder))
+            {
+               m_hOwner.LoadMetadata(new Object[] { oCurrentBuilder });
+               oLastBuilder = oCurrentBuilder;
+            }
+         }
       }
    }
 }

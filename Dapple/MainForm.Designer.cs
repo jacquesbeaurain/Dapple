@@ -113,7 +113,7 @@ namespace Dapple
            this.cServerTabControl = new System.Windows.Forms.TabControl();
            this.cServerTreeView = new System.Windows.Forms.TabPage();
            this.cServerListView = new System.Windows.Forms.TabPage();
-           this.serverList1 = new Dapple.ServerList();
+           this.cServerListControl = new Dapple.ServerList();
            this.toolStripServers = new System.Windows.Forms.ToolStrip();
            this.toolStripLabel5 = new System.Windows.Forms.ToolStripLabel();
            this.splitContainerLayers = new Dapple.FixedCollapseSplitContainer();
@@ -156,6 +156,7 @@ namespace Dapple
            this.toolStripButtonResetCamera = new System.Windows.Forms.ToolStripButton();
            this.SearchResultsBrowser = new System.Windows.Forms.WebBrowser();
            this.cMetadataBrowser = new System.Windows.Forms.WebBrowser();
+           this.cMetadataLoadingLabel = new System.Windows.Forms.Label();
            this.cToolStripMetadata = new System.Windows.Forms.ToolStrip();
            this.toolStripLabel6 = new System.Windows.Forms.ToolStripLabel();
            this.DappleSearchToolbar = new System.Windows.Forms.ToolStrip();
@@ -916,7 +917,7 @@ namespace Dapple
            this.splitContainerLeftMain.Panel2.Controls.Add(this.splitContainerLayers);
            this.splitContainerLeftMain.Panel2MinSize = 75;
            this.splitContainerLeftMain.Size = new System.Drawing.Size(232, 445);
-           this.splitContainerLeftMain.SplitterDistance = 198;
+           this.splitContainerLeftMain.SplitterDistance = 250;
            this.splitContainerLeftMain.TabIndex = 0;
            this.splitContainerLeftMain.SizeChanged += new System.EventHandler(this.splitContainerLeftMain_SizeChanged);
            // 
@@ -938,7 +939,7 @@ namespace Dapple
            // 
            this.splitContainerServers.Panel2.Controls.Add(this.cAddLayerButton);
            this.splitContainerServers.Panel2.Controls.Add(this.cServerTabControl);
-           this.splitContainerServers.Size = new System.Drawing.Size(232, 173);
+           this.splitContainerServers.Size = new System.Drawing.Size(232, 225);
            this.splitContainerServers.SplitterDistance = 25;
            this.splitContainerServers.SplitterWidth = 1;
            this.splitContainerServers.TabIndex = 0;
@@ -989,7 +990,7 @@ namespace Dapple
            this.cServerTabControl.Location = new System.Drawing.Point(0, 9);
            this.cServerTabControl.Name = "cServerTabControl";
            this.cServerTabControl.SelectedIndex = 0;
-           this.cServerTabControl.Size = new System.Drawing.Size(232, 138);
+           this.cServerTabControl.Size = new System.Drawing.Size(232, 190);
            this.cServerTabControl.TabIndex = 0;
            this.cServerTabControl.SelectedIndexChanged += new System.EventHandler(this.cServerTabControl_SelectedIndexChanged);
            // 
@@ -998,30 +999,29 @@ namespace Dapple
            this.cServerTreeView.Location = new System.Drawing.Point(4, 22);
            this.cServerTreeView.Name = "cServerTreeView";
            this.cServerTreeView.Padding = new System.Windows.Forms.Padding(3);
-           this.cServerTreeView.Size = new System.Drawing.Size(224, 112);
+           this.cServerTreeView.Size = new System.Drawing.Size(224, 164);
            this.cServerTreeView.TabIndex = 0;
            this.cServerTreeView.Text = "Tree";
            this.cServerTreeView.UseVisualStyleBackColor = true;
            // 
            // cServerListView
            // 
-           this.cServerListView.Controls.Add(this.serverList1);
+           this.cServerListView.Controls.Add(this.cServerListControl);
            this.cServerListView.Location = new System.Drawing.Point(4, 22);
            this.cServerListView.Name = "cServerListView";
            this.cServerListView.Padding = new System.Windows.Forms.Padding(3);
-           this.cServerListView.Size = new System.Drawing.Size(224, 112);
+           this.cServerListView.Size = new System.Drawing.Size(224, 164);
            this.cServerListView.TabIndex = 1;
            this.cServerListView.Text = "List";
            this.cServerListView.UseVisualStyleBackColor = true;
            // 
-           // serverList1
+           // cServerListControl
            // 
-           this.serverList1.Dock = System.Windows.Forms.DockStyle.Fill;
-           this.serverList1.Enabled = false;
-           this.serverList1.Location = new System.Drawing.Point(3, 3);
-           this.serverList1.Name = "serverList1";
-           this.serverList1.Size = new System.Drawing.Size(218, 106);
-           this.serverList1.TabIndex = 0;
+           this.cServerListControl.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.cServerListControl.Location = new System.Drawing.Point(3, 3);
+           this.cServerListControl.Name = "cServerListControl";
+           this.cServerListControl.Size = new System.Drawing.Size(218, 158);
+           this.cServerListControl.TabIndex = 0;
            // 
            // toolStripServers
            // 
@@ -1058,7 +1058,7 @@ namespace Dapple
            // splitContainerLayers.Panel2
            // 
            this.splitContainerLayers.Panel2.Controls.Add(this.panelLayers);
-           this.splitContainerLayers.Size = new System.Drawing.Size(232, 243);
+           this.splitContainerLayers.Size = new System.Drawing.Size(232, 191);
            this.splitContainerLayers.SplitterDistance = 51;
            this.splitContainerLayers.SplitterWidth = 1;
            this.splitContainerLayers.TabIndex = 0;
@@ -1259,7 +1259,7 @@ namespace Dapple
            this.panelLayers.Dock = System.Windows.Forms.DockStyle.Fill;
            this.panelLayers.Location = new System.Drawing.Point(0, 0);
            this.panelLayers.Name = "panelLayers";
-           this.panelLayers.Size = new System.Drawing.Size(232, 191);
+           this.panelLayers.Size = new System.Drawing.Size(232, 139);
            this.panelLayers.TabIndex = 25;
            // 
            // splitContainerOverview
@@ -1337,6 +1337,7 @@ namespace Dapple
            // 
            this.cWorldMetadataSplitter.Panel2.BackColor = System.Drawing.SystemColors.Control;
            this.cWorldMetadataSplitter.Panel2.Controls.Add(this.cMetadataBrowser);
+           this.cWorldMetadataSplitter.Panel2.Controls.Add(this.cMetadataLoadingLabel);
            this.cWorldMetadataSplitter.Panel2.Controls.Add(this.cToolStripMetadata);
            this.cWorldMetadataSplitter.Size = new System.Drawing.Size(663, 623);
            this.cWorldMetadataSplitter.SplitterDistance = 445;
@@ -1387,7 +1388,7 @@ namespace Dapple
            this.toolStripNavigation.Location = new System.Drawing.Point(216, 420);
            this.toolStripNavigation.Name = "toolStripNavigation";
            this.toolStripNavigation.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-           this.toolStripNavigation.Size = new System.Drawing.Size(228, 25);
+           this.toolStripNavigation.Size = new System.Drawing.Size(259, 25);
            this.toolStripNavigation.TabIndex = 1;
            this.toolStripNavigation.Text = "toolStrip1";
            // 
@@ -1546,6 +1547,15 @@ namespace Dapple
            this.cMetadataBrowser.Name = "cMetadataBrowser";
            this.cMetadataBrowser.Size = new System.Drawing.Size(663, 149);
            this.cMetadataBrowser.TabIndex = 1;
+           // 
+           // cMetadataLoadingLabel
+           // 
+           this.cMetadataLoadingLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.cMetadataLoadingLabel.Location = new System.Drawing.Point(0, 25);
+           this.cMetadataLoadingLabel.Name = "cMetadataLoadingLabel";
+           this.cMetadataLoadingLabel.Size = new System.Drawing.Size(663, 149);
+           this.cMetadataLoadingLabel.TabIndex = 2;
+           this.cMetadataLoadingLabel.Text = "I\'m the number four!";
            // 
            // cToolStripMetadata
            // 
@@ -2187,7 +2197,7 @@ namespace Dapple
        private System.Windows.Forms.ComboBox cSearchTextComboBox;
        private System.Windows.Forms.Button cSearchButton;
        private System.Windows.Forms.Button cAddLayerButton;
-       private ServerList serverList1;
+       private ServerList cServerListControl;
        private System.Windows.Forms.SplitContainer cWorldMetadataSplitter;
        private System.Windows.Forms.ToolStrip cToolStripMetadata;
        private System.Windows.Forms.ToolStripLabel toolStripLabel6;
@@ -2204,6 +2214,7 @@ namespace Dapple
        private System.Windows.Forms.ToolStripMenuItem setAsDAPServerAsDefaultToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem refreshDAPServerToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem removeDAPServerToolStripMenuItem;
+       private System.Windows.Forms.Label cMetadataLoadingLabel;
     }
 }
 
