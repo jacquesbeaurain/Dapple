@@ -218,7 +218,7 @@ namespace Dapple.LayerGeneration
             if (strToken.Contains("="))
             {
                String[] strParts = strToken.Split(new char[] { '=' });
-               m_oTokens[strParts[0].ToLower()] = strParts[1];
+               m_oTokens[strParts[0].ToLower()] = HttpUtility.UrlDecode(strParts[1]);
             }
             else
             {
@@ -267,7 +267,9 @@ namespace Dapple.LayerGeneration
 
       protected abstract ServerUri getServerUri(UriBuilder oBuilder);
 
-      public abstract LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree);
+      public abstract LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree);
+
+
    }
 
    public class ArcIMSLayerUri : LayerUri
@@ -307,19 +309,13 @@ namespace Dapple.LayerGeneration
          get { return AllTokensPresent; }
       }
 
-      public override LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree)
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
-         ArcIMSCatalogBuilder oCatalog = oTree.ArcIMSCatalog;
-         if (!oCatalog.ContainsServer(m_oServer as ArcIMSServerUri))
-         {
-            oTree.AddArcIMSServer(m_oServer as ArcIMSServerUri, true);
-         }
-
          return new ArcIMSQuadLayerBuilder(
             m_oServer as ArcIMSServerUri,
             getAttribute("servicename"),
             new GeographicBoundingBox(double.Parse(getAttribute("maxy")), double.Parse(getAttribute("miny")), double.Parse(getAttribute("minx")), double.Parse(getAttribute("maxx"))),
-            oApp.WorldWindow.CurrentWorld,
+            oWindow,
             null);
       }
    }
@@ -358,14 +354,12 @@ namespace Dapple.LayerGeneration
          get { return AllTokensPresent; }
       }
 
-      public override LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree)
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
          // Get the ServerBuilder (need its WMSLayers to make the QuadLayer
          WMSServerBuilder oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
          if (oServerBuilder == null)
          {
-            /*oServerBuilder = oTree.WMSCatalog.AddServer(m_oServer as WMSServerUri) as WMSServerBuilder;
-            oTree.UpdateTreeChange();*/
             oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true);
             oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
          }
@@ -381,7 +375,7 @@ namespace Dapple.LayerGeneration
          if (oLayer == null)
             throw new Exception("Server doesn't have a layer named " + getAttribute("layer"));
 
-         return new WMSQuadLayerBuilder(oLayer, oApp.WorldWindow.CurrentWorld, oServerBuilder, null);
+         return new WMSQuadLayerBuilder(oLayer, oWindow, oServerBuilder, null);
       }
    }
 
@@ -429,7 +423,7 @@ namespace Dapple.LayerGeneration
          get { return AllTokensPresent; }
       }
 
-      public override LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree)
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
          return new NltQuadLayerBuilder(
             getAttribute("name"),
@@ -443,7 +437,7 @@ namespace Dapple.LayerGeneration
             getAttribute("datasetname"),
             getAttribute("imgfileext"),
             255,
-            oApp.WorldWindow.CurrentWorld,
+            oWindow,
             null); 
       }
    }
@@ -486,14 +480,14 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree)
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
          if (String.Compare(m_oServer.Host, VirtualEarthMapType.road.ToString(), true) == 0)
-            return new VEQuadLayerBuilder("Virtual Earth Map", VirtualEarthMapType.road, oApp, true, null);
+            return new VEQuadLayerBuilder("Virtual Earth Map", VirtualEarthMapType.road, oWindow, true, null);
          else if (String.Compare(m_oServer.Host, VirtualEarthMapType.aerial.ToString(), true) == 0)
-            return new VEQuadLayerBuilder("Virtual Earth Satellite", VirtualEarthMapType.aerial, oApp, true, null);
+            return new VEQuadLayerBuilder("Virtual Earth Satellite", VirtualEarthMapType.aerial, oWindow, true, null);
          else if (String.Compare(m_oServer.Host, VirtualEarthMapType.hybrid.ToString(), true) == 0)
-            return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VirtualEarthMapType.hybrid, oApp, true, null);
+            return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VirtualEarthMapType.hybrid, oWindow, true, null);
          else
             return null;
       }
@@ -544,7 +538,7 @@ namespace Dapple.LayerGeneration
          get { return AllTokensPresent; }
       }
 
-      public override LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree)
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
          DataSet hDataSet = new DataSet();
          hDataSet.Name = getAttribute("datasetname");
@@ -570,7 +564,7 @@ namespace Dapple.LayerGeneration
          else
             oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
 
-         return new DAPQuadLayerBuilder(hDataSet, oApp.WorldWindow.CurrentWorld, oServer, null, height, size, lvl0tilesize, levels);
+         return new DAPQuadLayerBuilder(hDataSet, oWindow, oServer, null, height, size, lvl0tilesize, levels);
       }
    }
 
@@ -608,7 +602,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override LayerBuilder getBuilder(MainApplication oApp, ServerTree oTree)
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
          String strFile = m_oServer.LocalPath;
 
@@ -616,7 +610,7 @@ namespace Dapple.LayerGeneration
          GeographicBoundingBox extents = GeorefImageLayerBuilder.GetExtentsFromGeotif(strFile);
 
          if (extents != null)
-            return new GeorefImageLayerBuilder(strFile, false, oApp.WorldWindow.CurrentWorld, null);
+            return new GeorefImageLayerBuilder(strFile, false, oWindow, null);
          else
             return null;
       }

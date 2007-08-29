@@ -23,8 +23,16 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public GeorefImageLayerBuilder(string strFileName, bool bTmp, World World, IBuilder parent)
-         : base(Path.GetFileName(strFileName), World, parent)
+      public GeorefImageLayerBuilder(string strDisplayName, string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
+         : base(strDisplayName.Length > 0 ? strDisplayName : Path.GetFileName(strFileName), oWorldWindow, parent)
+      {
+         m_strFileName = strFileName;
+         m_bIsTmp = bTmp;
+         m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
+      }
+
+      public GeorefImageLayerBuilder(string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
+         : base(Path.GetFileName(strFileName), oWorldWindow, parent)
       {
          m_strFileName = strFileName;
          m_bIsTmp = bTmp;
@@ -118,7 +126,12 @@ namespace Dapple.LayerGeneration
          get { return m_blnIsChanged; }
       }
 
-      public override string LogoKey
+      public override string ServerTypeIconKey
+      {
+         get { return "georef_image"; }
+      }
+
+      public override string LayerTypeIconKey
       {
          get { return "georef_image"; }
       }
@@ -154,7 +167,7 @@ namespace Dapple.LayerGeneration
                      }
                   }
 
-                  m_Layer = new ImageLayer(m_strName, m_oWorld, 0.0, m_strCacheFileName, extents.South, extents.North, extents.West, extents.East, m_bOpacity, m_oWorld.TerrainAccessor);
+                  m_Layer = new ImageLayer(m_strName, m_oWorldWindow.CurrentWorld, 0.0, m_strCacheFileName, extents.South, extents.North, extents.West, extents.East, m_bOpacity, m_oWorldWindow.CurrentWorld.TerrainAccessor);
                   m_Layer.IsOn = m_IsOn;
                   m_Layer.Opacity = m_bOpacity;
                }
@@ -192,9 +205,9 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object Clone()
+      public override object CloneSpecific()
       {
-         return new GeorefImageLayerBuilder(m_strFileName, m_bIsTmp, m_oWorld, m_Parent);
+         return new GeorefImageLayerBuilder(m_strFileName, m_bIsTmp, m_oWorldWindow, m_Parent);
       }
 
       public override bool Equals(object obj)

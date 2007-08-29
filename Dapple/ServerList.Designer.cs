@@ -28,6 +28,7 @@ namespace Dapple
       /// </summary>
       private void InitializeComponent()
       {
+         this.components = new System.ComponentModel.Container();
          System.Windows.Forms.SplitContainer splitContainer1;
          System.Windows.Forms.Label label1;
          this.cServersComboBox = new System.Windows.Forms.ComboBox();
@@ -36,11 +37,14 @@ namespace Dapple
          this.cPrevButton = new System.Windows.Forms.Button();
          this.cNextButton = new System.Windows.Forms.Button();
          this.cPageLabel = new System.Windows.Forms.Label();
+         this.cLayerContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+         this.addToLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          splitContainer1 = new System.Windows.Forms.SplitContainer();
          label1 = new System.Windows.Forms.Label();
          splitContainer1.Panel1.SuspendLayout();
          splitContainer1.Panel2.SuspendLayout();
          splitContainer1.SuspendLayout();
+         this.cLayerContextMenu.SuspendLayout();
          this.SuspendLayout();
          // 
          // splitContainer1
@@ -96,6 +100,7 @@ namespace Dapple
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.cLayersListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.cLayerNameColumnHeader});
+         this.cLayersListView.ContextMenuStrip = this.cLayerContextMenu;
          this.cLayersListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
          this.cLayersListView.HideSelection = false;
          this.cLayersListView.Location = new System.Drawing.Point(0, 3);
@@ -144,6 +149,22 @@ namespace Dapple
          this.cPageLabel.Text = "Page X of X+n";
          this.cPageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
          // 
+         // cLayerContextMenu
+         // 
+         this.cLayerContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToLayersToolStripMenuItem});
+         this.cLayerContextMenu.Name = "cLayerContextMenu";
+         this.cLayerContextMenu.Size = new System.Drawing.Size(153, 48);
+         this.cLayerContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerContextMenu_Opening);
+         // 
+         // addToLayersToolStripMenuItem
+         // 
+         this.addToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
+         this.addToLayersToolStripMenuItem.Name = "addToLayersToolStripMenuItem";
+         this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+         this.addToLayersToolStripMenuItem.Text = "Add To Layers";
+         this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
+         // 
          // ServerList
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -155,6 +176,7 @@ namespace Dapple
          splitContainer1.Panel1.PerformLayout();
          splitContainer1.Panel2.ResumeLayout(false);
          splitContainer1.ResumeLayout(false);
+         this.cLayerContextMenu.ResumeLayout(false);
          this.ResumeLayout(false);
 
       }
@@ -167,5 +189,7 @@ namespace Dapple
       private System.Windows.Forms.Label cPageLabel;
       private System.Windows.Forms.ListView cLayersListView;
       private System.Windows.Forms.ColumnHeader cLayerNameColumnHeader;
+      private System.Windows.Forms.ContextMenuStrip cLayerContextMenu;
+      private System.Windows.Forms.ToolStripMenuItem addToLayersToolStripMenuItem;
    }
 }

@@ -36,6 +36,8 @@ namespace Dapple
 
       private Object m_oSelectedServer;
 
+      private LayerList m_hLayerList;
+
       #endregion
 
       #region Constructors
@@ -97,6 +99,27 @@ namespace Dapple
       }
 
       /// <summary>
+      /// Set the selected server
+      /// </summary>
+      public Object SelectedServer
+      {
+         get
+         {
+            return m_oSelectedServer;
+         }
+         set
+         {
+            int iSelectedIndex = m_oServerList.IndexOf(value);
+
+            if (iSelectedIndex != cServersComboBox.SelectedIndex)
+            {
+               cServersComboBox.SelectedIndex = iSelectedIndex;
+               cServersComboBox_SelectedIndexChanged(this, new EventArgs());
+            }
+         }
+      }
+
+      /// <summary>
       /// Whether any of the layers in the layer list are selected.
       /// </summary>
       public Boolean HasLayersSelected
@@ -123,6 +146,14 @@ namespace Dapple
 
             return result;
          }
+      }
+
+      /// <summary>
+      /// The layer list that this will add to on an 'add' action.
+      /// </summary>
+      public LayerList LayerList
+      {
+         set { m_hLayerList = value; }
       }
 
       #endregion
@@ -161,20 +192,22 @@ namespace Dapple
       /// <param name="e"></param>
       private void cServersComboBox_SelectedIndexChanged(object sender, EventArgs e)
       {
-         Object oNewSelectedServer = m_oServerList[cServersComboBox.SelectedIndex];
-
-         if (oNewSelectedServer == null)
+         if (cServersComboBox.SelectedIndex == -1)
          {
             SetNoServer();
+            m_oSelectedServer = null;
          }
-         else if (!oNewSelectedServer.Equals(m_oSelectedServer))
+         else
          {
-            SetSearching();
-            InitLayerList();
-            DrawCurrentPage();
+            Object oNewSelectedServer = m_oServerList[cServersComboBox.SelectedIndex];
+            if (!oNewSelectedServer.Equals(m_oSelectedServer))
+            {
+               SetSearching();
+               InitLayerList();
+               DrawCurrentPage();
+               m_oSelectedServer = oNewSelectedServer;
+            }
          }
-
-         m_oSelectedServer = oNewSelectedServer;
       }
 
       /// <summary>
@@ -243,6 +276,29 @@ namespace Dapple
          ResizeColumn();
       }
 
+      /// <summary>
+      /// Cancel the context menu if no layers are selected.
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+      private void cLayerContextMenu_Opening(object sender, CancelEventArgs e)
+      {
+         if (cLayersListView.SelectedIndices.Count == 0) e.Cancel = true;
+      }
+
+      /// <summary>
+      /// Add the selected layers to the visible layers set.
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+      private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         if (m_hLayerList != null)
+         {
+            m_hLayerList.AddLayers(this.SelectedLayers);
+         }
+      }
+
       #endregion
 
       #region Private helper methods
@@ -260,6 +316,7 @@ namespace Dapple
          cLayersListView.Items.Clear();
          cNextButton.Enabled = false;
          cPrevButton.Enabled = false;
+         m_oCurrServerLayers = new ArrayList();
       }
 
       /// <summary>
@@ -399,8 +456,8 @@ namespace Dapple
       {
          if (obj is Server)
             return "DAP: " + ((Server)obj).Name;
-         else if (obj is AsyncServerBuilder)
-            return ((AsyncServerBuilder)obj).Type + ": " + ((AsyncServerBuilder)obj).Name;
+         else if (obj is ServerBuilder)
+            return ((ServerBuilder)obj).Type + ": " + ((ServerBuilder)obj).Name;
          else
             throw new ArgumentException("obj is unknown type " + obj.GetType());
       }
@@ -443,7 +500,7 @@ namespace Dapple
       private LayerBuilder getLayerBuilder(Object obj)
       {
          if (obj is Geosoft.Dap.Common.DataSet)
-            return new DAPQuadLayerBuilder(obj as Geosoft.Dap.Common.DataSet, MainForm.WorldWindowSingleton.CurrentWorld, m_oServerList[cServersComboBox.SelectedIndex] as Server, null);
+            return new DAPQuadLayerBuilder(obj as Geosoft.Dap.Common.DataSet, MainForm.WorldWindowSingleton, m_oServerList[cServersComboBox.SelectedIndex] as Server, null);
          else if (obj is LayerBuilder)
             return ((LayerBuilder)obj);
          else
@@ -458,7 +515,7 @@ namespace Dapple
       {
          foreach (Object obj in oList)
          {
-            if (!(obj is Server || obj is AsyncServerBuilder)) throw new ArgumentException("oServers contains an invalid object (Type " + obj.GetType().ToString() + ")");
+            if (!(obj is Server || obj is ServerBuilder)) throw new ArgumentException("oServers contains an invalid object (Type " + obj.GetType().ToString() + ")");
          }
       }
 

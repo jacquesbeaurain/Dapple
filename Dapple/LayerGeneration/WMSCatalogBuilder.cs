@@ -107,6 +107,18 @@ namespace Dapple.LayerGeneration
          m_oWMSListCache.Remove(oUri);
       }
 
+      public void cancelDownloads()
+      {
+         lock (m_oCatalogDownloadsInProgress.SyncRoot)
+         {
+            foreach (WebDownload oDownload in m_oCatalogDownloadsInProgress.Values)
+            {
+               oDownload.Cancel();
+               oDownload.Dispose();
+            }
+         }
+      }
+
       private void CatalogDownloadCompleteCallback(WebDownload download)
       {
          try
@@ -182,7 +194,7 @@ namespace Dapple.LayerGeneration
             while (parentServer != null && !(parentServer is WMSServerBuilder))
                parentServer = parentServer.Parent;
 
-            WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer, m_WorldWindow.CurrentWorld, parentServer as WMSServerBuilder, directory);
+            WMSQuadLayerBuilder builder = new WMSQuadLayerBuilder(layer, m_WorldWindow, parentServer as WMSServerBuilder, directory);
             directory.LayerBuilders.Add(builder);
          }
       }

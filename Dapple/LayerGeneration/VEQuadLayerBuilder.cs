@@ -37,16 +37,14 @@ namespace Dapple.LayerGeneration
 		VirtualEarthMapType m_mapType;
 		bool IsOn = true;
 		bool m_blnIsChanged = true;
-		MainApplication m_oMainApp;
 
       #endregion
 
       #region Constructor
 
-      public VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, MainApplication oApp, bool isOn, IBuilder parent)
-         :base(name, oApp.WorldWindow.CurrentWorld, parent)
+      public VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, WorldWindow oWorldWindow, bool isOn, IBuilder parent)
+         :base(name, oWorldWindow, parent)
 		{
-			m_oMainApp = oApp;
 			IsOn = isOn;
 			m_mapType = mapType;
       }
@@ -126,7 +124,12 @@ namespace Dapple.LayerGeneration
          get { return m_blnIsChanged; }
       }
 
-      public override string LogoKey
+      public override string ServerTypeIconKey
+      {
+         get { return "live"; }
+      }
+
+      public override string LayerTypeIconKey
       {
          get { return "live"; }
       }
@@ -183,7 +186,7 @@ namespace Dapple.LayerGeneration
                }
             }
 
-            m_oVEQTS = new VeReprojectTilesLayer(m_strName, m_oMainApp, dataset, fileExt, 0, GetCachePath());
+            m_oVEQTS = new VeReprojectTilesLayer(m_strName, m_oWorldWindow, dataset, fileExt, 0, GetCachePath());
 #endif
             m_oVEQTS.IsOn = m_IsOn;
             m_oVEQTS.Opacity = m_bOpacity;
@@ -210,9 +213,9 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object Clone()
+      public override object CloneSpecific()
       {
-         return new VEQuadLayerBuilder(m_strName, m_mapType, m_oMainApp, m_IsOn, m_Parent);
+         return new VEQuadLayerBuilder(m_strName, m_mapType, m_oWorldWindow, m_IsOn, m_Parent);
       }
 
       public override bool Equals(object obj)

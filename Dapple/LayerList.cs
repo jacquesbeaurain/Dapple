@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using Dapple.LayerGeneration;
 using System.Drawing.Drawing2D;
+using dappleview;
 
 namespace Dapple
 {
@@ -67,14 +68,14 @@ namespace Dapple
       public LayerList(bool blIsOMMode)
       {
          InitializeComponent();
-         cExtractButton.Visible = blIsOMMode;
+         OMFeaturesEnabled = blIsOMMode;
       }
 
       #endregion
 
       #region Properties
 
-      public List<LayerBuilderContainer> Layers
+      public List<LayerBuilderContainer> SelectedLayers
       {
          get
          {
@@ -87,12 +88,28 @@ namespace Dapple
          }
       }
 
+      public List<LayerBuilderContainer> AllLayers
+      {
+         get
+         {
+            return m_oLayers;
+         }
+      }
+
       public ImageList ImageList
       {
          set
          {
             cLayerList.SmallImageList = value;
             cLayerList.LargeImageList = value;
+         }
+      }
+
+      public bool OMFeaturesEnabled
+      {
+         set
+         {
+            cExtractButton.Visible = value;
          }
       }
 
@@ -107,13 +124,30 @@ namespace Dapple
 
       public void AddLayers(List<LayerBuilder> oLayers, int iInsertIndex)
       {
+         for (int count = oLayers.Count - 1; count >= 0; count--)
+         {
+            if (this.ContainsLayerBuilder(oLayers[count])) oLayers.Remove(oLayers[count]);
+         }
+         if (oLayers.Count == 0) return;
+
          cLayerList.BeginUpdate();
+         m_blSupressSelectedChanged = true;
 
          for (int count = 0; count < oLayers.Count; count++)
          {
             AddLayer(oLayers[count], iInsertIndex + count);
          }
 
+         cLayerList.SelectedIndices.Clear();
+
+         for (int count = iInsertIndex; count < iInsertIndex + oLayers.Count; count++)
+         {
+            cLayerList.Items[count].Selected = true;
+         }
+
+         m_blSupressSelectedChanged = false;
+
+         cLayerList_SelectedIndexChanged(this, new EventArgs());
          cLayerList.EndUpdate();
       }
 
@@ -124,10 +158,12 @@ namespace Dapple
 
       public void AddLayer(LayerBuilder oLayer, int iInsertIndex)
       {
+         if (ContainsLayerBuilder(oLayer)) return;
+
          m_oLayers.Insert(iInsertIndex, new LayerBuilderContainer(oLayer, true));
          cLayerList.Items.Insert(iInsertIndex, oLayer.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
-         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("layer");
+         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].Builder.LayerTypeIconKey);
 
          m_oLayers[iInsertIndex].Builder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
 
@@ -145,33 +181,7 @@ namespace Dapple
             m_oLayers[iInsertIndex].Builder.AsyncAddLayer();
          }
 
-         CheckIsValid();
-      }
-
-      public void DeleteSelectedLayers()
-      {
-         if (cLayerList.SelectedIndices.Count == 0) return;
-
-         cLayerList.BeginUpdate();
-         m_blSupressSelectedChanged = true;
-         while (cLayerList.SelectedIndices.Count > 0)
-         {
-            int iIndexToDelete = cLayerList.SelectedIndices[0];
-
-            if (m_oLayers[iIndexToDelete].Builder != null)
-            {
-               m_oLayers[iIndexToDelete].Builder.UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
-               m_oLayers[iIndexToDelete].Builder.RemoveLayer();
-            }
-
-            m_oLayers.RemoveAt(iIndexToDelete);
-            cLayerList.Items.RemoveAt(iIndexToDelete);
-         }
-         m_blSupressSelectedChanged = false;
-         cLayerList.EndUpdate();
-
-         RefreshLayerRenderOrder();
-         SetButtonState();
+         cLayerList.Items[iInsertIndex].Selected = true;
          CheckIsValid();
       }
 
@@ -228,7 +238,7 @@ namespace Dapple
          m_iLastTransparency = cTransparencySlider.Value;
          if (cTransparencySlider.Enabled)
          {
-            foreach (LayerBuilderContainer oContainer in this.Layers)
+            foreach (LayerBuilderContainer oContainer in this.SelectedLayers)
             {
                oContainer.Opacity = Convert.ToByte(cTransparencySlider.Value);
             }
@@ -249,7 +259,7 @@ namespace Dapple
 
       private void cRemoveLayerButton_Click(object sender, EventArgs e)
       {
-         DeleteSelectedLayers();
+         CmdRemoveSelectedLayers();
       }
 
       private void cExtractButton_Click(object sender, EventArgs e)
@@ -300,6 +310,8 @@ namespace Dapple
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
             AddLayers(oDropData, iInsertPoint);
+
+            cLayerList.Focus();
          }
          else if (e.Data.GetDataPresent(typeof(ListViewItem)))
          {
@@ -308,6 +320,8 @@ namespace Dapple
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
             ShuffleLayer(oDropData.Index, iInsertPoint);
+
+            cLayerList.Focus();
          }
       }
 
@@ -335,6 +349,14 @@ namespace Dapple
          if ((e.Button & MouseButtons.Left) == MouseButtons.Left && cLayerList.SelectedIndices.Count == 1)
          {
             DoDragDrop(cLayerList.SelectedItems[0], DragDropEffects.Move);
+         }
+      }
+
+      private void cLayerList_KeyUp(object sender, KeyEventArgs e)
+      {
+         if (e.KeyCode == Keys.Delete)
+         {
+            CmdRemoveSelectedLayers();
          }
       }
 
@@ -378,7 +400,7 @@ namespace Dapple
 
       private void cRemoveToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         DeleteSelectedLayers();
+         CmdRemoveSelectedLayers();
       }
 
       private void cRefreshToolStripMenuItem_Click(object sender, EventArgs e)
@@ -628,7 +650,114 @@ namespace Dapple
          }
       }
 
+      public void CmdRemoveSelectedLayers()
+      {
+         if (cLayerList.SelectedIndices.Count == 0) return;
+
+         cLayerList.BeginUpdate();
+         m_blSupressSelectedChanged = true;
+         while (cLayerList.SelectedIndices.Count > 0)
+         {
+            int iIndexToDelete = cLayerList.SelectedIndices[0];
+
+            if (m_oLayers[iIndexToDelete].Builder != null)
+            {
+               m_oLayers[iIndexToDelete].Builder.UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+               m_oLayers[iIndexToDelete].Builder.RemoveLayer();
+            }
+
+            m_oLayers.RemoveAt(iIndexToDelete);
+            cLayerList.Items.RemoveAt(iIndexToDelete);
+         }
+         m_blSupressSelectedChanged = false;
+         cLayerList.EndUpdate();
+
+         RefreshLayerRenderOrder();
+         SetButtonState();
+         CheckIsValid();
+      }
+
+      public void CmdRemoveAllLayers()
+      {
+         cLayerList.Items.Clear();
+         m_oLayers.Clear();
+
+         SetButtonState();
+         CheckIsValid();
+      }
+
+      public void CmdRemoveGeoTiff(String szFilename)
+      {
+         cLayerList.BeginUpdate();
+         m_blSupressSelectedChanged = true;
+
+         int iIndex = m_oLayers.Count - 1;
+         while (iIndex >= 0)
+         {
+            if (m_oLayers[iIndex].Builder != null && m_oLayers[iIndex].Builder is GeorefImageLayerBuilder &&
+               ((GeorefImageLayerBuilder)m_oLayers[iIndex].Builder).FileName.Equals(szFilename))
+            {
+               m_oLayers[iIndex].Builder.UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+               m_oLayers[iIndex].Builder.RemoveLayer();
+
+               m_oLayers.RemoveAt(iIndex);
+               cLayerList.Items.RemoveAt(iIndex);
+            }
+         }
+
+         m_blSupressSelectedChanged = false;
+         cLayerList.EndUpdate();
+
+         RefreshLayerRenderOrder();
+         SetButtonState();
+         CheckIsValid();
+      }
+
+      public bool LoadFromView(DappleView view, ServerTree oTree)
+      {
+         CmdRemoveAllLayers();
+
+         bool blIncompleteLoad = false;
+
+         cLayerList.BeginUpdate();
+         m_blSupressSelectedChanged = true;
+         for (int i = 0; i < view.View.activelayers.datasetCount; i++)
+         {
+            datasetType dataset = view.View.activelayers.GetdatasetAt(i);
+
+            LayerUri oUri = LayerUri.create(dataset.uri.Value);
+            if (!oUri.IsValid)
+            {
+               blIncompleteLoad = true;
+               continue;
+            }
+
+            LayerBuilder oBuilder = oUri.getBuilder(MainForm.WorldWindowSingleton, oTree);
+            oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
+            oBuilder.Opacity = (byte)dataset.opacity.Value;
+            AddLayer(oBuilder);
+         }
+         m_blSupressSelectedChanged = false;
+         cLayerList.EndUpdate();
+
+         return blIncompleteLoad;
+      }
+
       #endregion
+
+      /// <summary>
+      /// Check if a LayerBuilder is already in the layer list.
+      /// </summary>
+      /// <param name="oBuilder"></param>
+      /// <returns></returns>
+      private bool ContainsLayerBuilder(LayerBuilder oBuilder)
+      {
+         foreach (LayerBuilderContainer oContainer in m_oLayers)
+         {
+            if (oContainer.Builder.Equals(oBuilder)) return true;
+         }
+         return false;
+      }
 
       #region Testing
 

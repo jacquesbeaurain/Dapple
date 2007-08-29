@@ -40,8 +40,7 @@ namespace Dapple
 		VEQuadLayerBuilder m_VEMapAndSatQTB;
 
 		protected MainForm m_oParent;
-		protected TriStateTreeView m_layerTree;
-		protected LayerBuilderList m_activeLayers;
+		protected LayerList m_activeLayers;
 		protected List<AsyncServerBuilder> m_wmsServers = new List<AsyncServerBuilder>();
       protected List<AsyncServerBuilder> m_oArcIMSServers = new List<AsyncServerBuilder>();
 		#endregion
@@ -55,11 +54,10 @@ namespace Dapple
 		/// Constructor
 		/// </summary>
 		/// <param name="strCacheDir"></param>
-		public ServerTree(string strCacheDir, MainForm oParent, TriStateTreeView tvLayer, LayerBuilderList activeLayers)
+		public ServerTree(string strCacheDir, MainForm oParent, LayerList activeLayers)
 			: base(strCacheDir)
 		{
 			m_oParent = oParent;
-			m_layerTree = tvLayer;
 			m_activeLayers = activeLayers;
 
 			this.SupportDatasetSelection = false;
@@ -100,9 +98,9 @@ namespace Dapple
 			m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = iImageListIndex("live");
 			m_hVERootNode.Tag = veDir;
 
-			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", WorldWind.VirtualEarthMapType.road, m_oParent, true, veDir);
-			m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", WorldWind.VirtualEarthMapType.aerial, m_oParent, true, veDir);
-			m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", WorldWind.VirtualEarthMapType.hybrid, m_oParent, true, veDir);
+			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", WorldWind.VirtualEarthMapType.road, m_oParent.WorldWindow, true, veDir);
+         m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", WorldWind.VirtualEarthMapType.aerial, m_oParent.WorldWindow, true, veDir);
+         m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", WorldWind.VirtualEarthMapType.hybrid, m_oParent.WorldWindow, true, veDir);
 			veDir.LayerBuilders.Add(m_VEMapQTB);
 			veDir.LayerBuilders.Add(m_VESatQTB);
 			veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
@@ -164,7 +162,7 @@ namespace Dapple
                TreeNode oServerNode = this.SelectedNode;
                while (!(oServerNode.Tag is Server)) oServerNode = oServerNode.Parent;
 
-               oDragData.Add(new DAPQuadLayerBuilder(m_oDragSource.Tag as DataSet, m_oParent.WorldWindow.CurrentWorld, oServerNode.Tag as Server, null));
+               oDragData.Add(new DAPQuadLayerBuilder(m_oDragSource.Tag as DataSet, m_oParent.WorldWindow, oServerNode.Tag as Server, null));
             }
 
             if (oDragData.Count > 0)
@@ -242,6 +240,61 @@ namespace Dapple
 				return m_hRootNode;
 			}
 		}
+
+      public Object SelectedServer
+      {
+         get
+         {
+            TreeNode iter = this.SelectedOrRoot;
+            while (iter != this.RootNode)
+            {
+               if (iter.Tag is Server || iter.Tag is ServerBuilder) return iter.Tag;
+
+               iter = iter.Parent;
+            }
+            return null;
+         }
+         set
+         {
+            if (value is Server)
+            {
+               this.SelectedNode = m_hDAPRootNode;
+               foreach (TreeNode oNode in DAPRootNodes)
+               {
+                  if (oNode.Tag.Equals(value))
+                  {
+                     this.SelectedNode = oNode;
+                     break;
+                  }
+               }
+            }
+            else if (value is ArcIMSServerBuilder)
+            {
+               this.SelectedNode = m_hArcIMSRootNode;
+               foreach (TreeNode oNode in ArcIMSRootNodes)
+               {
+                  if (oNode.Tag.Equals(value))
+                  {
+                     this.SelectedNode = oNode;
+                     break;
+                  }
+               }
+            }
+            else if (value is WMSServerBuilder)
+            {
+               this.SelectedNode = m_hWMSRootNode;
+               foreach (TreeNode oNode in WMSRootNodes)
+               {
+                  if (oNode.Tag.Equals(value))
+                  {
+                     this.SelectedNode = oNode;
+                     break;
+                  }
+               }
+            }
+         }
+      }
+
 		#endregion
 
 		#region Catalog Load Handler
@@ -292,11 +345,8 @@ namespace Dapple
 		{
 			if (this.SelectedDAPDataset != null)
 			{
-				if (!m_oParent.bContainsDAPLayer(m_oCurServer, this.SelectedDAPDataset))
-				{
-					DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(this.SelectedDAPDataset, m_oParent.WorldWindow.CurrentWorld, /*m_strCacheDir,*/ m_oCurServer, null);
-					m_oParent.AddLayerBuilder(layerBuilder);
-				}
+				DAPQuadLayerBuilder layerBuilder = new DAPQuadLayerBuilder(this.SelectedDAPDataset, m_oParent.WorldWindow, m_oCurServer, null);
+				m_oParent.AddLayerBuilder(layerBuilder);
 			}
 			else if (this.SelectedNode != null && SelectedNode.Tag is LayerBuilder)
 				m_oParent.AddLayerBuilder(SelectedNode.Tag as LayerBuilder);
@@ -418,12 +468,14 @@ namespace Dapple
 			{
 				// Clear Tree and WMS servers too
 				WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
+            wmsBuilder.cancelDownloads();
 				wmsBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
             wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
 				m_hWMSRootNode.Tag = wmsBuilder;
 				wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
             ArcIMSCatalogBuilder arcIMSBuilder = m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder;
+            arcIMSBuilder.cancelDownloads();
             arcIMSBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
             arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
             m_hArcIMSRootNode.Tag = arcIMSBuilder;
@@ -560,7 +612,7 @@ namespace Dapple
 					int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
 					int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
 					NltQuadLayerBuilder quadBuilder = new NltQuadLayerBuilder(tile.name.Value, iDistance, true, new WorldWind.GeographicBoundingBox(tile.boundingbox.maxlat.Value, tile.boundingbox.minlat.Value, tile.boundingbox.minlon.Value, tile.boundingbox.maxlon.Value), tile.levelzerotilesize.Value, tile.levels.Value, iPixelSize, tile.url.Value,
-															tile.dataset.Value, tile.imageextension.Value, 255, m_oParent.WorldWindow.CurrentWorld, /*MainApplication.Settings.CachePath,*/ tileDir);
+															tile.dataset.Value, tile.imageextension.Value, 255, m_oParent.WorldWindow, tileDir);
 					newServerChildNode.Tag = quadBuilder;
 				}
 			}

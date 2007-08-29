@@ -85,6 +85,18 @@ namespace Dapple.LayerGeneration
          return result;
       }
 
+      public void cancelDownloads()
+      {
+         lock (m_oCatalogDownloadsInProgress.SyncRoot)
+         {
+            foreach (WebDownload oDownload in m_oCatalogDownloadsInProgress.Values)
+            {
+               oDownload.Cancel();
+               oDownload.Dispose();
+            }
+         }
+      }
+
       private void CatalogDownloadCompleteCallback(WebDownload download)
       {
          try
@@ -146,7 +158,7 @@ namespace Dapple.LayerGeneration
       private void ProcessArcIMSService(ArcIMSServerUri serviceUri, XmlElement nServiceNode, BuilderDirectory directory)
       {
          //TODO: Get acutal layer bounds, not placeholder ones
-         ArcIMSQuadLayerBuilder builder = new ArcIMSQuadLayerBuilder(serviceUri, nServiceNode.GetAttribute("name"), new GeographicBoundingBox(90, -90, -180, 180), m_oWorldWindow.CurrentWorld, directory);
+         ArcIMSQuadLayerBuilder builder = new ArcIMSQuadLayerBuilder(serviceUri, nServiceNode.GetAttribute("name"), new GeographicBoundingBox(90, -90, -180, 180), m_oWorldWindow, directory);
          directory.LayerBuilders.Add(builder);
       }
    }

@@ -43,8 +43,8 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public WMSQuadLayerBuilder(WMSLayer layer, World world, WMSServerBuilder server, IBuilder parent)
-         :base(layer.Title, world, parent)
+      public WMSQuadLayerBuilder(WMSLayer layer, WorldWindow worldWindow, WMSServerBuilder server, IBuilder parent)
+         :base(layer.Title, worldWindow, parent)
 		{
 			terrainMapped = true;
 
@@ -140,9 +140,14 @@ namespace Dapple.LayerGeneration
          get { return m_blnIsChanged; }
       }
 
-      public override string LogoKey
+      public override string ServerTypeIconKey
       {
          get { return "wms"; }
+      }
+
+      public override string LayerTypeIconKey
+      {
+         get { return "layer"; }
       }
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
@@ -205,7 +210,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].TextureFormat = World.Settings.TextureFormat;
             imageStores[0].TextureSizePixels = m_iTextureSizePixels;
 
-            m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorld, distAboveSurface,
+            m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorldWindow.CurrentWorld, distAboveSurface,
                (double)m_wmsLayer.North, (double)m_wmsLayer.South, (double)m_wmsLayer.West, (double)m_wmsLayer.East,
                terrainMapped, imageStores);
             m_oQuadTileSet.AlwaysRenderBaseTiles = true;
@@ -239,9 +244,9 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object Clone()
+      public override object CloneSpecific()
       {
-         return new WMSQuadLayerBuilder(m_wmsLayer, m_oWorld, m_Server, m_Parent);
+         return new WMSQuadLayerBuilder(m_wmsLayer, m_oWorldWindow, m_Server, m_Parent);
       }
 
       public override bool Equals(object obj)

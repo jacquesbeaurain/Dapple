@@ -31,8 +31,8 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oUri, String strServiceName, GeographicBoundingBox oEnvelope, World oWorld, IBuilder oParent)
-         :base(strServiceName, oWorld, oParent)
+      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oUri, String strServiceName, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent)
+         :base(strServiceName, oWorldWindow, oParent)
       {
          m_oEnvelope = oEnvelope;
          m_oUri = oUri;
@@ -123,9 +123,14 @@ namespace Dapple.LayerGeneration
          get { return m_blnIsChanged; }
       }
 
-      public override string LogoKey
+      public override string ServerTypeIconKey
       {
          get { return "arcims"; }
+      }
+
+      public override string LayerTypeIconKey
+      {
+         get { return "layer"; }
       }
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
@@ -159,7 +164,7 @@ namespace Dapple.LayerGeneration
             aImageStore[0].TextureFormat = World.Settings.TextureFormat;
             aImageStore[0].TextureSizePixels = 256;
 
-            m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorld, 0,
+            m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorldWindow.CurrentWorld, 0,
                m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,
                true, aImageStore);
             m_oQuadTileSet.AlwaysRenderBaseTiles = true;
@@ -172,7 +177,7 @@ namespace Dapple.LayerGeneration
 
       public override string GetURI()
       {
-         return m_oUri.ToServiceUri(m_strName).Replace("http://", URLProtocolName);
+         return m_oUri.ToServiceUri(m_strName).Replace("http://", URLProtocolName) + String.Format("&minx={0}&miny={1}&maxx={2}&maxy={3}", m_oEnvelope.West, m_oEnvelope.South, m_oEnvelope.East, m_oEnvelope.North);
       }
 
       public override string GetCachePath()
@@ -188,9 +193,9 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object Clone()
+      public override object CloneSpecific()
       {
-         return new ArcIMSQuadLayerBuilder(m_oUri, m_strName, m_oEnvelope, m_oWorld, m_Parent);
+         return new ArcIMSQuadLayerBuilder(m_oUri, m_strName, m_oEnvelope, m_oWorldWindow, m_Parent);
       }
 
       public override bool Equals(object obj)

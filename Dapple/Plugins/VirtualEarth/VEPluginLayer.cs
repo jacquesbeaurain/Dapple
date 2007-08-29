@@ -42,7 +42,7 @@ namespace bNb.Plugins_GD
 	public class VeReprojectTilesLayer : RenderableObject
 	{
 		private Projection proj;
-		private MainApplication parentApplication;
+		private WorldWindow parentApplication;
 
 		private MD5 md5Hasher = MD5.Create();
 
@@ -64,7 +64,7 @@ namespace bNb.Plugins_GD
 		private int startZoomLevel;
 		private string cacheDirectory;
 
-		public VeReprojectTilesLayer(string name, MainApplication parentApplication, string datasetName, string imageExtension, int startZoomLevel, string cache)
+		public VeReprojectTilesLayer(string name, WorldWindow parentApplication, string datasetName, string imageExtension, int startZoomLevel, string cache)
 			: base(name)
 		{
 			this.name = name;
@@ -165,7 +165,7 @@ namespace bNb.Plugins_GD
 				}
 				*/
 
-				earthRadius = parentApplication.WorldWindow.CurrentWorld.EquatorialRadius;
+				earthRadius = parentApplication.CurrentWorld.EquatorialRadius;
 				earthCircum = earthRadius * 2.0 * Math.PI; //40075016.685578488
 				earthHalfCirc = earthCircum / 2; //20037508.
 
@@ -176,7 +176,7 @@ namespace bNb.Plugins_GD
 				proj = new Projection(projectionParameters);
 
 				//static
-				VeTile.Init(this.proj, parentApplication.WorldWindow.CurrentWorld.TerrainAccessor, parentApplication.WorldWindow.CurrentWorld.EquatorialRadius);
+				VeTile.Init(this.proj, parentApplication.CurrentWorld.TerrainAccessor, parentApplication.CurrentWorld.EquatorialRadius);
 
 				prevVe = World.Settings.VerticalExaggeration;
 
@@ -201,8 +201,8 @@ namespace bNb.Plugins_GD
 		public string GetLocalLiveLink()
 		{
 			//http://local.live.com/default.aspx?v=2&cp=43.057723~-88.404224&style=r&lvl=12
-			string lat = parentApplication.WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees.ToString("###.#####");
-			string lon = parentApplication.WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees.ToString("###.#####");
+			string lat = parentApplication.DrawArgs.WorldCamera.Latitude.Degrees.ToString("###.#####");
+			string lon = parentApplication.DrawArgs.WorldCamera.Longitude.Degrees.ToString("###.#####");
 			string link = "http://local.live.com/default.aspx?v=2&cp=" + lat + "~" + lon + "&styles=" + datasetName + "&lvl=" + prevLvl.ToString();
 			return link;
 		}

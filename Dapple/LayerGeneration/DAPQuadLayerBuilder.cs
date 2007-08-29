@@ -41,14 +41,14 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      public DAPQuadLayerBuilder(DataSet dataSet, World world,Server server, IBuilder parent)
+      public DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent)
 			:
-		   this(dataSet, world,  server, parent, 0, 256, 0, 0)
+		   this(dataSet, worldWindow,  server, parent, 0, 256, 0, 0)
 		{
 		}
 
-		public DAPQuadLayerBuilder(DataSet dataSet, World world, Server server, IBuilder parent, int height, int size, double lvl0tilesize, int levels)
-         :base(dataSet.Title, world, parent)
+		public DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent, int height, int size, double lvl0tilesize, int levels)
+         :base(dataSet.Title, worldWindow, parent)
 		{
 			m_hDataSet = dataSet;
 			m_oServer = server;
@@ -142,9 +142,14 @@ namespace Dapple.LayerGeneration
          get { return m_layer == null; }
       }
 
-      public override string LogoKey
+      public override string ServerTypeIconKey
       {
          get { return "dap"; }
+      }
+
+      public override string LayerTypeIconKey
+      {
+         get { return "dap_" + m_hDataSet.Type.ToLower(); }
       }
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
@@ -209,7 +214,7 @@ namespace Dapple.LayerGeneration
          m_layer = null;
       }
 
-      public override object Clone()
+      public override object CloneSpecific()
       {
          DataSet hDSCopy = new DataSet();
          hDSCopy.Edition = m_hDataSet.Edition;
@@ -220,7 +225,7 @@ namespace Dapple.LayerGeneration
          hDSCopy.Type = m_hDataSet.Type;
          hDSCopy.Url = m_hDataSet.Url;
 
-         return new DAPQuadLayerBuilder(hDSCopy, m_oWorld, m_oServer, m_Parent, m_iHeight, m_iTextureSizePixels, this.LevelZeroTileSize, m_iLevels);
+         return new DAPQuadLayerBuilder(hDSCopy, m_oWorldWindow, m_oServer, m_Parent, m_iHeight, m_iTextureSizePixels, this.LevelZeroTileSize, m_iLevels);
       }
 
       public override bool Equals(object obj)
@@ -330,7 +335,7 @@ namespace Dapple.LayerGeneration
             GeographicBoundingBox box = new WorldWind.GeographicBoundingBox(m_hDataSet.Boundary.MaxY,
                m_hDataSet.Boundary.MinY, m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX);
 
-            m_layer = new QuadTileSet(m_hDataSet.Title, m_oWorld, 0, m_hDataSet.Boundary.MaxY, m_hDataSet.Boundary.MinY,
+            m_layer = new QuadTileSet(m_hDataSet.Title, m_oWorldWindow.CurrentWorld, 0, m_hDataSet.Boundary.MaxY, m_hDataSet.Boundary.MinY,
                m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX, true, imageStores);
             m_layer.AlwaysRenderBaseTiles = true;
             m_layer.IsOn = m_IsOn;

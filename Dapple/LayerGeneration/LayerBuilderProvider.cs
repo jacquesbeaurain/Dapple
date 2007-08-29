@@ -65,7 +65,7 @@ namespace Dapple.LayerGeneration
 	}
 
 	public delegate void LayerLoadedCallback(IBuilder builder);
-	public delegate void BuilderChangedHandler(IBuilder sender, BuilderChangeType changeType);
+	public delegate void BuilderChangedHandler(LayerBuilder sender, BuilderChangeType changeType);
 
 	public enum BuilderChangeType
 	{
@@ -84,7 +84,8 @@ namespace Dapple.LayerGeneration
 	{
 		protected string m_strName;
 		protected IBuilder m_Parent;
-		protected World m_oWorld;
+		protected WorldWindow m_oWorldWindow;
+
 		protected byte m_bOpacity = 255;
 		private bool m_blnIsLoading = false;
 		protected bool m_IsOn = true;
@@ -94,16 +95,17 @@ namespace Dapple.LayerGeneration
 		private bool m_blnIsAdded = false;
 		private bool m_bAsyncLoaded = false;
 		private object m_lockObject = new object();
+      private bool m_bTemporary = false;
 
 		private static int intObjectsRendered = 0;
 
 		private event BuilderChangedHandler BuilderChanged;
 
-      public LayerBuilder(String strName, World oWorld, IBuilder oParent)
+      public LayerBuilder(String strName, WorldWindow oWorldWindow, IBuilder oParent)
       {
          m_strName = strName;
          m_Parent = oParent;
-         m_oWorld = oWorld;
+         m_oWorldWindow = oWorldWindow;
       }
 
 		public string Name
@@ -136,14 +138,25 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
-		public abstract string LogoKey
+		public abstract string ServerTypeIconKey
 		{
 			get;
 		}
 
+      public abstract string LayerTypeIconKey
+      {
+         get;
+      }
+
       public abstract GeographicBoundingBox Extents
       {
          get;
+      }
+
+      public bool Temporary
+      {
+         get { return m_bTemporary; }
+         set { m_bTemporary = value; }
       }
 
 		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
@@ -282,11 +295,11 @@ namespace Dapple.LayerGeneration
 		{
 			lock (m_lockObject)
 			{
-				RenderableObject oRO = m_oWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
+				RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
 				m_blnIsLoading = false;
 				if (oRO != null)
 				{
-					m_oWorld.RenderableObjects.Remove(oRO);
+               m_oWorldWindow.CurrentWorld.RenderableObjects.Remove(oRO);
 					m_blnIsLoading = false;
 				}
 				CleanUpLayer(false);
@@ -299,13 +312,13 @@ namespace Dapple.LayerGeneration
 		{
 			lock (m_lockObject)
 			{
-				RenderableObject oRO = m_oWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
+            RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
 				if (oRO != null)
 				{
 					intObjectsRendered++;
 					m_intRenderPriority = intObjectsRendered;
 					oRO.Name = "3 - " + m_intRenderPriority.ToString();
-					m_oWorld.RenderableObjects.SortChildren();
+               m_oWorldWindow.CurrentWorld.RenderableObjects.SortChildren();
 				}
 			}
 		}
@@ -316,11 +329,11 @@ namespace Dapple.LayerGeneration
 			bool bReturn = false;
 			lock (m_lockObject)
 			{
-				RenderableObject oRO = m_oWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
+            RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
 				m_blnIsLoading = false;
 				if (oRO != null)
 				{
-					m_oWorld.RenderableObjects.Remove(oRO);
+               m_oWorldWindow.CurrentWorld.RenderableObjects.Remove(oRO);
 					m_blnIsLoading = false;
 					bRemoved = true;
 					bReturn = true;
@@ -354,10 +367,10 @@ namespace Dapple.LayerGeneration
 				if (!m_blnFailed)
 				{
 					layer.Name = "3 - " + m_intRenderPriority.ToString();
-					m_oWorld.RenderableObjects.Remove("3 - " + m_intRenderPriority.ToString());
+               m_oWorldWindow.CurrentWorld.RenderableObjects.Remove("3 - " + m_intRenderPriority.ToString());
 					if (m_blnIsLoading)
 					{
-						m_oWorld.RenderableObjects.Add(layer);
+                  m_oWorldWindow.CurrentWorld.RenderableObjects.Add(layer);
 						m_blnIsAdded = true;
 					}
 					m_blnIsLoading = false;
@@ -410,7 +423,17 @@ namespace Dapple.LayerGeneration
 
 		#region ICloneable Members
 
-		public abstract object Clone();
+      public object Clone()
+      {
+         LayerBuilder result = CloneSpecific() as LayerBuilder;
+         result.m_bOpacity = this.m_bOpacity;
+         result.m_IsOn = this.m_IsOn;
+         result.m_bTemporary = this.m_bTemporary;
+
+         return result;
+      }
+
+		public abstract object CloneSpecific();
 
 		#endregion
 

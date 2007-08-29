@@ -45,14 +45,14 @@ namespace Dapple.LayerGeneration
 
       public NltQuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
 		   double levelZeroTileSize, int levels, int textureSize, string serverURL, string dataSetName, string imageExtension,
-		   byte opacity, World world, IBuilder parent)
-         :base(name, world, parent)
+		   byte opacity, WorldWindow worldWindow, IBuilder parent)
+         :base(name, worldWindow, parent)
 		{
 			distAboveSurface = height;
 			terrainMapped = isTerrainMapped;
 			m_hBoundary = boundary;
 			m_bOpacity = opacity;
-         m_strWorldName = world.Name;
+         m_strWorldName = worldWindow.CurrentWorld.Name;
 			m_iLevels = levels;
 			m_iTextureSizePixels = textureSize;
 			m_dLevelZeroTileSizeDegrees = levelZeroTileSize;
@@ -134,9 +134,14 @@ namespace Dapple.LayerGeneration
          get { return m_blnIsChanged; }
       }
 
-      public override string LogoKey
+      public override string ServerTypeIconKey
       {
          get { return "tile"; }
+      }
+
+      public override string LayerTypeIconKey
+      {
+         get { return "layer"; }
       }
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
@@ -194,9 +199,9 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object Clone()
+      public override object CloneSpecific()
       {
-         return new NltQuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees, m_iLevels, m_iTextureSizePixels, m_strServerUrl, m_strDatasetName, m_strImageExt, Opacity, m_oWorld, m_Parent);
+         return new NltQuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees, m_iLevels, m_iTextureSizePixels, m_strServerUrl, m_strDatasetName, m_strImageExt, Opacity, m_oWorldWindow, m_Parent);
       }
 
       public override bool Equals(object obj)
@@ -266,7 +271,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].TextureSizePixels = m_iTextureSizePixels;
 
             m_oQuadTileSet = new QuadTileSet(m_strName,
-               m_oWorld,
+               m_oWorldWindow.CurrentWorld,
                distAboveSurface,
                90, -90, -180, 180, terrainMapped, imageStores);
             m_oQuadTileSet.IsOn = m_IsOn;
