@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+   <Product Id="ee5b25a5-f50d-4549-85aa-3c9c0419e2f2" Name="Dapple" Language="1033" Version="1.9.95" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
+      <Package InstallerVersion="200" Compressed="yes" />
+
+      <Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
+
+      <Directory Id="TARGETDIR" Name="SourceDir">
+         <Directory Id="ProgramFilesFolder">
+            <Directory Id="INSTALLLOCATION" Name="Dapple">
+               <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
+            </Directory>
+         </Directory>
+      </Directory>
+
+      <Feature Id="Main" Title="Main Application" Level="1">
+         <MergeRef Id="DappleMergeModule"/>
+      </Feature>
+
+      <Upgrade Id="DFEA744A-F951-4BED-B156-44478FAB86D6">
+         <UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="1.0.20" IncludeMaximum="yes"/>
+      </Upgrade>
+
+      <InstallExecuteSequence>
+         <RemoveExistingProducts After='InstallValidate'/>
+      </InstallExecuteSequence>
+   </Product>
+</Wix>
+
