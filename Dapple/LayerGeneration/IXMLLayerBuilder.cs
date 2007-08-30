@@ -263,7 +263,7 @@ namespace Dapple.LayerGeneration
       /// Get all of the LayerBuilders throughout the tree.
       /// </summary>
       /// <param name="result">The ArrayList to fill with the LayerBuilders.</param>
-      public void getLayerBuilders(ref System.Collections.ArrayList result)
+      public void getLayerBuilders(ref List<LayerBuilder> result)
       {
          foreach (LayerBuilder oBuilder in m_colChildren)
             result.Add(oBuilder);

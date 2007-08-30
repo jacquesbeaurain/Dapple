@@ -116,7 +116,6 @@ namespace Dapple
             this.cColumnHeader});
          this.cLayerList.ContextMenuStrip = this.cLayerListContextMenu;
          this.cLayerList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-         this.cLayerList.HideSelection = false;
          this.cLayerList.Location = new System.Drawing.Point(0, 25);
          this.cLayerList.Name = "cLayerList";
          this.cLayerList.Size = new System.Drawing.Size(197, 96);

@@ -30,7 +30,7 @@ namespace Dapple
 
       private int m_iCurrPage;
       private int m_iNumPages;
-      private ArrayList m_oCurrServerLayers;
+      private List<LayerBuilder> m_oCurrServerLayers;
 
       private bool m_oDragDropReady;
 
@@ -141,7 +141,7 @@ namespace Dapple
 
             foreach (int index in cLayersListView.SelectedIndices)
             {
-               result.Add(getLayerBuilder(m_oCurrServerLayers[index + m_iCurrPage * LAYERS_PER_PAGE]));
+               result.Add(m_oCurrServerLayers[index + m_iCurrPage * LAYERS_PER_PAGE]);
             }
 
             return result;
@@ -153,7 +153,17 @@ namespace Dapple
       /// </summary>
       public LayerList LayerList
       {
-         set { m_hLayerList = value; }
+         set
+         {
+            if (m_hLayerList != null)
+            {
+               m_hLayerList.ActiveLayersChanged -= new LayerList.ActiveLayersChangedHandler(UpdateActiveLayers); 
+            }
+
+            m_hLayerList = value;
+            m_hLayerList.ActiveLayersChanged += new LayerList.ActiveLayersChangedHandler(UpdateActiveLayers);
+            UpdateActiveLayers();
+         }
       }
 
       #endregion
@@ -179,6 +189,34 @@ namespace Dapple
                UpdatePageNavigation();
             }
          }
+      }
+
+      /// <summary>
+      /// Makes the text color of those layers that have been added to the layer list green.
+      /// </summary>
+      public void UpdateActiveLayers()
+      {
+         cLayersListView.SuspendLayout();
+
+         if (m_oCurrServerLayers != null)
+         {
+            for (int count = m_iCurrPage * LAYERS_PER_PAGE; count < m_iCurrPage * LAYERS_PER_PAGE + LAYERS_PER_PAGE; count++)
+            {
+               if (count < m_oCurrServerLayers.Count)
+               {
+                  if (m_hLayerList.ContainsLayerBuilder(m_oCurrServerLayers[count]))
+                  {
+                     cLayersListView.Items[count % LAYERS_PER_PAGE].ForeColor = Color.ForestGreen;
+                  }
+                  else
+                  {
+                     cLayersListView.Items[count % LAYERS_PER_PAGE].ForeColor = cLayersListView.ForeColor;
+                  }
+               }
+            }
+         }
+
+         cLayersListView.ResumeLayout();
       }
 
       #endregion
@@ -316,7 +354,7 @@ namespace Dapple
          cLayersListView.Items.Clear();
          cNextButton.Enabled = false;
          cPrevButton.Enabled = false;
-         m_oCurrServerLayers = new ArrayList();
+         m_oCurrServerLayers = new List<LayerBuilder>();
       }
 
       /// <summary>
@@ -372,11 +410,13 @@ namespace Dapple
          {
             for (int count = m_iCurrPage * LAYERS_PER_PAGE; count < m_iCurrPage * LAYERS_PER_PAGE + LAYERS_PER_PAGE; count++)
             {
-               if (count < m_oCurrServerLayers.Count) cLayersListView.Items.Add(getLayerTitle(m_oCurrServerLayers[count]), getImageIndex(m_oCurrServerLayers[count]));
+               if (count < m_oCurrServerLayers.Count) cLayersListView.Items.Add(getLayerTitle(m_oCurrServerLayers[count]), cLayersListView.SmallImageList.Images.IndexOfKey(m_oCurrServerLayers[count].LayerTypeIconKey));
             }
          }
 
          cLayersListView.ResumeLayout();
+
+         UpdateActiveLayers();
       }
 
       /// <summary>
@@ -419,13 +459,19 @@ namespace Dapple
          {
             if (obj is Server)
             {
-               m_oCurrServerLayers = new ArrayList();
+               ArrayList oDapLayers = new ArrayList();
+               m_oCurrServerLayers = new List<LayerBuilder>();
                Geosoft.Dap.Common.BoundingBox oConvertedBox = m_oSearchBox == null ? null : new Geosoft.Dap.Common.BoundingBox(m_oSearchBox.East, m_oSearchBox.North, m_oSearchBox.West, m_oSearchBox.South);
-               ((Server)obj).Command.GetCatalog(null, 0, 0, MAX_DAP_RESULTS, m_strSearchString, oConvertedBox, out m_oCurrServerLayers);
+               ((Server)obj).Command.GetCatalog(null, 0, 0, MAX_DAP_RESULTS, m_strSearchString, oConvertedBox, out oDapLayers);
+
+               foreach (Geosoft.Dap.Common.DataSet oDataSet in oDapLayers)
+               {
+                  m_oCurrServerLayers.Add(new DAPQuadLayerBuilder(oDataSet, MainForm.WorldWindowSingleton, obj as Server, null));
+               }
             }
             else if (obj is AsyncServerBuilder)
             {
-               m_oCurrServerLayers = new ArrayList();
+               m_oCurrServerLayers = new List<LayerBuilder>();
                ((AsyncServerBuilder)obj).getLayerBuilders(ref m_oCurrServerLayers);
             }
             else
@@ -488,21 +534,6 @@ namespace Dapple
             return cLayersListView.SmallImageList.Images.IndexOfKey("dap_" + ((Geosoft.Dap.Common.DataSet)obj).Type.ToLower());
          else if (obj is LayerBuilder)
             return cLayersListView.SmallImageList.Images.IndexOfKey("layer");
-         else
-            throw new ArgumentException("obj is unknown type " + obj.GetType());
-      }
-
-      /// <summary>
-      /// Get a layer builder from a LayerBuilder/DataSet.
-      /// </summary>
-      /// <param name="obj">The obj to make a LayerBuilder from.</param>
-      /// <returns>Obj if obj is a LayerBuilder, or a DAPQuadLayerbuilder from the DataSet.</returns>
-      private LayerBuilder getLayerBuilder(Object obj)
-      {
-         if (obj is Geosoft.Dap.Common.DataSet)
-            return new DAPQuadLayerBuilder(obj as Geosoft.Dap.Common.DataSet, MainForm.WorldWindowSingleton, m_oServerList[cServersComboBox.SelectedIndex] as Server, null);
-         else if (obj is LayerBuilder)
-            return ((LayerBuilder)obj);
          else
             throw new ArgumentException("obj is unknown type " + obj.GetType());
       }

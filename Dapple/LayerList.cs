@@ -26,6 +26,11 @@ namespace Dapple
       /// <param name="?"></param>
       public delegate void ViewMetadataHandler(LayerBuilder oBuilder);
 
+      /// <summary>
+      /// Occurrs when a layer is added or removed to the list.
+      /// </summary>
+      public delegate void ActiveLayersChangedHandler();
+
       #endregion
 
       #region Statics
@@ -58,6 +63,7 @@ namespace Dapple
 
       public event GoToHandler GoTo;
       public event ViewMetadataHandler ViewMetadata;
+      public event ActiveLayersChangedHandler ActiveLayersChanged;
 
       #endregion
 
@@ -164,6 +170,7 @@ namespace Dapple
          cLayerList.Items.Insert(iInsertIndex, oLayer.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
          cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].Builder.LayerTypeIconKey);
+         cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
 
          m_oLayers[iInsertIndex].Builder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
 
@@ -182,6 +189,8 @@ namespace Dapple
          }
 
          cLayerList.Items[iInsertIndex].Selected = true;
+
+         if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
       }
 
@@ -674,6 +683,8 @@ namespace Dapple
 
          RefreshLayerRenderOrder();
          SetButtonState();
+
+         if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
       }
 
@@ -683,6 +694,8 @@ namespace Dapple
          m_oLayers.Clear();
 
          SetButtonState();
+
+         if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
       }
 
@@ -710,6 +723,8 @@ namespace Dapple
 
          RefreshLayerRenderOrder();
          SetButtonState();
+
+         if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
       }
 
@@ -750,7 +765,7 @@ namespace Dapple
       /// </summary>
       /// <param name="oBuilder"></param>
       /// <returns></returns>
-      private bool ContainsLayerBuilder(LayerBuilder oBuilder)
+      public bool ContainsLayerBuilder(LayerBuilder oBuilder)
       {
          foreach (LayerBuilderContainer oContainer in m_oLayers)
          {
