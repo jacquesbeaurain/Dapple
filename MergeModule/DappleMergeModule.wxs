@@ -84,7 +84,7 @@
                   <File Id="KMLImporter.xml"  Name="KMLImporter.xml" Source="..\Dapple\bin\x86\Release\Config\KMLImporter.xml" Vital="yes"/>
                   <File Id="World.xml"  Name="World.xml" Source="..\Dapple\bin\x86\Release\Config\World.xml" Vital="yes"/>
                   <File Id="WorldWind.xml"  Name="WorldWind.xml" Source="..\Dapple\bin\x86\Release\Config\WorldWind.xml" Vital="yes"/>
-                  <File Id="ConfigPlacenames.xml"  Name="ConfigPlacenames.xml" Source="..\Dapple\bin\x86\Release\Config\^Placenames.xml" Vital="yes"/>
+                  <File Id="Placenames.xml"  Name="^Placenames.xml" Source="..\Dapple\bin\x86\Release\Config\^Placenames.xml" Vital="yes"/>
                </Component>
             </Directory>
 
@@ -140,12 +140,14 @@
                </Directory>
 
                <Directory Id="kml" Name="kml">
-                  <Component Id="KMLFiles" Guid="c0decdce-7b6e-4bc9-9a3c-d33d109b2287">
-                     <File Id="kmlpalette2"  Name="palette-2.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-2.png" Vital="yes"/>
-                     <File Id="kmlpalette3"  Name="palette-3.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-3.png" Vital="yes"/>
-                     <File Id="kmlpalette4"  Name="palette-4.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-4.png" Vital="yes"/>
-                     <File Id="kmlpalette5"  Name="palette-5.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-5.png" Vital="yes"/>
-                  </Component>
+                  <Directory Id="icons" Name="icons">
+                     <Component Id="KMLFiles" Guid="c0decdce-7b6e-4bc9-9a3c-d33d109b2287">
+                        <File Id="kmlpalette2"  Name="palette-2.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-2.png" Vital="yes"/>
+                        <File Id="kmlpalette3"  Name="palette-3.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-3.png" Vital="yes"/>
+                        <File Id="kmlpalette4"  Name="palette-4.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-4.png" Vital="yes"/>
+                        <File Id="kmlpalette5"  Name="palette-5.png" Source="..\Dapple\bin\x86\Release\Data\kml\icons\palette-5.png" Vital="yes"/>
+                     </Component>
+                  </Directory>
                </Directory>
 
                <Directory Id="MetaViewer" Name="MetaViewer">
