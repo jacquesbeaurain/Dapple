@@ -121,20 +121,22 @@
 
             <Directory Id="Data" Name="Data">
                <Directory Id="Earth" Name="Earth">
-                  <Component Id="BMNGFiles" Guid="63fe5133-eb12-4ef9-ab25-575a66d0a7e4">
-                     <File Id="world.topo.bathy.200401.jpg"  Name="world.topo.bathy.200401.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200401.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200402.jpg"  Name="world.topo.bathy.200402.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200402.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200403.jpg"  Name="world.topo.bathy.200403.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200403.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200404.jpg"  Name="world.topo.bathy.200404.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200404.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200405.jpg"  Name="world.topo.bathy.200405.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200405.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200406.jpg"  Name="world.topo.bathy.200406.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200406.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200407.jpg"  Name="world.topo.bathy.200407.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200407.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200408.jpg"  Name="world.topo.bathy.200408.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200408.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200409.jpg"  Name="world.topo.bathy.200409.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200409.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200410.jpg"  Name="world.topo.bathy.200410.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200410.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200411.jpg"  Name="world.topo.bathy.200411.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200411.jpg" Vital="yes"/>
-                     <File Id="world.topo.bathy.200412.jpg"  Name="world.topo.bathy.200412.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200412.jpg" Vital="yes"/>
-                  </Component>
+                  <Directory Id="BmngBathy" Name="BmngBathy">
+                     <Component Id="BMNGFiles" Guid="63fe5133-eb12-4ef9-ab25-575a66d0a7e4">
+                        <File Id="world.topo.bathy.200401.jpg"  Name="world.topo.bathy.200401.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200401.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200402.jpg"  Name="world.topo.bathy.200402.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200402.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200403.jpg"  Name="world.topo.bathy.200403.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200403.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200404.jpg"  Name="world.topo.bathy.200404.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200404.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200405.jpg"  Name="world.topo.bathy.200405.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200405.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200406.jpg"  Name="world.topo.bathy.200406.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200406.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200407.jpg"  Name="world.topo.bathy.200407.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200407.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200408.jpg"  Name="world.topo.bathy.200408.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200408.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200409.jpg"  Name="world.topo.bathy.200409.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200409.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200410.jpg"  Name="world.topo.bathy.200410.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200410.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200411.jpg"  Name="world.topo.bathy.200411.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200411.jpg" Vital="yes"/>
+                        <File Id="world.topo.bathy.200412.jpg"  Name="world.topo.bathy.200412.jpg" Source="..\Dapple\bin\x86\Release\Data\Earth\BmngBathy\world.topo.bathy.200412.jpg" Vital="yes"/>
+                     </Component>
+                  </Directory>
                </Directory>
 
                <Directory Id="kml" Name="kml">
