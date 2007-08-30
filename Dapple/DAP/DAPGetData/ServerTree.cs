@@ -9,11 +9,7 @@ using Geosoft.Dap;
 using Geosoft.Dap.Common;
 using Geosoft.DotNetTools;
 
-#if !DAPPLE
-using Resources = global::Geosoft.GX.Properties.Resources;
-#else
 using Resources = global::Dapple.Properties.Resources;
-#endif
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -49,11 +45,8 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Members
-#if !DAPPLE
-      protected bool m_bGeodist;
-#else
       protected string m_strCacheDir;
-#endif
+
       ContextMenuStrip m_oContextMenuStrip;
       protected bool m_bSupportDatasetSelection = true;
       protected bool m_bEntireCatalogMode = false;
@@ -90,21 +83,14 @@ namespace Geosoft.GX.DAPGetData
       protected System.Threading.Thread m_oAsyncThread2;
 
       protected string m_strSecureToken;
-
       #endregion
 
       #region Construction/Destruction
-#if !DAPPLE
-      public ServerTree()
-      {
-         m_oServerList = new ServerList();                  
-#else
-      public ServerTree(string strCacheDir)
+      public ServerTree(ImageList oImageList, string strCacheDir)
       {
          m_strCacheDir = strCacheDir;
          m_oServerList = new ServerList(m_strCacheDir);
-         m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);
-#endif
+         m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);         
 
          try
          {
@@ -127,31 +113,8 @@ namespace Geosoft.GX.DAPGetData
          this.ShowPlusMinus = false;
          this.HideSelection = false;
          this.Scrollable = true;
-
-         base.ImageList = new ImageList();
-         
-         base.ImageList.ColorDepth = ColorDepth.Depth32Bit;
-         base.ImageList.ImageSize = new Size(16, 16);
-         base.ImageList.TransparentColor = Color.Transparent;
-
-         base.ImageList.Images.Add("enserver", Resources.enserver);
-         base.ImageList.Images.Add("disserver", Resources.disserver);
-         base.ImageList.Images.Add("offline", Resources.offline);
-         base.ImageList.Images.Add("dap", Resources.dap);
-         base.ImageList.Images.Add("dap_database", Resources.dap_database);
-         base.ImageList.Images.Add("dap_document", Resources.dap_document);
-         base.ImageList.Images.Add("dap_grid", Resources.dap_grid);
-         base.ImageList.Images.Add("dap_map", Resources.dap_map);
-         base.ImageList.Images.Add("dap_picture", Resources.dap_picture);
-         base.ImageList.Images.Add("dap_point", Resources.dap_point);
-         base.ImageList.Images.Add("dap_spf", Resources.dap_spf);
-         base.ImageList.Images.Add("dap_voxel", Resources.dap_voxel);
-         base.ImageList.Images.Add("folder", Resources.folder);
-         base.ImageList.Images.Add("folder_open", Resources.folder_open);
-         base.ImageList.Images.Add("loading", Resources.loading);
-		 base.ImageList.Images.Add("kml", Resources.kml);
-
-         this.ImageIndex = this.SelectedImageIndex = iImageListIndex("folder");
+         base.ImageList = oImageList;
+         this.ImageIndex = this.SelectedImageIndex = Dapple.MainForm.ImageListIndex("folder");
          this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
          this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);         
@@ -163,7 +126,6 @@ namespace Geosoft.GX.DAPGetData
          EnqueueRequest(AsyncRequestType.Stop);
          EnqueueRequest(AsyncRequestType.Stop);
 
-#if DAPPLE
          try
          {
             // Force it in Dapple
@@ -173,7 +135,7 @@ namespace Geosoft.GX.DAPGetData
          catch
          {
          }
-#endif
+
          if (disposing)
          {
             if (m_oCacheManager != null)
@@ -344,11 +306,6 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       public void Load()
       {
-#if !DAPPLE
-         m_bGeodist = Geosoft.GXNet.CSYS.iGetGeodist() != 0;
-         m_oCacheManager = new CatalogCacheManager(this);
-         m_oServerList.Load(m_strSecureToken);
-#endif
          m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
          m_oAsyncThread1.Start();
 
@@ -369,11 +326,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUrl"></param>
       /// <returns></returns>
-#if !DAPPLE
-      public bool AddServer(string strUrl, out Server hRetServer)
-#else
       public bool AddDAPServer(string strUrl, out Server hRetServer)
-#endif
       {
          bool bRet;
 
@@ -388,18 +341,12 @@ namespace Geosoft.GX.DAPGetData
             if (!strServerUrl.StartsWith("http://"))
                strServerUrl = "http://" + strServerUrl;
 
-#if !DAPPLE
-            Server oServer = new Server(strServerUrl, m_strSecureToken);
-#else
             Server oServer = new Server(strServerUrl, m_strCacheDir, m_strSecureToken);
-#endif
+
             if (oServer.Status == Server.ServerStatus.OnLine || oServer.Status == Server.ServerStatus.Maintenance)
             {
                m_oValidServerList.Remove(oServer.Url);
                m_oValidServerList.Add(oServer.Url, oServer);
-#if !DAPPLE
-               PopulateServerList();
-#endif
                hRetServer = oServer;
             }
             m_oFullServerList.Remove(oServer.Url);
@@ -407,16 +354,11 @@ namespace Geosoft.GX.DAPGetData
 
             m_oServerList.RemoveServer(oServer);
             m_oServerList.AddServer(oServer);
-#if DAPPLE
             PopulateServerList();
-#endif
          }
          catch (Exception e)
          {
             GetDapError.Instance.Write("Error adding dap server " + strUrl + " to the list.\n\r(" + e.Message + ")");
-#if !DAPPLE
-            Geosoft.GXNet.CSYS.iClearErrAP();
-#endif
             bRet = false;
          }
          Cursor = System.Windows.Forms.Cursors.Default;
@@ -510,20 +452,11 @@ namespace Geosoft.GX.DAPGetData
             if (!m_oFullServerList.ContainsKey(oServer.Url)) m_oFullServerList.Add(oServer.Url, oServer);
          }
 
-#if DAPPLE
          // Show all servers in Dapple, there is no other way to manage the list of servers
          if (m_oCurServer != null && m_oFullServerList.ContainsValue(m_oCurServer))
-#else
-         if (m_oCurServer != null && m_oValidServerList.ContainsValue(m_oCurServer))
-#endif
             strServerUrl = m_oCurServer.Url;
          else
             m_oCurServer = null;
-
-#if !DAPPLE
-         if (strServerUrl == string.Empty)
-            Constant.GetSelectedServerInSettingsMeta(out strServerUrl);
-#endif
 
          this.BeginUpdate();
 
@@ -538,16 +471,11 @@ namespace Geosoft.GX.DAPGetData
          }
 
          int iInsert = 0;
-#if DAPPLE
          // Show all servers in Dapple, there is no other way to manage the list of servers
          for (int i = 0; i < m_oFullServerList.Count; i++)
          {
             Server oServer = m_oFullServerList.Values[i];
-#else
-         for (int i = 0; i < m_oValidServerList.Count; i++)
-         {
-            Server oServer = m_oValidServerList.Values[i];
-#endif
+
             if (m_oCurServer == oServer)
                iInsert++;
             else
@@ -682,26 +610,6 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
-#if !DAPPLE
-      /// <summary>
-      /// Request to the server failed to respond
-      /// </summary>
-      public void NoResponseError()
-      {
-         if (m_oValidServerList.Count > 0)
-         {
-            if (MessageBox.Show(this, "An error has occurred while attempting to retrieve the catalog from the dap server.\nDo you wish to disable this server?", "Failed to update catalog", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-               DisableServer(m_oCurServer);
-               SelectServer(m_oValidServerList.Values[0]);
-            }
-         }
-         else
-         {
-            MessageBox.Show(this, "An error has occurred while attempting to retrieve the catalog from the dap server.", "Failed to update catalog", MessageBoxButtons.OK, MessageBoxIcon.Information);
-         }
-      }
-#else
       public void ReenableServer(Server oServer)
       {
          oServer.Status = Server.ServerStatus.OnLine;
@@ -720,7 +628,6 @@ namespace Geosoft.GX.DAPGetData
          else
             PopulateServerList();
       }
-#endif
 
       /// <summary>
       /// Get the catalog hierarchy
@@ -755,19 +662,13 @@ namespace Geosoft.GX.DAPGetData
             if (oCatalog == null)
             {
                // --- do something to disable server ---
-#if !DAPPLE
-               NoResponseError();
-#else
                NoResponseError(m_oCurServer);
-#endif
                return;
             }
             else
             {
-#if DAPPLE
                // --- Looks like the server is online now ---
                ReenableServer(m_oCurServer);
-#endif
                m_oCatalog = oCatalog.Document;
                strConfigurationEdition = oCatalog.ConfigurationEdition;
             }
@@ -883,12 +784,8 @@ namespace Geosoft.GX.DAPGetData
 
             if (bRet)
             {
-#if DAPPLE
                // Show all servers in Dapple, there is no other way to manage the list of servers
                SelectServer(m_oFullServerList[m_oCurServer.Url]);
-#else
-               SelectServer(m_oValidServerList[m_oCurServer.Url]);
-#endif
                SetupCatalog(searchExtents);
             }
 
@@ -959,34 +856,6 @@ namespace Geosoft.GX.DAPGetData
          oRequest.m_oParam5 = oParam5;
          m_oAsyncQueue.Enqueue(oRequest);
       }
-#if DEBUG
-      const string GEOLIB = "geolibd.dll";
-#else 
-      const string GEOLIB = "geolib.dll";
-#endif
-      [DllImport(GEOLIB, EntryPoint = "?hCreat_AP@@YAPAUh_ap@@PBD0@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static IntPtr hCreat_AP(string strApplication, string strVersion);
-
-      [DllImport(GEOLIB, EntryPoint = "?Destr_AP@@YAXPAUh_ap@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static void Destr_AP(IntPtr oAP);
-
-      [DllImport(GEOLIB, EntryPoint = "?hCreat_INI@@YAPAUh_ini@@PAUh_ap@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static IntPtr hCreat_INI(IntPtr oAP);
-
-      [DllImport(GEOLIB, EntryPoint = "?Destr_INI@@YAXPAUh_ini@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static void Destr_INI(IntPtr oINI);
-
-      [DllImport(GEOLIB, EntryPoint = "?hCreat_GXP@@YAPAUh_gxp@@PAUh_ap@@PAUh_ini@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static IntPtr hCreat_GXP(IntPtr oAP, IntPtr oINI);
-
-      [DllImport(GEOLIB, EntryPoint = "?Destr_GXP@@YAXPAUh_gxp@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static IntPtr Destr_GXP(IntPtr oGXP);
-
-      [DllImport(GEOLIB, EntryPoint = "?hCreatExtern_GXX@@YAPAUh_gxx@@PAUh_gxp@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static IntPtr hCreatExtern_GXX(IntPtr oGXP);
-
-      [DllImport(GEOLIB, EntryPoint = "?Destr_GXX@@YAXPAUh_gxx@@@Z", CallingConvention = CallingConvention.Cdecl)]
-      extern static IntPtr Destr_GXX(IntPtr oGXX);
 
       /// <summary>
       /// Send an async request
@@ -994,56 +863,17 @@ namespace Geosoft.GX.DAPGetData
       protected void SendAsyncRequest()
       {
          AsyncRequest oRequest;
-#if !DAPPLE
-         Geosoft.GXNet.CGX_NET oGxNet;
-         IntPtr oAP = IntPtr.Zero;
-         IntPtr oGXP = IntPtr.Zero;
-         IntPtr oGXX = IntPtr.Zero;
-         IntPtr oINI = IntPtr.Zero;
-
-        lock (this)
-         {
-            if (m_bGeodist)
-            {
-               oGxNet = new Geosoft.GXNet.CGX_NET("GetDapData", "1.0", 0, 0, 0);
-            }
-            else
-            {
-               oAP = hCreat_AP(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-               if (oAP == IntPtr.Zero) return;
-
-               oINI = hCreat_INI(oAP);
-               if (oINI == IntPtr.Zero) return;
-
-               oGXP = hCreat_GXP(oAP, oINI);
-               if (oGXP == IntPtr.Zero) return;
-
-               oGXX = hCreatExtern_GXX(oGXP);
-               if (oGXX == IntPtr.Zero) return;
-
-               oGxNet = new Geosoft.GXNet.CGX_NET(oGXX);
-            }
-         }
-
-         // --- do not display server error messages ---
-
-         Geosoft.GXNet.CSYS.SetServerMessagesAP(0);
-#endif
          do
          {
-#if !DAPPLE
-            oRequest = (AsyncRequest)m_oAsyncQueue.Dequeue();
-#else
             oRequest = new AsyncRequest();
             oRequest.m_bValid = false;
-#endif
+
             // --- Safety try/catch so that a thread will not terminate, and not clean itself up ---
 
             try
             {
-#if DAPPLE
                oRequest = (AsyncRequest)m_oAsyncQueue.Dequeue();
-#endif
+
                if (oRequest.m_eType == AsyncRequestType.GetCatalogHierarchy)
                {
                   GetCatalogHierarchy();
@@ -1066,14 +896,6 @@ namespace Geosoft.GX.DAPGetData
             }
 
          } while (!oRequest.m_bValid || oRequest.m_eType != AsyncRequestType.Stop);
-
-#if !DAPPLE
-         oGxNet.Dispose();
-         if (oGXX != IntPtr.Zero) Destr_GXX(oGXX);
-         if (oGXP != IntPtr.Zero) Destr_GXP(oGXP);
-         if (oINI != IntPtr.Zero) Destr_INI(oINI);
-         if (oAP != IntPtr.Zero) Destr_AP(oAP);
-#endif
       }
 
       /// <summary>
@@ -1125,23 +947,23 @@ namespace Geosoft.GX.DAPGetData
            {
                case Server.ServerStatus.OnLine:
                    str += " (" + oServer.DatasetCount.ToString() + ")";
-                   iImage = iImageListIndex("enserver");
+                   iImage = Dapple.MainForm.ImageListIndex("enserver");
                    break;
                case Server.ServerStatus.Maintenance:
                    str += " (undergoing maintenance)";
-                   iImage = iImageListIndex("disserver");
+                   iImage = Dapple.MainForm.ImageListIndex("disserver");
                    break;
                case Server.ServerStatus.OffLine:
                    str += " (offline)";
-                   iImage = iImageListIndex("offline");
+                   iImage = Dapple.MainForm.ImageListIndex("offline");
                    break;
                case Server.ServerStatus.Disabled:
                    str += " (disabled)";
-                   iImage = iImageListIndex("disserver");
+                   iImage = Dapple.MainForm.ImageListIndex("disserver");
                    break;
                default:
                    str += " (unsupported)";
-                   iImage = iImageListIndex("offline");
+                   iImage = Dapple.MainForm.ImageListIndex("offline");
                    break;
            }
 
@@ -1154,73 +976,7 @@ namespace Geosoft.GX.DAPGetData
       internal FolderDatasetList GetDatasets(CatalogFolder oFolder)
       {
          return m_oCacheManager.GetDatasets(m_oCurServer, oFolder, m_oCatalogBoundingBox, m_bAOIFilter, m_bTextFilter, m_strSearchString);
-      }
-
-      /// <summary>
-      /// Returns imagelist
-      /// </summary>
-      /// <param name="strKey"></param>
-      /// <returns></returns>
-      public new ImageList ImageList
-      {
-         get
-         {
-            return base.ImageList;
-         }
-      }
-
-      /// <summary>
-      /// Returns imagelist index from key name
-      /// </summary>
-      /// <param name="strKey"></param>
-      /// <returns></returns>
-      public int iImageListIndex(string strKey)
-      {
-         return base.ImageList.Images.IndexOfKey(strKey);
-      }
-
-      /// <summary>
-      /// Get the image index based on the DAP data type
-      /// </summary>
-      /// <param name="strType"></param>
-      /// <returns></returns>
-      public Int32 iImageIndex(string strType)
-      {
-         Int32 iRet = 3;
-
-         switch (strType.ToLower())
-         {
-            case "database":
-               iRet = iImageListIndex("dap_database");
-               break;
-            case "document":
-               iRet = iImageListIndex("dap_document");
-               break;
-            case "generic":
-               iRet = iImageListIndex("dap_map");
-               break;
-            case "grid":
-               iRet = iImageListIndex("dap_grid");
-               break;
-            case "map":
-               iRet = iImageListIndex("dap_map");
-               break;
-            case "picture":
-               iRet = iImageListIndex("dap_picture");
-               break;
-            case "point":
-               iRet = iImageListIndex("dap_point");
-               break;
-            case "spf":
-               iRet = iImageListIndex("dap_spf");
-               break;
-            case "voxel":
-               iRet = iImageListIndex("dap_voxel");
-               break;
-         }
-         return iRet;
-      }
-
+      }      
 
       /// <summary>
       /// Display the catalog, after it has been modified
@@ -1318,11 +1074,11 @@ namespace Geosoft.GX.DAPGetData
                         hTreeNode.Nodes.RemoveAt(1);
                   }
                   hTreeNode = hTreeNode.Nodes[0];
-                  hTreeNode.ImageIndex = hTreeNode.SelectedImageIndex = iImageListIndex("folder_open");
+                  hTreeNode.ImageIndex = hTreeNode.SelectedImageIndex = Dapple.MainForm.ImageListIndex("folder_open");
                }
                else
                {
-                  TreeNode oTempNode = new TreeNode(str, iImageListIndex("folder_open"), iImageListIndex("folder_open"));
+                  TreeNode oTempNode = new TreeNode(str, Dapple.MainForm.ImageListIndex("folder_open"), Dapple.MainForm.ImageListIndex("folder_open"));
                   oTempNode.Tag = null;
 
                   hTreeNode.Nodes.Clear();
@@ -1338,7 +1094,7 @@ namespace Geosoft.GX.DAPGetData
          {
             TreeNode hChildTreeNode;
 
-            hChildTreeNode = new TreeNode(oFolder.Name, iImageListIndex("folder"), iImageListIndex("folder"));
+            hChildTreeNode = new TreeNode(oFolder.Name, Dapple.MainForm.ImageListIndex("folder"), Dapple.MainForm.ImageListIndex("folder"));
             hChildTreeNode.Tag = null;
             hTreeNode.Nodes.Add(hChildTreeNode);
          }
@@ -1349,7 +1105,7 @@ namespace Geosoft.GX.DAPGetData
             // --- updating in progress ---
 
             TreeNode hTempNode;
-            hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
+            hTempNode = new TreeNode("Retrieving Datasets...", Dapple.MainForm.ImageListIndex("loading"), Dapple.MainForm.ImageListIndex("loading"));
             hTempNode.Tag = null;
             hTreeNode.Nodes.Add(hTempNode);
             this.Refresh();
@@ -1363,7 +1119,7 @@ namespace Geosoft.GX.DAPGetData
                Int32 iType;
                TreeNode hChildTreeNode;
 
-               iType = iImageIndex(oDataset.Type);
+               iType = Dapple.MainForm.ImageIndex(oDataset.Type);
                if (m_bSupportDatasetSelection)
                {
                   if (m_hSelectedDataSets.ContainsKey(oDataset.UniqueName))
@@ -1450,13 +1206,13 @@ namespace Geosoft.GX.DAPGetData
                         hTreeNode.Nodes.RemoveAt(1);
                   }
                   hTreeNode = hTreeNode.Nodes[0];
-                  hTreeNode.ImageIndex = hTreeNode.SelectedImageIndex = iImageListIndex("folder_open");
+                  hTreeNode.ImageIndex = hTreeNode.SelectedImageIndex = Dapple.MainForm.ImageListIndex("folder_open");
                }
                else
                {
                   hTreeNode.Nodes.Clear();
 
-                  TreeNode oTempNode = new TreeNode(str, iImageListIndex("folder_open"), iImageListIndex("folder_open"));
+                  TreeNode oTempNode = new TreeNode(str, Dapple.MainForm.ImageListIndex("folder_open"), Dapple.MainForm.ImageListIndex("folder_open"));
                   oTempNode.Tag = null;
                   hTreeNode.Nodes.Add(oTempNode);
                   hTreeNode = oTempNode;
@@ -1475,7 +1231,7 @@ namespace Geosoft.GX.DAPGetData
 
             if (hChildNode.Name == Geosoft.Dap.Xml.Common.Constant.Tag.COLLECTION_TAG)
             {
-               hChildTreeNode = new TreeNode(hAttr.Value, iImageListIndex("folder"), iImageListIndex("folder"));
+               hChildTreeNode = new TreeNode(hAttr.Value, Dapple.MainForm.ImageListIndex("folder"), Dapple.MainForm.ImageListIndex("folder"));
                hChildTreeNode.Tag = null;
                hTreeNode.Nodes.Add(hChildTreeNode);
             }
@@ -1495,7 +1251,7 @@ namespace Geosoft.GX.DAPGetData
 
                m_oCurServer.Command.Parser.DataSet(hChildNode, out oDataSet);
 
-               iType = iImageIndex(oDataSet.Type);
+               iType = Dapple.MainForm.ImageIndex(oDataSet.Type);
 
                if (m_bSupportDatasetSelection)
                {
@@ -1539,7 +1295,7 @@ namespace Geosoft.GX.DAPGetData
             // --- updating in progress ---
 
             TreeNode hTempNode;
-            hTempNode = new TreeNode("Retrieving Datasets...", iImageListIndex("loading"), iImageListIndex("loading"));
+            hTempNode = new TreeNode("Retrieving Datasets...", Dapple.MainForm.ImageListIndex("loading"), Dapple.MainForm.ImageListIndex("loading"));
             hTempNode.Tag = null;
             m_hCurServerTreeNode.Nodes.Add(hTempNode);
             this.Refresh();

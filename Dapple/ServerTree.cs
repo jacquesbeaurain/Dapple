@@ -54,8 +54,8 @@ namespace Dapple
 		/// Constructor
 		/// </summary>
 		/// <param name="strCacheDir"></param>
-		public ServerTree(string strCacheDir, MainForm oParent, LayerList activeLayers)
-			: base(strCacheDir)
+		public ServerTree(ImageList oImageList, string strCacheDir, MainForm oParent, LayerList activeLayers)
+			: base(oImageList, strCacheDir)
 		{
 			m_oParent = oParent;
 			m_activeLayers = activeLayers;
@@ -64,38 +64,20 @@ namespace Dapple
 			this.AfterCollapse += new TreeViewEventHandler(OnAfterCollapse);
 			this.MouseDoubleClick += new MouseEventHandler(OnMouseDoubleClick);
 
-			// Extra icons
-			base.ImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
-			base.ImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
-			base.ImageList.Images.Add("error", global::Dapple.Properties.Resources.error);
-			base.ImageList.Images.Add("folder_gray", global::Dapple.Properties.Resources.folder_gray);
-			base.ImageList.Images.Add("layer", global::Dapple.Properties.Resources.layer);
-			base.ImageList.Images.Add("live", global::Dapple.Properties.Resources.live);
-			base.ImageList.Images.Add("tile", global::Dapple.Properties.Resources.tile);
-			base.ImageList.Images.Add("tile_gray", global::Dapple.Properties.Resources.tile_gray);
-			base.ImageList.Images.Add("georef_image", global::Dapple.Properties.Resources.georef_image);
-			base.ImageList.Images.Add("time", global::Dapple.Properties.Resources.time_icon);
-			base.ImageList.Images.Add("wms", global::Dapple.Properties.Resources.wms);
-			base.ImageList.Images.Add("wms_gray", global::Dapple.Properties.Resources.wms_gray);
-			base.ImageList.Images.Add("nasa", global::Dapple.Properties.Resources.nasa);
-			base.ImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
-			base.ImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
-         base.ImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
-
-			m_hRootNode = new TreeNode("Available Servers", iImageListIndex("dapple"), iImageListIndex("dapple"));
+         m_hRootNode = new TreeNode("Available Servers", Dapple.MainForm.ImageListIndex("dapple"), Dapple.MainForm.ImageListIndex("dapple"));
 			this.Nodes.Add(m_hRootNode);
 			m_hRootNode.ToolTipText = "It is possible to double-click on layers in\nhere to add them to the current layers.\nSingle-click browses tree.";
 
-			m_hDAPRootNode = new TreeNode("DAP Servers", iImageListIndex("dap"), iImageListIndex("dap"));
+         m_hDAPRootNode = new TreeNode("DAP Servers", Dapple.MainForm.ImageListIndex("dap"), Dapple.MainForm.ImageListIndex("dap"));
 			m_hRootNode.Nodes.Add(m_hDAPRootNode);
 
-			m_hTileRootNode = new TreeNode("Image Tile Servers", iImageListIndex("tile"), iImageListIndex("tile"));
+         m_hTileRootNode = new TreeNode("Image Tile Servers", Dapple.MainForm.ImageListIndex("tile"), Dapple.MainForm.ImageListIndex("tile"));
 			m_hRootNode.Nodes.Add(m_hTileRootNode);
 			BuilderDirectory tileDir = new BuilderDirectory("Image Tile Servers", null, false, 0, 0);
 
-         VETileSetBuilder veDir = new VETileSetBuilder("Virtual Earth", null, false, iImageListIndex("live"), 0);
+         VETileSetBuilder veDir = new VETileSetBuilder("Virtual Earth", null, false, Dapple.MainForm.ImageListIndex("live"), 0);
 			m_hVERootNode = m_hRootNode.Nodes.Add("Virtual Earth");
-			m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = iImageListIndex("live");
+         m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = Dapple.MainForm.ImageListIndex("live");
 			m_hVERootNode.Tag = veDir;
 
 			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", WorldWind.VirtualEarthMapType.road, m_oParent.WorldWindow, true, veDir);
@@ -105,17 +87,17 @@ namespace Dapple
 			veDir.LayerBuilders.Add(m_VESatQTB);
 			veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
 
-         WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
+         WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
 			wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
-			m_hWMSRootNode = new TreeNode("WMS Servers", iImageListIndex("wms"), iImageListIndex("wms"));
+         m_hWMSRootNode = new TreeNode("WMS Servers", Dapple.MainForm.ImageListIndex("wms"), Dapple.MainForm.ImageListIndex("wms"));
 			m_hWMSRootNode.Tag = wmsBuilder;
 			m_hRootNode.Nodes.Add(m_hWMSRootNode);
 
-         ArcIMSCatalogBuilder arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
+         ArcIMSCatalogBuilder arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
          arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
-         m_hArcIMSRootNode = new TreeNode("ArcIMS Servers", iImageListIndex("arcims"), iImageListIndex("arcims"));
+         m_hArcIMSRootNode = new TreeNode("ArcIMS Servers", Dapple.MainForm.ImageListIndex("arcims"), Dapple.MainForm.ImageListIndex("arcims"));
          m_hArcIMSRootNode.Tag = arcIMSBuilder;
          m_hRootNode.Nodes.Add(m_hArcIMSRootNode);
 
@@ -431,7 +413,7 @@ namespace Dapple
 			{
 				this.BeginUpdate();
 				treeNode = m_hWMSRootNode.Nodes.Add(strCapUrl);
-				treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("disserver");
+            treeNode.SelectedImageIndex = treeNode.ImageIndex = Dapple.MainForm.ImageListIndex("disserver");
 				treeNode.Tag = builder;
 				this.EndUpdate();
             //this.AfterSelected(this.SelectedNode);
@@ -451,7 +433,7 @@ namespace Dapple
          {
             this.BeginUpdate();
             TreeNode treeNode = m_hArcIMSRootNode.Nodes.Add(serverUri.ToString());
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = iImageListIndex("disserver");
+            treeNode.SelectedImageIndex = treeNode.ImageIndex = Dapple.MainForm.ImageListIndex("disserver");
             treeNode.Tag = builderEntry;
             this.EndUpdate();
             //this.AfterSelected(this.SelectedNode);
@@ -470,14 +452,14 @@ namespace Dapple
 				WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
             wmsBuilder.cancelDownloads();
 				wmsBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
-            wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
+            wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
 				m_hWMSRootNode.Tag = wmsBuilder;
 				wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
             ArcIMSCatalogBuilder arcIMSBuilder = m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder;
             arcIMSBuilder.cancelDownloads();
             arcIMSBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
-            arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, iImageListIndex("enserver"), iImageListIndex("layer"), iImageListIndex("folder"));
+            arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
             m_hArcIMSRootNode.Tag = arcIMSBuilder;
             arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
@@ -607,7 +589,7 @@ namespace Dapple
 				{
 					tilelayerType tile = tileServerSet.tilelayers.GettilelayerAt(count);
 					TreeNode newServerChildNode = serverNode.Nodes.Add(tile.name.Value);
-					newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = iImageListIndex("layer");
+               newServerChildNode.SelectedImageIndex = newServerChildNode.ImageIndex = Dapple.MainForm.ImageListIndex("layer");
 
 					int iDistance = tile.Hasdistanceabovesurface() ? tile.distanceabovesurface.Value : Convert.ToInt32(tilelayerType.GetdistanceabovesurfaceDefault());
 					int iPixelSize = tile.Hastilepixelsize() ? tile.tilepixelsize.Value : Convert.ToInt32(tilelayerType.GettilepixelsizeDefault());
@@ -626,14 +608,14 @@ namespace Dapple
 				else
 				{
 					TreeNode newNode = serverNode.Nodes.Add(entry.builderdirectory.name.Value);
-					newNode.SelectedImageIndex = newNode.ImageIndex = iImageListIndex("local");
+               newNode.SelectedImageIndex = newNode.ImageIndex = Dapple.MainForm.ImageListIndex("local");
 					newNode.Tag = entry.builderdirectory;
 				}
 			}
 			else if (entry.Hastileserverset())
 			{
             TreeNode newNode = serverNode.Nodes.Add(entry.tileserverset.name.Value);
-				newNode.SelectedImageIndex = newNode.ImageIndex = iImageListIndex("tile");
+            newNode.SelectedImageIndex = newNode.ImageIndex = Dapple.MainForm.ImageListIndex("tile");
 				newNode.Tag = entry.tileserverset;
 			}
 		}

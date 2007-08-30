@@ -96,6 +96,86 @@
     <Compile Include="DAP\DAPGetData\ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Extract\DownloadOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\DownloadOptions.Designer.cs">
+      <DependentUpon>DownloadOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Generic.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Generic.designer.cs">
+      <DependentUpon>Generic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Options.cs">
+    </Compile>
+    <Compile Include="Extract\Voxel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Voxel.designer.cs">
+      <DependentUpon>Voxel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Database.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Database.designer.cs">
+      <DependentUpon>Database.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Document.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Document.designer.cs">
+      <DependentUpon>Document.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\DownloadSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extract\DownloadSettings.designer.cs">
+      <DependentUpon>DownloadSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\GIS.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\GIS.designer.cs">
+      <DependentUpon>GIS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Grid.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Grid.designer.cs">
+      <DependentUpon>Grid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\HyperMAP.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\HyperMAP.designer.cs">
+      <DependentUpon>HyperMAP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\HyperXYZ.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\HyperXYZ.designer.cs">
+      <DependentUpon>HyperXYZ.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Picture.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Picture.Designer.cs">
+      <DependentUpon>Picture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\PictureWithoutResolution.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\PictureWithoutResolution.Designer.cs">
+      <DependentUpon>PictureWithoutResolution.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\Resolution.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\Resolution.Designer.cs">
+      <DependentUpon>Resolution.cs</DependentUpon>
+    </Compile>
     <Compile Include="LayerGeneration\ArcIMSDownloading.cs" />
     <Compile Include="LayerGeneration\ArcIMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\ArcIMSCatalogBuilder.cs" />
@@ -150,6 +230,54 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Generic.resx">
+      <DependentUpon>Generic.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Voxel.resx">
+      <DependentUpon>Voxel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Database.resx">
+      <DependentUpon>Database.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Document.resx">
+      <DependentUpon>Document.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\DownloadSettings.resx">
+      <DependentUpon>DownloadSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\GIS.resx">
+      <DependentUpon>GIS.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Grid.resx">
+      <DependentUpon>Grid.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\HyperMAP.resx">
+      <DependentUpon>HyperMAP.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\HyperXYZ.resx">
+      <DependentUpon>HyperXYZ.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Picture.resx">
+      <DependentUpon>Picture.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\PictureWithoutResolution.resx">
+      <DependentUpon>PictureWithoutResolution.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\Resolution.resx">
+      <DependentUpon>Resolution.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="LayerList.resx">
       <DependentUpon>LayerList.cs</DependentUpon>

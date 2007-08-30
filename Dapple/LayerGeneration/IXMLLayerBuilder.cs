@@ -353,20 +353,20 @@ namespace Dapple.LayerGeneration
       {
          if (IsLoading)
          {
-            oParent.ImageIndex = oTree.iImageListIndex("enserver");
-            oParent.SelectedImageIndex = oTree.iImageListIndex("enserver");
+            oParent.ImageIndex = MainForm.ImageListIndex("enserver");
+            oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
             oParent.Text = Name;
             oParent.Nodes.Clear();
 
-            TreeNode hTempNode = new TreeNode("Retrieving Datasets...", oTree.iImageListIndex("loading"), oTree.iImageListIndex("loading"));
+            TreeNode hTempNode = new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
             hTempNode.Tag = null;
             oParent.Nodes.Add(hTempNode);
             oParent.ExpandAll();
          }
          else if (LoadingErrorOccurred)
          {
-            oParent.ImageIndex = oTree.iImageListIndex("offline");
-            oParent.SelectedImageIndex = oTree.iImageListIndex("offline");
+            oParent.ImageIndex = MainForm.ImageListIndex("offline");
+            oParent.SelectedImageIndex = MainForm.ImageListIndex("offline");
             oParent.Text = Name + " (" + ErrorMessage + ")";
          }
          else

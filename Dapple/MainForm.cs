@@ -107,7 +107,6 @@ namespace Dapple
 		private Stars3D.Plugin.Stars3D starsPlugin;
 		private ThreeDconnexion.Plugin.TDxWWInput threeDConnPlugin;
 
-		private TreeNode kmlNode;
 		private KMLPlugin.KMLImporter kmlPlugin;
 
 		//private MeasureToolNewgen.Plugins.MeasureToolNG measurePlugin;
@@ -123,10 +122,7 @@ namespace Dapple
 		private string metaviewerDir = "";
 		private string strLayerToLoad = String.Empty;
 
-		private bool rightmouse_context = false;
-		private bool checked_context = false;
-
-      private MetadataDisplayThread m_oMetadataDisplay;
+		private MetadataDisplayThread m_oMetadataDisplay;
 
 		Geosoft.GX.DAPGetData.GetDapError dapErrors;
 
@@ -137,8 +133,9 @@ namespace Dapple
       
 		*/
 
-      private RemoteInterface m_oMontajRemoteInterface;
-      private GeographicBoundingBox m_oAoi;
+      private static ImageList m_oImageList = new ImageList();
+      private static RemoteInterface m_oMontajRemoteInterface;
+      private static GeographicBoundingBox m_oAoi;
       private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
 		#endregion
 
@@ -151,12 +148,29 @@ namespace Dapple
 				return this.menuStrip;
 			}
 		}
-      
-      private bool IsMontajChildProcess
+
+      private static bool IsMontajChildProcess
       {
          get { return m_oMontajRemoteInterface != null; }
       }
 
+      public static ImageList DataTypeImageList
+      {
+         get { return m_oImageList; }
+      }
+
+      public static RemoteInterface MontajInterface
+      {
+         get { return m_oMontajRemoteInterface; }
+      }
+
+      /// <summary>
+      /// Get the open map area of interest
+      /// </summary>
+      public static GeographicBoundingBox MapAoi
+      {
+         get { return m_oAoi; }
+      }
 		#endregion
 
 		#region Constructor
@@ -169,8 +183,8 @@ namespace Dapple
 			this.openGeoTiff = strGeoTiff;
 			this.openGeoTiffName = strGeotiffName;
 			this.openGeoTiffTmp = bGeotiffTmp;
-			this.lastView = strLastView;
-         this.m_oMontajRemoteInterface = oMRI;
+			this.lastView = strLastView;         
+         m_oMontajRemoteInterface = oMRI;
 
 			// Establish the version number string used for user display,
 			// such as the Splash and Help->About screens.
@@ -261,6 +275,47 @@ namespace Dapple
 				this.splashScreen.SetText("Initializing...");
 
 				Application.DoEvents();
+
+            // --- setup the list of images used for the different datatypes ---
+
+            m_oImageList.ColorDepth = ColorDepth.Depth32Bit;
+            m_oImageList.ImageSize = new Size(16, 16);
+            m_oImageList.TransparentColor = Color.Transparent;
+
+            m_oImageList.Images.Add("enserver", Resources.enserver);
+            m_oImageList.Images.Add("disserver", Resources.disserver);
+            m_oImageList.Images.Add("offline", Resources.offline);
+            m_oImageList.Images.Add("dap", Resources.dap);
+            m_oImageList.Images.Add("dap_database", Resources.dap_database);
+            m_oImageList.Images.Add("dap_document", Resources.dap_document);
+            m_oImageList.Images.Add("dap_grid", Resources.dap_grid);
+            m_oImageList.Images.Add("dap_map", Resources.dap_map);
+            m_oImageList.Images.Add("dap_picture", Resources.dap_picture);
+            m_oImageList.Images.Add("dap_point", Resources.dap_point);
+            m_oImageList.Images.Add("dap_spf", Resources.dap_spf);
+            m_oImageList.Images.Add("dap_voxel", Resources.dap_voxel);
+            m_oImageList.Images.Add("folder", Resources.folder);
+            m_oImageList.Images.Add("folder_open", Resources.folder_open);
+            m_oImageList.Images.Add("loading", Resources.loading);
+            m_oImageList.Images.Add("kml", Resources.kml);
+            m_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
+            m_oImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
+            m_oImageList.Images.Add("error", global::Dapple.Properties.Resources.error);
+            m_oImageList.Images.Add("folder_gray", global::Dapple.Properties.Resources.folder_gray);
+            m_oImageList.Images.Add("layer", global::Dapple.Properties.Resources.layer);
+            m_oImageList.Images.Add("live", global::Dapple.Properties.Resources.live);
+            m_oImageList.Images.Add("tile", global::Dapple.Properties.Resources.tile);
+            m_oImageList.Images.Add("tile_gray", global::Dapple.Properties.Resources.tile_gray);
+            m_oImageList.Images.Add("georef_image", global::Dapple.Properties.Resources.georef_image);
+            m_oImageList.Images.Add("time", global::Dapple.Properties.Resources.time_icon);
+            m_oImageList.Images.Add("wms", Resources.wms);
+            m_oImageList.Images.Add("wms_gray", global::Dapple.Properties.Resources.wms_gray);
+            m_oImageList.Images.Add("nasa", global::Dapple.Properties.Resources.nasa);
+            m_oImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
+            m_oImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
+            m_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
+
+
 				InitializeComponent();
 				this.SuspendLayout();
 				this.Icon = new System.Drawing.Icon(@"app.ico");
@@ -269,7 +324,6 @@ namespace Dapple
 				toolStripLayerLabel.Renderer = this.toolStripRenderer;
 				toolStripOverview.Renderer = this.toolStripRenderer;
             cToolStripMetadata.Renderer = this.toolStripRenderer;
-
 
 				// set Upper and Lower limits for Cache size control, in bytes
 				long CacheUpperLimit = (long)Settings.CacheSizeGigaBytes * 1024L * 1024L * 1024L;
@@ -428,7 +482,7 @@ namespace Dapple
 
 				#region Tree Views
 
-				this.tvServers = new ServerTree(Settings.CachePath, this, cLayerList);
+				this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList);
             cServerListControl.ImageList = this.tvServers.ImageList;
             cLayerList.ImageList = this.tvServers.ImageList;
 
@@ -1377,7 +1431,7 @@ namespace Dapple
 			// Render once to not just show the atmosphere at startup (looks better) ---
 			worldWindow.SafeRender();
 
-         if (this.IsMontajChildProcess)
+         if (IsMontajChildProcess)
             OpenView(Path.Combine(Settings.DataPath, DefaultView), false, false);
          else if (this.openView.Length > 0)
             OpenView(openView, this.openGeoTiff.Length == 0);
@@ -1960,9 +2014,9 @@ namespace Dapple
 		/// </summary>
 		/// <param name="strKey"></param>
 		/// <returns></returns>
-		public int ImageListIndex(string strKey)
+		public static int ImageListIndex(string strKey)
 		{
-			return this.tvServers.iImageListIndex(strKey);
+         return m_oImageList.Images.IndexOfKey(strKey);
 		}
 
 		/// <summary>
@@ -1970,9 +2024,41 @@ namespace Dapple
 		/// </summary>
 		/// <param name="strType"></param>
 		/// <returns></returns>
-		public int ImageIndex(string strType)
+      public static int ImageIndex(string strType)
 		{
-			return this.tvServers.iImageIndex(strType);
+         Int32 iRet = 3;
+
+         switch (strType.ToLower())
+         {
+            case "database":
+               iRet = ImageListIndex("dap_database");
+               break;
+            case "document":
+               iRet = ImageListIndex("dap_document");
+               break;
+            case "generic":
+               iRet = ImageListIndex("dap_map");
+               break;
+            case "grid":
+               iRet = ImageListIndex("dap_grid");
+               break;
+            case "map":
+               iRet = ImageListIndex("dap_map");
+               break;
+            case "picture":
+               iRet = ImageListIndex("dap_picture");
+               break;
+            case "point":
+               iRet = ImageListIndex("dap_point");
+               break;
+            case "spf":
+               iRet = ImageListIndex("dap_spf");
+               break;
+            case "voxel":
+               iRet = ImageListIndex("dap_voxel");
+               break;
+         }
+         return iRet;         
 		}
 
 		private void AddTreeNode(TreeView tree, LayerBuilder builder, TreeNode parent)
@@ -2230,13 +2316,11 @@ namespace Dapple
 
 		bool OpenView(string filename, bool bGoto, bool bLoadLayers)
 		{
-			bool bFinishUpdate = false;
 			bool bOldView = false;
 			try
 			{
 				if (File.Exists(filename))
 				{
-					int i;
 					DappleView view = new DappleView(filename);
 					bool bShowBlueMarble = true;
 
@@ -3265,7 +3349,7 @@ namespace Dapple
             WebResponse response = request.GetResponse();
             response.Close();
          }
-         catch (Exception)
+         catch
          {
             // Never crash, just silently fail to send the data to the server.
          }
@@ -3399,11 +3483,6 @@ namespace Dapple
 			Utility.AbortUtility.Abort(e.Exception, Thread.CurrentThread);
 #endif
 		}
-
-      private void cExtractButton_Click(object sender, EventArgs e)
-      {
-         MessageBox.Show("I'm Ryan's fancy dialog!", "Dialog++", MessageBoxButtons.OK);
-      }
 
       private void cSearchTextComboBox_KeyPress(object sender, KeyPressEventArgs e)
       {

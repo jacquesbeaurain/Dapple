@@ -125,9 +125,10 @@ namespace Dapple
                      "Message: " + e.Message
                      );
                   Application.Run(errorDialog);
+                  
+                  oRemoteInterface = null;
                   return;
                }
-               //MessageBox.Show("I've connected to OM");
             }
 
             if (cmdl["aoi"] != null)

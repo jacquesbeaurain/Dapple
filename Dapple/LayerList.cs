@@ -273,7 +273,8 @@ namespace Dapple
 
       private void cExtractButton_Click(object sender, EventArgs e)
       {
-         MessageBox.Show("I'm Ryan's Dialog.");
+         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(m_oLayers);
+         oDownloadDialog.ShowDialog(this);
       }
 
       #endregion
