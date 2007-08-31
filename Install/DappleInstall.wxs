@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
    <Product Id="ee5b25a5-f50d-4549-85aa-3c9c0419e2f2" Name="Dapple" Language="1033" Version="1.9.95" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
-      <Package InstallerVersion="200" Compressed="yes" />
+      <Package InstallerVersion="200" Compressed="yes"  Description="Explore the earth" />
 
       <Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
 
@@ -24,6 +24,13 @@
       <InstallExecuteSequence>
          <RemoveExistingProducts After='InstallValidate'/>
       </InstallExecuteSequence>
+
+      <WixVariable Id="WixUILicenseRtf" Value="ui\License.rtf" />
+      <WixVariable Id="WixUIBannerBmp" Value="Bitmaps\bannrbmp.bmp" />
+      <WixVariable Id="WixUIDialogBmp" Value="Bitmaps\dlgbmp.bmp" />
+            
+      <UIRef Id="WixUI_Minimal" />
+      <UIRef Id="WixUI_ErrorProgressText" />
    </Product>
 </Wix>
 

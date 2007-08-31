@@ -161,6 +161,10 @@
                      <File Id="wms_layer_meta.xslt"  Name="wms_layer_meta.xslt" Source="..\Dapple\bin\x86\Release\Data\MetaViewer\wms_layer_meta.xslt" Vital="yes"/>
                   </Component>
                </Directory>
+               <Component Id="DataFiles" Guid="5D3E6163-19F4-4147-A3AA-6EBCC44EF2B0">
+                  <File Id="default.dapple"  Name="default.dapple" Source="..\Dapple\bin\x86\Release\Data\default.dapple" Vital="yes"/>
+                  <File Id="dappleview.xsd"  Name="dappleview.xsd" Source="..\Dapple\bin\x86\Release\Data\dappleview.xsd" Vital="yes"/>
+               </Component>
             </Directory>
             <Directory Id="Plugins" Name="Plugins">
                <Directory Id="BlueMarble" Name="BlueMarble">
