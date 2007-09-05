@@ -1424,11 +1424,12 @@ namespace Dapple
            // cSearchButton
            // 
            this.cSearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-           this.cSearchButton.Location = new System.Drawing.Point(178, 1);
+           this.cSearchButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+           this.cSearchButton.Image = global::Dapple.Properties.Resources.blue_marble;
+           this.cSearchButton.Location = new System.Drawing.Point(206, 1);
            this.cSearchButton.Name = "cSearchButton";
-           this.cSearchButton.Size = new System.Drawing.Size(53, 23);
+           this.cSearchButton.Size = new System.Drawing.Size(23, 23);
            this.cSearchButton.TabIndex = 1;
-           this.cSearchButton.Text = "Search";
            this.cSearchButton.UseVisualStyleBackColor = true;
            this.cSearchButton.Click += new System.EventHandler(this.cSearchButton_Click);
            // 
@@ -1439,7 +1440,7 @@ namespace Dapple
            this.cSearchTextComboBox.FormattingEnabled = true;
            this.cSearchTextComboBox.Location = new System.Drawing.Point(3, 2);
            this.cSearchTextComboBox.Name = "cSearchTextComboBox";
-           this.cSearchTextComboBox.Size = new System.Drawing.Size(169, 21);
+           this.cSearchTextComboBox.Size = new System.Drawing.Size(197, 21);
            this.cSearchTextComboBox.Sorted = true;
            this.cSearchTextComboBox.TabIndex = 0;
            this.cSearchTextComboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cSearchTextComboBox_KeyPress);
@@ -1447,12 +1448,12 @@ namespace Dapple
            // cAddLayerButton
            // 
            this.cAddLayerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+           this.cAddLayerButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
            this.cAddLayerButton.Image = global::Dapple.Properties.Resources.layers_add;
-           this.cAddLayerButton.Location = new System.Drawing.Point(178, 0);
+           this.cAddLayerButton.Location = new System.Drawing.Point(206, 0);
            this.cAddLayerButton.Name = "cAddLayerButton";
-           this.cAddLayerButton.Size = new System.Drawing.Size(53, 28);
+           this.cAddLayerButton.Size = new System.Drawing.Size(23, 23);
            this.cAddLayerButton.TabIndex = 0;
-           this.cAddLayerButton.Text = "Add";
            this.cAddLayerButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
            this.cAddLayerButton.UseVisualStyleBackColor = true;
            this.cAddLayerButton.Click += new System.EventHandler(this.cAddLayerButton_Click);
@@ -1464,10 +1465,10 @@ namespace Dapple
                        | System.Windows.Forms.AnchorStyles.Right)));
            this.cServerTabControl.Controls.Add(this.cServerTreeView);
            this.cServerTabControl.Controls.Add(this.cServerListView);
-           this.cServerTabControl.Location = new System.Drawing.Point(0, 9);
+           this.cServerTabControl.Location = new System.Drawing.Point(0, 4);
            this.cServerTabControl.Name = "cServerTabControl";
            this.cServerTabControl.SelectedIndex = 0;
-           this.cServerTabControl.Size = new System.Drawing.Size(231, 188);
+           this.cServerTabControl.Size = new System.Drawing.Size(231, 194);
            this.cServerTabControl.TabIndex = 0;
            this.cServerTabControl.SelectedIndexChanged += new System.EventHandler(this.cServerTabControl_SelectedIndexChanged);
            // 
@@ -1476,7 +1477,7 @@ namespace Dapple
            this.cServerTreeView.Location = new System.Drawing.Point(4, 22);
            this.cServerTreeView.Name = "cServerTreeView";
            this.cServerTreeView.Padding = new System.Windows.Forms.Padding(3);
-           this.cServerTreeView.Size = new System.Drawing.Size(223, 162);
+           this.cServerTreeView.Size = new System.Drawing.Size(223, 168);
            this.cServerTreeView.TabIndex = 0;
            this.cServerTreeView.Text = "Tree";
            this.cServerTreeView.UseVisualStyleBackColor = true;
@@ -1487,7 +1488,7 @@ namespace Dapple
            this.cServerListView.Location = new System.Drawing.Point(4, 22);
            this.cServerListView.Name = "cServerListView";
            this.cServerListView.Padding = new System.Windows.Forms.Padding(3);
-           this.cServerListView.Size = new System.Drawing.Size(223, 162);
+           this.cServerListView.Size = new System.Drawing.Size(223, 168);
            this.cServerListView.TabIndex = 1;
            this.cServerListView.Text = "List";
            this.cServerListView.UseVisualStyleBackColor = true;
@@ -1497,7 +1498,8 @@ namespace Dapple
            this.cServerListControl.Dock = System.Windows.Forms.DockStyle.Fill;
            this.cServerListControl.Location = new System.Drawing.Point(3, 3);
            this.cServerListControl.Name = "cServerListControl";
-           this.cServerListControl.Size = new System.Drawing.Size(217, 156);
+           this.cServerListControl.SelectedServer = null;
+           this.cServerListControl.Size = new System.Drawing.Size(217, 162);
            this.cServerListControl.TabIndex = 0;
            // 
            // cLayerList

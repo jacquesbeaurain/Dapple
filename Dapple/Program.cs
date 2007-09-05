@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 using DM.SharedMemory;
 using Utility;
 using WorldWind;
+using System.Runtime.Remoting.Channels.Ipc;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting;
 
 namespace Dapple
 {
@@ -25,6 +28,7 @@ namespace Dapple
 #endif
 
          MontajRemote.RemoteInterface oRemoteInterface = null;
+         IpcChannel oClientChannel = null;
 
          try
          {
@@ -100,14 +104,14 @@ namespace Dapple
 
                if (cmdl["dummyserver"] != null)
                {
-                  System.Runtime.Remoting.Channels.Ipc.IpcChannel oClientChannel = new System.Runtime.Remoting.Channels.Ipc.IpcChannel(String.Format("localhost:{0}", iMontajPort));
-                  System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(oClientChannel, true);
-                  System.Runtime.Remoting.RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+                  oClientChannel = new IpcChannel(String.Format("localhost:{0}", iMontajPort));
+                  ChannelServices.RegisterChannel(oClientChannel, true);
+                  RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
                }
                else
                {
-                  System.Runtime.Remoting.Channels.Ipc.IpcChannel oClientChannel = new System.Runtime.Remoting.Channels.Ipc.IpcChannel();
-                  System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(oClientChannel, true);
+                  oClientChannel = new IpcChannel();
+                  ChannelServices.RegisterChannel(oClientChannel, true);
                }
 
                oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iMontajPort));
@@ -236,6 +240,7 @@ namespace Dapple
          finally
          {
             if (oRemoteInterface != null) oRemoteInterface.EndConnection();
+            if (oClientChannel != null) ChannelServices.UnregisterChannel(oClientChannel);
          }
       }
 

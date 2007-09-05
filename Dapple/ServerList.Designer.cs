@@ -109,6 +109,7 @@ namespace Dapple
          this.cLayersListView.UseCompatibleStateImageBehavior = false;
          this.cLayersListView.View = System.Windows.Forms.View.Details;
          this.cLayersListView.Resize += new System.EventHandler(this.cLayersListView_Resize);
+         this.cLayersListView.SelectedIndexChanged += new System.EventHandler(this.cLayersListView_SelectedIndexChanged);
          this.cLayersListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cLayersListView_MouseMove);
          this.cLayersListView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cLayersListView_MouseDown);
          // 

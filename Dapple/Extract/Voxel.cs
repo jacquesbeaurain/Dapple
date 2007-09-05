@@ -77,16 +77,15 @@ namespace Dapple.Extract
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
+         oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
          oResolutionAttr.Value = oResolution.ResolutionValue.ToString();
-
-         oDatasetElement.Attributes.Append(oPathAttr);
          oDatasetElement.Attributes.Append(oResolutionAttr);
 
-         System.Xml.XmlElement oGroupElement = oDatasetElement.OwnerDocument.CreateElement("group");
-         oGroupElement.Value = tbGroupName.Text;
-         oDatasetElement.AppendChild(oGroupElement);
+         System.Xml.XmlAttribute oGroupAttribute = oDatasetElement.OwnerDocument.CreateAttribute("group");
+         oGroupAttribute.Value = tbGroupName.Text;
+         oDatasetElement.Attributes.Append(oGroupAttribute);
 
          return true;
       }

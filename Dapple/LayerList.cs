@@ -21,12 +21,6 @@ namespace Dapple
       public delegate void GoToHandler(LayerBuilder oBuilder);
 
       /// <summary>
-      /// Called when this control selects a layer to tell others to load Metadata for it.
-      /// </summary>
-      /// <param name="?"></param>
-      public delegate void ViewMetadataHandler(LayerBuilder oBuilder);
-
-      /// <summary>
       /// Occurrs when a layer is added or removed to the list.
       /// </summary>
       public delegate void ActiveLayersChangedHandler();
@@ -62,7 +56,7 @@ namespace Dapple
       private bool m_blSupressSelectedChanged = false;
 
       public event GoToHandler GoTo;
-      public event ViewMetadataHandler ViewMetadata;
+      public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
       public event ActiveLayersChangedHandler ActiveLayersChanged;
 
       #endregion
@@ -458,7 +452,7 @@ namespace Dapple
 
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
          cRemoveLayerButton.Enabled = cLayerList.SelectedIndices.Count > 0;
-         cExtractButton.Enabled = cLayerList.SelectedIndices.Count > 0;
+         cExtractButton.Enabled = m_oLayers.Count > 0;
       }
 
       /// <summary>

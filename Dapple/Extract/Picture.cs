@@ -78,21 +78,20 @@ namespace Dapple.Extract
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
+         oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
          oResolutionAttr.Value = oResolution.ResolutionValue.ToString();
-         
-         oDatasetElement.Attributes.Append(oPathAttr);
          oDatasetElement.Attributes.Append(oResolutionAttr);
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
          Options.Picture.DownloadOptions eOption = (Options.Picture.DownloadOptions)cbDownloadOptions.SelectedIndex;
-         oDownloadElement.Value = eOption.ToString();
+         oDownloadElement.InnerText = eOption.ToString();
          oDatasetElement.AppendChild(oDownloadElement);
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");
          Options.Picture.DisplayOptions eDisplayOption = (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex;
-         oDisplayElement.Value = eDisplayOption.ToString();
+         oDisplayElement.InnerText = eDisplayOption.ToString();
          oDatasetElement.AppendChild(oDisplayElement);
          return true;
       }

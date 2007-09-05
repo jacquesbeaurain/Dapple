@@ -78,12 +78,12 @@ namespace Dapple.Extract
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
          oResolutionAttr.Value = oResolution.ResolutionValue.ToString();
 
+         System.Xml.XmlAttribute oGroupElement = oDatasetElement.OwnerDocument.CreateAttribute("group");
+         oGroupElement.Value = tbGroupName.Text;
+
          oDatasetElement.Attributes.Append(oPathAttr);
          oDatasetElement.Attributes.Append(oResolutionAttr);
-
-         System.Xml.XmlElement oGroupElement = oDatasetElement.OwnerDocument.CreateElement("group");
-         oGroupElement.Value = tbGroupName.Text;
-         oDatasetElement.AppendChild(oGroupElement);
+         oDatasetElement.Attributes.Append(oGroupElement);
 
          return true;
       }

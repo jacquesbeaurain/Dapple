@@ -43,6 +43,8 @@ namespace Dapple
 		protected LayerList m_activeLayers;
 		protected List<AsyncServerBuilder> m_wmsServers = new List<AsyncServerBuilder>();
       protected List<AsyncServerBuilder> m_oArcIMSServers = new List<AsyncServerBuilder>();
+
+      public event MainForm.ViewMetadataHandler ViewMetadata;
 		#endregion
 
       #region Delegates
@@ -921,6 +923,11 @@ namespace Dapple
 
          oPostNode = SelectedOrRoot;
          CMRebuildTree();
+
+         if (oSelectedNode.Tag is IBuilder)
+         {
+            if (ViewMetadata != null) ViewMetadata(oSelectedNode.Tag as IBuilder);
+         }
 		}
 
 		TreeNode m_nodeLastCollapsed = null; // I'm never used?
@@ -1065,19 +1072,4 @@ namespace Dapple
          return result;
       }
 	}
-
-   /*class LayerDragData
-   {
-      private String m_strName;
-      private LayerBuilder m_oBuilder;
-
-      public LayerDragData(String strName, LayerBuilder oBuilder)
-      {
-         m_strName = strName;
-         m_oBuilder = oBuilder;
-      }
-
-      public String Name { get { return m_strName; } }
-      public LayerBuilder Builder { get { return m_oBuilder; } }
-   }*/
 }

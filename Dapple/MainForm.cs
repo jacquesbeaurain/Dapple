@@ -40,10 +40,19 @@ namespace Dapple
 		[DllImport("User32.dll")]
 		private static extern UInt32 RegisterWindowMessageW(String strMessage);
 
+      #region Delegates
 
-		#region Statics
+      /// <summary>
+      /// Called when this control selects a layer to tell others to load Metadata for it.
+      /// </summary>
+      /// <param name="?"></param>
+      public delegate void ViewMetadataHandler(IBuilder oBuilder);
 
-		public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
+      #endregion
+
+      #region Statics
+
+      public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
 		public const string ViewExt = ".dapple";
 		public const string LinkExt = ".dapple_datasetlink";
 		public const string LastView = "lastview" + ViewExt;
@@ -479,17 +488,18 @@ namespace Dapple
 
 				worldWindow.ClearDevice();
 
+            #region Tree Views
 
-				#region Tree Views
-
-				this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList);
+            this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList);
             cServerListControl.ImageList = this.tvServers.ImageList;
             cLayerList.ImageList = this.tvServers.ImageList;
 
             m_oMetadataDisplay = new MetadataDisplayThread(this);
             cServerListControl.LayerList = cLayerList;
-            cLayerList.ViewMetadata += new LayerList.ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
+            cLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
             cLayerList.GoTo += new LayerList.GoToHandler(this.GoTo);
+            tvServers.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
+            cServerListControl.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
 
             this.tvServers.AfterSelect += new TreeViewEventHandler(this.ServerTreeAfterSelected);
 				this.tvServers.RMBContextMenuStrip = this.contextMenuStripServers;
@@ -3570,17 +3580,9 @@ namespace Dapple
          }
       }
 
-      private void LayerSelected(Object oSender, TreeViewEventArgs oArgs)
-      {
-         LayerBuilderContainer oContainer = oArgs.Node.Tag as LayerBuilderContainer;
-         LayerBuilder oBuilder = oContainer.Builder;
-
-         m_oMetadataDisplay.addBuilder(oBuilder);
-      }
-
       public void LoadMetadata(Object oParams)
       {
-         LayerBuilder oBuilder = ((Object[])oParams)[0] as LayerBuilder;
+         IBuilder oBuilder = ((Object[])oParams)[0] as IBuilder;
 
          try
          {
@@ -3689,7 +3691,7 @@ namespace Dapple
    {
       private Object LOCK = new Object();
       private ManualResetEvent m_oSignaller = new ManualResetEvent(false);
-      private List<LayerBuilder> m_hLayerToLoad = new List<LayerBuilder>();
+      private List<IBuilder> m_hLayerToLoad = new List<IBuilder>();
       private Thread m_hThread;
       private MainForm m_hOwner;
 
@@ -3702,7 +3704,7 @@ namespace Dapple
          m_hThread.Start();
       }
 
-      public void addBuilder(LayerBuilder oBuilder)
+      public void addBuilder(IBuilder oBuilder)
       {
          lock (LOCK)
          {
@@ -3713,8 +3715,8 @@ namespace Dapple
 
       private void ThreadMain()
       {
-         LayerBuilder oCurrentBuilder = null;
-         LayerBuilder oLastBuilder = null;
+         IBuilder oCurrentBuilder = null;
+         IBuilder oLastBuilder = null;
 
          while (true)
          {

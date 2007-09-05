@@ -56,14 +56,14 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oPathAttr);
 
          
-         System.Xml.XmlElement oGroupElement = oDatasetElement.OwnerDocument.CreateElement("group");
-         oGroupElement.Value = tbGroupName.Text;
-         oDatasetElement.AppendChild(oGroupElement);
+         System.Xml.XmlAttribute oGroupAttribute = oDatasetElement.OwnerDocument.CreateAttribute("group");
+         oGroupAttribute.Value = tbGroupName.Text;
+         oDatasetElement.Attributes.Append(oGroupAttribute);
 
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
          Options.GIS.OMDownloadOptions eOption = (Options.GIS.OMDownloadOptions)cbOptions.SelectedIndex;
-         oDownloadElement.Value = eOption.ToString();
+         oDownloadElement.InnerXml = eOption.ToString();
          oDatasetElement.AppendChild(oDownloadElement);
 
          return true;

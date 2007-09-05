@@ -46,7 +46,7 @@ namespace Dapple.Extract
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
          Options.Document.DownloadOptions eOption = (Options.Document.DownloadOptions)cbDownload.SelectedIndex;
-         oDownloadElement.Value = eOption.ToString();
+         oDownloadElement.InnerText = eOption.ToString();
          oDatasetElement.AppendChild(oDownloadElement);
 
          return true;

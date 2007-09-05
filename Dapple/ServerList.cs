@@ -38,6 +38,8 @@ namespace Dapple
 
       private LayerList m_hLayerList;
 
+      public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
+
       #endregion
 
       #region Constructors
@@ -57,6 +59,7 @@ namespace Dapple
          m_oSelectedServer = null;
          m_oDragDropReady = false;
 
+         m_oServerList = new ArrayList();
          SetNoServer();
       }
 
@@ -334,6 +337,19 @@ namespace Dapple
          if (m_hLayerList != null)
          {
             m_hLayerList.AddLayers(this.SelectedLayers);
+         }
+      }
+
+      /// <summary>
+      /// View the metadata if there is one layer selected.
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+      private void cLayersListView_SelectedIndexChanged(object sender, EventArgs e)
+      {
+         if (cLayersListView.SelectedIndices.Count == 1)
+         {
+            if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[cLayersListView.SelectedIndices[0]]);
          }
       }
 
