@@ -205,5 +205,10 @@ namespace Dapple.LayerGeneration
       {
          get { return "ArcIMS"; }
       }
+
+      public override System.Drawing.Icon Icon
+      {
+         get { return Dapple.Properties.Resources.arcims; }
+      }
    }
 }

@@ -75,12 +75,14 @@ namespace Dapple
          // 
          this.cServersComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
+         this.cServersComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
          this.cServersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
          this.cServersComboBox.FormattingEnabled = true;
          this.cServersComboBox.Location = new System.Drawing.Point(50, 3);
          this.cServersComboBox.Name = "cServersComboBox";
          this.cServersComboBox.Size = new System.Drawing.Size(100, 21);
          this.cServersComboBox.TabIndex = 1;
+         this.cServersComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cServersComboBox_DrawItem);
          this.cServersComboBox.SelectedIndexChanged += new System.EventHandler(this.cServersComboBox_SelectedIndexChanged);
          // 
          // label1

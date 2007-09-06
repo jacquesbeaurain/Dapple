@@ -365,7 +365,7 @@ namespace Dapple
       private void SetNoServer()
       {
          cServersComboBox.SelectedIndex = -1;
-         cPageLabel.Text = "Select server";
+         cPageLabel.Text = "";
 
          cLayersListView.Items.Clear();
          cNextButton.Enabled = false;
@@ -517,9 +517,19 @@ namespace Dapple
       private String getServerName(Object obj)
       {
          if (obj is Server)
-            return "DAP: " + ((Server)obj).Name;
+            return ((Server)obj).Name;
          else if (obj is ServerBuilder)
-            return ((ServerBuilder)obj).Type + ": " + ((ServerBuilder)obj).Name;
+            return ((ServerBuilder)obj).Name;
+         else
+            throw new ArgumentException("obj is unknown type " + obj.GetType());
+      }
+
+      private Icon getServerIcon(Object obj)
+      {
+         if (obj is Server)
+            return Dapple.Properties.Resources.dap;
+         else if (obj is ServerBuilder)
+            return ((ServerBuilder)obj).Icon;
          else
             throw new ArgumentException("obj is unknown type " + obj.GetType());
       }
@@ -567,6 +577,19 @@ namespace Dapple
       }
 
       #endregion
+
+      private void cServersComboBox_DrawItem(object sender, DrawItemEventArgs e)
+      {
+         if (e.Index >= 0)
+         {
+            e.Graphics.DrawIcon(getServerIcon(m_oServerList[e.Index]), new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Height, e.Bounds.Height));
+            e.Graphics.DrawString(getServerName(m_oServerList[e.Index]), e.Font, Brushes.Black, new PointF(e.Bounds.X + e.Bounds.Height, e.Bounds.Y));
+         }
+         else
+         {
+            e.Graphics.DrawString("Select a server", e.Font, Brushes.Black, e.Bounds.Location);
+         }
+      }
 
       #endregion
    }

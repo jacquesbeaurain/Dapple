@@ -290,6 +290,11 @@ namespace Dapple.LayerGeneration
          get { return m_oUri; }
       }
 
+      public abstract System.Drawing.Icon Icon
+      {
+         get;
+      }
+
       public abstract override string Type
       {
          get;
@@ -374,6 +379,12 @@ namespace Dapple.LayerGeneration
             oParent.Text = Name + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
          }
       }
+
+      public abstract override System.Drawing.Icon Icon
+      {
+         get;
+      }
+
       #endregion
 
       #region Assigning state

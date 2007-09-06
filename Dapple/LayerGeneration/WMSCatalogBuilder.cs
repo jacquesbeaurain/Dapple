@@ -267,5 +267,10 @@ namespace Dapple.LayerGeneration
          get { return m_oList; }
          set { m_oList = value; }
       }
+
+      public override System.Drawing.Icon Icon
+      {
+         get { return Dapple.Properties.Resources.wms; }
+      }
    }
 }
