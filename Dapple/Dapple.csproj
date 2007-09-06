@@ -96,6 +96,12 @@
     <Compile Include="DAP\DAPGetData\ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Extract\DownloadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extract\DownloadingForm.Designer.cs">
+      <DependentUpon>DownloadingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extract\DownloadOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -230,6 +236,10 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\DownloadingForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DownloadingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extract\Generic.resx">
       <DependentUpon>Generic.cs</DependentUpon>

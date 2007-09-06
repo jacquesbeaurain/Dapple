@@ -246,7 +246,14 @@ namespace Dapple.Extract
             }
          }
 
+         DownloadingForm oPopup = new DownloadingForm();
+         oPopup.Show(this);
+         Application.DoEvents();
+
          MainForm.MontajInterface.Download(oExtractDoc.OuterXml);
+
+         oPopup.Hide();
+         this.Close();
       }
 
       /// <summary>

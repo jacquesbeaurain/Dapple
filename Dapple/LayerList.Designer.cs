@@ -83,6 +83,7 @@ namespace Dapple
          this.cGoToButton.Name = "cGoToButton";
          this.cGoToButton.Size = new System.Drawing.Size(23, 22);
          this.cGoToButton.Text = "toolStripButton1";
+         this.cGoToButton.ToolTipText = "Go to layer";
          this.cGoToButton.Click += new System.EventHandler(this.cGoToButton_Click);
          // 
          // cRemoveLayerButton
@@ -93,6 +94,7 @@ namespace Dapple
          this.cRemoveLayerButton.Name = "cRemoveLayerButton";
          this.cRemoveLayerButton.Size = new System.Drawing.Size(23, 22);
          this.cRemoveLayerButton.Text = "toolStripButton2";
+         this.cRemoveLayerButton.ToolTipText = "Remove layer from visible layers";
          this.cRemoveLayerButton.Click += new System.EventHandler(this.cRemoveLayerButton_Click);
          // 
          // cExtractButton
@@ -103,6 +105,7 @@ namespace Dapple
          this.cExtractButton.Name = "cExtractButton";
          this.cExtractButton.Size = new System.Drawing.Size(23, 22);
          this.cExtractButton.Text = "toolStripButton3";
+         this.cExtractButton.ToolTipText = "Download visible layers...";
          this.cExtractButton.Click += new System.EventHandler(this.cExtractButton_Click);
          // 
          // cLayerList

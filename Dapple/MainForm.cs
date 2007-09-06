@@ -3680,6 +3680,23 @@ namespace Dapple
       {
          AddDatasetAction();
       }
+
+      private void WorldResultsSplitPanel_Panel1_DragOver(object sender, DragEventArgs e)
+      {
+         if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
+         {
+            e.Effect = DragDropEffects.Copy;
+         }
+      }
+
+      private void WorldResultsSplitPanel_Panel1_DragDrop(object sender, DragEventArgs e)
+      {
+         if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
+         {
+            List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
+            cLayerList.AddLayers(oDropData);
+         }
+      }
    }
 
    /// <summary>
