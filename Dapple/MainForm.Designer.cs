@@ -1158,7 +1158,7 @@ namespace Dapple
            this.toolStripNavigation.Location = new System.Drawing.Point(216, 420);
            this.toolStripNavigation.Name = "toolStripNavigation";
            this.toolStripNavigation.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-           this.toolStripNavigation.Size = new System.Drawing.Size(228, 25);
+           this.toolStripNavigation.Size = new System.Drawing.Size(259, 25);
            this.toolStripNavigation.TabIndex = 1;
            this.toolStripNavigation.Text = "toolStrip1";
            // 
@@ -1220,7 +1220,7 @@ namespace Dapple
            this.toolStripButtonRestoreTilt.Name = "toolStripButtonRestoreTilt";
            this.toolStripButtonRestoreTilt.Size = new System.Drawing.Size(23, 22);
            this.toolStripButtonRestoreTilt.Text = "toolStripButton5";
-           this.toolStripButtonRestoreTilt.ToolTipText = "Reset Tilt Only\r\nAlso available with \"T\" key shortcut.";
+           this.toolStripButtonRestoreTilt.ToolTipText = "Reset Tilt \r\nAlso available with \"T\" key shortcut.";
            this.toolStripButtonRestoreTilt.Click += new System.EventHandler(this.toolStripButtonRestoreTilt_Click);
            // 
            // toolStripButtonTiltDown
@@ -1266,7 +1266,7 @@ namespace Dapple
            this.toolStripButtonRestoreNorth.Name = "toolStripButtonRestoreNorth";
            this.toolStripButtonRestoreNorth.Size = new System.Drawing.Size(23, 22);
            this.toolStripButtonRestoreNorth.Text = "toolStripButton6";
-           this.toolStripButtonRestoreNorth.ToolTipText = "Reset Heading to North Only\r\nAlso available with \"N\" key shortcut.";
+           this.toolStripButtonRestoreNorth.ToolTipText = "Reset Heading to North \r\nAlso available with \"N\" key shortcut.";
            this.toolStripButtonRestoreNorth.Click += new System.EventHandler(this.toolStripButtonRestoreNorth_Click);
            // 
            // toolStripButtonRotLeft

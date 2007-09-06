@@ -532,7 +532,7 @@ namespace WorldWind.Camera
          Fov = World.Settings.cameraFov;
 
          int curTime = Environment.TickCount;
-         if (curTime - lastResetTime < DoubleTapDelay)
+         if (true)//(curTime - lastResetTime < DoubleTapDelay)
          {
             // Was already reset (step 1) - do a full reset
             if (Angle.IsNaN(_tilt))
