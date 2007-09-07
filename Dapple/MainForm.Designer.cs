@@ -95,7 +95,7 @@ namespace Dapple
            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.addToLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.removeFromLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-           this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.cOMServerMenu = new System.Windows.Forms.ToolStripMenuItem();
            this.addDAPServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -723,7 +723,7 @@ namespace Dapple
             this.searchToolStripMenuItem,
             this.addToLayersToolStripMenuItem,
             this.removeFromLayersToolStripMenuItem,
-            this.extractToolStripMenuItem,
+            this.downloadToolStripMenuItem,
             this.exitToolStripMenuItem});
            this.cOMToolsMenu.Name = "cOMToolsMenu";
            this.cOMToolsMenu.Size = new System.Drawing.Size(68, 20);
@@ -753,11 +753,13 @@ namespace Dapple
            this.removeFromLayersToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
            this.removeFromLayersToolStripMenuItem.Text = "Remove from Layers";
            // 
-           // extractToolStripMenuItem
+           // downloadToolStripMenuItem
            // 
-           this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-           this.extractToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
-           this.extractToolStripMenuItem.Text = "Extract";
+           this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
+           this.downloadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
+           this.downloadToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+           this.downloadToolStripMenuItem.Text = "Download";
+           this.downloadToolStripMenuItem.Click += new System.EventHandler(this.downloadToolStripMenuItem_Click);
            // 
            // exitToolStripMenuItem
            // 
@@ -1158,7 +1160,7 @@ namespace Dapple
            this.toolStripNavigation.Location = new System.Drawing.Point(216, 420);
            this.toolStripNavigation.Name = "toolStripNavigation";
            this.toolStripNavigation.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-           this.toolStripNavigation.Size = new System.Drawing.Size(259, 25);
+           this.toolStripNavigation.Size = new System.Drawing.Size(228, 25);
            this.toolStripNavigation.TabIndex = 1;
            this.toolStripNavigation.Text = "toolStrip1";
            // 
@@ -1780,7 +1782,7 @@ namespace Dapple
        private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem addToLayersToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem removeFromLayersToolStripMenuItem;
-       private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem cOMServerMenu;
        private System.Windows.Forms.ToolStripMenuItem addDAPServerToolStripMenuItem;

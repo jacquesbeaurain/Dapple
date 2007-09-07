@@ -1317,10 +1317,16 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
+      protected virtual void UpdateTreeNodeColors()
+      {
+      }
       protected virtual void AfterSelected(TreeNode node)
       {
-         // Override in base to do something
       }
+      protected virtual void FireViewMetadataEvent()
+      {
+      }
+
       /// <summary>
       /// Modify catalog browsing tree
       /// </summary>
@@ -1357,10 +1363,15 @@ namespace Geosoft.GX.DAPGetData
                      else
                         RefreshResults();
                   }
+                  UpdateTreeNodeColors();
                }
                else
                   AfterSelected(e.Node);
-            } 
+            }
+            else
+            {
+               FireViewMetadataEvent();
+            }
 
             // --- This is needed because all the docking window activations tends to change the tree selection on us ---
             if (this.SelectedNode != e.Node)

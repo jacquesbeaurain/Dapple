@@ -61,6 +61,7 @@ namespace Dapple
 		{
 			m_oParent = oParent;
 			m_activeLayers = activeLayers;
+         m_activeLayers.ActiveLayersChanged += new LayerList.ActiveLayersChangedHandler(UpdateTreeNodeColors);
 
 			this.SupportDatasetSelection = false;
 			this.AfterCollapse += new TreeViewEventHandler(OnAfterCollapse);
@@ -818,6 +819,45 @@ namespace Dapple
          if (focus != m_hRootNode && focus != m_hDAPRootNode) openNodes[0].Nodes.Clear();
       }
 
+      protected override void UpdateTreeNodeColors()
+      {
+         UpdateTreeNodeColors(RootNode);
+      }
+
+      private void UpdateTreeNodeColors(TreeNode oNode)
+      {
+         if (oNode.Tag is LayerBuilder && m_activeLayers.ContainsLayerBuilder(oNode.Tag as LayerBuilder))
+         {
+            oNode.ForeColor = System.Drawing.Color.Green;
+         }
+         else if (oNode.Tag is DataSet)
+         {
+            TreeNode iter = oNode;
+            while (!(iter.Tag is Server))
+            {
+               iter = iter.Parent;
+            }
+
+            if (m_activeLayers.ContainsLayerBuilder(new DAPQuadLayerBuilder(oNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null)))
+            {
+               oNode.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+               oNode.ForeColor = this.ForeColor;
+            }
+         }
+         else
+         {
+            oNode.ForeColor = this.ForeColor;
+         }
+
+         foreach (TreeNode oChildNode in oNode.Nodes)
+         {
+            UpdateTreeNodeColors(oChildNode);
+         }
+      }
+
       private void CMRebuildTree()
       {
          if (oPreNode == null) throw new ArgumentNullException("Preselect node unset");
@@ -857,7 +897,7 @@ namespace Dapple
          oPostNode.Expand();
          RefreshTreeNodeText();
          this.FilterTreeNodes(oPostNode);
-         //this.Sort();
+         UpdateTreeNodeColors();
          this.EndUpdate();
       }
 
@@ -913,6 +953,27 @@ namespace Dapple
          oPreNode = SelectedOrRoot;
       }
 
+      protected override void FireViewMetadataEvent()
+      {
+         if (SelectedNode != null && ViewMetadata != null)
+         {
+            if (SelectedNode.Tag is IBuilder)
+            {
+               ViewMetadata(SelectedNode.Tag as IBuilder);
+            }
+            if (SelectedNode.Tag is DataSet)
+            {
+               TreeNode iter = SelectedNode;
+               while (!(iter.Tag is Server))
+               {
+                  iter = iter.Parent;
+               }
+
+               ViewMetadata(new DAPQuadLayerBuilder(SelectedNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null));
+            }
+         }
+      }
+
 		/// <summary>
 		/// Modify catalog browsing tree
 		/// </summary>
@@ -924,10 +985,7 @@ namespace Dapple
          oPostNode = SelectedOrRoot;
          CMRebuildTree();
 
-         if (oSelectedNode.Tag is IBuilder)
-         {
-            if (ViewMetadata != null) ViewMetadata(oSelectedNode.Tag as IBuilder);
-         }
+         FireViewMetadataEvent();
 		}
 
 		TreeNode m_nodeLastCollapsed = null; // I'm never used?

@@ -488,7 +488,7 @@ namespace Dapple
 
 				worldWindow.ClearDevice();
 
-            #region Tree Views
+            #region Views
 
             this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList);
             cServerListControl.ImageList = this.tvServers.ImageList;
@@ -551,6 +551,8 @@ namespace Dapple
             }
             else
             {
+               downloadToolStripMenuItem.Enabled = false;
+
                // register handler for dataset links
 
                Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Mime\\Database\\Content Type\\text/Geosoft_datasetlink", "Extension", LinkExt);
@@ -3696,6 +3698,11 @@ namespace Dapple
             List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
             cLayerList.AddLayers(oDropData);
          }
+      }
+
+      private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         cLayerList.CmdDownloadActiveLayers();
       }
    }
 

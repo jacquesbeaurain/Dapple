@@ -267,8 +267,7 @@ namespace Dapple
 
       private void cExtractButton_Click(object sender, EventArgs e)
       {
-         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(m_oLayers);
-         oDownloadDialog.ShowDialog(this);
+         CmdDownloadActiveLayers();
       }
 
       #endregion
@@ -654,6 +653,9 @@ namespace Dapple
          }
       }
 
+      /// <summary>
+      /// Remove selected layers in the layer list.
+      /// </summary>
       public void CmdRemoveSelectedLayers()
       {
          if (cLayerList.SelectedIndices.Count == 0) return;
@@ -683,6 +685,9 @@ namespace Dapple
          CheckIsValid();
       }
 
+      /// <summary>
+      /// Remove all the layers in the layer list.
+      /// </summary>
       public void CmdRemoveAllLayers()
       {
          cLayerList.Items.Clear();
@@ -694,6 +699,10 @@ namespace Dapple
          CheckIsValid();
       }
 
+      /// <summary>
+      /// Remove a GeoTiff from the active layers.
+      /// </summary>
+      /// <param name="szFilename">The filename of the GeoTiff to remove.</param>
       public void CmdRemoveGeoTiff(String szFilename)
       {
          cLayerList.BeginUpdate();
@@ -723,6 +732,21 @@ namespace Dapple
          CheckIsValid();
       }
 
+      /// <summary>
+      /// Open the download dialog.
+      /// </summary>
+      public void CmdDownloadActiveLayers()
+      {
+         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(m_oLayers);
+         oDownloadDialog.ShowDialog(this);
+      }
+
+      /// <summary>
+      /// Set the active layers from a saved view.
+      /// </summary>
+      /// <param name="view">The view to load from.</param>
+      /// <param name="oTree">The ServerTree to save servers to.</param>
+      /// <returns>True if one or more of the layers is in an old/improper format.</returns>
       public bool LoadFromView(DappleView view, ServerTree oTree)
       {
          CmdRemoveAllLayers();
