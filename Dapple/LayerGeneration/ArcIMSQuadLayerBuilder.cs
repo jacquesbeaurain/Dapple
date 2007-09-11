@@ -118,6 +118,7 @@ namespace Dapple.LayerGeneration
          get { return TypeName; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
          get { return m_blnIsChanged; }

@@ -70,37 +70,18 @@ namespace Dapple.LayerGeneration
          m_strName = strNewName;
       }
 
-      public byte Opacity
-      {
-         get
-         {
-            return m_bOpacity;
-         }
-         set
-         {
-            foreach (IBuilder builder in SubList)
-            {
-               builder.Opacity = value;
-            }
-            foreach (LayerBuilder builder in LayerBuilders)
-            {
-               if (builder.IsAdded)
-                  builder.Opacity = value;
-            }
-            m_bOpacity = value;
-         }
-      }
-
       public virtual string Type
       {
          get { return TypeName; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public bool IsChanged
       {
          get { return false; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public IBuilder Parent
       {
          get { return m_Parent; }
@@ -140,7 +121,6 @@ namespace Dapple.LayerGeneration
          BuilderChanged += handler;
       }
 
-      [System.ComponentModel.Browsable(false)]
       public virtual bool SupportsMetaData
       {
          get { return false; }
@@ -290,6 +270,7 @@ namespace Dapple.LayerGeneration
          get { return m_oUri; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public abstract System.Drawing.Icon Icon
       {
          get;
@@ -320,6 +301,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Description of the error that occurred while loading the server.
       /// </summary>
+      [System.ComponentModel.Browsable(false)]
       public String ErrorMessage
       {
          get { return m_strErrorMessage; }
@@ -328,6 +310,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Whether an error occurred while accessing this server for its service information.
       /// </summary>
+      [System.ComponentModel.Browsable(false)]
       public bool LoadingErrorOccurred
       {
          get { return !m_strErrorMessage.Equals(String.Empty); }
@@ -336,6 +319,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Whether the server loaded successfully.  Eqivalent to saying !IsLoading && !LoadingErrorOccurred.
       /// </summary>
+      [System.ComponentModel.Browsable(false)]
       public bool IsLoadedSuccessfully
       {
          get { return !IsLoading && !LoadingErrorOccurred; }
@@ -344,6 +328,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Whether the server is loading, or loading has been completed.
       /// </summary>
+      [System.ComponentModel.Browsable(false)]
       public bool IsLoading
       {
          get { return m_blnIsLoading; }
@@ -380,6 +365,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public abstract override System.Drawing.Icon Icon
       {
          get;

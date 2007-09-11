@@ -211,6 +211,7 @@ namespace Dapple.LayerGeneration
          m_strCapabilitiesFilePath = CapabilitiesFilePath;
       }
 
+      [System.ComponentModel.Browsable(false)]
       public string CapabilitiesFilePath
       {
          get
@@ -254,6 +255,7 @@ namespace Dapple.LayerGeneration
          return newNode;
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override string StyleSheetName
       {
          get
@@ -262,12 +264,14 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public WMSList List
       {
          get { return m_oList; }
          set { m_oList = value; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override System.Drawing.Icon Icon
       {
          get { return Dapple.Properties.Resources.wms; }

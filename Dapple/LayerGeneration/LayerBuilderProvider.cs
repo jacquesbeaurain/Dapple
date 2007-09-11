@@ -17,34 +17,28 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
-		byte Opacity
-		{
-			get;
-			set;
-		}
-
 		string Type
 		{
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		bool IsChanged
 		{
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		IBuilder Parent
 		{
 			get;
 		}
 
-		[System.ComponentModel.Browsable(false)]
 		bool SupportsOpacity
 		{
 			get;
 		}
 
-		[System.ComponentModel.Browsable(false)]
 		bool SupportsMetaData
 		{
 			get;
@@ -133,43 +127,51 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		public abstract bool IsChanged
 		{
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		public abstract string ServerTypeIconKey
 		{
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
       public abstract string LayerTypeIconKey
       {
          get;
       }
 
+      [System.ComponentModel.Browsable(true)]
       public abstract GeographicBoundingBox Extents
       {
          get;
       }
 
+      [System.ComponentModel.Browsable(false)]
       public bool Temporary
       {
          get { return m_bTemporary; }
          set { m_bTemporary = value; }
       }
 
+      [System.ComponentModel.Browsable(false)]
 		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
 
 		/// <summary>
 		/// Used to display the type of service being provided
 		/// DAP, WMS, File etc..
 		/// </summary>
+      [System.ComponentModel.Browsable(true)]
 		public abstract string ServiceType
 		{
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		public IBuilder Parent
 		{
 			get
@@ -178,6 +180,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		public bool Failed
 		{
 			get
@@ -186,6 +189,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+      [System.ComponentModel.Browsable(false)]
 		public bool IsAdded
 		{
 			get
@@ -203,7 +207,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		[System.ComponentModel.Browsable(false)]
+      [System.ComponentModel.Browsable(true)]
 		public virtual bool SupportsMetaData
 		{
 			get
@@ -217,7 +221,7 @@ namespace Dapple.LayerGeneration
 			return null;
 		}
 
-		[System.ComponentModel.Browsable(false)]
+      [System.ComponentModel.Browsable(true)]
 		public virtual bool SupportsLegend
 		{
 			get
@@ -231,7 +235,7 @@ namespace Dapple.LayerGeneration
 			return null;
 		}
 
-
+      [System.ComponentModel.Browsable(false)]
 		public virtual string StyleSheetName
 		{
 			get

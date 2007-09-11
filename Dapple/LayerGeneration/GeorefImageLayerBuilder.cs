@@ -121,6 +121,7 @@ namespace Dapple.LayerGeneration
          get { return "GeoTif"; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
          get { return m_blnIsChanged; }

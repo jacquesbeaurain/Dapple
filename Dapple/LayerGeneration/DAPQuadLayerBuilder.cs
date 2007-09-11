@@ -137,6 +137,7 @@ namespace Dapple.LayerGeneration
          get { return DAPQuadLayerBuilder.TypeName; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
          get { return m_layer == null; }

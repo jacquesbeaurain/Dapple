@@ -173,6 +173,7 @@ namespace Dapple.LayerGeneration
          m_strCatalogPathname = strCatalogPathname;
       }
 
+      [System.ComponentModel.Browsable(false)]
       public string CatalogFilename
       {
          get
@@ -193,6 +194,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override string StyleSheetName
       {
          get
@@ -206,6 +208,7 @@ namespace Dapple.LayerGeneration
          get { return "ArcIMS"; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override System.Drawing.Icon Icon
       {
          get { return Dapple.Properties.Resources.arcims; }

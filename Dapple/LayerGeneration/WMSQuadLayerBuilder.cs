@@ -135,6 +135,7 @@ namespace Dapple.LayerGeneration
          get { return WMSQuadLayerBuilder.TypeName; }
       }
 
+      [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
          get { return m_blnIsChanged; }
