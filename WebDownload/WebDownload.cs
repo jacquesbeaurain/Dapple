@@ -787,7 +787,8 @@ namespace WorldWind.Net
 		{
 			if (Exception != null)
 				//these occur regularly - ignore
-				if (!(Exception is WebException))
+            // Why?  They're exceptions!  They indicate a problem!
+				//if (!(Exception is WebException))
 					throw Exception;
 		}
 
