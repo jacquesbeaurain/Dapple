@@ -1605,6 +1605,8 @@ namespace WorldWind.Renderable
 
 					device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
 																verts.Length, vertexIndexes.Length / 3, vertexIndexes, true, verts);
+
+               device.RenderState.TextureFactor = Color.FromArgb(255, 255, 255, 255).ToArgb();
 				}
 				else
 				{
