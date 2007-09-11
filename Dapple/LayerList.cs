@@ -479,7 +479,8 @@ namespace Dapple
 
             if (eChangeType == BuilderChangeType.LoadedASync)
             {
-               // refresh layers and order
+               RefreshLayerRenderOrder();
+               cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(oBuilder.LayerTypeIconKey);
             }
             else if (eChangeType == BuilderChangeType.LoadedASyncFailed || eChangeType == BuilderChangeType.LoadedSyncFailed)
             {
@@ -662,6 +663,7 @@ namespace Dapple
 
          cLayerList.BeginUpdate();
          m_blSupressSelectedChanged = true;
+         int iLastIndex = 0;
          while (cLayerList.SelectedIndices.Count > 0)
          {
             int iIndexToDelete = cLayerList.SelectedIndices[0];
@@ -674,12 +676,16 @@ namespace Dapple
 
             m_oLayers.RemoveAt(iIndexToDelete);
             cLayerList.Items.RemoveAt(iIndexToDelete);
+            iLastIndex = iIndexToDelete;
          }
+         if (iLastIndex == cLayerList.Items.Count) iLastIndex--;
+         if (iLastIndex != -1) cLayerList.SelectedIndices.Add(iLastIndex);
          m_blSupressSelectedChanged = false;
          cLayerList.EndUpdate();
 
          RefreshLayerRenderOrder();
          SetButtonState();
+         CmdViewMetadata();
 
          if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
