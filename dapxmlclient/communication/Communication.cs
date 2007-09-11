@@ -235,6 +235,7 @@ namespace Geosoft.Dap.Xml
       #region Member Variables
       private bool m_bTask;
       private bool m_bSecure;
+      private int m_iTimeout;
       #endregion
 
       #region Properties
@@ -256,6 +257,15 @@ namespace Geosoft.Dap.Xml
          set { m_bTask = value; }
       }
 
+      /// <summary>
+      /// The number of milliseconds before a connection times out.
+      /// </summary>
+      public int Timeout
+      {
+         get { return m_iTimeout; }
+         set { m_iTimeout = value; }
+      }
+
       #endregion
 
       /// <summary>
@@ -263,10 +273,11 @@ namespace Geosoft.Dap.Xml
       /// </summary>
       /// <param name="bTask"></param>
       /// <param name="bSecure"></param>
-      public Communication(bool bTask, bool bSecure)
+      public Communication(bool bTask, bool bSecure, int iTimeout)
       {
          m_bTask = bTask;
          m_bSecure = bSecure;
+         m_iTimeout = iTimeout;
       }
 
       /// <summary>
@@ -446,7 +457,7 @@ namespace Geosoft.Dap.Xml
             cHttpWReq.KeepAlive = false;
             cHttpWReq.ContentType = "application/x-www-form-urlencoded";
             cHttpWReq.ContentLength = byte1.Length;
-            cHttpWReq.Timeout = 1000;
+            cHttpWReq.Timeout = m_iTimeout;
 
             // --- Serialize the XML document onto the wire ---
 

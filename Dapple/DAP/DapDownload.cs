@@ -132,6 +132,9 @@ namespace Dapple.DAP
 					{ }
 					return;
 				}
+            Log.Write(Log.Levels.Error, "DGDR", "web exception occurred");
+            Log.Write(Log.Levels.Error, "DGDR", "Dataset Name: " + m_DapImageStore.Name);
+            Log.Write(Log.Levels.Error, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
 				m_tile.TileSet.NumberRetries++;
 			}
 			catch
@@ -230,7 +233,7 @@ namespace Dapple.DAP
 				request.KeepAlive = false;
 				request.ContentType = "application/x-www-form-urlencoded";
 				request.ContentLength = byte1.Length;
-				request.Timeout = 1000;
+				request.Timeout = MainForm.DOWNLOAD_TIMEOUT;
 
 				// --- Serialize the XML document request onto the wire ---
 

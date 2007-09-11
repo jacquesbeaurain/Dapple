@@ -119,11 +119,11 @@ namespace Geosoft.Dap
       /// <summary>
       /// Default constructor
       /// </summary>
-      public Command()
+      public Command(int iTimeout)
       {
          m_hParse = new Parse();
          m_hEncodeRequest = new EncodeRequest(Version.GEOSOFT_XML_1_0);
-         m_oCommunication = new Communication(false, false);
+         m_oCommunication = new Communication(false, false, iTimeout);
       }    
 
       /// <summary>
@@ -131,12 +131,12 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="szUrl"></param>
       /// <param name="bTask"></param>
-      public Command(String szUrl, bool bTask)
+      public Command(String szUrl, bool bTask, int iTimeout)
       {
          m_strUrl = szUrl;
          m_hParse = new Parse(szUrl);
          m_hEncodeRequest = new EncodeRequest(Version.GEOSOFT_XML_1_0);
-         m_oCommunication = new Communication(bTask, false);
+         m_oCommunication = new Communication(bTask, false, iTimeout);
       }         
 
       /// <summary>
@@ -145,12 +145,12 @@ namespace Geosoft.Dap
       /// <param name="szUrl"></param>
       /// <param name="bTask"></param>
       /// <param name="eVersion"></param>
-      public Command(String szUrl, bool bTask, Version eVersion)
+      public Command(String szUrl, bool bTask, Version eVersion, int iTimeout)
       {
          m_strUrl = szUrl;
          m_hParse = new Parse(szUrl);
          m_hEncodeRequest = new EncodeRequest(eVersion);
-         m_oCommunication = new Communication(bTask, false);
+         m_oCommunication = new Communication(bTask, false, iTimeout);
       }
 
       /// <summary>
@@ -161,12 +161,12 @@ namespace Geosoft.Dap
       /// <param name="eVersion"></param>
       /// <param name="bSecure"></param>
       /// <param name="strToken"></param>
-      public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strToken)
+      public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strToken, int iTimeout)
       {
          m_strUrl = szUrl;
          m_hParse = new Parse(szUrl);
          m_hEncodeRequest = new EncodeRequest(eVersion, strToken);
-         m_oCommunication = new Communication(bTask, bSecure);
+         m_oCommunication = new Communication(bTask, bSecure, iTimeout);
       }      
       #endregion
 
