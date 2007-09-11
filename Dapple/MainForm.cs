@@ -52,6 +52,8 @@ namespace Dapple
 
       #region Statics
 
+      public static int DOWNLOAD_TIMEOUT = 30000;
+
       public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
 		public const string ViewExt = ".dapple";
 		public const string LinkExt = ".dapple_datasetlink";
@@ -68,6 +70,9 @@ namespace Dapple
 		public const string WebsiteForumsHelpUrl = "https://dappleforums.geosoft.com/";
 		public const string WMSWebsiteHelpUrl = "http://dapple.geosoft.com/help/wms.asp";
 		public const string DAPWebsiteHelpUrl = "http://dapple.geosoft.com/help/dap.asp";
+      public const string SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
+      public const string NEW_SERVER_GATEWAY = "AddNewServer.aspx";
+      public const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
 		public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
 
 		/// <summary>
@@ -741,6 +746,7 @@ namespace Dapple
                this.toolStripMenuItemServerLegend.Tag = builder is LayerBuilder;
                this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
                this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
+               this.toolStripMenuItempropertiesServer.Tag = true;
 
                if (builder is WMSServerBuilder || builder is ArcIMSServerBuilder)
                   this.toolStripMenuItemRefreshCatalog.Tag = true;
@@ -2956,9 +2962,6 @@ namespace Dapple
 
 		private enum SearchMode { Text, ROI, Dual };
 		private SearchMode searchMode = SearchMode.Dual;
-		private String SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
-      private String NEW_SERVER_GATEWAY = "AddNewServer.aspx";
-		private String SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
 		private String m_strDappleSearchServerURL = null;
 
 		private void DappleSearchKeyword_KeyPress(object sender, KeyPressEventArgs e)
@@ -3107,7 +3110,7 @@ namespace Dapple
 							setDappleSearchResultsLabelText("Hits: <ERROR " + error + ">");
 						else
 						{
-							setDappleSearchResultsLabelText("ERROR CONTACTING SEARCH SERVER");
+                     setDappleSearchResultsLabelText("Unable to contact search server");
 							DappleSearchGoButton.Enabled = false;
 						}
 						searchCompleted = true;
@@ -3204,25 +3207,6 @@ namespace Dapple
          }
          catch (Exception e)
          {
-            StringBuilder dump = new StringBuilder();
-            dump.Append("================================================================================" + Environment.NewLine);
-            dump.Append("Exception caused by background search thread at " + System.DateTime.Now + Environment.NewLine);
-            Exception iter = e;
-            while (e != null)
-            {
-               dump.Append("--------------------------------------------------------------------------------" + Environment.NewLine);
-               dump.Append("Type: " + e.GetType().ToString() + Environment.NewLine);
-               dump.Append("Message: " + e.Message + Environment.NewLine);
-               dump.Append("StackTrace:" + Environment.NewLine);
-               dump.Append(e.StackTrace + Environment.NewLine);
-
-               e = e.InnerException;
-            }
-
-            dump.Append("================================================================================" + Environment.NewLine);
-
-            File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "errordump.txt"), dump.ToString());
-
             hits = 0; error = -1; return;
          }
 		}
@@ -3630,11 +3614,6 @@ namespace Dapple
          }
       }
 
-      private void cAddLayerButton_Click(object sender, EventArgs e)
-      {
-         AddDatasetAction();
-      }
-
       private void DumpServerTree()
       {
          DumpTreeNode(this.tvServers.RootNode, String.Empty);
@@ -3703,6 +3682,17 @@ namespace Dapple
       private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
       {
          cLayerList.CmdDownloadActiveLayers();
+      }
+
+      private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)
+      {
+         IBuilder oBuilder = this.tvServers.SelectedNode.Tag as IBuilder;
+
+         if (oBuilder == null) return;
+
+         frmProperties form = new frmProperties();
+         form.SetObject = oBuilder;
+         form.ShowDialog(this);
       }
    }
 
