@@ -674,12 +674,12 @@ namespace bNb.Plugins_GD
 
 					// Render tiles
 					int zoomLevel = GetZoomLevelByTrueViewRange(drawArgs.WorldCamera.TrueViewRange.Degrees);
-					int tileDrawn = VeTile.Render(drawArgs, disableZBuffer, veTiles, zoomLevel); // Try current level first
+					int tileDrawn = VeTile.Render(drawArgs, disableZBuffer, veTiles, zoomLevel, m_opacity); // Try current level first
 					while (zoomLevel > 1 && tileDrawn == 0)
 					{
 						// If nothing drawn, try to render previous level tiles if they are still around, TODO: force refresh for that level on update???
 						zoomLevel--;
-						tileDrawn = VeTile.Render(drawArgs, disableZBuffer, veTiles, zoomLevel);
+						tileDrawn = VeTile.Render(drawArgs, disableZBuffer, veTiles, zoomLevel, m_opacity);
 					}
 
 					//camera jitter fix
@@ -1688,16 +1688,24 @@ namespace bNb.Plugins_GD
 
 		CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
 
-		public static int Render(DrawArgs drawArgs, bool disableZbuffer, ArrayList alVeTiles, int zoomLevel)
+		public static int Render(DrawArgs drawArgs, bool disableZbuffer, ArrayList alVeTiles, int zoomLevel, ushort usOpacity)
 		{
 			int tileDrawn = 0;
+         int iOldTextureFactor = 0;
 			try
 			{
+            iOldTextureFactor = drawArgs.device.RenderState.TextureFactor;
 				if (alVeTiles.Count <= 0)
 					return 0;
 
 				lock (alVeTiles.SyncRoot)
 				{
+               // Turn back light on if needed
+               if (World.Settings.EnableSunShading)
+               {
+                  drawArgs.device.RenderState.Lighting = false;
+               }
+
 					//setup device to render textures
 					if (disableZbuffer)
 					{
@@ -1710,10 +1718,12 @@ namespace bNb.Plugins_GD
 							drawArgs.device.RenderState.ZBufferEnable = true;
 					}
 					drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-					drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
+
+               drawArgs.device.TextureState[0].ColorOperation = TextureOperation.BlendCurrentAlpha;//TextureOperation.SelectArg1;
 					drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
-					drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.SelectArg1;
+					drawArgs.device.TextureState[0].AlphaOperation = TextureOperation.Modulate;//TextureOperation.SelectArg1;
 					drawArgs.device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+               drawArgs.device.RenderState.TextureFactor = Color.FromArgb(usOpacity, 255, 255, 255).ToArgb();
 
 					// Set up for shading 
 					if (World.Settings.EnableSunShading)
@@ -1791,6 +1801,8 @@ namespace bNb.Plugins_GD
 			{
 				if (disableZbuffer)
 					drawArgs.device.RenderState.ZBufferEnable = true;
+
+            drawArgs.device.RenderState.TextureFactor = iOldTextureFactor;
 			}
 			return tileDrawn;
 		}
