@@ -821,7 +821,9 @@ namespace Dapple
 
       protected override void UpdateTreeNodeColors()
       {
+         SuspendLayout();
          UpdateTreeNodeColors(RootNode);
+         ResumeLayout();
       }
 
       private void UpdateTreeNodeColors(TreeNode oNode)

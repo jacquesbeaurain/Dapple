@@ -13,7 +13,7 @@ using Resources = global::Dapple.Properties.Resources;
 
 namespace Geosoft.GX.DAPGetData
 {
-   public class ServerTree : TriStateTreeView
+   public class ServerTree : TreeView
    {
       #region Enums
       public enum SearchModeEnum
@@ -117,7 +117,6 @@ namespace Geosoft.GX.DAPGetData
          this.ImageIndex = this.SelectedImageIndex = Dapple.MainForm.ImageListIndex("folder");
          this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
-         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);         
       }
 
       protected override void Dispose(bool disposing)
@@ -990,7 +989,6 @@ namespace Geosoft.GX.DAPGetData
          if (this.IsDisposed) return;
 
          this.AfterSelect -= new TreeViewEventHandler(this.OnAfterSelect);
-         this.TreeNodeChecked -= new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
 
          // --- Clear all server nodes ---
          this.BeginUpdate();
@@ -1014,7 +1012,6 @@ namespace Geosoft.GX.DAPGetData
             this.ExpandAll();
          this.EndUpdate();
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
-         this.TreeNodeChecked += new TreeNodeCheckedEventHandler(this.OnTreeNodeChecked);
       }
 
       /// <summary>
@@ -1123,9 +1120,9 @@ namespace Geosoft.GX.DAPGetData
                if (m_bSupportDatasetSelection)
                {
                   if (m_hSelectedDataSets.ContainsKey(oDataset.UniqueName))
-                     hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType, TriStateTreeView.CheckBoxState.Checked);
+                     hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType);
                   else
-                     hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType, TriStateTreeView.CheckBoxState.Unchecked);
+                     hChildTreeNode = this.Add(hTreeNode, oDataset.Title, iType, iType);
                }
                else
                {
@@ -1256,9 +1253,9 @@ namespace Geosoft.GX.DAPGetData
                if (m_bSupportDatasetSelection)
                {
                   if (m_hSelectedDataSets.ContainsKey(oDataSet.UniqueName))
-                     hChildTreeNode = this.Add(hTreeNode, oDataSet.Title, iType, iType, TriStateTreeView.CheckBoxState.Checked);
+                     hChildTreeNode = this.Add(hTreeNode, oDataSet.Title, iType, iType);
                   else
-                     hChildTreeNode = this.Add(hTreeNode, oDataSet.Title, iType, iType, TriStateTreeView.CheckBoxState.Unchecked);
+                     hChildTreeNode = this.Add(hTreeNode, oDataSet.Title, iType, iType);
                }
                else
                {
@@ -1269,6 +1266,31 @@ namespace Geosoft.GX.DAPGetData
             }
          }
          return hTreeNode;
+      }
+
+      /// <summary>
+      /// Add a new node to the tree
+      /// </summary>
+      /// <param name="hParent"></param>
+      /// <param name="strNodeText"></param>
+      /// <param name="iImageIndex"></param>
+      /// <param name="iSelectedImageIndex"></param>
+      /// <param name="eState"></param>      
+      /// <returns></returns>
+      public virtual System.Windows.Forms.TreeNode Add(System.Windows.Forms.TreeNode hParent, string strNodeText, int iImageIndex, int iSelectedImageIndex)
+      {
+         System.Windows.Forms.TreeNode hNode;
+
+         hNode = new System.Windows.Forms.TreeNode(strNodeText);
+         hNode.ImageIndex = iImageIndex;
+         hNode.SelectedImageIndex = iSelectedImageIndex;
+
+         if (hParent != null)
+            hParent.Nodes.Add(hNode);
+         else
+            this.Nodes.Add(hNode);
+
+         return hNode;
       }
 
       /// <summary>
