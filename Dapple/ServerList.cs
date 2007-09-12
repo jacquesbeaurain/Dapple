@@ -50,6 +50,8 @@ namespace Dapple
       public ServerList()
       {
          InitializeComponent();
+         cPageNavigator.PageBack += new System.Threading.ThreadStart(BackPage);
+         cPageNavigator.PageForward += new System.Threading.ThreadStart(ForwardPage);
 
          m_strSearchString = String.Empty;
          m_oSearchBox = null;
@@ -252,28 +254,6 @@ namespace Dapple
       }
 
       /// <summary>
-      /// User presses the "back a page" button.
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      private void cPrevButton_Click(object sender, EventArgs e)
-      {
-         m_iCurrPage--;
-         DrawCurrentPage();
-      }
-
-      /// <summary>
-      /// User presses the "forward a page" button.
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      private void cNextButton_Click(object sender, EventArgs e)
-      {
-         m_iCurrPage++;
-         DrawCurrentPage();
-      }
-
-      /// <summary>
       /// User mouses down on the layer list view.  They may be wanting to start a drag & drop.
       /// </summary>
       /// <param name="sender"></param>
@@ -357,6 +337,28 @@ namespace Dapple
 
       #region Private helper methods
 
+      /// <summary>
+      /// User presses the "back a page" button.
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+      private void BackPage()
+      {
+         m_iCurrPage--;
+         DrawCurrentPage();
+      }
+
+      /// <summary>
+      /// User presses the "forward a page" button.
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+      private void ForwardPage()
+      {
+         m_iCurrPage++;
+         DrawCurrentPage();
+      }
+
       #region Enabling/disabling controls
 
       /// <summary>
@@ -365,11 +367,9 @@ namespace Dapple
       private void SetNoServer()
       {
          cServersComboBox.SelectedIndex = -1;
-         cPageLabel.Text = "";
-
          cLayersListView.Items.Clear();
-         cNextButton.Enabled = false;
-         cPrevButton.Enabled = false;
+         cPageNavigator.SetState(String.Empty);
+
          m_oCurrServerLayers = new List<LayerBuilder>();
       }
 
@@ -378,11 +378,9 @@ namespace Dapple
       /// </summary>
       private void SetSearching()
       {
-         cPageLabel.Text = "Searching...";
-
          cLayersListView.Items.Clear();
-         cNextButton.Enabled = false;
-         cPrevButton.Enabled = false;
+         cPageNavigator.SetState("Searching...");
+
          Refresh();
       }
 
@@ -402,15 +400,11 @@ namespace Dapple
       {
          if (m_oCurrServerLayers.Count > 0)
          {
-            cPageLabel.Text = "Page " + (m_iCurrPage + 1) + " of " + m_iNumPages;
-            cNextButton.Enabled = m_iCurrPage + 1 < m_iNumPages;
-            cPrevButton.Enabled = m_iCurrPage > 0;
+            cPageNavigator.SetState(m_iCurrPage, m_oCurrServerLayers.Count);
          }
          else
          {
-            cPageLabel.Text = "No results found";
-            cNextButton.Enabled = false;
-            cPrevButton.Enabled = false;
+            cPageNavigator.SetState("No results");
          }
       }
 
@@ -502,7 +496,7 @@ namespace Dapple
             m_oCurrServerLayers = null;
             m_iCurrPage = 0;
             m_iNumPages = -1;
-            cPageLabel.Text = "Error occurred.";
+            cPageNavigator.SetState("Error occurred");
          }
       }
 

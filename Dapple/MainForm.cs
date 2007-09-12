@@ -32,6 +32,7 @@ using Utility;
 using Dapple.Properties;
 using MontajRemote;
 using System.Collections;
+using Geosoft.GX.DAPGetData;
 
 namespace Dapple
 {
@@ -311,6 +312,7 @@ namespace Dapple
             m_oImageList.Images.Add("folder", Resources.folder);
             m_oImageList.Images.Add("folder_open", Resources.folder_open);
             m_oImageList.Images.Add("loading", Resources.loading);
+            m_oImageList.Images.Add("dap_arcgis", Resources.dap_spf);
             m_oImageList.Images.Add("kml", Resources.kml);
             m_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
             m_oImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
@@ -1221,7 +1223,7 @@ namespace Dapple
 			AddWMSServer();
 		}
 
-      private void addAnArcIMSServerToolStripMenuItem_Click(object sender, EventArgs e)
+      private void toolStripMenuItemAddArcIMS_Click(object sender, EventArgs e)
       {
          AddArcIMSServer();
       }
@@ -2119,15 +2121,26 @@ namespace Dapple
          cAoiList.BeginUpdate();
 
          cAoiList.Items.Clear();
-         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Go to specific AOI ---", null));
+         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Select a specific view ---", null));
          cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Whole world", new GeographicBoundingBox()));
-         if (IsMontajChildProcess && m_oAoi != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Area of interest", m_oAoi));
+
+         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+         {
+            Server oServer = this.tvServers.SelectedNode.Tag as Server;
+            if (oServer.Status == Server.ServerStatus.OnLine)
+            {
+               cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Server extent", new GeographicBoundingBox(oServer.ServerExtents.MaxY, oServer.ServerExtents.MinY, oServer.ServerExtents.MinX, oServer.ServerExtents.MaxX)));
+            }
+         }
+
+         if (IsMontajChildProcess && m_oAoi != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oAoi));
+
+         cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("-----------------------------", null));
 
          if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
             if (((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine)
             {
-               cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- AOIs from DAP Server ---", null));
                ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetAreaList();
                foreach (String strAOI in aAOIs)
                {
@@ -2144,7 +2157,6 @@ namespace Dapple
          }
          else
          {
-            cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Countries of the World ---", null));
             foreach (KeyValuePair<String, GeographicBoundingBox> country in m_oCountryAOIs)
             {
                cAoiList.Items.Add(country);
@@ -3506,6 +3518,8 @@ namespace Dapple
          String strText = cSearchTextComboBox.Text;
          this.tvServers.Search(oAoi, strText);
          this.cServerListControl.setSearchCriteria(strText, oAoi);
+
+         this.dappleSearchList1.SetSearchParameters(strText, oAoi);
       }
 
       private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
@@ -3693,6 +3707,11 @@ namespace Dapple
          frmProperties form = new frmProperties();
          form.SetObject = oBuilder;
          form.ShowDialog(this);
+      }
+
+      private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         doSearch();
       }
    }
 

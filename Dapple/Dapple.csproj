@@ -89,6 +89,12 @@
     <Compile Include="ConfigurationWizard\Pages\DappleSearchPage.Designer.cs">
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="DappleSearchList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DappleSearchList.Designer.cs">
+      <DependentUpon>DappleSearchList.cs</DependentUpon>
+    </Compile>
     <Compile Include="DAP\DAPGetData\CatalogCacheManager.cs" />
     <Compile Include="DAP\DAPGetData\CatalogFolder.cs" />
     <Compile Include="DAP\DAPGetData\FolderDatasetList.cs" />
@@ -182,6 +188,7 @@
     <Compile Include="Extract\Resolution.Designer.cs">
       <DependentUpon>Resolution.cs</DependentUpon>
     </Compile>
+    <Compile Include="IPageNavigator.cs" />
     <Compile Include="LayerGeneration\ArcIMSDownloading.cs" />
     <Compile Include="LayerGeneration\ArcIMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\ArcIMSCatalogBuilder.cs" />
@@ -196,6 +203,12 @@
     </Compile>
     <Compile Include="LayerList.Designer.cs">
       <DependentUpon>LayerList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PageNavigator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PageNavigator.Designer.cs">
+      <DependentUpon>PageNavigator.cs</DependentUpon>
     </Compile>
     <Compile Include="Plugins\3DConnexion\TDxWWInput.cs">
       <SubType>Form</SubType>
@@ -236,6 +249,10 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DappleSearchList.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DappleSearchList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extract\DownloadingForm.resx">
       <SubType>Designer</SubType>
@@ -292,6 +309,10 @@
     <EmbeddedResource Include="LayerList.resx">
       <DependentUpon>LayerList.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PageNavigator.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PageNavigator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ServerList.resx">
       <SubType>Designer</SubType>

@@ -141,9 +141,9 @@ namespace Dapple
             this.cGoToToolStripMenuItem,
             this.cViewPropertiesToolStripMenuItem,
             this.toolStripSeparator1,
-            this.cRemoveToolStripMenuItem,
             this.cRefreshToolStripMenuItem,
-            this.cClearCacheToolStripMenuItem});
+            this.cClearCacheToolStripMenuItem,
+            this.cRemoveToolStripMenuItem});
          this.cLayerListContextMenu.Name = "cLayerListContextMenu";
          this.cLayerListContextMenu.Size = new System.Drawing.Size(149, 120);
          this.cLayerListContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerListContextMenu_Opening);

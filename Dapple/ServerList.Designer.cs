@@ -29,47 +29,26 @@ namespace Dapple
       private void InitializeComponent()
       {
          this.components = new System.ComponentModel.Container();
-         System.Windows.Forms.SplitContainer splitContainer1;
          System.Windows.Forms.Label label1;
          this.cServersComboBox = new System.Windows.Forms.ComboBox();
          this.cLayersListView = new System.Windows.Forms.ListView();
          this.cLayerNameColumnHeader = new System.Windows.Forms.ColumnHeader();
          this.cLayerContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.addToLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.cPrevButton = new System.Windows.Forms.Button();
-         this.cNextButton = new System.Windows.Forms.Button();
-         this.cPageLabel = new System.Windows.Forms.Label();
-         splitContainer1 = new System.Windows.Forms.SplitContainer();
+         this.cPageNavigator = new Dapple.PageNavigator();
          label1 = new System.Windows.Forms.Label();
-         splitContainer1.Panel1.SuspendLayout();
-         splitContainer1.Panel2.SuspendLayout();
-         splitContainer1.SuspendLayout();
          this.cLayerContextMenu.SuspendLayout();
          this.SuspendLayout();
          // 
-         // splitContainer1
+         // label1
          // 
-         splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-         splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-         splitContainer1.IsSplitterFixed = true;
-         splitContainer1.Location = new System.Drawing.Point(0, 0);
-         splitContainer1.Name = "splitContainer1";
-         splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-         // 
-         // splitContainer1.Panel1
-         // 
-         splitContainer1.Panel1.Controls.Add(this.cServersComboBox);
-         splitContainer1.Panel1.Controls.Add(label1);
-         // 
-         // splitContainer1.Panel2
-         // 
-         splitContainer1.Panel2.Controls.Add(this.cLayersListView);
-         splitContainer1.Panel2.Controls.Add(this.cPrevButton);
-         splitContainer1.Panel2.Controls.Add(this.cNextButton);
-         splitContainer1.Panel2.Controls.Add(this.cPageLabel);
-         splitContainer1.Size = new System.Drawing.Size(150, 150);
-         splitContainer1.SplitterDistance = 27;
-         splitContainer1.TabIndex = 0;
+         label1.AutoSize = true;
+         label1.Location = new System.Drawing.Point(0, 3);
+         label1.Margin = new System.Windows.Forms.Padding(0);
+         label1.Name = "label1";
+         label1.Size = new System.Drawing.Size(41, 13);
+         label1.TabIndex = 0;
+         label1.Text = "Server:";
          // 
          // cServersComboBox
          // 
@@ -78,21 +57,12 @@ namespace Dapple
          this.cServersComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
          this.cServersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
          this.cServersComboBox.FormattingEnabled = true;
-         this.cServersComboBox.Location = new System.Drawing.Point(50, 3);
+         this.cServersComboBox.Location = new System.Drawing.Point(44, 0);
          this.cServersComboBox.Name = "cServersComboBox";
-         this.cServersComboBox.Size = new System.Drawing.Size(100, 21);
+         this.cServersComboBox.Size = new System.Drawing.Size(156, 21);
          this.cServersComboBox.TabIndex = 1;
          this.cServersComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cServersComboBox_DrawItem);
          this.cServersComboBox.SelectedIndexChanged += new System.EventHandler(this.cServersComboBox_SelectedIndexChanged);
-         // 
-         // label1
-         // 
-         label1.AutoSize = true;
-         label1.Location = new System.Drawing.Point(3, 6);
-         label1.Name = "label1";
-         label1.Size = new System.Drawing.Size(41, 13);
-         label1.TabIndex = 0;
-         label1.Text = "Server:";
          // 
          // cLayersListView
          // 
@@ -104,9 +74,10 @@ namespace Dapple
             this.cLayerNameColumnHeader});
          this.cLayersListView.ContextMenuStrip = this.cLayerContextMenu;
          this.cLayersListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-         this.cLayersListView.Location = new System.Drawing.Point(0, 3);
+         this.cLayersListView.Location = new System.Drawing.Point(0, 24);
+         this.cLayersListView.Margin = new System.Windows.Forms.Padding(0);
          this.cLayersListView.Name = "cLayersListView";
-         this.cLayersListView.Size = new System.Drawing.Size(150, 84);
+         this.cLayersListView.Size = new System.Drawing.Size(200, 149);
          this.cLayersListView.TabIndex = 4;
          this.cLayersListView.UseCompatibleStateImageBehavior = false;
          this.cLayersListView.View = System.Windows.Forms.View.Details;
@@ -135,63 +106,39 @@ namespace Dapple
          this.addToLayersToolStripMenuItem.Text = "Add To Layers";
          this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
          // 
-         // cPrevButton
+         // cPageNavigator
          // 
-         this.cPrevButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-         this.cPrevButton.Location = new System.Drawing.Point(3, 93);
-         this.cPrevButton.Name = "cPrevButton";
-         this.cPrevButton.Size = new System.Drawing.Size(24, 23);
-         this.cPrevButton.TabIndex = 1;
-         this.cPrevButton.Text = "<-";
-         this.cPrevButton.UseVisualStyleBackColor = true;
-         this.cPrevButton.Click += new System.EventHandler(this.cPrevButton_Click);
-         // 
-         // cNextButton
-         // 
-         this.cNextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-         this.cNextButton.Location = new System.Drawing.Point(123, 93);
-         this.cNextButton.Name = "cNextButton";
-         this.cNextButton.Size = new System.Drawing.Size(24, 23);
-         this.cNextButton.TabIndex = 2;
-         this.cNextButton.Text = "->";
-         this.cNextButton.UseVisualStyleBackColor = true;
-         this.cNextButton.Click += new System.EventHandler(this.cNextButton_Click);
-         // 
-         // cPageLabel
-         // 
-         this.cPageLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
-         this.cPageLabel.Location = new System.Drawing.Point(0, 93);
-         this.cPageLabel.Name = "cPageLabel";
-         this.cPageLabel.Size = new System.Drawing.Size(150, 26);
-         this.cPageLabel.TabIndex = 3;
-         this.cPageLabel.Text = "Page X of X+n";
-         this.cPageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+         this.cPageNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                     | System.Windows.Forms.AnchorStyles.Right)));
+         this.cPageNavigator.Location = new System.Drawing.Point(0, 176);
+         this.cPageNavigator.Name = "cPageNavigator";
+         this.cPageNavigator.Size = new System.Drawing.Size(200, 24);
+         this.cPageNavigator.TabIndex = 5;
          // 
          // ServerList
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.Controls.Add(splitContainer1);
+         this.Controls.Add(this.cServersComboBox);
+         this.Controls.Add(this.cPageNavigator);
+         this.Controls.Add(this.cLayersListView);
+         this.Controls.Add(label1);
          this.Name = "ServerList";
+         this.Size = new System.Drawing.Size(200, 200);
          this.Load += new System.EventHandler(this.ServerList_Load);
-         splitContainer1.Panel1.ResumeLayout(false);
-         splitContainer1.Panel1.PerformLayout();
-         splitContainer1.Panel2.ResumeLayout(false);
-         splitContainer1.ResumeLayout(false);
          this.cLayerContextMenu.ResumeLayout(false);
          this.ResumeLayout(false);
+         this.PerformLayout();
 
       }
 
       #endregion
 
       private System.Windows.Forms.ComboBox cServersComboBox;
-      private System.Windows.Forms.Button cNextButton;
-      private System.Windows.Forms.Button cPrevButton;
-      private System.Windows.Forms.Label cPageLabel;
       private System.Windows.Forms.ListView cLayersListView;
       private System.Windows.Forms.ColumnHeader cLayerNameColumnHeader;
       private System.Windows.Forms.ContextMenuStrip cLayerContextMenu;
       private System.Windows.Forms.ToolStripMenuItem addToLayersToolStripMenuItem;
+      private PageNavigator cPageNavigator;
    }
 }
