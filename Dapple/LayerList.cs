@@ -287,7 +287,7 @@ namespace Dapple
          {
             e.Effect = DragDropEffects.Copy;
          }
-         else if (e.Data.GetDataPresent(typeof(ListViewItem)))
+         else if (e.Data.GetDataPresent(typeof(LayerListInternalShuffleToken)))
          {
             e.Effect = DragDropEffects.Move;
          }
@@ -316,13 +316,12 @@ namespace Dapple
 
             cLayerList.Focus();
          }
-         else if (e.Data.GetDataPresent(typeof(ListViewItem)))
+         else if (e.Data.GetDataPresent(typeof(LayerListInternalShuffleToken)))
          {
-            ListViewItem oDropData = e.Data.GetData(typeof(ListViewItem)) as ListViewItem;
             Point oClientLocation = cLayerList.PointToClient(new Point(e.X, e.Y));
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
-            ShuffleLayer(oDropData.Index, iInsertPoint);
+            ShuffleSelectedLayers(iInsertPoint);
 
             cLayerList.Focus();
          }
@@ -349,9 +348,9 @@ namespace Dapple
 
       private void cLayerList_MouseMove(object sender, MouseEventArgs e)
       {
-         if ((e.Button & MouseButtons.Left) == MouseButtons.Left && cLayerList.SelectedIndices.Count == 1)
+         if ((e.Button & MouseButtons.Left) == MouseButtons.Left && cLayerList.SelectedIndices.Count > 0)
          {
-            DoDragDrop(cLayerList.SelectedItems[0], DragDropEffects.Move);
+            DoDragDrop(new LayerListInternalShuffleToken(), DragDropEffects.Move);
          }
       }
 
@@ -574,30 +573,77 @@ namespace Dapple
       }
 
       /// <summary>
-      /// Move a layer up or down in the list.
+      /// Reorder the selected layers to be continuous starting at the drop index.
       /// </summary>
-      /// <param name="iOldIndex"></param>
-      /// <param name="iNewIndex"></param>
-      private void ShuffleLayer(int iOldIndex, int iNewIndex)
+      /// <remarks>
+      /// The drop index is a value ranging from 0 to the number of layers in the list.  It represents the positions between layers (so drop index 2 is above layer 2, for example).
+      /// A drop index equal to the number of layers in the list represents dropping the layers at the end of the list.
+      /// </remarks>
+      private void ShuffleSelectedLayers(int iDropIndex)
       {
-         if (iOldIndex == iNewIndex || iOldIndex == iNewIndex - 1) return;
-         int iUpShim = iNewIndex < iOldIndex ? 1 : 0;
-         int iDownShim = iNewIndex > iOldIndex ? 1 : 0;
+         if (cLayerList.SelectedIndices.Count < 1) throw new InvalidOperationException("No layers are selected");
 
-         // --- Update the internal list ---
+         // --- Check if the selection is continuous ---
 
-         m_oLayers.Insert(iNewIndex, m_oLayers[iOldIndex]);
-         m_oLayers.RemoveAt(iOldIndex + iUpShim);
+         bool blContinuousSelection = cLayerList.SelectedIndices[cLayerList.SelectedIndices.Count - 1] - cLayerList.SelectedIndices[0] + 1 == cLayerList.SelectedIndices.Count;
+         
+         // --- Don't do anything if the selection is continuous and the drop index selected wouldn't move the items ---
 
-         // --- Update the UI list ---
+         if (blContinuousSelection)
+         {
+            if (iDropIndex >= cLayerList.SelectedIndices[0] && iDropIndex <= cLayerList.SelectedIndices[cLayerList.SelectedIndices.Count - 1] + 1)
+            {
+               return;
+            }
+         }
 
-         ListViewItem oItemToMove = cLayerList.Items[iOldIndex];
-         cLayerList.Items.RemoveAt(iOldIndex);
-         cLayerList.Items.Insert(System.Math.Max(iNewIndex - iDownShim, 0), oItemToMove);
+         // --- If the drop index is below a selected layer, decrement it, as removing the layer from the list before the insert changes the indices ---
+
+         int iDecrement = 0;
+         foreach (int iSelectedIndex in cLayerList.SelectedIndices)
+         {
+            if (iDropIndex > iSelectedIndex) iDecrement++; 
+         }
+         iDropIndex -= iDecrement;
+         
+         // --- Store items to move in temporary buffers ---
+
+         List<LayerBuilderContainer> oMovedContainers = new List<LayerBuilderContainer>();
+         List<ListViewItem> oMovedItems = new List<ListViewItem>();
+
+         foreach (int iSelectedIndex in cLayerList.SelectedIndices)
+         {
+            oMovedContainers.Add(m_oLayers[iSelectedIndex]);
+            oMovedItems.Add(cLayerList.Items[iSelectedIndex]);
+         }
+
+         // --- Remove the selected layers ---
+
+         cLayerList.SuspendLayout();
+         m_blSupressSelectedChanged = true;
+
+         while (cLayerList.SelectedIndices.Count > 0)
+         {
+            m_oLayers.RemoveAt(cLayerList.SelectedIndices[0]);
+            cLayerList.Items.RemoveAt(cLayerList.SelectedIndices[0]);
+         }
+
+         // --- Reinsert and reselect the selected layers ---
+
+         for (int count = 0; count < oMovedContainers.Count; count++)
+         {
+            m_oLayers.Insert(count + iDropIndex, oMovedContainers[count]);
+            cLayerList.Items.Insert(count + iDropIndex, oMovedItems[count]);
+            cLayerList.SelectedIndices.Add(count + iDropIndex);
+         }
+
+         m_blSupressSelectedChanged = false;
+         cLayerList.ResumeLayout();
 
          // --- Update the globe ---
 
          RefreshLayerRenderOrder();
+
          CheckIsValid();
       }
 
@@ -819,5 +865,10 @@ namespace Dapple
       #endregion
 
       #endregion
+
+      /// <summary>
+      /// Passed in a drag drop operation to tell the layer list that the user is doing a shuffle, not an add.
+      /// </summary>
+      private class LayerListInternalShuffleToken { }
    }
 }
