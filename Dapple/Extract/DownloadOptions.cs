@@ -55,6 +55,7 @@ namespace Dapple.Extract
          m_oDAPLayer = oDAPLayer;
          m_oViewedAoi = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetViewBox(false));
          m_oMapAoi = MainForm.MapAoi;
+         m_strMapProjection = MainForm.MapAoiCoordinateSystem;
       }
       #endregion
 
@@ -189,19 +190,19 @@ namespace Dapple.Extract
          // --- save the extents and coordinate system ---
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("minx");
-         oAttr.Value = dMinX.ToString();
+         oAttr.Value = dProjMinX.ToString();
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("miny");
-         oAttr.Value = dMinY.ToString();
+         oAttr.Value = dProjMinY.ToString();
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxx");
-         oAttr.Value = dMaxX.ToString();
+         oAttr.Value = dProjMaxX.ToString();
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxy");
-         oAttr.Value = dMaxY.ToString();
+         oAttr.Value = dProjMaxY.ToString();
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("coordinate_system");

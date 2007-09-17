@@ -150,7 +150,10 @@ namespace Dapple
 
       private static ImageList m_oImageList = new ImageList();
       private static RemoteInterface m_oMontajRemoteInterface;
+      private static Dapple.Extract.Options.Client.ClientType m_eClientType;
       private static GeographicBoundingBox m_oAoi;
+      private static string m_strAoiCoordinateSystem;
+      private static bool m_bOpenMap = false;
       private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
 		#endregion
 
@@ -180,17 +183,41 @@ namespace Dapple
       }
 
       /// <summary>
+      /// Get the client
+      /// </summary>
+      public static Dapple.Extract.Options.Client.ClientType Client
+      {
+         get { return m_eClientType; }
+      }
+
+      /// <summary>
       /// Get the open map area of interest
       /// </summary>
       public static GeographicBoundingBox MapAoi
       {
          get { return m_oAoi; }
       }
+
+      /// <summary>
+      /// Get the open map coordinate system
+      /// </summary>
+      public static string MapAoiCoordinateSystem
+      {
+         get { return m_strAoiCoordinateSystem; }
+      }
+
+      /// <summary>
+      /// See if there is an open map from our client
+      /// </summary>
+      public static bool OpenMap
+      {
+         get { return m_bOpenMap; }
+      }
 		#endregion
 
 		#region Constructor
 
-		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, RemoteInterface oMRI, GeographicBoundingBox oAoi)
+		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem)
 		{
          worldWindow = new WorldWindow();
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
@@ -545,7 +572,16 @@ namespace Dapple
             {
                cLayerList.OMFeaturesEnabled = true;
                this.Text = "Find Data";
-               m_oAoi = oAoi;
+               
+               m_bOpenMap = false;
+
+               if (oAoi != null && !string.IsNullOrEmpty(strAoiCoordinateSystem))
+               {
+                  m_oAoi = oAoi;
+                  m_strAoiCoordinateSystem = strAoiCoordinateSystem;
+                  m_bOpenMap = true;
+               }
+               m_eClientType = eClientType;               
 
                // Put the view menu after the first two
                menuStrip.Items.Remove(this.toolStripMenuItemoptions);
@@ -3217,7 +3253,7 @@ namespace Dapple
                error = 0;
             }
          }
-         catch (Exception e)
+         catch
          {
             hits = 0; error = -1; return;
          }

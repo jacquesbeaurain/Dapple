@@ -36,7 +36,7 @@ namespace Dapple.Extract
          tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, GRD_EXT);
 
          cbDownloadOptions.DataSource = Options.Grid.DownloadOptionStrings;
-         cbDownloadOptions.SelectedIndex = 1;
+         cbDownloadOptions.SelectedIndex = 0;
 
          cbDisplayOptions.DataSource = Options.Grid.DisplayOptionStrings;
          cbDisplayOptions.SelectedIndex = 0;         
@@ -75,19 +75,17 @@ namespace Dapple.Extract
       {
          base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
+         int iIndex = cbDownloadOptions.SelectedIndex;
+         string strFileName = System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[iIndex]);
+         strFileName = string.Format("{0}({1})", strFileName, Options.Grid.DownloadOptionQualifier[iIndex]);
+
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
+         oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
-         oResolutionAttr.Value = oResolution.ResolutionValue.ToString();
-
-         oDatasetElement.Attributes.Append(oPathAttr);
+         oResolutionAttr.Value = oResolution.ResolutionValue.ToString();         
          oDatasetElement.Attributes.Append(oResolutionAttr);
-
-         System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
-         Options.Grid.DownloadOptions eOption = (Options.Grid.DownloadOptions)cbDownloadOptions.SelectedIndex;
-         oDownloadElement.InnerText = eOption.ToString();
-         oDatasetElement.AppendChild(oDownloadElement);
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");
          Options.Grid.DisplayOptions eDisplayOption = (Options.Grid.DisplayOptions)cbDisplayOptions.SelectedIndex;
@@ -95,6 +93,12 @@ namespace Dapple.Extract
          oDatasetElement.AppendChild(oDisplayElement);
 
          return true;
+      }
+
+      private void cbDownloadOptions_SelectedIndexChanged(object sender, EventArgs e)
+      {
+         int iIndex = cbDownloadOptions.SelectedIndex;
+         tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[iIndex]);
       }
    }
 }

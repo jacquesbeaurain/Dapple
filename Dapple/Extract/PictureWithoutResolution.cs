@@ -32,9 +32,6 @@ namespace Dapple.Extract
          cbDownloadOptions.DataSource = Options.Picture.DownloadOptionStrings;
          cbDownloadOptions.SelectedIndex = 2;
 
-         cbSize.DataSource = Options.Picture.SizeOptionStrings;
-         cbSize.SelectedIndex = 3;
-
          tbFilename.Text = System.IO.Path.ChangeExtension(oBuilder.Name, TIF_EXT);
       }
 
@@ -72,11 +69,6 @@ namespace Dapple.Extract
          Options.Picture.DisplayOptions eDisplayOption = (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex;
          oDisplayElement.Value = eDisplayOption.ToString();
          oDatasetElement.AppendChild(oDisplayElement);
-
-         System.Xml.XmlElement oSizeElement = oDatasetElement.OwnerDocument.CreateElement("size");
-         Options.Picture.SizeOptions eSizeOption = (Options.Picture.SizeOptions)cbSize.SelectedIndex;
-         oSizeElement.Value = eSizeOption.ToString();
-         oDatasetElement.AppendChild(oSizeElement);
 
          return true;
       }

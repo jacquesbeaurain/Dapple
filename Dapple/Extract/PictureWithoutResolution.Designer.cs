@@ -34,8 +34,6 @@ namespace Dapple.Extract
          this.cbDownloadOptions = new System.Windows.Forms.ComboBox();
          this.lDisplayOptions = new System.Windows.Forms.Label();
          this.cbDisplayOptions = new System.Windows.Forms.ComboBox();
-         this.lSize = new System.Windows.Forms.Label();
-         this.cbSize = new System.Windows.Forms.ComboBox();
          this.SuspendLayout();
          // 
          // lFileName
@@ -59,7 +57,7 @@ namespace Dapple.Extract
          // lOptions
          // 
          this.lOptions.AutoSize = true;
-         this.lOptions.Location = new System.Drawing.Point(3, 59);
+         this.lOptions.Location = new System.Drawing.Point(3, 32);
          this.lOptions.Name = "lOptions";
          this.lOptions.Size = new System.Drawing.Size(95, 13);
          this.lOptions.TabIndex = 5;
@@ -71,7 +69,7 @@ namespace Dapple.Extract
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.cbDownloadOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
          this.cbDownloadOptions.FormattingEnabled = true;
-         this.cbDownloadOptions.Location = new System.Drawing.Point(95, 56);
+         this.cbDownloadOptions.Location = new System.Drawing.Point(95, 29);
          this.cbDownloadOptions.Name = "cbDownloadOptions";
          this.cbDownloadOptions.Size = new System.Drawing.Size(196, 21);
          this.cbDownloadOptions.TabIndex = 6;
@@ -80,7 +78,7 @@ namespace Dapple.Extract
          // lDisplayOptions
          // 
          this.lDisplayOptions.AutoSize = true;
-         this.lDisplayOptions.Location = new System.Drawing.Point(3, 89);
+         this.lDisplayOptions.Location = new System.Drawing.Point(3, 62);
          this.lDisplayOptions.Name = "lDisplayOptions";
          this.lDisplayOptions.Size = new System.Drawing.Size(81, 13);
          this.lDisplayOptions.TabIndex = 7;
@@ -92,37 +90,15 @@ namespace Dapple.Extract
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.cbDisplayOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
          this.cbDisplayOptions.FormattingEnabled = true;
-         this.cbDisplayOptions.Location = new System.Drawing.Point(95, 83);
+         this.cbDisplayOptions.Location = new System.Drawing.Point(95, 56);
          this.cbDisplayOptions.Name = "cbDisplayOptions";
          this.cbDisplayOptions.Size = new System.Drawing.Size(195, 21);
          this.cbDisplayOptions.TabIndex = 8;
-         // 
-         // lSize
-         // 
-         this.lSize.AutoSize = true;
-         this.lSize.Location = new System.Drawing.Point(3, 32);
-         this.lSize.Name = "lSize";
-         this.lSize.Size = new System.Drawing.Size(30, 13);
-         this.lSize.TabIndex = 9;
-         this.lSize.Text = "Size:";
-         // 
-         // cbSize
-         // 
-         this.cbSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.cbSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-         this.cbSize.FormattingEnabled = true;
-         this.cbSize.Location = new System.Drawing.Point(95, 29);
-         this.cbSize.Name = "cbSize";
-         this.cbSize.Size = new System.Drawing.Size(196, 21);
-         this.cbSize.TabIndex = 10;
          // 
          // PictureWithoutResolution
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.Controls.Add(this.cbSize);
-         this.Controls.Add(this.lSize);
          this.Controls.Add(this.cbDisplayOptions);
          this.Controls.Add(this.lDisplayOptions);
          this.Controls.Add(this.cbDownloadOptions);
@@ -130,7 +106,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
          this.Name = "PictureWithoutResolution";
-         this.Size = new System.Drawing.Size(299, 117);
+         this.Size = new System.Drawing.Size(299, 86);
          this.ResumeLayout(false);
          this.PerformLayout();
 
@@ -144,7 +120,5 @@ namespace Dapple.Extract
       private System.Windows.Forms.ComboBox cbDownloadOptions;
       private System.Windows.Forms.Label lDisplayOptions;
       private System.Windows.Forms.ComboBox cbDisplayOptions;
-      private System.Windows.Forms.Label lSize;
-      private System.Windows.Forms.ComboBox cbSize;
    }
 }

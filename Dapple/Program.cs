@@ -37,6 +37,8 @@ namespace Dapple
             bool bGeotiffTmp = false;
             
             GeographicBoundingBox oAoi = null;
+            string strAoiCoordinateSystem = string.Empty;
+            Dapple.Extract.Options.Client.ClientType eClientType = Dapple.Extract.Options.Client.ClientType.None;
 
             // Command line parsing
             CommandLineArguments cmdl = new CommandLineArguments(args);
@@ -143,30 +145,60 @@ namespace Dapple
                   MessageBox.Show("Error in AOI command-line argument: incorrect number of components");
                   return;
                }
+               double dMinX = 180, dMinY = 90, dMaxX = -180, dMaxY = -90;
 
-               try
+               bool bAoiArgument = double.TryParse(strValues[0], out dMinX);
+               
+               if (bAoiArgument)
+                  bAoiArgument = double.TryParse(strValues[1], out dMinY);
+
+               if (bAoiArgument)
+                  bAoiArgument = double.TryParse(strValues[2], out dMaxX);
+
+               if (bAoiArgument)
+                  bAoiArgument = double.TryParse(strValues[3], out dMaxY);
+
+               if (bAoiArgument)
                {
-                  double dMinX = double.Parse(strValues[0]);
-                  double dMinY = double.Parse(strValues[1]);
-                  double dMaxX = double.Parse(strValues[2]);
-                  double dMaxY = double.Parse(strValues[3]);
-
                   oAoi = new GeographicBoundingBox(dMaxY, dMinY, dMinX, dMaxX);
                }
-               catch (FormatException)
+               else
                {
                   MessageBox.Show("Error in AOI command-line argument: number format incorrect");
                   return;
                }
 
-               if (oAoi.North < oAoi.South || oAoi.East < oAoi.West ||
-                  oAoi.North < -90 || oAoi.East < -180 || oAoi.South < -90 || oAoi.West < -180 ||
-                  oAoi.North > 90 || oAoi.East > 180 || oAoi.South > 90 || oAoi.West > 180)
+               if (oAoi.North < oAoi.South || oAoi.East < oAoi.West)
                {
                   MessageBox.Show("Error in AOI command-line argument: invalid bounding box");
                   return;
                }
+
+               if (cmdl["aoi_cs"] != null)
+               {
+                  strAoiCoordinateSystem = cmdl["aoi_cs"];
+               }
+
+               if (string.IsNullOrEmpty(strAoiCoordinateSystem))
+               {
+                  MessageBox.Show("Error in AOI command-line argument: missing coordinate system");
+                  return;
+               }
             }
+
+            if (cmdl["client"] != null)
+            {
+               try
+               {
+                  eClientType = (Dapple.Extract.Options.Client.ClientType)Enum.Parse(eClientType.GetType(), cmdl["client"], true);
+               }
+               catch
+               {
+                  MessageBox.Show("Error in client command-line argument: invalid client type");
+                  return;
+               }
+            }
+            
 
             // From now on in own path please and free the console
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
@@ -200,7 +232,7 @@ namespace Dapple
 
                if (RunningInstance() == null)
                {
-                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, oRemoteInterface, oAoi));
+                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem));
                }
                else
                {

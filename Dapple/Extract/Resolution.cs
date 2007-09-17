@@ -13,7 +13,6 @@ namespace Dapple.Extract
       public static string WGS_84 = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
       private DownloadOptions m_oDownloadOptions;
       
-      private string m_strMapProjection;
       private string m_strDatasetProjection;
 
       private bool   m_bLatLon = false;
@@ -82,14 +81,14 @@ namespace Dapple.Extract
             m_bPicture = bPicture;
             m_strDatasetProjection = strCoordinateSystem;
 
-            if (!string.IsNullOrEmpty(m_strMapProjection))
+            if (!string.IsNullOrEmpty(MainForm.MapAoiCoordinateSystem))
             {
-               MainForm.MontajInterface.GetResolutionUnit(m_strMapProjection, out m_dResolutionConversionFactor, out m_strResolutionUnits, out m_bLatLon, ref dConv);
+               MainForm.MontajInterface.GetResolutionUnit(MainForm.MapAoiCoordinateSystem, out m_dResolutionConversionFactor, out m_strResolutionUnits, out m_bLatLon, ref dConv);
                lUnit.Text = m_strResolutionUnits;
             }
 
             MainForm.MontajInterface.GetResolutionUnit(m_strDatasetProjection, out m_dCellConversionFactor, out m_strCellUnits, out bLatLong, ref dConv);
-            if (string.IsNullOrEmpty(m_strMapProjection))
+            if (string.IsNullOrEmpty(MainForm.MapAoiCoordinateSystem))
             {
                m_dResolutionConversionFactor = m_dCellConversionFactor;
                m_bLatLon = bLatLong;
@@ -213,14 +212,14 @@ namespace Dapple.Extract
 
          try
          {
-            if (!string.IsNullOrEmpty(m_strMapProjection))
+            if (!string.IsNullOrEmpty(MainForm.MapAoiCoordinateSystem))
             {
-               MainForm.MontajInterface.GetResolutionUnit(m_strMapProjection, out m_dResolutionConversionFactor, out m_strResolutionUnits, out m_bLatLon, ref dConv);
+               MainForm.MontajInterface.GetResolutionUnit(MainForm.MapAoiCoordinateSystem, out m_dResolutionConversionFactor, out m_strResolutionUnits, out m_bLatLon, ref dConv);
                lUnit.Text = m_strResolutionUnits;
             }
 
             MainForm.MontajInterface.GetResolutionUnit(m_strDatasetProjection, out m_dCellConversionFactor, out m_strCellUnits, out bLatLon, ref dConv);
-            if (string.IsNullOrEmpty(m_strMapProjection))
+            if (string.IsNullOrEmpty(MainForm.MapAoiCoordinateSystem))
             {
                m_bLatLon = bLatLon;
                m_dResolutionConversionFactor = m_dCellConversionFactor;
@@ -330,15 +329,15 @@ namespace Dapple.Extract
             dExtractMinY = m_oDownloadOptions.ViewedAoi.South;
             dExtractMaxY = m_oDownloadOptions.ViewedAoi.North;
 
-            if (!string.IsNullOrEmpty(m_strMapProjection))
+            if (!string.IsNullOrEmpty(MainForm.MapAoiCoordinateSystem))
             {
-               if (!MainForm.MontajInterface.ProjectBoundingRectangle(m_strDatasetProjection, ref dMinXDest, ref dMinYDest, ref dMaxXDest, ref dMaxYDest, m_strMapProjection))
+               if (!MainForm.MontajInterface.ProjectBoundingRectangle(m_strDatasetProjection, ref dMinXDest, ref dMinYDest, ref dMaxXDest, ref dMaxYDest, MainForm.MapAoiCoordinateSystem))
                {
                   CalculateResolution(dOriginX, dOriginY, dOriginX + m_iSizeX * m_dCellSizeX, dOriginY + m_iSizeY * m_dCellSizeY);
                   return;
                }
 
-               if (!MainForm.MontajInterface.ProjectBoundingRectangle(WGS_84, ref dExtractMinX, ref dExtractMinY, ref dExtractMaxX, ref dExtractMaxY, m_strMapProjection))
+               if (!MainForm.MontajInterface.ProjectBoundingRectangle(WGS_84, ref dExtractMinX, ref dExtractMinY, ref dExtractMaxX, ref dExtractMaxY, MainForm.MapAoiCoordinateSystem))
                {
                   CalculateResolution(dOriginX, dOriginY, dOriginX + m_iSizeX * m_dCellSizeX, dOriginY + m_iSizeY * m_dCellSizeY);
                   return;
@@ -417,16 +416,16 @@ namespace Dapple.Extract
             dExtractMinY = m_oDownloadOptions.ViewedAoi.South;
             dExtractMaxY = m_oDownloadOptions.ViewedAoi.North;
 
-            if (!string.IsNullOrEmpty(m_strMapProjection))
+            if (!string.IsNullOrEmpty(MainForm.MapAoiCoordinateSystem))
             {
-               if (!MainForm.MontajInterface.ProjectBoundingRectangle(m_strDatasetProjection, ref dMinXDest, ref dMinYDest, ref dMaxXDest, ref dMaxYDest, m_strMapProjection))
+               if (!MainForm.MontajInterface.ProjectBoundingRectangle(m_strDatasetProjection, ref dMinXDest, ref dMinYDest, ref dMaxXDest, ref dMaxYDest, MainForm.MapAoiCoordinateSystem))
                {
                   CalculateResolution(dMinX, dMinY, dMaxX, dMaxY);
                   return;
                }
 
 
-               if (!MainForm.MontajInterface.ProjectBoundingRectangle(WGS_84, ref dExtractMinX, ref dExtractMinY, ref dExtractMaxX, ref dExtractMaxY, m_strMapProjection))
+               if (!MainForm.MontajInterface.ProjectBoundingRectangle(WGS_84, ref dExtractMinX, ref dExtractMinY, ref dExtractMaxX, ref dExtractMaxY, MainForm.MapAoiCoordinateSystem))
                {
                   CalculateResolution(dMinX, dMinY, dMaxX, dMaxY);
                   return;

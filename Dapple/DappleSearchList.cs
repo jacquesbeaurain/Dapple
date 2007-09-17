@@ -304,7 +304,7 @@ namespace Dapple
 
             return new SearchResultSet(responseXML);
          }
-         catch (Exception e)
+         catch
          {
             return null;
          }

@@ -39,6 +39,15 @@ namespace Dapple.Extract
       {
          InitializeComponent();
 
+         if (!MainForm.OpenMap)
+         {
+            rbClipMapExtent.Enabled = false;
+            rbReproject.Enabled = false;
+         }
+
+         if (string.IsNullOrEmpty(tbDestination.Text))
+            tbDestination.Text = MainForm.MontajInterface.BaseDirectory();
+
          lvDatasets.SmallImageList = MainForm.DataTypeImageList;
          lvDatasets.LargeImageList = MainForm.DataTypeImageList;
 
@@ -253,6 +262,8 @@ namespace Dapple.Extract
          MainForm.MontajInterface.Download(oExtractDoc.OuterXml);
 
          oPopup.Hide();
+
+         MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
          this.Close();
       }
 
