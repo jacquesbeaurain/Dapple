@@ -20,7 +20,7 @@ namespace WorldWind
       }
    }
 
-   public class GeographicBoundingBox
+   public class GeographicBoundingBox : ICloneable
    {
       public double North;
       public double South;
@@ -94,6 +94,15 @@ namespace WorldWind
       public override string ToString()
       {
          return String.Format("({0:F2} W,{1:F2} S) -> ({2:F2} E,{3:F2} N)", West, South, East, North);
-      } 
+      }
+
+      #region ICloneable Members
+
+      public object Clone()
+      {
+         return new GeographicBoundingBox(North, South, West, East, MinimumAltitude, MaximumAltitude);
+      }
+
+      #endregion
    }
 }

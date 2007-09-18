@@ -218,7 +218,7 @@ namespace Dapple.LayerGeneration
       #region IBuilder Members
 
 
-      public TreeNode[] getChildTreeNodes()
+      public virtual TreeNode[] getChildTreeNodes()
       {
          TreeNode[] result = new TreeNode[m_colChildren.Count + m_colSublist.Count];
          int index = 0;
@@ -283,16 +283,16 @@ namespace Dapple.LayerGeneration
    }
 
    /// <summary>
-   /// A BuilderDirectory representing a server type (WMS, ArcIMS) that has asynchronous loading and thus may
+   /// A BuilderDirectory representing a builder that has asynchronous loading and thus may
    /// not be loaded immediately upon addition to a ServerTree.
    /// </summary>
-   public abstract class AsyncServerBuilder : ServerBuilder
+   public abstract class AsyncBuilder : ServerBuilder
    {
       protected string m_strErrorMessage = String.Empty;
       protected bool m_blnIsLoading = true;
       private ManualResetEvent m_oLoadBlock = new ManualResetEvent(false);
       
-      public AsyncServerBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
+      public AsyncBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
          : base(name, parent, oUri, iLII, iDII)
       {
       }
@@ -335,6 +335,35 @@ namespace Dapple.LayerGeneration
       }
 
       /// <summary>
+      /// Get child nodes.
+      /// </summary>
+      /// <remarks>
+      /// If this server is still loading, the only child is a temporary node.
+      /// </remarks>
+      /// <returns></returns>
+      public override TreeNode[] getChildTreeNodes()
+      {
+         if (IsLoading)
+         {
+            TreeNode[] result = new TreeNode[1];
+            result[0] = getLoadingNode();
+
+            return result;
+         }
+
+         return base.getChildTreeNodes();
+      }
+
+      /// <summary>
+      /// Get the TreeNode to display as the child of this server's TreeNode if it's not loaded.
+      /// </summary>
+      /// <returns></returns>
+      protected virtual TreeNode getLoadingNode()
+      {
+         return new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+      }
+
+      /// <summary>
       /// Updates a TreeNode to be loaded, loading, or broken.
       /// </summary>
       /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
@@ -346,12 +375,6 @@ namespace Dapple.LayerGeneration
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
             oParent.Text = Name;
-            oParent.Nodes.Clear();
-
-            TreeNode hTempNode = new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
-            hTempNode.Tag = null;
-            oParent.Nodes.Add(hTempNode);
-            oParent.ExpandAll();
          }
          else if (LoadingErrorOccurred)
          {

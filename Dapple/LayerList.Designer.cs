@@ -40,9 +40,9 @@ namespace Dapple
          this.cGoToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cViewPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-         this.cRemoveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cRefreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cClearCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.cRemoveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cTransparencySlider = new Dapple.TrackBarWithPaint();
          cSliderMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
          cToolStrip = new System.Windows.Forms.ToolStrip();
@@ -119,6 +119,7 @@ namespace Dapple
             this.cColumnHeader});
          this.cLayerList.ContextMenuStrip = this.cLayerListContextMenu;
          this.cLayerList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+         this.cLayerList.HideSelection = false;
          this.cLayerList.Location = new System.Drawing.Point(0, 25);
          this.cLayerList.Name = "cLayerList";
          this.cLayerList.Size = new System.Drawing.Size(197, 96);
@@ -169,14 +170,6 @@ namespace Dapple
          this.toolStripSeparator1.Name = "toolStripSeparator1";
          this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
          // 
-         // cRemoveToolStripMenuItem
-         // 
-         this.cRemoveToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_remove;
-         this.cRemoveToolStripMenuItem.Name = "cRemoveToolStripMenuItem";
-         this.cRemoveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-         this.cRemoveToolStripMenuItem.Text = "Remove";
-         this.cRemoveToolStripMenuItem.Click += new System.EventHandler(this.cRemoveToolStripMenuItem_Click);
-         // 
          // cRefreshToolStripMenuItem
          // 
          this.cRefreshToolStripMenuItem.Image = global::Dapple.Properties.Resources.refresh;
@@ -192,6 +185,14 @@ namespace Dapple
          this.cClearCacheToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
          this.cClearCacheToolStripMenuItem.Text = "Clear Cache";
          this.cClearCacheToolStripMenuItem.Click += new System.EventHandler(this.cClearCacheToolStripMenuItem_Click);
+         // 
+         // cRemoveToolStripMenuItem
+         // 
+         this.cRemoveToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_remove;
+         this.cRemoveToolStripMenuItem.Name = "cRemoveToolStripMenuItem";
+         this.cRemoveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+         this.cRemoveToolStripMenuItem.Text = "Remove";
+         this.cRemoveToolStripMenuItem.Click += new System.EventHandler(this.cRemoveToolStripMenuItem_Click);
          // 
          // cTransparencySlider
          // 

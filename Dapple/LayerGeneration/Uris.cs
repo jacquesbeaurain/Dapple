@@ -27,7 +27,7 @@ namespace Dapple.LayerGeneration
       /// Get a cache directory for this Uri (host and path, minus query and scheme.
       /// </summary>
       /// <returns></returns>
-      public String ToCacheDirectory()
+      public virtual String ToCacheDirectory()
       {
          String result = base.Host + base.AbsolutePath;
 
@@ -106,6 +106,22 @@ namespace Dapple.LayerGeneration
       public ArcIMSServerUri(String strValue)
          : base(strValue)
       { }
+
+      /// <summary>
+      /// Get a cache directory for this Uri (host and path, minus query and scheme.
+      /// </summary>
+      /// <returns></returns>
+      public override String ToCacheDirectory()
+      {
+         String result = base.Host;
+
+         // Convert invalid characters to underscores
+         foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
+            result = result.Replace(ch.ToString(), "_");
+
+         // And done
+         return result;
+      }
 
       public String ToCatalogUri()
       {
@@ -276,6 +292,8 @@ namespace Dapple.LayerGeneration
    {
       private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          "servicename",
+         "layerid",
+         "title",
          "minx",
          "miny",
          "maxx",
@@ -314,6 +332,8 @@ namespace Dapple.LayerGeneration
          return new ArcIMSQuadLayerBuilder(
             m_oServer as ArcIMSServerUri,
             getAttribute("servicename"),
+            getAttribute("layertitle"),
+            getAttribute("layerid"),
             new GeographicBoundingBox(double.Parse(getAttribute("maxy")), double.Parse(getAttribute("miny")), double.Parse(getAttribute("minx")), double.Parse(getAttribute("maxx"))),
             oWindow,
             null);

@@ -450,7 +450,7 @@ namespace Dapple
 
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
          cRemoveLayerButton.Enabled = cLayerList.SelectedIndices.Count > 0;
-         cExtractButton.Enabled = m_oLayers.Count > 0;
+         cExtractButton.Enabled = cLayerList.SelectedIndices.Count > 0;
       }
 
       /// <summary>
@@ -789,7 +789,7 @@ namespace Dapple
       /// </summary>
       public void CmdDownloadActiveLayers()
       {
-         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(m_oLayers);
+         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.SelectedLayers);
          oDownloadDialog.ShowDialog(this);
       }
 

@@ -56,5 +56,17 @@ namespace Dapple
             base.OnRenderToolStripBorder(e);
       }
    }
+
+   public class BorderlessToolStripRenderer : ToolStripSystemRenderer
+   {
+      public BorderlessToolStripRenderer() : base()
+      {
+      }
+
+      protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+      {
+         // Don't
+      }
+   }
 }
 

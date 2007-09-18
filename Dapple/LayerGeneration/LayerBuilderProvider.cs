@@ -76,7 +76,7 @@ namespace Dapple.LayerGeneration
 
 	public abstract class LayerBuilder : IBuilder
 	{
-		protected string m_strName;
+		protected string m_szTreeNodeText;
 		protected IBuilder m_Parent;
 		protected WorldWindow m_oWorldWindow;
 
@@ -95,9 +95,9 @@ namespace Dapple.LayerGeneration
 
 		private event BuilderChangedHandler BuilderChanged;
 
-      public LayerBuilder(String strName, WorldWindow oWorldWindow, IBuilder oParent)
+      public LayerBuilder(String szTreeNodeText, WorldWindow oWorldWindow, IBuilder oParent)
       {
-         m_strName = strName;
+         m_szTreeNodeText = szTreeNodeText;
          m_Parent = oParent;
          m_oWorldWindow = oWorldWindow;
       }
@@ -106,7 +106,7 @@ namespace Dapple.LayerGeneration
 		{
 			get
 			{
-				return m_strName;
+				return m_szTreeNodeText;
 			}
 		}
 

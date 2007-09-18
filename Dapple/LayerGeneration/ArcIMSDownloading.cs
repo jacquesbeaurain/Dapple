@@ -286,6 +286,20 @@ namespace Dapple.LayerGeneration
             nImageSizeElement.SetAttribute("height", TILE_SIZE);
             nPropertiesElement.AppendChild(nImageSizeElement);
 
+            XmlElement nLayerListElement = oRequestDoc.CreateElement("LAYERLIST", oRequestDoc.NamespaceURI);
+            nLayerListElement.SetAttribute("nodefault", "true");
+            nPropertiesElement.AppendChild(nLayerListElement);
+
+            XmlElement nLayerDefElement = oRequestDoc.CreateElement("LAYERDEF", oRequestDoc.NamespaceURI);
+            nLayerDefElement.SetAttribute("id", m_oImageStore.LayerID);
+            nLayerDefElement.SetAttribute("visible", "true");
+            nLayerListElement.AppendChild(nLayerDefElement);
+
+            XmlElement nBackgroundElement = oRequestDoc.CreateElement("BACKGROUND", oRequestDoc.NamespaceURI);
+            nBackgroundElement.SetAttribute("color", "255,255,255");
+            nBackgroundElement.SetAttribute("transcolor", "255,255,255");
+            nPropertiesElement.AppendChild(nBackgroundElement);
+
             XmlElement nFeatureCoordSysElement = oRequestDoc.CreateElement("FEATURECOORDSYS", oRequestDoc.NamespaceURI);
             nFeatureCoordSysElement.SetAttribute("id", "4326");
             nPropertiesElement.AppendChild(nFeatureCoordSysElement);
@@ -383,28 +397,24 @@ namespace Dapple.LayerGeneration
    public class ArcIMSImageStore : ImageStore
    {
       private String m_strServiceName;
+      private String m_szLayerID;
       private ArcIMSServerUri m_oUri;
 
-      public ArcIMSImageStore(String strServiceName, ArcIMSServerUri oUri)
+      public ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri)
       {
          m_oUri = oUri;
          m_strServiceName = strServiceName;
+         m_szLayerID = szLayerID;
       }
 
-      public String ServiceName
-      {
-         get { return m_strServiceName; }
-      }
+      #region Properties
 
-      public ArcIMSServerUri ServerUri
-      {
-         get { return m_oUri; }
-      }
+      public String ServiceName { get { return m_strServiceName; } }
+      public String LayerID { get { return m_szLayerID; } }
+      public ArcIMSServerUri ServerUri { get { return m_oUri; } }
+      public override bool IsDownloadableLayer { get { return true; } }
 
-      public override bool IsDownloadableLayer
-      {
-         get { return true; }
-      }
+      #endregion
 
       protected override void QueueDownload(IGeoSpatialDownloadTile oTile, string strLocalFilePath)
       {

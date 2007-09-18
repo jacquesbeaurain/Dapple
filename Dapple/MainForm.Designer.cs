@@ -1122,6 +1122,7 @@ namespace Dapple
            // 
            // toolStripNavigation
            // 
+           this.toolStripNavigation.BackColor = System.Drawing.Color.Black;
            this.toolStripNavigation.Dock = System.Windows.Forms.DockStyle.None;
            this.toolStripNavigation.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
            this.toolStripNavigation.ImageScalingSize = new System.Drawing.Size(18, 18);
@@ -1138,9 +1139,8 @@ namespace Dapple
             this.toolStripButtonRotLeft,
             this.toolStripSeparator3,
             this.toolStripButtonResetCamera});
-           this.toolStripNavigation.Location = new System.Drawing.Point(216, 420);
+           this.toolStripNavigation.Location = new System.Drawing.Point(195, 418);
            this.toolStripNavigation.Name = "toolStripNavigation";
-           this.toolStripNavigation.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
            this.toolStripNavigation.Size = new System.Drawing.Size(228, 25);
            this.toolStripNavigation.TabIndex = 1;
            this.toolStripNavigation.Text = "toolStrip1";

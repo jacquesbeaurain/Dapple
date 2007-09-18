@@ -86,6 +86,9 @@
             <builderentry>
                <wmscatalog capabilitiesurl="http://wms.jpl.nasa.gov/wms.cgi"/>
             </builderentry>
+            <builderentry>
+               <arcimscatalog capabilitiesurl="http://gdr.ess.nrcan.gc.ca/servlet/com.esri.esrimap.Esrimap" />
+            </builderentry>
          </builderdirectory>
       </builderentry>
    </servers>

@@ -479,10 +479,10 @@ namespace Dapple
                   m_oCurrServerLayers.Add(new DAPQuadLayerBuilder(oDataSet, MainForm.WorldWindowSingleton, obj as Server, null));
                }
             }
-            else if (obj is AsyncServerBuilder)
+            else if (obj is AsyncBuilder)
             {
                m_oCurrServerLayers = new List<LayerBuilder>();
-               ((AsyncServerBuilder)obj).getLayerBuilders(ref m_oCurrServerLayers);
+               ((AsyncBuilder)obj).getLayerBuilders(ref m_oCurrServerLayers);
             }
             else
                throw new ArgumentException("obj is unknown type " + obj.GetType());

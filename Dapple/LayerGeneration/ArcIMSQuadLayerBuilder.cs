@@ -12,12 +12,14 @@ namespace Dapple.LayerGeneration
    {
       #region Member variables
 
+      private String m_szServiceName;
       private QuadTileSet m_oQuadTileSet = null;
       private bool m_blnIsChanged = true;
       private GeographicBoundingBox m_oEnvelope;
-      private ArcIMSServerUri m_oUri;
+      private ArcIMSServerUri m_oServerUri;
       private double m_dLevelZeroTileSizeDegrees = 0;
       private int m_iLevels = 15;
+      private String m_szLayerID;
 
       #endregion
 
@@ -31,11 +33,13 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oUri, String strServiceName, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent)
-         :base(strServiceName, oWorldWindow, oParent)
+      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent)
+         :base(szLayerTitle, oWorldWindow, oParent)
       {
          m_oEnvelope = oEnvelope;
-         m_oUri = oUri;
+         m_szLayerID = szLayerID;
+         m_szServiceName = strServiceName;
+         m_oServerUri = oServerUri;
 
          // Determine the needed levels (function of tile size and resolution, for which we just use ~5 meters because it is not available with WMS)
          double dRes = 5.0 / 100000.0;
@@ -156,7 +160,7 @@ namespace Dapple.LayerGeneration
          if (m_blnIsChanged)
          {
             ImageStore[] aImageStore = new ImageStore[1];
-            aImageStore[0] = new ArcIMSImageStore(m_strName, m_oUri);
+            aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri);
             aImageStore[0].DataDirectory = null;
             aImageStore[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
             aImageStore[0].LevelCount = m_iLevels;
@@ -165,7 +169,7 @@ namespace Dapple.LayerGeneration
             aImageStore[0].TextureFormat = World.Settings.TextureFormat;
             aImageStore[0].TextureSizePixels = 256;
 
-            m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorldWindow.CurrentWorld, 0,
+            m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0,
                m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,
                true, aImageStore);
             m_oQuadTileSet.AlwaysRenderBaseTiles = true;
@@ -178,12 +182,12 @@ namespace Dapple.LayerGeneration
 
       public override string GetURI()
       {
-         return m_oUri.ToServiceUri(m_strName).Replace("http://", URLProtocolName) + String.Format("&minx={0}&miny={1}&maxx={2}&maxy={3}", m_oEnvelope.West, m_oEnvelope.South, m_oEnvelope.East, m_oEnvelope.North);
+         return m_oServerUri.ToServiceUri(m_szTreeNodeText).Replace("http://", URLProtocolName) + String.Format("&minx={0}&miny={1}&maxx={2}&maxy={3}", m_oEnvelope.West, m_oEnvelope.South, m_oEnvelope.East, m_oEnvelope.North);
       }
 
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oUri.ToCacheDirectory()), m_strName);
+         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), "Layer" + m_szLayerID);
       }
 
       protected override void CleanUpLayer(bool bFinal)
@@ -196,7 +200,7 @@ namespace Dapple.LayerGeneration
 
       public override object CloneSpecific()
       {
-         return new ArcIMSQuadLayerBuilder(m_oUri, m_strName, m_oEnvelope, m_oWorldWindow, m_Parent);
+         return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent);
       }
 
       public override bool Equals(object obj)
@@ -205,7 +209,7 @@ namespace Dapple.LayerGeneration
          ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
 
          // -- Equal if they're the same service from the same server --
-         return m_oUri.Equals(castObj.m_oUri) && m_strName.Equals(castObj.m_strName);
+         return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
       }
 
       #endregion

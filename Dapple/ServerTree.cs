@@ -41,8 +41,8 @@ namespace Dapple
 
 		protected MainForm m_oParent;
 		protected LayerList m_activeLayers;
-		protected List<AsyncServerBuilder> m_wmsServers = new List<AsyncServerBuilder>();
-      protected List<AsyncServerBuilder> m_oArcIMSServers = new List<AsyncServerBuilder>();
+		protected List<AsyncBuilder> m_wmsServers = new List<AsyncBuilder>();
+      protected List<AsyncBuilder> m_oArcIMSServers = new List<AsyncBuilder>();
 
       public event MainForm.ViewMetadataHandler ViewMetadata;
 		#endregion
@@ -560,7 +560,7 @@ namespace Dapple
 			dir = entry.Newbuilderdirectory();
 			dir.Addname(new SchemaString(m_hWMSRootNode.Text));
 			dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
-			foreach (AsyncServerBuilder builderEntry in m_wmsServers)
+			foreach (AsyncBuilder builderEntry in m_wmsServers)
 			{
 				builderentryType subentry = servers.Newbuilderentry();
 				wmscatalogType wms = subentry.Newwmscatalog();
@@ -568,7 +568,7 @@ namespace Dapple
 				subentry.Addwmscatalog(wms);
 				dir.Addbuilderentry(subentry);
 			}
-         foreach (AsyncServerBuilder builderEntry in m_oArcIMSServers)
+         foreach (AsyncBuilder builderEntry in m_oArcIMSServers)
          {
             builderentryType subentry = servers.Newbuilderentry();
             arcimscatalogType arcims = subentry.Newarcimscatalog();
@@ -733,7 +733,7 @@ namespace Dapple
          // Annotate the tree for loading WMS servers.
          foreach (TreeNode treeNode in m_hWMSRootNode.Nodes)
          {
-            ((AsyncServerBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
+            ((AsyncBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
          }
 
          iCount = 0;
@@ -747,7 +747,7 @@ namespace Dapple
          // Annotate tree for loading ArcIMS servers.
          foreach (TreeNode treeNode in m_hArcIMSRootNode.Nodes)
          {
-            ((AsyncServerBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
+            ((AsyncBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
          }
 		}
 
@@ -773,7 +773,7 @@ namespace Dapple
 				  (treeNode.Tag as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) == 0)
 				{
                // Don't remove loading or busted servers
-               if (treeNode.Tag is AsyncServerBuilder && !((AsyncServerBuilder)treeNode.Tag).IsLoadedSuccessfully)
+               if (treeNode.Tag is AsyncBuilder && !((AsyncBuilder)treeNode.Tag).IsLoadedSuccessfully)
                   continue;
 					
 					treeNode.Remove();

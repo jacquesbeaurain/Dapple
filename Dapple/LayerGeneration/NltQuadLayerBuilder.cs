@@ -174,7 +174,7 @@ namespace Dapple.LayerGeneration
          return string.Format(CultureInfo.InvariantCulture, formatString,
             m_strServerUrl.Replace("http://", URLProtocolName),
             m_strDatasetName,
-            System.Web.HttpUtility.UrlEncode(m_strName),
+            System.Web.HttpUtility.UrlEncode(m_szTreeNodeText),
             distAboveSurface.ToString(),
             m_hBoundary.North,
             m_hBoundary.East,
@@ -202,7 +202,7 @@ namespace Dapple.LayerGeneration
 
       public override object CloneSpecific()
       {
-         return new NltQuadLayerBuilder(m_strName, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees, m_iLevels, m_iTextureSizePixels, m_strServerUrl, m_strDatasetName, m_strImageExt, Opacity, m_oWorldWindow, m_Parent);
+         return new NltQuadLayerBuilder(m_szTreeNodeText, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees, m_iLevels, m_iTextureSizePixels, m_strServerUrl, m_strDatasetName, m_strImageExt, Opacity, m_oWorldWindow, m_Parent);
       }
 
       public override bool Equals(object obj)
@@ -271,7 +271,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].TextureFormat = World.Settings.TextureFormat;
             imageStores[0].TextureSizePixels = m_iTextureSizePixels;
 
-            m_oQuadTileSet = new QuadTileSet(m_strName,
+            m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText,
                m_oWorldWindow.CurrentWorld,
                distAboveSurface,
                90, -90, -180, 180, terrainMapped, imageStores);

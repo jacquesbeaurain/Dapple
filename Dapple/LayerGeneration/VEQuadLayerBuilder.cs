@@ -187,7 +187,7 @@ namespace Dapple.LayerGeneration
                }
             }
 
-            m_oVEQTS = new VeReprojectTilesLayer(m_strName, m_oWorldWindow, dataset, fileExt, 0, GetCachePath());
+            m_oVEQTS = new VeReprojectTilesLayer(m_szTreeNodeText, m_oWorldWindow, dataset, fileExt, 0, GetCachePath());
 #endif
             m_oVEQTS.IsOn = m_IsOn;
             m_oVEQTS.Opacity = m_bOpacity;
@@ -216,7 +216,7 @@ namespace Dapple.LayerGeneration
 
       public override object CloneSpecific()
       {
-         return new VEQuadLayerBuilder(m_strName, m_mapType, m_oWorldWindow, m_IsOn, m_Parent);
+         return new VEQuadLayerBuilder(m_szTreeNodeText, m_mapType, m_oWorldWindow, m_IsOn, m_Parent);
       }
 
       public override bool Equals(object obj)

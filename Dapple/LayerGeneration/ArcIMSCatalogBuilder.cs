@@ -14,7 +14,7 @@ namespace Dapple.LayerGeneration
    public class ArcIMSCatalogBuilder : BuilderDirectory
    {
       #region Constants
-      protected const string CATALOG_CACHE = "ArcIMS Catalog Cache";
+      public const string CATALOG_CACHE = "ArcIMS Catalog Cache";
       #endregion
 
       private WorldWindow m_oWorldWindow;
@@ -136,7 +136,7 @@ namespace Dapple.LayerGeneration
 
             foreach (XmlNode nServiceNode in oNodeList)
             {
-               ProcessArcIMSService(serverDir.Uri as ArcIMSServerUri, nServiceNode as XmlElement, serverDir);
+               serverDir.SubList.Add(new ArcIMSServiceBuilder(serverDir, ((XmlElement)nServiceNode).GetAttribute("name"), LoadFinished));
             }
 
             serverDir.SetLoadSuccessful();
@@ -154,16 +154,9 @@ namespace Dapple.LayerGeneration
             }
          }
       }
-
-      private void ProcessArcIMSService(ArcIMSServerUri serviceUri, XmlElement nServiceNode, BuilderDirectory directory)
-      {
-         //TODO: Get acutal layer bounds, not placeholder ones
-         ArcIMSQuadLayerBuilder builder = new ArcIMSQuadLayerBuilder(serviceUri, nServiceNode.GetAttribute("name"), new GeographicBoundingBox(90, -90, -180, 180), m_oWorldWindow, directory);
-         directory.LayerBuilders.Add(builder);
-      }
    }
 
-   public class ArcIMSServerBuilder : AsyncServerBuilder
+   public class ArcIMSServerBuilder : AsyncBuilder
    {
       string m_strCatalogPathname;
 
@@ -212,6 +205,158 @@ namespace Dapple.LayerGeneration
       public override System.Drawing.Icon Icon
       {
          get { return Dapple.Properties.Resources.arcims; }
+      }
+   }
+
+
+   public class ArcIMSServiceBuilder : AsyncBuilder
+   {
+      private String m_szName;
+      private Object m_oLock = new Object();
+      private ArcIMSServiceDownload m_hDownload;
+      private ServerTree.LoadFinishedCallbackHandler LoadFinished;
+
+      public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished) : base(szName, hServer, hServer.Uri, 0, 0)
+      {
+         m_szName = szName;
+         LoadFinished = hLoadFinished;
+      }
+
+      public override System.Windows.Forms.TreeNode[] getChildTreeNodes()
+      {
+         lock (m_oLock)
+         {
+            if (m_hDownload == null)
+            {
+               // create the cache directory
+               String szSavePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, ArcIMSCatalogBuilder.CATALOG_CACHE), this.Uri.ToCacheDirectory());
+               Directory.CreateDirectory(szSavePath);
+
+               // download the catalog
+               String szXmlPath = Path.Combine(Path.Combine(szSavePath, m_szName), "__catalog.xml");
+
+               m_hDownload = new ArcIMSServiceDownload(this.Uri as ArcIMSServerUri, m_szName, 0);
+               m_hDownload.SavedFilePath = szXmlPath;
+               m_hDownload.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
+               m_hDownload.BackgroundDownloadFile();
+            }
+         }
+
+         return base.getChildTreeNodes();
+      }
+
+      private void CatalogDownloadCompleteCallback(WebDownload hDownload)
+      {
+         try
+         {
+            if (!File.Exists(hDownload.SavedFilePath))
+            {
+               SetLoadFailed("Could not retrieve layer list");
+               return;
+            }
+
+            if (new FileInfo(hDownload.SavedFilePath).Length == 0)
+            {
+               SetLoadFailed("Could not retrieve layer list");
+               File.Delete(hDownload.SavedFilePath);
+               return;
+            }
+
+            XmlDocument hCatalog = new XmlDocument();
+            try
+            {
+               hCatalog.Load(hDownload.SavedFilePath);
+            }
+            catch (XmlException)
+            {
+               SetLoadFailed("Could not retrieve layer list");
+               return;
+            }
+
+            XmlNodeList oNodeList = hCatalog.SelectNodes("/ARCXML/RESPONSE/SERVICEINFO/LAYERINFO");
+            if (oNodeList.Count == 0)
+            {
+               SetLoadFailed("Service has no layers");
+               return;
+            }
+
+            bool blRecognizedCRS = false;
+
+            XmlElement oFeatureCoordSys = hCatalog.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/FEATURECOORDSYS") as XmlElement;
+            if (oFeatureCoordSys != null)
+            {
+               String szCRSID = "EPSG:" + oFeatureCoordSys.GetAttribute("id");
+               blRecognizedCRS = Utility.GCSMappings.WMSWGS84Equivalents.Contains(szCRSID);
+            }
+
+            GeographicBoundingBox oServiceBounds = new GeographicBoundingBox();
+
+            if (blRecognizedCRS)
+            {
+               XmlElement oServiceEnvelope = hCatalog.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/ENVELOPE") as XmlElement;
+               if (oServiceEnvelope != null)
+               {
+                  oServiceBounds.North = Double.Parse(oServiceEnvelope.GetAttribute("maxy"));
+                  oServiceBounds.East = Double.Parse(oServiceEnvelope.GetAttribute("maxx"));
+                  oServiceBounds.South = Double.Parse(oServiceEnvelope.GetAttribute("miny"));
+                  oServiceBounds.West = Double.Parse(oServiceEnvelope.GetAttribute("minx"));
+               }
+            }
+
+            lock (m_oLock)
+            {
+               foreach (XmlElement nLayerElement in oNodeList)
+               {
+                  String szID = nLayerElement.GetAttribute("id");
+                  String szTitle = nLayerElement.GetAttribute("name");
+                  if (String.IsNullOrEmpty(szTitle)) szTitle = "LayerID " + szID;
+
+                  GeographicBoundingBox oLayerBounds = oServiceBounds.Clone() as GeographicBoundingBox;
+
+                  if (blRecognizedCRS)
+                  {
+                     XmlElement oLayerEnvelope = null;
+                     if (nLayerElement.GetAttribute("type").Equals("image"))
+                        oLayerEnvelope = nLayerElement.SelectSingleNode("ENVELOPE") as XmlElement;
+                     if (nLayerElement.GetAttribute("type").Equals("featureclass"))
+                        oLayerEnvelope = nLayerElement.SelectSingleNode("FCLASS/ENVELOPE") as XmlElement;                     
+                     if (oLayerEnvelope != null)
+                     {
+                        oLayerBounds.North = Double.Parse(oLayerEnvelope.GetAttribute("maxy"));
+                        oLayerBounds.East = Double.Parse(oLayerEnvelope.GetAttribute("maxx"));
+                        oLayerBounds.South = Double.Parse(oLayerEnvelope.GetAttribute("miny"));
+                        oLayerBounds.West = Double.Parse(oLayerEnvelope.GetAttribute("minx"));
+                     }
+                  }
+
+                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(this.Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this));
+               }
+            }
+
+            SetLoadSuccessful();
+         }
+         finally
+         {
+            if (LoadFinished != null) LoadFinished();
+
+            hDownload.IsComplete = true;
+            hDownload.Dispose();
+         }
+      }
+
+      protected override System.Windows.Forms.TreeNode getLoadingNode()
+      {
+         return new System.Windows.Forms.TreeNode("Getting service layers...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+      }
+
+      public override System.Drawing.Icon Icon
+      {
+         get { return Dapple.Properties.Resources.nasa; }
+      }
+
+      public override string Type
+      {
+         get { return "ArcIMS Service"; }
       }
    }
 }

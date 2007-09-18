@@ -200,7 +200,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class WMSServerBuilder : AsyncServerBuilder
+   public class WMSServerBuilder : AsyncBuilder
    {
       string m_strCapabilitiesFilePath;
       WMSList m_oList;

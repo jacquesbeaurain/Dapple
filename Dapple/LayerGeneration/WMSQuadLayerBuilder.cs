@@ -211,7 +211,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].TextureFormat = World.Settings.TextureFormat;
             imageStores[0].TextureSizePixels = m_iTextureSizePixels;
 
-            m_oQuadTileSet = new QuadTileSet(m_strName, m_oWorldWindow.CurrentWorld, distAboveSurface,
+            m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, distAboveSurface,
                (double)m_wmsLayer.North, (double)m_wmsLayer.South, (double)m_wmsLayer.West, (double)m_wmsLayer.East,
                terrainMapped, imageStores);
             m_oQuadTileSet.AlwaysRenderBaseTiles = true;

@@ -174,7 +174,7 @@ namespace WorldWind
 		/// <returns>The tile number</returns>
 		public static int GetRowFromLatitude(double latitude, double tileSize)
 		{
-			return (int)System.Math.Round((System.Math.Abs(-90.0 - latitude)%180)/tileSize, 1);
+			return (int)System.Math.Truncate((System.Math.Abs(-90.0 - latitude) % 180) / tileSize);
 		}
 
 		/// <summary>
@@ -185,7 +185,7 @@ namespace WorldWind
 		/// <returns>The tile number</returns>
 		public static int GetRowFromLatitude(Angle latitude, double tileSize)
 		{
-			return (int)System.Math.Round((System.Math.Abs(-90.0 - latitude.Degrees)%180)/tileSize, 1);
+			return (int)System.Math.Truncate((System.Math.Abs(-90.0 - latitude.Degrees) % 180) / tileSize);
 		}
 
 		/// <summary>
@@ -196,7 +196,7 @@ namespace WorldWind
 		/// <returns>The tile number</returns>
 		public static int GetColFromLongitude(double longitude, double tileSize)
 		{
-			return (int)System.Math.Round((System.Math.Abs(-180.0 - longitude)%360)/tileSize, 1);
+			return (int)System.Math.Truncate((System.Math.Abs(-180.0 - longitude) % 360) / tileSize);
 		}
 
 		/// <summary>
@@ -207,7 +207,7 @@ namespace WorldWind
 		/// <returns>The tile number</returns>
 		public static int GetColFromLongitude(Angle longitude, double tileSize)
 		{
-			return (int)System.Math.Round((System.Math.Abs(-180.0 - longitude.Degrees)%360)/tileSize, 1);
+			return (int)System.Math.Truncate((System.Math.Abs(-180.0 - longitude.Degrees) % 360) / tileSize);
 		}
 
 		/// <summary>
