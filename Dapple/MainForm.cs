@@ -155,6 +155,7 @@ namespace Dapple
       private static GeographicBoundingBox m_oAoi;
       private static string m_strAoiCoordinateSystem;
       private static bool m_bOpenMap = false;
+      private static string m_strOpenMapFileName = string.Empty;
       private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
       #endregion
 
@@ -214,12 +215,21 @@ namespace Dapple
       {
          get { return m_bOpenMap; }
       }
-      #endregion
+
+      /// <summary>
+      /// Get the name of the open map
+      /// </summary>
+      public static string MapFileName
+      {
+         get { return m_strOpenMapFileName; }
+      }         
+		#endregion
 
       #region Constructor
 
-      public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem)
-      {
+		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
+		{
+
          worldWindow = new WorldWindow();
          if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
             this.openView = strView;
@@ -585,6 +595,7 @@ namespace Dapple
                   m_oAoi = oAoi;
                   m_strAoiCoordinateSystem = strAoiCoordinateSystem;
                   m_bOpenMap = true;
+                  m_strOpenMapFileName = strMapFileName;
                }
                m_eClientType = eClientType;
 

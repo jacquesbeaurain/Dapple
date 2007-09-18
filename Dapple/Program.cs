@@ -33,7 +33,7 @@ namespace Dapple
          try
          {
             bool bAbort = false;
-            string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "";
+            string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "", strMapFileName = string.Empty;
             bool bGeotiffTmp = false;
             
             GeographicBoundingBox oAoi = null;
@@ -184,6 +184,11 @@ namespace Dapple
                   MessageBox.Show("Error in AOI command-line argument: missing coordinate system");
                   return;
                }
+
+               if (cmdl["filename_map"] != null)
+               {
+                  strMapFileName = cmdl["filename_map"];
+               }               
             }
 
             if (cmdl["client"] != null)
@@ -232,7 +237,7 @@ namespace Dapple
 
                if (RunningInstance() == null)
                {
-                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem));
+                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
                }
                else
                {

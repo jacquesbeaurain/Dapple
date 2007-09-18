@@ -45,6 +45,11 @@ namespace Dapple.Extract
             rbReproject.Enabled = false;
          }
 
+         if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
+         {
+            tbDestination.Text = System.IO.Path.GetDirectoryName(MainForm.MapFileName);
+         }
+         
          if (string.IsNullOrEmpty(tbDestination.Text))
             tbDestination.Text = MainForm.MontajInterface.BaseDirectory();
 
@@ -255,14 +260,8 @@ namespace Dapple.Extract
             }
          }
 
-         DownloadingForm oPopup = new DownloadingForm();
-         oPopup.Show(this);
-         Application.DoEvents();
-
          MainForm.MontajInterface.Download(oExtractDoc.OuterXml);
-
-         oPopup.Hide();
-
+         
          MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
          this.Close();
       }

@@ -34,7 +34,15 @@ namespace Dapple.Extract
       {
          InitializeComponent();
 
-         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, MAP_EXT);
+         if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
+         {
+            tbFilename.Text = System.IO.Path.GetFileName(MainForm.MapFileName);
+            tbFilename.Enabled = false;
+         }
+         else
+         {
+            tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, MAP_EXT);
+         }
          tbGroupName.Text = oDAPbuilder.Name;         
 
          oResolution.SetDownloadOptions(this);         
