@@ -130,7 +130,7 @@ namespace Dapple.LayerGeneration
          get { return "live"; }
       }
 
-      public override string LayerTypeIconKey
+      public override string DisplayIconKey
       {
          get { return "live"; }
       }

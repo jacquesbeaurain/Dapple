@@ -146,7 +146,7 @@ namespace Dapple.LayerGeneration
          get { return "wms"; }
       }
 
-      public override string LayerTypeIconKey
+      public override string DisplayIconKey
       {
          get { return "layer"; }
       }

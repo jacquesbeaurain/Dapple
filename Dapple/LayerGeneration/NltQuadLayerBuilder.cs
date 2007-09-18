@@ -140,7 +140,7 @@ namespace Dapple.LayerGeneration
          get { return "tile"; }
       }
 
-      public override string LayerTypeIconKey
+      public override string DisplayIconKey
       {
          get { return "layer"; }
       }

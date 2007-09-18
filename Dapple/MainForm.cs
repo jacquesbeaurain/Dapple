@@ -358,6 +358,7 @@ namespace Dapple
             m_oImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
             m_oImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
             m_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
+            m_oImageList.Images.Add("imageservice", Dapple.Properties.Resources.layers_top);
 
 
             InitializeComponent();

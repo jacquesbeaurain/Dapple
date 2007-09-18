@@ -24,13 +24,9 @@ namespace Dapple.LayerGeneration
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
-      private int m_iServerLayerImageIndex, m_iServerDirImageIndex;
-
-      public ArcIMSCatalogBuilder(String strName, WorldWindow oWorldWindow, IBuilder parent, int iLayerImageIndex, int iDirectoryImageIndex, int iSLI, int iSDI)
-         : base(strName, parent, false, iLayerImageIndex, iDirectoryImageIndex)
+      public ArcIMSCatalogBuilder(String strName, WorldWindow oWorldWindow, IBuilder parent)
+         : base(strName, parent, false)
       {
-         m_iServerDirImageIndex = iSDI;
-         m_iServerLayerImageIndex = iSLI;
          m_oWorldWindow = oWorldWindow;
       }
 
@@ -48,7 +44,7 @@ namespace Dapple.LayerGeneration
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         BuilderDirectory dir = new ArcIMSServerBuilder(this, oUri, xmlPath, m_iServerLayerImageIndex, m_iServerDirImageIndex);
+         BuilderDirectory dir = new ArcIMSServerBuilder(this, oUri, xmlPath);
          SubList.Add(dir);
 
          m_oCatalogDownloadsInProgress.Add(download.IndexNumber, dir);
@@ -160,8 +156,8 @@ namespace Dapple.LayerGeneration
    {
       string m_strCatalogPathname;
 
-      public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname, int iLayerImageIndex, int iDirectoryImageIndex)
-         : base(oUri.ToBaseUri(), parent, oUri, iLayerImageIndex, iDirectoryImageIndex)
+      public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname)
+         : base(oUri.ToBaseUri(), parent, oUri)
       {
          m_strCatalogPathname = strCatalogPathname;
       }
@@ -216,7 +212,7 @@ namespace Dapple.LayerGeneration
       private ArcIMSServiceDownload m_hDownload;
       private ServerTree.LoadFinishedCallbackHandler LoadFinished;
 
-      public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished) : base(szName, hServer, hServer.Uri, 0, 0)
+      public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished) : base(szName, hServer, hServer.Uri)
       {
          m_szName = szName;
          LoadFinished = hLoadFinished;
@@ -357,6 +353,14 @@ namespace Dapple.LayerGeneration
       public override string Type
       {
          get { return "ArcIMS Service"; }
+      }
+
+      public override string DisplayIconKey
+      {
+         get
+         {
+            return "imageservice";
+         }
       }
    }
 }

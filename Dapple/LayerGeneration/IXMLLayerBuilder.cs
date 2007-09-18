@@ -18,12 +18,9 @@ namespace Dapple.LayerGeneration
       protected List<LayerBuilder> m_colChildren;
       protected List<BuilderDirectory> m_colSublist;
       protected byte m_bOpacity = 255;
-      private int m_iLayerImageIndex, m_iDirImageIndex;
 
-      public BuilderDirectory(string name, IBuilder parent, bool removable, int iLayerImageIndex, int iDirImageIndex)
+      public BuilderDirectory(string name, IBuilder parent, bool removable)
       {
-         m_iDirImageIndex = iDirImageIndex;
-         m_iLayerImageIndex = iLayerImageIndex;
          m_strName = name;
          m_Parent = parent;
          m_Removable = removable;
@@ -85,6 +82,12 @@ namespace Dapple.LayerGeneration
       public IBuilder Parent
       {
          get { return m_Parent; }
+      }
+
+      [System.ComponentModel.Browsable(false)]
+      public virtual string DisplayIconKey
+      {
+         get { return "folder"; }
       }
 
       /// <summary>
@@ -201,7 +204,7 @@ namespace Dapple.LayerGeneration
 
       public virtual object Clone()
       {
-         BuilderDirectory dir = new BuilderDirectory(m_strName, m_Parent, m_Removable ,m_iLayerImageIndex, m_iDirImageIndex);
+         BuilderDirectory dir = new BuilderDirectory(m_strName, m_Parent, m_Removable);
          foreach (IBuilder builder in SubList)
          {
             dir.SubList.Add(builder.Clone() as BuilderDirectory);
@@ -224,13 +227,13 @@ namespace Dapple.LayerGeneration
          int index = 0;
          foreach(LayerBuilder childNode in m_colChildren)
          {
-            result[index] = new TreeNode(childNode.Name, m_iLayerImageIndex, m_iLayerImageIndex);
+            result[index] = new TreeNode(childNode.Name, MainForm.ImageListIndex(childNode.DisplayIconKey), MainForm.ImageListIndex(childNode.DisplayIconKey));
             result[index].Tag = childNode;
             index++;
          }
          foreach (BuilderDirectory childDir in m_colSublist)
          {
-            result[index] = new TreeNode(childDir.Name, m_iDirImageIndex, m_iDirImageIndex);
+            result[index] = new TreeNode(childDir.Name, MainForm.ImageListIndex(childDir.DisplayIconKey), MainForm.ImageListIndex(childDir.DisplayIconKey));
             result[index].Tag = childDir;
             index++;
          }
@@ -256,8 +259,8 @@ namespace Dapple.LayerGeneration
    {
       protected ServerUri m_oUri;
 
-      public ServerBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
-         : base(name, parent, true, iLII, iDII)
+      public ServerBuilder(string name, IBuilder parent, ServerUri oUri)
+         : base(name, parent, true)
       {
          m_oUri = oUri;
       }
@@ -292,8 +295,8 @@ namespace Dapple.LayerGeneration
       protected bool m_blnIsLoading = true;
       private ManualResetEvent m_oLoadBlock = new ManualResetEvent(false);
       
-      public AsyncBuilder(string name, IBuilder parent, ServerUri oUri, int iLII, int iDII)
-         : base(name, parent, oUri, iLII, iDII)
+      public AsyncBuilder(string name, IBuilder parent, ServerUri oUri)
+         : base(name, parent, oUri)
       {
       }
 
@@ -332,6 +335,19 @@ namespace Dapple.LayerGeneration
       public bool IsLoading
       {
          get { return m_blnIsLoading; }
+      }
+
+      [System.ComponentModel.Browsable(false)]
+      public override string DisplayIconKey
+      {
+         get
+         {
+            if (LoadingErrorOccurred)
+            {
+               return "offline";
+            }
+            return "enserver";
+         }
       }
 
       /// <summary>

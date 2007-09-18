@@ -879,8 +879,6 @@ namespace WorldWind
 					south,
 					west,
 					east,
-						  earliesttime,
-						  latesttime,
 					terrainMapped,
 					imageStores
 					);

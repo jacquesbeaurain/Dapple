@@ -50,6 +50,12 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
+      [System.ComponentModel.Browsable(false)]
+      string DisplayIconKey
+      {
+         get;
+      }
+
 		XmlNode GetMetaData(XmlDocument oDoc);
 
 		void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler);
@@ -140,7 +146,7 @@ namespace Dapple.LayerGeneration
 		}
 
       [System.ComponentModel.Browsable(false)]
-      public abstract string LayerTypeIconKey
+      public abstract string DisplayIconKey
       {
          get;
       }

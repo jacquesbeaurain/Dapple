@@ -76,9 +76,9 @@ namespace Dapple
 
          m_hTileRootNode = new TreeNode("Image Tile Servers", Dapple.MainForm.ImageListIndex("tile"), Dapple.MainForm.ImageListIndex("tile"));
 			m_hRootNode.Nodes.Add(m_hTileRootNode);
-			BuilderDirectory tileDir = new BuilderDirectory("Image Tile Servers", null, false, 0, 0);
+			BuilderDirectory tileDir = new BuilderDirectory("Image Tile Servers", null, false);
 
-         VETileSetBuilder veDir = new VETileSetBuilder("Virtual Earth", null, false, Dapple.MainForm.ImageListIndex("live"), 0);
+         VETileSetBuilder veDir = new VETileSetBuilder("Virtual Earth", null, false);
 			m_hVERootNode = m_hRootNode.Nodes.Add("Virtual Earth");
          m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = Dapple.MainForm.ImageListIndex("live");
 			m_hVERootNode.Tag = veDir;
@@ -90,14 +90,14 @@ namespace Dapple
 			veDir.LayerBuilders.Add(m_VESatQTB);
 			veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
 
-         WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
+         WMSCatalogBuilder wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null);
 			wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
          m_hWMSRootNode = new TreeNode("WMS Servers", Dapple.MainForm.ImageListIndex("wms"), Dapple.MainForm.ImageListIndex("wms"));
 			m_hWMSRootNode.Tag = wmsBuilder;
 			m_hRootNode.Nodes.Add(m_hWMSRootNode);
 
-         ArcIMSCatalogBuilder arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
+         ArcIMSCatalogBuilder arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null);
          arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
          m_hArcIMSRootNode = new TreeNode("ArcIMS Servers", Dapple.MainForm.ImageListIndex("arcims"), Dapple.MainForm.ImageListIndex("arcims"));
@@ -455,14 +455,14 @@ namespace Dapple
 				WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
             wmsBuilder.cancelDownloads();
 				wmsBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
-            wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
+            wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null);
 				m_hWMSRootNode.Tag = wmsBuilder;
 				wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
             ArcIMSCatalogBuilder arcIMSBuilder = m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder;
             arcIMSBuilder.cancelDownloads();
             arcIMSBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
-            arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null, 0, Dapple.MainForm.ImageListIndex("enserver"), Dapple.MainForm.ImageListIndex("layer"), Dapple.MainForm.ImageListIndex("folder"));
+            arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null);
             m_hArcIMSRootNode.Tag = arcIMSBuilder;
             arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
 
@@ -585,7 +585,7 @@ namespace Dapple
 
 		void LoadTileServerSetIntoNode(tileserversetType tileServerSet, TreeNode serverNode)
 		{
-         BuilderDirectory tileDir = new BuilderDirectory(tileServerSet.name.Value, null, false, 0, 0);
+         BuilderDirectory tileDir = new BuilderDirectory(tileServerSet.name.Value, null, false);
 			if (tileServerSet.Hastilelayers())
 			{
 				for (int count = 0; count < tileServerSet.tilelayers.tilelayerCount; count++)

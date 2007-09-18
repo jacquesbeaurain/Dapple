@@ -420,7 +420,7 @@ namespace Dapple
          {
             for (int count = m_iCurrPage * LAYERS_PER_PAGE; count < m_iCurrPage * LAYERS_PER_PAGE + LAYERS_PER_PAGE; count++)
             {
-               if (count < m_oCurrServerLayers.Count) cLayersListView.Items.Add(getLayerTitle(m_oCurrServerLayers[count]), cLayersListView.SmallImageList.Images.IndexOfKey(m_oCurrServerLayers[count].LayerTypeIconKey));
+               if (count < m_oCurrServerLayers.Count) cLayersListView.Items.Add(getLayerTitle(m_oCurrServerLayers[count]), cLayersListView.SmallImageList.Images.IndexOfKey(m_oCurrServerLayers[count].DisplayIconKey));
             }
          }
 

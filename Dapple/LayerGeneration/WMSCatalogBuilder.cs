@@ -30,14 +30,10 @@ namespace Dapple.LayerGeneration
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
-      private int m_iServerLayerImageIndex, m_iServerDirImageIndex;
-
-      public WMSCatalogBuilder(String strName, WorldWindow worldWindow, IBuilder parent, int iLayerImageIndex, int iDirectoryImageIndex, int iSLI, int iSDI)
-         : base(strName, parent, false, iLayerImageIndex, iDirectoryImageIndex)
+      public WMSCatalogBuilder(String strName, WorldWindow worldWindow, IBuilder parent)
+         : base(strName, parent, false)
       {
          m_WorldWindow = worldWindow;
-         m_iServerDirImageIndex = iSDI;
-         m_iServerLayerImageIndex = iSLI;
       }
 
       /// <summary>
@@ -60,7 +56,7 @@ namespace Dapple.LayerGeneration
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
          // add a child node
-         WMSServerBuilder dir = new WMSServerBuilder(this, oUri, xmlPath, m_iServerLayerImageIndex, m_iServerDirImageIndex);
+         WMSServerBuilder dir = new WMSServerBuilder(this, oUri, xmlPath);
          SubList.Add(dir);
          
          m_oCatalogDownloadsInProgress.Add(download.IndexNumber, dir);
@@ -180,7 +176,7 @@ namespace Dapple.LayerGeneration
       {
          if (layer.ChildLayers != null)
          {
-            BuilderDirectory childDir = new BuilderDirectory(layer.Title, directory, false, m_iServerLayerImageIndex, m_iServerDirImageIndex);
+            BuilderDirectory childDir = new BuilderDirectory(layer.Title, directory, false);
             directory.SubList.Add(childDir);
 
             foreach (WMSLayer childLayer in layer.ChildLayers)
@@ -205,8 +201,8 @@ namespace Dapple.LayerGeneration
       string m_strCapabilitiesFilePath;
       WMSList m_oList;
 
-      public WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath, int iLayerImageIndex, int iDirectoryImageIndex)
-         : base(oUri.ToBaseUri(), parent, oUri, iLayerImageIndex, iDirectoryImageIndex)
+      public WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath)
+         : base(oUri.ToBaseUri(), parent, oUri)
       {
          m_strCapabilitiesFilePath = CapabilitiesFilePath;
       }

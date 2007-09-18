@@ -148,7 +148,7 @@ namespace Dapple.LayerGeneration
          get { return "dap"; }
       }
 
-      public override string LayerTypeIconKey
+      public override string DisplayIconKey
       {
          get { return "dap_" + m_hDataSet.Type.ToLower(); }
       }

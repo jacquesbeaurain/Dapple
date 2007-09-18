@@ -163,7 +163,7 @@ namespace Dapple
          m_oLayers.Insert(iInsertIndex, new LayerBuilderContainer(oLayer, true));
          cLayerList.Items.Insert(iInsertIndex, oLayer.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
-         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].Builder.LayerTypeIconKey);
+         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].Builder.DisplayIconKey);
          cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
 
          m_oLayers[iInsertIndex].Builder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
@@ -479,7 +479,7 @@ namespace Dapple
             if (eChangeType == BuilderChangeType.LoadedASync)
             {
                RefreshLayerRenderOrder();
-               cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(oBuilder.LayerTypeIconKey);
+               cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(oBuilder.DisplayIconKey);
             }
             else if (eChangeType == BuilderChangeType.LoadedASyncFailed || eChangeType == BuilderChangeType.LoadedSyncFailed)
             {

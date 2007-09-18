@@ -132,7 +132,7 @@ namespace Dapple.LayerGeneration
          get { return "georef_image"; }
       }
 
-      public override string LayerTypeIconKey
+      public override string DisplayIconKey
       {
          get { return "georef_image"; }
       }

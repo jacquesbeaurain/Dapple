@@ -133,7 +133,7 @@ namespace Dapple.LayerGeneration
          get { return "arcims"; }
       }
 
-      public override string LayerTypeIconKey
+      public override string DisplayIconKey
       {
          get { return "layer"; }
       }
