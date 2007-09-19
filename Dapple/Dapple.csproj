@@ -89,6 +89,24 @@
     <Compile Include="ConfigurationWizard\Pages\DappleSearchPage.Designer.cs">
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\JanaLinkTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\JanaLinkTab.Designer.cs">
+      <DependentUpon>JanaLinkTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\JanaTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\JanaTab.Designer.cs">
+      <DependentUpon>JanaTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\TabToolbar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\TabToolbar.Designer.cs">
+      <DependentUpon>TabToolbar.cs</DependentUpon>
+    </Compile>
     <Compile Include="DappleSearchList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -243,6 +261,14 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\JanaLinkTab.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>JanaLinkTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\JanaTab.resx">
+      <DependentUpon>JanaTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DappleSearchList.resx">
       <SubType>Designer</SubType>
@@ -801,6 +827,7 @@
     <Content Include="Resources\layer.ico" />
     <Content Include="Resources\layers-bottom.png" />
     <Content Include="Resources\layers-down.png" />
+    <None Include="Resources\layers-download.png" />
     <Content Include="Resources\layers-goto.png" />
     <Content Include="Resources\layers-remove-all.png" />
     <Content Include="Resources\layers-remove.png" />
@@ -830,8 +857,10 @@
     <Content Include="Resources\nav-zoom-in.png" />
     <Content Include="Resources\nav-zoom-out.png" />
     <None Include="Resources\offline.ico" />
+    <None Include="Resources\next.png" />
     <Content Include="Resources\open.png" />
     <Content Include="Resources\openview.png" />
+    <None Include="Resources\previous.png" />
     <Content Include="Resources\properties.ico" />
     <Content Include="Resources\refresh.png" />
     <Content Include="Resources\refresh_cache.png" />
@@ -841,7 +870,12 @@
     <Content Include="Resources\search-intersecting.png" />
     <Content Include="Resources\search-none.png" />
     <Content Include="Resources\search-text.png" />
+    <None Include="Resources\search.png" />
+    <None Include="Resources\server-refresh.png" />
     <Content Include="Resources\settings.png" />
+    <None Include="Resources\tab-tree.png" />
+    <None Include="Resources\tab-list.png" />
+    <None Include="Resources\tab-thumbnail.png" />
     <Content Include="Resources\tile.ico" />
     <Content Include="Resources\tile_gray.ico" />
     <Content Include="Resources\time.ico" />

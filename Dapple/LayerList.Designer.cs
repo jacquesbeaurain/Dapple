@@ -100,7 +100,7 @@ namespace Dapple
          // cExtractButton
          // 
          this.cExtractButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-         this.cExtractButton.Image = global::Dapple.Properties.Resources.layers_down;
+         this.cExtractButton.Image = global::Dapple.Properties.Resources.layers_download;
          this.cExtractButton.ImageTransparentColor = System.Drawing.Color.Magenta;
          this.cExtractButton.Name = "cExtractButton";
          this.cExtractButton.Size = new System.Drawing.Size(23, 22);

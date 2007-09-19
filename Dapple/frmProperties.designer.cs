@@ -28,6 +28,7 @@ namespace Dapple
       /// </summary>
       private void InitializeComponent()
       {
+         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProperties));
          this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
          this.panel1 = new System.Windows.Forms.Panel();
          this.btnCancel = new System.Windows.Forms.Button();
@@ -84,6 +85,7 @@ namespace Dapple
          this.ClientSize = new System.Drawing.Size(292, 277);
          this.Controls.Add(this.propertyGrid1);
          this.Controls.Add(this.panel1);
+         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
          this.Name = "frmProperties";
          this.ShowInTaskbar = false;
          this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;

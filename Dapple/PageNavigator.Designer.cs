@@ -38,7 +38,7 @@ namespace Dapple
          this.cPageLabel.Dock = System.Windows.Forms.DockStyle.Fill;
          this.cPageLabel.Location = new System.Drawing.Point(0, 0);
          this.cPageLabel.Name = "cPageLabel";
-         this.cPageLabel.Size = new System.Drawing.Size(200, 24);
+         this.cPageLabel.Size = new System.Drawing.Size(200, 23);
          this.cPageLabel.TabIndex = 0;
          this.cPageLabel.Text = "Results 1-10 of 2000";
          this.cPageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -46,21 +46,23 @@ namespace Dapple
          // cForwardButton
          // 
          this.cForwardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-         this.cForwardButton.Location = new System.Drawing.Point(176, 0);
+         this.cForwardButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+         this.cForwardButton.Image = global::Dapple.Properties.Resources.next;
+         this.cForwardButton.Location = new System.Drawing.Point(177, 0);
          this.cForwardButton.Name = "cForwardButton";
-         this.cForwardButton.Size = new System.Drawing.Size(24, 24);
+         this.cForwardButton.Size = new System.Drawing.Size(23, 23);
          this.cForwardButton.TabIndex = 1;
-         this.cForwardButton.Text = "->";
          this.cForwardButton.UseVisualStyleBackColor = true;
          this.cForwardButton.Click += new System.EventHandler(this.cForwardButton_Click);
          // 
          // cBackButton
          // 
+         this.cBackButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+         this.cBackButton.Image = global::Dapple.Properties.Resources.previous;
          this.cBackButton.Location = new System.Drawing.Point(0, 0);
          this.cBackButton.Name = "cBackButton";
-         this.cBackButton.Size = new System.Drawing.Size(24, 24);
+         this.cBackButton.Size = new System.Drawing.Size(23, 23);
          this.cBackButton.TabIndex = 2;
-         this.cBackButton.Text = "<-";
          this.cBackButton.UseVisualStyleBackColor = true;
          this.cBackButton.Click += new System.EventHandler(this.cBackButton_Click);
          // 
@@ -72,7 +74,7 @@ namespace Dapple
          this.Controls.Add(this.cForwardButton);
          this.Controls.Add(this.cPageLabel);
          this.Name = "PageNavigator";
-         this.Size = new System.Drawing.Size(200, 24);
+         this.Size = new System.Drawing.Size(200, 23);
          this.ResumeLayout(false);
 
       }

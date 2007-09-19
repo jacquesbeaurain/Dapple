@@ -33,6 +33,7 @@ using Dapple.Properties;
 using MontajRemote;
 using System.Collections;
 using Geosoft.GX.DAPGetData;
+using Dapple.CustomControls;
 
 namespace Dapple
 {
@@ -104,6 +105,9 @@ namespace Dapple
 
       private Splash splashScreen;
       private ServerTree tvServers;
+      private ServerList cServerListControl;
+      private JanaTab cServerViewsTab;
+      private DappleSearchList cWebSearch;
       private static WorldWindow worldWindow;
       private Thread m_hDappleSearchBackgroundThread;
 
@@ -537,16 +541,19 @@ namespace Dapple
 
             worldWindow.ClearDevice();
 
-            #region Views
+            #region Search view setup
+            //---------------------------------------------------------------------------------------------
 
             this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList);
+            this.cServerListControl = new ServerList();
             cServerListControl.ImageList = this.tvServers.ImageList;
             cLayerList.ImageList = this.tvServers.ImageList;
 
             m_oMetadataDisplay = new MetadataDisplayThread(this);
             cServerListControl.LayerList = cLayerList;
-            cLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
             cLayerList.GoTo += new LayerList.GoToHandler(this.GoTo);
+
+            cLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
             tvServers.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
             cServerListControl.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
 
@@ -557,17 +564,24 @@ namespace Dapple
             this.tvServers.Location = new System.Drawing.Point(0, 0);
             this.tvServers.Name = "treeViewServers";
             this.tvServers.SelectedImageIndex = 0;
-            this.tvServers.Size = new System.Drawing.Size(245, 240);
             this.tvServers.TabIndex = 0;
 
-            this.cServerTreeView.SuspendLayout();
+            this.cServerViewsTab = new JanaTab();
+            this.cServerViewsTab.SetImage(0, Resources.tab_tree);
+            this.cServerViewsTab.SetImage(1, Resources.tab_list);
+            this.cServerViewsTab.SetPage(0, this.tvServers);
+            this.cServerViewsTab.SetPage(1, this.cServerListControl);
 
-            this.cServerTreeView.Controls.Add(this.tvServers);
+            cWebSearch = new DappleSearchList();
 
-            this.cServerTreeView.ResumeLayout(false);
+            this.janaLinkTab1.SetText(0, "Servers");
+            this.janaLinkTab1.SetPage(0, this.cServerViewsTab);
+            this.janaLinkTab1.SetText(1, "Web");
+            this.janaLinkTab1.SetPage(1, this.cWebSearch);
+
             this.ResumeLayout(false);
-            this.cServerTreeView.PerformLayout();
 
+            //---------------------------------------------------------------------------------------------
             #endregion
 
             this.PerformLayout();
@@ -599,17 +613,19 @@ namespace Dapple
                }
                m_eClientType = eClientType;
 
-               // Put the view menu after the first two
-               menuStrip.Items.Remove(this.toolStripMenuItemoptions);
-               menuStrip.Items.Add(this.toolStripMenuItemoptions);
-               cOMToolsMenu.Visible = true;
-               cOMServerMenu.Visible = true;
-               toolStripMenuItemfile.Visible = false;
                toolStripMenuItemedit.Visible = false;
+               toolStripMenuItemedit.Enabled = false;
                toolStripMenuItemhelp.Visible = false;
+               toolStripMenuItemhelp.Enabled = false;
+               toolStripSeparator10.Visible = false;
+               toolStripMenuItemOpen.Visible = false;
+               toolStripMenuItemOpen.Enabled = false;
+               toolStripMenuItemOpenKML.Visible = false;
+               toolStripMenuItemOpenKML.Enabled = false;
             }
             else
             {
+               downloadToolStripMenuItem.Visible = false;
                downloadToolStripMenuItem.Enabled = false;
 
                // register handler for dataset links
@@ -1856,225 +1872,7 @@ namespace Dapple
 
       private void toolStripMenuItemExport_Click(object sender, EventArgs e)
       {
-         string strGeotiff = null;
-         List<ExportEntry> expList = new List<ExportEntry>();
-         RenderableObject roBMNG = GetActiveBMNG();
-
-
-         // Gather info first
-         foreach (LayerBuilderContainer container in cLayerList.AllLayers)
-         {
-            if (container.Visible && container.Builder != null)
-            {
-               RenderableObject ro = container.Builder.GetLayer();
-               if (ro != null)
-               {
-                  RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
-                  ro.InitExportInfo(worldWindow.DrawArgs, expinfo);
-
-                  if (expinfo.iPixelsX > 0 && expinfo.iPixelsY > 0)
-                     expList.Add(new ExportEntry(container, ro, expinfo));
-               }
-            }
-         }
-         /*if (roBMNG != null && roBMNG.IsOn)
-         {
-            RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
-            roBMNG.InitExportInfo(worldWindow.DrawArgs, expinfo);
-            expList.Add(new ExportEntry(null, roBMNG, expinfo));
-         }*/
-
-         // Reverse the list to do render order right
-         expList.Reverse();
-
-         if (expList.Count == 0)
-         {
-            MessageBox.Show(this, "There are no visible layers to export.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
-         }
-
-         if (bIsDownloading())
-         {
-            MessageBox.Show(this, "It is not possible to export a view while there are still downloads in progress.\nPlease wait for the downloads to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
-         }
-
-         WorldWind.Camera.MomentumCamera camera = worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
-         if (camera.Tilt.Degrees > 5.0)
-         {
-            MessageBox.Show(this, "It is not possible to export a tilted view. Reset the tilt using the navigation buttons\nor by using Right-Mouse-Button and drag and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
-         }
-
-         try
-         {
-            ExportView dlg = new ExportView(Settings.ConfigPath);
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-               Cursor = Cursors.WaitCursor;
-
-               // Stop the camera
-               camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
-
-               // Determine output parameters
-               GeographicBoundingBox geoExtent = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(true));
-               int iResolution = dlg.Resolution;
-               int iExportPixelsX, iExportPixelsY;
-
-               // Minimize the estimated extents to what is available
-               GeographicBoundingBox geoExtentLayers = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
-               foreach (ExportEntry exp in expList)
-               {
-                  geoExtentLayers.North = Math.Max(geoExtentLayers.North, exp.Info.dMaxLat);
-                  geoExtentLayers.South = Math.Min(geoExtentLayers.South, exp.Info.dMinLat);
-                  geoExtentLayers.East = Math.Max(geoExtentLayers.East, exp.Info.dMaxLon);
-                  geoExtentLayers.West = Math.Min(geoExtentLayers.West, exp.Info.dMinLon);
-               }
-               if (geoExtent.East > geoExtentLayers.East)
-                  geoExtent.East = geoExtentLayers.East;
-               if (geoExtent.North > geoExtentLayers.North)
-                  geoExtent.North = geoExtentLayers.North;
-               if (geoExtent.West < geoExtentLayers.West)
-                  geoExtent.West = geoExtentLayers.West;
-               if (geoExtent.South < geoExtentLayers.South)
-                  geoExtent.South = geoExtentLayers.South;
-
-               // Determine the maximum resolution based on the highest res in layers
-               if (iResolution == -1)
-               {
-                  double dXRes, dYRes;
-                  foreach (ExportEntry exp in expList)
-                  {
-                     dXRes = (double)exp.Info.iPixelsX / (exp.Info.dMaxLon - exp.Info.dMinLon);
-                     dYRes = (double)exp.Info.iPixelsY / (exp.Info.dMaxLat - exp.Info.dMinLat);
-                     iResolution = Math.Max(iResolution, (int)Math.Round(Math.Max(dXRes * (geoExtent.East - geoExtent.West), dYRes * (geoExtent.North - geoExtent.South))));
-                  }
-               }
-               if (iResolution <= 0)
-                  return;
-
-               if (geoExtent.North - geoExtent.South > geoExtent.East - geoExtent.West)
-               {
-                  iExportPixelsY = iResolution;
-                  iExportPixelsX = (int)Math.Round((double)iResolution * (geoExtent.East - geoExtent.West) / (geoExtent.North - geoExtent.South));
-               }
-               else
-               {
-                  iExportPixelsX = iResolution;
-                  iExportPixelsY = (int)Math.Round((double)iResolution * (geoExtent.North - geoExtent.South) / (geoExtent.East - geoExtent.West));
-               }
-
-
-               // Make geotiff metadata file to use for georeferencing images
-               strGeotiff = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-               using (StreamWriter sw = new StreamWriter(strGeotiff, false))
-               {
-                  sw.WriteLine("Geotiff_Information:");
-                  sw.WriteLine("Version: 1");
-                  sw.WriteLine("Key_Revision: 1.0");
-                  sw.WriteLine("Tagged_Information:");
-                  sw.WriteLine("ModelTiepointTag (2,3):");
-                  sw.WriteLine("0 0 0");
-                  sw.WriteLine(geoExtent.West.ToString() + " " + geoExtent.North.ToString() + " 0");
-                  sw.WriteLine("ModelPixelScaleTag (1,3):");
-                  sw.WriteLine(((geoExtent.East - geoExtent.West) / (double)iExportPixelsX).ToString() + " " + ((geoExtent.North - geoExtent.South) / (double)iExportPixelsY).ToString() + " 0");
-                  sw.WriteLine("End_Of_Tags.");
-                  sw.WriteLine("Keyed_Information:");
-                  sw.WriteLine("GTModelTypeGeoKey (Short,1): ModelTypeGeographic");
-                  sw.WriteLine("GTRasterTypeGeoKey (Short,1): RasterPixelIsArea");
-                  sw.WriteLine("GeogAngularUnitsGeoKey (Short,1): Angular_Degree");
-                  sw.WriteLine("GeographicTypeGeoKey (Short,1): GCS_WGS_84");
-                  sw.WriteLine("End_Of_Keys.");
-                  sw.WriteLine("End_Of_Geotiff.");
-               }
-
-               // Export image(s)
-               using (Bitmap bitMapMain = new Bitmap(iExportPixelsX, iExportPixelsY))
-               {
-                  using (Graphics gr = Graphics.FromImage(bitMapMain))
-                  {
-                     gr.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
-                     foreach (ExportEntry exp in expList)
-                     {
-                        // Limit info for layer to area we are looking at
-
-                        double dExpXRes = (double)exp.Info.iPixelsX / (exp.Info.dMaxLon - exp.Info.dMinLon);
-                        double dExpYRes = (double)exp.Info.iPixelsY / (exp.Info.dMaxLat - exp.Info.dMinLat);
-                        int iExpOffsetX = (int)Math.Round((geoExtent.West - exp.Info.dMinLon) * dExpXRes);
-                        int iExpOffsetY = (int)Math.Round((exp.Info.dMaxLat - geoExtent.North) * dExpYRes);
-                        exp.Info.iPixelsX = (int)Math.Round((geoExtent.East - geoExtent.West) * dExpXRes);
-                        exp.Info.iPixelsY = (int)Math.Round((geoExtent.North - geoExtent.South) * dExpYRes);
-                        exp.Info.dMinLon = exp.Info.dMinLon + (double)iExpOffsetX / dExpXRes;
-                        exp.Info.dMaxLat = exp.Info.dMaxLat - (double)iExpOffsetY / dExpYRes;
-                        exp.Info.dMaxLon = exp.Info.dMinLon + (double)exp.Info.iPixelsX / dExpXRes;
-                        exp.Info.dMinLat = exp.Info.dMaxLat - (double)exp.Info.iPixelsY / dExpYRes;
-
-                        using (Bitmap bitMap = new Bitmap(exp.Info.iPixelsX, exp.Info.iPixelsY))
-                        {
-                           int iOffsetX, iOffsetY;
-                           int iWidth, iHeight;
-
-                           using (exp.Info.gr = Graphics.FromImage(bitMap))
-                              exp.RO.ExportProcess(worldWindow.DrawArgs, exp.Info);
-
-                           iOffsetX = (int)Math.Round((exp.Info.dMinLon - geoExtent.West) * (double)iExportPixelsX / (geoExtent.East - geoExtent.West));
-                           iOffsetY = (int)Math.Round((geoExtent.North - exp.Info.dMaxLat) * (double)iExportPixelsY / (geoExtent.North - geoExtent.South));
-                           iWidth = (int)Math.Round((exp.Info.dMaxLon - exp.Info.dMinLon) * (double)iExportPixelsX / (geoExtent.East - geoExtent.West));
-                           iHeight = (int)Math.Round((exp.Info.dMaxLat - exp.Info.dMinLat) * (double)iExportPixelsY / (geoExtent.North - geoExtent.South));
-
-                           if (exp.Container != null)
-                           {
-                              ImageAttributes imgAtt = new ImageAttributes();
-                              float[][] fMat = { 
-                                    new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-                                    new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
-                                    new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-                                    new float[] {0.0f, 0.0f, 0.0f, (float)exp.Container.Opacity/255.0f, 0.0f},
-                                    new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}
-                                 };
-                              ColorMatrix clrMatrix = new ColorMatrix(fMat);
-                              imgAtt.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-                              gr.DrawImage(bitMap, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, exp.Info.iPixelsX, exp.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
-                           }
-                           else
-                           {
-                              gr.DrawImage(bitMap, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, exp.Info.iPixelsX, exp.Info.iPixelsY, GraphicsUnit.Pixel);
-                           }
-                           if (dlg.KeepLayers)
-                           {
-                              using (Bitmap bitMapLayer = new Bitmap(iExportPixelsX, iExportPixelsY))
-                              {
-                                 using (Graphics grl = Graphics.FromImage(bitMapLayer))
-                                 {
-                                    grl.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
-                                    grl.DrawImage(bitMap, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, exp.Info.iPixelsX, exp.Info.iPixelsY, GraphicsUnit.Pixel);
-                                 }
-
-                                 if (exp.Container != null)
-                                    SaveGeoImage(bitMapLayer, dlg.OutputName + "_" + exp.Container.Name, dlg.Folder, dlg.OutputFormat, strGeotiff);
-                                 else
-                                    SaveGeoImage(bitMapLayer, dlg.OutputName + "_Blue Marble(" + exp.RO.Name + ")", dlg.Folder, dlg.OutputFormat, strGeotiff);
-                              }
-                           }
-                        }
-                     }
-                  }
-                  SaveGeoImage(bitMapMain, dlg.OutputName, dlg.Folder, dlg.OutputFormat, strGeotiff);
-               }
-            }
-         }
-         catch (Exception exc)
-         {
-            MessageBox.Show(this, "Export failed!\n" + exc.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            Cursor = Cursors.Default;
-         }
-         finally
-         {
-            if (strGeotiff != null && File.Exists(strGeotiff))
-               File.Delete(strGeotiff);
-
-            Cursor = Cursors.Default;
-         }
+         CmdExport();
       }
 
       #endregion
@@ -2514,14 +2312,14 @@ namespace Dapple
          {
             if (Settings.DappleSearchURL == null) Settings.DappleSearchURL = "http://dapplesearch.geosoft.com/";
 
-            if (!Settings.DappleSearchURL.Equals(String.Empty))
+            /*if (!Settings.DappleSearchURL.Equals(String.Empty))
             {
                m_strDappleSearchServerURL = Settings.DappleSearchURL;
                DappleSearchToolbar.Visible = true;
                m_hDappleSearchBackgroundThread = new Thread(new ThreadStart(BackgroundSearchThreadMain));
                m_hDappleSearchBackgroundThread.Name = "Background search thread";
                m_hDappleSearchBackgroundThread.Start();
-            }
+            }*/
          }
       }
 
@@ -2565,9 +2363,6 @@ namespace Dapple
          FinalizeSettings();
 
          worldWindow.Dispose();
-
-         this.cServerTreeView.Controls.Remove(this.tvServers);
-         this.tvServers.Dispose();
 
          if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
          {
@@ -3028,11 +2823,11 @@ namespace Dapple
 
       #region DappleSearch code
 
-      private enum SearchMode { Text, ROI, Dual };
-      private SearchMode searchMode = SearchMode.Dual;
+      /*private enum SearchMode { Text, ROI, Dual };
+      private SearchMode searchMode = SearchMode.Dual;*/
       private String m_strDappleSearchServerURL = null;
 
-      private void DappleSearchKeyword_KeyPress(object sender, KeyPressEventArgs e)
+      /*private void DappleSearchKeyword_KeyPress(object sender, KeyPressEventArgs e)
       {
          if (((ushort)e.KeyChar) == 13) ViewSearchResults(); // enter key pressed
       }
@@ -3193,28 +2988,19 @@ namespace Dapple
                mode = searchMode;
             }
          }
-      }
+      }*/
 
+      delegate void UpdateTextDelegate(String text);
       private void setDappleSearchResultsLabelText(String text)
       {
          if (InvokeRequired)
          {
-            Invoke(new UpdateTextDelegate(__setDappleSearchResultsLabelText), new Object[] { text });
+            Invoke(new UpdateTextDelegate(setDappleSearchResultsLabelText), new Object[] { text });
          }
          else
          {
-            __setDappleSearchResultsLabelText(text);
+            DappleSearchResultsLabel.Text = text;
          }
-      }
-
-      delegate void UpdateTextDelegate(String text);
-      /// <summary>
-      /// DO NOT CALL THIS METHOD DIRECTLY.  Call the non-underscored one instead.  It is event-thread-safe.
-      /// </summary>
-      /// <param name="text"></param>
-      private void __setDappleSearchResultsLabelText(String text)
-      {
-         DappleSearchResultsLabel.Text = text;
       }
 
       private void doBackgroundSearch(out int hits, out int error, String keywords, GeographicBoundingBox ROI)
@@ -3298,7 +3084,7 @@ namespace Dapple
 
          XmlElement searchElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/search_params");
 
-         if (searchElement != null)
+         /*if (searchElement != null)
          {
             StringBuilder resultsURL = new StringBuilder(m_strDappleSearchServerURL + SEARCH_HTML_GATEWAY + "?");
             if (!searchElement.GetAttribute("keyword").Equals(String.Empty))
@@ -3330,7 +3116,7 @@ namespace Dapple
             }
             SearchResultsBrowser.Navigate(resultsURL.ToString());
             displayResultsPanel();
-         }
+         }*/
 
          XmlElement displayMapElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/display_map");
 
@@ -3575,10 +3361,10 @@ namespace Dapple
          this.tvServers.Search(oAoi, strText);
          this.cServerListControl.setSearchCriteria(strText, oAoi);
 
-         this.dappleSearchList1.SetSearchParameters(strText, oAoi);
+         this.cWebSearch.SetSearchParameters(strText, oAoi);
       }
 
-      private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
+      /*private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
       {
          if (cServerTabControl.SelectedIndex == 1)
          {
@@ -3589,7 +3375,7 @@ namespace Dapple
          {
             tvServers.SelectedServer = cServerListControl.SelectedServer;
          }
-      }
+      }*/
 
       private void CenterNavigationToolStrip()
       {
@@ -3708,7 +3494,9 @@ namespace Dapple
 
       private void AddDatasetAction()
       {
-         if (cServerTabControl.SelectedIndex == 0)
+
+         MessageBox.Show("This feature is pending reimplementation");
+         /*if (cServerTabControl.SelectedIndex == 0)
          {
             this.tvServers.AddCurrentDataset();
          }
@@ -3717,15 +3505,10 @@ namespace Dapple
             List<LayerBuilder> oBuilderList = cServerListControl.SelectedLayers;
             oBuilderList.Reverse();
             cLayerList.AddLayers(oBuilderList);
-         }
+         }*/
       }
 
       #endregion
-
-      private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-      {
-         Close();
-      }
 
       private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
       {
@@ -3844,6 +3627,254 @@ namespace Dapple
                }
             }
          }
+      }
+
+      private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         MessageBox.Show("This menu option is not currently implemented.");
+      }
+
+      private void exportGeoTiffToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         CmdExport();
+      }
+
+      private void CmdExport()
+      {
+         string strGeotiff = null;
+         List<ExportEntry> expList = new List<ExportEntry>();
+         RenderableObject roBMNG = GetActiveBMNG();
+
+
+         // Gather info first
+         foreach (LayerBuilderContainer container in cLayerList.AllLayers)
+         {
+            if (container.Visible && container.Builder != null)
+            {
+               RenderableObject ro = container.Builder.GetLayer();
+               if (ro != null)
+               {
+                  RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
+                  ro.InitExportInfo(worldWindow.DrawArgs, expinfo);
+
+                  if (expinfo.iPixelsX > 0 && expinfo.iPixelsY > 0)
+                     expList.Add(new ExportEntry(container, ro, expinfo));
+               }
+            }
+         }
+         /*if (roBMNG != null && roBMNG.IsOn)
+         {
+            RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
+            roBMNG.InitExportInfo(worldWindow.DrawArgs, expinfo);
+            expList.Add(new ExportEntry(null, roBMNG, expinfo));
+         }*/
+
+         // Reverse the list to do render order right
+         expList.Reverse();
+
+         if (expList.Count == 0)
+         {
+            MessageBox.Show(this, "There are no visible layers to export.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+         }
+
+         if (bIsDownloading())
+         {
+            MessageBox.Show(this, "It is not possible to export a view while there are still downloads in progress.\nPlease wait for the downloads to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+         }
+
+         WorldWind.Camera.MomentumCamera camera = worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
+         if (camera.Tilt.Degrees > 5.0)
+         {
+            MessageBox.Show(this, "It is not possible to export a tilted view. Reset the tilt using the navigation buttons\nor by using Right-Mouse-Button and drag and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+         }
+
+         try
+         {
+            ExportView dlg = new ExportView(Settings.ConfigPath);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+               Cursor = Cursors.WaitCursor;
+
+               // Stop the camera
+               camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
+
+               // Determine output parameters
+               GeographicBoundingBox geoExtent = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(true));
+               int iResolution = dlg.Resolution;
+               int iExportPixelsX, iExportPixelsY;
+
+               // Minimize the estimated extents to what is available
+               GeographicBoundingBox geoExtentLayers = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+               foreach (ExportEntry exp in expList)
+               {
+                  geoExtentLayers.North = Math.Max(geoExtentLayers.North, exp.Info.dMaxLat);
+                  geoExtentLayers.South = Math.Min(geoExtentLayers.South, exp.Info.dMinLat);
+                  geoExtentLayers.East = Math.Max(geoExtentLayers.East, exp.Info.dMaxLon);
+                  geoExtentLayers.West = Math.Min(geoExtentLayers.West, exp.Info.dMinLon);
+               }
+               if (geoExtent.East > geoExtentLayers.East)
+                  geoExtent.East = geoExtentLayers.East;
+               if (geoExtent.North > geoExtentLayers.North)
+                  geoExtent.North = geoExtentLayers.North;
+               if (geoExtent.West < geoExtentLayers.West)
+                  geoExtent.West = geoExtentLayers.West;
+               if (geoExtent.South < geoExtentLayers.South)
+                  geoExtent.South = geoExtentLayers.South;
+
+               // Determine the maximum resolution based on the highest res in layers
+               if (iResolution == -1)
+               {
+                  double dXRes, dYRes;
+                  foreach (ExportEntry exp in expList)
+                  {
+                     dXRes = (double)exp.Info.iPixelsX / (exp.Info.dMaxLon - exp.Info.dMinLon);
+                     dYRes = (double)exp.Info.iPixelsY / (exp.Info.dMaxLat - exp.Info.dMinLat);
+                     iResolution = Math.Max(iResolution, (int)Math.Round(Math.Max(dXRes * (geoExtent.East - geoExtent.West), dYRes * (geoExtent.North - geoExtent.South))));
+                  }
+               }
+               if (iResolution <= 0)
+                  return;
+
+               if (geoExtent.North - geoExtent.South > geoExtent.East - geoExtent.West)
+               {
+                  iExportPixelsY = iResolution;
+                  iExportPixelsX = (int)Math.Round((double)iResolution * (geoExtent.East - geoExtent.West) / (geoExtent.North - geoExtent.South));
+               }
+               else
+               {
+                  iExportPixelsX = iResolution;
+                  iExportPixelsY = (int)Math.Round((double)iResolution * (geoExtent.North - geoExtent.South) / (geoExtent.East - geoExtent.West));
+               }
+
+
+               // Make geotiff metadata file to use for georeferencing images
+               strGeotiff = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+               using (StreamWriter sw = new StreamWriter(strGeotiff, false))
+               {
+                  sw.WriteLine("Geotiff_Information:");
+                  sw.WriteLine("Version: 1");
+                  sw.WriteLine("Key_Revision: 1.0");
+                  sw.WriteLine("Tagged_Information:");
+                  sw.WriteLine("ModelTiepointTag (2,3):");
+                  sw.WriteLine("0 0 0");
+                  sw.WriteLine(geoExtent.West.ToString() + " " + geoExtent.North.ToString() + " 0");
+                  sw.WriteLine("ModelPixelScaleTag (1,3):");
+                  sw.WriteLine(((geoExtent.East - geoExtent.West) / (double)iExportPixelsX).ToString() + " " + ((geoExtent.North - geoExtent.South) / (double)iExportPixelsY).ToString() + " 0");
+                  sw.WriteLine("End_Of_Tags.");
+                  sw.WriteLine("Keyed_Information:");
+                  sw.WriteLine("GTModelTypeGeoKey (Short,1): ModelTypeGeographic");
+                  sw.WriteLine("GTRasterTypeGeoKey (Short,1): RasterPixelIsArea");
+                  sw.WriteLine("GeogAngularUnitsGeoKey (Short,1): Angular_Degree");
+                  sw.WriteLine("GeographicTypeGeoKey (Short,1): GCS_WGS_84");
+                  sw.WriteLine("End_Of_Keys.");
+                  sw.WriteLine("End_Of_Geotiff.");
+               }
+
+               // Export image(s)
+               using (Bitmap bitMapMain = new Bitmap(iExportPixelsX, iExportPixelsY))
+               {
+                  using (Graphics gr = Graphics.FromImage(bitMapMain))
+                  {
+                     gr.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
+                     foreach (ExportEntry exp in expList)
+                     {
+                        // Limit info for layer to area we are looking at
+
+                        double dExpXRes = (double)exp.Info.iPixelsX / (exp.Info.dMaxLon - exp.Info.dMinLon);
+                        double dExpYRes = (double)exp.Info.iPixelsY / (exp.Info.dMaxLat - exp.Info.dMinLat);
+                        int iExpOffsetX = (int)Math.Round((geoExtent.West - exp.Info.dMinLon) * dExpXRes);
+                        int iExpOffsetY = (int)Math.Round((exp.Info.dMaxLat - geoExtent.North) * dExpYRes);
+                        exp.Info.iPixelsX = (int)Math.Round((geoExtent.East - geoExtent.West) * dExpXRes);
+                        exp.Info.iPixelsY = (int)Math.Round((geoExtent.North - geoExtent.South) * dExpYRes);
+                        exp.Info.dMinLon = exp.Info.dMinLon + (double)iExpOffsetX / dExpXRes;
+                        exp.Info.dMaxLat = exp.Info.dMaxLat - (double)iExpOffsetY / dExpYRes;
+                        exp.Info.dMaxLon = exp.Info.dMinLon + (double)exp.Info.iPixelsX / dExpXRes;
+                        exp.Info.dMinLat = exp.Info.dMaxLat - (double)exp.Info.iPixelsY / dExpYRes;
+
+                        using (Bitmap bitMap = new Bitmap(exp.Info.iPixelsX, exp.Info.iPixelsY))
+                        {
+                           int iOffsetX, iOffsetY;
+                           int iWidth, iHeight;
+
+                           using (exp.Info.gr = Graphics.FromImage(bitMap))
+                              exp.RO.ExportProcess(worldWindow.DrawArgs, exp.Info);
+
+                           iOffsetX = (int)Math.Round((exp.Info.dMinLon - geoExtent.West) * (double)iExportPixelsX / (geoExtent.East - geoExtent.West));
+                           iOffsetY = (int)Math.Round((geoExtent.North - exp.Info.dMaxLat) * (double)iExportPixelsY / (geoExtent.North - geoExtent.South));
+                           iWidth = (int)Math.Round((exp.Info.dMaxLon - exp.Info.dMinLon) * (double)iExportPixelsX / (geoExtent.East - geoExtent.West));
+                           iHeight = (int)Math.Round((exp.Info.dMaxLat - exp.Info.dMinLat) * (double)iExportPixelsY / (geoExtent.North - geoExtent.South));
+
+                           if (exp.Container != null)
+                           {
+                              ImageAttributes imgAtt = new ImageAttributes();
+                              float[][] fMat = { 
+                                    new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+                                    new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
+                                    new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+                                    new float[] {0.0f, 0.0f, 0.0f, (float)exp.Container.Opacity/255.0f, 0.0f},
+                                    new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}
+                                 };
+                              ColorMatrix clrMatrix = new ColorMatrix(fMat);
+                              imgAtt.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+                              gr.DrawImage(bitMap, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, exp.Info.iPixelsX, exp.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
+                           }
+                           else
+                           {
+                              gr.DrawImage(bitMap, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, exp.Info.iPixelsX, exp.Info.iPixelsY, GraphicsUnit.Pixel);
+                           }
+                           if (dlg.KeepLayers)
+                           {
+                              using (Bitmap bitMapLayer = new Bitmap(iExportPixelsX, iExportPixelsY))
+                              {
+                                 using (Graphics grl = Graphics.FromImage(bitMapLayer))
+                                 {
+                                    grl.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
+                                    grl.DrawImage(bitMap, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, exp.Info.iPixelsX, exp.Info.iPixelsY, GraphicsUnit.Pixel);
+                                 }
+
+                                 if (exp.Container != null)
+                                    SaveGeoImage(bitMapLayer, dlg.OutputName + "_" + exp.Container.Name, dlg.Folder, dlg.OutputFormat, strGeotiff);
+                                 else
+                                    SaveGeoImage(bitMapLayer, dlg.OutputName + "_Blue Marble(" + exp.RO.Name + ")", dlg.Folder, dlg.OutputFormat, strGeotiff);
+                              }
+                           }
+                        }
+                     }
+                  }
+                  SaveGeoImage(bitMapMain, dlg.OutputName, dlg.Folder, dlg.OutputFormat, strGeotiff);
+               }
+            }
+         }
+         catch (Exception exc)
+         {
+            MessageBox.Show(this, "Export failed!\n" + exc.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Cursor = Cursors.Default;
+         }
+         finally
+         {
+            if (strGeotiff != null && File.Exists(strGeotiff))
+               File.Delete(strGeotiff);
+
+            Cursor = Cursors.Default;
+         }
+      }
+
+      private void removeFromLayersToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         MessageBox.Show("This command is not currently implemented.");
+      }
+
+      private void refreshServerToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         MessageBox.Show("This command is not currently implemented.");
+      }
+
+      private void removeServerToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         MessageBox.Show("This command is not currently implemented.");
       }
    }
 }

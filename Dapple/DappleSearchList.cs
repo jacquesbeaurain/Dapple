@@ -11,10 +11,20 @@ using System.Net;
 using System.Threading;
 using System.Drawing.Drawing2D;
 
-namespace Dapple
+namespace Dapple.CustomControls
 {
    public partial class DappleSearchList : UserControl
    {
+      #region Enums
+
+      private enum DisplayMode
+      {
+         Thumbnail = 0,
+         List = 1
+      }
+
+      #endregion
+
       #region Statics
 
       private const int THUMBNAIL_SIZE = 50;
@@ -30,6 +40,7 @@ namespace Dapple
       private SearchResultSet[] m_aPages;
       private int m_iCurrentPage;
       private int m_iAccessedPages;
+      private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
 
       #endregion
 
@@ -38,6 +49,9 @@ namespace Dapple
       public DappleSearchList()
       {
          InitializeComponent();
+         cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
+         cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
+         cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
          SetNoSearch();
          cNavigator.PageBack += new ThreadStart(BackPage);
          cNavigator.PageForward += new ThreadStart(ForwardPage);
@@ -52,58 +66,78 @@ namespace Dapple
          if (e.Index == -1) return;
 
          SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
-
          e.DrawBackground();
+
          Matrix oOrigTransform = e.Graphics.Transform;
-
-         // --- Rating bar ---
-
          e.Graphics.TranslateTransform(e.Bounds.X, e.Bounds.Y);
 
-         e.Graphics.DrawRectangle(new Pen(Color.Black), new Rectangle(0, 0, BAR_WIDTH + 1, THUMBNAIL_SIZE + 1));
-
-         double dPercentageRank = (double)oResult.Rank / (double)UInt16.MaxValue;
-         int iBarHeight = (int)(THUMBNAIL_SIZE * dPercentageRank);
-         int iStartPoint = THUMBNAIL_SIZE + 1 - iBarHeight;
-
-         e.Graphics.FillRectangle(Brushes.LightGray, new Rectangle(1, 1, BAR_WIDTH, THUMBNAIL_SIZE));
-         e.Graphics.FillRectangle(new LinearGradientBrush(new Point(BAR_WIDTH/2, THUMBNAIL_SIZE + 2), new Point(BAR_WIDTH / 2 + 1, 0), Color.DarkGreen, Color.Lime), new Rectangle(1, iStartPoint, BAR_WIDTH, iBarHeight));
-
-         // --- Thumbnail ---
-
-         e.Graphics.TranslateTransform(BAR_WIDTH + 1, 0, MatrixOrder.Append);
-
-         e.Graphics.DrawRectangle(new Pen(Brushes.Black), new Rectangle(0, 0, THUMBNAIL_SIZE + 1, THUMBNAIL_SIZE + 1));
-
-         if (oResult.Thumbnail == null)
+         if (m_eDisplayMode == DisplayMode.Thumbnail)
          {
-            e.Graphics.FillRectangle(Brushes.Orange, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+            // --- Rating bar ---
+
+            e.Graphics.DrawRectangle(new Pen(Color.Black), new Rectangle(0, 0, BAR_WIDTH + 1, THUMBNAIL_SIZE + 1));
+
+            double dPercentageRank = (double)oResult.Rank / (double)UInt16.MaxValue;
+            int iBarHeight = (int)(THUMBNAIL_SIZE * dPercentageRank);
+            int iStartPoint = THUMBNAIL_SIZE + 1 - iBarHeight;
+
+            e.Graphics.FillRectangle(Brushes.LightGray, new Rectangle(1, 1, BAR_WIDTH, THUMBNAIL_SIZE));
+            e.Graphics.FillRectangle(new LinearGradientBrush(new Point(BAR_WIDTH / 2, THUMBNAIL_SIZE + 2), new Point(BAR_WIDTH / 2 + 1, 0), Color.DarkGreen, Color.Lime), new Rectangle(1, iStartPoint, BAR_WIDTH, iBarHeight));
+
+            // --- Thumbnail ---
+
+            e.Graphics.TranslateTransform(BAR_WIDTH + 1, 0, MatrixOrder.Append);
+
+            e.Graphics.DrawRectangle(new Pen(Brushes.Black), new Rectangle(0, 0, THUMBNAIL_SIZE + 1, THUMBNAIL_SIZE + 1));
+
+            if (oResult.Thumbnail == null)
+            {
+               e.Graphics.FillRectangle(Brushes.Orange, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+            }
+            else
+            {
+               e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+            }
+
+            // --- Title ---
+
+            e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
+
+            Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
+            e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, (THUMBNAIL_SIZE / 2 - cResultListBox.Font.Height) / 2));
          }
-         else
+         else if (m_eDisplayMode == DisplayMode.List)
          {
-            e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+            e.Graphics.DrawString(oResult.Title, cResultListBox.Font, Brushes.Black, new PointF(0, 0));
          }
-
-         // --- Title ---
-
-         e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
-
-         Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
-         e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, (THUMBNAIL_SIZE / 2 - cResultListBox.Font.Height) / 2));
 
          e.Graphics.Transform = oOrigTransform;
-
          e.DrawFocusRectangle();
       }
 
       private void cResultListBox_MeasureItem(object sender, MeasureItemEventArgs e)
       {
-         e.ItemHeight = THUMBNAIL_SIZE + 2;
+         if (m_eDisplayMode == DisplayMode.Thumbnail)
+         {
+            e.ItemHeight = THUMBNAIL_SIZE + 3;
+         }
+         else if (m_eDisplayMode == DisplayMode.List)
+         {
+            // Just use the standard item height
+         }
+      }
+
+      private void DisplayModeChanged(int iIndex)
+      {
+         DisplayMode eNewDisplayMode = (DisplayMode)Enum.Parse(typeof(DisplayMode), iIndex.ToString());
+         if (eNewDisplayMode != m_eDisplayMode)
+         {
+            m_eDisplayMode = eNewDisplayMode;
+            RefreshResultList();
+         }
       }
 
       #endregion
-
-      #region PagedList Implementation
 
       private void BackPage()
       {
@@ -135,8 +169,6 @@ namespace Dapple
          RefreshResultList();
       }
 
-      #endregion
-
       #region helper functions
 
       private void RefreshResultList()
@@ -157,6 +189,11 @@ namespace Dapple
          else
          {
             cNavigator.SetState("No results");
+         }
+
+         if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
+         {
+            m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox);
          }
 
          cResultListBox.ResumeLayout();
@@ -191,7 +228,6 @@ namespace Dapple
             if (iNumPages > 0)
             {
                m_aPages[0] = oResults;
-               QueueThumbnails(oResults);
             }
          }
       }
@@ -207,29 +243,8 @@ namespace Dapple
          else
          {
             m_aPages[iPage] = oResults;
-            QueueThumbnails(oResults);
          }
       }
-
-      #region Asynchronous Thumbnail Loading
-
-      private void QueueThumbnails(SearchResultSet oResults)
-      {
-         foreach (SearchResult oResult in oResults.Results)
-         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult });
-         }
-      }
-
-      private void AsyncLoadThumbnail(Object oParams)
-      {
-         SearchResult oResult = ((Object[])oParams)[0] as SearchResult;
-
-         oResult.downloadThumbnail();
-         cResultListBox.Invalidate();
-      }
-
-      #endregion
 
       #endregion
    }
@@ -239,6 +254,9 @@ namespace Dapple
       private int m_iOffset;
       private int m_iTotalCount;
       private List<SearchResult> m_aResults;
+
+      private Object LOCK = new Object();
+      private bool m_blThumbnailsQueued = false;
 
       private SearchResultSet(XmlDocument oSearchResult)
       {
@@ -259,6 +277,35 @@ namespace Dapple
       public int TotalCount { get { return m_iTotalCount; } }
       public List<SearchResult> Results { get { return m_aResults; } }
       public int Offset { get { return m_iOffset; } }
+
+      #region Asynchronous Thumbnail Loading
+
+      public void QueueThumbnails(ListBox oView)
+      {
+         lock (LOCK)
+         {
+            if (!m_blThumbnailsQueued)
+            {
+               m_blThumbnailsQueued = true;
+
+               foreach (SearchResult oResult in m_aResults)
+               {
+                  ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView});
+               }
+            }
+         }
+      }
+
+      private void AsyncLoadThumbnail(Object oParams)
+      {
+         SearchResult oResult = ((Object[])oParams)[0] as SearchResult;
+         ListBox oView = ((Object[])oParams)[1] as ListBox;
+
+         oResult.downloadThumbnail();
+         oView.Invalidate();
+      }
+
+      #endregion
 
       public static SearchResultSet doSearch(String szDappleSearchServerURL, String szSearchString, GeographicBoundingBox oSearchBoundingBox, int iOffset, int iNumResults)
       {

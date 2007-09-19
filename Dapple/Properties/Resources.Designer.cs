@@ -371,6 +371,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap layers_download {
+            get {
+                object obj = ResourceManager.GetObject("layers_download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap layers_goto {
             get {
                 object obj = ResourceManager.GetObject("layers_goto", resourceCulture);
@@ -546,6 +553,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap next {
+            get {
+                object obj = ResourceManager.GetObject("next", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon offline {
             get {
                 object obj = ResourceManager.GetObject("offline", resourceCulture);
@@ -563,6 +577,13 @@ namespace Dapple.Properties {
         internal static System.Drawing.Bitmap openview {
             get {
                 object obj = ResourceManager.GetObject("openview", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap previous {
+            get {
+                object obj = ResourceManager.GetObject("previous", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -609,6 +630,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap search {
+            get {
+                object obj = ResourceManager.GetObject("search", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap search_intersecting {
             get {
                 object obj = ResourceManager.GetObject("search_intersecting", resourceCulture);
@@ -630,9 +658,37 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap server_refresh {
+            get {
+                object obj = ResourceManager.GetObject("server_refresh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap settings {
             get {
                 object obj = ResourceManager.GetObject("settings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap tab_list {
+            get {
+                object obj = ResourceManager.GetObject("tab_list", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap tab_thumbnail {
+            get {
+                object obj = ResourceManager.GetObject("tab_thumbnail", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap tab_tree {
+            get {
+                object obj = ResourceManager.GetObject("tab_tree", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
