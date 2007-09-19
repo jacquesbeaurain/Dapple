@@ -1912,10 +1912,16 @@ namespace Dapple
             case "grid":
                iRet = ImageListIndex("dap_grid");
                break;
+            case "gridsection":
+               iRet = ImageListIndex("dap_grid");
+               break;
             case "map":
                iRet = ImageListIndex("dap_map");
                break;
             case "picture":
+               iRet = ImageListIndex("dap_picture");
+               break;
+            case "picturesection":
                iRet = ImageListIndex("dap_picture");
                break;
             case "point":

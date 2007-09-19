@@ -55,12 +55,7 @@ namespace Dapple.Extract
       }
 
       public class Grid
-      {
-         public enum SectionDownloadOptions
-         {
-            NativeProjection
-         }
-
+      {      
          public enum DisplayOptions
          {
             ShadedColourImage,
@@ -181,6 +176,17 @@ namespace Dapple.Extract
                                                                          "WGC"};
       }
 
+      public class SectionGrid
+      {
+         public enum DisplayOptions
+         {
+            ColourImage,
+            DoNotDisplay
+         }
+
+         public static string[] DisplayOptionStrings = new string[] { "Colour image", "Do not display" };
+      }
+
       public class Picture
       {
          public enum DownloadOptions
@@ -200,6 +206,17 @@ namespace Dapple.Extract
          
          public static string[] DownloadOptionStrings = new string[] { "PNG", "JPG", "TIFF", "Native", "Default" };
          public static string[] DisplayOptionStrings = new string[] { "Download and display", "Do not display" };
+      }
+
+      public class SectionPicture
+      {
+         public enum DisplayOptions
+         {
+            ColourImage,
+            DoNotDisplay
+         }
+
+         public static string[] DisplayOptionStrings = new string[] { "Colour image", "Do not display" };
       }
    }
 }

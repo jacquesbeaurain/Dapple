@@ -163,11 +163,11 @@ namespace Dapple.Extract
             }
             else if (oDAPbuilder.DAPType.ToLower() == "picturesection")
             {
-               oControl = new Picture(oDAPbuilder);
+               oControl = new SectionPicture(oDAPbuilder);
             }
             else if (oDAPbuilder.DAPType.ToLower() == "gridsection")
             {
-               oControl = new Grid(oDAPbuilder);
+               oControl = new SectionGrid(oDAPbuilder);
             }
          }
          else 

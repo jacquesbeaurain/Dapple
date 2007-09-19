@@ -120,6 +120,18 @@
     <Compile Include="DAP\DAPGetData\ServerTree.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Extract\SectionPicture.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\SectionPicture.designer.cs">
+      <DependentUpon>SectionPicture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extract\SectionGrid.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\SectionGrid.designer.cs">
+      <DependentUpon>SectionGrid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extract\DownloadOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -273,6 +285,14 @@
     <EmbeddedResource Include="DappleSearchList.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\SectionPicture.resx">
+      <DependentUpon>SectionPicture.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\SectionGrid.resx">
+      <DependentUpon>SectionGrid.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Extract\Generic.resx">
       <DependentUpon>Generic.cs</DependentUpon>
