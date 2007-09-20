@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WorldWind.Renderable;
+using System.IO;
 
 namespace Dapple.LayerGeneration
 {
@@ -13,7 +14,7 @@ namespace Dapple.LayerGeneration
       private RenderableObject m_hObject;
       private bool m_blIsChanged = true;
 
-      public BlueMarbleBuilder(RenderableObject hObject) :base("The blue marble", MainForm.WorldWindowSingleton, null)
+      public BlueMarbleBuilder(RenderableObject hObject) :base("Blue Marble", MainForm.WorldWindowSingleton, null)
       {
          m_hObject = hObject;
       }
@@ -91,7 +92,7 @@ namespace Dapple.LayerGeneration
 
       public override string GetCachePath()
       {
-         throw new Exception("Needs finishin'");
+         return Path.Combine(m_oWorldWindow.Cache.CacheDirectory, "BMNG");
       }
 
       protected override void CleanUpLayer(bool bFinal)

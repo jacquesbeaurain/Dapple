@@ -55,6 +55,8 @@ namespace Dapple
       /// </summary>
       private bool m_blSupressSelectedChanged = false;
 
+      private LayerBuilder m_hBaseLayer = null;
+
       public event GoToHandler GoTo;
       public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
       public event ActiveLayersChangedHandler ActiveLayersChanged;
@@ -113,6 +115,17 @@ namespace Dapple
          }
       }
 
+      /// <summary>
+      /// Whether a delete operation should be allowed to commence (disallows deletion of the base layer).
+      /// </summary>
+      private bool RemoveAllowed
+      {
+         get
+         {
+            return cLayerList.SelectedIndices.Count > 1 || (cLayerList.SelectedIndices.Count == 1 && !m_oLayers[cLayerList.SelectedIndices[0]].Equals(m_hBaseLayer));
+         }
+      }
+
       #endregion
 
       #region Public Members
@@ -154,6 +167,8 @@ namespace Dapple
       public void SetBaseLayer(LayerBuilder oBaseLayer)
       {
          // For now, just add a normal layer.  Later, we'll make it super special
+         // TODO: remove an existing base layer, if necessary.
+         m_hBaseLayer = oBaseLayer;
          oBaseLayer.Temporary = true;
          AddLayer(oBaseLayer, 0);
       }
@@ -170,8 +185,17 @@ namespace Dapple
          m_oLayers.Insert(iInsertIndex, oNewBuilder);
          cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
-         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
-         cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
+         if (oNewBuilder.Equals(m_hBaseLayer))
+         {
+            cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("blue_marble");
+            cLayerList.Items[iInsertIndex].ForeColor = Color.Black;
+            cLayerList.Items[iInsertIndex].Font = new Font(cLayerList.Items[iInsertIndex].Font, FontStyle.Bold | FontStyle.Underline);
+         }
+         else
+         {
+            cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
+            cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
+         }
 
          m_oLayers[iInsertIndex].SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
 
@@ -381,6 +405,7 @@ namespace Dapple
             return;
          }
 
+         cRemoveToolStripMenuItem.Enabled = this.RemoveAllowed;
          cGoToToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1;
          cViewPropertiesToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1;
       }
@@ -456,7 +481,7 @@ namespace Dapple
          }
 
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
-         cRemoveLayerButton.Enabled = cLayerList.SelectedIndices.Count > 0;
+         cRemoveLayerButton.Enabled = this.RemoveAllowed;
          cExtractButton.Enabled = cLayerList.SelectedIndices.Count > 0;
       }
 
@@ -716,6 +741,16 @@ namespace Dapple
 
          cLayerList.BeginUpdate();
          m_blSupressSelectedChanged = true;
+
+         foreach (int iIndex in cLayerList.SelectedIndices)
+         {
+            if (m_oLayers[iIndex].Equals(m_hBaseLayer))
+            {
+               cLayerList.SelectedIndices.Remove(iIndex);
+               break;
+            }
+         }
+
          int iLastIndex = 0;
          while (cLayerList.SelectedIndices.Count > 0)
          {
@@ -733,26 +768,13 @@ namespace Dapple
          }
          if (iLastIndex == cLayerList.Items.Count) iLastIndex--;
          if (iLastIndex != -1) cLayerList.SelectedIndices.Add(iLastIndex);
+
          m_blSupressSelectedChanged = false;
          cLayerList.EndUpdate();
 
          RefreshLayerRenderOrder();
          SetButtonState();
          CmdViewMetadata();
-
-         if (ActiveLayersChanged != null) ActiveLayersChanged();
-         CheckIsValid();
-      }
-
-      /// <summary>
-      /// Remove all the layers in the layer list.
-      /// </summary>
-      public void CmdRemoveAllLayers()
-      {
-         cLayerList.Items.Clear();
-         m_oLayers.Clear();
-
-         SetButtonState();
 
          if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
@@ -808,12 +830,16 @@ namespace Dapple
       /// <returns>True if one or more of the layers is in an old/improper format.</returns>
       public bool LoadFromView(DappleView view, ServerTree oTree)
       {
-         CmdRemoveAllLayers();
-
          bool blIncompleteLoad = false;
 
          cLayerList.BeginUpdate();
          m_blSupressSelectedChanged = true;
+
+         cLayerList.Items.Clear();
+         m_oLayers.Clear();
+
+         AddLayer(m_hBaseLayer);
+
          for (int i = 0; i < view.View.activelayers.datasetCount; i++)
          {
             datasetType dataset = view.View.activelayers.GetdatasetAt(i);
@@ -830,8 +856,11 @@ namespace Dapple
             oBuilder.Opacity = (byte)dataset.opacity.Value;
             AddLayer(oBuilder);
          }
+
          m_blSupressSelectedChanged = false;
          cLayerList.EndUpdate();
+
+         CheckIsValid();
 
          return blIncompleteLoad;
       }
@@ -845,6 +874,9 @@ namespace Dapple
       /// </summary>
       private void CheckIsValid()
       {
+         if (m_hBaseLayer != null && !m_oLayers.Contains(m_hBaseLayer))
+            throw new ArgumentException("You've somehow managed to delete the base layer");
+
          if (m_oLayers.Count != cLayerList.Items.Count)
             throw new ArgumentException("Data no longer syncs");
 

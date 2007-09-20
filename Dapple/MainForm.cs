@@ -2345,7 +2345,6 @@ namespace Dapple
          SaveLastView();
 
          // Ensure cleanup
-         cLayerList.CmdRemoveAllLayers();
          for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
          {
             RenderableObject oRO = (RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i];

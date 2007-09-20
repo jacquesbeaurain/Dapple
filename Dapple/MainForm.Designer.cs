@@ -102,10 +102,20 @@ namespace Dapple
            this.splitContainerMain = new System.Windows.Forms.SplitContainer();
            this.splitContainerLeft = new System.Windows.Forms.SplitContainer();
            this.splitContainerLeftMain = new System.Windows.Forms.SplitContainer();
+           this.splitContainerServers = new Dapple.FixedCollapseSplitContainer();
+           this.cSearchButton = new System.Windows.Forms.Button();
+           this.cSearchTextComboBox = new System.Windows.Forms.ComboBox();
+           this.janaLinkTab1 = new Dapple.CustomControls.JanaLinkTab();
            this.toolStripServers = new System.Windows.Forms.ToolStrip();
            this.toolStripLabel5 = new System.Windows.Forms.ToolStripLabel();
            this.toolStripLayerLabel = new System.Windows.Forms.ToolStrip();
            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+           this.cLayerList = new Dapple.LayerList();
+           this.splitContainerOverview = new Dapple.FixedCollapseSplitContainer();
+           this.cAoiList = new System.Windows.Forms.ComboBox();
+           this.toolStripOverview = new System.Windows.Forms.ToolStrip();
+           this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
+           this.panelOverview = new System.Windows.Forms.Panel();
            this.cWorldMetadataSplitter = new System.Windows.Forms.SplitContainer();
            this.WorldResultsSplitPanel = new System.Windows.Forms.SplitContainer();
            this.toolStripNavigation = new System.Windows.Forms.ToolStrip();
@@ -154,16 +164,6 @@ namespace Dapple
            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
            this.timerNavigation = new System.Windows.Forms.Timer(this.components);
-           this.splitContainerServers = new Dapple.FixedCollapseSplitContainer();
-           this.cSearchButton = new System.Windows.Forms.Button();
-           this.cSearchTextComboBox = new System.Windows.Forms.ComboBox();
-           this.janaLinkTab1 = new Dapple.CustomControls.JanaLinkTab();
-           this.cLayerList = new Dapple.LayerList();
-           this.splitContainerOverview = new Dapple.FixedCollapseSplitContainer();
-           this.cAoiList = new System.Windows.Forms.ComboBox();
-           this.toolStripOverview = new System.Windows.Forms.ToolStrip();
-           this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
-           this.panelOverview = new System.Windows.Forms.Panel();
            this.statusStrip.SuspendLayout();
            this.menuStrip.SuspendLayout();
            this.splitContainerMain.Panel1.SuspendLayout();
@@ -175,8 +175,15 @@ namespace Dapple
            this.splitContainerLeftMain.Panel1.SuspendLayout();
            this.splitContainerLeftMain.Panel2.SuspendLayout();
            this.splitContainerLeftMain.SuspendLayout();
+           this.splitContainerServers.Panel1.SuspendLayout();
+           this.splitContainerServers.Panel2.SuspendLayout();
+           this.splitContainerServers.SuspendLayout();
            this.toolStripServers.SuspendLayout();
            this.toolStripLayerLabel.SuspendLayout();
+           this.splitContainerOverview.Panel1.SuspendLayout();
+           this.splitContainerOverview.Panel2.SuspendLayout();
+           this.splitContainerOverview.SuspendLayout();
+           this.toolStripOverview.SuspendLayout();
            this.cWorldMetadataSplitter.Panel1.SuspendLayout();
            this.cWorldMetadataSplitter.Panel2.SuspendLayout();
            this.cWorldMetadataSplitter.SuspendLayout();
@@ -187,13 +194,6 @@ namespace Dapple
            this.cToolStripMetadata.SuspendLayout();
            this.DappleSearchToolbar.SuspendLayout();
            this.contextMenuStripServers.SuspendLayout();
-           this.splitContainerServers.Panel1.SuspendLayout();
-           this.splitContainerServers.Panel2.SuspendLayout();
-           this.splitContainerServers.SuspendLayout();
-           this.splitContainerOverview.Panel1.SuspendLayout();
-           this.splitContainerOverview.Panel2.SuspendLayout();
-           this.splitContainerOverview.SuspendLayout();
-           this.toolStripOverview.SuspendLayout();
            this.SuspendLayout();
            // 
            // statusStrip
@@ -846,6 +846,61 @@ namespace Dapple
            this.splitContainerLeftMain.TabIndex = 0;
            this.splitContainerLeftMain.SizeChanged += new System.EventHandler(this.splitContainerLeftMain_SizeChanged);
            // 
+           // splitContainerServers
+           // 
+           this.splitContainerServers.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.splitContainerServers.InvertSplitterFix = false;
+           this.splitContainerServers.IsSplitterFixed = true;
+           this.splitContainerServers.Location = new System.Drawing.Point(0, 25);
+           this.splitContainerServers.Name = "splitContainerServers";
+           this.splitContainerServers.Orientation = System.Windows.Forms.Orientation.Horizontal;
+           // 
+           // splitContainerServers.Panel1
+           // 
+           this.splitContainerServers.Panel1.Controls.Add(this.cSearchButton);
+           this.splitContainerServers.Panel1.Controls.Add(this.cSearchTextComboBox);
+           // 
+           // splitContainerServers.Panel2
+           // 
+           this.splitContainerServers.Panel2.Controls.Add(this.janaLinkTab1);
+           this.splitContainerServers.Size = new System.Drawing.Size(231, 223);
+           this.splitContainerServers.SplitterDistance = 25;
+           this.splitContainerServers.SplitterWidth = 1;
+           this.splitContainerServers.TabIndex = 0;
+           // 
+           // cSearchButton
+           // 
+           this.cSearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+           this.cSearchButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+           this.cSearchButton.Image = global::Dapple.Properties.Resources.search;
+           this.cSearchButton.Location = new System.Drawing.Point(208, 1);
+           this.cSearchButton.Name = "cSearchButton";
+           this.cSearchButton.Size = new System.Drawing.Size(23, 23);
+           this.cSearchButton.TabIndex = 1;
+           this.toolTip.SetToolTip(this.cSearchButton, "Search");
+           this.cSearchButton.UseVisualStyleBackColor = true;
+           this.cSearchButton.Click += new System.EventHandler(this.cSearchButton_Click);
+           // 
+           // cSearchTextComboBox
+           // 
+           this.cSearchTextComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                       | System.Windows.Forms.AnchorStyles.Right)));
+           this.cSearchTextComboBox.FormattingEnabled = true;
+           this.cSearchTextComboBox.Location = new System.Drawing.Point(3, 2);
+           this.cSearchTextComboBox.Name = "cSearchTextComboBox";
+           this.cSearchTextComboBox.Size = new System.Drawing.Size(199, 21);
+           this.cSearchTextComboBox.Sorted = true;
+           this.cSearchTextComboBox.TabIndex = 0;
+           this.cSearchTextComboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cSearchTextComboBox_KeyPress);
+           // 
+           // janaLinkTab1
+           // 
+           this.janaLinkTab1.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.janaLinkTab1.Location = new System.Drawing.Point(0, 0);
+           this.janaLinkTab1.Name = "janaLinkTab1";
+           this.janaLinkTab1.Size = new System.Drawing.Size(231, 197);
+           this.janaLinkTab1.TabIndex = 4;
+           // 
            // toolStripServers
            // 
            this.toolStripServers.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -881,6 +936,75 @@ namespace Dapple
            this.toolStripLabel1.Name = "toolStripLabel1";
            this.toolStripLabel1.Size = new System.Drawing.Size(45, 22);
            this.toolStripLabel1.Text = "Layers";
+           // 
+           // cLayerList
+           // 
+           this.cLayerList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                       | System.Windows.Forms.AnchorStyles.Left)
+                       | System.Windows.Forms.AnchorStyles.Right)));
+           this.cLayerList.Location = new System.Drawing.Point(0, 25);
+           this.cLayerList.Name = "cLayerList";
+           this.cLayerList.Size = new System.Drawing.Size(231, 166);
+           this.cLayerList.TabIndex = 2;
+           // 
+           // splitContainerOverview
+           // 
+           this.splitContainerOverview.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.splitContainerOverview.InvertSplitterFix = false;
+           this.splitContainerOverview.IsSplitterFixed = true;
+           this.splitContainerOverview.Location = new System.Drawing.Point(0, 0);
+           this.splitContainerOverview.Name = "splitContainerOverview";
+           this.splitContainerOverview.Orientation = System.Windows.Forms.Orientation.Horizontal;
+           // 
+           // splitContainerOverview.Panel1
+           // 
+           this.splitContainerOverview.Panel1.Controls.Add(this.cAoiList);
+           this.splitContainerOverview.Panel1.Controls.Add(this.toolStripOverview);
+           this.splitContainerOverview.Panel1MinSize = 50;
+           // 
+           // splitContainerOverview.Panel2
+           // 
+           this.splitContainerOverview.Panel2.Controls.Add(this.panelOverview);
+           this.splitContainerOverview.Size = new System.Drawing.Size(231, 174);
+           this.splitContainerOverview.SplitterWidth = 1;
+           this.splitContainerOverview.TabIndex = 0;
+           // 
+           // cAoiList
+           // 
+           this.cAoiList.Dock = System.Windows.Forms.DockStyle.Bottom;
+           this.cAoiList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+           this.cAoiList.FormattingEnabled = true;
+           this.cAoiList.Location = new System.Drawing.Point(0, 29);
+           this.cAoiList.Name = "cAoiList";
+           this.cAoiList.Size = new System.Drawing.Size(231, 21);
+           this.cAoiList.TabIndex = 2;
+           this.cAoiList.SelectedIndexChanged += new System.EventHandler(this.cAoiList_SelectedIndexChanged);
+           // 
+           // toolStripOverview
+           // 
+           this.toolStripOverview.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+           this.toolStripOverview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel4});
+           this.toolStripOverview.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+           this.toolStripOverview.Location = new System.Drawing.Point(0, 0);
+           this.toolStripOverview.Name = "toolStripOverview";
+           this.toolStripOverview.Size = new System.Drawing.Size(231, 25);
+           this.toolStripOverview.TabIndex = 0;
+           // 
+           // toolStripLabel4
+           // 
+           this.toolStripLabel4.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+           this.toolStripLabel4.Name = "toolStripLabel4";
+           this.toolStripLabel4.Size = new System.Drawing.Size(88, 22);
+           this.toolStripLabel4.Text = "Overview map";
+           // 
+           // panelOverview
+           // 
+           this.panelOverview.Dock = System.Windows.Forms.DockStyle.Fill;
+           this.panelOverview.Location = new System.Drawing.Point(0, 0);
+           this.panelOverview.Name = "panelOverview";
+           this.panelOverview.Size = new System.Drawing.Size(231, 123);
+           this.panelOverview.TabIndex = 1;
            // 
            // cWorldMetadataSplitter
            // 
@@ -952,7 +1076,7 @@ namespace Dapple
             this.toolStripButtonResetCamera});
            this.toolStripNavigation.Location = new System.Drawing.Point(195, 418);
            this.toolStripNavigation.Name = "toolStripNavigation";
-           this.toolStripNavigation.Size = new System.Drawing.Size(259, 25);
+           this.toolStripNavigation.Size = new System.Drawing.Size(228, 25);
            this.toolStripNavigation.TabIndex = 1;
            this.toolStripNavigation.Text = "toolStrip1";
            // 
@@ -1363,130 +1487,6 @@ namespace Dapple
            // 
            this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
            // 
-           // splitContainerServers
-           // 
-           this.splitContainerServers.Dock = System.Windows.Forms.DockStyle.Fill;
-           this.splitContainerServers.InvertSplitterFix = false;
-           this.splitContainerServers.IsSplitterFixed = true;
-           this.splitContainerServers.Location = new System.Drawing.Point(0, 25);
-           this.splitContainerServers.Name = "splitContainerServers";
-           this.splitContainerServers.Orientation = System.Windows.Forms.Orientation.Horizontal;
-           // 
-           // splitContainerServers.Panel1
-           // 
-           this.splitContainerServers.Panel1.Controls.Add(this.cSearchButton);
-           this.splitContainerServers.Panel1.Controls.Add(this.cSearchTextComboBox);
-           // 
-           // splitContainerServers.Panel2
-           // 
-           this.splitContainerServers.Panel2.Controls.Add(this.janaLinkTab1);
-           this.splitContainerServers.Size = new System.Drawing.Size(231, 223);
-           this.splitContainerServers.SplitterDistance = 25;
-           this.splitContainerServers.SplitterWidth = 1;
-           this.splitContainerServers.TabIndex = 0;
-           // 
-           // cSearchButton
-           // 
-           this.cSearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-           this.cSearchButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-           this.cSearchButton.Image = global::Dapple.Properties.Resources.search;
-           this.cSearchButton.Location = new System.Drawing.Point(208, 1);
-           this.cSearchButton.Name = "cSearchButton";
-           this.cSearchButton.Size = new System.Drawing.Size(23, 23);
-           this.cSearchButton.TabIndex = 1;
-           this.toolTip.SetToolTip(this.cSearchButton, "Search");
-           this.cSearchButton.UseVisualStyleBackColor = true;
-           this.cSearchButton.Click += new System.EventHandler(this.cSearchButton_Click);
-           // 
-           // cSearchTextComboBox
-           // 
-           this.cSearchTextComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                       | System.Windows.Forms.AnchorStyles.Right)));
-           this.cSearchTextComboBox.FormattingEnabled = true;
-           this.cSearchTextComboBox.Location = new System.Drawing.Point(3, 2);
-           this.cSearchTextComboBox.Name = "cSearchTextComboBox";
-           this.cSearchTextComboBox.Size = new System.Drawing.Size(199, 21);
-           this.cSearchTextComboBox.Sorted = true;
-           this.cSearchTextComboBox.TabIndex = 0;
-           this.cSearchTextComboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cSearchTextComboBox_KeyPress);
-           // 
-           // janaLinkTab1
-           // 
-           this.janaLinkTab1.Dock = System.Windows.Forms.DockStyle.Fill;
-           this.janaLinkTab1.Location = new System.Drawing.Point(0, 0);
-           this.janaLinkTab1.Name = "janaLinkTab1";
-           this.janaLinkTab1.Size = new System.Drawing.Size(231, 197);
-           this.janaLinkTab1.TabIndex = 4;
-           // 
-           // cLayerList
-           // 
-           this.cLayerList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                       | System.Windows.Forms.AnchorStyles.Left)
-                       | System.Windows.Forms.AnchorStyles.Right)));
-           this.cLayerList.Location = new System.Drawing.Point(0, 25);
-           this.cLayerList.Name = "cLayerList";
-           this.cLayerList.Size = new System.Drawing.Size(231, 166);
-           this.cLayerList.TabIndex = 2;
-           // 
-           // splitContainerOverview
-           // 
-           this.splitContainerOverview.Dock = System.Windows.Forms.DockStyle.Fill;
-           this.splitContainerOverview.InvertSplitterFix = false;
-           this.splitContainerOverview.IsSplitterFixed = true;
-           this.splitContainerOverview.Location = new System.Drawing.Point(0, 0);
-           this.splitContainerOverview.Name = "splitContainerOverview";
-           this.splitContainerOverview.Orientation = System.Windows.Forms.Orientation.Horizontal;
-           // 
-           // splitContainerOverview.Panel1
-           // 
-           this.splitContainerOverview.Panel1.Controls.Add(this.cAoiList);
-           this.splitContainerOverview.Panel1.Controls.Add(this.toolStripOverview);
-           this.splitContainerOverview.Panel1MinSize = 50;
-           // 
-           // splitContainerOverview.Panel2
-           // 
-           this.splitContainerOverview.Panel2.Controls.Add(this.panelOverview);
-           this.splitContainerOverview.Size = new System.Drawing.Size(231, 174);
-           this.splitContainerOverview.SplitterWidth = 1;
-           this.splitContainerOverview.TabIndex = 0;
-           // 
-           // cAoiList
-           // 
-           this.cAoiList.Dock = System.Windows.Forms.DockStyle.Bottom;
-           this.cAoiList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-           this.cAoiList.FormattingEnabled = true;
-           this.cAoiList.Location = new System.Drawing.Point(0, 29);
-           this.cAoiList.Name = "cAoiList";
-           this.cAoiList.Size = new System.Drawing.Size(231, 21);
-           this.cAoiList.TabIndex = 2;
-           this.cAoiList.SelectedIndexChanged += new System.EventHandler(this.cAoiList_SelectedIndexChanged);
-           // 
-           // toolStripOverview
-           // 
-           this.toolStripOverview.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-           this.toolStripOverview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel4});
-           this.toolStripOverview.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-           this.toolStripOverview.Location = new System.Drawing.Point(0, 0);
-           this.toolStripOverview.Name = "toolStripOverview";
-           this.toolStripOverview.Size = new System.Drawing.Size(231, 25);
-           this.toolStripOverview.TabIndex = 0;
-           // 
-           // toolStripLabel4
-           // 
-           this.toolStripLabel4.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
-           this.toolStripLabel4.Name = "toolStripLabel4";
-           this.toolStripLabel4.Size = new System.Drawing.Size(88, 22);
-           this.toolStripLabel4.Text = "Overview map";
-           // 
-           // panelOverview
-           // 
-           this.panelOverview.Dock = System.Windows.Forms.DockStyle.Fill;
-           this.panelOverview.Location = new System.Drawing.Point(0, 0);
-           this.panelOverview.Name = "panelOverview";
-           this.panelOverview.Size = new System.Drawing.Size(231, 123);
-           this.panelOverview.TabIndex = 1;
-           // 
            // MainForm
            // 
            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1524,10 +1524,19 @@ namespace Dapple
            this.splitContainerLeftMain.Panel2.ResumeLayout(false);
            this.splitContainerLeftMain.Panel2.PerformLayout();
            this.splitContainerLeftMain.ResumeLayout(false);
+           this.splitContainerServers.Panel1.ResumeLayout(false);
+           this.splitContainerServers.Panel2.ResumeLayout(false);
+           this.splitContainerServers.ResumeLayout(false);
            this.toolStripServers.ResumeLayout(false);
            this.toolStripServers.PerformLayout();
            this.toolStripLayerLabel.ResumeLayout(false);
            this.toolStripLayerLabel.PerformLayout();
+           this.splitContainerOverview.Panel1.ResumeLayout(false);
+           this.splitContainerOverview.Panel1.PerformLayout();
+           this.splitContainerOverview.Panel2.ResumeLayout(false);
+           this.splitContainerOverview.ResumeLayout(false);
+           this.toolStripOverview.ResumeLayout(false);
+           this.toolStripOverview.PerformLayout();
            this.cWorldMetadataSplitter.Panel1.ResumeLayout(false);
            this.cWorldMetadataSplitter.Panel2.ResumeLayout(false);
            this.cWorldMetadataSplitter.Panel2.PerformLayout();
@@ -1543,15 +1552,6 @@ namespace Dapple
            this.DappleSearchToolbar.ResumeLayout(false);
            this.DappleSearchToolbar.PerformLayout();
            this.contextMenuStripServers.ResumeLayout(false);
-           this.splitContainerServers.Panel1.ResumeLayout(false);
-           this.splitContainerServers.Panel2.ResumeLayout(false);
-           this.splitContainerServers.ResumeLayout(false);
-           this.splitContainerOverview.Panel1.ResumeLayout(false);
-           this.splitContainerOverview.Panel1.PerformLayout();
-           this.splitContainerOverview.Panel2.ResumeLayout(false);
-           this.splitContainerOverview.ResumeLayout(false);
-           this.toolStripOverview.ResumeLayout(false);
-           this.toolStripOverview.PerformLayout();
            this.ResumeLayout(false);
            this.PerformLayout();
 
