@@ -7,7 +7,7 @@
 
       <Directory Id="TARGETDIR" Name="SourceDir">
          <Directory Id="ProgramFilesFolder">
-            <Directory Id="INSTALLLOCATION" Name="Dapple">
+            <Directory Id="INSTALLDIR" Name="Dapple">
                <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
             </Directory>
          </Directory>
