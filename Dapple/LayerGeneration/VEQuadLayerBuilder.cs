@@ -114,11 +114,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return "VETileSet"; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
@@ -145,11 +140,6 @@ namespace Dapple.LayerGeneration
             iTotalBytes = 0;
             return false;
          }
-      }
-
-      public override string ServiceType
-      {
-         get { return "Virtual Earth Layer"; }
       }
 
       public override RenderableObject GetLayer()

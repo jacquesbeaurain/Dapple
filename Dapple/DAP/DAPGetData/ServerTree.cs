@@ -325,7 +325,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUrl"></param>
       /// <returns></returns>
-      public bool AddDAPServer(string strUrl, out Server hRetServer)
+      public virtual bool AddDAPServer(string strUrl, out Server hRetServer)
       {
          bool bRet;
 

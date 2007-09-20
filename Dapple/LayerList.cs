@@ -135,7 +135,7 @@ namespace Dapple
 
          for (int count = 0; count < oLayers.Count; count++)
          {
-            AddLayer(oLayers[count], iInsertIndex + count);
+            AddLayer(new LayerBuilderContainer(oLayers[count]), iInsertIndex + count);
          }
 
          cLayerList.SelectedIndices.Clear();
@@ -151,17 +151,25 @@ namespace Dapple
          cLayerList.EndUpdate();
       }
 
-      public void AddLayer(LayerBuilder oLayer)
+      public void SetBaseLayer(LayerBuilder oBaseLayer)
       {
-         AddLayer(oLayer, 0);
+         // For now, just add a normal layer.  Later, we'll make it super special
+         LayerBuilderContainer oContainer = new LayerBuilderContainer(oBaseLayer);
+         oContainer.Temporary = true;
+         AddLayer(oContainer, 0);
       }
 
-      public void AddLayer(LayerBuilder oLayer, int iInsertIndex)
+      public void AddLayer(LayerBuilder oLayer)
       {
-         if (ContainsLayerBuilder(oLayer)) return;
+         AddLayer(new LayerBuilderContainer(oLayer, true), 0);
+      }
 
-         m_oLayers.Insert(iInsertIndex, new LayerBuilderContainer(oLayer, true));
-         cLayerList.Items.Insert(iInsertIndex, oLayer.Name);
+      private void AddLayer(LayerBuilderContainer oContainer, int iInsertIndex)
+      {
+         if (ContainsLayerBuilder(oContainer.Builder)) return;
+
+         m_oLayers.Insert(iInsertIndex, oContainer);
+         cLayerList.Items.Insert(iInsertIndex, oContainer.Builder.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
          cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].Builder.DisplayIconKey);
          cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;

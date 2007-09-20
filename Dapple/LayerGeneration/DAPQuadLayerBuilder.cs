@@ -23,8 +23,6 @@ namespace Dapple.LayerGeneration
 
 		public static readonly string URISchemeName = "gxdap";
 
-		public static readonly string TypeName = "DAPQuadLayer";
-
 		public static readonly string CacheSubDir = "DAPImages";
 
 		#endregion
@@ -132,11 +130,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return DAPQuadLayerBuilder.TypeName; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
@@ -165,14 +158,6 @@ namespace Dapple.LayerGeneration
          }
       }
       
-      public override string ServiceType
-		{
-			get
-			{
-				return "DAP Layer";
-			}
-		}
-
       public override RenderableObject GetLayer()
       {
          return GetQuadTileSet();

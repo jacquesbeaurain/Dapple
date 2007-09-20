@@ -10,6 +10,7 @@ using System.Xml;
 using System.Net;
 using System.Threading;
 using System.Drawing.Drawing2D;
+using Dapple.LayerGeneration;
 
 namespace Dapple.CustomControls
 {
@@ -41,6 +42,7 @@ namespace Dapple.CustomControls
       private int m_iCurrentPage;
       private int m_iAccessedPages;
       private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
+      private bool m_blDragDropEnabled = false;
 
       #endregion
 
@@ -104,11 +106,13 @@ namespace Dapple.CustomControls
             e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
 
             Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
-            e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, (THUMBNAIL_SIZE / 2 - cResultListBox.Font.Height) / 2));
+            e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, (THUMBNAIL_SIZE - cResultListBox.Font.Height) / 2));
          }
          else if (m_eDisplayMode == DisplayMode.List)
          {
-            e.Graphics.DrawString(oResult.Title, cResultListBox.Font, Brushes.Black, new PointF(0, 0));
+            e.Graphics.DrawIcon(Dapple.Properties.Resources.layer, new Rectangle(0, 0, e.Bounds.Height, e.Bounds.Height));
+            e.Graphics.TranslateTransform(e.Bounds.Height, 0, MatrixOrder.Append);
+            e.Graphics.DrawString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font, Brushes.Black, new PointF(0, 0));
          }
 
          e.Graphics.Transform = oOrigTransform;
@@ -123,8 +127,36 @@ namespace Dapple.CustomControls
          }
          else if (m_eDisplayMode == DisplayMode.List)
          {
-            // Just use the standard item height
+            // Use height of icon
+            e.ItemHeight = 16;
          }
+      }
+
+      private void cResultListBox_MouseMove(object sender, MouseEventArgs e)
+      {
+         if (m_blDragDropEnabled && (e.Button & MouseButtons.Left) == MouseButtons.Left)
+         {
+            m_blDragDropEnabled = false;
+
+            MessageBox.Show("The layers from web searches cannot currently be added.");
+
+            /*if (cResultListBox.SelectedIndices.Count > 0)
+            {
+               List<LayerBuilder> oLayers = new List<LayerBuilder>();
+
+               foreach (int iIndex in cResultListBox.SelectedIndices)
+               {
+                  LayerUri oUri = m_aPages[m_iCurrentPage].Results[iIndex].Uri;
+               }
+
+               DoDragDrop(oLayers, DragDropEffects.Copy);
+            }*/
+         }
+      }
+
+      private void cResultListBox_MouseDown(object sender, MouseEventArgs e)
+      {
+         m_blDragDropEnabled = (e.Button & MouseButtons.Left) == MouseButtons.Left;
       }
 
       private void DisplayModeChanged(int iIndex)
@@ -364,24 +396,30 @@ namespace Dapple.CustomControls
 
    class SearchResult
    {
-      private String m_szTitle;
-      private UInt16 m_uiRank;
       private Bitmap m_oBitmap;
-      private String m_szDescription;
-      private Int32 m_iID;
+      private Dictionary<String, String> m_aCommonAttributes = new Dictionary<string, string>();
+      private Dictionary<String, String> m_aTypeSpecificAttributes = new Dictionary<string, string>();
 
       public SearchResult(XmlElement oLayerElement)
       {
-         m_uiRank = UInt16.Parse(oLayerElement.GetAttribute("rankingscore"));
+
          XmlElement oCommonElement = oLayerElement.SelectSingleNode("common") as XmlElement;
-         m_szTitle = oCommonElement.GetAttribute("layertitle");
-         m_iID = Int32.Parse(oCommonElement.GetAttribute("obaselayerid"));
-         m_szDescription = oCommonElement.GetAttribute("description");
+         foreach (XmlAttribute oAttribute in oCommonElement.Attributes)
+         {
+            m_aCommonAttributes.Add(oAttribute.Name, oAttribute.Value);
+         }
+         m_aCommonAttributes.Add("rankingscore", oLayerElement.GetAttribute("rankingscore"));
+
+         XmlElement oTypeElement = oLayerElement.SelectSingleNode(m_aCommonAttributes["type"].ToLower()) as XmlElement;
+         foreach (XmlAttribute oAttribute in oTypeElement.Attributes)
+         {
+            m_aTypeSpecificAttributes.Add(oAttribute.Name, oAttribute.Value);
+         }
       }
 
       public void downloadThumbnail()
       {
-         WebRequest oRequest = WebRequest.Create("http://dapplesearch.geosoft.com/Thumbnail.aspx?layerid=" + m_iID.ToString());
+         WebRequest oRequest = WebRequest.Create("http://dapplesearch.geosoft.com/Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
          WebResponse oResponse = null;
          try
          {
@@ -394,9 +432,47 @@ namespace Dapple.CustomControls
          }
       }
 
-      public String Title { get { return m_szTitle; } }
-      public UInt16 Rank { get { return m_uiRank; } }
+      public String Title { get { return m_aCommonAttributes["layertitle"]; } }
+      public UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
+      public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
       public Bitmap Thumbnail { get { return m_oBitmap; } }
-      public String Description { get { return m_szDescription; } }
+      public String Description { get { return m_aCommonAttributes["description"]; } }
+
+      public LayerUri Uri
+      {
+         get
+         {
+            String szType = m_aCommonAttributes["type"];
+
+            if (szType.Equals("dap", StringComparison.InvariantCultureIgnoreCase))
+            {
+            }
+            else if (szType.Equals("wms", StringComparison.InvariantCultureIgnoreCase))
+            {
+               String szUri = "gxwms://" + m_aCommonAttributes["url"];
+               if (!szUri.Contains("?")) szUri += "?";
+               szUri += "version=" + m_aTypeSpecificAttributes["serverversion"];
+               szUri += "&layer=" + m_aTypeSpecificAttributes["layername"];
+               szUri += "&" + m_aTypeSpecificAttributes["cgitokens"];
+               if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)
+               {
+                  szUri += "&srs=";
+               }
+               else
+               {
+                  szUri += "&crs=";
+               }
+               szUri += m_aTypeSpecificAttributes["specialcoord"];
+
+               WMSLayerUri oUri = new WMSLayerUri(szUri);
+
+               return oUri;
+            }
+            else if (szType.Equals("arcims", StringComparison.InvariantCultureIgnoreCase))
+            {
+            }
+            return null;
+         }
+      }
    }
 }

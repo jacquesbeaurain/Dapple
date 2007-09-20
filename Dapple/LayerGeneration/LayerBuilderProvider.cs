@@ -17,12 +17,7 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
-		string Type
-		{
-			get;
-		}
-
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		bool IsChanged
 		{
 			get;
@@ -128,12 +123,7 @@ namespace Dapple.LayerGeneration
 			set;
 		}
 
-		public abstract string Type
-		{
-			get;
-		}
-
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		public abstract bool IsChanged
 		{
 			get;
@@ -167,17 +157,7 @@ namespace Dapple.LayerGeneration
       [System.ComponentModel.Browsable(false)]
 		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
 
-		/// <summary>
-		/// Used to display the type of service being provided
-		/// DAP, WMS, File etc..
-		/// </summary>
-      [System.ComponentModel.Browsable(true)]
-		public abstract string ServiceType
-		{
-			get;
-		}
-
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		public IBuilder Parent
 		{
 			get

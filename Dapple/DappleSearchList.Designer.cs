@@ -49,6 +49,8 @@ namespace Dapple.CustomControls
          this.cResultListBox.TabIndex = 0;
          this.cResultListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cResultListBox_DrawItem);
          this.cResultListBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.cResultListBox_MeasureItem);
+         this.cResultListBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseMove);
+         this.cResultListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDown);
          // 
          // cNavigator
          // 

@@ -325,6 +325,7 @@ namespace Dapple
 
          Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
+#if !DEBUG
          using (this.splashScreen = new Splash())
          {
             this.splashScreen.Owner = this;
@@ -332,6 +333,7 @@ namespace Dapple
             this.splashScreen.SetText("Initializing...");
 
             Application.DoEvents();
+#endif
 
             // --- setup the list of images used for the different datatypes ---
 
@@ -373,6 +375,7 @@ namespace Dapple
             m_oImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
             m_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
             m_oImageList.Images.Add("imageservice", Dapple.Properties.Resources.layers_top);
+            m_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
 
 
             InitializeComponent();
@@ -522,13 +525,6 @@ namespace Dapple
 
             #region OverviewPanel
 
-            int i;
-            for (i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
-            {
-               if (((RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
-                  break;
-            }
-
             this.overviewCtl = new OverviewControl(Settings.DataPath + @"\Earth\BmngBathy\world.topo.bathy.200407.jpg", worldWindow, panelOverview);
             this.overviewCtl.Dock = DockStyle.Fill;
             this.panelOverview.Controls.Add(this.overviewCtl);
@@ -544,10 +540,11 @@ namespace Dapple
             #region Search view setup
             //---------------------------------------------------------------------------------------------
 
-            this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList);
             this.cServerListControl = new ServerList();
+            this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList, cServerListControl);
             cServerListControl.ImageList = this.tvServers.ImageList;
             cLayerList.ImageList = this.tvServers.ImageList;
+            cLayerList.SetBaseLayer(new BlueMarbleBuilder(GetBMNG()));
 
             m_oMetadataDisplay = new MetadataDisplayThread(this);
             cServerListControl.LayerList = cLayerList;
@@ -587,9 +584,10 @@ namespace Dapple
             this.PerformLayout();
             strLayerToLoad = strDatasetLink;
 
-
+#if !DEBUG
             while (!this.splashScreen.IsDone)
                System.Threading.Thread.Sleep(50);
+#endif
 
             // Force initial render to avoid showing random contents of frame buffer to user.
             worldWindow.Render();
@@ -642,7 +640,9 @@ namespace Dapple
 
             loadCountryList();
             populateAoiComboBox();
+#if !DEBUG
          }
+#endif
       }
       #endregion
 
@@ -3369,19 +3369,6 @@ namespace Dapple
 
          this.cWebSearch.SetSearchParameters(strText, oAoi);
       }
-
-      /*private void cServerTabControl_SelectedIndexChanged(object sender, EventArgs e)
-      {
-         if (cServerTabControl.SelectedIndex == 1)
-         {
-            cServerListControl.Servers = this.tvServers.getServerList();
-            cServerListControl.SelectedServer = this.tvServers.SelectedServer;
-         }
-         else if (cServerTabControl.SelectedIndex == 0)
-         {
-            tvServers.SelectedServer = cServerListControl.SelectedServer;
-         }
-      }*/
 
       private void CenterNavigationToolStrip()
       {

@@ -63,24 +63,19 @@ namespace Dapple.CustomControls
 
       private void PositionLabels()
       {
-         Console.WriteLine("Width: " + this.Width);
          int iFreeSpace = this.Width;
 
          foreach (LinkLabel oLabel in m_cLinks)
          {
             iFreeSpace -= (oLabel.PreferredWidth + oLabel.Padding.Horizontal);
-            Console.WriteLine("Label with space " + (oLabel.PreferredWidth + oLabel.Padding.Horizontal));
          }
-         Console.WriteLine("Free Space: " + iFreeSpace);
-
+         
          int iIncrement = iFreeSpace / (m_cLinks.Length + 1);
 
-         Console.WriteLine("Increment: " + iIncrement);
          int iCurrPosition = iIncrement;
 
          foreach (LinkLabel oLabel in m_cLinks)
          {
-            Console.WriteLine("Positioning label " + oLabel + " at X " + iCurrPosition);
             oLabel.Location = new Point(iCurrPosition, oLabel.Padding.Top);
             iCurrPosition += (oLabel.PreferredWidth + oLabel.Padding.Horizontal + iIncrement);
          }

@@ -217,6 +217,7 @@
     <Compile Include="LayerGeneration\ArcIMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\ArcIMSCatalogBuilder.cs" />
     <Compile Include="LayerGeneration\ArcIMSServiceBuilder.cs" />
+    <Compile Include="LayerGeneration\BlueMarbleBuilder.cs" />
     <Compile Include="LayerGeneration\GeorefImageLayerBuilder.cs" />
     <Compile Include="LayerGeneration\Uris.cs" />
     <Compile Include="LayerGeneration\VEQuadLayerBuilder.cs">

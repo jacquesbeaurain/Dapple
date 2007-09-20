@@ -20,14 +20,6 @@ namespace Dapple.LayerGeneration
 		private bool m_temporary;
       private byte m_opacity;
 
-		public LayerBuilderContainer(string strName, string strUri, bool visible, byte opacity)
-		{
-			m_name = strName;
-			m_uri = strUri;
-			m_visible = visible;
-			m_opacity = opacity;
-		}
-
 		public LayerBuilderContainer(LayerBuilder builder)
 			: this(builder, true)
 		{

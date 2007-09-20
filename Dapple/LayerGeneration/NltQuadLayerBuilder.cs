@@ -124,11 +124,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return "QuadTileSet"; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
@@ -155,11 +150,6 @@ namespace Dapple.LayerGeneration
             iTotalBytes = 0;
             return false;
          }
-      }
-
-      public override string ServiceType
-      {
-         get { return "Tile Server"; }
       }
 
       public override RenderableObject GetLayer()

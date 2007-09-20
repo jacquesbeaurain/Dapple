@@ -116,11 +116,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return "GeoTif"; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
@@ -142,11 +137,6 @@ namespace Dapple.LayerGeneration
          iBytesRead = 0;
          iTotalBytes = 0;
          return false;
-      }
-
-      public override string ServiceType
-      {
-         get { return "GeoTif Image Layer"; }
       }
 
       public override RenderableObject GetLayer()

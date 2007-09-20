@@ -228,11 +228,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return "WMS"; }
-      }
-
       public override XmlNode GetMetaData(XmlDocument oDoc)
       {
          XmlDocument responseDoc = new XmlDocument();

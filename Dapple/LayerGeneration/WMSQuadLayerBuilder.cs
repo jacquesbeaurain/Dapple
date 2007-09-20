@@ -18,12 +18,11 @@ namespace Dapple.LayerGeneration
 		QuadTileSet m_oQuadTileSet;
 
 		private int m_iLevels = 15;
-		private int m_iTextureSizePixels = 256;
+		private const int TextureSizePixels = 256;
 		
 		int distAboveSurface = 0;
 		bool terrainMapped = false;
 		GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
-		private double m_dLevelZeroTileSizeDegrees = 0;
 
 		WMSServerBuilder m_Server;
 
@@ -60,7 +59,7 @@ namespace Dapple.LayerGeneration
 			{
 				double dTileSize = LevelZeroTileSize;
 				m_iLevels = 1;
-				while (dTileSize / Convert.ToDouble(m_iTextureSizePixels) > dRes / 4.0)
+				while (dTileSize / Convert.ToDouble(TextureSizePixels) > dRes / 4.0)
 				{
 					m_iLevels++;
 					dTileSize /= 2;
@@ -130,11 +129,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return WMSQuadLayerBuilder.TypeName; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
@@ -160,14 +154,6 @@ namespace Dapple.LayerGeneration
             iBytesRead = 0;
             iTotalBytes = 0;
             return false;
-         }
-      }
-
-      public override string ServiceType
-      {
-         get
-         {
-            return "WMS Layer";
          }
       }
 
@@ -209,7 +195,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].ImageExtension = strExt;
             imageStores[0].CacheDirectory = strCachePath;
             imageStores[0].TextureFormat = World.Settings.TextureFormat;
-            imageStores[0].TextureSizePixels = m_iTextureSizePixels;
+            imageStores[0].TextureSizePixels = TextureSizePixels;
 
             m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, distAboveSurface,
                (double)m_wmsLayer.North, (double)m_wmsLayer.South, (double)m_wmsLayer.West, (double)m_wmsLayer.East,
@@ -226,7 +212,7 @@ namespace Dapple.LayerGeneration
       {
          String result = m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl;
          if (!result.Contains("?")) result += "?";
-         result += "&layer=" + m_wmsLayer.Name + "&pixelsize=" + m_iTextureSizePixels.ToString();
+         result += "&layer=" + m_wmsLayer.Name;
          result = result.Replace("http://", URLProtocolName);
          return result;
       }
@@ -388,17 +374,17 @@ namespace Dapple.LayerGeneration
 		{
 			get
 			{
-				if (m_dLevelZeroTileSizeDegrees == 0)
-				{
-					// Round to ceiling of four decimals (>~ 10 meter resolution)
-					// Empirically determined as pretty good tile size choice for small data sets
-					double dLevelZero = Math.Ceiling(10000.0 * Math.Max(m_hBoundary.North - m_hBoundary.South, m_hBoundary.West - m_hBoundary.East)) / 10000.0;
+            double m_dLevelZeroTileSizeDegrees = 0;
 
-					// Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
-					m_dLevelZeroTileSizeDegrees = 22.5;
-					while (dLevelZero < m_dLevelZeroTileSizeDegrees)
-						m_dLevelZeroTileSizeDegrees /= 2;
-				}
+				// Round to ceiling of four decimals (>~ 10 meter resolution)
+				// Empirically determined as pretty good tile size choice for small data sets
+				double dLevelZero = Math.Ceiling(10000.0 * Math.Max(m_hBoundary.North - m_hBoundary.South, m_hBoundary.West - m_hBoundary.East)) / 10000.0;
+
+				// Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
+				m_dLevelZeroTileSizeDegrees = 22.5;
+				while (dLevelZero < m_dLevelZeroTileSizeDegrees)
+					m_dLevelZeroTileSizeDegrees /= 2;
+
 				return m_dLevelZeroTileSizeDegrees;
 			}
       }

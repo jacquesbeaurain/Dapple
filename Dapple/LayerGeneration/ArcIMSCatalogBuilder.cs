@@ -192,11 +192,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return "ArcIMS"; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override System.Drawing.Icon Icon
       {
@@ -348,11 +343,6 @@ namespace Dapple.LayerGeneration
       public override System.Drawing.Icon Icon
       {
          get { return Dapple.Properties.Resources.nasa; }
-      }
-
-      public override string Type
-      {
-         get { return "ArcIMS Service"; }
       }
 
       public override string DisplayIconKey

@@ -25,7 +25,6 @@ namespace Dapple.LayerGeneration
 
       #region Static
 
-      public static readonly string TypeName = "ArcIMSQuadLayer";
       public static readonly string URLProtocolName = "gxarcims://";
       public static readonly string CacheSubDir = "ArcIMSImages";
 
@@ -117,11 +116,6 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override string Type
-      {
-         get { return TypeName; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
@@ -148,11 +142,6 @@ namespace Dapple.LayerGeneration
             iTotalBytes = 0;
             return false;
          }
-      }
-
-      public override string ServiceType
-      {
-         get { return "ArcIMS Server"; }
       }
 
       public override RenderableObject GetLayer()

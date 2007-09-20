@@ -67,11 +67,6 @@ namespace Dapple.LayerGeneration
          m_strName = strNewName;
       }
 
-      public virtual string Type
-      {
-         get { return TypeName; }
-      }
-
       [System.ComponentModel.Browsable(false)]
       public bool IsChanged
       {
@@ -173,14 +168,6 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      public static string TypeName
-      {
-         get
-         {
-            return "BuilderDirectory";
-         }
-      }
-
       public void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
       {
          BuilderChanged -= handler;
@@ -275,11 +262,6 @@ namespace Dapple.LayerGeneration
 
       [System.ComponentModel.Browsable(false)]
       public abstract System.Drawing.Icon Icon
-      {
-         get;
-      }
-
-      public abstract override string Type
       {
          get;
       }

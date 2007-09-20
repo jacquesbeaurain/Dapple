@@ -35,12 +35,9 @@ namespace Dapple
 
 		//TreeNodeSorter m_TreeSorter;
 
-		VEQuadLayerBuilder m_VEMapQTB;
-		VEQuadLayerBuilder m_VESatQTB;
-		VEQuadLayerBuilder m_VEMapAndSatQTB;
-
 		protected MainForm m_oParent;
 		protected LayerList m_activeLayers;
+      protected ServerList m_oServerListControl;
 		protected List<AsyncBuilder> m_wmsServers = new List<AsyncBuilder>();
       protected List<AsyncBuilder> m_oArcIMSServers = new List<AsyncBuilder>();
 
@@ -56,11 +53,12 @@ namespace Dapple
 		/// Constructor
 		/// </summary>
 		/// <param name="strCacheDir"></param>
-		public ServerTree(ImageList oImageList, string strCacheDir, MainForm oParent, LayerList activeLayers)
+		public ServerTree(ImageList oImageList, string strCacheDir, MainForm oParent, LayerList activeLayers, ServerList oServerList)
 			: base(oImageList, strCacheDir)
 		{
 			m_oParent = oParent;
 			m_activeLayers = activeLayers;
+         m_oServerListControl = oServerList;
          m_activeLayers.ActiveLayersChanged += new LayerList.ActiveLayersChangedHandler(UpdateTreeNodeColors);
 
 			this.SupportDatasetSelection = false;
@@ -83,9 +81,9 @@ namespace Dapple
          m_hVERootNode.SelectedImageIndex = m_hVERootNode.ImageIndex = Dapple.MainForm.ImageListIndex("live");
 			m_hVERootNode.Tag = veDir;
 
-			m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", WorldWind.VirtualEarthMapType.road, m_oParent.WorldWindow, true, veDir);
-         m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", WorldWind.VirtualEarthMapType.aerial, m_oParent.WorldWindow, true, veDir);
-         m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", WorldWind.VirtualEarthMapType.hybrid, m_oParent.WorldWindow, true, veDir);
+         VEQuadLayerBuilder m_VEMapQTB = new VEQuadLayerBuilder("Virtual Earth Map", WorldWind.VirtualEarthMapType.road, m_oParent.WorldWindow, true, veDir);
+         VEQuadLayerBuilder m_VESatQTB = new VEQuadLayerBuilder("Virtual Earth Satellite", WorldWind.VirtualEarthMapType.aerial, m_oParent.WorldWindow, true, veDir);
+         VEQuadLayerBuilder m_VEMapAndSatQTB = new VEQuadLayerBuilder("Virtual Earth Map & Satellite", WorldWind.VirtualEarthMapType.hybrid, m_oParent.WorldWindow, true, veDir);
 			veDir.LayerBuilders.Add(m_VEMapQTB);
 			veDir.LayerBuilders.Add(m_VESatQTB);
 			veDir.LayerBuilders.Add(m_VEMapAndSatQTB);
@@ -297,6 +295,8 @@ namespace Dapple
 
       void LoadFinished()
       {
+         m_oServerListControl.Servers = getServerList();
+
          // Rebuild the tree, only the selected node hasn't changed
          oPreNode = SelectedOrRoot;
          oPostNode = SelectedOrRoot;
@@ -381,24 +381,31 @@ namespace Dapple
 			}
 			else
 			{
-            if (this.SelectedNode.Tag is Server)
-				{
-               RemoveServer(this.SelectedNode.Tag as Server);
-					return;
-				}
-            else if (this.SelectedNode.Tag is WMSServerBuilder)
-				{
-               WMSServerBuilder serverBuilder = this.SelectedNode.Tag as WMSServerBuilder;
-				   m_wmsServers.Remove(serverBuilder);
-               ((WMSCatalogBuilder)m_hWMSRootNode.Tag).UncacheServer(serverBuilder.Uri as WMSServerUri);
-				}
-            else if (this.SelectedNode.Tag is ArcIMSServerBuilder)
+            try
             {
-               ArcIMSServerBuilder serverBuilder = this.SelectedNode.Tag as ArcIMSServerBuilder;
-               m_oArcIMSServers.Remove(serverBuilder);
-               ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).UncacheServer(serverBuilder.Uri as ArcIMSServerUri);
+               if (this.SelectedNode.Tag is Server)
+               {
+                  RemoveServer(this.SelectedNode.Tag as Server);
+                  return;
+               }
+               else if (this.SelectedNode.Tag is WMSServerBuilder)
+               {
+                  WMSServerBuilder serverBuilder = this.SelectedNode.Tag as WMSServerBuilder;
+                  m_wmsServers.Remove(serverBuilder);
+                  ((WMSCatalogBuilder)m_hWMSRootNode.Tag).UncacheServer(serverBuilder.Uri as WMSServerUri);
+               }
+               else if (this.SelectedNode.Tag is ArcIMSServerBuilder)
+               {
+                  ArcIMSServerBuilder serverBuilder = this.SelectedNode.Tag as ArcIMSServerBuilder;
+                  m_oArcIMSServers.Remove(serverBuilder);
+                  ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).UncacheServer(serverBuilder.Uri as ArcIMSServerUri);
+               }
+               (this.SelectedNode.Parent.Tag as BuilderDirectory).SubList.Remove(this.SelectedNode.Tag as BuilderDirectory);
             }
-            (this.SelectedNode.Parent.Tag as BuilderDirectory).SubList.Remove(this.SelectedNode.Tag as BuilderDirectory);
+            finally
+            {
+               m_oServerListControl.Servers = getServerList();
+            }
 			}
 
          this.SelectedNode.Parent.Nodes.Remove(this.SelectedNode);
@@ -990,9 +997,11 @@ namespace Dapple
          FireViewMetadataEvent();
 		}
 
-		TreeNode m_nodeLastCollapsed = null; // I'm never used?
+		
 		protected void OnAfterCollapse(object sender, TreeViewEventArgs e)
 		{
+         TreeNode oNodeLastCollapsed = null; // I'm never used?
+
 			// Never collapse root
 			if (e.Node == null || e.Node == m_hRootNode)
 				m_hRootNode.Expand();
@@ -1003,7 +1012,7 @@ namespace Dapple
 				// this makes for better keyboard/double click navigation
 				// in the new tree infrastructure but should only happen in servers
 
-				m_nodeLastCollapsed = null;
+				oNodeLastCollapsed = null;
 				TreeNode serverNode = e.Node;
 				while (serverNode != null && serverNode.Parent != null)
 				{
@@ -1026,7 +1035,7 @@ namespace Dapple
 							if (node.Tag == tag && node.Text == strText)
 							{
 								m_bSelect = false;
-								m_nodeLastCollapsed = this.SelectedNode = node;
+								oNodeLastCollapsed = this.SelectedNode = node;
 								m_bSelect = true;
 								break;
 							}
@@ -1042,6 +1051,13 @@ namespace Dapple
          AddCurrentDataset();
 		}
 		#endregion
+
+      public override bool AddDAPServer(string strUrl, out Server hRetServer)
+      {
+         bool result = base.AddDAPServer(strUrl, out hRetServer);
+         this.m_oServerListControl.Servers = getServerList();
+         return result;
+      }
 
 		#region WMS TreeNode Sorter
 		// Create a node sorter that implements the IComparer interface that puts directories in front of layer builders.

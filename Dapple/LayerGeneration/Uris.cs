@@ -231,6 +231,8 @@ namespace Dapple.LayerGeneration
 
          foreach (String strToken in aTokens)
          {
+            if (strToken.Length == 0) continue;
+
             if (strToken.Contains("="))
             {
                String[] strParts = strToken.Split(new char[] { '=' });
@@ -343,8 +345,7 @@ namespace Dapple.LayerGeneration
    public class WMSLayerUri : LayerUri
    {
       private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
-         "layer",
-         "pixelsize"
+         "layer"
          });
 
       public WMSLayerUri(String strUri) : base(strUri) { }
