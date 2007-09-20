@@ -43,7 +43,7 @@ namespace Dapple
       /// <summary>
       /// The internal list of LayerBuilderContainers.
       /// </summary>
-      private List<LayerBuilderContainer> m_oLayers = new List<LayerBuilderContainer>();
+      private List<LayerBuilder> m_oLayers = new List<LayerBuilder>();
 
       /// <summary>
       /// Where drop data will be dropper.
@@ -75,11 +75,11 @@ namespace Dapple
 
       #region Properties
 
-      public List<LayerBuilderContainer> SelectedLayers
+      public List<LayerBuilder> SelectedLayers
       {
          get
          {
-            List<LayerBuilderContainer> result = new List<LayerBuilderContainer>();
+            List<LayerBuilder> result = new List<LayerBuilder>();
             foreach (int index in cLayerList.SelectedIndices)
             {
                result.Add(m_oLayers[index]);
@@ -88,7 +88,7 @@ namespace Dapple
          }
       }
 
-      public List<LayerBuilderContainer> AllLayers
+      public List<LayerBuilder> AllLayers
       {
          get
          {
@@ -126,7 +126,7 @@ namespace Dapple
       {
          for (int count = oLayers.Count - 1; count >= 0; count--)
          {
-            if (this.ContainsLayerBuilder(oLayers[count])) oLayers.Remove(oLayers[count]);
+            if (m_oLayers.Contains(oLayers[count])) oLayers.Remove(oLayers[count]);
          }
          if (oLayers.Count == 0) return;
 
@@ -135,7 +135,7 @@ namespace Dapple
 
          for (int count = 0; count < oLayers.Count; count++)
          {
-            AddLayer(new LayerBuilderContainer(oLayers[count]), iInsertIndex + count);
+            AddLayer(oLayers[count], iInsertIndex + count);
          }
 
          cLayerList.SelectedIndices.Clear();
@@ -154,40 +154,39 @@ namespace Dapple
       public void SetBaseLayer(LayerBuilder oBaseLayer)
       {
          // For now, just add a normal layer.  Later, we'll make it super special
-         LayerBuilderContainer oContainer = new LayerBuilderContainer(oBaseLayer);
-         oContainer.Temporary = true;
-         AddLayer(oContainer, 0);
+         oBaseLayer.Temporary = true;
+         AddLayer(oBaseLayer, 0);
       }
 
       public void AddLayer(LayerBuilder oLayer)
       {
-         AddLayer(new LayerBuilderContainer(oLayer, true), 0);
+         AddLayer(oLayer, 0);
       }
 
-      private void AddLayer(LayerBuilderContainer oContainer, int iInsertIndex)
+      private void AddLayer(LayerBuilder oNewBuilder, int iInsertIndex)
       {
-         if (ContainsLayerBuilder(oContainer.Builder)) return;
+         if (m_oLayers.Contains(oNewBuilder)) return;
 
-         m_oLayers.Insert(iInsertIndex, oContainer);
-         cLayerList.Items.Insert(iInsertIndex, oContainer.Builder.Name);
+         m_oLayers.Insert(iInsertIndex, oNewBuilder);
+         cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
-         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].Builder.DisplayIconKey);
+         cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
          cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
 
-         m_oLayers[iInsertIndex].Builder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+         m_oLayers[iInsertIndex].SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
 
-         if (m_oLayers[iInsertIndex].Builder is GeorefImageLayerBuilder)
+         if (m_oLayers[iInsertIndex] is GeorefImageLayerBuilder)
          {
-            if (m_oLayers[iInsertIndex].Builder.GetLayer() == null)
+            if (m_oLayers[iInsertIndex].GetLayer() == null)
                cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
             else
-               m_oLayers[iInsertIndex].Builder.SyncAddLayer(true);
+               m_oLayers[iInsertIndex].SyncAddLayer(true);
 
             RefreshLayerRenderOrder();
          }
          else
          {
-            m_oLayers[iInsertIndex].Builder.AsyncAddLayer();
+            m_oLayers[iInsertIndex].AsyncAddLayer();
          }
 
          cLayerList.Items[iInsertIndex].Selected = true;
@@ -249,7 +248,7 @@ namespace Dapple
          m_iLastTransparency = cTransparencySlider.Value;
          if (cTransparencySlider.Enabled)
          {
-            foreach (LayerBuilderContainer oContainer in this.SelectedLayers)
+            foreach (LayerBuilder oContainer in this.SelectedLayers)
             {
                oContainer.Opacity = Convert.ToByte(cTransparencySlider.Value);
             }
@@ -393,7 +392,7 @@ namespace Dapple
 
       private void cViewPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         LayerBuilder oBuilder = m_oLayers[cLayerList.SelectedIndices[0]].Builder;
+         LayerBuilder oBuilder = m_oLayers[cLayerList.SelectedIndices[0]];
 
          if (oBuilder == null) return;
 
@@ -479,7 +478,7 @@ namespace Dapple
             int iBuilderIndex = 0;
             do
             {
-               if (m_oLayers[iBuilderIndex].Builder == oBuilder) break;
+               if (m_oLayers[iBuilderIndex] == oBuilder) break;
                iBuilderIndex++;
             } while (iBuilderIndex < m_oLayers.Count);
             if (iBuilderIndex == m_oLayers.Count) return;
@@ -505,9 +504,9 @@ namespace Dapple
       /// </summary>
       private void RefreshLayerRenderOrder()
       {
-         foreach (LayerBuilderContainer oLayer in m_oLayers)
+         foreach (LayerBuilder oLayer in m_oLayers)
          {
-            oLayer.Builder.PushBackInRenderOrder();
+            oLayer.PushBackInRenderOrder();
          }
       }
 
@@ -616,7 +615,7 @@ namespace Dapple
          
          // --- Store items to move in temporary buffers ---
 
-         List<LayerBuilderContainer> oMovedContainers = new List<LayerBuilderContainer>();
+         List<LayerBuilder> oMovedContainers = new List<LayerBuilder>();
          List<ListViewItem> oMovedItems = new List<ListViewItem>();
 
          foreach (int iSelectedIndex in cLayerList.SelectedIndices)
@@ -665,9 +664,9 @@ namespace Dapple
       /// <param name="iIndex"></param>
       private void CmdClearLayerCache(int iIndex)
       {
-         if (m_oLayers[cLayerList.SelectedIndices[0]].Builder != null)
+         if (m_oLayers[cLayerList.SelectedIndices[0]] != null)
          {
-            string strCache = m_oLayers[iIndex].Builder.GetCachePath();
+            string strCache = m_oLayers[iIndex].GetCachePath();
             if (!string.IsNullOrEmpty(strCache))
             {
                Utility.FileSystem.DeleteFolderGUI(this, strCache);
@@ -683,7 +682,7 @@ namespace Dapple
       private void CmdRefreshLayer(int iIndex)
       {
          cLayerList.Items[iIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("time");
-         m_oLayers[iIndex].Builder.RefreshLayer();
+         m_oLayers[iIndex].RefreshLayer();
       }
 
       /// <summary>
@@ -691,9 +690,9 @@ namespace Dapple
       /// </summary>
       private void CmdGoTo()
       {
-         if (cLayerList.SelectedIndices.Count == 1 && GoTo != null && m_oLayers[cLayerList.SelectedIndices[0]].Builder != null)
+         if (cLayerList.SelectedIndices.Count == 1 && GoTo != null && m_oLayers[cLayerList.SelectedIndices[0]] != null)
          {
-            GoTo(m_oLayers[cLayerList.SelectedIndices[0]].Builder);
+            GoTo(m_oLayers[cLayerList.SelectedIndices[0]]);
          }
       }
 
@@ -702,9 +701,9 @@ namespace Dapple
       /// </summary>
       private void CmdViewMetadata()
       {
-         if (cLayerList.SelectedIndices.Count == 1 && ViewMetadata != null && m_oLayers[cLayerList.SelectedIndices[0]].Builder != null)
+         if (cLayerList.SelectedIndices.Count == 1 && ViewMetadata != null && m_oLayers[cLayerList.SelectedIndices[0]] != null)
          {
-            ViewMetadata(m_oLayers[cLayerList.SelectedIndices[0]].Builder);
+            ViewMetadata(m_oLayers[cLayerList.SelectedIndices[0]]);
          }
       }
 
@@ -722,10 +721,10 @@ namespace Dapple
          {
             int iIndexToDelete = cLayerList.SelectedIndices[0];
 
-            if (m_oLayers[iIndexToDelete].Builder != null)
+            if (m_oLayers[iIndexToDelete] != null)
             {
-               m_oLayers[iIndexToDelete].Builder.UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
-               m_oLayers[iIndexToDelete].Builder.RemoveLayer();
+               m_oLayers[iIndexToDelete].UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+               m_oLayers[iIndexToDelete].RemoveLayer();
             }
 
             m_oLayers.RemoveAt(iIndexToDelete);
@@ -771,11 +770,11 @@ namespace Dapple
          int iIndex = m_oLayers.Count - 1;
          while (iIndex >= 0)
          {
-            if (m_oLayers[iIndex].Builder != null && m_oLayers[iIndex].Builder is GeorefImageLayerBuilder &&
-               ((GeorefImageLayerBuilder)m_oLayers[iIndex].Builder).FileName.Equals(szFilename))
+            if (m_oLayers[iIndex] != null && m_oLayers[iIndex] is GeorefImageLayerBuilder &&
+               ((GeorefImageLayerBuilder)m_oLayers[iIndex]).FileName.Equals(szFilename))
             {
-               m_oLayers[iIndex].Builder.UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
-               m_oLayers[iIndex].Builder.RemoveLayer();
+               m_oLayers[iIndex].UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+               m_oLayers[iIndex].RemoveLayer();
 
                m_oLayers.RemoveAt(iIndex);
                cLayerList.Items.RemoveAt(iIndex);
@@ -838,20 +837,6 @@ namespace Dapple
       }
 
       #endregion
-
-      /// <summary>
-      /// Check if a LayerBuilder is already in the layer list.
-      /// </summary>
-      /// <param name="oBuilder"></param>
-      /// <returns></returns>
-      public bool ContainsLayerBuilder(LayerBuilder oBuilder)
-      {
-         foreach (LayerBuilderContainer oContainer in m_oLayers)
-         {
-            if (oContainer.Builder.Equals(oBuilder)) return true;
-         }
-         return false;
-      }
 
       #region Testing
 

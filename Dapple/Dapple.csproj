@@ -445,7 +445,6 @@
     <Compile Include="frmProperties.designer.cs">
       <DependentUpon>frmProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="LayerGeneration\LayerBuilderContainer.cs" />
     <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
     <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />

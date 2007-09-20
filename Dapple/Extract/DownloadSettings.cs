@@ -35,7 +35,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oLayersToDownload"></param>
-      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilderContainer> oLayersToDownload)
+      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload)
       {
          InitializeComponent();
 
@@ -56,34 +56,34 @@ namespace Dapple.Extract
          lvDatasets.SmallImageList = MainForm.DataTypeImageList;
          lvDatasets.LargeImageList = MainForm.DataTypeImageList;
 
-         foreach (Dapple.LayerGeneration.LayerBuilderContainer oContainer in oLayersToDownload)
+         foreach (Dapple.LayerGeneration.LayerBuilder oBuilder in oLayersToDownload)
          {
             int iImageIndex = 0;
 
-            if (oContainer.Builder is Dapple.LayerGeneration.DAPQuadLayerBuilder)
+            if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder)
             {
-               Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oContainer.Builder;
+               Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
 
                iImageIndex = MainForm.ImageIndex(oDAPbuilder.DAPType.ToLower());
                if (iImageIndex == -1)
                   MainForm.ImageListIndex("layer");
             }
-            else if (oContainer.Builder is Dapple.LayerGeneration.VEQuadLayerBuilder)
+            else if (oBuilder is Dapple.LayerGeneration.VEQuadLayerBuilder)
                iImageIndex = MainForm.ImageListIndex("live");
-            else if (oContainer.Builder is Dapple.LayerGeneration.GeorefImageLayerBuilder)
+            else if (oBuilder is Dapple.LayerGeneration.GeorefImageLayerBuilder)
                iImageIndex = MainForm.ImageListIndex("georef_image");
             else
                iImageIndex = MainForm.ImageListIndex("layer");
 
 
-            ListViewItem oItem = new ListViewItem(oContainer.Name);
+            ListViewItem oItem = new ListViewItem(oBuilder.Name);
             oItem.ImageIndex = iImageIndex;
-            oItem.Tag = oContainer;
+            oItem.Tag = oBuilder;
 
             
             // --- create the user control ---
 
-            DownloadOptions oControl = CreateUserControl(oContainer.Builder);
+            DownloadOptions oControl = CreateUserControl(oBuilder);
             if (oControl != null)
             {
 

@@ -1151,7 +1151,7 @@ namespace Dapple
                while (bExist)
                {
                   bExist = false;
-                  foreach (LayerBuilderContainer container in cLayerList.AllLayers)
+                  foreach (LayerBuilder container in cLayerList.AllLayers)
                   {
                      if (container.Name == strNewName)
                      {
@@ -1847,9 +1847,9 @@ namespace Dapple
          if (roBMNG != null && roBMNG.IsOn && ((QuadTileSet)((RenderableObjectList)roBMNG).ChildObjects[1]).bIsDownloading(out iRead, out iTotal))
             return true;
 
-         foreach (LayerBuilderContainer container in cLayerList.AllLayers)
+         foreach (LayerBuilder container in cLayerList.AllLayers)
          {
-            if (container.Visible && container.Builder != null && container.Builder.bIsDownloading(out iRead, out iTotal))
+            if (container.Visible && container.bIsDownloading(out iRead, out iTotal))
                return true;
          }
 
@@ -1858,11 +1858,11 @@ namespace Dapple
 
       private class ExportEntry
       {
-         public LayerBuilderContainer Container;
+         public LayerBuilder Container;
          public RenderableObject RO;
          public RenderableObject.ExportInfo Info;
 
-         public ExportEntry(LayerBuilderContainer container, RenderableObject ro, RenderableObject.ExportInfo expInfo)
+         public ExportEntry(LayerBuilder container, RenderableObject ro, RenderableObject.ExportInfo expInfo)
          {
             Container = container;
             RO = ro;
@@ -2077,7 +2077,7 @@ namespace Dapple
          if (cLayerList.AllLayers.Count > 0)
          {
             activelayersType lyrs = view.View.Newactivelayers();
-            foreach (LayerBuilderContainer container in cLayerList.AllLayers)
+            foreach (LayerBuilder container in cLayerList.AllLayers)
             {
                if (!container.Temporary)
                {
@@ -2086,7 +2086,7 @@ namespace Dapple
                   opacityType op = dataset.Newopacity();
                   op.Value = container.Opacity;
                   dataset.Addopacity(op);
-                  dataset.Adduri(new SchemaString(container.Uri));
+                  dataset.Adduri(new SchemaString(container.GetURI()));
                   dataset.Addinvisible(new SchemaBoolean(!container.Visible));
                   lyrs.Adddataset(dataset);
                }
@@ -2467,15 +2467,15 @@ namespace Dapple
             currentList.Add(dl);
          }
 
-         foreach (LayerBuilderContainer container in cLayerList.AllLayers)
+         foreach (LayerBuilder oBuilder in cLayerList.AllLayers)
          {
-            if (container.Builder != null && container.Builder.bIsDownloading(out iBuilderPos, out iBuilderTotal))
+            if (oBuilder.bIsDownloading(out iBuilderPos, out iBuilderTotal))
             {
                bDownloading = true;
                iPos += iBuilderPos;
                iTotal += iBuilderTotal;
                ActiveDownload dl = new ActiveDownload();
-               dl.builder = container.Builder;
+               dl.builder = oBuilder;
                dl.iPos = iBuilderPos;
                dl.iTotal = iBuilderTotal;
                dl.bOn = true;
@@ -3640,11 +3640,11 @@ namespace Dapple
 
 
          // Gather info first
-         foreach (LayerBuilderContainer container in cLayerList.AllLayers)
+         foreach (LayerBuilder container in cLayerList.AllLayers)
          {
-            if (container.Visible && container.Builder != null)
+            if (container.Visible)
             {
-               RenderableObject ro = container.Builder.GetLayer();
+               RenderableObject ro = container.GetLayer();
                if (ro != null)
                {
                   RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();

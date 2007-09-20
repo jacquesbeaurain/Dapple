@@ -835,7 +835,7 @@ namespace Dapple
 
       private void UpdateTreeNodeColors(TreeNode oNode)
       {
-         if (oNode.Tag is LayerBuilder && m_activeLayers.ContainsLayerBuilder(oNode.Tag as LayerBuilder))
+         if (oNode.Tag is LayerBuilder && m_activeLayers.AllLayers.Contains(oNode.Tag as LayerBuilder))
          {
             oNode.ForeColor = System.Drawing.Color.Green;
          }
@@ -847,7 +847,7 @@ namespace Dapple
                iter = iter.Parent;
             }
 
-            if (m_activeLayers.ContainsLayerBuilder(new DAPQuadLayerBuilder(oNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null)))
+            if (m_activeLayers.AllLayers.Contains(new DAPQuadLayerBuilder(oNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null)))
             {
                oNode.ForeColor = System.Drawing.Color.Green;
             }

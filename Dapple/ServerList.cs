@@ -209,7 +209,7 @@ namespace Dapple
             {
                if (count < m_oCurrServerLayers.Count)
                {
-                  if (m_hLayerList.ContainsLayerBuilder(m_oCurrServerLayers[count]))
+                  if (m_hLayerList.AllLayers.Contains(m_oCurrServerLayers[count]))
                   {
                      cLayersListView.Items[count % LAYERS_PER_PAGE].ForeColor = Color.ForestGreen;
                   }
