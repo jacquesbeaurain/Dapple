@@ -327,9 +327,12 @@ namespace Murris.Plugins
 				device.VertexFormat = CustomVertex.PositionTextured.Format;
 				device.SetTexture(0, texture);
 				device.TextureState[0].ColorOperation = TextureOperation.BlendCurrentAlpha;
-				device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
-
-			}
+            device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+            device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
+            device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+            device.TextureState[0].AlphaArgument2 = TextureArgument.TFactor;
+            device.DrawUserPrimitives(PrimitiveType.TriangleStrip, 2, borderVertices);
+         }
 
 			// Draw tilted icon next 
 			if (textureTilt != null)
