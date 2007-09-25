@@ -965,7 +965,7 @@ namespace Dapple
                camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
 
                // Determine output parameters
-               GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetViewBox(true));
+               GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
                int iResolution = oExportDialog.Resolution;
                int iExportPixelsX, iExportPixelsY;
 

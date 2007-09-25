@@ -3197,7 +3197,7 @@ namespace Dapple
             cSearchTextComboBox.Items.Add(cSearchTextComboBox.Text);
          }
 
-         GeographicBoundingBox oAoi = GeographicBoundingBox.FromQuad(worldWindow.GetViewBox(false));
+         GeographicBoundingBox oAoi = GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox());
          String strText = cSearchTextComboBox.Text;
          this.tvServers.Search(oAoi, strText);
          this.cServerListControl.setSearchCriteria(strText, oAoi);

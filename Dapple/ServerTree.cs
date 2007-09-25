@@ -365,7 +365,7 @@ namespace Dapple
             ArcIMSServerBuilder serverBuilder = oCurrentServer as ArcIMSServerBuilder;
             RemoveCurrentServer();
             AddArcIMSServer(serverBuilder.Uri as ArcIMSServerUri, true);
-            foreach (TreeNode oNode in m_hWMSRootNode.Nodes)
+            foreach (TreeNode oNode in m_hArcIMSRootNode.Nodes)
             {
                if (((ArcIMSServerBuilder)oNode.Tag).Uri.Equals(serverBuilder.Uri))
                {
@@ -410,8 +410,10 @@ namespace Dapple
                m_oArcIMSServers.Remove(serverBuilder);
                ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).UncacheServer(serverBuilder.Uri as ArcIMSServerUri);
             }
-            //this.SelectedNode.Parent.Nodes.Remove(this.SelectedNode);
-            //(this.SelectedNode.Parent.Tag as BuilderDirectory).SubList.Remove(this.SelectedNode.Tag as BuilderDirectory);
+
+            TreeNode oNodeToDelete = this.SelectedNode;
+            (oNodeToDelete.Parent.Tag as BuilderDirectory).SubList.Remove(oNodeToDelete.Tag as BuilderDirectory);
+            oNodeToDelete.Parent.Nodes.Remove(oNodeToDelete);
          }
          finally
          {
