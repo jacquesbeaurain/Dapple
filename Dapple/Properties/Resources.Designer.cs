@@ -224,10 +224,10 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Icon disserver {
+        internal static System.Drawing.Bitmap disserver {
             get {
                 object obj = ResourceManager.GetObject("disserver", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -238,10 +238,10 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Icon enserver {
+        internal static System.Drawing.Bitmap enserver {
             get {
                 object obj = ResourceManager.GetObject("enserver", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

@@ -486,6 +486,12 @@ namespace Dapple
                this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
             }
 
+            /*ServerTreePhoenix oFire = new ServerTreePhoenix();
+            oFire.ImageList = m_oImageList;
+            oFire.Size = new Size(640, 480);
+            oFire.Location = new Point(0, 0);
+            this.WorldResultsSplitPanel.Panel1.Controls.Add(oFire);*/
+
             this.WorldResultsSplitPanel.Panel1.Controls.Add(worldWindow);
             worldWindow.Dock = DockStyle.Fill;
 
@@ -555,7 +561,6 @@ namespace Dapple
             cServerListControl.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
 
             this.tvServers.AfterSelect += new TreeViewEventHandler(this.ServerTreeAfterSelected);
-            this.tvServers.RMBContextMenuStrip = this.contextMenuStripServers;
             this.tvServers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tvServers.ImageIndex = 0;
             this.tvServers.Location = new System.Drawing.Point(0, 0);
@@ -748,138 +753,6 @@ namespace Dapple
       #endregion
 
       #region Context menus and buttons
-
-      #region Opening
-
-      private void contextMenuStripServers_Opening(object sender, CancelEventArgs e)
-      {
-         e.Cancel = false;
-         if (this.tvServers.SelectedNode == null || this.tvServers.SelectedNode.Nodes == this.tvServers.TileRootNodes)
-         {
-            e.Cancel = true;
-            return;
-         }
-
-         this.toolStripMenuItemAddLayer.Tag = false;
-         this.toolStripMenuItemaddServer.Tag = false;
-         this.toolStripMenuItemgoToServer.Tag = false;
-         this.toolStripMenuItemremoveServer.Tag = false;
-         this.toolStripMenuItemviewMetadataServer.Tag = false;
-         this.toolStripMenuItemServerLegend.Tag = false;
-         this.toolStripMenuItemviewMetadataServer.Tag = false;
-         this.toolStripMenuItemServerLegend.Tag = false;
-         this.toolStripMenuItempropertiesServer.Tag = false;
-         this.toolStripMenuItemRefreshCatalog.Tag = false;
-
-         if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
-         {
-            this.toolStripMenuItemaddServer.Text = "Add DAP Server";
-            this.toolStripMenuItemaddServer.Tag = true;
-         }
-         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
-         {
-            this.toolStripMenuItemaddServer.Text = "Add WMS Server";
-            this.toolStripMenuItemaddServer.Tag = true;
-         }
-         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.ArcIMSRootNodes)
-         {
-            this.toolStripMenuItemaddServer.Text = "Add ArcIMS Server";
-            this.toolStripMenuItemaddServer.Tag = true;
-         }
-         else if (this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
-         {
-            this.toolStripMenuItemRefreshCatalog.Tag = true;
-            this.toolStripMenuItemremoveServer.Tag = true;
-         }
-         else if (this.tvServers.SelectedNode.Tag != null)
-         {
-            IBuilder builder = null;
-            Geosoft.Dap.Common.DataSet dapDataset = null;
-
-            if (this.tvServers.SelectedNode.Tag is IBuilder)
-               builder = this.tvServers.SelectedNode.Tag as IBuilder;
-            if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
-               dapDataset = this.tvServers.SelectedDAPDataset;
-
-            if (builder is LayerBuilder || dapDataset != null)
-            {
-               this.toolStripMenuItemAddLayer.Tag = true;
-               this.toolStripMenuItemgoToServer.Tag = true;
-            }
-
-            if (!(dapDataset != null || builder == null || builder is WMSQuadLayerBuilder || builder is VEQuadLayerBuilder || builder is NltQuadLayerBuilder || builder is ArcIMSQuadLayerBuilder || (builder is BuilderDirectory && !(builder as BuilderDirectory).Removable)))
-               this.toolStripMenuItemremoveServer.Tag = true;
-
-            if (builder != null)
-            {
-               this.toolStripMenuItemviewMetadataServer.Tag = builder.SupportsMetaData || builder is LayerBuilder;
-               this.toolStripMenuItemServerLegend.Tag = builder is LayerBuilder;
-               this.toolStripMenuItemviewMetadataServer.Enabled = builder.SupportsMetaData;
-               this.toolStripMenuItemServerLegend.Enabled = (builder is LayerBuilder) && (builder as LayerBuilder).SupportsLegend;
-               this.toolStripMenuItempropertiesServer.Tag = true;
-
-               if (builder is WMSServerBuilder || builder is ArcIMSServerBuilder)
-                  this.toolStripMenuItemRefreshCatalog.Tag = true;
-            }
-
-            if (dapDataset != null)
-            {
-               this.toolStripMenuItemviewMetadataServer.Tag = true;
-               this.toolStripMenuItemviewMetadataServer.Enabled = true;
-            }
-         }
-
-         // Filter Separators
-         bool bAnyVisible = false;
-         int iTotalVisible = 0;
-         ToolStripSeparator lastSeparator = null;
-
-         this.toolStripSeparatorServerAdd.Visible = true;
-         this.toolStripSeparatorServerGoto.Visible = true;
-         this.toolStripSeparatorServerRemove.Visible = true;
-         this.toolStripSeparatorRefreshCatalog.Visible = true;
-
-
-         for (int i = 0; i < this.contextMenuStripServers.Items.Count; i++)
-         {
-            if (this.contextMenuStripServers.Items[i] is ToolStripSeparator)
-            {
-               if (!bAnyVisible)
-                  this.contextMenuStripServers.Items[i].Visible = false;
-               lastSeparator = this.contextMenuStripServers.Items[i] as ToolStripSeparator;
-               bAnyVisible = false;
-            }
-            else
-            {
-               if ((bool)this.contextMenuStripServers.Items[i].Tag)
-               {
-                  iTotalVisible++;
-                  this.contextMenuStripServers.Items[i].Visible = true;
-                  bAnyVisible = true;
-               }
-               else
-                  this.contextMenuStripServers.Items[i].Visible = false;
-            }
-         }
-         if (iTotalVisible > 0)
-         {
-            if (iTotalVisible == 1)
-            {
-               // Hide all separators
-               for (int i = 0; i < this.contextMenuStripServers.Items.Count; i++)
-               {
-                  if (this.contextMenuStripServers.Items[i] is ToolStripSeparator)
-                     this.contextMenuStripServers.Items[i].Visible = false;
-               }
-            }
-            else if (lastSeparator != null && !bAnyVisible)
-               lastSeparator.Visible = false;
-         }
-         else
-            e.Cancel = true;
-      }
-
-      #endregion
 
       #region Nav Strip Buttons
 
@@ -1296,16 +1169,6 @@ namespace Dapple
          AddArcIMSServer();
       }
 
-      void toolStripMenuItemaddServer_Click(object sender, EventArgs e)
-      {
-         if (this.tvServers.SelectedNode.Nodes == this.tvServers.DAPRootNodes)
-            AddDAPServer();
-         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.WMSRootNodes)
-            AddWMSServer();
-         else if (this.tvServers.SelectedNode.Nodes == this.tvServers.ArcIMSRootNodes)
-            AddArcIMSServer();
-      }
-
       #endregion
 
       #region Remove Items
@@ -1347,7 +1210,9 @@ namespace Dapple
 
       void GoTo(GeographicBoundingBox extents, double dLevelZeroTileSize)
       {
-         double latitude, longitude;
+         worldWindow.GotoBoundingbox(extents.West, extents.South, extents.East, extents.North);
+
+         /*double latitude, longitude;
          long overviewCameraAlt = 12000000;
 
          if (extents.North > 89 &&
@@ -1374,7 +1239,7 @@ namespace Dapple
          else
          {
             worldWindow.GotoLatLonAltitude(latitude, longitude, overviewCameraAlt);
-         }
+         }*/
       }
 
       #endregion
@@ -1389,22 +1254,6 @@ namespace Dapple
       #endregion
 
       #region Metadata, legend and properties
-
-      /*private void toolStripMenuItemGetLegend_Click(object sender, EventArgs e)
-		{
-			if (LayerBuilderItem != null && LayerBuilderItem.Builder != null)
-			{
-				if (LayerBuilderItem.Builder.SupportsLegend)
-				{
-					string[] strLegendArr = LayerBuilderItem.Builder.GetLegendURLs();
-					foreach (string strLegend in strLegendArr)
-					{
-						if (!String.IsNullOrEmpty(strLegend))
-							MainForm.BrowseTo(strLegend);
-					}
-				}
-			}
-		}*/
 
       private void toolStripMenuItemServerLegend_Click(object sender, EventArgs e)
       {
@@ -1421,20 +1270,6 @@ namespace Dapple
             }
          }
       }
-
-      /*private void toolStripMenuItemviewMetadataServer_Click(object sender, EventArgs e)
-      {
-         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is IBuilder)
-            ViewMetadata(this.tvServers.SelectedNode.Tag as IBuilder);
-         else
-            ViewMetadata(null);
-      }*/
-
-      /*private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)
-      {
-         if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is IBuilder)
-            ViewProperties(this.tvServers.SelectedNode.Tag as IBuilder);
-      }*/
 
       #endregion
 
@@ -1801,6 +1636,7 @@ namespace Dapple
 
       #region Export
 
+      /*
       private void SaveGeoImage(Bitmap bitMap, string strName, string strFolder, string strFormat, string strGeotiff)
       {
          ImageFormat format = ImageFormat.Tiff;
@@ -1868,11 +1704,11 @@ namespace Dapple
             RO = ro;
             Info = expInfo;
          }
-      }
+      }*/
 
       private void toolStripMenuItemExport_Click(object sender, EventArgs e)
       {
-         CmdExport();
+         cLayerList.CmdExportSelected();
       }
 
       #endregion
@@ -2240,7 +2076,7 @@ namespace Dapple
                this.tvServers.LoadFromView(view);
                if (bLoadLayers && view.View.Hasactivelayers())
                {
-                  bOldView = cLayerList.LoadFromView(view, tvServers);
+                  bOldView = cLayerList.CmdLoadFromView(view, tvServers);
                }
             }
          }
@@ -3391,7 +3227,7 @@ namespace Dapple
       {
          cMetadataBrowser.Visible = false;
          cMetadataLoadingLabel.Text = szMessage;
-         cWorldMetadataSplitter.Panel2.Refresh();
+         Application.DoEvents();
       }
 
       private void __DisplayMetadataDocument(String szUri)
@@ -3410,7 +3246,7 @@ namespace Dapple
                cMetadataBrowser.Url = metaUri;
                cMetadataBrowser.Refresh(WebBrowserRefreshOption.Completely);
             }
-            cWorldMetadataSplitter.Panel2.Refresh();
+            Application.DoEvents();
          }
       }
 
@@ -3462,11 +3298,6 @@ namespace Dapple
          }
       }
 
-      private void DumpServerTree()
-      {
-         DumpTreeNode(this.tvServers.RootNode, String.Empty);
-      }
-
       private void DumpTreeNode(TreeNode oNode, String strPrepend)
       {
          Console.Write(strPrepend + oNode.Text);
@@ -3486,18 +3317,7 @@ namespace Dapple
 
       private void AddDatasetAction()
       {
-
-         MessageBox.Show("This feature is pending reimplementation");
-         /*if (cServerTabControl.SelectedIndex == 0)
-         {
-            this.tvServers.AddCurrentDataset();
-         }
-         else
-         {
-            List<LayerBuilder> oBuilderList = cServerListControl.SelectedLayers;
-            oBuilderList.Reverse();
-            cLayerList.AddLayers(oBuilderList);
-         }*/
+         this.tvServers.AddCurrentDataset();
       }
 
       #endregion
@@ -3617,20 +3437,24 @@ namespace Dapple
                   m_hOwner.LoadMetadata(new Object[] { oCurrentBuilder });
                   oLastBuilder = oCurrentBuilder;
                }
+               else
+               {
+                  Console.WriteLine("Skipping layer " + oCurrentBuilder.Name);
+               }
             }
          }
       }
 
       private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         MessageBox.Show("This menu option is not currently implemented.");
+         this.tvServers.CmdServerProperties();
       }
 
       private void exportGeoTiffToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         CmdExport();
+         cLayerList.CmdExportSelected();
       }
-
+      /*
       private void CmdExport()
       {
          string strGeotiff = null;
@@ -3654,12 +3478,12 @@ namespace Dapple
                }
             }
          }
-         /*if (roBMNG != null && roBMNG.IsOn)
+         if (roBMNG != null && roBMNG.IsOn)
          {
             RenderableObject.ExportInfo expinfo = new RenderableObject.ExportInfo();
             roBMNG.InitExportInfo(worldWindow.DrawArgs, expinfo);
             expList.Add(new ExportEntry(null, roBMNG, expinfo));
-         }*/
+         }
 
          // Reverse the list to do render order right
          expList.Reverse();
@@ -3853,20 +3677,44 @@ namespace Dapple
             Cursor = Cursors.Default;
          }
       }
-
+      */
       private void removeFromLayersToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         MessageBox.Show("This command is not currently implemented.");
+         cLayerList.CmdRemoveSelectedLayers();
       }
 
       private void refreshServerToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         MessageBox.Show("This command is not currently implemented.");
+         this.tvServers.RefreshCurrentServer();
       }
 
       private void removeServerToolStripMenuItem_Click(object sender, EventArgs e)
       {
+         this.tvServers.RemoveCurrentServer();
+      }
+
+      /// <summary>
+      /// Anything that doesn't currently work calls this method.  That way, I can do a 'find references' on this
+      /// to figure out what I still need to do.
+      /// </summary>
+      public static void NotifyUnimplemented()
+      {
          MessageBox.Show("This command is not currently implemented.");
+      }
+
+      private void cOMToolsMenu_Click(object sender, EventArgs e)
+      {
+         addToLayersToolStripMenuItem.Enabled = false;
+         if (tvServers.Visible)
+         {
+            addToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode != null && (tvServers.SelectedNode.Tag is LayerBuilder || tvServers.SelectedNode.Tag is DataSet);
+         }
+         else if (cServerListControl.Visible)
+         {
+            addToLayersToolStripMenuItem.Enabled = cServerListControl.SelectedLayers.Count > 0;
+         }
+
+         removeFromLayersToolStripMenuItem.Enabled = cLayerList.RemoveAllowed;
       }
    }
 }

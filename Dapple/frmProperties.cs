@@ -131,5 +131,15 @@ namespace Dapple
          Close();
       }
 
+      /// <summary>
+      /// Display a frmProperties for an Object.
+      /// </summary>
+      /// <param name="oTarget"></param>
+      public static void DisplayForm(Object oTarget)
+      {
+         frmProperties oBob = new frmProperties();
+         oBob.SetObject = oTarget;
+         oBob.ShowDialog();
+      }
    }
 }

@@ -44,6 +44,7 @@ namespace Dapple
          this.cClearCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cRemoveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cTransparencySlider = new Dapple.TrackBarWithPaint();
+         this.cExportButton = new System.Windows.Forms.ToolStripButton();
          cSliderMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
          cToolStrip = new System.Windows.Forms.ToolStrip();
          cToolStrip.SuspendLayout();
@@ -67,7 +68,8 @@ namespace Dapple
             cSliderMenuSeparator,
             this.cGoToButton,
             this.cRemoveLayerButton,
-            this.cExtractButton});
+            this.cExtractButton,
+            this.cExportButton});
          cToolStrip.Location = new System.Drawing.Point(46, 0);
          cToolStrip.Name = "cToolStrip";
          cToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -209,6 +211,16 @@ namespace Dapple
          this.cTransparencySlider.ValueChanged += new System.EventHandler(this.cTransparencySlider_ValueChanged);
          this.cTransparencySlider.Paint += new System.Windows.Forms.PaintEventHandler(this.cTransparencySlider_Paint);
          // 
+         // cExportButton
+         // 
+         this.cExportButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+         this.cExportButton.Image = global::Dapple.Properties.Resources.export;
+         this.cExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.cExportButton.Name = "cExportButton";
+         this.cExportButton.Size = new System.Drawing.Size(23, 22);
+         this.cExportButton.Text = "toolStripButton1";
+         this.cExportButton.Click += new System.EventHandler(this.cExportButton_Click);
+         // 
          // LayerList
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -242,5 +254,6 @@ namespace Dapple
       private System.Windows.Forms.ToolStripMenuItem cRefreshToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem cClearCacheToolStripMenuItem;
       private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+      private System.Windows.Forms.ToolStripButton cExportButton;
    }
 }

@@ -537,6 +537,113 @@ namespace WorldWind
          dX = dTemp;
       }
 
+      /// <summary>
+      /// If the camera's height is above this value, the entire half of the world is visible.  Below this value, the top and bottom of the globe
+      /// is clipped by the window.
+      /// </summary>
+      public double HeightThreshold
+      {
+         get
+         {
+            return m_World.EquatorialRadius * (1 - Math.Sin(drawArgs.WorldCamera.Fov.Radians / 2)) / Math.Sin(drawArgs.WorldCamera.Fov.Radians / 2);
+         }
+      }
+
+      /// <summary>
+      /// Gets how much arc of the earth's surface is visible at the given height.
+      /// </summary>
+      /// <param name="dDistance">Height above the earth's surface.</param>
+      /// <returns>Latitude viewing angle, in degrees.</returns>
+      public double LatitudeVisibleAngleFromCameraHeight(double dDistance)
+      {
+         if (dDistance >= HeightThreshold) return 180 - drawArgs.WorldCamera.Fov.Degrees;
+         if (dDistance <= 0) return 0.0;
+
+         double dRadius = m_World.EquatorialRadius;
+         double dFov = this.drawArgs.WorldCamera.Fov.Radians;
+
+         // Step 1: Figure out the third side of the triangle
+
+         double A = 1.0;
+         double B = -2 * (dDistance + dRadius) * Math.Cos(dFov / 2);
+         double C = Math.Pow(dDistance + dRadius, 2) - Math.Pow(dRadius, 2);
+
+         double dDiscriminant = Math.Sqrt(Math.Pow(B, 2) - (4 * A * C));
+
+         double x1 = (-B + dDiscriminant) / (2.0 * A);
+         double x2 = (-B - dDiscriminant) / (2.0 * A);
+         double X = Math.Min(x1, x2);
+
+         // Step 2: Figure out the actual view angle
+
+         return 180 - Math.Acos((Math.Pow(X, 2) - Math.Pow(dDistance + dRadius, 2) - Math.Pow(dRadius, 2)) / (2 * (dDistance + dRadius) * dRadius)) * Rad2Deg;
+      }
+
+      /// <summary>
+      /// Gets the altitude needed to produce the requested visible arc.  For arcs greater than the camera can display, just gives the height threshold.
+      /// </summary>
+      /// <remarks>
+      /// dLatArc must be between 0 and 180.
+      /// </remarks>
+      /// <param name="dLatArc"></param>
+      /// <returns></returns>
+      public double CameraHeightFromLatitudeVisibleAngle(double dLatArc)
+      {
+         if (dLatArc > 180.0 - drawArgs.WorldCamera.Fov.Degrees) return HeightThreshold + 10000;
+         if (dLatArc <= 0.0) return 0.0;
+
+         double dFovAngle = drawArgs.WorldCamera.Fov.Radians / 2;
+         return this.m_World.EquatorialRadius * Math.Sin(Math.PI - dFovAngle - dLatArc / 2 * Deg2Rad) / Math.Sin(dFovAngle) - m_World.EquatorialRadius;
+      }
+
+      /// <summary>
+      /// Get a search box.  It is calculated based solely on the radius of the world, the lat/lon of the current viewing location, the altitude,
+      /// the FOV, and the aspect ratio of the window.  In pretty much all cases, it more accurately reflects what you're actually looking at.
+      /// </summary>
+      /// <returns></returns>
+      public GeographicQuad GetSearchBox()
+      {
+         double dDistance = this.drawArgs.WorldCamera.Distance;
+         double dRadius = m_World.EquatorialRadius;
+         double dFov = this.drawArgs.WorldCamera.Fov.Radians;
+         double dCameraLatitude = drawArgs.WorldCamera.Latitude.Degrees;
+         if (dCameraLatitude > 89.9) dCameraLatitude = 89.0;
+         if (dCameraLatitude < -89.9) dCameraLatitude = -89.9;
+         double dCameraLongitude = drawArgs.WorldCamera.Longitude.Degrees;
+         double dMaxVisibleAngle = 90.0 - drawArgs.WorldCamera.Fov.Degrees / 2;
+
+         // Step 0: If you're zoomed out, use a whole-world box
+
+         if (dDistance > HeightThreshold)
+         {
+            return new GeographicQuad(-180.0, -90.0, 180.0, -90.0, 180.0, 90.0, -180.0, 90.0);
+         }
+
+         // Step 1: Figure out the third side of the triangle
+
+         double dLatitudeVisibleAngle = LatitudeVisibleAngleFromCameraHeight(dDistance);
+         
+         // Step 2: Scale the longitude viewing angle by the screen aspect ratio
+
+         double dAspectRatio = (double)this.Width / (double)this.Height;
+         double dLongitudeVisibleAngle = dLatitudeVisibleAngle * dAspectRatio;
+         if (dLongitudeVisibleAngle > dMaxVisibleAngle) dLongitudeVisibleAngle = dMaxVisibleAngle;
+
+         // Step 3: Scale the longitude viewing angle by the latitude (higher up == wider)
+
+         double dLatitudeScaleFactor = 1 / Math.Cos(dCameraLatitude * Deg2Rad);
+         dLongitudeVisibleAngle *= dLatitudeScaleFactor;         
+
+         // Step 4: Return the box based on that viewed area
+
+         return new GeographicQuad(
+            dCameraLongitude - dLongitudeVisibleAngle, dCameraLatitude - dLatitudeVisibleAngle,
+            dCameraLongitude - dLongitudeVisibleAngle, dCameraLatitude + dLatitudeVisibleAngle,
+            dCameraLongitude + dLongitudeVisibleAngle, dCameraLatitude + dLatitudeVisibleAngle,
+            dCameraLongitude + dLongitudeVisibleAngle, dCameraLatitude - dLatitudeVisibleAngle
+         );
+      }
+
 
       /// <summary>
       /// Algorithm for a better estimate of what we are looking at on the planet.
@@ -559,14 +666,14 @@ namespace WorldWind
          double dX3, dY3; // upper right
          double dX4, dY4; // upper left
 
-         // Maximum visibility
-         double dMaxAngle = Math.Acos(dRadius / (dRadius + dAlt)) * Rad2Deg;
-         
-         // If the angle is large enough, just say we're looking at the whole world
-         if (dMaxAngle > 67)
+         double dFov = this.drawArgs.WorldCamera.Fov.Radians;
+         double dHeightThreshold = dRadius * (1 - Math.Sin(dFov / 2)) / Math.Sin(dFov / 2);
+         if (dAlt > dHeightThreshold)
          {
             return new GeographicQuad(-180.0, -90.0, 180.0, -90.0, 180.0, 90.0, -180.0, 90.0);
          }
+
+         double dMaxAngle = Math.Acos(dRadius / (dRadius + dAlt)) * Rad2Deg;
 
          double H_Range, D_Range;
          double dHRatio = (dAlt + dRadius) * Math.Sin(HVangle * Deg2Rad) / dRadius;
@@ -764,6 +871,22 @@ namespace WorldWind
             heading,
             altitude,
             this.drawArgs.WorldCamera.Tilt.Degrees);
+      }
+
+      /// <summary>
+      /// New routine for "go to" operations.
+      /// </summary>
+      /// <param name="dMinLon"></param>
+      /// <param name="dMinLat"></param>
+      /// <param name="dMaxLon"></param>
+      /// <param name="dMaxLat"></param>
+      public void GotoBoundingbox(double dMinLon, double dMinLat, double dMaxLon, double dMaxLat)
+      {
+         double dLatitudeAngle = dMaxLat - dMinLat;
+         double dLatitude = (dMinLat + dMaxLat) / 2.0;
+         double dLongitude = (dMinLon + dMaxLon) / 2.0;
+
+         GotoLatLonHeadingAltitude(dLatitude, dLongitude, 0.0, CameraHeightFromLatitudeVisibleAngle(dLatitudeAngle));
       }
 
       /// <summary>

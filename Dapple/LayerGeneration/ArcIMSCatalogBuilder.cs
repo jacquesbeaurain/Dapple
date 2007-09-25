@@ -8,6 +8,7 @@ using System.IO;
 using WorldWind.PluginEngine;
 using System.Xml;
 using System.Collections;
+using System.Windows.Forms;
 
 namespace Dapple.LayerGeneration
 {
@@ -240,6 +241,7 @@ namespace Dapple.LayerGeneration
       {
          try
          {
+
             if (!File.Exists(hDownload.SavedFilePath))
             {
                SetLoadFailed("Could not retrieve layer list");
@@ -310,7 +312,7 @@ namespace Dapple.LayerGeneration
                      if (nLayerElement.GetAttribute("type").Equals("image"))
                         oLayerEnvelope = nLayerElement.SelectSingleNode("ENVELOPE") as XmlElement;
                      if (nLayerElement.GetAttribute("type").Equals("featureclass"))
-                        oLayerEnvelope = nLayerElement.SelectSingleNode("FCLASS/ENVELOPE") as XmlElement;                     
+                        oLayerEnvelope = nLayerElement.SelectSingleNode("FCLASS/ENVELOPE") as XmlElement;
                      if (oLayerEnvelope != null)
                      {
                         oLayerBounds.North = Double.Parse(oLayerEnvelope.GetAttribute("maxy"));
@@ -326,6 +328,10 @@ namespace Dapple.LayerGeneration
 
             SetLoadSuccessful();
          }
+         catch (Exception e)
+         {
+            SetLoadFailed(e.Message);
+         }
          finally
          {
             if (LoadFinished != null) LoadFinished();
@@ -337,7 +343,9 @@ namespace Dapple.LayerGeneration
 
       protected override System.Windows.Forms.TreeNode getLoadingNode()
       {
-         return new System.Windows.Forms.TreeNode("Getting service layers...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+         TreeNode result =  new TreeNode("Getting service layers...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+         result.Tag = new ServerTree.TempNodeTag();
+         return result;
       }
 
       public override System.Drawing.Icon Icon

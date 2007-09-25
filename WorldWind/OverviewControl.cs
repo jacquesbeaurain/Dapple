@@ -191,7 +191,20 @@ namespace WorldWind
          g.DrawEllipse(m_ViewBoxPen, center.X - 1, center.Y - 1, 3, 3);
          g.FillEllipse(m_ViewBoxBrush, center.X - 1, center.Y - 1, 3, 3);
 
-         if(m_RenderTargetViewBox)
+         #region Draw the search area
+
+         viewBox = m_WorldWindow.GetSearchBox();
+
+         pts[0] = GetPointFromCoord(viewBox.Y1, viewBox.X1); // lower left
+         pts[1] = GetPointFromCoord(viewBox.Y2, viewBox.X2); // lower right
+         pts[2] = GetPointFromCoord(viewBox.Y3, viewBox.X3); // upper left
+         pts[3] = GetPointFromCoord(viewBox.Y4, viewBox.X4); // upper right
+
+         g.DrawPolygon(new Pen(new System.Drawing.Drawing2D.HatchBrush(System.Drawing.Drawing2D.HatchStyle.DiagonalCross, Color.FromArgb(255, 0, 255, 0), Color.FromArgb(64, 0, 255, 0))), pts);
+
+         #endregion
+
+         if (m_RenderTargetViewBox)
 				RenderTargetViewBox(g);
 		}
 
@@ -289,21 +302,21 @@ namespace WorldWind
 
 					PointF gotoPoint = GetGeoCoordFromScreenPoint(centerPoint);
 
-					double rangeX = Math.Abs(m_MouseDownStartPosition.X - m_LastMousePosition.X);
-					double rangeY = Math.Abs(m_MouseDownStartPosition.Y - m_LastMousePosition.Y);
+					double dLongitudeAngle = Math.Abs(m_MouseDownStartPosition.X - m_LastMousePosition.X);
+					double dLatitudeAngle = Math.Abs(m_MouseDownStartPosition.Y - m_LastMousePosition.Y);
 
 					double degreesPerPixelX = 360.0 / Width;
 					double degreesPerPixelY = 180.0 / Height;
 
-					rangeX *= degreesPerPixelX;
-					rangeY *= degreesPerPixelY;
+					dLongitudeAngle *= degreesPerPixelX;
+					dLatitudeAngle *= degreesPerPixelY;
 
-					m_WorldWindow.GotoLatLonHeadingViewRange(
-						gotoPoint.Y, gotoPoint.X, 0.0,
-						(rangeX > rangeY ? rangeX: rangeY)
-						);
-
-				}
+               m_WorldWindow.GotoBoundingbox(
+                  gotoPoint.X - dLongitudeAngle / 2.0,
+                  gotoPoint.Y - dLatitudeAngle / 2.0,
+                  gotoPoint.X + dLongitudeAngle / 2.0,
+                  gotoPoint.Y + dLatitudeAngle / 2.0);
+            }
 			}
 			else if(e.Button == MouseButtons.Left)
 			{

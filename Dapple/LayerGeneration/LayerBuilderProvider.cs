@@ -29,11 +29,6 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
-		bool SupportsOpacity
-		{
-			get;
-		}
-
 		bool SupportsMetaData
 		{
 			get;
@@ -181,15 +176,6 @@ namespace Dapple.LayerGeneration
 			get
 			{
 				return m_blnIsAdded;
-			}
-		}
-
-		[System.ComponentModel.Browsable(false)]
-		public virtual bool SupportsOpacity
-		{
-			get
-			{
-				return true;
 			}
 		}
 

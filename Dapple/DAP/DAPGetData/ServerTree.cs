@@ -47,7 +47,7 @@ namespace Geosoft.GX.DAPGetData
       #region Members
       protected string m_strCacheDir;
 
-      ContextMenuStrip m_oContextMenuStrip;
+      //ContextMenuStrip m_oContextMenuStrip;
       protected bool m_bSupportDatasetSelection = true;
       protected bool m_bEntireCatalogMode = false;
       protected bool m_bAOIFilter = false;
@@ -86,6 +86,12 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Construction/Destruction
+
+      /// <summary>
+      /// Only in here for designer support
+      /// </summary>
+      public ServerTree() : this(null, String.Empty) { }
+
       public ServerTree(ImageList oImageList, string strCacheDir)
       {
          m_strCacheDir = strCacheDir;
@@ -115,7 +121,7 @@ namespace Geosoft.GX.DAPGetData
          this.Scrollable = true;
          base.ImageList = oImageList;
          this.ImageIndex = this.SelectedImageIndex = Dapple.MainForm.ImageListIndex("folder");
-         this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
+         //this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
       }
 
@@ -225,11 +231,11 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Context menu to display on RMB
       /// </summary>
-      public ContextMenuStrip RMBContextMenuStrip
+      /*public ContextMenuStrip RMBContextMenuStrip
       {
          get { return m_oContextMenuStrip; }
          set { m_oContextMenuStrip = value; }
-      }
+      }*/
 
       /// <summary>
       /// Get the current server
@@ -1328,7 +1334,7 @@ namespace Geosoft.GX.DAPGetData
 
       #region Event Handlers
 
-      protected void OnNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+      /*protected void OnNodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
       {
          if (m_oContextMenuStrip != null && e.Button == MouseButtons.Right)
          {
@@ -1337,7 +1343,7 @@ namespace Geosoft.GX.DAPGetData
 
             m_oContextMenuStrip.Show(this, e.Location.X, e.Node.Bounds.Y + e.Node.Bounds.Height/2);
          }
-      }
+      }*/
 
       protected virtual void UpdateTreeNodeColors()
       {
@@ -1396,8 +1402,8 @@ namespace Geosoft.GX.DAPGetData
             }
 
             // --- This is needed because all the docking window activations tends to change the tree selection on us ---
-            if (this.SelectedNode != e.Node)
-               this.SelectedNode = e.Node;
+            /*if (!this.SelectedNode.Equals(e.Node))
+               this.SelectedNode = e.Node;*/
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("SelectedNode Changed (AfterSelect): " + (this.SelectedNode != null ? this.SelectedNode.Text : "(none)"));
 #endif

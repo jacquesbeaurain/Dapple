@@ -8,6 +8,12 @@ using System.Windows.Forms;
 using Dapple.LayerGeneration;
 using System.Drawing.Drawing2D;
 using dappleview;
+using WorldWind.Renderable;
+using WorldWind;
+using System.IO;
+using System.Drawing.Imaging;
+using WorldWind.PluginEngine;
+using System.Diagnostics;
 
 namespace Dapple
 {
@@ -118,11 +124,26 @@ namespace Dapple
       /// <summary>
       /// Whether a delete operation should be allowed to commence (disallows deletion of the base layer).
       /// </summary>
-      private bool RemoveAllowed
+      public bool RemoveAllowed
       {
          get
          {
             return cLayerList.SelectedIndices.Count > 1 || (cLayerList.SelectedIndices.Count == 1 && !m_oLayers[cLayerList.SelectedIndices[0]].Equals(m_hBaseLayer));
+         }
+      }
+
+      public bool DownloadsInProgress
+      {
+         get
+         {
+            int temp, temp2;
+
+            foreach (LayerBuilder oBuilder in this.SelectedLayers)
+            {
+               if (oBuilder.Visible && oBuilder.bIsDownloading(out temp, out temp2))
+                  return true;
+            }
+            return false;
          }
       }
 
@@ -301,6 +322,11 @@ namespace Dapple
          CmdDownloadActiveLayers();
       }
 
+      private void cExportButton_Click(object sender, EventArgs e)
+      {
+         CmdExportSelected();
+      }
+
       #endregion
 
       #region Layer List
@@ -418,12 +444,9 @@ namespace Dapple
       private void cViewPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
       {
          LayerBuilder oBuilder = m_oLayers[cLayerList.SelectedIndices[0]];
-
          if (oBuilder == null) return;
 
-         frmProperties form = new frmProperties();
-         form.SetObject = oBuilder;
-         form.ShowDialog(this);
+         frmProperties.DisplayForm(oBuilder);
 
          if (oBuilder.IsChanged)
          {
@@ -483,6 +506,7 @@ namespace Dapple
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
          cRemoveLayerButton.Enabled = this.RemoveAllowed;
          cExtractButton.Enabled = cLayerList.SelectedIndices.Count > 0;
+         cExportButton.Enabled = cLayerList.SelectedIndices.Count > 0;
       }
 
       /// <summary>
@@ -828,7 +852,7 @@ namespace Dapple
       /// <param name="view">The view to load from.</param>
       /// <param name="oTree">The ServerTree to save servers to.</param>
       /// <returns>True if one or more of the layers is in an old/improper format.</returns>
-      public bool LoadFromView(DappleView view, ServerTree oTree)
+      public bool CmdLoadFromView(DappleView view, ServerTree oTree)
       {
          bool blIncompleteLoad = false;
 
@@ -863,6 +887,276 @@ namespace Dapple
          CheckIsValid();
 
          return blIncompleteLoad;
+      }
+
+      #endregion
+
+      #region Exporting
+
+      private class ExportEntry
+      {
+         public LayerBuilder Container;
+         public RenderableObject RO;
+         public RenderableObject.ExportInfo Info;
+
+         public ExportEntry(LayerBuilder container, RenderableObject ro, RenderableObject.ExportInfo expInfo)
+         {
+            Container = container;
+            RO = ro;
+            Info = expInfo;
+         }
+      }
+
+      /// <summary>
+      /// Extracts all the currently selected datasets (including blue marble).
+      /// </summary>
+      public void CmdExportSelected()
+      {
+         string szGeoTiff = null;
+         List<ExportEntry> aExportList = new List<ExportEntry>();
+
+         // Gather info first
+         foreach (LayerBuilder oBuilder in this.SelectedLayers)
+         {
+            if (oBuilder.Visible)
+            {
+               RenderableObject oRObj = oBuilder.GetLayer();
+               if (oRObj != null)
+               {
+                  RenderableObject.ExportInfo oExportInfo = new RenderableObject.ExportInfo();
+                  oRObj.InitExportInfo(MainForm.WorldWindowSingleton.DrawArgs, oExportInfo);
+
+                  if (oExportInfo.iPixelsX > 0 && oExportInfo.iPixelsY > 0)
+                     aExportList.Add(new ExportEntry(oBuilder, oRObj, oExportInfo));
+               }
+            }
+         }
+
+         if (aExportList.Count == 0)
+         {
+            MessageBox.Show(this, "There are no visible layers to export.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+         }
+
+         // Reverse the list to do render order right
+         aExportList.Reverse();
+
+         if (DownloadsInProgress)
+         {
+            MessageBox.Show(this, "It is not possible to export a view while there are still downloads in progress.\nPlease wait for the downloads to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+         }
+
+         WorldWind.Camera.MomentumCamera camera = MainForm.WorldWindowSingleton.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
+         if (camera.Tilt.Degrees > 5.0)
+         {
+            MessageBox.Show(this, "It is not possible to export a tilted view. Reset the tilt using the navigation buttons\nor by using Right-Mouse-Button and drag and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+         }
+
+         try
+         {
+            ExportView oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
+            if (oExportDialog.ShowDialog(this) == DialogResult.OK)
+            {
+               Cursor = Cursors.WaitCursor;
+
+               // Stop the camera
+               camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
+
+               // Determine output parameters
+               GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetViewBox(true));
+               int iResolution = oExportDialog.Resolution;
+               int iExportPixelsX, iExportPixelsY;
+
+               // Minimize the estimated extents to what is available
+               GeographicBoundingBox oExtractArea = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+               foreach (ExportEntry oExportEntry in aExportList)
+               {
+                  oExtractArea.North = Math.Max(oExtractArea.North, oExportEntry.Info.dMaxLat);
+                  oExtractArea.South = Math.Min(oExtractArea.South, oExportEntry.Info.dMinLat);
+                  oExtractArea.East = Math.Max(oExtractArea.East, oExportEntry.Info.dMaxLon);
+                  oExtractArea.West = Math.Min(oExtractArea.West, oExportEntry.Info.dMinLon);
+               }
+
+               oViewedArea.East = Math.Min(oViewedArea.East, oExtractArea.East);
+               oViewedArea.North = Math.Min(oViewedArea.North, oExtractArea.North);
+               oViewedArea.West = Math.Max(oViewedArea.West, oExtractArea.West);
+               oViewedArea.South = Math.Max(oViewedArea.South, oExtractArea.South);
+
+               // Determine the maximum resolution based on the highest res in layers
+               if (iResolution == -1)
+               {
+                  double dXRes, dYRes;
+                  foreach (ExportEntry oExportEntry in aExportList)
+                  {
+                     dXRes = (double)oExportEntry.Info.iPixelsX / (oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon);
+                     dYRes = (double)oExportEntry.Info.iPixelsY / (oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat);
+                     iResolution = Math.Max(iResolution, (int)Math.Round(Math.Max(dXRes * (oViewedArea.East - oViewedArea.West), dYRes * (oViewedArea.North - oViewedArea.South))));
+                  }
+               }
+               if (iResolution <= 0)
+                  return;
+
+               if (oViewedArea.North - oViewedArea.South > oViewedArea.East - oViewedArea.West)
+               {
+                  iExportPixelsY = iResolution;
+                  iExportPixelsX = (int)Math.Round((double)iResolution * (oViewedArea.East - oViewedArea.West) / (oViewedArea.North - oViewedArea.South));
+               }
+               else
+               {
+                  iExportPixelsX = iResolution;
+                  iExportPixelsY = (int)Math.Round((double)iResolution * (oViewedArea.North - oViewedArea.South) / (oViewedArea.East - oViewedArea.West));
+               }
+
+
+               // Make geotiff metadata file to use for georeferencing images
+               szGeoTiff = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+               using (StreamWriter sw = new StreamWriter(szGeoTiff, false))
+               {
+                  sw.WriteLine("Geotiff_Information:");
+                  sw.WriteLine("Version: 1");
+                  sw.WriteLine("Key_Revision: 1.0");
+                  sw.WriteLine("Tagged_Information:");
+                  sw.WriteLine("ModelTiepointTag (2,3):");
+                  sw.WriteLine("0 0 0");
+                  sw.WriteLine(oViewedArea.West.ToString() + " " + oViewedArea.North.ToString() + " 0");
+                  sw.WriteLine("ModelPixelScaleTag (1,3):");
+                  sw.WriteLine(((oViewedArea.East - oViewedArea.West) / (double)iExportPixelsX).ToString() + " " + ((oViewedArea.North - oViewedArea.South) / (double)iExportPixelsY).ToString() + " 0");
+                  sw.WriteLine("End_Of_Tags.");
+                  sw.WriteLine("Keyed_Information:");
+                  sw.WriteLine("GTModelTypeGeoKey (Short,1): ModelTypeGeographic");
+                  sw.WriteLine("GTRasterTypeGeoKey (Short,1): RasterPixelIsArea");
+                  sw.WriteLine("GeogAngularUnitsGeoKey (Short,1): Angular_Degree");
+                  sw.WriteLine("GeographicTypeGeoKey (Short,1): GCS_WGS_84");
+                  sw.WriteLine("End_Of_Keys.");
+                  sw.WriteLine("End_Of_Geotiff.");
+               }
+
+               // Export image(s)
+               using (Bitmap oExportedImage = new Bitmap(iExportPixelsX, iExportPixelsY))
+               {
+                  using (Graphics oEIGraphics = Graphics.FromImage(oExportedImage))
+                  {
+                     oEIGraphics.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
+                     foreach (ExportEntry oExportEntry in aExportList)
+                     {
+                        // Limit info for layer to area we are looking at
+
+                        double dExpXRes = (double)oExportEntry.Info.iPixelsX / (oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon);
+                        double dExpYRes = (double)oExportEntry.Info.iPixelsY / (oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat);
+                        int iExpOffsetX = (int)Math.Round((oViewedArea.West - oExportEntry.Info.dMinLon) * dExpXRes);
+                        int iExpOffsetY = (int)Math.Round((oExportEntry.Info.dMaxLat - oViewedArea.North) * dExpYRes);
+                        oExportEntry.Info.iPixelsX = (int)Math.Round((oViewedArea.East - oViewedArea.West) * dExpXRes);
+                        oExportEntry.Info.iPixelsY = (int)Math.Round((oViewedArea.North - oViewedArea.South) * dExpYRes);
+                        oExportEntry.Info.dMinLon = oExportEntry.Info.dMinLon + (double)iExpOffsetX / dExpXRes;
+                        oExportEntry.Info.dMaxLat = oExportEntry.Info.dMaxLat - (double)iExpOffsetY / dExpYRes;
+                        oExportEntry.Info.dMaxLon = oExportEntry.Info.dMinLon + (double)oExportEntry.Info.iPixelsX / dExpXRes;
+                        oExportEntry.Info.dMinLat = oExportEntry.Info.dMaxLat - (double)oExportEntry.Info.iPixelsY / dExpYRes;
+
+                        using (Bitmap oLayerImage = new Bitmap(oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY))
+                        {
+                           int iOffsetX, iOffsetY;
+                           int iWidth, iHeight;
+
+                           using (oExportEntry.Info.gr = Graphics.FromImage(oLayerImage))
+                              oExportEntry.RO.ExportProcess(MainForm.WorldWindowSingleton.DrawArgs, oExportEntry.Info);
+
+                           iOffsetX = (int)Math.Round((oExportEntry.Info.dMinLon - oViewedArea.West) * (double)iExportPixelsX / (oViewedArea.East - oViewedArea.West));
+                           iOffsetY = (int)Math.Round((oViewedArea.North - oExportEntry.Info.dMaxLat) * (double)iExportPixelsY / (oViewedArea.North - oViewedArea.South));
+                           iWidth = (int)Math.Round((oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon) * (double)iExportPixelsX / (oViewedArea.East - oViewedArea.West));
+                           iHeight = (int)Math.Round((oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat) * (double)iExportPixelsY / (oViewedArea.North - oViewedArea.South));
+
+                           ImageAttributes imgAtt = new ImageAttributes();
+                           float[][] fMat = { 
+                                 new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+                                 new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
+                                 new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+                                 new float[] {0.0f, 0.0f, 0.0f, (float)oExportEntry.Container.Opacity/255.0f, 0.0f},
+                                 new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}
+                              };
+                           ColorMatrix clrMatrix = new ColorMatrix(fMat);
+                           imgAtt.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+                           oEIGraphics.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
+
+                           if (oExportDialog.KeepLayers)
+                           {
+                              using (Bitmap oIndividualLayerImage = new Bitmap(iExportPixelsX, iExportPixelsY))
+                              {
+                                 using (Graphics grl = Graphics.FromImage(oIndividualLayerImage))
+                                 {
+                                    grl.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
+                                    grl.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel);
+                                 }
+
+                                 SaveGeoImage(oIndividualLayerImage, oExportDialog.OutputName + "_" + oExportEntry.Container.Name, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
+                              }
+                           }
+                        }
+                     }
+                  }
+                  SaveGeoImage(oExportedImage, oExportDialog.OutputName, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
+               }
+            }
+         }
+         catch (Exception exc)
+         {
+            MessageBox.Show(this, "Export failed!\n" + exc.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Cursor = Cursors.Default;
+         }
+         finally
+         {
+            if (szGeoTiff != null && File.Exists(szGeoTiff))
+               File.Delete(szGeoTiff);
+
+            Cursor = Cursors.Default;
+         }
+      }
+
+      /// <summary>
+      /// Saves a bitmap to a GeoTiff, or if another format has been requested, just saves it.
+      /// </summary>
+      /// <param name="oBitmap"></param>
+      /// <param name="szName"></param>
+      /// <param name="strFolder"></param>
+      /// <param name="szFormat"></param>
+      /// <param name="szGeotiff"></param>
+      private void SaveGeoImage(Bitmap oBitmap, string szName, string strFolder, string szFormat, string szGeotiff)
+      {
+         ImageFormat eFormat = ImageFormat.Tiff;
+
+         if (szFormat.Equals(".bmp")) eFormat = ImageFormat.Bmp;
+         else if (szFormat.Equals(".png")) eFormat = ImageFormat.Png;
+         else if (szFormat.Equals(".gif")) eFormat = ImageFormat.Gif;
+
+         foreach (char c in Path.GetInvalidFileNameChars())
+            szName = szName.Replace(c, '_');
+
+         if (eFormat == ImageFormat.Tiff)
+         {
+            string szTempImageFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + szFormat);
+            oBitmap.Save(szTempImageFile, eFormat);
+
+            ProcessStartInfo psi = new ProcessStartInfo(Path.GetDirectoryName(Application.ExecutablePath) + @"\System\geotifcp.exe");
+            psi.UseShellExecute = false;
+            psi.CreateNoWindow = true;
+            psi.Arguments = "-g \"" + szGeotiff + "\" \"" + szTempImageFile + "\" \"" + Path.Combine(strFolder, szName + szFormat) + "\"";
+
+            using (Process p = Process.Start(psi))
+               p.WaitForExit();
+
+            try
+            {
+               File.Delete(szTempImageFile);
+            }
+            catch
+            {
+            }
+         }
+         else
+         {
+            oBitmap.Save(Path.Combine(strFolder, szName + szFormat), eFormat);
+         }
       }
 
       #endregion

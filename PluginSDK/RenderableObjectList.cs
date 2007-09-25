@@ -632,5 +632,23 @@ namespace WorldWind.Renderable
 				Log.Write(ex);
 			}
 		}
+
+      public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
+      {
+         foreach (RenderableObject oRO in this.ChildObjects)
+         {
+            if (oRO.Initialized && oRO.IsOn)
+               oRO.InitExportInfo(drawArgs, info);
+         }
+      }
+
+      public override void ExportProcess(DrawArgs drawArgs, ExportInfo info)
+      {
+         foreach (RenderableObject oRO in this.ChildObjects)
+         {
+            if (oRO.Initialized && oRO.IsOn)
+               oRO.ExportProcess(drawArgs, info);
+         }
+      }
 	}
 }

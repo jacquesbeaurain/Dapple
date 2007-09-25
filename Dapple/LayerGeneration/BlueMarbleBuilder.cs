@@ -65,19 +65,7 @@ namespace Dapple.LayerGeneration
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
-         if (m_hObject.IsOn)
-         {
-            //CMTODO: Implement this actually
-            iBytesRead = 5;
-            iTotalBytes = 50;
-            return true;
-         }
-         else
-         {
-            iBytesRead = 0;
-            iTotalBytes = 0;
-            return false;
-         }
+         return CascadeDownloading(m_hObject, out iBytesRead, out iTotalBytes);
       }
 
       public override WorldWind.Renderable.RenderableObject GetLayer()
@@ -126,6 +114,39 @@ namespace Dapple.LayerGeneration
                CascadeOpacity(oChildRObject, bOpacity);
             }
          }
+      }
+
+      private bool CascadeDownloading(RenderableObject oObj, out int iBytesRead, out int iTotalBytes)
+      {
+         if (oObj.Initialized && oObj.IsOn)
+         {
+            if (oObj is QuadTileSet)
+            {
+               return ((QuadTileSet)oObj).bIsDownloading(out iBytesRead, out iTotalBytes);
+            }
+            else if (oObj is RenderableObjectList)
+            {
+               bool result = false;
+               int iResultRead = 0;
+               int iResultTotal = 0;
+
+               foreach (RenderableObject oRO in ((RenderableObjectList)oObj).ChildObjects)
+               {
+                  int iRead, iTotal;
+                  result |= CascadeDownloading(oRO, out iRead, out iTotal);
+                  iResultRead += iRead;
+                  iResultTotal += iTotal;
+               }
+
+               iBytesRead = iResultRead;
+               iTotalBytes = iResultTotal;
+               return result;
+            }
+         }
+
+         iBytesRead = 0;
+         iTotalBytes = 0;
+         return false;
       }
    }
 }

@@ -85,33 +85,6 @@ namespace Dapple.LayerGeneration
          get { return "folder"; }
       }
 
-      /// <summary>
-      /// Indicates whether a directory supports opacity
-      /// by querying it's sublist and layers
-      /// </summary>
-      [System.ComponentModel.Browsable(false)]
-      public virtual bool SupportsOpacity
-      {
-         get 
-         {
-            foreach (LayerBuilder builder in LayerBuilders)
-            {
-               if (builder.SupportsOpacity)
-               {
-                  return true;
-               }
-            }
-            foreach (BuilderDirectory dir in SubList)
-            {
-               if (dir.SupportsOpacity)
-               {
-                  return true;
-               }
-            }
-            return false;
-         }
-      }
-
       public event BuilderChangedHandler BuilderChanged; 
 
       public void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
@@ -358,7 +331,9 @@ namespace Dapple.LayerGeneration
       /// <returns></returns>
       protected virtual TreeNode getLoadingNode()
       {
-         return new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+         TreeNode result = new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+         result.Tag = new ServerTree.TempNodeTag();
+         return result;
       }
 
       /// <summary>

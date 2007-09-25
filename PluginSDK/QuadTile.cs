@@ -1731,7 +1731,7 @@ namespace WorldWind.Renderable
 					bChildren = true;
 				}
 
-				if (!bChildren && textures == null || textures[0] == null)
+				if (!bChildren && this.textures != null && this.textures[0] != null)
 				{
 					Image img = null;
 

@@ -359,6 +359,10 @@
       <DependentUpon>AddArcIMS.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="ServerTree.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ServerTree.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Splash.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Splash.cs</DependentUpon>
@@ -828,9 +832,9 @@
     <Content Include="Resources\dap_spf.ico" />
     <Content Include="Resources\dap_voxel.ico" />
     <Content Include="Resources\delete.ico" />
-    <None Include="Resources\disserver.ico" />
+    <None Include="Resources\disserver.png" />
     <Content Include="Resources\email-view.png" />
-    <None Include="Resources\enserver.ico" />
+    <None Include="Resources\enserver.png" />
     <Content Include="Resources\error.ico" />
     <Content Include="Resources\exit.png" />
     <Content Include="Resources\expand.png" />
@@ -967,56 +971,56 @@
   <ItemGroup>
     <PublishFile Include="Config\KMLImporter.xml">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Config\World.xml">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Config\WorldWind.xml">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Config\^Placenames.xml">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Scripts\AroundTheEquator.xml">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
     <PublishFile Include="Scripts\DisplayMessageTest01.xml">
       <Visible>False</Visible>
+      <PublishState>Include</PublishState>
       <Group>
       </Group>
       <TargetPath>
       </TargetPath>
-      <PublishState>Include</PublishState>
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>
