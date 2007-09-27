@@ -273,6 +273,7 @@ namespace Geosoft.Dap.Xml
       /// </summary>
       /// <param name="bTask"></param>
       /// <param name="bSecure"></param>
+      /// <param name="iTimeout"></param>
       public Communication(bool bTask, bool bSecure, int iTimeout)
       {
          m_bTask = bTask;

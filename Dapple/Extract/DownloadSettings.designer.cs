@@ -295,6 +295,7 @@ namespace Dapple.Extract
          this.lvDatasets.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
          this.lvDatasets.HideSelection = false;
          this.lvDatasets.Location = new System.Drawing.Point(3, 3);
+         this.lvDatasets.MultiSelect = false;
          this.lvDatasets.Name = "lvDatasets";
          this.lvDatasets.Size = new System.Drawing.Size(443, 170);
          this.lvDatasets.TabIndex = 0;

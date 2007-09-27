@@ -27,6 +27,7 @@ namespace Dapple.Extract
       }
 
       #region Member Variables
+      List<Dapple.LayerGeneration.LayerBuilder> m_oLayersToDownload;
       private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
       private DownloadOptions m_oCurUserControl = null;
       #endregion
@@ -38,6 +39,7 @@ namespace Dapple.Extract
       public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload)
       {
          InitializeComponent();
+         m_oLayersToDownload = oLayersToDownload;
 
          if (!MainForm.OpenMap)
          {
@@ -258,12 +260,12 @@ namespace Dapple.Extract
             {
                oExtractElement.AppendChild(oDatasetElement);
             }
-         }
-
-         MainForm.MontajInterface.Download(oExtractDoc.OuterXml);
-         
-         MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+         }         
          this.Close();
+
+         DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
+         if (oDiscliamers.HasDisclaimer)
+            oDiscliamers.ShowDialog();
       }
 
       /// <summary>

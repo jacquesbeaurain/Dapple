@@ -50,6 +50,8 @@ namespace Geosoft.Dap.Xml.Common
          /// <summary></summary>
          IMAGE,
          /// <summary></summary>
+         DISCLAIMER,
+         /// <summary></summary>
          TRANSLATE,
          /// <summary></summary>
          EXTRACT,
@@ -76,6 +78,7 @@ namespace Geosoft.Dap.Xml.Common
          "/DMS/ois.dll",
          "/DMS/ois.dll",
          "/DMS/ois.dll",
+         "/DMS/ois.dll",
          "/DFS/ois.dll",
          "/DMS/ois.dll",
          "/DMS/ois.dll",
@@ -87,6 +90,7 @@ namespace Geosoft.Dap.Xml.Common
       /// </summary>
       public static string []ServerV1_1 = new String[]
       {
+         "/DAP/ois.dll",
          "/DAP/ois.dll",
          "/DAP/ois.dll",
          "/DAP/ois.dll",
@@ -297,6 +301,9 @@ namespace Geosoft.Dap.Xml.Common
 
          /// <summary></summary>
          public const string DESTROY_STATE_TAG            = "destroy_state";
+
+         /// <summary></summary>
+         public const string DISCLAIMERS_TAG = "disclaimers";
       }
 
 

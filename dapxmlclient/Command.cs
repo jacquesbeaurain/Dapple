@@ -119,6 +119,7 @@ namespace Geosoft.Dap
       /// <summary>
       /// Default constructor
       /// </summary>
+      /// <param name="iTimeout"></param>
       public Command(int iTimeout)
       {
          m_hParse = new Parse();
@@ -131,6 +132,7 @@ namespace Geosoft.Dap
       /// </summary>
       /// <param name="szUrl"></param>
       /// <param name="bTask"></param>
+      /// <param name="iTimeout"></param>
       public Command(String szUrl, bool bTask, int iTimeout)
       {
          m_strUrl = szUrl;
@@ -145,6 +147,7 @@ namespace Geosoft.Dap
       /// <param name="szUrl"></param>
       /// <param name="bTask"></param>
       /// <param name="eVersion"></param>
+      /// <param name="iTimeout"></param>
       public Command(String szUrl, bool bTask, Version eVersion, int iTimeout)
       {
          m_strUrl = szUrl;
@@ -161,6 +164,7 @@ namespace Geosoft.Dap
       /// <param name="eVersion"></param>
       /// <param name="bSecure"></param>
       /// <param name="strToken"></param>
+      /// <param name="iTimeout"></param>
       public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strToken, int iTimeout)
       {
          m_strUrl = szUrl;
@@ -372,63 +376,6 @@ namespace Geosoft.Dap
             m_oLock.ReleaseReaderLock();
          }
          return hResponseDocument;
-      }
-
-      /// <summary>
-      /// Get the list of properties
-      /// </summary>
-      /// <returns>The list of properties in GeosoftXML</returns>
-      public System.Xml.XmlDocument GetProperties()
-      {
-         return GetProperties(null);
-      }
-
-      /// <summary>
-      /// Get the list of properties
-      /// </summary>
-      /// <param name="progressCallBack">Progress handler (may be null)</param>
-      /// <returns>The list of properties in GeosoftXML</returns>
-      public System.Xml.XmlDocument GetProperties(UpdateProgessCallback progressCallBack) 
-      {
-         string                  szUrl;
-         System.Xml.XmlDocument  hRequestDocument;
-         System.Xml.XmlDocument  hResponseDocument;
-         
-         try 
-         {
-            m_oLock.AcquireReaderLock(-1);
-            szUrl = CreateUrl(Constant.Request.PROPERTIES);
-
-            hRequestDocument = m_hEncodeRequest.Properties( null );
-            hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);  
-         }
-         finally
-         {
-            m_oLock.ReleaseReaderLock();
-         }
-         return hResponseDocument;
-      }
-
-      /// <summary>
-      /// Get the list of properties
-      /// </summary>
-      /// <param name="hArray">The list of properties</param>
-      public void GetProperties(out System.Collections.SortedList hArray)
-      {
-         GetProperties(out hArray, null);
-      }
-
-      /// <summary>
-      /// Get the list of properties
-      /// </summary>
-      /// <param name="hArray">The list of properties</param>
-      /// <param name="progressCallBack">Progress handler (may be null)</param>
-      public void GetProperties(out System.Collections.SortedList hArray, UpdateProgessCallback progressCallBack) 
-      {
-         System.Xml.XmlDocument  hResponse = null;
-
-         hResponse = GetProperties(progressCallBack);     
-         m_hParse.Properties(hResponse, out hArray);         
       }
 
       /// <summary>
@@ -1201,7 +1148,6 @@ namespace Geosoft.Dap
 		/// <param name="bBaseMap">Draw the base map</param>
 		/// <param name="bIndexMap">Draw the index map</param>
 		/// <param name="hArrayList">The list of dataset server names</param>
-		/// <param name="progressCallBack">Progress handler (may be null)</param>
 		/// <param name="szUrl">URL to use to retrieve image</param>
 		/// <returns>The image request in GeosoftXML</returns>
 		/// <remarks>
@@ -2260,7 +2206,7 @@ namespace Geosoft.Dap
       /// <returns>The configuration response in GeosoftXML</returns>
       public System.Xml.XmlDocument GetLog(string strPassword)
       {
-         return GetLog(strPassword, null);
+         return GetLog(strPassword, DateTime.Today);
       }
 
       /// <summary>
@@ -2436,6 +2382,83 @@ namespace Geosoft.Dap
          return hResponseDocument;
       }
       
+
+      /// <summary>
+      /// Get the disclaimer GeosoftXML for this dataset
+      /// </summary>
+      /// <param name="hDataSet"></param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetDisclaimer(DataSet hDataSet)
+      {
+         return GetDisclaimer(hDataSet, null);         
+      }
+
+      /// <summary>
+      /// Get the disclaimer GeosoftXML for this dataset
+      /// </summary>
+      /// <param name="hDataSet"></param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The configuration response in GeosoftXML</returns>
+      public System.Xml.XmlDocument GetDisclaimer(DataSet hDataSet, UpdateProgessCallback progressCallBack)
+      {
+         string szUrl;
+         System.Xml.XmlDocument hRequestDocument;
+         System.Xml.XmlDocument hResponseDocument;
+
+         try
+         {
+            m_oLock.AcquireReaderLock(-1);
+
+            szUrl = CreateUrl(Constant.Request.DISCLAIMER);
+            hRequestDocument = m_hEncodeRequest.Disclaimer(null, hDataSet.Name);
+            hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);
+         }
+         finally
+         {
+            m_oLock.ReleaseReaderLock();
+         }
+         return hResponseDocument;
+      }
+
+      /// <summary>
+      /// Get the disclaimer data
+      /// </summary>
+      /// <param name="hDataSet"></param>
+      /// <param name="strTempFile"></param>
+      /// <returns>The exact data response in GeosoftXML</returns>
+      public System.Xml.XmlReader GetDisclaimerEx(DataSet hDataSet, string strTempFile)
+      {
+         return GetDisclaimerEx(hDataSet, strTempFile, null);
+      }
+
+      /// <summary>
+      /// Get the disclaimer data
+      /// </summary>
+      /// <param name="hDataSet"></param>
+      /// <param name="strTempFile"></param>
+      /// <param name="progressCallBack">Progress handler (may be null)</param>
+      /// <returns>The exact data response in GeosoftXML</returns>
+      public System.Xml.XmlReader GetDisclaimerEx(DataSet hDataSet, string strTempFile, UpdateProgessCallback progressCallBack)
+      {
+         string szUrl;
+         System.Xml.XmlDocument hRequestDocument;
+         System.Xml.XmlReader hResponseReader;
+
+         try
+         {
+            m_oLock.AcquireReaderLock(-1);
+            szUrl = CreateUrl(Constant.Request.DISCLAIMER);
+
+            hRequestDocument = m_hEncodeRequest.Disclaimer(null, hDataSet.Name);
+            hResponseReader = m_oCommunication.SendEx(szUrl, hRequestDocument, strTempFile, progressCallBack);
+         }
+         finally
+         {
+            m_oLock.ReleaseReaderLock();
+         }
+         return hResponseReader;
+      }
+
       /// <summary>
       /// Create the url, base of the xml version and whether it is secure or not
       /// </summary>

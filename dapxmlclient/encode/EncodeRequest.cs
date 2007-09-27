@@ -268,19 +268,7 @@ namespace Geosoft.Dap.Xml
 
          return hConfigurationNode.OwnerDocument;
       }
-
-      /// <summary>
-      /// Encode the request to discover the list of keywords of a Dap server
-      /// </summary>
-      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>
-      /// <returns>The GeosoftXML request</returns>
-      public System.Xml.XmlDocument Keywords( string szHandle )
-      {
-         System.Xml.XmlElement	hKeywordsNode = CreateRequest(szHandle, Constant.Tag.KEYWORDS_TAG);
-
-         return hKeywordsNode.OwnerDocument;
-      }
-
+      
       /// <summary>
       /// Encode the request to discover the capabilities of a Dap server
       /// </summary>
@@ -292,19 +280,7 @@ namespace Geosoft.Dap.Xml
 
          return hCapabilitiesNode.OwnerDocument;
       }
-
-      /// <summary>
-      /// Encode the request to discover the properties of a Dap server
-      /// </summary>
-      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>
-      /// <returns>The GeosoftXML request</returns>
-      public System.Xml.XmlDocument Properties( string szHandle )
-      {
-         System.Xml.XmlElement	hPropertiesNode = CreateRequest(szHandle, Constant.Tag.PROPERTIES_TAG);
-
-         return hPropertiesNode.OwnerDocument;
-      }
-
+      
       /// <summary>
       /// Encode the request for the complete catalog from a Dap server
       /// </summary>
@@ -497,6 +473,33 @@ namespace Geosoft.Dap.Xml
             hGetMetaDataNode.SetAttributeNode( hAttr );
          }
          return hGetMetaDataNode.OwnerDocument;
+      }
+
+      /// <summary>
+      /// Encode the request to get the a disclaimer for a particular dataset
+      /// </summary>
+      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>
+      /// <param name="szDataSet">The unique dataset name</param>
+      /// <returns>The GeosoftXML request</returns>
+      public System.Xml.XmlDocument Disclaimer(string szHandle, string szDataSet)
+      {
+         // --- Create required nodes ---
+
+         System.Xml.XmlElement hGetDisclaimerNode = CreateRequest(szHandle, Constant.Tag.DISCLAIMERS_TAG);
+         System.Xml.XmlElement hDatasetsNode = hGetDisclaimerNode.OwnerDocument.CreateElement(Constant.Tag.DATASETS_TAG);
+
+         hGetDisclaimerNode.AppendChild(hDatasetsNode);
+
+         if (szDataSet != null && szDataSet.Length != 0)
+         {
+            System.Xml.XmlElement hDataSetNode = hGetDisclaimerNode.OwnerDocument.CreateElement(Constant.Tag.DATASET_TAG);
+            System.Xml.XmlAttribute hAttr = hGetDisclaimerNode.OwnerDocument.CreateAttribute(Constant.Attribute.NAME_ATTR);
+            hAttr.Value = szDataSet;
+            hDataSetNode.SetAttributeNode(hAttr);
+            hDatasetsNode.AppendChild(hDataSetNode);
+
+         }
+         return hGetDisclaimerNode.OwnerDocument;
       }
 
       /// <summary>
@@ -888,7 +891,7 @@ namespace Geosoft.Dap.Xml
             hGetLogNode.SetAttributeNode(hAttr);
 
             hAttr = hGetLogNode.OwnerDocument.CreateAttribute(Constant.Attribute.DATE_ATTR);
-            hAttr.Value = oDate.ToString("dddd, MMMM dd, yyyy");
+            hAttr.Value = oDate.ToString("dddd, MMMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture);
             hGetLogNode.SetAttributeNode(hAttr);
          }
 

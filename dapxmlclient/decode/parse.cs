@@ -892,14 +892,14 @@ namespace Geosoft.Dap.Xml
       /// <param name="oStream">The extracted data in a stream</param>
       public void ExtractData(System.Xml.XmlReader oReader, System.IO.Stream oStream)
       {
-         byte  []bExtract = new byte[65536];
+         byte  []bExtract = new byte[4096];
          if (oReader.ReadToFollowing(Constant.Tag.EXTRACT_DATA_TAG))
          {
             int iCount = 0;
 
             do
             {
-               iCount = oReader.ReadElementContentAsBase64(bExtract, 0, 65536);
+               iCount = oReader.ReadElementContentAsBase64(bExtract, 0, 4096);
                oStream.Write(bExtract, 0, iCount);
             } while (iCount != 0);
          }
