@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading;
 using System.Drawing.Drawing2D;
 using Dapple.LayerGeneration;
+using System.Web;
 
 namespace Dapple.CustomControls
 {
@@ -43,20 +44,48 @@ namespace Dapple.CustomControls
       private int m_iAccessedPages;
       private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
       private bool m_blDragDropEnabled = false;
+      private ServerTree m_hServerTree;
+
+      private String m_szDappleSearchURI = null;
 
       #endregion
 
       #region Constructors
 
-      public DappleSearchList()
+      public DappleSearchList() : this(String.Empty)
+      {
+      }
+
+      public DappleSearchList(String szDappleSearchURI)
       {
          InitializeComponent();
+         m_szDappleSearchURI = szDappleSearchURI;
          cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
          cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
          cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
          SetNoSearch();
          cNavigator.PageBack += new ThreadStart(BackPage);
          cNavigator.PageForward += new ThreadStart(ForwardPage);
+      }
+
+      #endregion
+
+      #region Properties
+
+      public ServerTree ServerTree
+      {
+         set
+         {
+            m_hServerTree = value;
+         }
+      }
+
+      public String DappleSearchURI
+      {
+         set
+         {
+            m_szDappleSearchURI = value;
+         }
       }
 
       #endregion
@@ -138,19 +167,17 @@ namespace Dapple.CustomControls
          {
             m_blDragDropEnabled = false;
 
-            MessageBox.Show("The layers from web searches cannot currently be added.");
-
-            /*if (cResultListBox.SelectedIndices.Count > 0)
+            if (cResultListBox.SelectedIndices.Count > 0)
             {
-               List<LayerBuilder> oLayers = new List<LayerBuilder>();
+               List<LayerUri> oLayerUris = new List<LayerUri>();
 
                foreach (int iIndex in cResultListBox.SelectedIndices)
                {
-                  LayerUri oUri = m_aPages[m_iCurrentPage].Results[iIndex].Uri;
+                  oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
                }
 
-               DoDragDrop(oLayers, DragDropEffects.Copy);
-            }*/
+               DoDragDrop(oLayerUris, DragDropEffects.Copy);
+            }
          }
       }
 
@@ -183,7 +210,7 @@ namespace Dapple.CustomControls
          if (m_iCurrentPage >= m_iAccessedPages)
          {
             m_iAccessedPages++;
-            SearchResultSet oPage = SearchResultSet.doSearch("http://dapplesearch.geosoft.com/", m_szSearchString, m_oSearchBoundingBox, m_iCurrentPage * PageNavigator.ResultsPerPage, PageNavigator.ResultsPerPage);
+            SearchResultSet oPage = SearchResultSet.doSearch(m_szDappleSearchURI, m_szSearchString, m_oSearchBoundingBox, m_iCurrentPage * PageNavigator.ResultsPerPage, PageNavigator.ResultsPerPage);
             ExtendSearch(oPage, m_iCurrentPage);
          }
          RefreshResultList();
@@ -194,7 +221,7 @@ namespace Dapple.CustomControls
          m_oSearchBoundingBox = oBoundingBox;
          m_szSearchString = szKeyword;
 
-         SearchResultSet oPage1 = SearchResultSet.doSearch("http://dapplesearch.geosoft.com/", szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
+         SearchResultSet oPage1 = SearchResultSet.doSearch(m_szDappleSearchURI, szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
 
          InitSearch(oPage1);
 
@@ -209,6 +236,12 @@ namespace Dapple.CustomControls
 
          cResultListBox.SuspendLayout();
          cResultListBox.Items.Clear();
+
+         if (String.IsNullOrEmpty(m_szDappleSearchURI))
+         {
+            cNavigator.SetState("DappleSearch not configured");
+            return;
+         }
 
          if (m_aPages.Length > 0 && m_aPages[m_iCurrentPage] != null)
          {
@@ -225,7 +258,7 @@ namespace Dapple.CustomControls
 
          if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
          {
-            m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox);
+            m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox, m_szDappleSearchURI);
          }
 
          cResultListBox.ResumeLayout();
@@ -237,7 +270,14 @@ namespace Dapple.CustomControls
          m_iAccessedPages = 0;
          m_aPages = new SearchResultSet[0];
 
-         cNavigator.SetState("Press Alt-S to search");
+         if (String.IsNullOrEmpty(m_szDappleSearchURI))
+         {
+            cNavigator.SetState("DappleSearch not configured");
+         }
+         else
+         {
+            cNavigator.SetState("Press Alt-S to search");
+         }
       }
 
       private delegate void InitResultsDelegate(SearchResultSet oResults);
@@ -253,13 +293,20 @@ namespace Dapple.CustomControls
             m_iCurrentPage = 0;
             m_iAccessedPages = 1;
 
-            int iNumPages = PageNavigator.PagesFromResults(oResults.TotalCount);
-
-            m_aPages = new SearchResultSet[iNumPages];
-
-            if (iNumPages > 0)
+            if (oResults != null)
             {
-               m_aPages[0] = oResults;
+               int iNumPages = PageNavigator.PagesFromResults(oResults.TotalCount);
+
+               m_aPages = new SearchResultSet[iNumPages];
+
+               if (iNumPages > 0)
+               {
+                  m_aPages[0] = oResults;
+               }
+            }
+            else
+            {
+               cNavigator.SetState("DappleSearch not configured");
             }
          }
       }
@@ -274,7 +321,14 @@ namespace Dapple.CustomControls
          }
          else
          {
-            m_aPages[iPage] = oResults;
+            if (oResults != null)
+            {
+               m_aPages[iPage] = oResults;
+            }
+            else
+            {
+               cNavigator.SetState("DappleSearch not configured");
+            }
          }
       }
 
@@ -312,7 +366,7 @@ namespace Dapple.CustomControls
 
       #region Asynchronous Thumbnail Loading
 
-      public void QueueThumbnails(ListBox oView)
+      public void QueueThumbnails(ListBox oView, String szDappleSearchURI)
       {
          lock (LOCK)
          {
@@ -322,7 +376,7 @@ namespace Dapple.CustomControls
 
                foreach (SearchResult oResult in m_aResults)
                {
-                  ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView});
+                  ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView, szDappleSearchURI });
                }
             }
          }
@@ -332,8 +386,9 @@ namespace Dapple.CustomControls
       {
          SearchResult oResult = ((Object[])oParams)[0] as SearchResult;
          ListBox oView = ((Object[])oParams)[1] as ListBox;
+         String szDappleSearchURI = ((Object[])oParams)[2] as String;
 
-         oResult.downloadThumbnail();
+         oResult.downloadThumbnail(szDappleSearchURI);
          oView.Invalidate();
       }
 
@@ -341,6 +396,8 @@ namespace Dapple.CustomControls
 
       public static SearchResultSet doSearch(String szDappleSearchServerURL, String szSearchString, GeographicBoundingBox oSearchBoundingBox, int iOffset, int iNumResults)
       {
+         if (String.IsNullOrEmpty(szDappleSearchServerURL)) return null;
+
          XmlDocument query = new XmlDocument();
          XmlElement geoRoot = query.CreateElement("geosoft_xml");
          query.AppendChild(geoRoot);
@@ -417,9 +474,11 @@ namespace Dapple.CustomControls
          }
       }
 
-      public void downloadThumbnail()
+      public void downloadThumbnail(String szDappleSearchURI)
       {
-         WebRequest oRequest = WebRequest.Create("http://dapplesearch.geosoft.com/Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
+         if (String.IsNullOrEmpty(szDappleSearchURI)) return;
+
+         WebRequest oRequest = WebRequest.Create(szDappleSearchURI + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
          WebResponse oResponse = null;
          try
          {
@@ -446,14 +505,35 @@ namespace Dapple.CustomControls
 
             if (szType.Equals("dap", StringComparison.InvariantCultureIgnoreCase))
             {
+               String szUri = "gxdap://" + m_aCommonAttributes["url"];
+               if (!szUri.Contains("?")) szUri += "?";
+               szUri += "&datasetname=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["datasetname"]);
+               szUri += "&height=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["height"]);
+               szUri += "&size=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["size"]);
+               szUri += "&type=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["type"]);
+               szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+               szUri += "&edition=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["edition"]);
+               szUri += "&hierarchy=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["hierarchy"]);
+               szUri += "&levels=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["levels"]);
+               szUri += "&lvl0tilesize=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["lvlzerotilesize"]);
+               szUri += "&north=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxy"]);
+               szUri += "&east=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxx"]);
+               szUri += "&south=" + HttpUtility.UrlEncode(m_aCommonAttributes["miny"]);
+               szUri += "&west=" + HttpUtility.UrlEncode(m_aCommonAttributes["minx"]);
+
+               DapLayerUri oUri = new DapLayerUri(szUri);
+
+               return oUri;
             }
             else if (szType.Equals("wms", StringComparison.InvariantCultureIgnoreCase))
             {
-               String szUri = "gxwms://" + m_aCommonAttributes["url"];
+               String szUri = "gxwms://" + HttpUtility.UrlEncode(m_aCommonAttributes["url"]);
                if (!szUri.Contains("?")) szUri += "?";
-               szUri += "version=" + m_aTypeSpecificAttributes["serverversion"];
-               szUri += "&layer=" + m_aTypeSpecificAttributes["layername"];
-               szUri += "&" + m_aTypeSpecificAttributes["cgitokens"];
+               szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
+               szUri += "&layer=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layername"]);
+               szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+               szUri += "&" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["cgitokens"]);
+
                if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)
                {
                   szUri += "&srs=";
@@ -462,7 +542,16 @@ namespace Dapple.CustomControls
                {
                   szUri += "&crs=";
                }
-               szUri += m_aTypeSpecificAttributes["specialcoord"];
+
+               if (m_aTypeSpecificAttributes.ContainsKey("specialcoord"))
+               {
+                  szUri += HttpUtility.UrlEncode(m_aTypeSpecificAttributes["specialcoord"]);
+               }
+               else
+               {
+                  szUri += "EPSG:4326";
+                  szUri += "&bbox=" + String.Format("{0},{1},{2},{3}", m_aCommonAttributes["minx"], m_aCommonAttributes["miny"], m_aCommonAttributes["maxx"], m_aCommonAttributes["maxy"]);
+               }
 
                WMSLayerUri oUri = new WMSLayerUri(szUri);
 
@@ -470,6 +559,21 @@ namespace Dapple.CustomControls
             }
             else if (szType.Equals("arcims", StringComparison.InvariantCultureIgnoreCase))
             {
+               String szUri = "gxarcims://" + m_aCommonAttributes["url"];
+               if (!szUri.Contains("?")) szUri += "?";
+               szUri += "&servicename=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["servicename"]);
+               szUri += "&layerid=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layerid"]);
+               szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+               szUri += "&minx=" + HttpUtility.UrlEncode(m_aCommonAttributes["minx"]);
+               szUri += "&miny=" + HttpUtility.UrlEncode(m_aCommonAttributes["miny"]);
+               szUri += "&maxx=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxx"]);
+               szUri += "&maxy=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxy"]);
+               szUri += "&minscale=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["minscale"]);
+               szUri += "&maxscale=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["maxscale"]);
+
+               ArcIMSLayerUri oUri = new ArcIMSLayerUri(szUri);
+
+               return oUri;
             }
             return null;
          }

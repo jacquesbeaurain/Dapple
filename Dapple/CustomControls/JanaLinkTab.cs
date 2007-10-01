@@ -38,9 +38,11 @@ namespace Dapple.CustomControls
             m_cLinks[count].Text = "Link " + count;
             m_cLinks[count].Padding = new Padding(3);
             m_cLinks[count].Tag = count;
+            m_cLinks[count].DisabledLinkColor = SystemColors.ControlText;
             m_cLinks[count].LinkClicked += new LinkLabelLinkClickedEventHandler(LinkClicked);
             this.Controls.Add(m_cLinks[count]);
          }
+         m_cLinks[0].Enabled = false;
 
          InitializeComponent();
       }
@@ -51,6 +53,12 @@ namespace Dapple.CustomControls
 
       void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
       {
+         foreach (LinkLabel oLink in m_cLinks)
+         {
+            oLink.Enabled = true;
+         }
+         ((LinkLabel)sender).Enabled = false;
+
          PageChanged((int)((LinkLabel)sender).Tag);
       }
 

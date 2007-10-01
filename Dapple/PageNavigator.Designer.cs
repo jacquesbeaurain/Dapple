@@ -39,7 +39,7 @@ namespace Dapple
          this.cPageLabel.Location = new System.Drawing.Point(0, 0);
          this.cPageLabel.Name = "cPageLabel";
          this.cPageLabel.Size = new System.Drawing.Size(200, 23);
-         this.cPageLabel.TabIndex = 0;
+         this.cPageLabel.TabIndex = 1;
          this.cPageLabel.Text = "Results 1-10 of 2000";
          this.cPageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
          // 
@@ -51,7 +51,7 @@ namespace Dapple
          this.cForwardButton.Location = new System.Drawing.Point(177, 0);
          this.cForwardButton.Name = "cForwardButton";
          this.cForwardButton.Size = new System.Drawing.Size(23, 23);
-         this.cForwardButton.TabIndex = 1;
+         this.cForwardButton.TabIndex = 2;
          this.cForwardButton.UseVisualStyleBackColor = true;
          this.cForwardButton.Click += new System.EventHandler(this.cForwardButton_Click);
          // 
@@ -62,7 +62,7 @@ namespace Dapple
          this.cBackButton.Location = new System.Drawing.Point(0, 0);
          this.cBackButton.Name = "cBackButton";
          this.cBackButton.Size = new System.Drawing.Size(23, 23);
-         this.cBackButton.TabIndex = 2;
+         this.cBackButton.TabIndex = 0;
          this.cBackButton.UseVisualStyleBackColor = true;
          this.cBackButton.Click += new System.EventHandler(this.cBackButton_Click);
          // 

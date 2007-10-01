@@ -32,7 +32,7 @@ namespace Dapple
       private int m_iNumPages;
       private List<LayerBuilder> m_oCurrServerLayers;
 
-      private bool m_oDragDropReady;
+      private Point m_oDragDropStartPoint;
 
       private Object m_oSelectedServer;
 
@@ -59,7 +59,7 @@ namespace Dapple
          m_oServerList = null;
 
          m_oSelectedServer = null;
-         m_oDragDropReady = false;
+         m_oDragDropStartPoint = Point.Empty;
 
          m_oServerList = new ArrayList();
          SetNoServer();
@@ -253,6 +253,29 @@ namespace Dapple
          }
       }
 
+      private void cServersComboBox_DrawItem(object sender, DrawItemEventArgs e)
+      {
+         e.DrawBackground();
+
+         if (e.Index >= 0)
+         {
+            e.Graphics.DrawIcon(getServerIcon(m_oServerList[e.Index]), new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Height, e.Bounds.Height));
+            e.Graphics.DrawString(getServerName(m_oServerList[e.Index]), e.Font, Brushes.Black, new PointF(e.Bounds.X + e.Bounds.Height, e.Bounds.Y));
+         }
+         else
+         {
+            e.Graphics.DrawString("Select a server", e.Font, Brushes.Black, e.Bounds.Location);
+         }
+      }
+
+      private void cLayersListView_DoubleClick(object sender, EventArgs e)
+      {
+         if (m_hLayerList != null)
+         {
+            m_hLayerList.AddLayers(this.SelectedLayers);
+         }
+      }
+
       /// <summary>
       /// User mouses down on the layer list view.  They may be wanting to start a drag & drop.
       /// </summary>
@@ -260,7 +283,7 @@ namespace Dapple
       /// <param name="e"></param>
       private void cLayersListView_MouseDown(object sender, MouseEventArgs e)
       {
-         m_oDragDropReady = true;
+         m_oDragDropStartPoint = e.Location;
       }
 
       /// <summary>
@@ -270,11 +293,13 @@ namespace Dapple
       /// <param name="e"></param>
       private void cLayersListView_MouseMove(object sender, MouseEventArgs e)
       {
-         if (m_oDragDropReady && HasLayersSelected && (e.Button & MouseButtons.Left) == MouseButtons.Left)
+         if (m_oDragDropStartPoint != Point.Empty && e.Location.Equals(m_oDragDropStartPoint)) return; // The mouse didn't really move
+
+         if (m_oDragDropStartPoint != Point.Empty && HasLayersSelected && (e.Button & MouseButtons.Left) == MouseButtons.Left)
          {
             DoDragDrop(SelectedLayers, DragDropEffects.Copy);
+            m_oDragDropStartPoint = Point.Empty;
          }
-         m_oDragDropReady = false;
       }
 
       /// <summary>
@@ -305,6 +330,8 @@ namespace Dapple
       private void cLayerContextMenu_Opening(object sender, CancelEventArgs e)
       {
          if (cLayersListView.SelectedIndices.Count == 0) e.Cancel = true;
+
+         viewLegendToolStripMenuItem.Enabled = (cLayersListView.SelectedIndices.Count == 1 && m_oCurrServerLayers[cLayersListView.SelectedIndices[0]].SupportsLegend);
       }
 
       /// <summary>
@@ -317,6 +344,22 @@ namespace Dapple
          if (m_hLayerList != null)
          {
             m_hLayerList.AddLayers(this.SelectedLayers);
+         }
+      }
+
+      /// <summary>
+      /// View the legend for the selected layer.
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
+      private void viewLegendToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         LayerBuilder oBuilder = m_oCurrServerLayers[cLayersListView.SelectedIndices[0]];
+
+         string[] aLegends = oBuilder.GetLegendURLs();
+         foreach (string szLegend in aLegends)
+         {
+            if (!String.IsNullOrEmpty(szLegend)) MainForm.BrowseTo(szLegend);
          }
       }
 
@@ -571,19 +614,6 @@ namespace Dapple
       }
 
       #endregion
-
-      private void cServersComboBox_DrawItem(object sender, DrawItemEventArgs e)
-      {
-         if (e.Index >= 0)
-         {
-            e.Graphics.DrawIcon(getServerIcon(m_oServerList[e.Index]), new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Height, e.Bounds.Height));
-            e.Graphics.DrawString(getServerName(m_oServerList[e.Index]), e.Font, Brushes.Black, new PointF(e.Bounds.X + e.Bounds.Height, e.Bounds.Y));
-         }
-         else
-         {
-            e.Graphics.DrawString("Select a server", e.Font, Brushes.Black, e.Bounds.Location);
-         }
-      }
 
       #endregion
    }

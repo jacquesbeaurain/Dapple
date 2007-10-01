@@ -181,9 +181,6 @@
   <data name="metadata" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\metadata.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="removeserver" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\removeserver.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="dap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dap.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -420,5 +417,11 @@
   </data>
   <data name="enserver" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\enserver.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="server_remove" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\server-remove.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="filter_clear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\filter-clear.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

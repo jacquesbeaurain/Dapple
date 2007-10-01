@@ -29,20 +29,12 @@ namespace WorldWind
 		public double MinimumAltitude;
 		public double MaximumAltitude;
 
-		public GeographicBoundingBox()
+		public GeographicBoundingBox() : this(90.0, -90.0, -180.0, 180.0, 0.0 , 0.0)
 		{
-			North = 90;
-			South = -90;
-			West = -180;
-			East = 180;
 		}
 
-      public GeographicBoundingBox(double north, double south, double west, double east)
+      public GeographicBoundingBox(double north, double south, double west, double east) : this(north, south, west, east, 0.0, 0.0)
       {
-         North = north;
-         South = south;
-         West = west;
-         East = east;
       }
 
 		public GeographicBoundingBox(double north, double south, double west, double east, double minAltitude, double maxAltitude)
@@ -53,6 +45,10 @@ namespace WorldWind
 			East = east;
 			MinimumAltitude = minAltitude;
 			MaximumAltitude = maxAltitude;
+
+         if (north < south)             throw new ArgumentOutOfRangeException("Invalid bounding box parameters: north is less than south");
+         if (east < west)               throw new ArgumentOutOfRangeException("Invalid bounding box parameters: east is less than west");
+         if (maxAltitude < minAltitude) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: max altitude is less than min altitude");
 		}
 
       public static GeographicBoundingBox FromQuad(GeographicQuad quad)

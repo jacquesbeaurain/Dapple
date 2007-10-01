@@ -298,11 +298,25 @@ namespace Dapple.LayerGeneration
 
             lock (m_oLock)
             {
-               foreach (XmlElement nLayerElement in oNodeList)
+               foreach (XmlElement nLayerElement in oNodeList) //CMTODO: get maxscale and minscale here?
                {
                   String szID = nLayerElement.GetAttribute("id");
                   String szTitle = nLayerElement.GetAttribute("name");
                   if (String.IsNullOrEmpty(szTitle)) szTitle = "LayerID " + szID;
+
+                  String szMinScale = nLayerElement.GetAttribute("minscale");
+                  double dMinScale = 0.0;
+                  if (!String.IsNullOrEmpty(szMinScale))
+                  {
+                     dMinScale = Double.Parse(szMinScale);
+                  }
+
+                  String szMaxScale = nLayerElement.GetAttribute("maxscale");
+                  double dMaxScale = double.MaxValue;
+                  if (!String.IsNullOrEmpty(szMaxScale))
+                  {
+                     dMaxScale = Double.Parse(szMaxScale);
+                  }
 
                   GeographicBoundingBox oLayerBounds = oServiceBounds.Clone() as GeographicBoundingBox;
 
@@ -322,7 +336,7 @@ namespace Dapple.LayerGeneration
                      }
                   }
 
-                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(this.Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this));
+                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(this.Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, dMinScale, dMaxScale));
                }
             }
 

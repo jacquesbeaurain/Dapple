@@ -41,6 +41,8 @@ namespace Dapple.CustomControls
 
       public TabToolStrip(int iNumButtons)
       {
+         if (iNumButtons < 1) throw new ArgumentException("Need to specify at least one button");
+
          InitializeComponent();
 
          this.SuspendLayout();
@@ -60,8 +62,9 @@ namespace Dapple.CustomControls
             m_aButtons[count].Click += new EventHandler(ButtonClick);
             this.Items.Add(m_aButtons[count]);
          }
+         m_aButtons[0].Checked = true;
 
-         this.Renderer = new BorderlessToolStripRenderer();
+         this.Renderer = new TabToolBarRenderer();
          this.GripStyle = ToolStripGripStyle.Hidden;
          this.Dock = DockStyle.Bottom;
 
@@ -74,7 +77,13 @@ namespace Dapple.CustomControls
 
       void ButtonClick(object sender, EventArgs e)
       {
-         if (ButtonPressed != null || sender is ToolStripButton)
+         foreach (ToolStripButton oButton in m_aButtons)
+         {
+            oButton.Checked = false;
+         }
+         ((ToolStripButton)sender).Checked = true;
+
+         if (ButtonPressed != null && sender is ToolStripButton)
          {
             ButtonPressed((int)((ToolStripButton)sender).Tag);
          }
@@ -90,5 +99,24 @@ namespace Dapple.CustomControls
       }
 
       #endregion
+   }
+
+   public class TabToolBarRenderer : ToolStripProfessionalRenderer
+   {
+      public TabToolBarRenderer()
+         : base()
+      {
+         this.RoundedEdges = false;
+      }
+
+      protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+      {
+         e.Graphics.DrawLine(new Pen(System.Drawing.SystemBrushes.WindowFrame), new Point(0, 0), new Point(e.AffectedBounds.Width, 0));
+      }
+
+      protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+      {
+         e.Graphics.FillRectangle(new SolidBrush(e.BackColor), e.AffectedBounds);
+      }
    }
 }

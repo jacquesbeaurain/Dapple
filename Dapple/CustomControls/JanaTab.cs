@@ -71,6 +71,7 @@ namespace Dapple.CustomControls
          m_cControls[iPage].Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right | AnchorStyles.Top;
          m_cControls[iPage].Location = new Point(0, 0);
          m_cControls[iPage].Size = new Size(this.Width, this.Height - cTabToolbar.Height);
+         m_cControls[iPage].TabIndex = 0;
 
          this.ResumeLayout();
       }

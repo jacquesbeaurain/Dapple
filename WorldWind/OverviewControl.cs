@@ -171,16 +171,10 @@ namespace WorldWind
 		{
          Point[] pts = new Point[4];
 
-         GeographicQuad viewBox = m_WorldWindow.GetViewBox(false);
-         double halfVr = m_WorldWindow.DrawArgs.WorldCamera.ViewRange.Degrees * 0.5;
-
+         GeographicQuad viewBox = m_WorldWindow.GetSearchBox();
+         
          Point center = GetPointFromCoord(m_WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, m_WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees);
-         float dppX = (float)Width / 360.0f;
-         float dppY = (float)Height / 180.0f;
-
-         double percentTilt = m_WorldWindow.DrawArgs.WorldCamera.Tilt.Degrees / 90.0;
-         double trueHeading = m_WorldWindow.DrawArgs.WorldCamera.Heading.Radians - Math.PI * .5;
-
+         
          pts[0] = GetPointFromCoord(viewBox.Y1, viewBox.X1); // lower left
          pts[1] = GetPointFromCoord(viewBox.Y2, viewBox.X2); // lower right
          pts[2] = GetPointFromCoord(viewBox.Y3, viewBox.X3); // upper left
@@ -190,19 +184,6 @@ namespace WorldWind
          g.DrawPolygon(m_ViewBoxPen, pts);
          g.DrawEllipse(m_ViewBoxPen, center.X - 1, center.Y - 1, 3, 3);
          g.FillEllipse(m_ViewBoxBrush, center.X - 1, center.Y - 1, 3, 3);
-
-         #region Draw the search area
-
-         viewBox = m_WorldWindow.GetSearchBox();
-
-         pts[0] = GetPointFromCoord(viewBox.Y1, viewBox.X1); // lower left
-         pts[1] = GetPointFromCoord(viewBox.Y2, viewBox.X2); // lower right
-         pts[2] = GetPointFromCoord(viewBox.Y3, viewBox.X3); // upper left
-         pts[3] = GetPointFromCoord(viewBox.Y4, viewBox.X4); // upper right
-
-         g.DrawPolygon(new Pen(new System.Drawing.Drawing2D.HatchBrush(System.Drawing.Drawing2D.HatchStyle.DiagonalCross, Color.FromArgb(255, 0, 255, 0), Color.FromArgb(64, 0, 255, 0))), pts);
-
-         #endregion
 
          if (m_RenderTargetViewBox)
 				RenderTargetViewBox(g);

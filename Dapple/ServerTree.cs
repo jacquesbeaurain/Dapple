@@ -109,6 +109,7 @@ namespace Dapple
          this.MouseMove += new MouseEventHandler(this.HandleMouseMove);
          this.MouseDown += new MouseEventHandler(this.HandleMouseDown);
          this.AllowDrop = false;
+         this.BorderStyle = BorderStyle.FixedSingle;
 		}
 		protected override void Dispose(bool disposing)
 		{
@@ -1012,6 +1013,16 @@ namespace Dapple
          CMRebuildTree();
 		}
 
+      /// <summary>
+      /// Disallow collapsing of TreeNodes.
+      /// </summary>
+      /// <param name="e"></param>
+      protected override void OnBeforeCollapse(TreeViewCancelEventArgs e)
+      {
+         base.OnBeforeCollapse(e);
+
+         e.Cancel = true;
+      }
 		
 		protected void OnAfterCollapse(object sender, TreeViewEventArgs e)
 		{
@@ -1311,7 +1322,7 @@ namespace Dapple
          // 
          // cMenuItem_RemoveServer
          // 
-         this.cMenuItem_RemoveServer.Image = global::Dapple.Properties.Resources.removeserver;
+         this.cMenuItem_RemoveServer.Image = global::Dapple.Properties.Resources.server_remove;
          this.cMenuItem_RemoveServer.Name = "cMenuItem_RemoveServer";
          this.cMenuItem_RemoveServer.Size = new System.Drawing.Size(208, 24);
          this.cMenuItem_RemoveServer.Text = "Remove";
@@ -1352,6 +1363,7 @@ namespace Dapple
          // 
          // cMenuItem_ViewLegend
          // 
+         this.cMenuItem_ViewLegend.Image = global::Dapple.Properties.Resources.legend;
          this.cMenuItem_ViewLegend.Name = "cMenuItem_ViewLegend";
          this.cMenuItem_ViewLegend.Size = new System.Drawing.Size(146, 22);
          this.cMenuItem_ViewLegend.Text = "View Legend...";
@@ -1408,7 +1420,10 @@ namespace Dapple
 
       void cMenuItem_AddBrowserMap_Click(object sender, EventArgs e)
       {
-         MainForm.NotifyUnimplemented();
+         if (SelectedNode != null && SelectedNode.Tag is Server)
+         {
+            m_activeLayers.AddLayer(new DAPBrowserMapBuilder(MainForm.WorldWindowSingleton, SelectedNode.Tag as Server, null));
+         }
       }
 
       void cMenuItem_Properties_Click(object sender, EventArgs e)

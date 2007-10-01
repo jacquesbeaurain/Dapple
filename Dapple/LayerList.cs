@@ -14,6 +14,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using WorldWind.PluginEngine;
 using System.Diagnostics;
+using Geosoft.GX.DAPGetData;
 
 namespace Dapple
 {
@@ -61,7 +62,10 @@ namespace Dapple
       /// </summary>
       private bool m_blSupressSelectedChanged = false;
 
+      private ServerTree m_hServerTree = null;
       private LayerBuilder m_hBaseLayer = null;
+
+      private TransparencyDriver m_oTransparencyDriver = new TransparencyDriver();
 
       public event GoToHandler GoTo;
       public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
@@ -144,6 +148,14 @@ namespace Dapple
                   return true;
             }
             return false;
+         }
+      }
+
+      public ServerTree ServerTree
+      {
+         set
+         {
+            m_hServerTree = value;
          }
       }
 
@@ -272,7 +284,14 @@ namespace Dapple
          {
             using (LinearGradientBrush lgb = new LinearGradientBrush(rect, SystemColors.ButtonFace, SystemColors.ControlDarkDark, LinearGradientMode.Horizontal))
                g.FillRectangle(lgb, rect);
-            g.DrawRectangle(SystemPens.ActiveCaption, rect);
+            if (cTransparencySlider.Focused)
+            {
+               g.DrawRectangle(SystemPens.ActiveCaption, rect);
+            }
+            else
+            {
+               g.DrawRectangle(SystemPens.InactiveCaption, rect);
+            }
             g.FillRectangle(SystemBrushes.ControlDarkDark, cTransparencySlider.Bounds.X + 9, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height / 2 - 1, cTransparencySlider.Bounds.Width - 17, 2);
             g.DrawImage(global::Dapple.Properties.Resources.trackbutton, cTransparencySlider.Bounds.X + iPos, cTransparencySlider.Bounds.Y + 1, global::Dapple.Properties.Resources.trackbutton.Width, cTransparencySlider.Bounds.Height - 3);
          }
@@ -293,10 +312,7 @@ namespace Dapple
          m_iLastTransparency = cTransparencySlider.Value;
          if (cTransparencySlider.Enabled)
          {
-            foreach (LayerBuilder oContainer in this.SelectedLayers)
-            {
-               oContainer.Opacity = Convert.ToByte(cTransparencySlider.Value);
-            }
+            m_oTransparencyDriver.OpacityChanged((byte)cTransparencySlider.Value);
          }
 
          // Invalidate to make sure our custom paintjob is fresh
@@ -348,6 +364,10 @@ namespace Dapple
          {
             e.Effect = DragDropEffects.Move;
          }
+         else if (e.Data.GetDataPresent(typeof(List<LayerUri>)))
+         {
+            e.Effect = DragDropEffects.Copy;
+         }
          else
          {
             e.Effect = DragDropEffects.None;
@@ -379,6 +399,23 @@ namespace Dapple
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
             ShuffleSelectedLayers(iInsertPoint);
+
+            cLayerList.Focus();
+         }
+         else if (e.Data.GetDataPresent(typeof(List<LayerUri>)))
+         {
+            List<LayerUri> oDropData = e.Data.GetData(typeof(List<LayerUri>)) as List<LayerUri>;
+            Point oClientLocation = cLayerList.PointToClient(new Point(e.X, e.Y));
+            int iInsertPoint = GetDropIndex(oClientLocation.Y);
+
+            List<LayerBuilder> oListToAdd = new List<LayerBuilder>();
+
+            foreach (LayerUri oUri in oDropData)
+            {
+               oListToAdd.Add(oUri.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree));
+            }
+
+            AddLayers(oListToAdd, iInsertPoint);
 
             cLayerList.Focus();
          }
@@ -451,7 +488,6 @@ namespace Dapple
          if (oBuilder.IsChanged)
          {
             CmdRefreshLayer(cLayerList.SelectedIndices[0]);
-            SetButtonState();
          }
       }
 
@@ -497,10 +533,18 @@ namespace Dapple
       /// </summary>
       private void SetButtonState()
       {
-         cTransparencySlider.Enabled = cLayerList.SelectedIndices.Count == 1;
-         if (cLayerList.SelectedIndices.Count == 1)
+         cTransparencySlider.Enabled = cLayerList.SelectedIndices.Count > 0;
+
+         if (cTransparencySlider.Enabled)
          {
-            cTransparencySlider.Value = m_oLayers[cLayerList.SelectedIndices[0]].Opacity;
+            List<LayerBuilder> oSelectedLayers = new List<LayerBuilder>();
+            foreach (int iIndex in cLayerList.SelectedIndices)
+            {
+               oSelectedLayers.Add(m_oLayers[iIndex]);
+            }
+
+            m_oTransparencyDriver.SetBuilders(oSelectedLayers);
+            cTransparencySlider.Value = m_oTransparencyDriver.ReferenceValue;
          }
 
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
@@ -825,6 +869,8 @@ namespace Dapple
                m_oLayers.RemoveAt(iIndex);
                cLayerList.Items.RemoveAt(iIndex);
             }
+
+            iIndex--;
          }
 
          m_blSupressSelectedChanged = false;
@@ -1189,5 +1235,89 @@ namespace Dapple
       /// Passed in a drag drop operation to tell the layer list that the user is doing a shuffle, not an add.
       /// </summary>
       private class LayerListInternalShuffleToken { }
+
+      /// <summary>
+      /// Handles transparency application for single and multiple selections.
+      /// </summary>
+      private class TransparencyDriver
+      {
+         private List<LayerBuilder> m_aBuilders;
+         private List<byte> m_aOriginalOpacities;
+         private byte m_bReferenceValue;
+
+         public TransparencyDriver()
+         {
+            m_aBuilders = new List<LayerBuilder>();
+            m_aOriginalOpacities = new List<byte>();
+            m_bReferenceValue = 128;
+         }
+
+         public byte ReferenceValue
+         {
+            get
+            {
+               return m_bReferenceValue;
+            }
+         }
+
+         public void SetBuilders(List<LayerBuilder> oBuilders)
+         {
+            m_aBuilders.Clear();
+            m_aBuilders.AddRange(oBuilders);
+            m_aOriginalOpacities.Clear();
+
+            byte bMinOpacity = Byte.MaxValue;
+            byte bMaxOpacity = Byte.MinValue;
+
+            foreach (LayerBuilder oBuilder in m_aBuilders)
+            {
+               byte bOpacity = oBuilder.Opacity;
+
+               bMinOpacity = Math.Min(bMinOpacity, bOpacity);
+               bMaxOpacity = Math.Max(bMaxOpacity, bOpacity);
+
+               m_aOriginalOpacities.Add(bOpacity);
+            }
+
+            m_bReferenceValue = (byte)(((int)bMinOpacity + (int)bMaxOpacity) / 2);
+         }
+
+         public void OpacityChanged(byte bNewValue)
+         {
+            ApplyTransparencies(bNewValue);
+         }
+
+         private void ApplyTransparencies(byte bSliderValue)
+         {
+            if (bSliderValue == m_bReferenceValue) return;
+
+            bool blNegative = bSliderValue < m_bReferenceValue;
+            double dRatio = 0.0;
+
+            if (blNegative)
+            {
+               dRatio = (double)bSliderValue / (double)m_bReferenceValue;
+            }
+            else
+            {
+               dRatio = (double)(bSliderValue - m_bReferenceValue) / (double)(Byte.MaxValue - m_bReferenceValue);
+            }
+
+            for (int count = 0; count < m_aBuilders.Count; count++)
+            {
+               LayerBuilder oBuilder = m_aBuilders[count];
+               byte bOriginalOpacity = m_aOriginalOpacities[count];
+
+               if (blNegative)
+               {
+                  oBuilder.Opacity = (byte)(bOriginalOpacity * dRatio);
+               }
+               else
+               {
+                  oBuilder.Opacity = (byte)((Byte.MaxValue - bOriginalOpacity) * dRatio + bOriginalOpacity);
+               }
+            }
+         }
+      }
    }
 }

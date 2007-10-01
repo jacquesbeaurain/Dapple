@@ -21,7 +21,6 @@ namespace Dapple
       public frmProperties()
       {
          InitializeComponent();
-         this.Icon = new System.Drawing.Icon(@"app.ico");
       }
 
       public object SetObject

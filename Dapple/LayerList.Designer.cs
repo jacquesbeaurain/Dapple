@@ -34,6 +34,7 @@ namespace Dapple
          this.cGoToButton = new System.Windows.Forms.ToolStripButton();
          this.cRemoveLayerButton = new System.Windows.Forms.ToolStripButton();
          this.cExtractButton = new System.Windows.Forms.ToolStripButton();
+         this.cExportButton = new System.Windows.Forms.ToolStripButton();
          this.cLayerList = new System.Windows.Forms.ListView();
          this.cColumnHeader = new System.Windows.Forms.ColumnHeader();
          this.cLayerListContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -44,7 +45,6 @@ namespace Dapple
          this.cClearCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cRemoveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.cTransparencySlider = new Dapple.TrackBarWithPaint();
-         this.cExportButton = new System.Windows.Forms.ToolStripButton();
          cSliderMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
          cToolStrip = new System.Windows.Forms.ToolStrip();
          cToolStrip.SuspendLayout();
@@ -75,6 +75,7 @@ namespace Dapple
          cToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
          cToolStrip.Size = new System.Drawing.Size(151, 25);
          cToolStrip.TabIndex = 1;
+         cToolStrip.TabStop = true;
          cToolStrip.Text = "toolStrip1";
          // 
          // cGoToButton
@@ -110,6 +111,17 @@ namespace Dapple
          this.cExtractButton.ToolTipText = "Download visible layers...";
          this.cExtractButton.Click += new System.EventHandler(this.cExtractButton_Click);
          // 
+         // cExportButton
+         // 
+         this.cExportButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+         this.cExportButton.Image = global::Dapple.Properties.Resources.export;
+         this.cExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.cExportButton.Name = "cExportButton";
+         this.cExportButton.Size = new System.Drawing.Size(23, 22);
+         this.cExportButton.Text = "toolStripButton1";
+         this.cExportButton.ToolTipText = "Export to GeoTiff";
+         this.cExportButton.Click += new System.EventHandler(this.cExportButton_Click);
+         // 
          // cLayerList
          // 
          this.cLayerList.AllowDrop = true;
@@ -125,7 +137,7 @@ namespace Dapple
          this.cLayerList.Location = new System.Drawing.Point(0, 25);
          this.cLayerList.Name = "cLayerList";
          this.cLayerList.Size = new System.Drawing.Size(197, 96);
-         this.cLayerList.TabIndex = 0;
+         this.cLayerList.TabIndex = 2;
          this.cLayerList.UseCompatibleStateImageBehavior = false;
          this.cLayerList.View = System.Windows.Forms.View.Details;
          this.cLayerList.DragEnter += new System.Windows.Forms.DragEventHandler(this.cLayerList_DragEnter);
@@ -148,14 +160,14 @@ namespace Dapple
             this.cClearCacheToolStripMenuItem,
             this.cRemoveToolStripMenuItem});
          this.cLayerListContextMenu.Name = "cLayerListContextMenu";
-         this.cLayerListContextMenu.Size = new System.Drawing.Size(149, 120);
+         this.cLayerListContextMenu.Size = new System.Drawing.Size(136, 120);
          this.cLayerListContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerListContextMenu_Opening);
          // 
          // cGoToToolStripMenuItem
          // 
          this.cGoToToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_goto;
          this.cGoToToolStripMenuItem.Name = "cGoToToolStripMenuItem";
-         this.cGoToToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+         this.cGoToToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
          this.cGoToToolStripMenuItem.Text = "Go To";
          this.cGoToToolStripMenuItem.Click += new System.EventHandler(this.cGoToToolStripMenuItem_Click);
          // 
@@ -163,20 +175,20 @@ namespace Dapple
          // 
          this.cViewPropertiesToolStripMenuItem.Image = global::Dapple.Properties.Resources.properties;
          this.cViewPropertiesToolStripMenuItem.Name = "cViewPropertiesToolStripMenuItem";
-         this.cViewPropertiesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-         this.cViewPropertiesToolStripMenuItem.Text = "View Properties";
+         this.cViewPropertiesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+         this.cViewPropertiesToolStripMenuItem.Text = "Properties...";
          this.cViewPropertiesToolStripMenuItem.Click += new System.EventHandler(this.cViewPropertiesToolStripMenuItem_Click);
          // 
          // toolStripSeparator1
          // 
          this.toolStripSeparator1.Name = "toolStripSeparator1";
-         this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+         this.toolStripSeparator1.Size = new System.Drawing.Size(132, 6);
          // 
          // cRefreshToolStripMenuItem
          // 
          this.cRefreshToolStripMenuItem.Image = global::Dapple.Properties.Resources.refresh;
          this.cRefreshToolStripMenuItem.Name = "cRefreshToolStripMenuItem";
-         this.cRefreshToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+         this.cRefreshToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
          this.cRefreshToolStripMenuItem.Text = "Refresh";
          this.cRefreshToolStripMenuItem.Click += new System.EventHandler(this.cRefreshToolStripMenuItem_Click);
          // 
@@ -184,7 +196,7 @@ namespace Dapple
          // 
          this.cClearCacheToolStripMenuItem.Image = global::Dapple.Properties.Resources.refresh_cache;
          this.cClearCacheToolStripMenuItem.Name = "cClearCacheToolStripMenuItem";
-         this.cClearCacheToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+         this.cClearCacheToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
          this.cClearCacheToolStripMenuItem.Text = "Clear Cache";
          this.cClearCacheToolStripMenuItem.Click += new System.EventHandler(this.cClearCacheToolStripMenuItem_Click);
          // 
@@ -192,7 +204,7 @@ namespace Dapple
          // 
          this.cRemoveToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_remove;
          this.cRemoveToolStripMenuItem.Name = "cRemoveToolStripMenuItem";
-         this.cRemoveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+         this.cRemoveToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
          this.cRemoveToolStripMenuItem.Text = "Remove";
          this.cRemoveToolStripMenuItem.Click += new System.EventHandler(this.cRemoveToolStripMenuItem_Click);
          // 
@@ -206,20 +218,10 @@ namespace Dapple
          this.cTransparencySlider.Name = "cTransparencySlider";
          this.cTransparencySlider.Size = new System.Drawing.Size(46, 25);
          this.cTransparencySlider.SmallChange = 5;
-         this.cTransparencySlider.TabIndex = 2;
+         this.cTransparencySlider.TabIndex = 0;
          this.cTransparencySlider.TickStyle = System.Windows.Forms.TickStyle.None;
          this.cTransparencySlider.ValueChanged += new System.EventHandler(this.cTransparencySlider_ValueChanged);
          this.cTransparencySlider.Paint += new System.Windows.Forms.PaintEventHandler(this.cTransparencySlider_Paint);
-         // 
-         // cExportButton
-         // 
-         this.cExportButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-         this.cExportButton.Image = global::Dapple.Properties.Resources.export;
-         this.cExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-         this.cExportButton.Name = "cExportButton";
-         this.cExportButton.Size = new System.Drawing.Size(23, 22);
-         this.cExportButton.Text = "toolStripButton1";
-         this.cExportButton.Click += new System.EventHandler(this.cExportButton_Click);
          // 
          // LayerList
          // 

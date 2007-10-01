@@ -196,8 +196,15 @@ namespace Dapple.DAP
 				oRes.Height = m_oImageStore.TextureSizePixels;
 				oRes.Width = m_oImageStore.TextureSizePixels;
 				ArrayList oArr = new ArrayList();
-				oArr.Add(m_oImageStore.Name);
-				oRequestDoc = m_oImageStore.Server.Command.GetImageRequestDocument(oFormat, m_hBB, oRes, false, false, oArr, out strURL);
+            if (String.IsNullOrEmpty(m_oImageStore.Name))
+            {
+               oRequestDoc = m_oImageStore.Server.Command.GetImageRequestDocument(oFormat, m_hBB, oRes, true, false, oArr, out strURL);
+            }
+            else
+            {
+               oArr.Add(m_oImageStore.Name);
+               oRequestDoc = m_oImageStore.Server.Command.GetImageRequestDocument(oFormat, m_hBB, oRes, false, false, oArr, out strURL);
+            }
 
 				// Create the request object.
 				request = (HttpWebRequest)WebRequest.Create(strURL);

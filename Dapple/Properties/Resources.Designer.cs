@@ -280,6 +280,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap filter_clear {
+            get {
+                object obj = ResourceManager.GetObject("filter_clear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap folder {
             get {
                 object obj = ResourceManager.GetObject("folder", resourceCulture);
@@ -609,13 +616,6 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap removeserver {
-            get {
-                object obj = ResourceManager.GetObject("removeserver", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap reset_dapple_defaults {
             get {
                 object obj = ResourceManager.GetObject("reset_dapple_defaults", resourceCulture);
@@ -661,6 +661,13 @@ namespace Dapple.Properties {
         internal static System.Drawing.Bitmap server_refresh {
             get {
                 object obj = ResourceManager.GetObject("server_refresh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap server_remove {
+            get {
+                object obj = ResourceManager.GetObject("server_remove", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

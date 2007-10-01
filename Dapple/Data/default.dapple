@@ -89,6 +89,9 @@
             <builderentry>
                <arcimscatalog capabilitiesurl="http://gdr.ess.nrcan.gc.ca/servlet/com.esri.esrimap.Esrimap" />
             </builderentry>
+            <builderentry>
+               <arcimscatalog capabilitiesurl="http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap" />
+            </builderentry>
          </builderdirectory>
       </builderentry>
    </servers>

@@ -263,6 +263,7 @@ namespace Dapple.LayerGeneration
       {
          if (strUri.StartsWith("gxarcims")) return new ArcIMSLayerUri(strUri);
          if (strUri.StartsWith("gxwms")) return new WMSLayerUri(strUri);
+         if (strUri.StartsWith("gxdapbm")) return new BrowserMapLayerUri(strUri);
          if (strUri.StartsWith("gxdap")) return new DapLayerUri(strUri);
          if (strUri.StartsWith("gxtile")) return new TileLayerUri(strUri);
          if (strUri.StartsWith("gxve")) return new VELayerUri(strUri);
@@ -299,7 +300,9 @@ namespace Dapple.LayerGeneration
          "minx",
          "miny",
          "maxx",
-         "maxy"
+         "maxy",
+         "minscale",
+         "maxscale"
          });
 
       public ArcIMSLayerUri(String strUri) : base(strUri) { }
@@ -334,18 +337,21 @@ namespace Dapple.LayerGeneration
          return new ArcIMSQuadLayerBuilder(
             m_oServer as ArcIMSServerUri,
             getAttribute("servicename"),
-            getAttribute("layertitle"),
+            getAttribute("title"),
             getAttribute("layerid"),
             new GeographicBoundingBox(double.Parse(getAttribute("maxy")), double.Parse(getAttribute("miny")), double.Parse(getAttribute("minx")), double.Parse(getAttribute("maxx"))),
             oWindow,
-            null);
+            null,
+            Double.Parse(getAttribute("minscale")),
+            Double.Parse(getAttribute("maxscale")));
       }
    }
 
    public class WMSLayerUri : LayerUri
    {
       private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
-         "layer"
+         "layer",
+         "title"
          });
 
       public WMSLayerUri(String strUri) : base(strUri) { }
@@ -586,6 +592,50 @@ namespace Dapple.LayerGeneration
             oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
 
          return new DAPQuadLayerBuilder(hDataSet, oWindow, oServer, null, height, size, lvl0tilesize, levels);
+      }
+   }
+
+   public class BrowserMapLayerUri : LayerUri
+   {
+      private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
+         });
+
+      public BrowserMapLayerUri(String strUri) : base(strUri) { }
+
+      protected override string LayerScheme
+      {
+         get { return "gxdapbm"; }
+      }
+
+      public override string LayerType
+      {
+         get { return "DAP browser map"; }
+      }
+
+      protected override List<string> AdditionalUriTokens
+      {
+         get { return m_lAdditionalTokens; }
+      }
+
+      protected override ServerUri getServerUri(UriBuilder oBuilder)
+      {
+         return new DapServerUri(oBuilder.Uri.ToString());
+      }
+
+      public override bool IsValid
+      {
+         get { return AllTokensPresent; }
+      }
+
+      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+      {
+         Geosoft.GX.DAPGetData.Server oServer = null;
+         if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
+            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer);
+         else
+            oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
+
+         return new DAPBrowserMapBuilder(oWindow, oServer, null);
       }
    }
 

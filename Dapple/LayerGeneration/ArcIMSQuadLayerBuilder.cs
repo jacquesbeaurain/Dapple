@@ -19,7 +19,9 @@ namespace Dapple.LayerGeneration
       private ArcIMSServerUri m_oServerUri;
       private double m_dLevelZeroTileSizeDegrees = 0;
       private int m_iLevels = 15;
+      private int m_iPixels = 256;
       private String m_szLayerID;
+      private double m_dMinScale, m_dMaxScale;
 
       #endregion
 
@@ -32,29 +34,46 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent)
+      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale)
          :base(szLayerTitle, oWorldWindow, oParent)
       {
          m_oEnvelope = oEnvelope;
          m_szLayerID = szLayerID;
          m_szServiceName = strServiceName;
          m_oServerUri = oServerUri;
+         m_dMinScale = dMinScale;
+         m_dMaxScale = dMaxScale;
 
-         // Determine the needed levels (function of tile size and resolution, for which we just use ~5 meters because it is not available with WMS)
-         double dRes = 5.0 / 100000.0;
-         if (dRes > 0)
+         m_dLevelZeroTileSizeDegrees = 22.5;
+         while (m_dLevelZeroTileSizeDegrees > MaxDegreesPerTile)
          {
-            double dTileSize = LevelZeroTileSize;
-            m_iLevels = 1;
-            while (dTileSize / Convert.ToDouble(256) > dRes / 4.0)
-            {
-               m_iLevels++;
-               dTileSize /= 2;
-            }
+            m_dLevelZeroTileSizeDegrees /= 2;
          }
+
+         if (m_dLevelZeroTileSizeDegrees < MinDegreesPerTile)
+         {
+            m_dLevelZeroTileSizeDegrees = 1;
+            m_iPixels = (int)(111195.0 * (m_dMaxScale + m_dMinScale) / 2.0);
+         }
+
+         m_szTreeNodeText = String.Format("{0} ({1:f2}-{2:f2}) {3}", szLayerTitle, MinDegreesPerTile, MaxDegreesPerTile, m_dLevelZeroTileSizeDegrees);
+
+         m_iLevels = 3;
       }
 
       #endregion
+
+      [System.ComponentModel.Browsable(true)]
+      public double MinScale { get { return m_dMinScale; } }
+
+      [System.ComponentModel.Browsable(true)]
+      public double MaxScale { get { return m_dMaxScale; } }
+
+      [System.ComponentModel.Browsable(true)]
+      public double MaxDegreesPerTile { get { return Math.Min(256.0 / 111195.0 / m_dMinScale, 360.0); } }
+
+      [System.ComponentModel.Browsable(true)]
+      public double MinDegreesPerTile { get { return Math.Max(256.0 / 111195.0 / m_dMaxScale, 0.0); } }
 
       #region ImageBuilder Implementations
 
@@ -146,17 +165,19 @@ namespace Dapple.LayerGeneration
 
       public override RenderableObject GetLayer()
       {
+         Console.WriteLine(m_dLevelZeroTileSizeDegrees + "," + m_iPixels + "," + m_iLevels);
+
          if (m_blnIsChanged)
          {
             ImageStore[] aImageStore = new ImageStore[1];
             aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri);
             aImageStore[0].DataDirectory = null;
-            aImageStore[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
+            aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
             aImageStore[0].LevelCount = m_iLevels;
             aImageStore[0].ImageExtension = ".png";
             aImageStore[0].CacheDirectory = GetCachePath();
             aImageStore[0].TextureFormat = World.Settings.TextureFormat;
-            aImageStore[0].TextureSizePixels = 256;
+            aImageStore[0].TextureSizePixels = m_iPixels;
 
             m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0,
                m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,
@@ -176,7 +197,7 @@ namespace Dapple.LayerGeneration
 
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), "Layer" + m_szLayerID);
+         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), m_szServiceName + " - " + m_szLayerID);
       }
 
       protected override void CleanUpLayer(bool bFinal)
@@ -189,7 +210,7 @@ namespace Dapple.LayerGeneration
 
       public override object CloneSpecific()
       {
-         return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent);
+         return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale);
       }
 
       public override bool Equals(object obj)
@@ -205,7 +226,7 @@ namespace Dapple.LayerGeneration
 
       #region Private Members
 
-      // Copied shamelessly from WMS
+      /*// Copied shamelessly from WMS
       private double LevelZeroTileSize
       {
          get
@@ -223,7 +244,7 @@ namespace Dapple.LayerGeneration
             }
             return m_dLevelZeroTileSizeDegrees;
          }
-      }
+      }*/
 
       #endregion
    }

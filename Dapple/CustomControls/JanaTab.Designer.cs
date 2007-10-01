@@ -38,7 +38,8 @@ namespace Dapple.CustomControls
          this.cTabToolbar.Location = new System.Drawing.Point(0, 125);
          this.cTabToolbar.Name = "cTabToolbar";
          this.cTabToolbar.Size = new System.Drawing.Size(150, 25);
-         this.cTabToolbar.TabIndex = 0;
+         this.cTabToolbar.TabIndex = 1;
+         this.cTabToolbar.TabStop = true;
          this.cTabToolbar.Text = "tabToolbar1";
          // 
          // JanaTab
