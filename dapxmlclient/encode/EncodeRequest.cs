@@ -591,6 +591,70 @@ namespace Geosoft.Dap.Xml
       }
 
       /// <summary>
+      /// Encode the request to get a tile for a dataset
+      /// </summary>
+      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>   
+      /// <param name="iColumn"></param>
+      /// <param name="iLevel"></param>
+      /// <param name="iRow"></param>
+      /// <param name="oDataset"></param>
+      /// <returns>The GeosoftXML request</returns>
+      public System.Xml.XmlDocument GetTile(string szHandle,
+                                            DataSet oDataset,
+                                            int iLevel,
+                                            int iRow,
+                                            int iColumn)
+      {
+
+         // --- Create required nodes ---
+
+         System.Xml.XmlAttribute hAttr;
+         System.Xml.XmlElement oGetTileNode = CreateRequest(szHandle, Constant.Tag.GET_TILE_TAG);
+
+         hAttr = oGetTileNode.OwnerDocument.CreateAttribute(Constant.Attribute.LAYER_ATTR);
+         hAttr.Value = oDataset.Name;
+         oGetTileNode.SetAttributeNode(hAttr);
+
+         hAttr = oGetTileNode.OwnerDocument.CreateAttribute(Constant.Attribute.LEVEL_ATTR);
+         hAttr.Value = iLevel.ToString();
+         oGetTileNode.SetAttributeNode(hAttr);
+
+         hAttr = oGetTileNode.OwnerDocument.CreateAttribute(Constant.Attribute.ROW_ATTR);
+         hAttr.Value = iRow.ToString();
+         oGetTileNode.SetAttributeNode(hAttr);
+
+         hAttr = oGetTileNode.OwnerDocument.CreateAttribute(Constant.Attribute.COLUMN_ATTR);
+         hAttr.Value = iColumn.ToString();
+         oGetTileNode.SetAttributeNode(hAttr);
+
+         return oGetTileNode.OwnerDocument;
+      }
+
+      /// <summary>
+      /// Encode the request to get a legend for a dataset
+      /// </summary>
+      /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>         
+      /// <param name="oDataset"></param>
+      /// <returns>The GeosoftXML request</returns>
+      public System.Xml.XmlDocument GetLegend(string szHandle,
+                                            DataSet oDataset)                                            
+      {
+
+         // --- Create required nodes ---
+
+         System.Xml.XmlAttribute hAttr;
+         System.Xml.XmlElement oLegendNode = CreateRequest(szHandle, Constant.Tag.LEGEND_TAG);
+         System.Xml.XmlElement oDatasetNode = oLegendNode.OwnerDocument.CreateElement(Constant.Tag.DATASET_TAG);
+
+         hAttr = oLegendNode.OwnerDocument.CreateAttribute(Constant.Attribute.NAME_ATTR);
+         hAttr.Value = oDataset.Name;
+         oDatasetNode.SetAttributeNode(hAttr);
+         oLegendNode.AppendChild(oDatasetNode);
+
+         return oLegendNode.OwnerDocument;
+      }
+
+      /// <summary>
       /// Encode the request to translate a list of coordinates from one coordinate system to another
       /// </summary>
       /// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>

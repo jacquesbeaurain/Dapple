@@ -1259,6 +1259,73 @@ namespace Geosoft.Dap
       }
 
       /// <summary>
+      /// Get a tile for this dataset from the dap server
+      /// </summary>
+      /// <param name="oDataSet"></param>
+      /// <param name="iLevel"></param>
+      /// <param name="iRow"></param>
+      /// <param name="iColumn"></param>
+      /// <param name="progressCallBack"></param>
+      /// <returns>The tile</returns>
+      public System.Drawing.Bitmap GetTile(DataSet oDataSet, int iLevel, int iRow, int iColumn, UpdateProgessCallback progressCallBack)
+      {
+         string szUrl;
+         System.Xml.XmlDocument oRequestDocument;
+         System.Xml.XmlReader oResponse = null;
+         System.Drawing.Bitmap oBitmap = null;
+
+         try
+         {
+            m_oLock.AcquireReaderLock(-1);
+            szUrl = CreateUrl(Constant.Request.IMAGE);
+
+            oRequestDocument = m_hEncodeRequest.GetTile(null, oDataSet, iLevel, iRow, iColumn);
+            oResponse = m_oCommunication.SendHttpEx(szUrl, oRequestDocument, progressCallBack);
+
+            if (oResponse != null)
+               m_hParse.Tile(oResponse, out oBitmap);            
+         }
+         finally
+         {
+            if (oResponse != null) oResponse.Close();
+            m_oLock.ReleaseReaderLock();
+         }
+         return oBitmap;
+      }
+
+      /// <summary>
+      /// Get a legend for this dataset from the dap server
+      /// </summary>
+      /// <param name="oDataSet"></param>
+      /// <param name="progressCallBack"></param>
+      /// <returns>The tile</returns>
+      public System.Drawing.Bitmap GetLegend(DataSet oDataSet, UpdateProgessCallback progressCallBack)
+      {
+         string szUrl;
+         System.Xml.XmlDocument oRequestDocument;
+         System.Xml.XmlReader oResponse = null;
+         System.Drawing.Bitmap oBitmap = null;
+
+         try
+         {
+            m_oLock.AcquireReaderLock(-1);
+            szUrl = CreateUrl(Constant.Request.IMAGE);
+
+            oRequestDocument = m_hEncodeRequest.GetLegend(null, oDataSet);
+            oResponse = m_oCommunication.SendHttpEx(szUrl, oRequestDocument, progressCallBack);
+
+            if (oResponse != null)
+               m_hParse.Legend(oResponse, out oBitmap);
+         }
+         finally
+         {
+            if (oResponse != null) oResponse.Close();
+            m_oLock.ReleaseReaderLock();
+         }
+         return oBitmap;
+      }
+
+      /// <summary>
       /// Get the default resolution to extract this data set at
       /// </summary>
       /// <param name="szType">The dataset type</param>

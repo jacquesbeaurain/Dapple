@@ -846,6 +846,99 @@ namespace Geosoft.Dap.Xml
       }
 
       /// <summary>
+      /// Parse the image response.
+      /// </summary>
+      /// <param name="oReader">The GeosoftXML response</param>
+      /// <param name="oBitmap">The image</param>
+      public void Tile(System.Xml.XmlReader oReader, out System.Drawing.Bitmap oBitmap)
+      {
+         System.IO.MemoryStream oMemStream = new System.IO.MemoryStream();
+         oBitmap = null;
+
+         try
+         {
+
+            // --- find the dataset edition element ---
+            if (oReader.ReadToFollowing(Constant.Tag.GET_TILE_TAG))
+            {
+               byte[] bImage = new byte[4096];
+               int iCount = 0;
+
+               do
+               {
+                  iCount = oReader.ReadContentAsBase64(bImage, 0, 4096);
+                  if (iCount > 0)
+                     oMemStream.Write(bImage, 0, iCount);
+               } while (iCount > 0);
+
+               oMemStream.Seek(0, System.IO.SeekOrigin.Begin);
+               oBitmap = new System.Drawing.Bitmap(oMemStream);
+            }
+         }
+         catch (Exception e)
+         {
+            throw new DapException("Error retrieving tile", e);
+         }
+         finally
+         {
+            oMemStream.Close();
+         }
+      }
+
+      /// <summary>
+      /// Parse the image response.
+      /// </summary>
+      /// <param name="oReader">The GeosoftXML response</param>
+      /// <param name="oBitmap">The image</param>
+      public void Legend(System.Xml.XmlReader oReader, out System.Drawing.Bitmap oBitmap)
+      {
+         System.IO.MemoryStream oMemStream = new System.IO.MemoryStream();
+         oBitmap = null;
+
+         try
+         {
+
+            // --- find the dataset edition element ---
+            if (oReader.ReadToFollowing(Constant.Tag.LEGEND_TAG))
+            {
+               string strValue = oReader.GetAttribute(Constant.Attribute.VALUE_ATTR);
+               bool bValue;
+
+               if (string.IsNullOrEmpty(strValue))
+                  return;
+
+               if (!bool.TryParse(strValue, out bValue))
+                  return;
+
+               if (!bValue)
+                  return;
+
+
+               byte[] bImage = new byte[4096];
+               int iCount = 0;
+
+               do
+               {
+                  iCount = oReader.ReadContentAsBase64(bImage, 0, 4096);
+                  if (iCount > 0)
+                     oMemStream.Write(bImage, 0, iCount);
+               } while (iCount > 0);
+
+               oMemStream.Seek(0, System.IO.SeekOrigin.Begin);
+               oBitmap = new System.Drawing.Bitmap(oMemStream);
+            }
+         }
+         catch (Exception e)
+         {
+            throw new DapException("Error retrieving legend", e);
+         }
+         finally
+         {
+            oMemStream.Close();
+         }
+      }
+
+      /// <summary>
       /// Parse the extract response.
       /// </summary>
       /// <param name="hDocument">The GeosoftXML response</param>

@@ -165,6 +165,12 @@ namespace Geosoft.Dap.Xml.Common
          public const string IMAGE_TAG						   = "image";
 
          /// <summary></summary>
+         public const string GET_TILE_TAG                = "get_tile";
+
+         /// <summary></summary>
+         public const string LEGEND_TAG                  = "legend";
+
+         /// <summary></summary>
          public const string TRANSLATE_COORDINATES_TAG	= "translate_coordinates";
 
          /// <summary></summary>
@@ -436,7 +442,19 @@ namespace Geosoft.Dap.Xml.Common
          public const string PASSWORD_ATTR      = "password";         
 
          /// <summary></summary>
-         public const string DATE_ATTR          = "date";         
+         public const string DATE_ATTR          = "date";
+
+         /// <summary></summary>
+         public const string LAYER_ATTR = "layer";
+
+         /// <summary></summary>
+         public const string ROW_ATTR = "row";
+
+         /// <summary></summary>
+         public const string COLUMN_ATTR = "column";
+
+         /// <summary></summary>
+         public const string LEVEL_ATTR = "level";
       }
    }
 }
