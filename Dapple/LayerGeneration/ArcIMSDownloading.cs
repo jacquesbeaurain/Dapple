@@ -40,6 +40,7 @@ namespace Dapple.LayerGeneration
       protected override void DownloadComplete(WebDownload downloadInfo)
       {
          Log.Write(Log.Levels.Debug, "AGDR", "GET_IMAGE response received.");
+         ArcIMSImageDownload oCastDL = downloadInfo as ArcIMSImageDownload;
 
          XmlDocument oArcXMLResponse = new XmlDocument();
 
@@ -59,6 +60,37 @@ namespace Dapple.LayerGeneration
             System.Xml.XmlReader oResponseXmlStream = System.Xml.XmlReader.Create(downloadInfo.ContentStream, oSettings);
             hResponseDocument.Load(oResponseXmlStream);
             downloadInfo.ContentStream.Close();
+
+            /*XmlElement nScaleElement = hResponseDocument.SelectSingleNode("/ARCXML/RESPONSE/IMAGE/SCALE") as XmlElement;
+            if (nScaleElement == null)
+            {
+               Console.WriteLine("###### Image returned didn't say scale ######");
+            }
+            else
+            {
+               Console.WriteLine("###### Image returned has scale " + nScaleElement.GetAttribute("rf") + " ######");
+            }
+            Console.WriteLine("Degrees: "  + oCastDL.Degrees);
+            Console.WriteLine("Pixels: " + oCastDL.TextureSize);
+            Console.WriteLine("Map degrees per pixel: " + (oCastDL.Degrees / (double)oCastDL.TextureSize));
+            Console.WriteLine("Map meters per pixel: " + (oCastDL.Degrees / (double)oCastDL.TextureSize) * 111195.0);
+
+            bool blLayerActuallyRendered = false;
+            foreach (XmlElement oNode in hResponseDocument.SelectNodes("/ARCXML/RESPONSE/IMAGE/LAYERS/LAYER"))
+            {
+               Console.WriteLine(oNode.OuterXml);
+               if (oNode.GetAttribute("id").Equals(((ArcIMSImageStore)m_imageStore).LayerID))
+               {
+                  blLayerActuallyRendered = true;
+               }
+            }
+
+            if (!blLayerActuallyRendered)
+            {
+               Console.WriteLine("****** Requested layer was not drawn in the image! ******");
+            }
+
+            Console.WriteLine("############");*/
 
             // Get the URL, save the image
             XmlElement nOutputElement = hResponseDocument.SelectSingleNode("/ARCXML/RESPONSE/IMAGE/OUTPUT") as XmlElement;
@@ -247,8 +279,6 @@ namespace Dapple.LayerGeneration
 
    public class ArcIMSImageDownload : ArcIMSDownload
    {
-      public static readonly String TILE_SIZE = "256";
-
       private ArcIMSImageStore m_oImageStore;
       private Geosoft.Dap.Common.BoundingBox m_oEnvelope;
 
@@ -257,6 +287,27 @@ namespace Dapple.LayerGeneration
       {
          m_oImageStore = oImageStore;
          m_oEnvelope = oEnvelope;
+      }
+
+      public double Degrees
+      {
+         get
+         {
+            if (m_oEnvelope.MaxY - m_oEnvelope.MinY != m_oEnvelope.MaxX - m_oEnvelope.MinX)
+            {
+               throw new ArgumentException("This tile isn't square");
+            }
+
+            return m_oEnvelope.MaxY - m_oEnvelope.MinY;
+         }
+      }
+
+      public int TextureSize
+      {
+         get
+         {
+            return m_oImageStore.TextureSizePixels;
+         }
       }
 
       protected override XmlDocument RequestDocument
@@ -272,6 +323,8 @@ namespace Dapple.LayerGeneration
             nArcIMSElement.SetAttribute("version", "1.1");
             XmlElement nRequestElement = oRequestDoc.CreateElement("REQUEST", oRequestDoc.NamespaceURI);
             XmlElement nGetImageElement = oRequestDoc.CreateElement("GET_IMAGE", oRequestDoc.NamespaceURI);
+            nGetImageElement.SetAttribute("show", "strict layers");
+            nGetImageElement.SetAttribute("returnscale", "true");
             XmlElement nPropertiesElement = oRequestDoc.CreateElement("PROPERTIES", oRequestDoc.NamespaceURI);
 
             XmlElement nEnvelopeElement = oRequestDoc.CreateElement("ENVELOPE", oRequestDoc.NamespaceURI);
@@ -282,8 +335,8 @@ namespace Dapple.LayerGeneration
             nPropertiesElement.AppendChild(nEnvelopeElement);
 
             XmlElement nImageSizeElement = oRequestDoc.CreateElement("IMAGESIZE", oRequestDoc.NamespaceURI);
-            nImageSizeElement.SetAttribute("width", TILE_SIZE);
-            nImageSizeElement.SetAttribute("height", TILE_SIZE);
+            nImageSizeElement.SetAttribute("width", m_oImageStore.TextureSizePixels.ToString());
+            nImageSizeElement.SetAttribute("height", m_oImageStore.TextureSizePixels.ToString());
             nPropertiesElement.AppendChild(nImageSizeElement);
 
             XmlElement nLayerListElement = oRequestDoc.CreateElement("LAYERLIST", oRequestDoc.NamespaceURI);
@@ -399,12 +452,14 @@ namespace Dapple.LayerGeneration
       private String m_strServiceName;
       private String m_szLayerID;
       private ArcIMSServerUri m_oUri;
+      private int m_iTextureSize;
 
-      public ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri)
+      public ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize)
       {
          m_oUri = oUri;
          m_strServiceName = strServiceName;
          m_szLayerID = szLayerID;
+         m_iTextureSize = iTextureSize;
       }
 
       #region Properties
@@ -413,6 +468,17 @@ namespace Dapple.LayerGeneration
       public String LayerID { get { return m_szLayerID; } }
       public ArcIMSServerUri ServerUri { get { return m_oUri; } }
       public override bool IsDownloadableLayer { get { return true; } }
+      public override int TextureSizePixels
+      {
+         get
+         {
+            return m_iTextureSize; ;
+         }
+         set
+         {
+            m_iTextureSize = value;
+         }
+      }
 
       #endregion
 

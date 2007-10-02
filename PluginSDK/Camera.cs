@@ -53,6 +53,9 @@ namespace WorldWind.Camera
       static int lastResetTime; // Used by Reset() to keep track type of reset.
       const int DoubleTapDelay = 3000; // Double tap max time (ms)
 
+      // Camera changed callback
+      public event System.EventHandler CameraChanged;
+
       /// <summary>
       /// Initializes a new instance of the <see cref= "T:WorldWind.Camera.CameraBase"/> class.
       /// </summary>
@@ -515,6 +518,18 @@ namespace WorldWind.Camera
             trueViewRange = Angle.FromRadians(Math.Abs(Math.Asin((this._distance) / this._worldRadius)) * 2);
          else
             trueViewRange = Angle.FromRadians(Math.PI);
+
+         if (CameraChanged != null)
+         {
+            if (World.Settings.cameraAltitudeMeters != Altitude ||
+               World.Settings.cameraLatitude != _latitude ||
+               World.Settings.cameraLongitude != _longitude ||
+               World.Settings.cameraHeading != _heading ||
+               World.Settings.cameraTilt != _tilt)
+            {
+               CameraChanged(this, new EventArgs());
+            }
+         }
 
          World.Settings.cameraAltitudeMeters = Altitude;
          World.Settings.cameraLatitude = _latitude;

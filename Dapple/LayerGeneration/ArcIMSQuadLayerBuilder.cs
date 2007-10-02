@@ -45,7 +45,9 @@ namespace Dapple.LayerGeneration
          m_dMaxScale = dMaxScale;
 
          m_dLevelZeroTileSizeDegrees = 22.5;
-         while (m_dLevelZeroTileSizeDegrees > MaxDegreesPerTile)
+         m_iLevels = 6;
+
+         /*while (m_dLevelZeroTileSizeDegrees > MaxDegreesPerTile)
          {
             m_dLevelZeroTileSizeDegrees /= 2;
          }
@@ -56,9 +58,8 @@ namespace Dapple.LayerGeneration
             m_iPixels = (int)(111195.0 * (m_dMaxScale + m_dMinScale) / 2.0);
          }
 
-         m_szTreeNodeText = String.Format("{0} ({1:f2}-{2:f2}) {3}", szLayerTitle, MinDegreesPerTile, MaxDegreesPerTile, m_dLevelZeroTileSizeDegrees);
-
-         m_iLevels = 3;
+         m_szTreeNodeText = String.Format("{0}[{4}] ({1:f2}-{2:f2}) {3}", szLayerTitle, Math.Floor(MinMetersPerPixel), Math.Floor(MaxMetersPerPixel), m_dLevelZeroTileSizeDegrees, m_szLayerID);
+         */
       }
 
       #endregion
@@ -70,10 +71,10 @@ namespace Dapple.LayerGeneration
       public double MaxScale { get { return m_dMaxScale; } }
 
       [System.ComponentModel.Browsable(true)]
-      public double MaxDegreesPerTile { get { return Math.Min(256.0 / 111195.0 / m_dMinScale, 360.0); } }
+      public double MinMetersPerPixel { get { return 1.0 / m_dMinScale; } }
 
       [System.ComponentModel.Browsable(true)]
-      public double MinDegreesPerTile { get { return Math.Max(256.0 / 111195.0 / m_dMaxScale, 0.0); } }
+      public double MaxMetersPerPixel { get { return 1.0 / m_dMaxScale; } }
 
       #region ImageBuilder Implementations
 
@@ -170,14 +171,13 @@ namespace Dapple.LayerGeneration
          if (m_blnIsChanged)
          {
             ImageStore[] aImageStore = new ImageStore[1];
-            aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri);
+            aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri, m_iPixels);
             aImageStore[0].DataDirectory = null;
             aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
             aImageStore[0].LevelCount = m_iLevels;
             aImageStore[0].ImageExtension = ".png";
             aImageStore[0].CacheDirectory = GetCachePath();
             aImageStore[0].TextureFormat = World.Settings.TextureFormat;
-            aImageStore[0].TextureSizePixels = m_iPixels;
 
             m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0,
                m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,

@@ -102,8 +102,8 @@ namespace Geosoft.GX.DAPGetData
          {
             // --- Create Secure Token ---
 
-            GeoSecureClient.CGeoSecureInterfaceClass scClass = new GeoSecureClient.CGeoSecureInterfaceClass();
-            scClass.CreateSecureToken(out m_strSecureToken);
+            /*GeoSecureClient.CGeoSecureInterfaceClass scClass = new GeoSecureClient.CGeoSecureInterfaceClass();
+            scClass.CreateSecureToken(out m_strSecureToken);*/
          }
          catch
          {

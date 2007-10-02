@@ -183,7 +183,11 @@ namespace Dapple
       /// <param name="oBounds">The bounding box to search for.</param>
       public void setSearchCriteria(String strKeywords, GeographicBoundingBox oBounds)
       {
-         if (!strKeywords.Equals(m_strSearchString) || !oBounds.Equals(m_oSearchBox))
+         bool blBoundsEqual = false;
+         if (oBounds == null && m_oSearchBox == null) blBoundsEqual = true;
+         if (oBounds != null && m_oSearchBox != null && oBounds.Equals(m_oSearchBox)) blBoundsEqual = true;
+
+         if (!strKeywords.Equals(m_strSearchString) || !blBoundsEqual)
          {
             m_strSearchString = strKeywords;
             m_oSearchBox = oBounds;

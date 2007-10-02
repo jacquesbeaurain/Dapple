@@ -157,11 +157,14 @@ namespace Dapple
       private static ImageList m_oImageList = new ImageList();
       private static RemoteInterface m_oMontajRemoteInterface;
       private static Dapple.Extract.Options.Client.ClientType m_eClientType;
-      private static GeographicBoundingBox m_oAoi;
+      private static GeographicBoundingBox m_oOMMapExtent;
       private static string m_strAoiCoordinateSystem;
       private static bool m_bOpenMap = false;
       private static string m_strOpenMapFileName = string.Empty;
       private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
+
+      private string m_szLastSearchString = String.Empty;
+      private GeographicBoundingBox m_oLastSearchROI = null;
       #endregion
 
       #region Properties
@@ -202,7 +205,7 @@ namespace Dapple
       /// </summary>
       public static GeographicBoundingBox MapAoi
       {
-         get { return m_oAoi; }
+         get { return m_oOMMapExtent; }
       }
 
       /// <summary>
@@ -236,6 +239,7 @@ namespace Dapple
 		{
 
          worldWindow = new WorldWindow();
+
          if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
             this.openView = strView;
          this.openGeoTiff = strGeoTiff;
@@ -440,6 +444,7 @@ namespace Dapple
                terrainAccessor);
 
             worldWindow.CurrentWorld = world;
+            worldWindow.DrawArgs.WorldCamera.CameraChanged += new EventHandler(WorldCamera_CameraChanged);
 
             string strPluginsDir = Path.Combine(DirectoryPath, "Plugins");
             this.bmngLoader = new NASA.Plugins.BmngLoader();
@@ -612,7 +617,7 @@ namespace Dapple
 
                if (oAoi != null && !string.IsNullOrEmpty(strAoiCoordinateSystem))
                {
-                  m_oAoi = oAoi;
+                  m_oOMMapExtent = oAoi;
                   m_strAoiCoordinateSystem = strAoiCoordinateSystem;
                   m_bOpenMap = true;
                   m_strOpenMapFileName = strMapFileName;
@@ -652,6 +657,7 @@ namespace Dapple
          }
 #endif
       }
+
       #endregion
 
       #region Updates
@@ -1379,8 +1385,8 @@ namespace Dapple
          if (strLayerToLoad.Length > 0)
             OpenDatasetLink(strLayerToLoad);
 
-         if (m_oAoi != null)
-            GoTo(m_oAoi, 0);
+         if (m_oOMMapExtent != null)
+            GoTo(m_oOMMapExtent, 0);
       }
 
       bool m_bSizing = false;
@@ -1798,7 +1804,7 @@ namespace Dapple
             }
          }
 
-         if (IsMontajChildProcess && m_oAoi != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oAoi));
+         if (IsMontajChildProcess && m_oOMMapExtent != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtent));
 
          cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("-----------------------------", null));
 
@@ -3163,21 +3169,52 @@ namespace Dapple
 
       private void doSearch()
       {
-         cSearchTextComboBox.Text = cSearchTextComboBox.Text.Trim();
-
-         if (cSearchTextComboBox.Text.Equals(NO_SEARCH)) cSearchTextComboBox.Text = String.Empty;
-
-         if (!cSearchTextComboBox.Text.Equals(String.Empty) && !cSearchTextComboBox.Items.Contains(cSearchTextComboBox.Text))
+         if (!SearchKeyword.Equals(String.Empty) && !cSearchTextComboBox.Items.Contains(SearchKeyword))
          {
             cSearchTextComboBox.Items.Add(cSearchTextComboBox.Text);
          }
 
-         GeographicBoundingBox oAoi = GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox());
-         String strText = cSearchTextComboBox.Text;
-         this.tvServers.Search(oAoi, strText);
-         this.cServerListControl.setSearchCriteria(strText, oAoi);
+         SetSearchable(false);
+         SetSearchClearable(true);
 
-         this.cWebSearch.SetSearchParameters(strText, oAoi);
+         m_oLastSearchROI = GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox());
+         m_szLastSearchString = SearchKeyword;
+
+         applySearchCriteria();
+      }
+
+      private void clearSearch()
+      {
+         SetSearchable(true);
+         SetSearchClearable(false);
+
+         m_oLastSearchROI = null;
+         m_szLastSearchString = String.Empty;
+
+         cSearchTextComboBox.Text = NO_SEARCH;
+         cSearchTextComboBox.ForeColor = SystemColors.GrayText;
+
+         applySearchCriteria();
+      }
+
+      private void applySearchCriteria()
+      {
+         this.UseWaitCursor = true;
+         this.tvServers.Search(m_oLastSearchROI, m_szLastSearchString);
+         this.cServerListControl.setSearchCriteria(m_szLastSearchString, m_oLastSearchROI);
+         this.cWebSearch.SetSearchParameters(m_szLastSearchString, m_oLastSearchROI);
+         this.UseWaitCursor = false;
+      }
+
+      private String SearchKeyword
+      {
+         get
+         {
+            String result = cSearchTextComboBox.Text.Trim();
+            if (result.Equals(NO_SEARCH)) result = String.Empty;
+
+            return result;
+         }
       }
 
       private void CenterNavigationToolStrip()
@@ -3480,9 +3517,33 @@ namespace Dapple
          }
       }
 
-      private void cClearFilterButton_Click(object sender, EventArgs e)
+      private void cClearSearchButton_Click(object sender, EventArgs e)
       {
-         NotifyUnimplemented();
+         clearSearch();
+      }
+
+      private void cSearchTextComboBox_TextUpdate(object sender, EventArgs e)
+      {
+         if (!SearchKeyword.Equals(m_szLastSearchString))
+         {
+            SetSearchable(true);
+         }
+      }
+
+      private void SetSearchable(bool blValue)
+      {
+         searchToolStripMenuItem.Enabled = blValue;
+         cSearchButton.Enabled = blValue;
+      }
+
+      private void SetSearchClearable(bool blValue)
+      {
+         cClearSearchButton.Enabled = blValue;
+      }
+
+      void WorldCamera_CameraChanged(object sender, EventArgs e)
+      {
+         SetSearchable(true);
       }
    }
 }
