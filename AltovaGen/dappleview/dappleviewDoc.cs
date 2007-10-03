@@ -17,7 +17,7 @@ namespace dappleview
 {
 	public class dappleviewDoc : Altova.Xml.Document
 	{
-		override protected void DeclareNamespaces(Altova.Xml.Node node)
+		override protected internal void DeclareNamespaces(Altova.Xml.Node node)
 		{
 			DeclareNamespace(node, "xml", "http://www.w3.org/XML/1998/namespace");
 		}
