@@ -150,66 +150,69 @@ namespace dappleview
 		public static readonly int _altova_mil_altova_builderentryType = 26 ;
 
 		public static readonly int _altova_mif_altova_dapcatalogType = _altova_mil_altova_builderentryType ;
-		public static readonly int _altova_mi_altova_dapcatalogType_altova_url = _altova_mif_altova_dapcatalogType ;
-		public static readonly int _altova_mil_altova_dapcatalogType = 27 ;
+		public static readonly int _altova_mi_altova_dapcatalogType_altova_enabled = _altova_mif_altova_dapcatalogType ;
+		public static readonly int _altova_mi_altova_dapcatalogType_altova_url = 27 ;
+		public static readonly int _altova_mil_altova_dapcatalogType = 28 ;
 
 		public static readonly int _altova_mif_altova_wmscatalogType = _altova_mil_altova_dapcatalogType ;
-		public static readonly int _altova_mi_altova_wmscatalogType_altova_capabilitiesurl = _altova_mif_altova_wmscatalogType ;
-		public static readonly int _altova_mil_altova_wmscatalogType = 28 ;
+		public static readonly int _altova_mi_altova_wmscatalogType_altova_enabled = _altova_mif_altova_wmscatalogType ;
+		public static readonly int _altova_mi_altova_wmscatalogType_altova_capabilitiesurl = 29 ;
+		public static readonly int _altova_mil_altova_wmscatalogType = 30 ;
 
 		public static readonly int _altova_mif_altova_localfilesystemType = _altova_mil_altova_wmscatalogType ;
 		public static readonly int _altova_mi_altova_localfilesystemType_altova_path = _altova_mif_altova_localfilesystemType ;
-		public static readonly int _altova_mil_altova_localfilesystemType = 29 ;
+		public static readonly int _altova_mil_altova_localfilesystemType = 31 ;
 
 		public static readonly int _altova_mif_altova_tileserversetType = _altova_mil_altova_localfilesystemType ;
 		public static readonly int _altova_mi_altova_tileserversetType_altova_name = _altova_mif_altova_tileserversetType ;
-		public static readonly int _altova_mi_altova_tileserversetType_altova_tilelayers = 30 ;
-		public static readonly int _altova_mil_altova_tileserversetType = 31 ;
+		public static readonly int _altova_mi_altova_tileserversetType_altova_tilelayers = 32 ;
+		public static readonly int _altova_mil_altova_tileserversetType = 33 ;
 
 		public static readonly int _altova_mif_altova_tilelayersType = _altova_mil_altova_tileserversetType ;
 		public static readonly int _altova_mi_altova_tilelayersType_altova_tilelayer = _altova_mif_altova_tilelayersType ;
-		public static readonly int _altova_mil_altova_tilelayersType = 32 ;
+		public static readonly int _altova_mil_altova_tilelayersType = 34 ;
 
 		public static readonly int _altova_mif_altova_tilelayerType = _altova_mil_altova_tilelayersType ;
 		public static readonly int _altova_mi_altova_tilelayerType_altova_name = _altova_mif_altova_tilelayerType ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_url = 33 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_dataset = 34 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_levelzerotilesize = 35 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_tilepixelsize = 36 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_levels = 37 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_imageextension = 38 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_distanceabovesurface = 39 ;
-		public static readonly int _altova_mi_altova_tilelayerType_altova_boundingbox = 40 ;
-		public static readonly int _altova_mil_altova_tilelayerType = 41 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_url = 35 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_dataset = 36 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_levelzerotilesize = 37 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_tilepixelsize = 38 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_levels = 39 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_imageextension = 40 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_distanceabovesurface = 41 ;
+		public static readonly int _altova_mi_altova_tilelayerType_altova_boundingbox = 42 ;
+		public static readonly int _altova_mil_altova_tilelayerType = 43 ;
 
 		public static readonly int _altova_mif_altova_virtualearthType = _altova_mil_altova_tilelayerType ;
 		public static readonly int _altova_mi_altova_virtualearthType_altova_name = _altova_mif_altova_virtualearthType ;
-		public static readonly int _altova_mil_altova_virtualearthType = 42 ;
+		public static readonly int _altova_mil_altova_virtualearthType = 44 ;
 
 		public static readonly int _altova_mif_altova_arcimscatalogType = _altova_mil_altova_virtualearthType ;
-		public static readonly int _altova_mi_altova_arcimscatalogType_altova_capabilitiesurl = _altova_mif_altova_arcimscatalogType ;
-		public static readonly int _altova_mil_altova_arcimscatalogType = 43 ;
+		public static readonly int _altova_mi_altova_arcimscatalogType_altova_enabled = _altova_mif_altova_arcimscatalogType ;
+		public static readonly int _altova_mi_altova_arcimscatalogType_altova_capabilitiesurl = 45 ;
+		public static readonly int _altova_mil_altova_arcimscatalogType = 46 ;
 
 		public static readonly int _altova_mif_altova_cameraorientationType = _altova_mil_altova_arcimscatalogType ;
 		public static readonly int _altova_mi_altova_cameraorientationType_altova_lat = _altova_mif_altova_cameraorientationType ;
-		public static readonly int _altova_mi_altova_cameraorientationType_altova_lon = 44 ;
-		public static readonly int _altova_mi_altova_cameraorientationType_altova_heading = 45 ;
-		public static readonly int _altova_mi_altova_cameraorientationType_altova_tilt = 46 ;
-		public static readonly int _altova_mi_altova_cameraorientationType_altova_altitude = 47 ;
-		public static readonly int _altova_mil_altova_cameraorientationType = 48 ;
+		public static readonly int _altova_mi_altova_cameraorientationType_altova_lon = 47 ;
+		public static readonly int _altova_mi_altova_cameraorientationType_altova_heading = 48 ;
+		public static readonly int _altova_mi_altova_cameraorientationType_altova_tilt = 49 ;
+		public static readonly int _altova_mi_altova_cameraorientationType_altova_altitude = 50 ;
+		public static readonly int _altova_mil_altova_cameraorientationType = 51 ;
 
 		public static readonly int _altova_mif_altova_dappleviewType = _altova_mil_altova_cameraorientationType ;
 		public static readonly int _altova_mi_altova_dappleviewType_altova_showbluemarble = _altova_mif_altova_dappleviewType ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_servers = 49 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_activelayers = 50 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_cameraorientation = 51 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_notes = 52 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_preview = 53 ;
-		public static readonly int _altova_mil_altova_dappleviewType = 54 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_servers = 52 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_activelayers = 53 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_cameraorientation = 54 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_notes = 55 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_preview = 56 ;
+		public static readonly int _altova_mil_altova_dappleviewType = 57 ;
 
 		public static readonly int _altova_mif_altova_serversType = _altova_mil_altova_dappleviewType ;
 		public static readonly int _altova_mi_altova_serversType_altova_builderentry = _altova_mif_altova_serversType ;
-		public static readonly int _altova_mil_altova_serversType = 55 ;
+		public static readonly int _altova_mil_altova_serversType = 58 ;
 
 		public static readonly int _altova_mif_xs_altova_ENTITIES = _altova_mil_altova_serversType ;
 		public static readonly int _altova_mil_xs_altova_ENTITIES = _altova_mif_xs_altova_ENTITIES ;
@@ -249,7 +252,7 @@ namespace dappleview
 
 		public static readonly int _altova_mif_xs_altova_anyType = _altova_mil_xs_altova_anySimpleType ;
 		public static readonly int _altova_mi_xs_altova_anyType_altova_unnamed = _altova_mif_xs_altova_anyType ;
-		public static readonly int _altova_mil_xs_altova_anyType = 56 ;
+		public static readonly int _altova_mil_xs_altova_anyType = 59 ;
 
 		public static readonly int _altova_mif_xs_altova_anyURI = _altova_mil_xs_altova_anyType ;
 		public static readonly int _altova_mil_xs_altova_anyURI = _altova_mif_xs_altova_anyURI ;
@@ -352,11 +355,11 @@ namespace dappleview
 
 		public static readonly int _altova_mif_xs_altova_stringType = _altova_mil_xs_altova_unsignedShort ;
 		public static readonly int _altova_mi_xs_altova_stringType_altova_unnamed = _altova_mif_xs_altova_stringType ;
-		public static readonly int _altova_mil_xs_altova_stringType = 57 ;
+		public static readonly int _altova_mil_xs_altova_stringType = 60 ;
 
 		public static readonly int _altova_mif_xs_altova_base64BinaryType = _altova_mil_xs_altova_stringType ;
 		public static readonly int _altova_mi_xs_altova_base64BinaryType_altova_unnamed = _altova_mif_xs_altova_base64BinaryType ;
-		public static readonly int _altova_mil_xs_altova_base64BinaryType = 58 ;
+		public static readonly int _altova_mil_xs_altova_base64BinaryType = 61 ;
 
 	
 
@@ -712,8 +715,10 @@ namespace dappleview
 			new MemberInfo (binder, "", "virtualearth", _altova_ti_altova_builderentryType, _altova_ti_altova_virtualearthType, MemberFlags.None),
 			new MemberInfo (binder, "", "arcimscatalog", _altova_ti_altova_builderentryType, _altova_ti_altova_arcimscatalogType, MemberFlags.None),
 
+			new MemberInfo (binder, "", "enabled", _altova_ti_altova_dapcatalogType, _altova_ti_xs_altova_boolean, MemberFlags.None),
 			new MemberInfo (binder, "", "url", _altova_ti_altova_dapcatalogType, _altova_ti_xs_altova_string2, MemberFlags.None),
 
+			new MemberInfo (binder, "", "enabled", _altova_ti_altova_wmscatalogType, _altova_ti_xs_altova_boolean, MemberFlags.None),
 			new MemberInfo (binder, "", "capabilitiesurl", _altova_ti_altova_wmscatalogType, _altova_ti_xs_altova_string2, MemberFlags.None),
 
 			new MemberInfo (binder, "", "path", _altova_ti_altova_localfilesystemType, _altova_ti_xs_altova_string2, MemberFlags.None),
@@ -735,6 +740,7 @@ namespace dappleview
 
 			new MemberInfo (binder, "", "name", _altova_ti_altova_virtualearthType, _altova_ti_xs_altova_string2, MemberFlags.None),
 
+			new MemberInfo (binder, "", "enabled", _altova_ti_altova_arcimscatalogType, _altova_ti_xs_altova_boolean, MemberFlags.None),
 			new MemberInfo (binder, "", "capabilitiesurl", _altova_ti_altova_arcimscatalogType, _altova_ti_xs_altova_string2, MemberFlags.None),
 
 			new MemberInfo (binder, "", "lat", _altova_ti_altova_cameraorientationType, _altova_ti_xs_altova_double2, MemberFlags.None),

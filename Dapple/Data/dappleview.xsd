@@ -85,11 +85,13 @@
 				<xs:element ref="builderdirectory"/>
 				<xs:element name="dapcatalog">
 					<xs:complexType>
+						<xs:attribute name="enabled" type="xs:boolean" default="true"/>
 						<xs:attribute name="url" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="wmscatalog">
 					<xs:complexType>
+						<xs:attribute name="enabled" type="xs:boolean" default="true"/>
 						<xs:attribute name="capabilitiesurl" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>
@@ -133,6 +135,7 @@
 				</xs:element>
 				<xs:element name="arcimscatalog">
 					<xs:complexType>
+						<xs:attribute name="enabled" type="xs:boolean" default="true"/>
 						<xs:attribute name="capabilitiesurl" type="xs:string" use="required"/>
 					</xs:complexType>
 				</xs:element>

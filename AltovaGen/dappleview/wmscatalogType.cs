@@ -37,6 +37,14 @@ namespace dappleview
 		public override void AdjustPrefix()
 		{
 
+		    for (	XmlNode DOMNode = GetDomFirstChild( NodeType.Attribute, "", "enabled" );
+					DOMNode != null; 
+					DOMNode = GetDomNextChild( NodeType.Attribute, "", "enabled", DOMNode )
+				)
+			{
+				InternalAdjustPrefix(DOMNode, false);
+			}
+
 		    for (	XmlNode DOMNode = GetDomFirstChild( NodeType.Attribute, "", "capabilitiesurl" );
 					DOMNode != null; 
 					DOMNode = GetDomNextChild( NodeType.Attribute, "", "capabilitiesurl", DOMNode )
@@ -52,6 +60,193 @@ namespace dappleview
 			el.SetAttribute("type", "http://www.w3.org/2001/XMLSchema-instance", "wmscatalog");
 		}
 
+
+		#region enabled Documentation
+		public static string GetenabledAnnoDocumentation()
+		{
+			return "";		
+		}
+		public static string GetenabledDefault()
+		{
+			return "true";		
+		}
+		#endregion
+
+		#region enabled accessor methods
+		public static int GetenabledMinCount()
+		{
+			return 0;
+		}
+
+		public static int enabledMinCount
+		{
+			get
+			{
+				return 0;
+			}
+		}
+
+		public static int GetenabledMaxCount()
+		{
+			return 1;
+		}
+
+		public static int enabledMaxCount
+		{
+			get
+			{
+				return 1;
+			}
+		}
+
+		public int GetenabledCount()
+		{
+			return DomChildCount(NodeType.Attribute, "", "enabled");
+		}
+
+		public int enabledCount
+		{
+			get
+			{
+				return DomChildCount(NodeType.Attribute, "", "enabled");
+			}
+		}
+
+		public bool Hasenabled()
+		{
+			return HasDomChild(NodeType.Attribute, "", "enabled");
+		}
+
+		public SchemaBoolean Newenabled()
+		{
+			return new SchemaBoolean();
+		}
+
+		public SchemaBoolean GetenabledAt(int index)
+		{
+			return new SchemaBoolean(GetDomNodeValue(GetDomChildAt(NodeType.Attribute, "", "enabled", index)));
+		}
+
+		public XmlNode GetStartingenabledCursor()
+		{
+			return GetDomFirstChild( NodeType.Attribute, "", "enabled" );
+		}
+
+		public XmlNode GetAdvancedenabledCursor( XmlNode curNode )
+		{
+			return GetDomNextChild( NodeType.Attribute, "", "enabled", curNode );
+		}
+
+		public SchemaBoolean GetenabledValueAtCursor( XmlNode curNode )
+		{
+			if( curNode == null )
+				  throw new Altova.Xml.XmlException("Out of range");
+			else
+				return new SchemaBoolean( curNode.Value );
+		}
+
+
+		public SchemaBoolean Getenabled()
+		{
+			return GetenabledAt(0);
+		}
+
+		public SchemaBoolean enabled
+		{
+			get
+			{
+				return GetenabledAt(0);
+			}
+		}
+
+		public void RemoveenabledAt(int index)
+		{
+			RemoveDomChildAt(NodeType.Attribute, "", "enabled", index);
+		}
+
+		public void Removeenabled()
+		{
+			RemoveenabledAt(0);
+		}
+
+		public XmlNode Addenabled(SchemaBoolean newValue)
+		{
+			if( newValue.IsNull() == false )
+				return AppendDomChild(NodeType.Attribute, "", "enabled", newValue.ToString());
+			return null;
+		}
+
+		public void InsertenabledAt(SchemaBoolean newValue, int index)
+		{
+			if( newValue.IsNull() == false )
+				InsertDomChildAt(NodeType.Attribute, "", "enabled", index, newValue.ToString());
+		}
+
+		public void ReplaceenabledAt(SchemaBoolean newValue, int index)
+		{
+			ReplaceDomChildAt(NodeType.Attribute, "", "enabled", index, newValue.ToString());
+		}
+		#endregion // enabled accessor methods
+
+		#region enabled collection
+        public enabledCollection	Myenableds = new enabledCollection( );
+
+        public class enabledCollection: IEnumerable
+        {
+            wmscatalogType parent;
+            public wmscatalogType Parent
+			{
+				set
+				{
+					parent = value;
+				}
+			}
+			public enabledEnumerator GetEnumerator() 
+			{
+				return new enabledEnumerator(parent);
+			}
+		
+			IEnumerator IEnumerable.GetEnumerator() 
+			{
+				return GetEnumerator();
+			}
+        }
+
+        public class enabledEnumerator: IEnumerator 
+        {
+			int nIndex;
+			wmscatalogType parent;
+			public enabledEnumerator(wmscatalogType par) 
+			{
+				parent = par;
+				nIndex = -1;
+			}
+			public void Reset() 
+			{
+				nIndex = -1;
+			}
+			public bool MoveNext() 
+			{
+				nIndex++;
+				return(nIndex < parent.enabledCount );
+			}
+			public SchemaBoolean  Current 
+			{
+				get 
+				{
+					return(parent.GetenabledAt(nIndex));
+				}
+			}
+			object IEnumerator.Current 
+			{
+				get 
+				{
+					return(Current);
+				}
+			}
+    	}
+
+        #endregion // enabled collection
 
 		#region capabilitiesurl Documentation
 		public static string GetcapabilitiesurlAnnoDocumentation()
@@ -242,6 +437,7 @@ namespace dappleview
 
         private void SetCollectionParents()
         {
+            Myenableds.Parent = this; 
             Mycapabilitiesurls.Parent = this; 
 	}
 }
