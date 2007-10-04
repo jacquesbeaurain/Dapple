@@ -953,7 +953,6 @@ namespace Dapple
            this.toolStripServers.Size = new System.Drawing.Size(231, 25);
            this.toolStripServers.TabIndex = 0;
            this.toolStripServers.Text = "toolStripServers";
-           this.toolStripServers.DoubleClick += new System.EventHandler(this.toolStripServers_DoubleClick);
            // 
            // toolStripLabel5
            // 
