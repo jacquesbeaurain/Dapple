@@ -37,6 +37,14 @@ namespace dappleview
 		public override void AdjustPrefix()
 		{
 
+		    for (	XmlNode DOMNode = GetDomFirstChild( NodeType.Attribute, "", "favouriteserverurl" );
+					DOMNode != null; 
+					DOMNode = GetDomNextChild( NodeType.Attribute, "", "favouriteserverurl", DOMNode )
+				)
+			{
+				InternalAdjustPrefix(DOMNode, false);
+			}
+
 		    for (	XmlNode DOMNode = GetDomFirstChild( NodeType.Attribute, "", "showbluemarble" );
 					DOMNode != null; 
 					DOMNode = GetDomNextChild( NodeType.Attribute, "", "showbluemarble", DOMNode )
@@ -95,6 +103,193 @@ namespace dappleview
 			el.SetAttribute("type", "http://www.w3.org/2001/XMLSchema-instance", "dappleview");
 		}
 
+
+		#region favouriteserverurl Documentation
+		public static string GetfavouriteserverurlAnnoDocumentation()
+		{
+			return "";		
+		}
+		public static string GetfavouriteserverurlDefault()
+		{
+			return "";		
+		}
+		#endregion
+
+		#region favouriteserverurl accessor methods
+		public static int GetfavouriteserverurlMinCount()
+		{
+			return 0;
+		}
+
+		public static int favouriteserverurlMinCount
+		{
+			get
+			{
+				return 0;
+			}
+		}
+
+		public static int GetfavouriteserverurlMaxCount()
+		{
+			return 1;
+		}
+
+		public static int favouriteserverurlMaxCount
+		{
+			get
+			{
+				return 1;
+			}
+		}
+
+		public int GetfavouriteserverurlCount()
+		{
+			return DomChildCount(NodeType.Attribute, "", "favouriteserverurl");
+		}
+
+		public int favouriteserverurlCount
+		{
+			get
+			{
+				return DomChildCount(NodeType.Attribute, "", "favouriteserverurl");
+			}
+		}
+
+		public bool Hasfavouriteserverurl()
+		{
+			return HasDomChild(NodeType.Attribute, "", "favouriteserverurl");
+		}
+
+		public SchemaString Newfavouriteserverurl()
+		{
+			return new SchemaString();
+		}
+
+		public SchemaString GetfavouriteserverurlAt(int index)
+		{
+			return new SchemaString(GetDomNodeValue(GetDomChildAt(NodeType.Attribute, "", "favouriteserverurl", index)));
+		}
+
+		public XmlNode GetStartingfavouriteserverurlCursor()
+		{
+			return GetDomFirstChild( NodeType.Attribute, "", "favouriteserverurl" );
+		}
+
+		public XmlNode GetAdvancedfavouriteserverurlCursor( XmlNode curNode )
+		{
+			return GetDomNextChild( NodeType.Attribute, "", "favouriteserverurl", curNode );
+		}
+
+		public SchemaString GetfavouriteserverurlValueAtCursor( XmlNode curNode )
+		{
+			if( curNode == null )
+				  throw new Altova.Xml.XmlException("Out of range");
+			else
+				return new SchemaString( curNode.Value );
+		}
+
+
+		public SchemaString Getfavouriteserverurl()
+		{
+			return GetfavouriteserverurlAt(0);
+		}
+
+		public SchemaString favouriteserverurl
+		{
+			get
+			{
+				return GetfavouriteserverurlAt(0);
+			}
+		}
+
+		public void RemovefavouriteserverurlAt(int index)
+		{
+			RemoveDomChildAt(NodeType.Attribute, "", "favouriteserverurl", index);
+		}
+
+		public void Removefavouriteserverurl()
+		{
+			RemovefavouriteserverurlAt(0);
+		}
+
+		public XmlNode Addfavouriteserverurl(SchemaString newValue)
+		{
+			if( newValue.IsNull() == false )
+				return AppendDomChild(NodeType.Attribute, "", "favouriteserverurl", newValue.ToString());
+			return null;
+		}
+
+		public void InsertfavouriteserverurlAt(SchemaString newValue, int index)
+		{
+			if( newValue.IsNull() == false )
+				InsertDomChildAt(NodeType.Attribute, "", "favouriteserverurl", index, newValue.ToString());
+		}
+
+		public void ReplacefavouriteserverurlAt(SchemaString newValue, int index)
+		{
+			ReplaceDomChildAt(NodeType.Attribute, "", "favouriteserverurl", index, newValue.ToString());
+		}
+		#endregion // favouriteserverurl accessor methods
+
+		#region favouriteserverurl collection
+        public favouriteserverurlCollection	Myfavouriteserverurls = new favouriteserverurlCollection( );
+
+        public class favouriteserverurlCollection: IEnumerable
+        {
+            dappleviewType parent;
+            public dappleviewType Parent
+			{
+				set
+				{
+					parent = value;
+				}
+			}
+			public favouriteserverurlEnumerator GetEnumerator() 
+			{
+				return new favouriteserverurlEnumerator(parent);
+			}
+		
+			IEnumerator IEnumerable.GetEnumerator() 
+			{
+				return GetEnumerator();
+			}
+        }
+
+        public class favouriteserverurlEnumerator: IEnumerator 
+        {
+			int nIndex;
+			dappleviewType parent;
+			public favouriteserverurlEnumerator(dappleviewType par) 
+			{
+				parent = par;
+				nIndex = -1;
+			}
+			public void Reset() 
+			{
+				nIndex = -1;
+			}
+			public bool MoveNext() 
+			{
+				nIndex++;
+				return(nIndex < parent.favouriteserverurlCount );
+			}
+			public SchemaString  Current 
+			{
+				get 
+				{
+					return(parent.GetfavouriteserverurlAt(nIndex));
+				}
+			}
+			object IEnumerator.Current 
+			{
+				get 
+				{
+					return(Current);
+				}
+			}
+    	}
+
+        #endregion // favouriteserverurl collection
 
 		#region showbluemarble Documentation
 		public static string GetshowbluemarbleAnnoDocumentation()
@@ -1211,6 +1406,7 @@ namespace dappleview
 
         private void SetCollectionParents()
         {
+            Myfavouriteserverurls.Parent = this; 
             Myshowbluemarbles.Parent = this; 
             Myserverss.Parent = this; 
             Myactivelayerss.Parent = this; 

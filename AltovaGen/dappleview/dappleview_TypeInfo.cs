@@ -202,17 +202,18 @@ namespace dappleview
 		public static readonly int _altova_mil_altova_cameraorientationType = 51 ;
 
 		public static readonly int _altova_mif_altova_dappleviewType = _altova_mil_altova_cameraorientationType ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_showbluemarble = _altova_mif_altova_dappleviewType ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_servers = 52 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_activelayers = 53 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_cameraorientation = 54 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_notes = 55 ;
-		public static readonly int _altova_mi_altova_dappleviewType_altova_preview = 56 ;
-		public static readonly int _altova_mil_altova_dappleviewType = 57 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_favouriteserverurl = _altova_mif_altova_dappleviewType ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_showbluemarble = 52 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_servers = 53 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_activelayers = 54 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_cameraorientation = 55 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_notes = 56 ;
+		public static readonly int _altova_mi_altova_dappleviewType_altova_preview = 57 ;
+		public static readonly int _altova_mil_altova_dappleviewType = 58 ;
 
 		public static readonly int _altova_mif_altova_serversType = _altova_mil_altova_dappleviewType ;
 		public static readonly int _altova_mi_altova_serversType_altova_builderentry = _altova_mif_altova_serversType ;
-		public static readonly int _altova_mil_altova_serversType = 58 ;
+		public static readonly int _altova_mil_altova_serversType = 59 ;
 
 		public static readonly int _altova_mif_xs_altova_ENTITIES = _altova_mil_altova_serversType ;
 		public static readonly int _altova_mil_xs_altova_ENTITIES = _altova_mif_xs_altova_ENTITIES ;
@@ -252,7 +253,7 @@ namespace dappleview
 
 		public static readonly int _altova_mif_xs_altova_anyType = _altova_mil_xs_altova_anySimpleType ;
 		public static readonly int _altova_mi_xs_altova_anyType_altova_unnamed = _altova_mif_xs_altova_anyType ;
-		public static readonly int _altova_mil_xs_altova_anyType = 59 ;
+		public static readonly int _altova_mil_xs_altova_anyType = 60 ;
 
 		public static readonly int _altova_mif_xs_altova_anyURI = _altova_mil_xs_altova_anyType ;
 		public static readonly int _altova_mil_xs_altova_anyURI = _altova_mif_xs_altova_anyURI ;
@@ -355,11 +356,11 @@ namespace dappleview
 
 		public static readonly int _altova_mif_xs_altova_stringType = _altova_mil_xs_altova_unsignedShort ;
 		public static readonly int _altova_mi_xs_altova_stringType_altova_unnamed = _altova_mif_xs_altova_stringType ;
-		public static readonly int _altova_mil_xs_altova_stringType = 60 ;
+		public static readonly int _altova_mil_xs_altova_stringType = 61 ;
 
 		public static readonly int _altova_mif_xs_altova_base64BinaryType = _altova_mil_xs_altova_stringType ;
 		public static readonly int _altova_mi_xs_altova_base64BinaryType_altova_unnamed = _altova_mif_xs_altova_base64BinaryType ;
-		public static readonly int _altova_mil_xs_altova_base64BinaryType = 61 ;
+		public static readonly int _altova_mil_xs_altova_base64BinaryType = 62 ;
 
 	
 
@@ -749,6 +750,7 @@ namespace dappleview
 			new MemberInfo (binder, "", "tilt", _altova_ti_altova_cameraorientationType, _altova_ti_xs_altova_double2, MemberFlags.None),
 			new MemberInfo (binder, "", "altitude", _altova_ti_altova_cameraorientationType, _altova_ti_xs_altova_double2, MemberFlags.None),
 
+			new MemberInfo (binder, "", "favouriteserverurl", _altova_ti_altova_dappleviewType, _altova_ti_xs_altova_string2, MemberFlags.None),
 			new MemberInfo (binder, "", "showbluemarble", _altova_ti_altova_dappleviewType, _altova_ti_xs_altova_boolean, MemberFlags.None),
 			new MemberInfo (binder, "", "servers", _altova_ti_altova_dappleviewType, _altova_ti_altova_serversType, MemberFlags.None),
 			new MemberInfo (binder, "", "activelayers", _altova_ti_altova_dappleviewType, _altova_ti_altova_activelayersType, MemberFlags.None),

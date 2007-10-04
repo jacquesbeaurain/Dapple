@@ -16,6 +16,7 @@
 				<xs:element name="notes" type="xs:string" minOccurs="0"/>
 				<xs:element name="preview" type="xs:base64Binary" minOccurs="0"/>
 			</xs:all>
+			<xs:attribute name="favouriteserverurl" type="xs:string"/>
 			<xs:attribute name="showbluemarble" type="xs:boolean" use="optional" default="true"/>
 		</xs:complexType>
 	</xs:element>
