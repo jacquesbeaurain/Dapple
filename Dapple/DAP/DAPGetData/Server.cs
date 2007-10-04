@@ -46,7 +46,9 @@ namespace Geosoft.GX.DAPGetData
       protected Geosoft.Dap.Configuration       m_oServerConfiguration = null;
       protected CatalogCollection               m_oCatalogs;
 
-      protected XmlDocument                     m_oBrowserMap = null;      
+      protected XmlDocument                     m_oBrowserMap = null;
+      protected bool                            m_blEnabled;
+      protected bool                            m_blConfigured = false;
 
       protected string m_strCacheDir;
       protected string m_strCacheRoot;
@@ -197,6 +199,28 @@ namespace Geosoft.GX.DAPGetData
          get { return m_bLogin; }
       }
 
+      public bool Enabled
+      {
+         get { return m_blEnabled; }
+         set
+         {
+            if (value != m_blEnabled)
+            {
+               m_blEnabled = value;
+
+               if (m_blEnabled && !m_blConfigured)
+               {
+                  ConfigureServer();
+
+                  // --- If the edition change we need to reload the configuration ---
+                  string strEdition, strConfigEdition;
+                  m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+                  if (m_strCacheVersion != strConfigEdition)
+                     UpdateConfiguration();
+               }
+            }
+         }
+      }
      
       #endregion
 
@@ -209,9 +233,10 @@ namespace Geosoft.GX.DAPGetData
 #if !DAPPLE
       public Server(string strDnsAddress, string strSecureToken)
 #else
-      public Server(string strDnsAddress, string strCacheDir, string strSecureToken)
+      public Server(string strDnsAddress, string strCacheDir, string strSecureToken, bool blEnabled)
 #endif
       {
+         m_blEnabled = blEnabled;
          string strEdition, strConfigEdition;
          
          m_strSecureToken = strSecureToken;
@@ -239,12 +264,15 @@ namespace Geosoft.GX.DAPGetData
          {
             m_oCatalogs = new CatalogCollection(this);
 
-            ConfigureServer();
+            if (m_blEnabled)
+            {
+               ConfigureServer();
 
-            // --- If the edition change we need to reload the configuration ---
-            m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-            if (m_strCacheVersion != strConfigEdition)
-               UpdateConfiguration();
+               // --- If the edition change we need to reload the configuration ---
+               m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+               if (m_strCacheVersion != strConfigEdition)
+                  UpdateConfiguration();
+            }
          }
          catch
          {
@@ -398,6 +426,8 @@ namespace Geosoft.GX.DAPGetData
       /// <returns></returns>
       public Int32 GetDatasetCount(Geosoft.Dap.Common.BoundingBox hBox, string szKeywords)
       {
+         if (!(m_blEnabled && m_blConfigured)) return 0;
+
          m_iCount = 0;
          try
          {
@@ -540,6 +570,7 @@ namespace Geosoft.GX.DAPGetData
 
          LoadConfiguration();         
          LoadBrowserMap();
+         m_blConfigured = true;
       }
 
       /// <summary>

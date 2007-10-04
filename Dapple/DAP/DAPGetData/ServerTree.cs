@@ -184,7 +184,7 @@ namespace Geosoft.GX.DAPGetData
          {
             ServerSelect(this, oServer);
          }
-         else
+         else if (oServer.Enabled)
          {
             // The login will setup the catalog
             Login(null);
@@ -331,7 +331,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUrl"></param>
       /// <returns></returns>
-      public virtual bool AddDAPServer(string strUrl, out Server hRetServer)
+      public virtual bool AddDAPServer(string strUrl, out Server hRetServer, bool blEnabled)
       {
          bool bRet;
 
@@ -346,7 +346,7 @@ namespace Geosoft.GX.DAPGetData
             if (!strServerUrl.StartsWith("http://"))
                strServerUrl = "http://" + strServerUrl;
 
-            Server oServer = new Server(strServerUrl, m_strCacheDir, m_strSecureToken);
+            Server oServer = new Server(strServerUrl, m_strCacheDir, m_strSecureToken, blEnabled);
 
             if (oServer.Status == Server.ServerStatus.OnLine || oServer.Status == Server.ServerStatus.Maintenance)
             {
@@ -643,6 +643,26 @@ namespace Geosoft.GX.DAPGetData
 
          if (m_oCurServer == null)
             return;
+
+         if (!(m_oCurServer.Enabled))
+         {
+            m_oCatalogHierarchyRoot = null;
+
+            if (this.InvokeRequired)
+            {
+               try
+               {
+                  this.Invoke(new MethodInvoker(this.RefreshResults));
+               }
+               catch
+               {
+               }
+            }
+            else
+               RefreshResults();
+
+            return;
+         }
 
          if (m_bEntireCatalogMode)
          {
@@ -948,29 +968,37 @@ namespace Geosoft.GX.DAPGetData
             else
                str = oServer.Name;
 
-           switch (oServer.Status)
-           {
-               case Server.ServerStatus.OnLine:
-                   str += " (" + oServer.DatasetCount.ToString() + ")";
-                   iImage = Dapple.MainForm.ImageListIndex("enserver");
-                   break;
-               case Server.ServerStatus.Maintenance:
-                   str += " (undergoing maintenance)";
-                   iImage = Dapple.MainForm.ImageListIndex("disserver");
-                   break;
-               case Server.ServerStatus.OffLine:
-                   str += " (offline)";
-                   iImage = Dapple.MainForm.ImageListIndex("offline");
-                   break;
-               case Server.ServerStatus.Disabled:
-                   str += " (disabled)";
-                   iImage = Dapple.MainForm.ImageListIndex("disserver");
-                   break;
-               default:
-                   str += " (unsupported)";
-                   iImage = Dapple.MainForm.ImageListIndex("offline");
-                   break;
-           }
+            if (!oServer.Enabled)
+            {
+               str += " (disabled)";
+               iImage = Dapple.MainForm.ImageListIndex("disserver");
+            }
+            else
+            {
+               switch (oServer.Status)
+               {
+                  case Server.ServerStatus.OnLine:
+                     str += " (" + oServer.DatasetCount.ToString() + ")";
+                     iImage = Dapple.MainForm.ImageListIndex("enserver");
+                     break;
+                  case Server.ServerStatus.Maintenance:
+                     str += " (undergoing maintenance)";
+                     iImage = Dapple.MainForm.ImageListIndex("disserver");
+                     break;
+                  case Server.ServerStatus.OffLine:
+                     str += " (offline)";
+                     iImage = Dapple.MainForm.ImageListIndex("offline");
+                     break;
+                  case Server.ServerStatus.Disabled:
+                     str += " (disabled)";
+                     iImage = Dapple.MainForm.ImageListIndex("disserver");
+                     break;
+                  default:
+                     str += " (unsupported)";
+                     iImage = Dapple.MainForm.ImageListIndex("offline");
+                     break;
+               }
+            }
 
 
             oTreeNode.Text = str;
@@ -1002,10 +1030,17 @@ namespace Geosoft.GX.DAPGetData
          foreach (TreeNode oTreeNode in this.DAPRootNodes)
             oTreeNode.Nodes.Clear();
 
-         if (m_bEntireCatalogMode)
-            oSelectedNode = DisplayEntireCatalog();
+         if (m_oCurServer.Enabled)
+         {
+            if (m_bEntireCatalogMode)
+               oSelectedNode = DisplayEntireCatalog();
+            else
+               oSelectedNode = DisplayCatalog();
+         }
          else
-            oSelectedNode = DisplayCatalog();
+         {
+            oSelectedNode = m_hCurServerTreeNode;
+         }
 
          this.SelectedNode = oSelectedNode;
 #if DEBUG

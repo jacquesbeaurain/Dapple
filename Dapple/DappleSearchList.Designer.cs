@@ -43,7 +43,7 @@ namespace Dapple.CustomControls
          this.cResultListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
          this.cResultListBox.FormattingEnabled = true;
          this.cResultListBox.IntegralHeight = false;
-         this.cResultListBox.Location = new System.Drawing.Point(3, 3);
+         this.cResultListBox.Location = new System.Drawing.Point(3, 32);
          this.cResultListBox.Name = "cResultListBox";
          this.cResultListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
          this.cResultListBox.Size = new System.Drawing.Size(192, 138);
@@ -68,9 +68,9 @@ namespace Dapple.CustomControls
          // 
          // cNavigator
          // 
-         this.cNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+         this.cNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
-         this.cNavigator.Location = new System.Drawing.Point(3, 147);
+         this.cNavigator.Location = new System.Drawing.Point(3, 3);
          this.cNavigator.Name = "cNavigator";
          this.cNavigator.Size = new System.Drawing.Size(192, 23);
          this.cNavigator.TabIndex = 1;

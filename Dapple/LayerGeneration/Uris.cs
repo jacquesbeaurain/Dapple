@@ -387,7 +387,7 @@ namespace Dapple.LayerGeneration
          WMSServerBuilder oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
          if (oServerBuilder == null)
          {
-            oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true);
+            oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true, true);
             oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
          }
 
@@ -587,7 +587,7 @@ namespace Dapple.LayerGeneration
 
          Geosoft.GX.DAPGetData.Server oServer = null;
          if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
-            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer);
+            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true);
          else
             oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
 
@@ -631,7 +631,7 @@ namespace Dapple.LayerGeneration
       {
          Geosoft.GX.DAPGetData.Server oServer = null;
          if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
-            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer);
+            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true);
          else
             oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
 

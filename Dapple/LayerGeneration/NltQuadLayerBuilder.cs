@@ -216,6 +216,11 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      public int Levels
+      {
+         get { return m_iLevels; }
+      }
+
       #endregion
 
       #region Private Members
@@ -268,11 +273,34 @@ namespace Dapple.LayerGeneration
             m_oQuadTileSet.IsOn = m_IsOn;
             m_oQuadTileSet.Opacity = m_bOpacity;
 
+
+            m_oQuadTileSet.AlwaysRenderBaseTiles = true;
+            m_oQuadTileSet.IsOn = m_IsOn;
+            m_oQuadTileSet.Opacity = m_bOpacity;
             m_blnIsChanged = false;
          }
          return m_oQuadTileSet;
       }
 
       #endregion
+
+      internal void SaveToXml(XmlElement oServerElement)
+      {
+         oServerElement.SetAttribute("name", Name);
+         oServerElement.SetAttribute("url", m_strServerUrl);
+         oServerElement.SetAttribute("dataset", m_strDatasetName);
+         oServerElement.SetAttribute("image_extension", m_strImageExt);
+
+         XmlElement oBoundsElement = oServerElement.OwnerDocument.CreateElement("bounding_box");
+         oBoundsElement.SetAttribute("minx", m_hBoundary.West.ToString());
+         oBoundsElement.SetAttribute("miny", m_hBoundary.South.ToString());
+         oBoundsElement.SetAttribute("maxx", m_hBoundary.East.ToString());
+         oBoundsElement.SetAttribute("maxy", m_hBoundary.North.ToString());
+
+         XmlElement oResElement = oServerElement.OwnerDocument.CreateElement("resolution");
+         oResElement.SetAttribute("level_zero_tilesize", LevelZeroTileSize.ToString());
+         oResElement.SetAttribute("levels", Levels.ToString());
+         oResElement.SetAttribute("tile_size", m_iTextureSizePixels.ToString());
+      }
    }
 }

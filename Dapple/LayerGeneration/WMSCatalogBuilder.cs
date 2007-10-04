@@ -41,28 +41,39 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="oUri">The URI of the server.</param>
       /// <returns>A WMSServerBuilder for the server added.</returns>
-      public BuilderDirectory AddServer(WMSServerUri oUri)
+      public BuilderDirectory AddServer(WMSServerUri oUri, bool blEnabled)
       {
          // create the cache directory
          string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);
-
-         // queue up capabilities download
          string xmlPath = Path.Combine(savePath, "capabilities.xml");
 
-         IndexedWebDownload download = new IndexedWebDownload(oUri.ToCapabilitiesUri(), true, m_iDownloadIndex);
+         // add a child node
+         WMSServerBuilder oBuilder = new WMSServerBuilder(this, oUri, xmlPath, blEnabled);
+         SubList.Add(oBuilder);
+
+         if (blEnabled == true)
+         {
+            QueueServerDownload(oBuilder);
+         }
+
+         return oBuilder;
+      }
+
+      private void QueueServerDownload(WMSServerBuilder oBuilder)
+      {
+         // create the cache directory
+         string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), ((WMSServerUri)oBuilder.Uri).ToCacheDirectory());
+         Directory.CreateDirectory(savePath);
+         string xmlPath = Path.Combine(savePath, "capabilities.xml");
+
+         IndexedWebDownload download = new IndexedWebDownload(((WMSServerUri)oBuilder.Uri).ToCapabilitiesUri(), true, m_iDownloadIndex);
          m_iDownloadIndex++;
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         // add a child node
-         WMSServerBuilder dir = new WMSServerBuilder(this, oUri, xmlPath);
-         SubList.Add(dir);
-         
-         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, dir);
+         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, oBuilder);
          download.BackgroundDownloadFile();
-
-         return dir;
       }
 
       public bool ContainsServer(WMSServerUri oUri)
@@ -101,6 +112,15 @@ namespace Dapple.LayerGeneration
       public void UncacheServer(WMSServerUri oUri)
       {
          m_oWMSListCache.Remove(oUri);
+
+         foreach (WMSServerBuilder iter in m_colSublist)
+         {
+            if (iter.Uri.Equals(oUri))
+            {
+               m_colSublist.Remove(iter);
+               break;
+            }
+         }
       }
 
       public void cancelDownloads()
@@ -194,17 +214,34 @@ namespace Dapple.LayerGeneration
             directory.LayerBuilders.Add(builder);
          }
       }
+
+      internal void Enable(WMSServerBuilder oBuilder)
+      {
+         if (oBuilder.LoadingPending)
+         {
+            oBuilder.LoadingPending = false;
+            QueueServerDownload(oBuilder);
+         }
+      }
    }
 
    public class WMSServerBuilder : AsyncBuilder
    {
       string m_strCapabilitiesFilePath;
       WMSList m_oList;
+      bool m_blLoadingPending = true;
 
-      public WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath)
-         : base(oUri.ToBaseUri(), parent, oUri)
+      public WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath, bool blEnabled)
+         : base(oUri.ToBaseUri(), parent, oUri, blEnabled)
       {
          m_strCapabilitiesFilePath = CapabilitiesFilePath;
+      }
+
+      [System.ComponentModel.Browsable(false)]
+      public bool LoadingPending
+      {
+         get { return m_blLoadingPending; }
+         set { m_blLoadingPending = value; }
       }
 
       [System.ComponentModel.Browsable(false)]
@@ -266,6 +303,11 @@ namespace Dapple.LayerGeneration
       public override System.Drawing.Icon Icon
       {
          get { return Dapple.Properties.Resources.wms; }
+      }
+
+      protected override void SetEnabled(bool blValue)
+      {
+         ((WMSCatalogBuilder)Parent).Enable(this);
       }
    }
 }

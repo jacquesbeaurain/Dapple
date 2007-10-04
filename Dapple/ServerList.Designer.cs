@@ -45,8 +45,9 @@ namespace Dapple
          // 
          // label1
          // 
+         label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
          label1.AutoSize = true;
-         label1.Location = new System.Drawing.Point(2, 6);
+         label1.Location = new System.Drawing.Point(3, 177);
          label1.Name = "label1";
          label1.Size = new System.Drawing.Size(41, 13);
          label1.TabIndex = 0;
@@ -54,12 +55,12 @@ namespace Dapple
          // 
          // cServersComboBox
          // 
-         this.cServersComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+         this.cServersComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.cServersComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
          this.cServersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
          this.cServersComboBox.FormattingEnabled = true;
-         this.cServersComboBox.Location = new System.Drawing.Point(49, 3);
+         this.cServersComboBox.Location = new System.Drawing.Point(49, 174);
          this.cServersComboBox.Name = "cServersComboBox";
          this.cServersComboBox.Size = new System.Drawing.Size(146, 21);
          this.cServersComboBox.TabIndex = 1;
@@ -76,7 +77,7 @@ namespace Dapple
             this.cLayerNameColumnHeader});
          this.cLayersListView.ContextMenuStrip = this.cLayerContextMenu;
          this.cLayersListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-         this.cLayersListView.Location = new System.Drawing.Point(3, 30);
+         this.cLayersListView.Location = new System.Drawing.Point(3, 32);
          this.cLayersListView.Name = "cLayersListView";
          this.cLayersListView.Size = new System.Drawing.Size(192, 136);
          this.cLayersListView.TabIndex = 2;
@@ -132,9 +133,9 @@ namespace Dapple
          // 
          // cPageNavigator
          // 
-         this.cPageNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+         this.cPageNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
-         this.cPageNavigator.Location = new System.Drawing.Point(3, 172);
+         this.cPageNavigator.Location = new System.Drawing.Point(3, 3);
          this.cPageNavigator.Name = "cPageNavigator";
          this.cPageNavigator.Size = new System.Drawing.Size(192, 23);
          this.cPageNavigator.TabIndex = 3;

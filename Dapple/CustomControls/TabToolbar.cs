@@ -116,7 +116,8 @@ namespace Dapple.CustomControls
 
       protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
       {
-         e.Graphics.FillRectangle(new SolidBrush(e.BackColor), e.AffectedBounds);
+         //Don't
+         //e.Graphics.FillRectangle(new SolidBrush(e.BackColor), e.AffectedBounds);
       }
    }
 }

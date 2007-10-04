@@ -162,6 +162,7 @@
                   </Component>
                </Directory>
                <Component Id="DataFiles" Guid="5D3E6163-19F4-4147-A3AA-6EBCC44EF2B0">
+                 <File Id="default.dapple_serverlist" Name="default.dapple_serverlist" Source="..\Dapple\bin\x86\Release\Data\default.dapple_serverlist" Vital="yes"/>
                   <File Id="default.dapple"  Name="default.dapple" Source="..\Dapple\bin\x86\Release\Data\default.dapple" Vital="yes"/>
                   <File Id="dappleview.xsd"  Name="dappleview.xsd" Source="..\Dapple\bin\x86\Release\Data\dappleview.xsd" Vital="yes"/>
                </Component>

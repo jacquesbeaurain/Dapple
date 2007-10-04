@@ -59,8 +59,10 @@ namespace Dapple
       public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
       public const string ViewExt = ".dapple";
       public const string LinkExt = ".dapple_datasetlink";
+      public const string FavouriteServerExt = ".dapple_serverlist";
       public const string LastView = "lastview" + ViewExt;
       public const string DefaultView = "default" + ViewExt;
+      public const string HomeView = "homeview" + ViewExt;
       public const string ViewFileDescr = "Dapple View";
       public const string LinkFileDescr = "Dapple Link";
       public const string WebsiteUrl = "http://dapple.geosoft.com/";
@@ -283,6 +285,17 @@ namespace Dapple
             File.Copy(strMetaFile, strUserMeta, true);
          }
 
+         // --- Set up a new user's favorites list and home view ---
+
+         /*if (!File.Exists(Path.Combine(CurrentSettingsDirectory, "user.dapple_serverlist")))
+         {
+            File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple_serverlist"), Path.Combine(CurrentSettingsDirectory, "user.dapple_serverlist"));
+         }*/
+         if (!File.Exists(Path.Combine(CurrentSettingsDirectory, "homeview.dapple")))
+         {
+            File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple"), Path.Combine(CurrentSettingsDirectory, "homeview.dapple"));
+         }
+
          InitSettings();
 
          if (Settings.NewCachePath.Length > 0)
@@ -431,6 +444,10 @@ namespace Dapple
             Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open", "", "Open &" + ViewFileDescr);
             Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open\\Command", "", "\"" + DirectoryPath + "\" \"%1\"");
             Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
+
+            //Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\" + FavouriteServerExt, "", "Dapple Favourite Server List");
+            //Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple Favourite Server List", "", "Dapple Favourite Server List");
+            //Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple Favourite Server List\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
 
             this.dapErrors = new Geosoft.GX.DAPGetData.GetDapError(Path.Combine(Settings.CachePath, "DapErrors.log"));
 
@@ -584,10 +601,10 @@ namespace Dapple
 
             cWebSearch = new DappleSearchList(Settings.DappleSearchURL);
 
-            this.janaLinkTab1.SetText(0, "Servers");
-            this.janaLinkTab1.SetPage(0, this.cServerViewsTab);
-            this.janaLinkTab1.SetText(1, "Web");
-            this.janaLinkTab1.SetPage(1, this.cWebSearch);
+            cSearchTabPane.TabPages[0].Controls.Add(cServerViewsTab);
+            cServerViewsTab.Dock = DockStyle.Fill;
+            cSearchTabPane.TabPages[1].Controls.Add(cWebSearch);
+            cWebSearch.Dock = DockStyle.Fill;
 
             this.ResumeLayout(false);
 
@@ -1094,7 +1111,7 @@ namespace Dapple
             Geosoft.GX.DAPGetData.Server oServer;
             try
             {
-               if (this.tvServers.AddDAPServer(dlg.Url, out oServer))
+               if (this.tvServers.AddDAPServer(dlg.Url, out oServer, true))
                {
                   Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
                   t.Name = "Background add server thread";
@@ -1120,7 +1137,7 @@ namespace Dapple
             {
                try
                {
-                  if (this.tvServers.AddWMSServer(dlg.WmsURL, true))
+                  if (this.tvServers.AddWMSServer(dlg.WmsURL, true, true))
                   {
                      Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
                      t.Name = "Background add server thread";
@@ -1147,7 +1164,7 @@ namespace Dapple
             {
                try
                {
-                  if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true))
+                  if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true))
                   {
                      Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
                      t.Name = "Background add server thread";
@@ -1320,13 +1337,13 @@ namespace Dapple
          if (dlgtest.ViewFile != null)
          {
             if (res == DialogResult.OK)
-               OpenView(dlgtest.ViewFile, true);
+               OpenView(dlgtest.ViewFile, true, true);
          }
       }
 
-      private void toolStripMenuItemResetDefaultView_Click(object sender, EventArgs e)
+      private void cOpenHomeViewMenuItem_Click(object sender, EventArgs e)
       {
-         OpenView(Path.Combine(Settings.DataPath, DefaultView), true);
+         OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
       }
 
       private void MainForm_Shown(object sender, EventArgs e)
@@ -1334,10 +1351,10 @@ namespace Dapple
          // Render once to not just show the atmosphere at startup (looks better) ---
          worldWindow.SafeRender();
 
-         if (IsMontajChildProcess)
+         /*if (IsMontajChildProcess)
             OpenView(Path.Combine(Settings.DataPath, DefaultView), false, false);
          else if (this.openView.Length > 0)
-            OpenView(openView, this.openGeoTiff.Length == 0);
+            OpenView(openView, this.openGeoTiff.Length == 0, true);
          else if (this.openGeoTiff.Length == 0 && File.Exists(Path.Combine(Settings.ConfigPath, LastView)))
          {
             if (Settings.AskLastViewAtStartup)
@@ -1356,12 +1373,42 @@ namespace Dapple
             }
 
             if (Settings.LastViewAtStartup)
-               OpenView(Path.Combine(Settings.ConfigPath, LastView), true);
+               OpenView(Path.Combine(Settings.ConfigPath, LastView), true, true);
             else
                OpenView(Path.Combine(Settings.ConfigPath, LastView), false, false);
          }
          else
-            OpenView(Path.Combine(Settings.DataPath, DefaultView), this.openGeoTiff.Length == 0);
+            OpenView(Path.Combine(Settings.DataPath, DefaultView), this.openGeoTiff.Length == 0, true);*/
+
+         //tvServers.LoadFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
+
+         if (this.openView.Length > 0)
+            OpenView(this.openView, this.openGeoTiff.Length == 0, true);
+         else if (File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
+         {
+            if (Settings.AskLastViewAtStartup && IsMontajChildProcess)
+            {
+               Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
+               msgBox.AllowSaveResponse = true;
+               msgBox.SaveResponseText = "Don't ask me again";
+               msgBox.Caption = this.Text;
+               msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
+               msgBox.AddButtons(MessageBoxButtons.YesNo);
+               msgBox.Text = "Would you like to open your last View?";
+               msgBox.Font = this.Font;
+               Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
+               if (msgBox.SaveResponse)
+                  Settings.AskLastViewAtStartup = false;
+            }
+
+            if (Settings.LastViewAtStartup)
+               OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
+         }
+         else
+         {
+            OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
+         }
+
 
          if (this.openGeoTiff.Length > 0)
             AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
@@ -1616,76 +1663,6 @@ namespace Dapple
 
       #region Export
 
-      /*
-      private void SaveGeoImage(Bitmap bitMap, string strName, string strFolder, string strFormat, string strGeotiff)
-      {
-         ImageFormat format = ImageFormat.Tiff;
-         if (strFormat == ".bmp")
-            format = ImageFormat.Bmp;
-         else if (strFormat == ".png")
-            format = ImageFormat.Png;
-         else if (strFormat == ".gif")
-            format = ImageFormat.Gif;
-
-         foreach (char c in Path.GetInvalidFileNameChars())
-            strName = strName.Replace(c, '_');
-
-         if (format == ImageFormat.Tiff)
-         {
-            string strTempBM = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + strFormat);
-            bitMap.Save(strTempBM, format);
-
-            ProcessStartInfo psi = new ProcessStartInfo(Path.GetDirectoryName(DirectoryPath) + @"\System\geotifcp.exe");
-            psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-            psi.Arguments = "-g \"" + strGeotiff + "\" \"" + strTempBM + "\" \"" + Path.Combine(strFolder, strName + strFormat) + "\"";
-
-            using (Process p = Process.Start(psi))
-               p.WaitForExit();
-
-            try
-            {
-               File.Delete(strTempBM);
-            }
-            catch
-            {
-            }
-         }
-         else
-            bitMap.Save(Path.Combine(strFolder, strName + strFormat), format);
-      }
-
-      private bool bIsDownloading()
-      {
-         int iRead, iTotal;
-         RenderableObject roBMNG = GetActiveBMNG();
-
-         if (roBMNG != null && roBMNG.IsOn && ((QuadTileSet)((RenderableObjectList)roBMNG).ChildObjects[1]).bIsDownloading(out iRead, out iTotal))
-            return true;
-
-         foreach (LayerBuilder container in cLayerList.AllLayers)
-         {
-            if (container.Visible && container.bIsDownloading(out iRead, out iTotal))
-               return true;
-         }
-
-         return false;
-      }
-
-      private class ExportEntry
-      {
-         public LayerBuilder Container;
-         public RenderableObject RO;
-         public RenderableObject.ExportInfo Info;
-
-         public ExportEntry(LayerBuilder container, RenderableObject ro, RenderableObject.ExportInfo expInfo)
-         {
-            Container = container;
-            RO = ro;
-            Info = expInfo;
-         }
-      }*/
-
       private void toolStripMenuItemExport_Click(object sender, EventArgs e)
       {
          cLayerList.CmdExportSelected();
@@ -1810,7 +1787,8 @@ namespace Dapple
 
          if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
          {
-            if (((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine)
+            if (((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine &&
+               ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Enabled)
             {
                ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetAreaList();
                foreach (String strAOI in aAOIs)
@@ -2010,10 +1988,10 @@ namespace Dapple
          return bmp;
       }
 
-      bool OpenView(string filename, bool bGoto)
+      /*bool OpenView(string filename, bool bGoto)
       {
          return OpenView(filename, bGoto, true);
-      }
+      }*/
 
       bool OpenView(string filename, bool bGoto, bool bLoadLayers)
       {
@@ -2063,7 +2041,7 @@ namespace Dapple
          {
             if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
             {
-               return OpenView(Path.Combine(Settings.DataPath, DefaultView), true);
+               return OpenView(Path.Combine(Settings.DataPath, DefaultView), true, true);
             }
          }
 
@@ -2158,6 +2136,7 @@ namespace Dapple
          this.WindowState = FormWindowState.Minimized;
 
          SaveLastView();
+         //tvServers.SaveFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
 
          // Ensure cleanup
          for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
@@ -2221,7 +2200,7 @@ namespace Dapple
                string strDatasetLink = strData[5];
 
                if (strView.Length > 0)
-                  OpenView(strView, strGeoTiff.Length == 0);
+                  OpenView(strView, strGeoTiff.Length == 0, true);
                if (strGeoTiff.Length > 0)
                   AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
                if (strDatasetLink.Length > 0)
@@ -3256,7 +3235,6 @@ namespace Dapple
                   File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
                }
                cMetadataBrowser.Url = metaUri;
-               cMetadataBrowser.Refresh(WebBrowserRefreshOption.Completely);
             }
             Application.DoEvents();
          }
@@ -3444,6 +3422,9 @@ namespace Dapple
                   m_oSignaller.Reset();
                }
 
+               if (oCurrentBuilder is AsyncBuilder)
+                  ((AsyncBuilder)oCurrentBuilder).WaitUntilLoaded();
+
                if (!oCurrentBuilder.Equals(oLastBuilder))
                {
                   m_hOwner.LoadMetadata(new Object[] { oCurrentBuilder });
@@ -3544,6 +3525,11 @@ namespace Dapple
       void WorldCamera_CameraChanged(object sender, EventArgs e)
       {
          SetSearchable(true);
+      }
+
+      private void setAsMyHomeViewToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
       }
    }
 }

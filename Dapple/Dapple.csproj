@@ -777,6 +777,9 @@
     <Content Include="Plugins\VirtualEarth\VirtualEarthPushPin.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\default.dapple_serverlist">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Data\LayerSet.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -909,6 +912,7 @@
     <None Include="Resources\search.png" />
     <None Include="Resources\server-refresh.png" />
     <None Include="Resources\server-remove.png" />
+    <None Include="Resources\server-favourite.png" />
     <Content Include="Resources\settings.png" />
     <None Include="Resources\tab-tree.png" />
     <None Include="Resources\tab-list.png" />
@@ -921,6 +925,8 @@
     <Content Include="Resources\trackbutton_disable.png" />
     <Content Include="Resources\usgs.ico" />
     <Content Include="Resources\vertical-exag.png" />
+    <None Include="Resources\view-home.png" />
+    <None Include="Resources\view-save.png" />
     <Content Include="Resources\wms-18x18.png" />
     <Content Include="Resources\wms.ico" />
     <Content Include="Resources\wms_gray.ico" />

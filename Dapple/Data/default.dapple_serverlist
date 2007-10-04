@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<favorites_list>
+  <dap_servers>
+    <dap_server url="http://dap.geosoft.com" />
+    <dap_server url="http://gdrdap.agg.nrcan.gc.ca" />
+  </dap_servers>
+  <wms_servers>
+    <wms_server url="http://gdr.ess.nrcan.gc.ca/wmsconnector/com.esri.wms.Esrimap/gdr_e" />
+    <wms_server url="http://atlas.gc.ca/cgi-bin/atlaswms_en?VERSION=1.1.1" />
+    <wms_server url="http://apps1.gdr.nrcan.gc.ca/cgi-bin/canmin_en-ca_ows" />
+    <wms_server url="http://www.ga.gov.au/bin/getmap.pl" />
+    <wms_server url="http://apps1.gdr.nrcan.gc.ca/cgi-bin/worldmin_en-ca_ows" />
+    <wms_server url="http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap" />
+    <wms_server url="http://maps.customweather.com/image" />
+    <wms_server url="http://cgkn.net/cgi-bin/cgkn_wms" />
+    <wms_server url="http://wms.jpl.nasa.gov/wms.cgi" />
+  </wms_servers>
+  <arcims_servers>
+    <arcims_server url="http://gdr.ess.nrcan.gc.ca/servlet/com.esri.esrimap.Esrimap" />
+    <arcims_server url="http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap" />
+  </arcims_servers>
+  <default_server url="http://dap.geosoft.com" />
+</favorites_list>

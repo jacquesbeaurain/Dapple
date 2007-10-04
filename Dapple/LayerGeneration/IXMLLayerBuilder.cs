@@ -218,11 +218,13 @@ namespace Dapple.LayerGeneration
    public abstract class ServerBuilder : BuilderDirectory
    {
       protected ServerUri m_oUri;
+      protected bool m_blEnabled = true;
 
-      public ServerBuilder(string name, IBuilder parent, ServerUri oUri)
+      public ServerBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
          : base(name, parent, true)
       {
          m_oUri = oUri;
+         m_blEnabled = blEnabled;
       }
 
       /// <summary>
@@ -232,6 +234,23 @@ namespace Dapple.LayerGeneration
       {
          get { return m_oUri; }
       }
+
+      [System.ComponentModel.Browsable(true)]
+      [System.ComponentModel.ReadOnly(true)]
+      public bool Enabled
+      {
+         get { return m_blEnabled; }
+         set
+         {
+            if (value != m_blEnabled)
+            {
+               m_blEnabled = value;
+               SetEnabled(value);
+            }
+         }
+      }
+
+      protected abstract void SetEnabled(bool blValue);
 
       [System.ComponentModel.Browsable(false)]
       public abstract System.Drawing.Icon Icon
@@ -250,8 +269,8 @@ namespace Dapple.LayerGeneration
       protected bool m_blnIsLoading = true;
       private ManualResetEvent m_oLoadBlock = new ManualResetEvent(false);
       
-      public AsyncBuilder(string name, IBuilder parent, ServerUri oUri)
-         : base(name, parent, oUri)
+      public AsyncBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
+         : base(name, parent, oUri, blEnabled)
       {
       }
 
@@ -301,6 +320,10 @@ namespace Dapple.LayerGeneration
             {
                return "offline";
             }
+            if (m_blEnabled == false)
+            {
+               return "disserver";
+            }
             return "enserver";
          }
       }
@@ -314,15 +337,21 @@ namespace Dapple.LayerGeneration
       /// <returns></returns>
       public override TreeNode[] getChildTreeNodes()
       {
-         if (IsLoading)
+         if (!m_blEnabled)
+         {
+            return new TreeNode[0];
+         }
+         else if (IsLoading)
          {
             TreeNode[] result = new TreeNode[1];
             result[0] = getLoadingNode();
 
             return result;
          }
-
-         return base.getChildTreeNodes();
+         else
+         {
+            return base.getChildTreeNodes();
+         }
       }
 
       /// <summary>
@@ -343,11 +372,17 @@ namespace Dapple.LayerGeneration
       /// <param name="oTree">The ServerTree which contains oParent.</param>
       public void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
       {
-         if (IsLoading)
+         if (m_blEnabled == false)
+         {
+            oParent.ImageIndex = MainForm.ImageListIndex("disserver");
+            oParent.SelectedImageIndex = MainForm.ImageListIndex("disserver");
+            oParent.Text = Name + " (Disabled)";
+         }
+         else if (IsLoading)
          {
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.Text = Name;
+            oParent.Text = Name + "(Loading...)";
          }
          else if (LoadingErrorOccurred)
          {
@@ -357,6 +392,8 @@ namespace Dapple.LayerGeneration
          }
          else
          {
+            oParent.ImageIndex = MainForm.ImageListIndex("enserver");
+            oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
             oParent.Text = Name + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
          }
       }

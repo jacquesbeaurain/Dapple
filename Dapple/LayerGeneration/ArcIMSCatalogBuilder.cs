@@ -31,27 +31,39 @@ namespace Dapple.LayerGeneration
          m_oWorldWindow = oWorldWindow;
       }
 
-      public BuilderDirectory AddServer(ArcIMSServerUri oUri)
+      public BuilderDirectory AddServer(ArcIMSServerUri oUri, bool blEnabled)
       {
          // create the cache directory
          String savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);
-
-         // download the catalog
          String xmlPath = Path.Combine(savePath, "__catalog.xml");
 
-         ArcIMSCatalogDownload download = new ArcIMSCatalogDownload(oUri, m_iIndexGenerator);
+         ArcIMSServerBuilder dir = new ArcIMSServerBuilder(this, oUri, xmlPath, blEnabled);
+         SubList.Add(dir);
+
+         if (blEnabled)
+         {
+            QueueServerDownload(dir);
+         }
+
+         return dir;
+      }
+
+      private void QueueServerDownload(ArcIMSServerBuilder oBuilder)
+      {
+         // create the cache directory
+         String savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oBuilder.Uri.ToCacheDirectory());
+         Directory.CreateDirectory(savePath);
+         String xmlPath = Path.Combine(savePath, "__catalog.xml");
+
+         // download the catalog
+         ArcIMSCatalogDownload download = new ArcIMSCatalogDownload(((ArcIMSServerUri)oBuilder.Uri), m_iIndexGenerator);
          m_iIndexGenerator++;
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         BuilderDirectory dir = new ArcIMSServerBuilder(this, oUri, xmlPath);
-         SubList.Add(dir);
-
-         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, dir);
+         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, oBuilder);
          download.BackgroundDownloadFile();
-
-         return dir;
       }
 
       public bool ContainsServer(ArcIMSServerUri oUri)
@@ -67,6 +79,15 @@ namespace Dapple.LayerGeneration
       public void UncacheServer(ArcIMSServerUri oUri)
       {
          m_oServers.Remove(oUri);
+
+         foreach (ArcIMSServerBuilder iter in m_colSublist)
+         {
+            if (iter.Uri.Equals(oUri))
+            {
+               m_colSublist.Remove(iter);
+               break;
+            }
+         }
       }
 
       public ArrayList GetServers()
@@ -151,16 +172,43 @@ namespace Dapple.LayerGeneration
             }
          }
       }
+
+      public ArcIMSServerBuilder GetServer(ArcIMSServerUri oUri)
+      {
+         foreach (ArcIMSServerBuilder iter in m_colSublist)
+         {
+            if (iter.Uri.Equals(oUri))
+               return iter;
+         }
+         return null;
+      }
+
+      internal void Enable(ArcIMSServerBuilder oBuilder)
+      {
+         if (oBuilder.LoadingPending)
+         {
+            oBuilder.LoadingPending = false;
+            QueueServerDownload(oBuilder);
+         }
+      }
    }
 
    public class ArcIMSServerBuilder : AsyncBuilder
    {
       string m_strCatalogPathname;
+      bool m_blLoadingPending = true;
 
-      public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname)
-         : base(oUri.ToBaseUri(), parent, oUri)
+      public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname, bool blEnabled)
+         : base(oUri.ToBaseUri(), parent, oUri, blEnabled)
       {
          m_strCatalogPathname = strCatalogPathname;
+      }
+
+      [System.ComponentModel.Browsable(false)]
+      public bool LoadingPending
+      {
+         get { return m_blLoadingPending; }
+         set { m_blLoadingPending = value; }
       }
 
       [System.ComponentModel.Browsable(false)]
@@ -198,6 +246,11 @@ namespace Dapple.LayerGeneration
       {
          get { return Dapple.Properties.Resources.arcims; }
       }
+
+      protected override void SetEnabled(bool blValue)
+      {
+         ((ArcIMSCatalogBuilder)Parent).Enable(this);
+      }
    }
 
 
@@ -208,7 +261,7 @@ namespace Dapple.LayerGeneration
       private ArcIMSServiceDownload m_hDownload;
       private ServerTree.LoadFinishedCallbackHandler LoadFinished;
 
-      public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished) : base(szName, hServer, hServer.Uri)
+      public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished) : base(szName, hServer, hServer.Uri, true)
       {
          m_szName = szName;
          LoadFinished = hLoadFinished;
@@ -298,7 +351,7 @@ namespace Dapple.LayerGeneration
 
             lock (m_oLock)
             {
-               foreach (XmlElement nLayerElement in oNodeList) //CMTODO: get maxscale and minscale here?
+               foreach (XmlElement nLayerElement in oNodeList)
                {
                   String szID = nLayerElement.GetAttribute("id");
                   String szTitle = nLayerElement.GetAttribute("name");
@@ -373,6 +426,11 @@ namespace Dapple.LayerGeneration
          {
             return "imageservice";
          }
+      }
+
+      protected override void SetEnabled(bool blValue)
+      {
+         throw new Exception("The method or operation is not implemented.");
       }
    }
 }

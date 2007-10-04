@@ -658,6 +658,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap server_favourite {
+            get {
+                object obj = ResourceManager.GetObject("server_favourite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap server_refresh {
             get {
                 object obj = ResourceManager.GetObject("server_refresh", resourceCulture);
@@ -752,6 +759,20 @@ namespace Dapple.Properties {
         internal static System.Drawing.Bitmap vertical_exag {
             get {
                 object obj = ResourceManager.GetObject("vertical_exag", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap view_home {
+            get {
+                object obj = ResourceManager.GetObject("view_home", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap view_save {
+            get {
+                object obj = ResourceManager.GetObject("view_save", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
