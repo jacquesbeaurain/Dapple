@@ -45,36 +45,43 @@ namespace Dapple.LayerGeneration
          m_dMaxScale = dMaxScale;
 
          m_dLevelZeroTileSizeDegrees = 22.5;
-         m_iLevels = 6;
+         m_iLevels = 1;
+         m_iPixels = 256;
 
-         /*while (m_dLevelZeroTileSizeDegrees > MaxDegreesPerTile)
+         while ((m_dLevelZeroTileSizeDegrees / m_iPixels) > m_dMaxScale)
          {
-            m_dLevelZeroTileSizeDegrees /= 2;
+            m_dLevelZeroTileSizeDegrees /= 2.0;
          }
 
-         if (m_dLevelZeroTileSizeDegrees < MinDegreesPerTile)
+         if (m_dLevelZeroTileSizeDegrees / m_iPixels < m_dMinScale)
          {
-            m_dLevelZeroTileSizeDegrees = 1;
-            m_iPixels = (int)(111195.0 * (m_dMaxScale + m_dMinScale) / 2.0);
+            double dMidLZTS = (m_dMinScale + m_dMaxScale) * m_iPixels / 2.0;
+            double dCompressRatio = m_dLevelZeroTileSizeDegrees / dMidLZTS;
+            m_iPixels = (int)(m_iPixels * dCompressRatio);
+         }
+         else
+         {
+            double dIter = m_dLevelZeroTileSizeDegrees / 2.0;
+
+            while (dIter / m_iPixels > m_dMinScale && dIter > 0.35)
+            {
+               dIter /= 2.0;
+               m_iLevels++;
+            }
          }
 
-         m_szTreeNodeText = String.Format("{0}[{4}] ({1:f2}-{2:f2}) {3}", szLayerTitle, Math.Floor(MinMetersPerPixel), Math.Floor(MaxMetersPerPixel), m_dLevelZeroTileSizeDegrees, m_szLayerID);
-         */
+         // --- Check the calculations ---
+         if (m_dLevelZeroTileSizeDegrees > m_dMaxScale * m_iPixels) throw new InvalidDataException("LZTS is wrong");
+         if (m_dLevelZeroTileSizeDegrees < m_dMinScale * m_iPixels * Math.Pow(2.0, m_iLevels - 1)) throw new InvalidDataException("Levels is wrong");
       }
 
       #endregion
 
       [System.ComponentModel.Browsable(true)]
-      public double MinScale { get { return m_dMinScale; } }
+      public double MinMapUnitsPerPixel { get { return m_dMinScale; } }
 
       [System.ComponentModel.Browsable(true)]
-      public double MaxScale { get { return m_dMaxScale; } }
-
-      [System.ComponentModel.Browsable(true)]
-      public double MinMetersPerPixel { get { return 1.0 / m_dMinScale; } }
-
-      [System.ComponentModel.Browsable(true)]
-      public double MaxMetersPerPixel { get { return 1.0 / m_dMaxScale; } }
+      public double MaxMapUnitsPerPixel { get { return m_dMaxScale; } }
 
       #region ImageBuilder Implementations
 

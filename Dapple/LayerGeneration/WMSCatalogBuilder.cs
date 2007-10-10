@@ -141,6 +141,16 @@ namespace Dapple.LayerGeneration
          {
             WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[((IndexedWebDownload)download).IndexNumber] as WMSServerBuilder;
 
+            try
+            {
+               download.Verify();
+            }
+            catch (Exception e)
+            {
+               serverDir.SetLoadFailed("Error accessing catalog: " + e.Message);
+               return;
+            }
+
             if (!File.Exists(serverDir.CapabilitiesFilePath))
             {
                serverDir.SetLoadFailed("Could not retrieve configuration");

@@ -215,6 +215,8 @@ namespace Dapple
       {
          if (m_oLayers.Contains(oNewBuilder)) return;
 
+         oNewBuilder.Reset();
+
          m_oLayers.Insert(iInsertIndex, oNewBuilder);
          cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
@@ -1016,14 +1018,19 @@ namespace Dapple
                int iExportPixelsX, iExportPixelsY;
 
                // Minimize the estimated extents to what is available
-               GeographicBoundingBox oExtractArea = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+               double dMinX = double.MaxValue;
+               double dMaxX = double.MinValue;
+               double dMinY = double.MaxValue;
+               double dMaxY = double.MinValue;
+
                foreach (ExportEntry oExportEntry in aExportList)
                {
-                  oExtractArea.North = Math.Max(oExtractArea.North, oExportEntry.Info.dMaxLat);
-                  oExtractArea.South = Math.Min(oExtractArea.South, oExportEntry.Info.dMinLat);
-                  oExtractArea.East = Math.Max(oExtractArea.East, oExportEntry.Info.dMaxLon);
-                  oExtractArea.West = Math.Min(oExtractArea.West, oExportEntry.Info.dMinLon);
+                  dMaxY = Math.Max(dMaxY, oExportEntry.Info.dMaxLat);
+                  dMinY = Math.Min(dMinY, oExportEntry.Info.dMinLat);
+                  dMaxX = Math.Max(dMaxX, oExportEntry.Info.dMaxLon);
+                  dMinX = Math.Min(dMinX, oExportEntry.Info.dMinLon);
                }
+               GeographicBoundingBox oExtractArea = new GeographicBoundingBox(dMaxY, dMinY, dMinX, dMaxX);
 
                oViewedArea.East = Math.Min(oViewedArea.East, oExtractArea.East);
                oViewedArea.North = Math.Min(oViewedArea.North, oExtractArea.North);

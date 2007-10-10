@@ -422,5 +422,11 @@ namespace Dapple.LayerGeneration
       }
 
       #endregion
+
+      internal void Reset()
+      {
+         m_bOpacity = Byte.MaxValue;
+         m_IsOn = true;
+      }
    }
 }

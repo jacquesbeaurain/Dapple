@@ -121,6 +121,16 @@ namespace Dapple.LayerGeneration
          {
             ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[((ArcIMSCatalogDownload)download).IndexNumber] as ArcIMSServerBuilder;
 
+            try
+            {
+               download.Verify();
+            }
+            catch (Exception e)
+            {
+               serverDir.SetLoadFailed("Error accessing catalog: " + e.Message);
+               return;
+            }
+
             if (!File.Exists(serverDir.CatalogFilename))
             {
                serverDir.SetLoadFailed("Could not retrieve catalog");

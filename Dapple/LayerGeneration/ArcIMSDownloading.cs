@@ -61,37 +61,6 @@ namespace Dapple.LayerGeneration
             hResponseDocument.Load(oResponseXmlStream);
             downloadInfo.ContentStream.Close();
 
-            /*XmlElement nScaleElement = hResponseDocument.SelectSingleNode("/ARCXML/RESPONSE/IMAGE/SCALE") as XmlElement;
-            if (nScaleElement == null)
-            {
-               Console.WriteLine("###### Image returned didn't say scale ######");
-            }
-            else
-            {
-               Console.WriteLine("###### Image returned has scale " + nScaleElement.GetAttribute("rf") + " ######");
-            }
-            Console.WriteLine("Degrees: "  + oCastDL.Degrees);
-            Console.WriteLine("Pixels: " + oCastDL.TextureSize);
-            Console.WriteLine("Map degrees per pixel: " + (oCastDL.Degrees / (double)oCastDL.TextureSize));
-            Console.WriteLine("Map meters per pixel: " + (oCastDL.Degrees / (double)oCastDL.TextureSize) * 111195.0);
-
-            bool blLayerActuallyRendered = false;
-            foreach (XmlElement oNode in hResponseDocument.SelectNodes("/ARCXML/RESPONSE/IMAGE/LAYERS/LAYER"))
-            {
-               Console.WriteLine(oNode.OuterXml);
-               if (oNode.GetAttribute("id").Equals(((ArcIMSImageStore)m_imageStore).LayerID))
-               {
-                  blLayerActuallyRendered = true;
-               }
-            }
-
-            if (!blLayerActuallyRendered)
-            {
-               Console.WriteLine("****** Requested layer was not drawn in the image! ******");
-            }
-
-            Console.WriteLine("############");*/
-
             // Get the URL, save the image
             XmlElement nOutputElement = hResponseDocument.SelectSingleNode("/ARCXML/RESPONSE/IMAGE/OUTPUT") as XmlElement;
             if (nOutputElement != null)
@@ -323,8 +292,7 @@ namespace Dapple.LayerGeneration
             nArcIMSElement.SetAttribute("version", "1.1");
             XmlElement nRequestElement = oRequestDoc.CreateElement("REQUEST", oRequestDoc.NamespaceURI);
             XmlElement nGetImageElement = oRequestDoc.CreateElement("GET_IMAGE", oRequestDoc.NamespaceURI);
-            nGetImageElement.SetAttribute("show", "strict layers");
-            nGetImageElement.SetAttribute("returnscale", "true");
+            nGetImageElement.SetAttribute("show", "layers");
             XmlElement nPropertiesElement = oRequestDoc.CreateElement("PROPERTIES", oRequestDoc.NamespaceURI);
 
             XmlElement nEnvelopeElement = oRequestDoc.CreateElement("ENVELOPE", oRequestDoc.NamespaceURI);
@@ -349,8 +317,8 @@ namespace Dapple.LayerGeneration
             nLayerListElement.AppendChild(nLayerDefElement);
 
             XmlElement nBackgroundElement = oRequestDoc.CreateElement("BACKGROUND", oRequestDoc.NamespaceURI);
-            nBackgroundElement.SetAttribute("color", "255,255,255");
-            nBackgroundElement.SetAttribute("transcolor", "255,255,255");
+            nBackgroundElement.SetAttribute("color", "128,128,255");
+            nBackgroundElement.SetAttribute("transcolor", "128,128,255");
             nPropertiesElement.AppendChild(nBackgroundElement);
 
             XmlElement nFeatureCoordSysElement = oRequestDoc.CreateElement("FEATURECOORDSYS", oRequestDoc.NamespaceURI);
@@ -360,6 +328,10 @@ namespace Dapple.LayerGeneration
             XmlElement nFilterCoordSys = oRequestDoc.CreateElement("FILTERCOORDSYS", oRequestDoc.NamespaceURI);
             nFilterCoordSys.SetAttribute("id", "4326");
             nPropertiesElement.AppendChild(nFilterCoordSys);
+
+            XmlElement nOutputElement = oRequestDoc.CreateElement("OUTPUT", oRequestDoc.NamespaceURI);
+            nOutputElement.SetAttribute("type", "png");
+            nPropertiesElement.AppendChild(nOutputElement);
 
             nGetImageElement.AppendChild(nPropertiesElement);
             nRequestElement.AppendChild(nGetImageElement);

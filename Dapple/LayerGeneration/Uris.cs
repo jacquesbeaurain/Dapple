@@ -456,7 +456,7 @@ namespace Dapple.LayerGeneration
             getAttribute("name"),
             int.Parse(getAttribute("height")),
             bool.Parse(getAttribute("terrainmapped")),
-            new GeographicBoundingBox(double.Parse(getAttribute("north")), double.Parse(getAttribute("south")), double.Parse(getAttribute("east")), double.Parse(getAttribute("west"))),
+            new GeographicBoundingBox(double.Parse(getAttribute("north")), double.Parse(getAttribute("south")), double.Parse(getAttribute("west")), double.Parse(getAttribute("east"))),
             double.Parse(getAttribute("lvl0tilesize")),
             int.Parse(getAttribute("levels")),
             int.Parse(getAttribute("size")),
