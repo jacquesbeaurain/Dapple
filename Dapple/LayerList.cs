@@ -199,7 +199,6 @@ namespace Dapple
 
       public void SetBaseLayer(LayerBuilder oBaseLayer)
       {
-         // For now, just add a normal layer.  Later, we'll make it super special
          // TODO: remove an existing base layer, if necessary.
          m_hBaseLayer = oBaseLayer;
          oBaseLayer.Temporary = true;
@@ -245,7 +244,8 @@ namespace Dapple
          }
          else
          {
-            m_oLayers[iInsertIndex].AsyncAddLayer();
+            if (oNewBuilder != m_hBaseLayer)
+               m_oLayers[iInsertIndex].AsyncAddLayer();
          }
 
          cLayerList.Items[iInsertIndex].Selected = true;
@@ -926,7 +926,7 @@ namespace Dapple
             LayerBuilder oBuilder = oUri.getBuilder(MainForm.WorldWindowSingleton, oTree);
             oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
             oBuilder.Opacity = (byte)dataset.opacity.Value;
-            AddLayer(oBuilder);
+            AddLayer(oBuilder, i);
          }
 
          m_blSupressSelectedChanged = false;
@@ -1296,8 +1296,6 @@ namespace Dapple
 
          private void ApplyTransparencies(byte bSliderValue)
          {
-            if (bSliderValue == m_bReferenceValue) return;
-
             bool blNegative = bSliderValue < m_bReferenceValue;
             double dRatio = 0.0;
 
@@ -1315,13 +1313,20 @@ namespace Dapple
                LayerBuilder oBuilder = m_aBuilders[count];
                byte bOriginalOpacity = m_aOriginalOpacities[count];
 
-               if (blNegative)
+               if (bSliderValue == m_bReferenceValue)
                {
-                  oBuilder.Opacity = (byte)(bOriginalOpacity * dRatio);
+                  oBuilder.Opacity = bOriginalOpacity;
                }
                else
                {
-                  oBuilder.Opacity = (byte)((Byte.MaxValue - bOriginalOpacity) * dRatio + bOriginalOpacity);
+                  if (blNegative)
+                  {
+                     oBuilder.Opacity = (byte)(bOriginalOpacity * dRatio);
+                  }
+                  else
+                  {
+                     oBuilder.Opacity = (byte)((Byte.MaxValue - bOriginalOpacity) * dRatio + bOriginalOpacity);
+                  }
                }
             }
          }

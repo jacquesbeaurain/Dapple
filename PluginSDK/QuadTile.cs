@@ -146,8 +146,8 @@ namespace WorldWind.Renderable
 			if (quadTileSet.ImageStores[0] is VEImageStore)
 				row = MathEngine.GetRowFromLatitude(-north, north - south);
 			else
-				row = MathEngine.GetRowFromLatitude(south, north - south);
-			col = MathEngine.GetColFromLongitude(west, east - west);
+				row = MathEngine.GetRowFromLatitude((north + south) / 2.0, north - south);
+			col = MathEngine.GetColFromLongitude((east + west) / 2.0, east - west);
 
 			downloadRequests = new List<GeoSpatialDownloadRequest>();
 

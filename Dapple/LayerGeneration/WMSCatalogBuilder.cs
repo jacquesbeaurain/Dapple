@@ -232,6 +232,10 @@ namespace Dapple.LayerGeneration
             oBuilder.LoadingPending = false;
             QueueServerDownload(oBuilder);
          }
+         else
+         {
+            if (LoadFinished != null) LoadFinished();
+         }
       }
    }
 

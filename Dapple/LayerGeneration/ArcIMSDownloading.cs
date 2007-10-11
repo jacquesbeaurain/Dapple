@@ -317,8 +317,8 @@ namespace Dapple.LayerGeneration
             nLayerListElement.AppendChild(nLayerDefElement);
 
             XmlElement nBackgroundElement = oRequestDoc.CreateElement("BACKGROUND", oRequestDoc.NamespaceURI);
-            nBackgroundElement.SetAttribute("color", "128,128,255");
-            nBackgroundElement.SetAttribute("transcolor", "128,128,255");
+            nBackgroundElement.SetAttribute("color", "1,1,1");
+            nBackgroundElement.SetAttribute("transcolor", "1,1,1");
             nPropertiesElement.AppendChild(nBackgroundElement);
 
             XmlElement nFeatureCoordSysElement = oRequestDoc.CreateElement("FEATURECOORDSYS", oRequestDoc.NamespaceURI);

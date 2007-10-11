@@ -349,18 +349,18 @@ namespace WorldWind
 
          if (layer.HasLatLonBoundingBox())
          {
-            wmsLayer.North = Decimal.Parse(layer.LatLonBoundingBox.maxy.Value, CultureInfo.InvariantCulture);
-            wmsLayer.South = Decimal.Parse(layer.LatLonBoundingBox.miny.Value, CultureInfo.InvariantCulture);
-            wmsLayer.West = Decimal.Parse(layer.LatLonBoundingBox.minx.Value, CultureInfo.InvariantCulture);
-            wmsLayer.East = Decimal.Parse(layer.LatLonBoundingBox.maxx.Value, CultureInfo.InvariantCulture);
+            wmsLayer.North = Convert.ToDecimal(Double.Parse(layer.LatLonBoundingBox.maxy.Value, CultureInfo.InvariantCulture));
+            wmsLayer.South = Convert.ToDecimal(Double.Parse(layer.LatLonBoundingBox.miny.Value, CultureInfo.InvariantCulture));
+            wmsLayer.West = Convert.ToDecimal(Double.Parse(layer.LatLonBoundingBox.minx.Value, CultureInfo.InvariantCulture));
+            wmsLayer.East = Convert.ToDecimal(Double.Parse(layer.LatLonBoundingBox.maxx.Value, CultureInfo.InvariantCulture));
             parentLatLonBoundingBox = layer.LatLonBoundingBox;
          }
          else if (parentLatLonBoundingBox != null)
          {
-            wmsLayer.North = Decimal.Parse(parentLatLonBoundingBox.maxy.Value, CultureInfo.InvariantCulture);
-            wmsLayer.South = Decimal.Parse(parentLatLonBoundingBox.miny.Value, CultureInfo.InvariantCulture);
-            wmsLayer.West = Decimal.Parse(parentLatLonBoundingBox.minx.Value, CultureInfo.InvariantCulture);
-            wmsLayer.East = Decimal.Parse(parentLatLonBoundingBox.maxx.Value, CultureInfo.InvariantCulture);
+            wmsLayer.North = Convert.ToDecimal(Double.Parse(parentLatLonBoundingBox.maxy.Value, CultureInfo.InvariantCulture));
+            wmsLayer.South = Convert.ToDecimal(Double.Parse(parentLatLonBoundingBox.miny.Value, CultureInfo.InvariantCulture));
+            wmsLayer.West = Convert.ToDecimal(Double.Parse(parentLatLonBoundingBox.minx.Value, CultureInfo.InvariantCulture));
+            wmsLayer.East = Convert.ToDecimal(Double.Parse(parentLatLonBoundingBox.maxx.Value, CultureInfo.InvariantCulture));
          }
 
          if (layer.HasStyle())

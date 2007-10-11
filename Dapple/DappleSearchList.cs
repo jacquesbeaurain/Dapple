@@ -527,7 +527,7 @@ namespace Dapple.CustomControls
             }
             else if (szType.Equals("wms", StringComparison.InvariantCultureIgnoreCase))
             {
-               String szUri = "gxwms://" + HttpUtility.UrlEncode(m_aCommonAttributes["url"]);
+               String szUri = "gxwms://" + m_aCommonAttributes["url"];
                if (!szUri.Contains("?")) szUri += "?";
                szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
                szUri += "&layer=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layername"]);

@@ -1616,6 +1616,24 @@ namespace Dapple
          Form oAddForm = cMenuItem_AddServer.Tag as Form;
 
          if (oAddForm != null) oAddForm.ShowDialog();
+
+         if (oAddForm is AddDAP)
+         {
+            Server oDummyVariable;
+            AddDAPServer(((AddDAP)oAddForm).Url, out oDummyVariable, true);
+         }
+         else if (oAddForm is AddWMS)
+         {
+            AddWMSServer(((AddWMS)oAddForm).WmsURL, true, true);
+         }
+         else if (oAddForm is AddArcIMS)
+         {
+            AddArcIMSServer(new ArcIMSServerUri(((AddArcIMS)oAddForm).URL), true, true);
+         }
+         else
+         {
+            throw new InvalidOperationException("Unknown server type");
+         }
       }
 
       void cMenuItem_AddLayer_Click(object sender, EventArgs e)
@@ -1646,12 +1664,14 @@ namespace Dapple
          {
             ((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
 
-            CMRebuildTree();
+            LoadFinished();
          }
          else if (SelectedNode.Tag is Server)
          {
             ((Server)SelectedNode.Tag).Enabled ^= true;
             GetCatalogHierarchy();
+
+            LoadFinished();
          }
          else
             MainForm.NotifyUnimplemented();
