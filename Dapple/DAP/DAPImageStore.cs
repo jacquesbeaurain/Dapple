@@ -5,6 +5,7 @@ using System.IO;
 using WorldWind;
 using WorldWind.Net.Wms;
 using WorldWind.Renderable;
+using Geosoft.Dap.Common;
 
 namespace Dapple.DAP
 {
@@ -15,7 +16,7 @@ namespace Dapple.DAP
 	{
 		#region Private Members
 
-      protected string m_strName;
+      protected DataSet m_oDataSet;
       protected Geosoft.GX.DAPGetData.Server m_oServer;
 		protected int m_TextureSizePixels;
 
@@ -31,11 +32,11 @@ namespace Dapple.DAP
            }
        }
 
-      public string Name
+      public DataSet DataSet
       {
          get
          {
-            return m_strName;
+            return m_oDataSet;
          }
       }
 
@@ -61,10 +62,10 @@ namespace Dapple.DAP
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:DAPImageStore"/> class.
 		/// </summary>
-      public DAPImageStore(string name,
+      public DAPImageStore(DataSet oDataSet,
          Geosoft.GX.DAPGetData.Server server)
       {
-         m_strName = name;
+         m_oDataSet = oDataSet;
          m_oServer = server;
       }
 

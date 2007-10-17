@@ -313,7 +313,7 @@ namespace WorldWind.Camera
          if (tangentalDistance < 1000000 || double.IsNaN(tangentalDistance))
             tangentalDistance = 1000000;
 
-         m_absoluteProjectionMatrix = Matrix4d.PerspectiveFovRH(_fov.Radians, aspectRatio, zNear, tangentalDistance);
+         m_absoluteProjectionMatrix = Matrix4d.PerspectiveFovRH(_fov.Radians, aspectRatio, zNear, /*tangentalDistance*/ _worldRadius * 0.9 + _altitude);
 
          m_absoluteViewMatrix = Matrix4d.LookAtRH(
             MathEngine.SphericalToCartesian(
@@ -323,10 +323,10 @@ namespace WorldWind.Camera
             Point3d.Empty,
             new Point3d(0, 0, 1));
 
-         m_absoluteViewMatrix *= Matrix4d.RotationYawPitchRoll(
+         /*m_absoluteViewMatrix *= Matrix4d.RotationYawPitchRoll(
             0,
             -_tilt.Radians,
-            this._heading.Radians);
+            this._heading.Radians);*/
          //m_absoluteViewMatrix *= Matrix4d.Translation(0, 0, (-this._distance + curCameraElevation));
          m_absoluteViewMatrix *= Matrix4d.Translation(0, 0, (-this._distance));
          m_absoluteViewMatrix *= Matrix4d.RotationZ(this._bank.Radians);

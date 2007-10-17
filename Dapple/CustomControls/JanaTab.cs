@@ -37,6 +37,18 @@ namespace Dapple.CustomControls
 
       #endregion
 
+      #region Properties
+
+      public int SelectedIndex
+      {
+         get
+         {
+            return m_iCurrentPage;
+         }
+      }
+
+      #endregion
+
       #region Events
 
       void PageChanged(int iIndex)

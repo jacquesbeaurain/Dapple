@@ -118,12 +118,19 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bAccept_Click(object sender, EventArgs e)
       {
+         DownloadDatasets();
+
+         this.Close();
+      }
+
+      public void DownloadDatasets()
+      {
          MainForm.MontajInterface.Download(m_oDownloadXml.OuterXml);
-         
+
          MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
          foreach (ListViewItem oItem in lvDatasets.Items)
-         {            
+         {
             try
             {
                string strFile = oItem.Tag as string;
@@ -131,8 +138,8 @@ namespace Dapple.Extract
             }
             catch { }
          }
-         this.Close();
       }
+
       #endregion      
    }
 }

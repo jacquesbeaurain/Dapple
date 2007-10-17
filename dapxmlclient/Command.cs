@@ -1294,6 +1294,50 @@ namespace Geosoft.Dap
       }
 
       /// <summary>
+      /// Generate a tile download request XML.
+      /// </summary>
+      /// <param name="oDataSet">The dataset name to download.</param>
+      /// <param name="iLevel">The level of the tile.</param>
+      /// <param name="iRow">The tile row.</param>
+      /// <param name="iColumn">The tile column.</param>
+      /// <param name="szUrl">The address to send the request to.</param>
+      /// <returns></returns>
+      public System.Xml.XmlDocument GetTileRequestDocument(DataSet oDataSet, int iLevel, int iRow, int iColumn, out String szUrl)
+      {
+         return GetTileRequestDocument(null, oDataSet, iLevel, iRow, iColumn, out szUrl);
+      }
+
+      /// <summary>
+      /// Generate a tile download request XML.
+      /// </summary>
+      /// <param name="szHandle">A unique identifier for the request/response pair.</param>
+      /// <param name="oDataSet">The dataset name to download.</param>
+      /// <param name="iLevel">The level of the tile.</param>
+      /// <param name="iRow">The tile row.</param>
+      /// <param name="iColumn">The tile column.</param>
+      /// <param name="szUrl">The address to send the request to.</param>
+      /// <returns></returns>
+      public System.Xml.XmlDocument GetTileRequestDocument(String szHandle, DataSet oDataSet, int iLevel, int iRow, int iColumn, out String szUrl)
+      {
+         System.Xml.XmlDocument hRequestDocument = null;
+
+         try
+         {
+            m_oLock.AcquireReaderLock(-1);
+            szUrl = CreateUrl(Constant.Request.IMAGE);
+
+            hRequestDocument = m_hEncodeRequest.GetTile(szHandle, oDataSet, iLevel, iRow, iColumn);
+         }
+         catch (Exception e)
+         {
+            m_oLock.ReleaseReaderLock();
+            hRequestDocument = null;
+            throw e;
+         }
+         return hRequestDocument;
+      }
+
+      /// <summary>
       /// Get a legend for this dataset from the dap server
       /// </summary>
       /// <param name="oDataSet"></param>

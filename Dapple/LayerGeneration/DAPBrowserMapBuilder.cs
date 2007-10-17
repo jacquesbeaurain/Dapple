@@ -206,7 +206,7 @@ namespace Dapple.LayerGeneration
          {
 
             ImageStore[] imageStores = new ImageStore[1];
-            imageStores[0] = new DAPImageStore(String.Empty, m_oServer);
+            imageStores[0] = new DAPImageStore(null, m_oServer);
             imageStores[0].DataDirectory = null;
             imageStores[0].LevelZeroTileSizeDegrees = 90;
             imageStores[0].LevelCount = 5;

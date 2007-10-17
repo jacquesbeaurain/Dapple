@@ -10,7 +10,7 @@ using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
-   public class WMSQuadLayerBuilder : LayerBuilder
+   public class WMSQuadLayerBuilder : LayerBuilder 
 	{
 		#region Private Members
 
@@ -22,7 +22,7 @@ namespace Dapple.LayerGeneration
 		
 		int distAboveSurface = 0;
 		bool terrainMapped = false;
-		GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(0, 0, 0, 0);
+		GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(90, -90, -180, 180);
 
 		WMSServerBuilder m_Server;
 

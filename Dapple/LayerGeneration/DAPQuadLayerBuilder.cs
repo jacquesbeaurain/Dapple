@@ -55,6 +55,13 @@ namespace Dapple.LayerGeneration
 			m_iTextureSizePixels = size;
 			this.LevelZeroTileSize = lvl0tilesize;
          m_iLevels = levels;
+
+         if (server.MajorVersion >= 11)
+         {
+            m_iTextureSizePixels = 256;
+            m_dLevelZeroTileSizeDegrees = 90.0;
+            m_iLevels = 10;
+         }
       }
 
       #region ImageBuilder Implementations
@@ -309,7 +316,7 @@ namespace Dapple.LayerGeneration
             }
 
             ImageStore[] imageStores = new ImageStore[1];
-            imageStores[0] = new DAPImageStore(m_hDataSet.Name, m_oServer);
+            imageStores[0] = new DAPImageStore(m_hDataSet, m_oServer);
             imageStores[0].DataDirectory = null;
             imageStores[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
             imageStores[0].LevelCount = m_iLevels;

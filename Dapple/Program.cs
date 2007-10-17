@@ -27,6 +27,16 @@ namespace Dapple
          bool aborting = false;
 #endif
 
+#if DEBUG
+         System.Text.StringBuilder oTemp = new System.Text.StringBuilder();
+         foreach (String arg in args)
+         {
+            oTemp.Append(arg);
+            oTemp.Append(Environment.NewLine);
+         }
+         MessageBox.Show("Dapple is being invoked with the following command-line parameters:" + Environment.NewLine + oTemp.ToString() + Environment.NewLine + Environment.NewLine + "Attach debugger if desired, then press OK to continue");
+#endif
+
          MontajRemote.RemoteInterface oRemoteInterface = null;
          IpcChannel oClientChannel = null;
 

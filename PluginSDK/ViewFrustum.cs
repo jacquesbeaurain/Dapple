@@ -60,8 +60,8 @@ namespace WorldWind
 				m[3, 3] - m[3, 1]
 				);
 
-			foreach(Plane2d p in this.planes)
-				p.Normalize();
+         for (int count = 0; count < 6; count++)
+            this.planes[count].Normalize();
 		}
 
 		/// <summary>

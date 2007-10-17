@@ -159,7 +159,8 @@ namespace Dapple
       private static ImageList m_oImageList = new ImageList();
       private static RemoteInterface m_oMontajRemoteInterface;
       private static Dapple.Extract.Options.Client.ClientType m_eClientType;
-      private static GeographicBoundingBox m_oOMMapExtent;
+      private static GeographicBoundingBox m_oOMMapExtentWGS84;
+      private static GeographicBoundingBox m_oOMMapExtentNative;
       private static string m_strAoiCoordinateSystem;
       private static bool m_bOpenMap = false;
       private static string m_strOpenMapFileName = string.Empty;
@@ -207,7 +208,7 @@ namespace Dapple
       /// </summary>
       public static GeographicBoundingBox MapAoi
       {
-         get { return m_oOMMapExtent; }
+         get { return m_oOMMapExtentNative; }
       }
 
       /// <summary>
@@ -634,10 +635,13 @@ namespace Dapple
 
                if (oAoi != null && !string.IsNullOrEmpty(strAoiCoordinateSystem))
                {
-                  m_oOMMapExtent = oAoi;
+                  m_oOMMapExtentNative = oAoi;
                   m_strAoiCoordinateSystem = strAoiCoordinateSystem;
                   m_bOpenMap = true;
                   m_strOpenMapFileName = strMapFileName;
+
+                  m_oOMMapExtentWGS84 = m_oOMMapExtentNative.Clone() as GeographicBoundingBox;
+                  m_oMontajRemoteInterface.ProjectBoundingRectangle(strAoiCoordinateSystem, ref m_oOMMapExtentWGS84.West, ref m_oOMMapExtentWGS84.South, ref m_oOMMapExtentWGS84.East, ref m_oOMMapExtentWGS84.North, Dapple.Extract.Resolution.WGS_84);
                }
                m_eClientType = eClientType;
 
@@ -1432,8 +1436,8 @@ namespace Dapple
          if (strLayerToLoad.Length > 0)
             OpenDatasetLink(strLayerToLoad);
 
-         if (m_oOMMapExtent != null)
-            GoTo(m_oOMMapExtent, 0);
+         if (m_oOMMapExtentWGS84 != null)
+            GoTo(m_oOMMapExtentWGS84, 0);
       }
 
       bool m_bSizing = false;
@@ -1781,7 +1785,7 @@ namespace Dapple
             }
          }
 
-         if (IsMontajChildProcess && m_oOMMapExtent != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtent));
+         if (IsMontajChildProcess && m_oOMMapExtentWGS84 != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
 
          cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("-----------------------------", null));
 
@@ -3307,7 +3311,21 @@ namespace Dapple
 
       private void AddDatasetAction()
       {
-         this.tvServers.AddCurrentDataset();
+         if (cSearchTabPane.SelectedIndex == 0)
+         {
+            if (cServerViewsTab.SelectedIndex == 0)
+            {
+               tvServers.AddCurrentDataset();
+            }
+            else if (cServerViewsTab.SelectedIndex == 1)
+            {
+               cLayerList.AddLayers(cServerListControl.SelectedLayers);
+            }
+         }
+         else if (cSearchTabPane.SelectedIndex == 1)
+         {
+            //CMTODO
+         }
       }
 
       #endregion
@@ -3468,21 +3486,6 @@ namespace Dapple
          MessageBox.Show("This command is not currently implemented.");
       }
 
-      private void cOMToolsMenu_Click(object sender, EventArgs e)
-      {
-         addToLayersToolStripMenuItem.Enabled = false;
-         if (tvServers.Visible)
-         {
-            addToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode != null && (tvServers.SelectedNode.Tag is LayerBuilder || tvServers.SelectedNode.Tag is DataSet);
-         }
-         else if (cServerListControl.Visible)
-         {
-            addToLayersToolStripMenuItem.Enabled = cServerListControl.SelectedLayers.Count > 0;
-         }
-
-         removeFromLayersToolStripMenuItem.Enabled = cLayerList.RemoveAllowed;
-      }
-
       private void cSearchTextComboBox_Enter(object sender, EventArgs e)
       {
          cSearchTextComboBox.Text = String.Empty;
@@ -3530,6 +3533,43 @@ namespace Dapple
       private void setAsMyHomeViewToolStripMenuItem_Click(object sender, EventArgs e)
       {
          SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
+      }
+
+      private void cOMToolsMenu_DropDownOpening(object sender, EventArgs e)
+      {
+         addToLayersToolStripMenuItem.Enabled = false;
+         if (cSearchTabPane.SelectedIndex == 0)
+         {
+            if (cServerViewsTab.SelectedIndex == 0)
+            {
+               addToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode != null && (tvServers.SelectedNode.Tag is LayerBuilder || tvServers.SelectedNode.Tag is DataSet);
+            }
+            else if (cServerViewsTab.SelectedIndex == 1)
+            {
+               addToLayersToolStripMenuItem.Enabled = cServerListControl.SelectedLayers.Count > 0;
+            }
+         }
+         else if (cSearchTabPane.SelectedIndex == 1)
+         {
+            addToLayersToolStripMenuItem.Enabled = cWebSearch.HasLayersSelected;
+         }
+         else
+         {
+            addToLayersToolStripMenuItem.Enabled = false;
+         }
+
+         removeFromLayersToolStripMenuItem.Enabled = cLayerList.RemoveAllowed;
+      }
+
+      private void cOMServerMenu_DropDownOpening(object sender, EventArgs e)
+      {
+         bool blServerSelected = tvServers.SelectedNode.Tag is Server || tvServers.SelectedNode.Tag is ServerBuilder;
+         blServerSelected &= cSearchTabPane.SelectedIndex == 0;
+         blServerSelected &= cServerViewsTab.SelectedIndex == 0;
+
+         propertiesToolStripMenuItem.Enabled = blServerSelected;
+         refreshServerToolStripMenuItem.Enabled = blServerSelected;
+         removeServerToolStripMenuItem.Enabled = blServerSelected;
       }
    }
 }

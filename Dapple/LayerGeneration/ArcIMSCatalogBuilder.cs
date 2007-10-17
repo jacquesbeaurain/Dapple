@@ -207,7 +207,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class ArcIMSServerBuilder : AsyncBuilder
+   public class ArcIMSServerBuilder : ServerBuilder
    {
       string m_strCatalogPathname;
       bool m_blLoadingPending = true;
@@ -288,13 +288,13 @@ namespace Dapple.LayerGeneration
             if (m_hDownload == null)
             {
                // create the cache directory
-               String szSavePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, ArcIMSCatalogBuilder.CATALOG_CACHE), this.Uri.ToCacheDirectory());
+               String szSavePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, ArcIMSCatalogBuilder.CATALOG_CACHE), ((ArcIMSServerBuilder)Parent).Uri.ToCacheDirectory());
                Directory.CreateDirectory(szSavePath);
 
                // download the catalog
                String szXmlPath = Path.Combine(Path.Combine(szSavePath, m_szName), "__catalog.xml");
 
-               m_hDownload = new ArcIMSServiceDownload(this.Uri as ArcIMSServerUri, m_szName, 0);
+               m_hDownload = new ArcIMSServiceDownload(((ArcIMSServerBuilder)Parent).Uri as ArcIMSServerUri, m_szName, 0);
                m_hDownload.SavedFilePath = szXmlPath;
                m_hDownload.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
                m_hDownload.BackgroundDownloadFile();
@@ -403,7 +403,7 @@ namespace Dapple.LayerGeneration
                      }
                   }
 
-                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(this.Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, dMinScale, dMaxScale));
+                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(((ArcIMSServerBuilder)Parent).Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, dMinScale, dMaxScale));
                }
             }
 
@@ -440,11 +440,6 @@ namespace Dapple.LayerGeneration
          {
             return "imageservice";
          }
-      }
-
-      protected override void SetEnabled(bool blValue)
-      {
-         throw new Exception("The method or operation is not implemented.");
       }
    }
 }

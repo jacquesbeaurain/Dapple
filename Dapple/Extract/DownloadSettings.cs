@@ -266,6 +266,8 @@ namespace Dapple.Extract
          DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
          if (oDiscliamers.HasDisclaimer)
             oDiscliamers.ShowDialog();
+         else
+            oDiscliamers.DownloadDatasets();
       }
 
       /// <summary>

@@ -88,6 +88,14 @@ namespace Dapple.CustomControls
          }
       }
 
+      public bool HasLayersSelected
+      {
+         get
+         {
+            return cResultListBox.SelectedIndices.Count > 0;
+         }
+      }
+
       #endregion
 
       #region Event handlers

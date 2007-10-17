@@ -38,9 +38,9 @@ namespace Dapple
 		protected MainForm m_oParent;
 		protected LayerList m_activeLayers;
       protected ServerList m_oServerListControl;
-		protected List<AsyncBuilder> m_wmsServers = new List<AsyncBuilder>();
+		protected List<ServerBuilder> m_wmsServers = new List<ServerBuilder>();
       private ToolStripMenuItem cMenuItem_AddServer;
-      protected List<AsyncBuilder> m_oArcIMSServers = new List<AsyncBuilder>();
+      protected List<ServerBuilder> m_oArcIMSServers = new List<ServerBuilder>();
       private ToolStripMenuItem cMenuItem_SetDefault;
 
       private String m_szDefaultServer = String.Empty;
@@ -750,7 +750,7 @@ namespace Dapple
 			dir = entry.Newbuilderdirectory();
 			dir.Addname(new SchemaString(m_hWMSRootNode.Text));
 			dir.Addspecialcontainer(new SpecialDirectoryType("WMSServers"));
-			foreach (AsyncBuilder builderEntry in m_wmsServers)
+			foreach (ServerBuilder builderEntry in m_wmsServers)
 			{
 				builderentryType subentry = servers.Newbuilderentry();
 				wmscatalogType wms = subentry.Newwmscatalog();
@@ -759,7 +759,7 @@ namespace Dapple
 				subentry.Addwmscatalog(wms);
 				dir.Addbuilderentry(subentry);
 			}
-         foreach (AsyncBuilder builderEntry in m_oArcIMSServers)
+         foreach (ServerBuilder builderEntry in m_oArcIMSServers)
          {
             builderentryType subentry = servers.Newbuilderentry();
             arcimscatalogType arcims = subentry.Newarcimscatalog();

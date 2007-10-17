@@ -215,16 +215,54 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public abstract class ServerBuilder : BuilderDirectory
+   public abstract class ServerBuilder : AsyncBuilder
    {
       protected ServerUri m_oUri;
       protected bool m_blEnabled = true;
 
       public ServerBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
-         : base(name, parent, true)
+         : base(name, parent, oUri, blEnabled)
       {
          m_oUri = oUri;
          m_blEnabled = blEnabled;
+      }
+
+      /// <summary>
+      /// Get child nodes.
+      /// </summary>
+      /// <remarks>
+      /// If this server is still loading, the only child is a temporary node.
+      /// </remarks>
+      /// <returns></returns>
+      public override TreeNode[] getChildTreeNodes()
+      {
+         if (!m_blEnabled)
+         {
+            return new TreeNode[0];
+         }
+         else
+         {
+            return base.getChildTreeNodes();
+         }
+      }
+
+      /// <summary>
+      /// Updates a TreeNode to be loaded, loading, or broken.
+      /// </summary>
+      /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
+      /// <param name="oTree">The ServerTree which contains oParent.</param>
+      public override void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
+      {
+         if (m_blEnabled == false)
+         {
+            oParent.ImageIndex = MainForm.ImageListIndex("disserver");
+            oParent.SelectedImageIndex = MainForm.ImageListIndex("disserver");
+            oParent.Text = Name + " (Disabled)";
+         }
+         else
+         {
+            base.updateTreeNode(oParent, oTree, blnAOIFilter, oAOI, strSearch);
+         }
       }
 
       /// <summary>
@@ -253,9 +291,25 @@ namespace Dapple.LayerGeneration
       protected abstract void SetEnabled(bool blValue);
 
       [System.ComponentModel.Browsable(false)]
-      public abstract System.Drawing.Icon Icon
+      public abstract override System.Drawing.Icon Icon
       {
          get;
+      }
+
+      [System.ComponentModel.Browsable(false)]
+      public override string DisplayIconKey
+      {
+         get
+         {
+            if (m_blEnabled == false)
+            {
+               return "disserver";
+            }
+            else
+            {
+               return base.DisplayIconKey;
+            }
+         }
       }
    }
 
@@ -263,14 +317,14 @@ namespace Dapple.LayerGeneration
    /// A BuilderDirectory representing a builder that has asynchronous loading and thus may
    /// not be loaded immediately upon addition to a ServerTree.
    /// </summary>
-   public abstract class AsyncBuilder : ServerBuilder
+   public abstract class AsyncBuilder : BuilderDirectory
    {
       protected string m_strErrorMessage = String.Empty;
       protected bool m_blnIsLoading = true;
       private ManualResetEvent m_oLoadBlock = new ManualResetEvent(false);
       
       public AsyncBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
-         : base(name, parent, oUri, blEnabled)
+         :base(name, parent, true)
       {
       }
 
@@ -320,10 +374,6 @@ namespace Dapple.LayerGeneration
             {
                return "offline";
             }
-            if (m_blEnabled == false)
-            {
-               return "disserver";
-            }
             return "enserver";
          }
       }
@@ -337,11 +387,7 @@ namespace Dapple.LayerGeneration
       /// <returns></returns>
       public override TreeNode[] getChildTreeNodes()
       {
-         if (!m_blEnabled)
-         {
-            return new TreeNode[0];
-         }
-         else if (IsLoading)
+         if (IsLoading)
          {
             TreeNode[] result = new TreeNode[1];
             result[0] = getLoadingNode();
@@ -370,15 +416,9 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
       /// <param name="oTree">The ServerTree which contains oParent.</param>
-      public void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
+      public virtual void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
       {
-         if (m_blEnabled == false)
-         {
-            oParent.ImageIndex = MainForm.ImageListIndex("disserver");
-            oParent.SelectedImageIndex = MainForm.ImageListIndex("disserver");
-            oParent.Text = Name + " (Disabled)";
-         }
-         else if (IsLoading)
+         if (IsLoading)
          {
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
@@ -399,7 +439,7 @@ namespace Dapple.LayerGeneration
       }
 
       [System.ComponentModel.Browsable(false)]
-      public abstract override System.Drawing.Icon Icon
+      public abstract System.Drawing.Icon Icon
       {
          get;
       }

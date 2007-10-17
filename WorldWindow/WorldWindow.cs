@@ -579,6 +579,11 @@ namespace WorldWind
          return 180 - Math.Acos((Math.Pow(X, 2) - Math.Pow(dDistance + dRadius, 2) - Math.Pow(dRadius, 2)) / (2 * (dDistance + dRadius) * dRadius)) * Rad2Deg;
       }
 
+      public double CameraHeightFromVisibleAngles(double dLatArc, double dLonArc)
+      {
+         return Math.Max(CameraHeightFromLatitudeVisibleAngle(dLatArc), CameraHeightFromLatitudeVisibleAngle(dLonArc * Math.Cos(drawArgs.WorldCamera.Latitude.Radians) * (double)this.Height / (double)this.Width));
+      }
+
       /// <summary>
       /// Gets the altitude needed to produce the requested visible arc.  For arcs greater than the camera can display, just gives the height threshold.
       /// </summary>
@@ -883,10 +888,11 @@ namespace WorldWind
       public void GotoBoundingbox(double dMinLon, double dMinLat, double dMaxLon, double dMaxLat)
       {
          double dLatitudeAngle = dMaxLat - dMinLat;
+         double dLongitudeAngle = dMaxLon - dMinLon;
          double dLatitude = (dMinLat + dMaxLat) / 2.0;
          double dLongitude = (dMinLon + dMaxLon) / 2.0;
 
-         GotoLatLonHeadingAltitude(dLatitude, dLongitude, 0.0, CameraHeightFromLatitudeVisibleAngle(dLatitudeAngle));
+         GotoLatLonHeadingAltitude(dLatitude, dLongitude, 0.0, CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle));
       }
 
       /// <summary>

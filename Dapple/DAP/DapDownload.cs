@@ -50,14 +50,24 @@ namespace Dapple.DAP
 		public override void StartDownload()
       {
 			Log.Write(Log.Levels.Debug, "DGDR", "Starting download for DAP server " + m_DapImageStore.Server.Url);
-			Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + m_DapImageStore.Name);
-			Log.Write(Log.Levels.Debug, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
+			Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + m_DapImageStore.DataSet.Name);
+         if (m_DapImageStore.Server.MajorVersion >= 11)
+            Log.Write(Log.Levels.Debug, "DGDR", "Level: " + Tile.Level + " Column: " + Tile.Col + " Row: " + Tile.Row);
+         else
+            Log.Write(Log.Levels.Debug, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
 			Log.Write(Log.Levels.Debug, "DGDR", "to be stored in " + m_DapImageStore.GetLocalPath(Tile));
 
 			Tile.IsDownloadingImage = true;
 
 			Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
-			download = new DapDownload(m_localFilePath, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), m_DapImageStore);
+         if (m_DapImageStore.Server.MajorVersion >= 11)
+         {
+            download = new DapTileDownload(m_localFilePath, Tile, m_DapImageStore);
+         }
+         else
+         {
+            download = new DapDownload(m_localFilePath, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), m_DapImageStore);
+         }
 			download.DownloadType = DownloadType.Unspecified;
 			download.SavedFilePath = m_localFilePath + ".tmp";
 			download.ProgressCallback += new DownloadProgressHandler(UpdateProgress);
@@ -67,10 +77,13 @@ namespace Dapple.DAP
 
 		protected override void DownloadComplete(WebDownload downloadInfo)
 		{
-			Log.Write(Log.Levels.Debug, "DGDR", "Starting download for DAP server " + m_DapImageStore.Server.Url);
-			Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + m_DapImageStore.Name);
-			Log.Write(Log.Levels.Debug, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
-			Log.Write(Log.Levels.Debug, "DGDR", "to be stored in " + m_DapImageStore.GetLocalPath(Tile));
+         Log.Write(Log.Levels.Debug, "DGDR", "Finishing download for DAP server " + m_DapImageStore.Server.Url);
+         Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + m_DapImageStore.DataSet.Name);
+         if (m_DapImageStore.Server.MajorVersion >= 11)
+            Log.Write(Log.Levels.Debug, "DGDR", "Level: " + Tile.Level + " Column: " + Tile.Col + " Row: " + Tile.Row);
+         else
+            Log.Write(Log.Levels.Debug, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
+         Log.Write(Log.Levels.Debug, "DGDR", "to be stored in " + m_DapImageStore.GetLocalPath(Tile));
 			try
 			{
 				downloadInfo.Verify();
@@ -133,7 +146,7 @@ namespace Dapple.DAP
 					return;
 				}
             Log.Write(Log.Levels.Error, "DGDR", "web exception occurred");
-            Log.Write(Log.Levels.Error, "DGDR", "Dataset Name: " + m_DapImageStore.Name);
+            Log.Write(Log.Levels.Error, "DGDR", "Dataset Name: " + m_DapImageStore.DataSet.Name);
             Log.Write(Log.Levels.Error, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
 				m_tile.TileSet.NumberRetries++;
 			}
@@ -196,13 +209,13 @@ namespace Dapple.DAP
 				oRes.Height = m_oImageStore.TextureSizePixels;
 				oRes.Width = m_oImageStore.TextureSizePixels;
 				ArrayList oArr = new ArrayList();
-            if (String.IsNullOrEmpty(m_oImageStore.Name))
+            if (m_oImageStore.DataSet == null)
             {
                oRequestDoc = m_oImageStore.Server.Command.GetImageRequestDocument(oFormat, m_hBB, oRes, true, false, oArr, out strURL);
             }
             else
             {
-               oArr.Add(m_oImageStore.Name);
+               oArr.Add(m_oImageStore.DataSet.Name);
                oRequestDoc = m_oImageStore.Server.Command.GetImageRequestDocument(oFormat, m_hBB, oRes, false, false, oArr, out strURL);
             }
 
@@ -259,5 +272,100 @@ namespace Dapple.DAP
 
 			return request;
 		}
+   }
+
+   public class DapTileDownload : WorldWind.Net.WebDownload
+   {
+      private string m_strImagePath;
+      private IGeoSpatialDownloadTile m_oTile;
+      private DAPImageStore m_oImageStore;
+
+      public DapTileDownload(string imagePath, IGeoSpatialDownloadTile oTile, DAPImageStore imageStore)
+         : base()
+      {
+         m_oTile = oTile;
+         m_oImageStore = imageStore;
+         m_strImagePath = imagePath;
+         Url = imageStore.Server.Url;
+      }
+
+      protected override HttpWebRequest BuildRequest()
+      {
+         string strURL;
+         System.Xml.XmlDocument oRequestDoc = null;
+
+         try
+         {
+            System.IO.StringWriter hRequest = new StringWriter();
+
+            Geosoft.Dap.Common.Format oFormat = new Geosoft.Dap.Common.Format();
+            oFormat.Type = "image/" + m_oImageStore.ImageExtension;
+            oFormat.Transparent = true;
+            Geosoft.Dap.Common.Resolution oRes = new Geosoft.Dap.Common.Resolution();
+            oRes.Height = m_oImageStore.TextureSizePixels;
+            oRes.Width = m_oImageStore.TextureSizePixels;
+            ArrayList oArr = new ArrayList();
+            if (m_oImageStore.DataSet == null) // Base layers don't have tiling enabled
+            {
+               oRequestDoc = m_oImageStore.Server.Command.GetImageRequestDocument(oFormat, new Geosoft.Dap.Common.BoundingBox(m_oTile.East, m_oTile.North, m_oTile.West, m_oTile.South), oRes, true, false, oArr, out strURL);
+            }
+            else
+            {
+               oRequestDoc = m_oImageStore.Server.Command.GetTileRequestDocument(m_oImageStore.DataSet, m_oTile.Level, m_oTile.Row, m_oTile.Col, out strURL);
+            }
+
+            // Create the request object.
+            request = (HttpWebRequest)WebRequest.Create(strURL);
+            request.UserAgent = UserAgent;
+            request.Pipelined = false;
+
+            request.Proxy = ProxyHelper.DetermineProxyForUrl(
+                          strURL,
+                          WorldWind.Net.WebDownload.useWindowsDefaultProxy,
+                          WorldWind.Net.WebDownload.useDynamicProxy,
+                          WorldWind.Net.WebDownload.proxyUrl,
+                          WorldWind.Net.WebDownload.proxyUserName,
+                          WorldWind.Net.WebDownload.proxyPassword);
+
+
+            // --- Encode the document into ascii ---
+
+            System.Text.UTF8Encoding hRequestEncoding = new System.Text.UTF8Encoding();
+
+            oRequestDoc.Save(hRequest);
+            byte[] byte1 = hRequestEncoding.GetBytes(hRequest.GetStringBuilder().ToString());
+
+
+            // --- Setup the HTTP Request ---
+
+            request.Method = "POST";
+
+            if (WorldWind.Net.WebDownload.useProto == WorldWind.Net.WebDownload.HttpProtoVersion.HTTP1_1)
+               request.ProtocolVersion = HttpVersion.Version11;
+            else
+               request.ProtocolVersion = HttpVersion.Version10;
+
+            request.KeepAlive = false;
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentLength = byte1.Length;
+            request.Timeout = MainForm.DOWNLOAD_TIMEOUT;
+
+            // --- Serialize the XML document request onto the wire ---
+
+            System.IO.Stream hRequestStream = request.GetRequestStream();
+            hRequestStream.Write(byte1, 0, byte1.Length);
+            hRequestStream.Close();
+
+            // --- Turn off connection keep-alives. ---
+
+            request.KeepAlive = false;
+         }
+         finally
+         {
+            m_oImageStore.Server.Command.ReleaseImageRequestDocument(oRequestDoc);
+         }
+
+         return request;
+      }
    }
 }

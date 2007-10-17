@@ -428,7 +428,7 @@ namespace Dapple
            this.cOMToolsMenu.Name = "cOMToolsMenu";
            this.cOMToolsMenu.Size = new System.Drawing.Size(44, 20);
            this.cOMToolsMenu.Text = "Tools";
-           this.cOMToolsMenu.Click += new System.EventHandler(this.cOMToolsMenu_Click);
+           this.cOMToolsMenu.DropDownOpening += new System.EventHandler(this.cOMToolsMenu_DropDownOpening);
            // 
            // searchToolStripMenuItem
            // 
@@ -486,6 +486,7 @@ namespace Dapple
            this.cOMServerMenu.Name = "cOMServerMenu";
            this.cOMServerMenu.Size = new System.Drawing.Size(56, 20);
            this.cOMServerMenu.Text = "Servers";
+           this.cOMServerMenu.DropDownOpening += new System.EventHandler(this.cOMServerMenu_DropDownOpening);
            // 
            // toolStripMenuItemAddDAP
            // 
