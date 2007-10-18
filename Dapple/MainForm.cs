@@ -238,8 +238,8 @@ namespace Dapple
 
       #region Constructor
 
-		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
-		{
+      public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
+      {
 
          worldWindow = new WorldWindow();
 
@@ -344,7 +344,7 @@ namespace Dapple
 
          Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
-#if !DEBUG
+         //#if !DEBUG
          using (this.splashScreen = new Splash())
          {
             this.splashScreen.Owner = this;
@@ -352,7 +352,7 @@ namespace Dapple
             this.splashScreen.SetText("Initializing...");
 
             Application.DoEvents();
-#endif
+            //#endif
 
             // --- setup the list of images used for the different datatypes ---
 
@@ -615,10 +615,10 @@ namespace Dapple
             this.PerformLayout();
             strLayerToLoad = strDatasetLink;
 
-#if !DEBUG
+            //#if !DEBUG
             while (!this.splashScreen.IsDone)
                System.Threading.Thread.Sleep(50);
-#endif
+            //#endif
 
             // Force initial render to avoid showing random contents of frame buffer to user.
             worldWindow.Render();
@@ -674,9 +674,9 @@ namespace Dapple
 
             loadCountryList();
             populateAoiComboBox();
-#if !DEBUG
+            //#if !DEBUG
          }
-#endif
+         //#endif
       }
 
       #endregion

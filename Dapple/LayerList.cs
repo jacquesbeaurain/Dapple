@@ -473,6 +473,7 @@ namespace Dapple
          cRemoveToolStripMenuItem.Enabled = this.RemoveAllowed;
          cGoToToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1;
          cViewPropertiesToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1;
+         cViewLegendToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1 && m_oLayers[cLayerList.SelectedIndices[0]].SupportsLegend;
       }
 
       private void cGoToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -511,6 +512,15 @@ namespace Dapple
          foreach (int iIndex in cLayerList.SelectedIndices)
          {
             CmdClearLayerCache(iIndex);
+         }
+      }
+
+      private void cViewLegendToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         string[] aLegends = m_oLayers[cLayerList.SelectedIndices[0]].GetLegendURLs();
+         foreach (string szLegend in aLegends)
+         {
+            if (!String.IsNullOrEmpty(szLegend)) MainForm.BrowseTo(szLegend);
          }
       }
 

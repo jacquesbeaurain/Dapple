@@ -52,5 +52,13 @@ namespace Dapple
       {
          this.txtWmsURL.SelectionStart = this.txtWmsURL.Text.Length;
       }
+
+      private void txtWmsURL_Leave(object sender, EventArgs e)
+      {
+         if (!String.IsNullOrEmpty(txtWmsURL.Text) && !txtWmsURL.Text.EndsWith("/servlet/com.esri.esrimap.Esrimap"))
+         {
+            txtWmsURL.Text = txtWmsURL.Text + "/servlet/com.esri.esrimap.Esrimap";
+         }
+      }
    }
 }

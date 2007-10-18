@@ -62,6 +62,7 @@ namespace Dapple
          this.txtWmsURL.Size = new System.Drawing.Size(365, 20);
          this.txtWmsURL.TabIndex = 1;
          this.txtWmsURL.Text = "http://";
+         this.txtWmsURL.Leave += new System.EventHandler(this.txtWmsURL_Leave);
          // 
          // butCancel
          // 
@@ -84,7 +85,7 @@ namespace Dapple
          this.Controls.Add(this.butOK);
          this.Controls.Add(this.txtWmsURL);
          this.Controls.Add(this.butCancel);
-         this.Name = "AddWMS";
+         this.Name = "AddArcIMS";
          this.ShowInTaskbar = false;
          this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
          this.Text = "Add an ArcIMS Server";
