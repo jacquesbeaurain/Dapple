@@ -26,6 +26,10 @@ namespace Dapple.DAP
 		private static Stream SaveDAPImage(System.Xml.XmlDocument hDoc, string strFile)
 		{
 			System.Xml.XmlNodeList hNodeList = hDoc.SelectNodes("/" + Geosoft.Dap.Xml.Common.Constant.Tag.GEO_XML_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.RESPONSE_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.IMAGE_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.PICTURE_TAG);
+         if (hNodeList.Count == 0)
+         {
+            hNodeList = hDoc.SelectNodes("/" + Geosoft.Dap.Xml.Common.Constant.Tag.GEO_XML_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.RESPONSE_TAG + "/" + Geosoft.Dap.Xml.Common.Constant.Tag.TILE_TAG);
+         }
 			System.IO.FileStream fs = new System.IO.FileStream(strFile, System.IO.FileMode.Create);
 			System.IO.BinaryWriter bs = new System.IO.BinaryWriter(fs);
 

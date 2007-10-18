@@ -249,6 +249,9 @@ namespace Geosoft.Dap.Xml.Common
          public const string PICTURE_TAG			         = "picture";
 
          /// <summary></summary>
+         public const string TILE_TAG                    = "get_tile";
+
+         /// <summary></summary>
          public const string DATASET_TYPE_TAG			   = "dataset_type";
 
          /// <summary></summary>
