@@ -3208,87 +3208,76 @@ namespace Dapple
 
       private void DisplayMetadataMessage(String szMessage)
       {
-         if (InvokeRequired) this.Invoke(new UpdateTextDelegate(__DisplayMetadataMessage), new Object[] { szMessage });
-         else __DisplayMetadataMessage(szMessage);
+         cMetadataBrowser.Visible = false;
+         cMetadataLoadingLabel.Text = szMessage;
+         //Application.DoEvents();
       }
 
       private void DisplayMetadataDocument(String szMessage)
       {
-         if (InvokeRequired) this.Invoke(new UpdateTextDelegate(__DisplayMetadataDocument), new Object[] { szMessage });
-         else __DisplayMetadataDocument(szMessage);
-      }
-
-      private void __DisplayMetadataMessage(String szMessage)
-      {
-         cMetadataBrowser.Visible = false;
-         cMetadataLoadingLabel.Text = szMessage;
-         Application.DoEvents();
-      }
-
-      private void __DisplayMetadataDocument(String szUri)
-      {
-         lock (cMetadataBrowser)
+         cMetadataBrowser.Visible = true;
+         Uri metaUri = new Uri(szMessage);
+         if (!metaUri.Equals(cMetadataBrowser.Url))
          {
-            cMetadataBrowser.Visible = true;
-            Uri metaUri = new Uri(szUri);
-            if (!metaUri.Equals(cMetadataBrowser.Url))
+            // --- Delete the file we were pointing to before ---
+            if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
             {
-               // --- Delete the file we were pointing to before ---
-               if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
+               File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
+            }
+            cMetadataBrowser.Url = metaUri;
+         }
+         //Application.DoEvents();
+      }
+
+      public delegate void LoadMetadataDelegate(IBuilder oBuilder);
+      public void LoadMetadata(IBuilder oBuilder)
+      {
+         if (InvokeRequired)
+            this.Invoke(new LoadMetadataDelegate(LoadMetadata), new Object[] { oBuilder });
+         else
+         {
+            try
+            {
+               XmlDocument oDoc = new XmlDocument();
+               oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
+               XmlNode oNode = null;
+               string strStyleSheet = null;
+
+               if (oBuilder.SupportsMetaData)
                {
-                  File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
+                  oNode = oBuilder.GetMetaData(oDoc);
+                  strStyleSheet = oBuilder.StyleSheetName;
+                  DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Name);
                }
-               cMetadataBrowser.Url = metaUri;
-            }
-            Application.DoEvents();
-         }
-      }
+               else
+               {
+                  DisplayMetadataMessage("Metadata for the selected layer type is unsupported");
+                  return;
+               }
 
-      public void LoadMetadata(Object oParams)
-      {
-         IBuilder oBuilder = ((Object[])oParams)[0] as IBuilder;
+               if (oNode is XmlDocument)
+               {
+                  oDoc = oNode as XmlDocument;
+               }
+               else if (oNode is XmlElement)
+               {
+                  oDoc.AppendChild(oNode);
+               }
+               if (strStyleSheet != null)
+               {
+                  XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, strStyleSheet) + "'");
+                  oDoc.InsertBefore(oRef, oDoc.DocumentElement);
+               }
 
-         try
-         {
-            XmlDocument oDoc = new XmlDocument();
-            oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
-            XmlNode oNode = null;
-            string strStyleSheet = null;
-
-            if (oBuilder.SupportsMetaData)
-            {
-               oNode = oBuilder.GetMetaData(oDoc);
-               strStyleSheet = oBuilder.StyleSheetName;
-               DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Name);
+               string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
+               filePath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".xml");
+               oDoc.Save(filePath);
+               DisplayMetadataDocument(filePath);
             }
-            else
+            catch (Exception e)
             {
-               DisplayMetadataMessage("Metadata for the selected layer type is unsupported");
-               return;
+               DisplayMetadataMessage("An error occurred while accessing metadata: " + e.Message);
             }
-
-            if (oNode is XmlDocument)
-            {
-               oDoc = oNode as XmlDocument;
-            }
-            else if (oNode is XmlElement)
-            {
-               oDoc.AppendChild(oNode);
-            }
-            if (strStyleSheet != null)
-            {
-               XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, strStyleSheet) + "'");
-               oDoc.InsertBefore(oRef, oDoc.DocumentElement);
-            }
-
-            string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
-            filePath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".xml");
-            oDoc.Save(filePath);
-            DisplayMetadataDocument(filePath);
-         }
-         catch (Exception e)
-         {
-            DisplayMetadataMessage("An error occurred while accessing metadata: " + e.Message);
          }
       }
 
@@ -3445,7 +3434,7 @@ namespace Dapple
 
                if (!oCurrentBuilder.Equals(oLastBuilder))
                {
-                  m_hOwner.LoadMetadata(new Object[] { oCurrentBuilder });
+                  m_hOwner.LoadMetadata(oCurrentBuilder);
                   oLastBuilder = oCurrentBuilder;
                }
             }

@@ -22,8 +22,11 @@ namespace Dapple.LayerGeneration
 		#region Static
 
 		public static readonly string URISchemeName = "gxdap";
-
 		public static readonly string CacheSubDir = "DAPImages";
+
+      public const int DAP_TILE_SIZE = 256;
+      public const int DAP_TILE_LEVELS = 7;
+      public const double DAP_TILE_LZTS = 22.5;
 
 		#endregion
 
@@ -58,9 +61,9 @@ namespace Dapple.LayerGeneration
 
          if (server.MajorVersion >= 11)
          {
-            m_iTextureSizePixels = 256;
-            m_dLevelZeroTileSizeDegrees = 90.0;
-            m_iLevels = 10;
+            m_iTextureSizePixels = DAP_TILE_SIZE;
+            m_dLevelZeroTileSizeDegrees = DAP_TILE_LZTS;
+            m_iLevels = DAP_TILE_LEVELS;
          }
       }
 

@@ -27,7 +27,7 @@ namespace WorldWind
 		public static Angle FromDegrees(double degrees)
 		{
 			Angle res = new Angle();
-			res.Radians = Math.PI * degrees / 180.0f;
+			res.Radians = Math.PI * degrees / 180.0;
 			return res;
 		}
 

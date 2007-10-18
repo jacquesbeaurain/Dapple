@@ -122,6 +122,8 @@ namespace Dapple
 
       #region Event Handlers
 
+      private System.Drawing.Point m_oDragDropStartPoint = System.Drawing.Point.Empty;
+
       private TreeNode m_oDragSource = null;
       private void HandleMouseDown(Object oSender, MouseEventArgs oArgs)
       {
@@ -129,13 +131,15 @@ namespace Dapple
 
          if (oNodeOver != null && (oNodeOver.Tag is DataSet || oNodeOver.Tag is LayerBuilder))
          {
+            m_oDragDropStartPoint = new System.Drawing.Point(oArgs.X, oArgs.Y);
             m_oDragSource = oNodeOver;
          }
       }
 
       private void HandleMouseMove(Object oSender, MouseEventArgs oArgs)
       {
-         if ((oArgs.Button & MouseButtons.Left) == MouseButtons.Left)
+         //Check that the user is doing a click-hold AND a drag.  If you don't, you'll make the event thread behave strangely.
+         if ((oArgs.Button & MouseButtons.Left) == MouseButtons.Left && (oArgs.X != m_oDragDropStartPoint.X || oArgs.Y != m_oDragDropStartPoint.Y))
          {
             if (m_oDragSource == null) return;
             List<LayerBuilder> oDragData = new List<LayerBuilder>();
@@ -155,11 +159,12 @@ namespace Dapple
 
             if (oDragData.Count > 0)
             {
-            DragDropEffects dropEffect = this.DoDragDrop(oDragData, DragDropEffects.All);
-            this.SelectedNode = m_oDragSource;
+               DragDropEffects dropEffect = this.DoDragDrop(oDragData, DragDropEffects.All);
+               this.SelectedNode = m_oDragSource;
             }
 
             m_oDragSource = null;
+            m_oDragDropStartPoint = System.Drawing.Point.Empty;
          }
       }
 
