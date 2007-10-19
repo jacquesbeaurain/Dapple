@@ -23,6 +23,7 @@ namespace WorldWind.Renderable
 		float west;
 
 		World _parentWorld;
+        bool m_enableLighting = false;
 
 		int lineColor;
 		Vector3[] sphericalCoordinates = new Vector3[0]; // x = lat, y = lon, z = height
@@ -34,7 +35,7 @@ namespace WorldWind.Renderable
 		/// <param name="parentWorld"></param>
 		/// <param name="terrainfileName"></param>
 		/// <param name="heightAboveSurface"></param>
-		/// <param name="lineColor"></param>
+		/// <param name="lineColor"></param>        
 		public PathLine(string name, World parentWorld, string terrainfileName, float heightAboveSurface, 
 			System.Drawing.Color lineColor) 
 			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
@@ -85,6 +86,13 @@ namespace WorldWind.Renderable
 				(float)this._parentWorld.EquatorialRadius, 
 				(float)this._parentWorld.EquatorialRadius + this.heightAboveSurface );
 		}
+
+
+      public bool EnableLighting
+      {
+         get { return m_enableLighting; }
+         set { m_enableLighting = value; }
+      }
 
 		public override void Initialize(DrawArgs drawArgs)
 		{
@@ -345,6 +353,8 @@ namespace WorldWind.Renderable
 
 					if(this.linePoints != null)
 					{
+                        bool lighting = drawArgs.device.RenderState.Lighting;
+                        drawArgs.device.RenderState.Lighting = m_enableLighting;
 						drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
 						drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
 
@@ -356,6 +366,7 @@ namespace WorldWind.Renderable
 
 						drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, this.linePoints.Length - 1, this.linePoints);
 						drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
+                        drawArgs.device.RenderState.Lighting = lighting;
 					}
 				}
 			}

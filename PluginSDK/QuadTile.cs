@@ -161,6 +161,12 @@ namespace WorldWind.Renderable
 			quadTileSet.ImageStores[0].GetProjectionCorners(this, out UL, out UR, out LL, out LR);
 		}
 
+        public override string ToString()
+        {
+            return String.Format("QuadTile:Set={0} Level={1} X={2} Y={3}",
+                quadTileSet.Name, Level, Col, Row);
+        }
+
 		public virtual void ResetCache()
 		{
 			try

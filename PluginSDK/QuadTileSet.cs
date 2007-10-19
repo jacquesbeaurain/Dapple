@@ -196,6 +196,10 @@ namespace WorldWind.Renderable
          m_tileDrawSpread = 2.9f;
          m_imageStores = imageStores;
          m_terrainMapped = terrainMapped;
+
+			// Default terrain mapped imagery to terrain mapped priority 
+			if (terrainMapped)
+				m_renderPriority = RenderPriority.TerrainMappedImages;
       }
 
       #region Public properties

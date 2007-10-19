@@ -7,6 +7,7 @@ namespace WorldWind.Terrain
    /// </summary>
    public abstract class TerrainAccessor : IDisposable
    {
+        private bool isOn = true;
       protected string m_name;
       protected double m_north;
       protected double m_south;
@@ -89,6 +90,18 @@ namespace WorldWind.Terrain
          }
       }
 
+        /// <summary>
+        /// Hide/Show this object.
+        /// </summary>
+        [System.ComponentModel.Description("This layer's enabled status.")]
+        public virtual bool IsOn
+        {
+            get { return this.isOn; }
+            set
+            {
+                this.isOn = value;
+            }
+        }
       /// <summary>
       /// Gets the terrain elevation at a given Latitude, Longitude, 
       /// and resolution accuracy in the latitude/longitude geographic frame of reference.

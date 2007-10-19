@@ -28,8 +28,8 @@ namespace WorldWind
          ref Point3d v
 			)
 		{
-			latitude *= System.Math.PI / 180.0f;
-			longitude *= System.Math.PI /180.0f;
+			latitude *= System.Math.PI / 180.0;
+			longitude *= System.Math.PI /180.0;
 
 			double radCosLat = radius * Math.Cos(latitude);
 
@@ -100,7 +100,7 @@ namespace WorldWind
 		/// <returns>Angle in radians (0-2*Pi)</returns>
 		public static double DegreesToRadians(double degrees)
 		{
-			return Math.PI * degrees / 180.0f;
+			return Math.PI * degrees / 180.0;
 		}
 
 		/// <summary>

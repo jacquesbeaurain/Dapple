@@ -130,6 +130,8 @@ namespace WorldWind.Terrain
             {
                foreach (TerrainAccessor higherResSub in m_higherResolutionSubsets)
                {
+                        if (!higherResSub.IsOn)
+                            continue;
                   if (latitude > higherResSub.South && latitude < higherResSub.North &&
                       longitude > higherResSub.West && longitude < higherResSub.East)
                   {
@@ -194,6 +196,8 @@ namespace WorldWind.Terrain
             // TODO: Support more than 1 level of higher resolution sets and allow user selections
             foreach (TerrainAccessor higherResSub in m_higherResolutionSubsets)
             {
+                    if (!higherResSub.IsOn)
+                        continue;
                if (north <= higherResSub.North && south >= higherResSub.South &&
                   west >= higherResSub.West && east <= higherResSub.East)
                {
