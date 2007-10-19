@@ -331,23 +331,30 @@ namespace WorldWind.Net
 					response.Close();
 			}
 
-			// cancelled downloads must still be verified to set
-			// the proper error bits and avoid immediate re-download
-			if (CompleteCallback == null)
-			{
-				Verify();
-			}
-			else
-			{
-				try
-				{
-					CompleteCallback(this);
-				}
-				catch
-				{
+            // make sure the response stream is closed.
+            if(responseStream != null)
+                responseStream.Close();
 
-				}
-			}
+            // cancelled downloads must still be verified to set
+            // the proper error bits and avoid immediate re-download
+            /* NO. This is WRONG since the above request.Abort() or response.Close() 
+             * may still be in flight.
+            if (CompleteCallback == null)
+            {
+                Verify();
+            }
+            else
+            {
+                try
+                {
+                    CompleteCallback(this);
+                }
+                catch
+                {
+
+                }
+            }
+             */
 			OnDebugCallback(this);
 			OnDownloadEnded(this);
 			// it's not really complete, but done with...
@@ -511,9 +518,12 @@ namespace WorldWind.Net
 
 										BytesProcessed += bytesRead;
 
-										// If a registered progress-callback, inform it of our download progress so far.
-										OnProgressCallback(BytesProcessed, ContentLength);
-										OnDebugCallback(this);
+/*
+ * foreground downloads don't report progress
+									// If a registered progress-callback, inform it of our download progress so far.
+									OnProgressCallback(BytesProcessed, ContentLength);
+									OnDebugCallback(this);
+ */
 									}
 								}
 

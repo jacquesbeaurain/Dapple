@@ -119,6 +119,16 @@ namespace WorldWind.Net
 						return;
 					}
 				}
+
+                // don't forget to also check the currently active downloads!
+                foreach(DownloadRequest request in m_activeDownloads)
+                {
+                    if (request.Key == newRequest.Key)
+                    {
+                        newRequest.Dispose();
+                        return;
+                    }
+                }
 				
 				m_requests.Add(newRequest);
 

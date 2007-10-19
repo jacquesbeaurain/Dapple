@@ -85,6 +85,7 @@ namespace WorldWind
 			{
 				XmlReader docReader = XmlReader.Create(filename, readerSettings);
 				XPathDocument docNav = new XPathDocument(docReader);
+                docReader.Close();
 				XPathNavigator nav = docNav.CreateNavigator();
 
 				XPathNodeIterator worldIter = nav.Select("/World[@Name]");
@@ -232,6 +233,7 @@ namespace WorldWind
 					{
 						XmlReader docReader = XmlReader.Create(layerFile, readerSettings);
 						docNav = new XPathDocument(docReader);
+                        docReader.Close();
 					}
 					else
 					{
@@ -252,7 +254,7 @@ namespace WorldWind
 
 						XmlReader docReader = XmlReader.Create(download.ContentStream, readerSettings);
 						docNav = new XPathDocument(docReader);
-
+                        docReader.Close();
 					}
 
 					nav = docNav.CreateNavigator();
@@ -917,6 +919,19 @@ namespace WorldWind
 						qts.MetaData.Add("EffectPath", effectFile);
 					}
 				}
+                string effectParam = getInnerTextFromFirstChild(iter.Current.Select("EffectParam"));
+                if (effectParam != null && effectParam.Length > 0)
+                {
+                    Log.Write(Log.Levels.Debug, "CONF", "QuadTileSet with effect parameter" + effectParam);
+                    if (qts.MetaData.Contains("EffectParam"))
+                    {
+                        qts.MetaData["EffectParam"] = effectParam;
+                    }
+                    else
+                    {
+                        qts.MetaData.Add("EffectParam", effectParam);
+                    }
+                }
 
 
 				string description = getInnerTextFromFirstChild(iter.Current.Select("Description"));

@@ -42,5 +42,36 @@ namespace WorldWind
                 }
             }
         }
+
+        public static string GetAreaDisplayString(double area)
+        {
+            if (World.Settings.DisplayUnits == Units.Metric)
+            {
+                if (area >= 1E6)
+                {
+                    return string.Format("{0:,.0} sq.km.", area / 1E6);
+                }
+                else
+                {
+                    return string.Format("{0:f0} sq.m", area);
+                }
+            }
+            else
+            {
+                double sqfeetPerMeter = 10.763910449432011;
+                double sqfeetPerMile = 27878400;
+
+                area *= sqfeetPerMeter;
+
+                if (area >= sqfeetPerMile)
+                {
+                    return string.Format("{0:,.0} sq.miles", area / sqfeetPerMile);
+                }
+                else
+                {
+                    return string.Format("{0:f0} sq.ft", area);
+                }
+            }
+        }
     }
 }

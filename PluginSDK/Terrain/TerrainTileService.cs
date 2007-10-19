@@ -340,6 +340,8 @@ namespace WorldWind.Terrain
 
       public float GetElevationAt(double latitude, double longitude)
       {
+            if (!IsInitialized)
+                return 0;
          try
          {
             double deltaLat = North - latitude;

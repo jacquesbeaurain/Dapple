@@ -355,6 +355,13 @@ namespace WorldWind
 		{
 			string filePath = GetLocalPath(tile);
 			tile.ImageFilePath = filePath;
+            // remove broken files
+            if (File.Exists(filePath))
+            {
+                FileInfo fi = new FileInfo(filePath);
+                if (fi.Length == 0)
+                    File.Delete(filePath);
+            }
 			if (!File.Exists(filePath))
 			{
 				string badFlag = filePath + ".txt";

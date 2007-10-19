@@ -611,6 +611,9 @@ namespace WorldWind.Renderable
 
       public override void Update(DrawArgs drawArgs)
       {
+            if (System.Threading.Thread.CurrentThread.Name != "WorldWindow.WorkerThreadFunc")
+                throw new System.InvalidOperationException("QTS.Update() must be called from WorkerThread!");
+
          if (!isInitialized)
             Initialize(drawArgs);
 
@@ -984,6 +987,9 @@ namespace WorldWind.Renderable
          isInitialized = false;
 
          // flush downloads
+            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+            {
+                m_downloadRequests.Clear();
          for (int i = 0; i < m_activeDownloads.Length; i++)
          {
             if (m_activeDownloads[i] != null)
@@ -992,6 +998,7 @@ namespace WorldWind.Renderable
                m_activeDownloads[i] = null;
             }
          }
+            }
 
          foreach (QuadTile qt in m_topmostTiles.Values)
             qt.Dispose();
@@ -1121,6 +1128,8 @@ namespace WorldWind.Renderable
                if (!m_activeDownloads[i].IsComplete)
                   continue;
 
+                    // remove from request queue
+                    m_downloadRequests.Remove(m_activeDownloads[i].Tile);
                m_activeDownloads[i].Cancel();
                m_activeDownloads[i].Dispose();
                m_activeDownloads[i] = null;

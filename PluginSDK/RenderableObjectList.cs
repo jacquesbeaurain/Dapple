@@ -315,6 +315,14 @@ namespace WorldWind.Renderable
 					{
 						ro.Update(drawArgs);
 					}
+                    else
+                    {
+                        // dispose renderable objects that aren't disabled
+                        // TODO: would be cool to retain them for a bit to allow
+                        // quick toggles without having to tear down / reload them!
+                        if (ro.isInitialized)
+                            ro.Dispose();
+                    }
 				}
 			}
 			catch(Exception)

@@ -659,7 +659,7 @@ namespace WorldWind.Renderable
 				}
 
 				// Goto to URL if we have one
-				if (!ClickableActionURL.Contains(@"worldwind://"))
+                if (ClickableActionURL!=null && !ClickableActionURL.Contains(@"worldwind://"))
 				{
 					if (World.Settings.UseInternalBrowser && ClickableActionURL.StartsWith("http"))
 					{

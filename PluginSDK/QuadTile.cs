@@ -347,16 +347,13 @@ namespace WorldWind.Renderable
 
 				isDownloadingImage = false;
 				CreateTileMesh();
+                isInitialized = true;
 			}
 			//catch (Microsoft.DirectX.Direct3D.Direct3DXException)
 			catch (Exception)
 			{
 				//Log.Write(ex);
 				// Texture load failed.
-			}
-			finally
-			{
-				isInitialized = true;
 			}
 		}
 

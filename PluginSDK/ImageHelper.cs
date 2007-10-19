@@ -131,7 +131,22 @@ namespace WorldWind
 		/// <returns></returns>
 		public static Texture LoadTexture(string textureFileName, int transparentRangeDarkColor, int transparentRangeBrightColor)
 		{
-			Bitmap image = (Bitmap)Image.FromFile(textureFileName);
+            Bitmap image;
+
+            try
+            {
+                image = (Bitmap)Image.FromFile(textureFileName);
+            }
+            catch (OutOfMemoryException)
+            {
+                // image could not be loaded with Image.FromFile
+                // -- brain damaged to use that exception to signal unsupported file formats *argh*
+                // try to allocate directly.
+                FileStream fs = new FileStream(textureFileName, FileMode.Open);
+                Texture tex = new Texture(DrawArgs.Device, fs, Usage.None, Pool.Managed);
+                fs.Close();
+                return tex;
+            }
 
 			BitmapData srcInfo = image.LockBits(new Rectangle(0, 0, 
 				image.Width, image.Height), 
@@ -180,7 +195,12 @@ namespace WorldWind
 			transparentImage.UnlockBits(dstInfo);
 			image.UnlockBits(srcInfo);
 
-			return new Texture(DrawArgs.Device, transparentImage, Usage.None, Pool.Managed);
+            // make sure image and transparentImage are properly disposed
+            image.Dispose();
+            using (transparentImage)
+            {
+                return new Texture(DrawArgs.Device, transparentImage, Usage.None, Pool.Managed);
+            }
 		}
 
 		/// <summary>

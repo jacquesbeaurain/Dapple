@@ -310,7 +310,7 @@ namespace WorldWind.Renderable
 			menu.MenuItems.Add("Properties...", new EventHandler(OnPropertiesClick));
 			menu.MenuItems.Add("Info...", new EventHandler(OnInfoClick));
 			menu.MenuItems.Add("Delete...", new EventHandler(OnDeleteClick)); 
-
+			menu.MenuItems.Add("Reload Shader", new EventHandler(OnReloadShaderClick));
 			
 			if(dbfPath != "")
 				menu.MenuItems.Add("Dbf Info", new EventHandler(OnDbfInfo));
@@ -397,8 +397,12 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
+                // handled in Update() to avoid race conditions with background worker thread.
+                // -step
+                /*
 				if(isOn && !value)
 					this.Dispose();
+                 */
 				this.isOn = value;
 			}
 		}
@@ -534,6 +538,17 @@ namespace WorldWind.Renderable
 			m_propertyBrowser.Show();
 		}
 
+		/// <summary>
+		/// Layer properties context menu item
+		/// </summary>
+		protected virtual void OnReloadShaderClick(object sender, EventArgs e)
+		{
+			QuadTileSet qts = this as QuadTileSet;
+			if (qts != null)
+			{
+				qts.Effect = null;
+			}
+		}
 		/// <summary>
 		/// Delete layer context menu item
 		/// </summary>
