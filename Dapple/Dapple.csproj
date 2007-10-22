@@ -783,6 +783,9 @@
     <None Include="Data\LayerSet.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Data\sun.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Data\wms_server_list.xsd">
       <SubType>Designer</SubType>
     </None>

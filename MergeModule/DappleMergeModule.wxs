@@ -165,6 +165,7 @@
                  <File Id="default.dapple_serverlist" Name="default.dapple_serverlist" Source="..\Dapple\bin\x86\Release\Data\default.dapple_serverlist" Vital="yes"/>
                   <File Id="default.dapple"  Name="default.dapple" Source="..\Dapple\bin\x86\Release\Data\default.dapple" Vital="yes"/>
                   <File Id="dappleview.xsd"  Name="dappleview.xsd" Source="..\Dapple\bin\x86\Release\Data\dappleview.xsd" Vital="yes"/>
+                 <File Id="sun.dds"  Name="sun.dds" Source="..\Dapple\bin\x86\Release\Data\sun.dds" Vital="yes"/>
                </Component>
             </Directory>
             <Directory Id="Plugins" Name="Plugins">
