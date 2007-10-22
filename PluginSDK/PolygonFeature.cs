@@ -765,6 +765,8 @@ namespace WorldWind
 					}
 
 					//if(m_vertices != null)
+                if (this.Fill)
+                {
 					if (primList.Count > 0)
 					{
 						drawArgs.device.VertexFormat = CustomVertex.PositionNormalColored.Format;
@@ -786,6 +788,7 @@ namespace WorldWind
 								vertices);
 						}
 					}
+                }
 
 					if (m_lineFeature != null)
 					{
@@ -808,8 +811,55 @@ namespace WorldWind
 
 		public override bool PerformSelectionAction(DrawArgs drawArgs)
 		{
-			return false;
+            Point currentPosition = DrawArgs.LastMousePosition;
+            Angle Latitude, Longitude;
+            drawArgs.WorldCamera.PickingRayIntersection(
+                currentPosition.X,
+                currentPosition.Y,
+                out Latitude,
+                out Longitude);
+            Point3d queryPoint = new Point3d(Longitude.Degrees, Latitude.Degrees, 0);
+
+            if (!GeographicBoundingBox.Contains(queryPoint))
+                return false;
+            //TODO: Test holes/inner rings(if any) if point is in hole return false
+            if (this.m_innerRings != null)
+            {
+                foreach (LinearRing ring in m_innerRings)
+                {
+                    bool isIn = pointInRing(ring.Points, queryPoint);
+                    if (isIn)
+                        return false;
+                }
+            }
+
+            //TODO: Test outer ring
+            return pointInRing(OuterRing.Points, queryPoint);
 		}
 
+        /// <summary>
+        /// Utility method to check if point is in a simple polygon
+        /// Uses Winding number/Jordan Curve Theorem
+        /// http://en.wikipedia.org/wiki/Jordan_curve_theorem
+        /// </summary>
+        /// <param name="points">Polygon ring points</param>
+        /// <param name="queryPoint">Test point</param>
+        /// <returns>Location status</returns>
+        private bool pointInRing(Point3d[] points, Point3d queryPoint)
+        {
+            bool isIn = false;
+            int i, j = 0;
+            for (i = 0, j = points.Length - 1; i < points.Length; j = i++)
+            {
+                if ((((points[i].Y <= queryPoint.Y) && (queryPoint.Y < points[j].Y)) || ((points[j].Y <= queryPoint.Y)
+                    && (queryPoint.Y < points[i].Y))) && (queryPoint.X < (points[j].X - points[i].X)
+                    * (queryPoint.Y - points[i].Y) / (points[j].Y - points[i].Y) + points[i].X))
+                {
+                    isIn = !isIn;
+                }
+            }
+
+            return isIn;
+        }
 	}
 }

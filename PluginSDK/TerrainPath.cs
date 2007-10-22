@@ -6,6 +6,7 @@ using Microsoft.DirectX.Direct3D;
 using WorldWind;
 using WorldWind.Terrain;
 using Utility;
+using System.Collections.Generic;
 
 namespace WorldWind.Renderable
 {
@@ -38,7 +39,8 @@ namespace WorldWind.Renderable
 		int lineColor;
 		public CustomVertex.PositionColored[] linePoints;
 
-		Vector3[] sphericalCoordinates = new Vector3[0]; // x = lat, y = lon, z = height
+		List <Vector3> sphericalCoordinates = new List <Vector3>(); // x = lat, y = lon, z = height
+        bool m_needsUpdate = false;
 
 		public int LineColor
 		{
@@ -53,8 +55,13 @@ namespace WorldWind.Renderable
 
 		public Vector3[] SphericalCoordinates
 		{
-			get { return sphericalCoordinates; }
+			get{ return sphericalCoordinates.ToArray(); }
 		}
+
+        public List<Vector3> SphericalCoordinatesList
+        {
+            get { return sphericalCoordinates; }
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.TerrainPath"/> class.
@@ -152,7 +159,47 @@ namespace WorldWind.Renderable
 			this.isInitialized = true;
 		}
 
-		public Vector3[] GetSphericalCoordinates()
+        /// <summary>
+        /// Adds a new point to the terrain path
+        /// </summary>
+        /// <param name="x">Lat</param>
+        /// <param name="y">Lon</param>
+        /// <param name="z">Alt</param>
+        public void Add(float x, float y, float z)
+        {
+            Vector3 item = new Vector3(x, y, z);
+            sphericalCoordinates.Add(item);
+            
+            // zero out bounds for 1st entry
+            if (sphericalCoordinates.Count == 1)
+            {
+                this.north = 0;
+                this.east = 0;
+                this.south = 0;
+                this.west = 0;
+            }
+
+            if (this.north < x)
+                this.north = x;
+            if (this.east < y)
+                this.east = y;
+            if (this.south > x)
+                this.south = x;
+            if (this.west > y)
+                this.west = y;
+
+            this.boundingBox = new BoundingBox(this.south, this.north, this.west, this.east,
+                (float)this._parentWorld.EquatorialRadius,
+                (float)(this._parentWorld.EquatorialRadius + this.verticalExaggeration * z));
+
+            // fiddle with last updated position to force update
+            lastUpdatedPosition.X = x;
+
+            this.isLoaded = true;
+            this.isInitialized = false;
+            this.m_needsUpdate = true;
+        }
+		public List<Vector3> GetSphericalCoordinates()
 		{
 			float n = 0;
 			float s = 0;
@@ -162,7 +209,7 @@ namespace WorldWind.Renderable
 			return GetSphericalCoordinates(ref n, ref s, ref w, ref e);
 		}
 
-		public Vector3[] GetSphericalCoordinates(ref float northExtent, ref float southExtent, ref float westExtent, ref float eastExtent)
+		public List<Vector3> GetSphericalCoordinates(ref float northExtent, ref float southExtent, ref float westExtent, ref float eastExtent)
 		{
 			if (this._dataArchiveReader == null)
 			{
@@ -181,9 +228,13 @@ namespace WorldWind.Renderable
 				{
 					int numCoords = br.ReadInt32();
 
-					Vector3[] coordinates = new Vector3[numCoords];
-					coordinates[0].X = br.ReadSingle();
-					coordinates[0].Y = br.ReadSingle();
+                    Vector3 value = new Vector3(); 
+
+					List<Vector3> coordinates = new List<Vector3>(numCoords);
+                    value.X = br.ReadSingle();
+                    value.Y = br.ReadSingle();
+
+                    coordinates.Add(value);
 
 					northExtent = coordinates[0].X;
 					southExtent = coordinates[0].X;
@@ -192,8 +243,10 @@ namespace WorldWind.Renderable
 
 					for (int i = 1; i < numCoords; i++)
 					{
-						coordinates[i].X = br.ReadSingle();
-						coordinates[i].Y = br.ReadSingle();
+						value.X = br.ReadSingle();
+						value.Y = br.ReadSingle();
+
+                        coordinates.Add(value);
 
 						if (northExtent < coordinates[i].X)
 							northExtent = coordinates[i].X;
@@ -215,24 +268,30 @@ namespace WorldWind.Renderable
 				int numCoords = this._dataArchiveReader.ReadInt32();
 
 				byte numElements = this._dataArchiveReader.ReadByte();
-				Vector3[] coordinates = new Vector3[numCoords];
+                List<Vector3> coordinates = new List<Vector3>(numCoords);
 
-				coordinates[0].X = (float)this._dataArchiveReader.ReadDouble();
-				coordinates[0].Y = (float)this._dataArchiveReader.ReadDouble();
-				if (numElements == 3)
-					coordinates[0].Z = this._dataArchiveReader.ReadInt16();
+                Vector3 value = new Vector3();
+
+                value.X = (float)this._dataArchiveReader.ReadDouble();
+                value.Y = (float)this._dataArchiveReader.ReadDouble();
+				if(numElements == 3)
+                    value.Z = this._dataArchiveReader.ReadInt16();
+
+                coordinates.Add(value);
 
 				northExtent = coordinates[0].X;
 				southExtent = coordinates[0].X;
 				westExtent = coordinates[0].Y;
 				eastExtent = coordinates[0].Y;
 
-				for (int i = 1; i < numCoords; i++)
+				for(int i = 1; i < numCoords; i++)
 				{
-					coordinates[i].X = (float)this._dataArchiveReader.ReadDouble();
-					coordinates[i].Y = (float)this._dataArchiveReader.ReadDouble();
-					if (numElements == 3)
-						coordinates[i].Z = this._dataArchiveReader.ReadInt16();
+                    value.X = (float)this._dataArchiveReader.ReadDouble();
+                    value.Y = (float)this._dataArchiveReader.ReadDouble();
+                    if (numElements == 3)
+                        value.Z = this._dataArchiveReader.ReadInt16();
+
+                    coordinates.Add(value);
 
 					if (northExtent < coordinates[i].X)
 						northExtent = coordinates[i].X;
@@ -283,8 +342,8 @@ namespace WorldWind.Renderable
 		{
 			using (BinaryWriter output = new BinaryWriter(new FileStream(fileName, FileMode.Create)))
 			{
-				output.Write(this.sphericalCoordinates.Length);
-				for (int i = 0; i < this.sphericalCoordinates.Length; i++)
+				output.Write(this.sphericalCoordinates.Count);
+				for (int i = 0; i < this.sphericalCoordinates.Count; i++)
 				{
 					output.Write(this.sphericalCoordinates[i].X);
 					output.Write(this.sphericalCoordinates[i].Y);
@@ -306,7 +365,7 @@ namespace WorldWind.Renderable
 					Load();
 
 				if (linePoints != null)
-					if ((lastUpdatedPosition - drawArgs.WorldCamera.Position).LengthSq < 10 * 10) // Update if camera moved more than 10 meters
+					if((lastUpdatedPosition - drawArgs.WorldCamera.Position).LengthSq < 10*10) // Update if camera moved more than 10 meters
 						if (Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration) < 0.01)
 							// Already loaded and up-to-date
 							return;
@@ -324,7 +383,7 @@ namespace WorldWind.Renderable
 						  drawArgs.WorldCamera.ReferenceCenter.Z
 						  );
 
-				for (int i = 0; i < sphericalCoordinates.Length; i++)
+				for (int i = 0; i < sphericalCoordinates.Count; i++)
 				{
 					double altitude = 0;
 					if (_parentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 3000000)
@@ -398,6 +457,8 @@ namespace WorldWind.Renderable
 				if (drawArgs.WorldCamera.Altitude < _minDisplayAltitude)
 					return;
 
+                if (m_needsUpdate)
+                    this.Update(drawArgs);
 				if (this.linePoints == null)
 					return;
 
@@ -405,7 +466,7 @@ namespace WorldWind.Renderable
 					return;
 
 				drawArgs.numBoundaryPointsRendered += this.linePoints.Length;
-				drawArgs.numBoundaryPointsTotal += this.sphericalCoordinates.Length;
+				drawArgs.numBoundaryPointsTotal += this.sphericalCoordinates.Count;
 				drawArgs.numBoundariesDrawn++;
 
 				drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;

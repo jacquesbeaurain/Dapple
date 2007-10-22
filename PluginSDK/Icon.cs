@@ -251,6 +251,78 @@ namespace WorldWind.Renderable
 		}
 		protected bool m_autoScaleIcon = false;
 
+        /// <summary>
+        /// True if altitude is in AGL, False if ASL.  Default is AGL.
+        /// </summary>
+        public bool IsAGL
+        {
+            get { return m_isAGL; }
+            set { m_isAGL = value; }
+        }
+        protected bool m_isAGL = true;
+
+        /// <summary>
+        /// True if Vertical Exaggeration should be used in computing altitude.  
+        /// Default is true.
+        /// </summary>
+        public bool UseVE
+        {
+            get { return m_useVE; }
+            set { m_useVE = value; }
+        }
+        protected bool m_useVE = true;        
+        
+        /// <summary>
+        /// True if a zero Vertical Exaggeration should be used in computing altitude.  
+        /// If set then a VE of 0 forces altitude to 0 since its multiplied.  Ignored if UseVE is false.
+        /// Default is true.
+        /// </summary>
+        public bool UseZeroVE
+        {
+            get { return m_useZeroVE; }
+            set { m_useZeroVE = value; }
+        }
+        protected bool m_useZeroVE = true;
+
+        /// <summary>
+        /// Whether or not this will change color on mouseover (default = true)
+        /// </summary>
+        public bool AlwaysHighlight
+        {
+            get
+            {
+                return m_alwaysHighlight;
+            }
+            set
+            {
+                m_alwaysHighlight = value;
+            }
+        }
+        protected bool m_alwaysHighlight = false;
+
+        /// <summary>
+        /// Whether or not this will change color on mouseover (default = true)
+        /// </summary>
+        public bool DisableMouseoverHighlight
+        {
+            get
+            {
+                return m_disableMouseoverHighlight;
+            }
+            set
+            {
+                m_disableMouseoverHighlight = value;
+            }
+        }
+        protected bool m_disableMouseoverHighlight = false;
+
+        public bool OnClickZoomTo
+        {
+            get { return m_onClickZoomTo; }
+            set { m_onClickZoomTo = value; }
+        }
+
+        protected bool m_onClickZoomTo = true;
 		#endregion
 
 		public double OnClickZoomAltitude = double.NaN;
@@ -648,7 +720,8 @@ namespace WorldWind.Renderable
 			try
 			{
 				// Goto icon
-				if (OnClickZoomAltitude != double.NaN || OnClickZoomHeading != double.NaN || OnClickZoomTilt != double.NaN)
+                if (OnClickZoomTo && (OnClickZoomAltitude != double.NaN 
+                    || OnClickZoomHeading != double.NaN || OnClickZoomTilt != double.NaN))
 				{
 					drawArgs.WorldCamera.SetPosition(
 						 Latitude,
@@ -756,7 +829,15 @@ namespace WorldWind.Renderable
 			if (!m_isUpdated || (drawArgs.WorldCamera.ViewMatrix != lastView))
 			{
 				double elevation = drawArgs.WorldCamera.WorldRadius;
-				double altitude = World.Settings.VerticalExaggeration * Altitude;
+                double altitude;
+
+                // altitude = World.Settings.VerticalExaggeration * Altitude;
+
+                // Added this because if VE is set to zero then all floating icons fall to the earth.
+                if (UseVE && (UseZeroVE || World.Settings.VerticalExaggeration > 0.1))
+                    altitude = World.Settings.VerticalExaggeration * Altitude;
+                else
+                    altitude = Altitude;
 
 				if (drawArgs.CurrentWorld.TerrainAccessor != null && drawArgs.WorldCamera.Altitude < 300000)
 				{
@@ -764,13 +845,25 @@ namespace WorldWind.Renderable
 					elevation += drawArgs.CurrentWorld.TerrainAccessor.GetElevationAt(m_latitude, m_longitude, samplesPerDegree) * World.Settings.VerticalExaggeration;
 				}
 
-				Position = MathEngine.SphericalToCartesian(m_latitude, m_longitude,
-					altitude + elevation);
+                // we do this rather than zero out elevation because ground stick needs elevation if it exists.
+                if (IsAGL)
+                {
+                    Position = MathEngine.SphericalToCartesian(m_latitude, m_longitude, altitude + elevation);
 
-				m_positionD = MathEngine.SphericalToCartesian(
-					 Angle.FromDegrees(m_latitude),
-					 Angle.FromDegrees(m_longitude),
-					 altitude + elevation);
+                    m_positionD = MathEngine.SphericalToCartesian(
+                        Angle.FromDegrees(m_latitude),
+                        Angle.FromDegrees(m_longitude),
+                        altitude + elevation);
+                }
+                else
+                {
+                    Position = MathEngine.SphericalToCartesian(m_latitude, m_longitude, altitude + drawArgs.WorldCamera.WorldRadius);
+
+                    m_positionD = MathEngine.SphericalToCartesian(
+                        Angle.FromDegrees(m_latitude),
+                        Angle.FromDegrees(m_longitude),
+                        altitude + drawArgs.WorldCamera.WorldRadius);
+                }
 
 				if (m_drawGroundStick)
 				{
@@ -964,7 +1057,10 @@ namespace WorldWind.Renderable
 				this.Update(drawArgs);
 			}
 
-			int color = isMouseOver ? hotColor : normalColor;
+            int color = normalColor;
+
+            if ((!m_disableMouseoverHighlight && isMouseOver) || m_alwaysHighlight)
+                color = hotColor;
 
 			// Render the label if necessary
 			if (m_iconTexture == null || isMouseOver || NameAlwaysVisible)

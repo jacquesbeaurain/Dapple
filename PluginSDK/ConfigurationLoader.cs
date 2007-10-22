@@ -940,7 +940,7 @@ namespace WorldWind
 
 				if (iter.Current.Select("TransparentColor").Count > 0)
 				{
-					System.Drawing.Color c = getColor(iter.Current.Select("TransparentColor"));
+					System.Drawing.Color c = parseColorNode(iter.Current, "TransparentColor");
 					qts.ColorKey = c.ToArgb();
 				}
 
@@ -1189,10 +1189,7 @@ namespace WorldWind
 						if (hideBorderString != null && hideBorderString.Length > 0)
 							overlay.HideBorder = ParseBool(hideBorderString);
 
-						if (iter.Current.Select("BorderColor").Count != 0)
-						{
-							overlay.BorderColor = getColor(iter.Current.Select("BorderColor"));
-						}
+						overlay.BorderColor = parseColorNode(iter.Current, "BorderColor");
 
 						string cachePath = String.Format("{0}{1}{2}{1}{3}{1}{3}", cache.CacheDirectory, Path.DirectorySeparatorChar, getRenderablePathString(parentRenderable), name);
 
@@ -1361,7 +1358,80 @@ namespace WorldWind
 			}
 		}
 
-		private static System.Drawing.Color getColor(XPathNodeIterator iter)
+		/* parseColorNode (overload) */
+		private static System.Drawing.Color parseColorNode(XPathNavigator parentNode)
+		{
+			return parseColorNode(parentNode, null);
+		}
+
+		/* parseColorNode (overload) */
+		private static System.Drawing.Color parseColorNode(XPathNavigator parentNode, string RGBNodeName)
+		{
+			return parseColorNode(parentNode, RGBNodeName, System.Drawing.Color.White);
+		}
+
+		/* parseColorNode
+		 * Grabs the appropriate System.Drawing.Color from a parent node that contains a node from the following list:
+		 * WinColorName (Windows-type color name e.g. Cyan)
+		 * HexColor		(Hexadecimal format, RGB(A) e.g. #0000FF or FFFFFF)
+		 * RGBColor		(Contains Red, Green, Blue, and possibly Alpha color subnodes with a value from 0-255)
+		 * An optional node name, specified by RGBNodeName, that functions identically to RGBColor
+		*/
+		private static System.Drawing.Color parseColorNode(XPathNavigator parentNode, string RGBNodeName, System.Drawing.Color defaultColor)
+		{
+			string hexColorCode = getInnerTextFromFirstChild(parentNode.Select("HexColor"));
+			string winColorName = getInnerTextFromFirstChild(parentNode.Select("WinColorName"));
+
+			System.Drawing.Color c = defaultColor;
+
+			if (winColorName != null)
+			{
+				c = System.Drawing.Color.FromName(winColorName);
+			}
+			else if (hexColorCode != null)
+			{
+				c = getHexColor(hexColorCode);
+			}
+			else if (RGBNodeName != null && parentNode.Select(RGBNodeName).Count > 0)
+			{
+				c = getRGBColor(parentNode.Select(RGBNodeName));
+			}
+			else if (parentNode.Select("RGBColor").Count > 0)
+			{
+				c = getRGBColor(parentNode.Select("RGBColor"));
+			}
+			return c;
+		}
+
+		private static System.Drawing.Color getHexColor(string colorCode)
+		{
+			byte r = 0;
+			byte g = 0;
+			byte b = 0;
+			byte a = 255;
+
+			if (colorCode.Substring(0, 1) == "#")
+			{
+				colorCode = colorCode.Substring(1);
+			}
+			
+			string redString = colorCode.Substring(0, 2);
+			string greenString = colorCode.Substring(2, 2);
+			string blueString = colorCode.Substring(4, 2);
+
+			r = byte.Parse(redString, NumberStyles.HexNumber);
+			g = byte.Parse(greenString, NumberStyles.HexNumber);
+			b = byte.Parse(blueString, NumberStyles.HexNumber);
+
+			if (colorCode.Length > 6)
+			{
+				string alphaString = colorCode.Substring(6, 2);
+				a = byte.Parse(alphaString, NumberStyles.HexNumber);
+			}
+
+			return System.Drawing.Color.FromArgb(a, r, g, b);
+		}
+		private static System.Drawing.Color getRGBColor(XPathNodeIterator iter)
 		{
 			iter.MoveNext();
 			byte r = 0;
@@ -1446,22 +1516,12 @@ namespace WorldWind
 							System.Windows.Forms.Application.ExecutablePath),
 							placenameListFilePath);
 					}
-					string winColorName = getInnerTextFromFirstChild(iter.Current.Select("WinColorName"));
 					string iconFilePath = getInnerTextFromFirstChild(iter.Current.Select("IconFilePath"));
 
 					Microsoft.DirectX.Direct3D.FontDescription fd = getDisplayFont(iter.Current.Select("DisplayFont"));
 
-					System.Drawing.Color c = System.Drawing.Color.White;
-
-					if (winColorName != null)
-					{
-						c = System.Drawing.Color.FromName(winColorName);
-					}
-					else
-					{
-						c = getColor(iter.Current.Select("RGBColor"));
-					}
-
+					System.Drawing.Color c = parseColorNode(iter.Current, null, System.Drawing.Color.White);
+					
 					TiledPlacenameSet tps = new TiledPlacenameSet(
 						name,
 						parentWorld,
@@ -1538,21 +1598,12 @@ namespace WorldWind
 							  wfsBaseUrl);
 					}
 					*/
-					string winColorName = getInnerTextFromFirstChild(iter.Current.Select("WinColorName"));
-					string iconFilePath = getInnerTextFromFirstChild(iter.Current.Select("IconFilePath"));
+                    string iconFilePath = getInnerTextFromFirstChild(iter.Current.Select("IconFilePath"));
 
-					Microsoft.DirectX.Direct3D.FontDescription fd = getDisplayFont(iter.Current.Select("DisplayFont"));
+                    Microsoft.DirectX.Direct3D.FontDescription fd = getDisplayFont(iter.Current.Select("DisplayFont"));
 
-					System.Drawing.Color c = System.Drawing.Color.White;
+					System.Drawing.Color c = parseColorNode(iter.Current);
 
-					if (winColorName != null)
-					{
-						c = System.Drawing.Color.FromName(winColorName);
-					}
-					else
-					{
-						c = getColor(iter.Current.Select("RGBColor"));
-					}
 					//TODO:Validate URL
 					//Construct WFS Base URL
 					wfsBaseUrl += "TypeName=" + typename + "&Request=GetFeature&Service=WFS";
@@ -1725,6 +1776,19 @@ namespace WorldWind
 						ic.Rotation = Angle.FromDegrees(ParseDouble(rotationDegreesString));
 					}
 
+                    string alwaysHighlightString = getInnerTextFromFirstChild(iter.Current.Select("AlwaysHighlight"));
+                    string disableMouseoverHighlightString = getInnerTextFromFirstChild(iter.Current.Select("DisableMouseoverHighlight"));
+                   
+                    if(alwaysHighlightString != null)
+                    {
+                        bool alwaysHighlight = ParseBool(alwaysHighlightString);
+                        ic.AlwaysHighlight = alwaysHighlight;
+                    }
+                    if (disableMouseoverHighlightString != null)
+                    {
+                        bool disableMouseoverHighlight = ParseBool(disableMouseoverHighlightString);
+                        ic.DisableMouseoverHighlight = disableMouseoverHighlight;
+                    }
 					addExtendedInformation(iter.Current.Select("ExtendedInformation"), ic);
 
 					ic.ParentList = parentRenderable;
@@ -1773,17 +1837,7 @@ namespace WorldWind
 							pathsDirectory);
 					}
 
-					string winColorName = getInnerTextFromFirstChild(iter.Current.Select("WinColorName"));
-					System.Drawing.Color c = System.Drawing.Color.White;
-
-					if (winColorName != null)
-					{
-						c = System.Drawing.Color.FromName(winColorName);
-					}
-					else
-					{
-						c = getColor(iter.Current.Select("RGBColor"));
-					}
+					System.Drawing.Color c = parseColorNode(iter.Current);
 
 					PathList pl = new PathList(
 						name,
@@ -1878,17 +1932,7 @@ namespace WorldWind
 
 					}
 
-					System.Drawing.Color c = System.Drawing.Color.Black;
-
-					if (iter.Current.Select("RGBColor").Count > 0)
-					{
-						c = getColor(iter.Current.Select("RGBColor"));
-					}
-
-					if (iter.Current.Select("FeatureColor").Count > 0)
-					{
-						c = getColor(iter.Current.Select("FeatureColor"));
-					}
+					System.Drawing.Color c = parseColorNode(iter.Current, "FeatureColor");
 
 					LineFeature lf = null;
 
@@ -1909,10 +1953,7 @@ namespace WorldWind
 					if (description != null && description.Length > 0)
 						lf.Description = description;
 
-					if (iter.Current.Select("OutlineColor").Count > 0)
-					{
-						lf.LineColor = getColor(iter.Current.Select("OutlineColor"));
-					}
+					lf.LineColor = parseColorNode(iter.Current, "OutlineColor");
 
 					if (lineWidthString != null)
 						lf.LineWidth = (float)ParseDouble(lineWidthString);
@@ -2040,18 +2081,9 @@ namespace WorldWind
 							points[i].Z = ParseDouble(pointParts[2]);
 					}
 
-					System.Drawing.Color c = System.Drawing.Color.Black;
-					System.Drawing.Color outlineColor = System.Drawing.Color.Black;
+					System.Drawing.Color c = parseColorNode(iter.Current, "FeatureColor", System.Drawing.Color.Black);
 
-					if (iter.Current.Select("FeatureColor").Count > 0)
-					{
-						c = getColor(iter.Current.Select("FeatureColor"));
-					}
-
-					if (iter.Current.Select("OutlineColor").Count > 0)
-					{
-						outlineColor = getColor(iter.Current.Select("OutlineColor"));
-					}
+					System.Drawing.Color outlineColor = parseColorNode(iter.Current, "OutlineColor", System.Drawing.Color.Black);
 
 					PolygonFeature pf = null;
 

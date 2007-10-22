@@ -159,7 +159,7 @@ namespace WorldWind.Terrain
          double lonrange = Math.Abs(east - west);
 
          float[,] data = new float[samples, samples];
-         float scaleFactor = (float)1 / (samples - 1);
+         float scaleFactor = 1.0f / (samples - 1);
          for (int x = 0; x < samples; x++)
          {
             for (int y = 0; y < samples; y++)
