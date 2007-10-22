@@ -92,11 +92,13 @@ namespace Dapple
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.CancelButton = this.butCancel;
          this.ClientSize = new System.Drawing.Size(388, 90);
+         this.ControlBox = false;
          this.Controls.Add(this.linkLabelHelpWMS);
          this.Controls.Add(this.label11);
          this.Controls.Add(this.butOK);
          this.Controls.Add(this.txtWmsURL);
          this.Controls.Add(this.butCancel);
+         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
          this.Name = "AddWMS";
          this.ShowInTaskbar = false;
          this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

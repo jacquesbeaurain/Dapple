@@ -1390,7 +1390,7 @@ namespace Dapple
             OpenView(this.openView, this.openGeoTiff.Length == 0, true);
          else if (File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
          {
-            if (Settings.AskLastViewAtStartup && IsMontajChildProcess)
+            if (Settings.AskLastViewAtStartup && !IsMontajChildProcess)
             {
                Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
                msgBox.AllowSaveResponse = true;
@@ -1407,6 +1407,8 @@ namespace Dapple
 
             if (Settings.LastViewAtStartup)
                OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
+            else
+               OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
          }
          else
          {
@@ -3313,7 +3315,7 @@ namespace Dapple
          }
          else if (cSearchTabPane.SelectedIndex == 1)
          {
-            //CMTODO
+            cLayerList.AddLayers(cWebSearch.SelectedLayers);
          }
       }
 

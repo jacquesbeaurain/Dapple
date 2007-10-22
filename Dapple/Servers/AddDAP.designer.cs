@@ -92,13 +92,13 @@ namespace Dapple
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.CancelButton = this.butCancel;
          this.ClientSize = new System.Drawing.Size(377, 92);
+         this.ControlBox = false;
          this.Controls.Add(this.linkLabelHelpDAP);
          this.Controls.Add(this.label11);
          this.Controls.Add(this.butOK);
          this.Controls.Add(this.txtDapURL);
          this.Controls.Add(this.butCancel);
-         this.MaximizeBox = false;
-         this.MinimizeBox = false;
+         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
          this.Name = "AddDAP";
          this.ShowInTaskbar = false;
          this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

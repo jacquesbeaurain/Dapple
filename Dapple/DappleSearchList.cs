@@ -96,6 +96,21 @@ namespace Dapple.CustomControls
          }
       }
 
+      public List<LayerUri> SelectedLayers
+      {
+         get
+         {
+            List<LayerUri> result = new List<LayerUri>();
+
+            foreach (int index in cResultListBox.SelectedIndices)
+            {
+               result.Add(m_aPages[m_iCurrentPage].Results[index].Uri);
+            }
+
+            return result;
+         }
+      }
+
       #endregion
 
       #region Event handlers
