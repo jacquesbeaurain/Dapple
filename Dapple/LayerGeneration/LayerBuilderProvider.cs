@@ -7,6 +7,8 @@ using System.Text;
 using WorldWind;
 using WorldWind.Renderable;
 using WorldWind.PluginEngine;
+using System.IO;
+using System.Diagnostics;
 
 namespace Dapple.LayerGeneration
 {
@@ -217,6 +219,96 @@ namespace Dapple.LayerGeneration
 		}
 
 		public abstract RenderableObject GetLayer();
+
+      public bool exportToGeoTiff(String szFilename)
+      {
+         String szTempMetaFilename = String.Empty;
+         String szTempImageFile = String.Empty;
+         szFilename = Path.ChangeExtension(szFilename, ".tif");
+
+         try
+         {
+
+            RenderableObject oRObj = GetLayer();
+            RenderableObject.ExportInfo oExportInfo = new RenderableObject.ExportInfo();
+            oRObj.InitExportInfo(MainForm.WorldWindowSingleton.DrawArgs, oExportInfo);
+
+            if (!(oExportInfo.iPixelsX > 0 && oExportInfo.iPixelsY > 0)) return false;
+
+            // Stop the camera
+            //camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
+
+            // Minimize the estimated extents to what is available
+            GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+            oViewedArea.East = Math.Min(oViewedArea.East, oExportInfo.dMaxLon);
+            oViewedArea.North = Math.Min(oViewedArea.North, oExportInfo.dMaxLat);
+            oViewedArea.West = Math.Max(oViewedArea.West, oExportInfo.dMinLon);
+            oViewedArea.South = Math.Max(oViewedArea.South, oExportInfo.dMinLat);
+
+            //Calculate the image dimensions
+            int iImageWidth = (int)(oExportInfo.iPixelsX * (oViewedArea.East - oViewedArea.West) / (oExportInfo.dMaxLon - oExportInfo.dMinLon));
+            int iImageHeight = (int)(oExportInfo.iPixelsY * (oViewedArea.North - oViewedArea.South) / (oExportInfo.dMaxLat - oExportInfo.dMinLat));
+
+            // Export image
+            using (System.Drawing.Bitmap oExportedImage = new System.Drawing.Bitmap(iImageWidth, iImageHeight))
+            {
+               using (System.Drawing.Graphics oEIGraphics = System.Drawing.Graphics.FromImage(oExportedImage))
+               {
+                  oExportInfo.dMaxLat = oViewedArea.North;
+                  oExportInfo.dMaxLon = oViewedArea.East;
+                  oExportInfo.dMinLat = oViewedArea.South;
+                  oExportInfo.dMinLon = oViewedArea.West;
+                  oExportInfo.gr = oEIGraphics;
+                  oExportInfo.iPixelsX = iImageWidth;
+                  oExportInfo.iPixelsY = iImageHeight;
+
+                  oRObj.ExportProcess(MainForm.WorldWindowSingleton.DrawArgs, oExportInfo);
+               }
+
+               szTempMetaFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+               using (StreamWriter sw = new StreamWriter(szTempMetaFilename, false))
+               {
+                  sw.WriteLine("Geotiff_Information:");
+                  sw.WriteLine("Version: 1");
+                  sw.WriteLine("Key_Revision: 1.0");
+                  sw.WriteLine("Tagged_Information:");
+                  sw.WriteLine("ModelTiepointTag (2,3):");
+                  sw.WriteLine("0 0 0");
+                  sw.WriteLine(oViewedArea.West.ToString() + " " + oViewedArea.North.ToString() + " 0");
+                  sw.WriteLine("ModelPixelScaleTag (1,3):");
+                  sw.WriteLine(((oViewedArea.East - oViewedArea.West) / (double)iImageWidth).ToString() + " " + ((oViewedArea.North - oViewedArea.South) / (double)iImageHeight).ToString() + " 0");
+                  sw.WriteLine("End_Of_Tags.");
+                  sw.WriteLine("Keyed_Information:");
+                  sw.WriteLine("GTModelTypeGeoKey (Short,1): ModelTypeGeographic");
+                  sw.WriteLine("GTRasterTypeGeoKey (Short,1): RasterPixelIsArea");
+                  sw.WriteLine("GeogAngularUnitsGeoKey (Short,1): Angular_Degree");
+                  sw.WriteLine("GeographicTypeGeoKey (Short,1): GCS_WGS_84");
+                  sw.WriteLine("End_Of_Keys.");
+                  sw.WriteLine("End_Of_Geotiff.");
+               }
+
+               szTempImageFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+               oExportedImage.Save(szTempImageFile, System.Drawing.Imaging.ImageFormat.Tiff);
+
+               ProcessStartInfo psi = new ProcessStartInfo(Path.GetDirectoryName(Application.ExecutablePath) + @"\System\geotifcp.exe");
+               psi.UseShellExecute = false;
+               psi.CreateNoWindow = true;
+               psi.Arguments = "-g \"" + szTempMetaFilename + "\" \"" + szTempImageFile + "\" \"" + szFilename + "\"";
+
+               using (Process p = Process.Start(psi))
+                  p.WaitForExit();
+
+               if (File.Exists(szFilename + ".gi")) File.Delete(szFilename + ".gi");
+            }
+         }
+         finally
+         {
+            if (File.Exists(szTempMetaFilename)) File.Delete(szTempMetaFilename);
+            if (File.Exists(szTempImageFile)) File.Delete(szTempImageFile);
+         }
+
+         return true;
+      }
 
 		public abstract string GetURI();
 

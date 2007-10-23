@@ -5,6 +5,8 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using WorldWind.Renderable;
+using WorldWind;
 
 namespace Dapple.Extract
 {
@@ -17,6 +19,10 @@ namespace Dapple.Extract
       private readonly string TIF_EXT = ".tif";            
       #endregion
 
+      #region Member Variables
+      private Dapple.LayerGeneration.LayerBuilder m_oNonDapBuilder;
+      #endregion
+
       /// <summary>
       /// Default constructor
       /// </summary>
@@ -26,11 +32,10 @@ namespace Dapple.Extract
       {
          InitializeComponent();
 
+         m_oNonDapBuilder = oBuilder;
+
          cbDisplayOptions.DataSource = Options.Picture.DisplayOptionStrings;
          cbDisplayOptions.SelectedIndex = 0;
-
-         cbDownloadOptions.DataSource = Options.Picture.DownloadOptionStrings;
-         cbDownloadOptions.SelectedIndex = 2;
 
          tbFilename.Text = System.IO.Path.ChangeExtension(oBuilder.Name, TIF_EXT);
       }
@@ -53,40 +58,59 @@ namespace Dapple.Extract
       /// <returns></returns>
       public override bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
-         base.Save(oDatasetElement, strDestFolder, eClip, eCS);
+         //base.Save(oDatasetElement, strDestFolder, eClip, eCS);
+
+         System.Xml.XmlAttribute oTypeAttr = oDatasetElement.OwnerDocument.CreateAttribute("type");
+         oTypeAttr.Value = "geotiff";
+         oDatasetElement.Attributes.Append(oTypeAttr);
+
+         System.Xml.XmlAttribute oTitleAttr = oDatasetElement.OwnerDocument.CreateAttribute("title");
+         oTitleAttr.Value = m_oNonDapBuilder.Name;
+         oDatasetElement.Attributes.Append(oTitleAttr);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
-
+         String szFileName = tbFilename.Text;
+         foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
+            szFileName = szFileName.Replace(ch, '_');
+         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, szFileName);
          oDatasetElement.Attributes.Append(oPathAttr);
-
-         System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
-         Options.Picture.DownloadOptions eOption = (Options.Picture.DownloadOptions)cbDownloadOptions.SelectedIndex;
-         oDownloadElement.Value = eOption.ToString();
-         oDatasetElement.AppendChild(oDownloadElement);
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");
          Options.Picture.DisplayOptions eDisplayOption = (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex;
-         oDisplayElement.Value = eDisplayOption.ToString();
+         oDisplayElement.InnerText = eDisplayOption.ToString();
          oDatasetElement.AppendChild(oDisplayElement);
+
+         WorldWind.GeographicBoundingBox oViewBox = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+         String szViewCRS = Dapple.Extract.Resolution.WGS_84;
+
+         WorldWind.GeographicBoundingBox oMapBox = MainForm.MapAoi;
+         String szMapCRS = MainForm.MapAoiCoordinateSystem;
+
+         bool blNewMap;
+
+         if (oMapBox == null)
+         {
+            blNewMap = true;
+         }
+         else
+         {
+            if (MainForm.MontajInterface.ProjectBoundingRectangle(szMapCRS, ref oMapBox.West, ref oMapBox.South, ref oMapBox.East, ref oMapBox.North, szViewCRS))
+            {
+               blNewMap = (!oViewBox.Intersects(oMapBox));
+            }
+            else
+            {
+               blNewMap = true;
+            }
+         }
+
+         System.Xml.XmlAttribute oNewMapAttr = oDatasetElement.OwnerDocument.CreateAttribute("new_map");
+         oNewMapAttr.Value = blNewMap.ToString();
+         oDatasetElement.Attributes.Append(oNewMapAttr);
+
+         m_oNonDapBuilder.exportToGeoTiff(oPathAttr.Value);
 
          return true;
       }
-
-      /// <summary>
-      /// Set the extension correctly
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      private void cbDownloadOptions_SelectedIndexChanged(object sender, EventArgs e)
-      {
-         string strOption = cbDownloadOptions.SelectedItem.ToString().ToLower();
-         if (strOption == Options.Picture.DisplayOptionStrings[3].ToLower())
-            tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
-         else if (strOption == Options.Picture.DisplayOptionStrings[4].ToLower())
-            tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
-         else
-            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, "." + strOption.ToLower());
-      }      
    }
 }

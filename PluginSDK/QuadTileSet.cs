@@ -1247,7 +1247,7 @@ namespace WorldWind.Renderable
 
       public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
       {
-         Update(drawArgs);
+         //Update(drawArgs);
          lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
          {
             foreach (long key in m_topmostTiles.Keys)
@@ -1260,7 +1260,7 @@ namespace WorldWind.Renderable
 
       public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
       {
-         Update(drawArgs);
+         //Update(drawArgs);
          lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
          {
             foreach (long key in m_topmostTiles.Keys)

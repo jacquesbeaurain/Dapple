@@ -1315,12 +1315,12 @@ namespace Dapple
 
          if (blServerEnabled)
          {
-            cMenuItem_ToggleServerEnabled.Text = "Disable server";
+            cMenuItem_ToggleServerEnabled.Text = "Disable";
             cMenuItem_ToggleServerEnabled.Image = Dapple.Properties.Resources.disserver;
          }
          else
          {
-            cMenuItem_ToggleServerEnabled.Text = "Enable server";
+            cMenuItem_ToggleServerEnabled.Text = "Enable";
             cMenuItem_ToggleServerEnabled.Image = Dapple.Properties.Resources.enserver;
          }
 

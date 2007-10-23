@@ -77,7 +77,7 @@ namespace Dapple
       public const string SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
       public const string NEW_SERVER_GATEWAY = "AddNewServer.aspx";
       public const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
-      public const string NO_SEARCH = "--- Enter Keyword ---";
+      public const string NO_SEARCH = "--- Enter keyword ---";
       public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
 
       /// <summary>
