@@ -54,7 +54,7 @@ namespace Dapple.DAP
 		public override void StartDownload()
       {
 			Log.Write(Log.Levels.Debug, "DGDR", "Starting download for DAP server " + m_DapImageStore.Server.Url);
-			Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + m_DapImageStore.DataSet.Name);
+			Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + (m_DapImageStore.DataSet == null ? "Browser Map" : m_DapImageStore.DataSet.Name));
          if (m_DapImageStore.Server.MajorVersion >= 11)
             Log.Write(Log.Levels.Debug, "DGDR", "Level: " + Tile.Level + " Column: " + Tile.Col + " Row: " + Tile.Row);
          else
@@ -82,7 +82,7 @@ namespace Dapple.DAP
 		protected override void DownloadComplete(WebDownload downloadInfo)
 		{
          Log.Write(Log.Levels.Debug, "DGDR", "Finishing download for DAP server " + m_DapImageStore.Server.Url);
-         Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + m_DapImageStore.DataSet.Name);
+         Log.Write(Log.Levels.Debug, "DGDR", "Dataset Name: " + (m_DapImageStore.DataSet == null ? "Browser Map" : m_DapImageStore.DataSet.Name));
          if (m_DapImageStore.Server.MajorVersion >= 11)
             Log.Write(Log.Levels.Debug, "DGDR", "Level: " + Tile.Level + " Column: " + Tile.Col + " Row: " + Tile.Row);
          else

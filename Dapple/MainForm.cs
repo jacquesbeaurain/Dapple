@@ -3561,6 +3561,50 @@ namespace Dapple
          propertiesToolStripMenuItem.Enabled = blServerSelected;
          refreshServerToolStripMenuItem.Enabled = blServerSelected;
          removeServerToolStripMenuItem.Enabled = blServerSelected;
+         setAsFavoriteToolStripMenuItem.Enabled = blServerSelected;
+         addBrowserMapToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode.Tag is Server;
+
+         if (blServerSelected == false)
+         {
+            toggleDisableToolStripMenuItem.Text = "Disable";
+            toggleDisableToolStripMenuItem.Image = Resources.disserver;
+            toggleDisableToolStripMenuItem.Enabled = false;
+         }
+         else
+         {
+            bool blServerEnabled = true;
+            if (tvServers.SelectedNode.Tag is Server)
+               blServerEnabled = ((Server)tvServers.SelectedNode.Tag).Enabled;
+            else if (tvServers.SelectedNode.Tag is ServerBuilder)
+               blServerEnabled = ((ServerBuilder)tvServers.SelectedNode.Tag).Enabled;
+
+            if (blServerEnabled)
+            {
+               toggleDisableToolStripMenuItem.Text = "Disable";
+               toggleDisableToolStripMenuItem.Image = Resources.disserver;
+            }
+            else
+            {
+               toggleDisableToolStripMenuItem.Text = "Enable";
+               toggleDisableToolStripMenuItem.Image = Resources.enserver;
+            }
+            toggleDisableToolStripMenuItem.Enabled = true;
+         }
+      }
+
+      private void setAsFavoriteToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         tvServers.CmdSetFavoriteServer();
+      }
+
+      private void addBrowserMapToLayersToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         tvServers.CmdAddBrowserMap();
+      }
+
+      private void toggleDisableToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         tvServers.CmdToggleServerEnabled();
       }
    }
 }

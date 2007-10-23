@@ -155,6 +155,9 @@ namespace Dapple
            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
            this.timerNavigation = new System.Windows.Forms.Timer(this.components);
+           this.setAsFavoriteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.addBrowserMapToLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+           this.toggleDisableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.statusStrip.SuspendLayout();
            this.menuStrip.SuspendLayout();
            this.splitContainerMain.Panel1.SuspendLayout();
@@ -435,7 +438,7 @@ namespace Dapple
            this.searchToolStripMenuItem.Image = global::Dapple.Properties.Resources.search;
            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
            this.searchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-           this.searchToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+           this.searchToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
            this.searchToolStripMenuItem.Text = "Search";
            this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
            // 
@@ -444,7 +447,7 @@ namespace Dapple
            this.addToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
            this.addToLayersToolStripMenuItem.Name = "addToLayersToolStripMenuItem";
            this.addToLayersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-           this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+           this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
            this.addToLayersToolStripMenuItem.Text = "Add to Layers";
            this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
            // 
@@ -462,7 +465,7 @@ namespace Dapple
            this.downloadToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_download;
            this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
            this.downloadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
-           this.downloadToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+           this.downloadToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
            this.downloadToolStripMenuItem.Text = "Download Layers...";
            this.downloadToolStripMenuItem.Click += new System.EventHandler(this.downloadToolStripMenuItem_Click);
            // 
@@ -470,7 +473,7 @@ namespace Dapple
            // 
            this.exportGeoTiffToolStripMenuItem.Image = global::Dapple.Properties.Resources.export;
            this.exportGeoTiffToolStripMenuItem.Name = "exportGeoTiffToolStripMenuItem";
-           this.exportGeoTiffToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+           this.exportGeoTiffToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
            this.exportGeoTiffToolStripMenuItem.Text = "Export to GeoTiff...";
            this.exportGeoTiffToolStripMenuItem.Click += new System.EventHandler(this.exportGeoTiffToolStripMenuItem_Click);
            // 
@@ -482,7 +485,10 @@ namespace Dapple
             this.addAnArcIMSServerToolStripMenuItem,
             this.toolStripSeparator4,
             this.propertiesToolStripMenuItem,
+            this.setAsFavoriteToolStripMenuItem,
+            this.addBrowserMapToLayersToolStripMenuItem,
             this.refreshServerToolStripMenuItem,
+            this.toggleDisableToolStripMenuItem,
             this.removeServerToolStripMenuItem});
            this.cOMServerMenu.Name = "cOMServerMenu";
            this.cOMServerMenu.Size = new System.Drawing.Size(56, 20);
@@ -493,7 +499,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemAddDAP.Image = global::Dapple.Properties.Resources.addserver;
            this.toolStripMenuItemAddDAP.Name = "toolStripMenuItemAddDAP";
-           this.toolStripMenuItemAddDAP.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemAddDAP.Size = new System.Drawing.Size(206, 22);
            this.toolStripMenuItemAddDAP.Text = "Add DAP server...";
            this.toolStripMenuItemAddDAP.Click += new System.EventHandler(this.toolStripMenuItemAddDAP_Click);
            // 
@@ -501,7 +507,7 @@ namespace Dapple
            // 
            this.toolStripMenuItemAddWMS.Image = global::Dapple.Properties.Resources.addserver;
            this.toolStripMenuItemAddWMS.Name = "toolStripMenuItemAddWMS";
-           this.toolStripMenuItemAddWMS.Size = new System.Drawing.Size(176, 22);
+           this.toolStripMenuItemAddWMS.Size = new System.Drawing.Size(206, 22);
            this.toolStripMenuItemAddWMS.Text = "Add WMS server...";
            this.toolStripMenuItemAddWMS.Click += new System.EventHandler(this.toolStripMenuItemAddWMS_Click);
            // 
@@ -509,20 +515,20 @@ namespace Dapple
            // 
            this.addAnArcIMSServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.addserver;
            this.addAnArcIMSServerToolStripMenuItem.Name = "addAnArcIMSServerToolStripMenuItem";
-           this.addAnArcIMSServerToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+           this.addAnArcIMSServerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
            this.addAnArcIMSServerToolStripMenuItem.Text = "Add ArcIMS server...";
            this.addAnArcIMSServerToolStripMenuItem.Click += new System.EventHandler(this.toolStripMenuItemAddArcIMS_Click);
            // 
            // toolStripSeparator4
            // 
            this.toolStripSeparator4.Name = "toolStripSeparator4";
-           this.toolStripSeparator4.Size = new System.Drawing.Size(161, 6);
+           this.toolStripSeparator4.Size = new System.Drawing.Size(203, 6);
            // 
            // propertiesToolStripMenuItem
            // 
            this.propertiesToolStripMenuItem.Image = global::Dapple.Properties.Resources.properties;
            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-           this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+           this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
            this.propertiesToolStripMenuItem.Text = "Properties";
            this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
            // 
@@ -530,7 +536,7 @@ namespace Dapple
            // 
            this.refreshServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.server_refresh;
            this.refreshServerToolStripMenuItem.Name = "refreshServerToolStripMenuItem";
-           this.refreshServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+           this.refreshServerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
            this.refreshServerToolStripMenuItem.Text = "Refresh";
            this.refreshServerToolStripMenuItem.Click += new System.EventHandler(this.refreshServerToolStripMenuItem_Click);
            // 
@@ -538,7 +544,7 @@ namespace Dapple
            // 
            this.removeServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.server_remove;
            this.removeServerToolStripMenuItem.Name = "removeServerToolStripMenuItem";
-           this.removeServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+           this.removeServerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
            this.removeServerToolStripMenuItem.Text = "Remove";
            this.removeServerToolStripMenuItem.Click += new System.EventHandler(this.removeServerToolStripMenuItem_Click);
            // 
@@ -1430,6 +1436,30 @@ namespace Dapple
            // 
            this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
            // 
+           // setAsFavoriteToolStripMenuItem
+           // 
+           this.setAsFavoriteToolStripMenuItem.Image = global::Dapple.Properties.Resources.server_favourite;
+           this.setAsFavoriteToolStripMenuItem.Name = "setAsFavoriteToolStripMenuItem";
+           this.setAsFavoriteToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+           this.setAsFavoriteToolStripMenuItem.Text = "Set as Favourite";
+           this.setAsFavoriteToolStripMenuItem.Click += new System.EventHandler(this.setAsFavoriteToolStripMenuItem_Click);
+           // 
+           // addBrowserMapToLayersToolStripMenuItem
+           // 
+           this.addBrowserMapToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_bottom;
+           this.addBrowserMapToLayersToolStripMenuItem.Name = "addBrowserMapToLayersToolStripMenuItem";
+           this.addBrowserMapToLayersToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+           this.addBrowserMapToLayersToolStripMenuItem.Text = "Add Browser Map to Layers";
+           this.addBrowserMapToLayersToolStripMenuItem.Click += new System.EventHandler(this.addBrowserMapToLayersToolStripMenuItem_Click);
+           // 
+           // toggleDisableToolStripMenuItem
+           // 
+           this.toggleDisableToolStripMenuItem.Image = global::Dapple.Properties.Resources.disserver;
+           this.toggleDisableToolStripMenuItem.Name = "toggleDisableToolStripMenuItem";
+           this.toggleDisableToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+           this.toggleDisableToolStripMenuItem.Text = "Disable";
+           this.toggleDisableToolStripMenuItem.Click += new System.EventHandler(this.toggleDisableToolStripMenuItem_Click);
+           // 
            // MainForm
            // 
            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1628,6 +1658,9 @@ namespace Dapple
        private System.Windows.Forms.TabPage tabPage1;
        private System.Windows.Forms.TabPage tabPage2;
        private System.Windows.Forms.ToolStripMenuItem setAsMyHomeViewToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem setAsFavoriteToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem addBrowserMapToLayersToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem toggleDisableToolStripMenuItem;
     }
 }
 

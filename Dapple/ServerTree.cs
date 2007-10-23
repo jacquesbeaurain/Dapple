@@ -1669,6 +1669,54 @@ namespace Dapple
 
       void cMenuItem_ToggleServerEnabled_Click(object sender, EventArgs e)
       {
+         CmdToggleServerEnabled();
+      }
+
+      void cMenuItem_Refresh_Click(object sender, EventArgs e)
+      {
+         RefreshCurrentServer();
+      }
+
+      void cMenuItem_AddBrowserMap_Click(object sender, EventArgs e)
+      {
+         CmdAddBrowserMap();
+      }
+
+      void cMenuItem_Properties_Click(object sender, EventArgs e)
+      {
+         CmdServerProperties();
+      }
+
+      void cMenuItem_SetDefault_Click(object sender, EventArgs e)
+      {
+         CmdSetFavoriteServer();
+      }
+
+      public void CmdAddBrowserMap()
+      {
+         if (SelectedNode != null && SelectedNode.Tag is Server)
+         {
+            m_activeLayers.AddLayer(new DAPBrowserMapBuilder(MainForm.WorldWindowSingleton, SelectedNode.Tag as Server, null));
+         }
+      }
+
+      public void CmdSetFavoriteServer()
+      {
+         if (SelectedNode != null)
+         {
+            if (SelectedNode.Tag is Server)
+            {
+               m_szDefaultServer = ((Server)SelectedNode.Tag).Url;
+            }
+            if (SelectedNode.Tag is ServerBuilder)
+            {
+               m_szDefaultServer = ((ServerBuilder)SelectedNode.Tag).Uri.ToString();
+            }
+         }
+      }
+
+      public void CmdToggleServerEnabled()
+      {
          if (SelectedNode.Tag is ServerBuilder)
          {
             ((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
@@ -1684,39 +1732,6 @@ namespace Dapple
          }
          else
             MainForm.NotifyUnimplemented();
-      }
-
-      void cMenuItem_Refresh_Click(object sender, EventArgs e)
-      {
-         RefreshCurrentServer();
-      }
-
-      void cMenuItem_AddBrowserMap_Click(object sender, EventArgs e)
-      {
-         if (SelectedNode != null && SelectedNode.Tag is Server)
-         {
-            m_activeLayers.AddLayer(new DAPBrowserMapBuilder(MainForm.WorldWindowSingleton, SelectedNode.Tag as Server, null));
-         }
-      }
-
-      void cMenuItem_Properties_Click(object sender, EventArgs e)
-      {
-         CmdServerProperties();
-      }
-
-      void cMenuItem_SetDefault_Click(object sender, EventArgs e)
-      {
-         if (SelectedNode != null)
-         {
-            if (SelectedNode.Tag is Server)
-            {
-               m_szDefaultServer = ((Server)SelectedNode.Tag).Url;
-            }
-            if (SelectedNode.Tag is ServerBuilder)
-            {
-               m_szDefaultServer = ((ServerBuilder)SelectedNode.Tag).Uri.ToString();
-            }
-         }
       }
 
       #endregion
