@@ -1367,7 +1367,7 @@ namespace Dapple
       {
          bool result = base.AddDAPServer(strUrl, out hRetServer, blEnabled);
          this.m_oServerListControl.Servers = getServerList();
-         if (hRetServer.Url.Equals(m_szDefaultServer))
+         if (hRetServer != null && hRetServer.Url.Equals(m_szDefaultServer))
          {
             this.SelectedServer = hRetServer;
          }

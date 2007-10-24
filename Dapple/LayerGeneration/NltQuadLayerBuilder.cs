@@ -221,6 +221,16 @@ namespace Dapple.LayerGeneration
          get { return m_iLevels; }
       }
 
+      public String Server
+      {
+         get { return m_strServerUrl; }
+      }
+
+      public String DatasetName
+      {
+         get { return m_strDatasetName; }
+      }
+
       #endregion
 
       #region Private Members

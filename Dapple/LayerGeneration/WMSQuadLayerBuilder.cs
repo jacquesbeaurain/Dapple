@@ -217,6 +217,14 @@ namespace Dapple.LayerGeneration
          return result;
       }
 
+      public WMSLayer Layer
+      {
+         get
+         {
+            return m_wmsLayer;
+         }
+      }
+
       public override string GetCachePath()
       {
          WMSServerUri temp = new WMSServerUri(m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl);

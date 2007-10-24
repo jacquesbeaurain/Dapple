@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using WorldWind.Renderable;
 using WorldWind;
+using Dapple.LayerGeneration;
 
 namespace Dapple.Extract
 {
@@ -58,22 +59,29 @@ namespace Dapple.Extract
       /// <returns></returns>
       public override bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
-         //base.Save(oDatasetElement, strDestFolder, eClip, eCS);
+         System.Xml.XmlAttribute oAttr = oDatasetElement.OwnerDocument.CreateAttribute("type");
+         oAttr.Value = "geotiff";
+         oDatasetElement.Attributes.Append(oAttr);
 
-         System.Xml.XmlAttribute oTypeAttr = oDatasetElement.OwnerDocument.CreateAttribute("type");
-         oTypeAttr.Value = "geotiff";
-         oDatasetElement.Attributes.Append(oTypeAttr);
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("title");
+         oAttr.Value = m_oNonDapBuilder.Name;
+         oDatasetElement.Attributes.Append(oAttr);
 
-         System.Xml.XmlAttribute oTitleAttr = oDatasetElement.OwnerDocument.CreateAttribute("title");
-         oTitleAttr.Value = m_oNonDapBuilder.Name;
-         oDatasetElement.Attributes.Append(oTitleAttr);
-
-         System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          String szFileName = tbFilename.Text;
          foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
             szFileName = szFileName.Replace(ch, '_');
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, szFileName);
-         oDatasetElement.Attributes.Append(oPathAttr);
+         oAttr.Value = System.IO.Path.Combine(strDestFolder, szFileName);
+         oDatasetElement.Attributes.Append(oAttr);
+
+         if (m_oNonDapBuilder is GeorefImageLayerBuilder)
+         {
+            System.IO.File.Copy(((GeorefImageLayerBuilder)m_oNonDapBuilder).FileName, oAttr.Value);
+         }
+         else
+         {
+            m_oNonDapBuilder.exportToGeoTiff(oAttr.Value);
+         }
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");
          Options.Picture.DisplayOptions eDisplayOption = (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex;
@@ -104,11 +112,82 @@ namespace Dapple.Extract
             }
          }
 
-         System.Xml.XmlAttribute oNewMapAttr = oDatasetElement.OwnerDocument.CreateAttribute("new_map");
-         oNewMapAttr.Value = blNewMap.ToString();
-         oDatasetElement.Attributes.Append(oNewMapAttr);
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("new_map");
+         oAttr.Value = blNewMap.ToString();
+         oDatasetElement.Attributes.Append(oAttr);
 
-         m_oNonDapBuilder.exportToGeoTiff(oPathAttr.Value);
+
+         GeographicBoundingBox oGeoTiffBox = oViewBox.Clone() as GeographicBoundingBox;
+
+         if (m_oNonDapBuilder is GeorefImageLayerBuilder)
+         {
+            oGeoTiffBox = GeorefImageLayerBuilder.GetExtentsFromGeotif(((GeorefImageLayerBuilder)m_oNonDapBuilder).FileName);
+         }
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("minx");
+         oAttr.Value = oGeoTiffBox.West.ToString();
+         oDatasetElement.Attributes.Append(oAttr);
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("miny");
+         oAttr.Value = oGeoTiffBox.South.ToString();
+         oDatasetElement.Attributes.Append(oAttr);
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxx");
+         oAttr.Value = oGeoTiffBox.East.ToString();
+         oDatasetElement.Attributes.Append(oAttr);
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxy");
+         oAttr.Value = oGeoTiffBox.North.ToString();
+         oDatasetElement.Attributes.Append(oAttr);
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("coordinate_system");
+         oAttr.Value = szViewCRS;
+         oDatasetElement.Attributes.Append(oAttr);
+
+         String szDownloadType = String.Empty;
+         String szDownloadUrl = String.Empty;
+         String szLayerId = String.Empty;
+
+         if (m_oNonDapBuilder is WMSQuadLayerBuilder)
+         {
+            szDownloadType = "wms";
+            szDownloadUrl = ((WMSQuadLayerBuilder)m_oNonDapBuilder).Layer.ParentWMSList.ServerGetCapabilitiesUrl;
+            szLayerId = ((WMSQuadLayerBuilder)m_oNonDapBuilder).Layer.Name;
+         }
+         else if (m_oNonDapBuilder is ArcIMSQuadLayerBuilder)
+         {
+            szDownloadType = "arcims";
+            szDownloadUrl = ((ArcIMSQuadLayerBuilder)m_oNonDapBuilder).Server;
+            szLayerId = ((ArcIMSQuadLayerBuilder)m_oNonDapBuilder).LayerId;
+         }
+         else if (m_oNonDapBuilder is NltQuadLayerBuilder)
+         {
+            szDownloadType = "tile";
+            szDownloadUrl = ((NltQuadLayerBuilder)m_oNonDapBuilder).Server;
+            szLayerId = ((NltQuadLayerBuilder)m_oNonDapBuilder).DatasetName;
+         }
+         else if (m_oNonDapBuilder is GeorefImageLayerBuilder)
+         {
+            szDownloadType = "file";
+            szDownloadUrl = String.Empty;
+            szLayerId = String.Empty;
+         }
+         else
+         {
+            throw new ApplicationException("Unknown server type :" + m_oNonDapBuilder.GetType().ToString());
+         }
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("download_type");
+         oAttr.Value = szDownloadType;
+         oDatasetElement.Attributes.Append(oAttr);
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("url");
+         oAttr.Value = szDownloadUrl;
+         oDatasetElement.Attributes.Append(oAttr);
+
+         oAttr = oDatasetElement.OwnerDocument.CreateAttribute("id");
+         oAttr.Value = szLayerId;
+         oDatasetElement.Attributes.Append(oAttr);
 
          return true;
       }

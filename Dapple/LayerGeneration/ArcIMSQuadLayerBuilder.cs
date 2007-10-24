@@ -229,6 +229,22 @@ namespace Dapple.LayerGeneration
          return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
       }
 
+      public String Server
+      {
+         get
+         {
+            return m_oServerUri.ToString();
+         }
+      }
+
+      public String LayerId
+      {
+         get
+         {
+            return m_szLayerID;
+         }
+      }
+
       #endregion
 
       #region Private Members
