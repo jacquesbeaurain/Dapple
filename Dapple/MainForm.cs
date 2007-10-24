@@ -654,6 +654,10 @@ namespace Dapple
                toolStripMenuItemOpen.Enabled = false;
                toolStripMenuItemOpenKML.Visible = false;
                toolStripMenuItemOpenKML.Enabled = false;
+
+               this.MinimizeBox = false;
+               this.MaximizeBox = false;
+               this.HelpButton = true;
             }
             else
             {
@@ -3605,6 +3609,14 @@ namespace Dapple
       private void toggleDisableToolStripMenuItem_Click(object sender, EventArgs e)
       {
          tvServers.CmdToggleServerEnabled();
+      }
+
+      private void MainForm_HelpButtonClicked(object sender, CancelEventArgs e)
+      {
+         if (m_oMontajRemoteInterface != null)
+            m_oMontajRemoteInterface.DisplayHelp();
+
+         e.Cancel = true;
       }
    }
 }
