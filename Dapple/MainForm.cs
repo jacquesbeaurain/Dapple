@@ -1680,6 +1680,8 @@ namespace Dapple
       void ServerTreeAfterSelected(object sender, TreeViewEventArgs e)
       {
          populateAoiComboBox();
+         cOMToolsMenu_DropDownOpening(this, new EventArgs());
+         cOMServerMenu_DropDownOpening(this, new EventArgs());
       }
 
       #endregion
@@ -3561,7 +3563,7 @@ namespace Dapple
          {
             if (cServerViewsTab.SelectedIndex == 0)
             {
-               addToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode != null && (tvServers.SelectedNode.Tag is LayerBuilder || tvServers.SelectedNode.Tag is DataSet);
+               addToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode != null && (tvServers.SelectedNode.Tag is LayerBuilder || tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
             }
             else if (cServerViewsTab.SelectedIndex == 1)
             {

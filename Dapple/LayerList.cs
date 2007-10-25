@@ -257,7 +257,14 @@ namespace Dapple
             m_oLayers[iInsertIndex].AsyncAddLayer();
          }
 
+         bool blSupressed = m_blSupressSelectedChanged;
+         m_blSupressSelectedChanged = true;
+
+         cLayerList.SelectedIndices.Clear();
          cLayerList.Items[iInsertIndex].Selected = true;
+
+         m_blSupressSelectedChanged = blSupressed;
+         cLayerList_SelectedIndexChanged(this, new EventArgs());
 
          if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
