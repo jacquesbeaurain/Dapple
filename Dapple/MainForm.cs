@@ -465,9 +465,9 @@ namespace Dapple
             worldWindow.DrawArgs.WorldCamera.CameraChanged += new EventHandler(WorldCamera_CameraChanged);
 
             string strPluginsDir = Path.Combine(DirectoryPath, "Plugins");
-            this.bmngLoader = new NASA.Plugins.BmngLoader();
+            /*this.bmngLoader = new NASA.Plugins.BmngLoader();
             this.bmngLoader.PluginLoad(this, Path.Combine(strPluginsDir, "BlueMarble"));
-            this.bmngPlugin = bmngLoader.BMNGForm;
+            this.bmngPlugin = bmngLoader.BMNGForm;*/
 
             this.scalebarPlugin = new NASA.Plugins.ScaleBarLegend();
             this.scalebarPlugin.PluginLoad(this, strPluginsDir);
@@ -575,7 +575,7 @@ namespace Dapple
             this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList, cServerListControl);
             cServerListControl.ImageList = this.tvServers.ImageList;
             cLayerList.ImageList = this.tvServers.ImageList;
-            cLayerList.SetBaseLayer(new BlueMarbleBuilder(GetBMNG()));
+            cLayerList.SetBaseLayer(new BlueMarbleBuilder());
             cLayerList.ServerTree = tvServers;
 
             m_oMetadataDisplay = new MetadataDisplayThread(this);
@@ -658,6 +658,15 @@ namespace Dapple
                this.MinimizeBox = false;
                this.MaximizeBox = false;
                this.HelpButton = true;
+
+               // Hide and disable the file menu
+               toolStripMenuItemfile.Visible = false;
+               toolStripMenuItemfile.Enabled = false;
+               toolStripMenuItemOpenSaved.Enabled = false;
+               cOpenHomeViewMenuItem.Enabled = false;
+               setAsMyHomeViewToolStripMenuItem.Enabled = false;
+               toolStripMenuItemsave.Enabled = false;
+               toolStripMenuItemsend.Enabled = false;
             }
             else
             {
@@ -1131,6 +1140,7 @@ namespace Dapple
                MessageBox.Show(this, "Error adding server \"" + dlg.Url + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             SaveLastView();
+            CmdSaveHomeView();
          }
       }
 
@@ -1156,6 +1166,7 @@ namespace Dapple
                {
                   MessageBox.Show(this, "Error adding server \"" + dlg.WmsURL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                }
+               CmdSaveHomeView();
                SaveLastView();
             }
          }
@@ -1183,6 +1194,7 @@ namespace Dapple
                {
                   MessageBox.Show(this, "Error adding server \"" + dlg.URL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                }
+               CmdSaveHomeView();
                SaveLastView();
             }
          }
@@ -1210,6 +1222,7 @@ namespace Dapple
       private void toolStripMenuItemremoveServer_Click(object sender, EventArgs e)
       {
          this.tvServers.RemoveCurrentServer();
+         CmdSaveHomeView();
          SaveLastView();
       }
 
@@ -1351,7 +1364,7 @@ namespace Dapple
 
       private void cOpenHomeViewMenuItem_Click(object sender, EventArgs e)
       {
-         OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
+         CmdLoadHomeView();
       }
 
       private void MainForm_Shown(object sender, EventArgs e)
@@ -1412,11 +1425,11 @@ namespace Dapple
             if (Settings.LastViewAtStartup)
                OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
             else
-               OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
+               CmdLoadHomeView();
          }
          else
          {
-            OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
+            CmdLoadHomeView();
          }
 
 
@@ -2146,6 +2159,7 @@ namespace Dapple
          this.WindowState = FormWindowState.Minimized;
 
          SaveLastView();
+         CmdSaveHomeView();
          //tvServers.SaveFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
 
          // Ensure cleanup
@@ -3525,9 +3539,19 @@ namespace Dapple
          SetSearchable(true);
       }
 
-      private void setAsMyHomeViewToolStripMenuItem_Click(object sender, EventArgs e)
+      public void CmdSaveHomeView()
       {
          SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
+      }
+
+      public void CmdLoadHomeView()
+      {
+         OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), false, false);
+      }
+
+      private void setAsMyHomeViewToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         CmdSaveHomeView();
       }
 
       private void cOMToolsMenu_DropDownOpening(object sender, EventArgs e)
@@ -3609,6 +3633,7 @@ namespace Dapple
       private void toggleDisableToolStripMenuItem_Click(object sender, EventArgs e)
       {
          tvServers.CmdToggleServerEnabled();
+         CmdSaveHomeView();
       }
 
       private void MainForm_HelpButtonClicked(object sender, CancelEventArgs e)

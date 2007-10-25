@@ -254,8 +254,7 @@ namespace Dapple
          }
          else
          {
-            if (oNewBuilder != m_hBaseLayer)
-               m_oLayers[iInsertIndex].AsyncAddLayer();
+            m_oLayers[iInsertIndex].AsyncAddLayer();
          }
 
          cLayerList.Items[iInsertIndex].Selected = true;

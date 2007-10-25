@@ -21,7 +21,6 @@ namespace Dapple.LayerGeneration
 		private const int TextureSizePixels = 256;
 		
 		int distAboveSurface = 0;
-		bool terrainMapped = false;
 		GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(90, -90, -180, 180);
 
 		WMSServerBuilder m_Server;
@@ -45,8 +44,6 @@ namespace Dapple.LayerGeneration
       public WMSQuadLayerBuilder(WMSLayer layer, WorldWindow worldWindow, WMSServerBuilder server, IBuilder parent)
          :base(layer.Title, worldWindow, parent)
 		{
-			terrainMapped = true;
-
 			m_Server = server;
 			m_wmsLayer = layer;
 			distAboveSurface = 0;
@@ -199,7 +196,7 @@ namespace Dapple.LayerGeneration
 
             m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, distAboveSurface,
                (double)m_wmsLayer.North, (double)m_wmsLayer.South, (double)m_wmsLayer.West, (double)m_wmsLayer.East,
-               terrainMapped, imageStores);
+               true, imageStores);
             m_oQuadTileSet.AlwaysRenderBaseTiles = true;
             m_oQuadTileSet.IsOn = m_IsOn;
             m_oQuadTileSet.Opacity = m_bOpacity;

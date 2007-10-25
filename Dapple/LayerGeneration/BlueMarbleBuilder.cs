@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WorldWind.Renderable;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Dapple.LayerGeneration
 {
@@ -13,6 +14,40 @@ namespace Dapple.LayerGeneration
    {
       private RenderableObject m_hObject;
       private bool m_blIsChanged = true;
+
+      public BlueMarbleBuilder()
+         : base("Blue Marble", MainForm.WorldWindowSingleton, null)
+      {
+         ImageLayer oBaseLayer = new WorldWind.Renderable.ImageLayer(
+            "Blue Marble ImageLayer",
+            MainForm.WorldWindowSingleton.CurrentWorld,
+            0,
+            String.Format("{0}\\Data\\Earth\\BmngBathy\\world.topo.bathy.2004{1:D2}.jpg", Path.GetDirectoryName(Application.ExecutablePath), 7),
+            -90, 90, -180, 180, 1.0f, null);
+
+         WorldWind.NltImageStore imageStore = new WorldWind.NltImageStore(String.Format("bmng.topo.bathy.2004{0:D2}", 7), "http://worldwind25.arc.nasa.gov/tile/tile.aspx");
+         imageStore.DataDirectory = null;
+         imageStore.LevelZeroTileSizeDegrees = 36.0;
+         imageStore.LevelCount = 5;
+         imageStore.ImageExtension = "jpg";
+         imageStore.CacheDirectory = String.Format("{0}\\BMNG\\{1}", MainForm.WorldWindowSingleton.Cache.CacheDirectory, String.Format("BMNG (Shaded + Bathymetry) Tiled - {0}.2004", 7));
+
+         WorldWind.ImageStore[] ias = new WorldWind.ImageStore[1];
+         ias[0] = imageStore;
+
+         QuadTileSet oTiledBaseLayer = new WorldWind.Renderable.QuadTileSet(
+                 "Blue Marble QuadTileSet",
+                 MainForm.WorldWindowSingleton.CurrentWorld,
+                 0,
+                 90, -90, -180, 180, true, ias);
+
+         RenderableObjectList oRenderableList = new RenderableObjectList("This name doesn't matter, it gets rewritten");
+         oRenderableList.Add(oBaseLayer);
+         oRenderableList.Add(oTiledBaseLayer);
+         oRenderableList.RenderPriority = RenderPriority.TerrainMappedImages;
+
+         m_hObject = oRenderableList;
+      }
 
       public BlueMarbleBuilder(RenderableObject hObject) :base("Blue Marble", MainForm.WorldWindowSingleton, null)
       {

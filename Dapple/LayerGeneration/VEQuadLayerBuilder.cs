@@ -181,6 +181,7 @@ namespace Dapple.LayerGeneration
 #endif
             m_oVEQTS.IsOn = m_IsOn;
             m_oVEQTS.Opacity = m_bOpacity;
+            m_oVEQTS.RenderPriority = RenderPriority.TerrainMappedImages;
             m_blnIsChanged = false;
          }
          return m_oVEQTS;
