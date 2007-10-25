@@ -79,6 +79,7 @@ namespace Dapple
       public const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
       public const string NO_SEARCH = "--- Enter keyword ---";
       public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
+      public const int MAX_MRU_TERMS = 8;
 
       /// <summary>
       /// Try to open url in web browser
@@ -3174,9 +3175,15 @@ namespace Dapple
 
       private void doSearch()
       {
-         if (!SearchKeyword.Equals(String.Empty) && !cSearchTextComboBox.Items.Contains(SearchKeyword))
+         if (!SearchKeyword.Equals(String.Empty))
          {
-            cSearchTextComboBox.Items.Add(cSearchTextComboBox.Text);
+            cSearchTextComboBox.Items.Remove(SearchKeyword);
+
+            while (cSearchTextComboBox.Items.Count >= MAX_MRU_TERMS)
+            {
+               cSearchTextComboBox.Items.RemoveAt(cSearchTextComboBox.Items.Count - 1);
+            }
+            cSearchTextComboBox.Items.Insert(0, cSearchTextComboBox.Text);
          }
 
          SetSearchable(false);

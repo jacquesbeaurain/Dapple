@@ -937,7 +937,6 @@ namespace Dapple
            this.cSearchTextComboBox.Location = new System.Drawing.Point(3, 2);
            this.cSearchTextComboBox.Name = "cSearchTextComboBox";
            this.cSearchTextComboBox.Size = new System.Drawing.Size(181, 21);
-           this.cSearchTextComboBox.Sorted = true;
            this.cSearchTextComboBox.TabIndex = 0;
            this.cSearchTextComboBox.Text = "--- Enter Keyword(s) ---";
            this.cSearchTextComboBox.Leave += new System.EventHandler(this.cSearchTextComboBox_Leave);
