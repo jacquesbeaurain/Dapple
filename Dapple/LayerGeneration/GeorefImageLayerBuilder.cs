@@ -161,6 +161,7 @@ namespace Dapple.LayerGeneration
                   m_Layer = new ImageLayer(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0.0, m_strCacheFileName, extents.South, extents.North, extents.West, extents.East, m_bOpacity, m_oWorldWindow.CurrentWorld.TerrainAccessor);
                   m_Layer.IsOn = m_IsOn;
                   m_Layer.Opacity = m_bOpacity;
+                  m_Layer.RenderPriority = RenderPriority.TerrainMappedImages;
                }
             }
             catch
