@@ -50,7 +50,7 @@ namespace bNb.Plugins_GD
 		private static double earthCircum; //40075016.685578488
 		private static double earthHalfCirc; //20037508.
 
-		private const int pixelsPerTile = 256;
+		public const int pixelsPerTile = 256;
 		private int prevRow = -1;
 		private int prevCol = -1;
 		private int prevLvl = -1;
@@ -233,7 +233,6 @@ namespace bNb.Plugins_GD
 		/// </summary>
 		public override void Update(DrawArgs drawArgs)
 		{
-
 			try
 			{
 				if (this.isOn == false)
@@ -793,6 +792,54 @@ namespace bNb.Plugins_GD
 		{
 			return false;
 		}
+
+      public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+      {
+         lock (veTiles)
+         {
+            int iMinCol = int.MaxValue;
+            int iMaxCol = int.MinValue;
+            int iMinRow = int.MaxValue;
+            int iMaxRow = int.MinValue;
+
+            int iLevel = ((VeTile)veTiles[0]).Level;
+
+            foreach (VeTile oTile in veTiles)
+            {
+               iMinRow = Math.Min(oTile.Row, iMinRow);
+               iMaxRow = Math.Max(oTile.Row, iMaxRow);
+
+               iMinCol = Math.Min(oTile.Col, iMinCol);
+               iMaxCol = Math.Max(oTile.Col, iMaxCol);
+
+               info.dMinLat = Math.Min(info.dMinLat, oTile.MinY);
+               info.dMaxLat = Math.Max(info.dMaxLat, oTile.MaxY);
+
+               info.dMinLon = Math.Min(info.dMinLon, oTile.MinX);
+               info.dMaxLon = Math.Max(info.dMaxLon, oTile.MaxX);
+            }
+
+            info.iPixelsX = (iMaxCol - iMinCol + 1) * pixelsPerTile;
+            info.iPixelsY = (iMaxRow - iMinRow + 1) * pixelsPerTile;
+         }
+      }
+
+      public override void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
+      {
+         foreach (VeTile oTile in veTiles)
+         {
+            double dNorth = (oTile.MaxY - expInfo.dMaxLat) / (expInfo.dMinLat - expInfo.dMaxLat) * expInfo.iPixelsY;
+            double dSouth = (oTile.MinY - expInfo.dMaxLat) / (expInfo.dMinLat - expInfo.dMaxLat) * expInfo.iPixelsY;
+
+            double dEast = (oTile.MaxX - expInfo.dMinLon) / (expInfo.dMaxLon - expInfo.dMinLon) * expInfo.iPixelsX;
+            double dWest = (oTile.MinX - expInfo.dMinLon) / (expInfo.dMaxLon - expInfo.dMinLon) * expInfo.iPixelsX;
+
+            using (Image oMap = oTile.getBitmap(cacheDirectory, datasetName))
+            {
+               expInfo.gr.DrawImage(oMap, new Rectangle((int)dWest, (int)dNorth, (int)(dEast - dWest), (int)(dSouth - dNorth)));
+            }
+         }
+      }
 	}
 	#endregion
 
@@ -1067,6 +1114,10 @@ namespace bNb.Plugins_GD
 		private int row;
 		private int col;
 		private int level;
+
+      public int Row { get { return row; } }
+      public int Col { get { return col; } }
+      public int Level { get { return level; } }
 
 		public VeTile(int row, int col, int level, MD5 _md5Hasher)
 		{
@@ -1431,6 +1482,11 @@ namespace bNb.Plugins_GD
 		private double South;
 		private double West;
 		private double East;
+
+      public double MinX { get { return West; } }
+      public double MaxX { get { return East; } }
+      public double MinY { get { return South; } }
+      public double MaxY { get { return North; } }
 
 		//NOTE this is a mix from Mashi's Reproject and WW for terrain
 		public void CreateMesh(byte opacity, float verticalExaggeration)
@@ -1856,7 +1912,34 @@ namespace bNb.Plugins_GD
 			// camera jitter fix
 			drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 		}
-	}
+
+      internal Image getBitmap(String _cacheDirectory, String _datasetName)
+      {
+         string levelDir = CreateLevelDir(level, _cacheDirectory);
+         string mapTypeDir = CreateMapTypeDir(levelDir, _datasetName);
+         string rowDir = CreateRowDir(mapTypeDir, row);
+         string textureName = String.Empty;
+         if (_datasetName == "r")
+         {
+            textureName = GetTextureName(rowDir, row, col, "png");
+         }
+         else
+         {
+            textureName = GetTextureName(rowDir, row, col, "jpeg");
+         }
+
+         if (File.Exists(textureName))
+         {
+            Image result = Bitmap.FromFile(textureName);
+            return result;
+         }
+         else
+         {
+            Image oPlaceHolder = new Bitmap(VeReprojectTilesLayer.pixelsPerTile, VeReprojectTilesLayer.pixelsPerTile);
+            return oPlaceHolder;
+         }
+      }
+   }
 	#endregion
 
 }

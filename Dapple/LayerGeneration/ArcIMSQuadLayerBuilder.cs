@@ -229,22 +229,6 @@ namespace Dapple.LayerGeneration
          return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
       }
 
-      public String Server
-      {
-         get
-         {
-            return m_oServerUri.ToString();
-         }
-      }
-
-      public String LayerId
-      {
-         get
-         {
-            return m_szLayerID;
-         }
-      }
-
       #endregion
 
       #region Private Members
@@ -268,6 +252,13 @@ namespace Dapple.LayerGeneration
             return m_dLevelZeroTileSizeDegrees;
          }
       }*/
+
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "arcims";
+         szServerURL = m_oServerUri.ToBaseUri();
+         szLayerId = m_szLayerID;
+      }
 
       #endregion
    }

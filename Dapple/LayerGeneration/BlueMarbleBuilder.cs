@@ -183,5 +183,12 @@ namespace Dapple.LayerGeneration
          iTotalBytes = 0;
          return false;
       }
+
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "tile";
+         szServerURL = "http://worldwind25.arc.nasa.gov/tile/tile.aspx";
+         szLayerId = "bmng.topo.bathy.200407";
+      }
    }
 }

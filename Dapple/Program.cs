@@ -286,8 +286,22 @@ namespace Dapple
 #endif
          finally
          {
-            if (oRemoteInterface != null) oRemoteInterface.EndConnection();
-            if (oClientChannel != null) ChannelServices.UnregisterChannel(oClientChannel);
+            if (oRemoteInterface != null)
+            {
+               try
+               {
+                  oRemoteInterface.EndConnection();
+               }
+               catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
+            }
+            if (oClientChannel != null)
+            {
+               try
+               {
+                  ChannelServices.UnregisterChannel(oClientChannel);
+               }
+               catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
+            }
          }
       }
 

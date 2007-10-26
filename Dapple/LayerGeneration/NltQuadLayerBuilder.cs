@@ -312,5 +312,12 @@ namespace Dapple.LayerGeneration
          oResElement.SetAttribute("levels", Levels.ToString());
          oResElement.SetAttribute("tile_size", m_iTextureSizePixels.ToString());
       }
+
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "tile";
+         szServerURL = m_strServerUrl;
+         szLayerId = m_strDatasetName;
+      }
    }
 }

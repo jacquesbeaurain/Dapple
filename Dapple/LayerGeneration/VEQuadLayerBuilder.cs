@@ -219,6 +219,13 @@ namespace Dapple.LayerGeneration
          return m_mapType == castObj.m_mapType;
       }
 
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "ve";
+         szServerURL = m_mapType.ToString()[0] + "0.ortho.tiles.virtualearth.net/tiles/";
+         szLayerId = m_mapType.ToString();
+      }
+
       #endregion
 	}
 }

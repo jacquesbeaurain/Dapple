@@ -394,6 +394,13 @@ namespace Dapple.LayerGeneration
 			}
       }
 
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "wms";
+         szServerURL = m_Server.Uri.ToBaseUri();
+         szLayerId = m_wmsLayer.Name;
+      }
+
       #endregion
 
       #region Other Public Methods

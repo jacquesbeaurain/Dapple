@@ -184,6 +184,13 @@ namespace Dapple.LayerGeneration
          return this.m_oServer.Url.Equals(castObj.m_oServer.Url);
       }
 
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "dap";
+         szServerURL = m_oServer.Url;
+         szLayerId = "browser_map";
+      }
+
       #endregion
 
       #region ImageBuilder Overrides

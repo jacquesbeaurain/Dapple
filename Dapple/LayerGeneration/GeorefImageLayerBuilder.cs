@@ -367,6 +367,13 @@ namespace Dapple.LayerGeneration
          get { return m_strFileName; }
       }
 
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "file";
+         szServerURL = String.Empty;
+         szLayerId = String.Empty;
+      }
+
       #endregion
    }
 }

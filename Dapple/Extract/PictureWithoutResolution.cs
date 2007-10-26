@@ -147,35 +147,7 @@ namespace Dapple.Extract
          String szDownloadType = String.Empty;
          String szDownloadUrl = String.Empty;
          String szLayerId = String.Empty;
-
-         if (m_oNonDapBuilder is WMSQuadLayerBuilder)
-         {
-            szDownloadType = "wms";
-            szDownloadUrl = ((WMSQuadLayerBuilder)m_oNonDapBuilder).Layer.ParentWMSList.ServerGetCapabilitiesUrl;
-            szLayerId = ((WMSQuadLayerBuilder)m_oNonDapBuilder).Layer.Name;
-         }
-         else if (m_oNonDapBuilder is ArcIMSQuadLayerBuilder)
-         {
-            szDownloadType = "arcims";
-            szDownloadUrl = ((ArcIMSQuadLayerBuilder)m_oNonDapBuilder).Server;
-            szLayerId = ((ArcIMSQuadLayerBuilder)m_oNonDapBuilder).LayerId;
-         }
-         else if (m_oNonDapBuilder is NltQuadLayerBuilder)
-         {
-            szDownloadType = "tile";
-            szDownloadUrl = ((NltQuadLayerBuilder)m_oNonDapBuilder).Server;
-            szLayerId = ((NltQuadLayerBuilder)m_oNonDapBuilder).DatasetName;
-         }
-         else if (m_oNonDapBuilder is GeorefImageLayerBuilder)
-         {
-            szDownloadType = "file";
-            szDownloadUrl = String.Empty;
-            szLayerId = String.Empty;
-         }
-         else
-         {
-            throw new ApplicationException("Unknown server type :" + m_oNonDapBuilder.GetType().ToString());
-         }
+         m_oNonDapBuilder.GetOMMetadata(out szDownloadType, out szDownloadUrl, out szLayerId);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("download_type");
          oAttr.Value = szDownloadType;

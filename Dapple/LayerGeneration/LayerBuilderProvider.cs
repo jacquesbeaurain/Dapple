@@ -489,6 +489,8 @@ namespace Dapple.LayerGeneration
 
       public abstract override bool Equals(object obj);
 
+      public abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
+
 		#region ICloneable Members
 
       public object Clone()

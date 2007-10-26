@@ -334,6 +334,7 @@ namespace WorldWind
       private Point mouseDownStartPosition = Point.Empty;
       private bool renderWireFrame;
       private System.Timers.Timer m_FpsTimer = new System.Timers.Timer(250);
+      private bool supressUpdates = false;
       
       //		protected DownloadIndicator m_downloadIndicator;
 
@@ -1754,6 +1755,11 @@ namespace WorldWind
                   this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
                   this.drawArgs.WorldCamera.ZoomStepped(-World.Settings.CameraZoomStepKeyboard);
                   return true;
+#if DEBUG
+               case Keys.Escape:
+                  this.supressUpdates ^= true;
+                  return true;
+#endif
             }
          }
          return false;
@@ -2394,7 +2400,10 @@ namespace WorldWind
 
                DataStore.Update();
 
-               m_World.Update(this.drawArgs);
+               if (!supressUpdates)
+               {
+                  m_World.Update(this.drawArgs);
+               }
                if (Updated != null)
                   Updated();
 

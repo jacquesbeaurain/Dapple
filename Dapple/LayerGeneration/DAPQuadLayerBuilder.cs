@@ -355,6 +355,14 @@ namespace Dapple.LayerGeneration
          }
       }
 
+      // Note: in practice this will never get called, as DAP layers use a separate metadata handling process.
+      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      {
+         szDownloadType = "dap";
+         szServerURL = m_oServer.Url;
+         szLayerId = m_hDataSet.Name;
+      }
+
       #endregion
    }
 }

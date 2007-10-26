@@ -89,7 +89,8 @@ namespace WorldWind
 
       public override string ToString()
       {
-         return String.Format("({0:F2} W,{1:F2} S) -> ({2:F2} E,{3:F2} N)", West, South, East, North);
+         return String.Format("({0:F2} {4},{1:F2} {5}) -> ({2:F2} {6},{3:F2} {7})", Math.Abs(West), Math.Abs(South), Math.Abs(East), Math.Abs(North),
+            West < 0 ? "W" : "E", South < 0 ? "S" : "N", East < 0 ? "W" : "E", North < 0 ? "S" : "N");
       }
 
       #region ICloneable Members

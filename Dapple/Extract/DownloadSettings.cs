@@ -223,51 +223,58 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bDownload_Click(object sender, EventArgs e)
       {
-         DownloadClip eClip = DownloadClip.None;
-         DownloadCoordinateSystem eCS = DownloadCoordinateSystem.Native;
-
-
-         // --- setup the global settings ---
-
-         if (rbClipMapExtent.Checked)
-            eClip = DownloadClip.OriginalMap;
-         else if (rbClipViewedArea.Checked)
-            eClip = DownloadClip.ViewedArea;
-
-         if (rbReproject.Checked)
-            eCS = DownloadCoordinateSystem.OriginalMap;
-
-
-         System.Xml.XmlDocument oExtractDoc = new System.Xml.XmlDocument();
-         System.Xml.XmlElement oRootElement = oExtractDoc.CreateElement("geosoft_xml");
-         System.Xml.XmlElement oExtractElement = oExtractDoc.CreateElement("extract");
-
-         oExtractDoc.AppendChild(oRootElement);
-         oRootElement.AppendChild(oExtractElement);
-
-
-         // --- verify inputs ---
-
-
-
-         // --- create xml document for each dataset ---
-
-         foreach (DownloadOptions oDataset in m_oDownloadSettings)
+         try
          {
-            System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
+            DownloadClip eClip = DownloadClip.None;
+            DownloadCoordinateSystem eCS = DownloadCoordinateSystem.Native;
 
-            if (oDataset.Save(oDatasetElement, tbDestination.Text, eClip, eCS))
+
+            // --- setup the global settings ---
+
+            if (rbClipMapExtent.Checked)
+               eClip = DownloadClip.OriginalMap;
+            else if (rbClipViewedArea.Checked)
+               eClip = DownloadClip.ViewedArea;
+
+            if (rbReproject.Checked)
+               eCS = DownloadCoordinateSystem.OriginalMap;
+
+
+            System.Xml.XmlDocument oExtractDoc = new System.Xml.XmlDocument();
+            System.Xml.XmlElement oRootElement = oExtractDoc.CreateElement("geosoft_xml");
+            System.Xml.XmlElement oExtractElement = oExtractDoc.CreateElement("extract");
+
+            oExtractDoc.AppendChild(oRootElement);
+            oRootElement.AppendChild(oExtractElement);
+
+
+            // --- verify inputs ---
+
+
+
+            // --- create xml document for each dataset ---
+
+            foreach (DownloadOptions oDataset in m_oDownloadSettings)
             {
-               oExtractElement.AppendChild(oDatasetElement);
-            }
-         }         
-         this.Close();
+               System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
 
-         DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
-         if (oDiscliamers.HasDisclaimer)
-            oDiscliamers.ShowDialog();
-         else
-            oDiscliamers.DownloadDatasets();
+               if (oDataset.Save(oDatasetElement, tbDestination.Text, eClip, eCS))
+               {
+                  oExtractElement.AppendChild(oDatasetElement);
+               }
+            }
+            this.Close();
+
+            DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
+            if (oDiscliamers.HasDisclaimer)
+               oDiscliamers.ShowDialog();
+            else
+               oDiscliamers.DownloadDatasets();
+         }
+         catch (Exception ex)
+         {
+            MessageBox.Show("An error has occurred: " + ex.Message, "Download Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+         }
       }
 
       /// <summary>

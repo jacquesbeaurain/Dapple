@@ -1196,11 +1196,11 @@ namespace Dapple
                }
             }
          }
-         catch (Exception exc)
+         /*catch (Exception exc)
          {
             MessageBox.Show(this, "Export failed!\n" + exc.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             Cursor = Cursors.Default;
-         }
+         }*/
          finally
          {
             if (szGeoTiff != null && File.Exists(szGeoTiff))
