@@ -108,6 +108,14 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+      private String RenderableObjectName
+      {
+         get
+         {
+            return "3 - " + m_intRenderPriority.ToString("0000000000");
+         }
+      }
+
 		public abstract byte Opacity
 		{
 			get;
@@ -363,7 +371,7 @@ namespace Dapple.LayerGeneration
 		{
 			lock (m_lockObject)
 			{
-				RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
+				RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject(this.RenderableObjectName);
 				m_blnIsLoading = false;
 				if (oRO != null)
 				{
@@ -380,12 +388,12 @@ namespace Dapple.LayerGeneration
 		{
 			lock (m_lockObject)
 			{
-            RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
+            RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject(this.RenderableObjectName);
 				if (oRO != null)
 				{
 					intObjectsRendered++;
 					m_intRenderPriority = intObjectsRendered;
-					oRO.Name = "3 - " + m_intRenderPriority.ToString();
+               oRO.Name = this.RenderableObjectName;
                m_oWorldWindow.CurrentWorld.RenderableObjects.SortChildren();
 				}
 			}
@@ -397,7 +405,7 @@ namespace Dapple.LayerGeneration
 			bool bReturn = false;
 			lock (m_lockObject)
 			{
-            RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject("3 - " + m_intRenderPriority.ToString());
+            RenderableObject oRO = m_oWorldWindow.CurrentWorld.RenderableObjects.GetObject(this.RenderableObjectName);
 				m_blnIsLoading = false;
 				if (oRO != null)
 				{
@@ -434,8 +442,8 @@ namespace Dapple.LayerGeneration
 				}
 				if (!m_blnFailed)
 				{
-					layer.Name = "3 - " + m_intRenderPriority.ToString();
-               m_oWorldWindow.CurrentWorld.RenderableObjects.Remove("3 - " + m_intRenderPriority.ToString());
+					layer.Name = this.RenderableObjectName;
+               m_oWorldWindow.CurrentWorld.RenderableObjects.Remove(this.RenderableObjectName);
 					if (m_blnIsLoading)
 					{
                   m_oWorldWindow.CurrentWorld.RenderableObjects.Add(layer);
