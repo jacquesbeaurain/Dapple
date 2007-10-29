@@ -21,7 +21,11 @@ namespace Dapple
       private FEditControl m_fEditControl;
       private string m_strConfigDir;
 
-      public ExportView(string strConfigDir)
+      public ExportView(string szConfigDir): this(szConfigDir, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
+      {
+      }
+
+      public ExportView(string strConfigDir, string strInitialFolder)
       {
          InitializeComponent();
          m_strConfigDir = strConfigDir;
@@ -55,6 +59,7 @@ namespace Dapple
          m_fEditControl.FEditTextChanged += new Geosoft.OpenGX.UtilityForms.FEditControl.FEditTextChangedEventHandler(FEditTextChanged);
          m_fEditControl.MaxHistory = 0;
          m_fEditControl.Required = true;
+         m_fEditControl.InitialDirectory = strInitialFolder;
          this.Controls.Add(m_fEditControl);
 
          string strPath = "";

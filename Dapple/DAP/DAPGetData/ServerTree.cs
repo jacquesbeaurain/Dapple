@@ -346,7 +346,11 @@ namespace Geosoft.GX.DAPGetData
             if (!strServerUrl.StartsWith("http://"))
                strServerUrl = "http://" + strServerUrl;
 
-            Server oServer = new Server(strServerUrl, m_strCacheDir, m_strSecureToken, blEnabled);
+            // Throw the string through a Uri parse/unparse so that server list lookups are right more often.
+            // Fixes the problem that "http://dap.geosoft.com" and "http://dap.geosoft.com/" aren't recognized as the same server.
+            String strActualServerUrl = new Uri(strServerUrl).ToString();
+
+            Server oServer = new Server(strActualServerUrl, m_strCacheDir, m_strSecureToken, blEnabled);
 
             if (oServer.Status == Server.ServerStatus.OnLine || oServer.Status == Server.ServerStatus.Maintenance)
             {

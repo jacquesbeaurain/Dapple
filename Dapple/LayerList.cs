@@ -1048,7 +1048,16 @@ namespace Dapple
 
          try
          {
-            ExportView oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
+            ExportView oExportDialog = null;
+            if (MainForm.MontajInterface != null)
+            {
+               oExportDialog = new ExportView(MainApplication.Settings.ConfigPath, MainForm.MontajInterface.BaseDirectory());
+            }
+            else
+            {
+               oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
+            }
+
             if (oExportDialog.ShowDialog(this) == DialogResult.OK)
             {
                Cursor = Cursors.WaitCursor;
