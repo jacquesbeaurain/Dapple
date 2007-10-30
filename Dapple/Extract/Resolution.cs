@@ -47,9 +47,21 @@ namespace Dapple.Extract
       /// <summary>
       /// Get the resolution
       /// </summary>
-      public double ResolutionValue
+      private double ResolutionValue
       {
          get { return m_dResolution; }
+      }
+
+      public double ResolutionValueSpecific(DownloadSettings.DownloadCoordinateSystem eCS)
+      {
+         if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap)
+         {
+            return ResolutionValue;
+         }
+         else
+         {
+            return (ResolutionValue * m_dResolutionConversionFactor) / m_dCellConversionFactor;
+         }
       }
       #endregion
 

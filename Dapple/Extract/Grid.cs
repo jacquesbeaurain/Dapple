@@ -84,7 +84,7 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
-         oResolutionAttr.Value = oResolution.ResolutionValue.ToString();         
+         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString();         
          oDatasetElement.Attributes.Append(oResolutionAttr);
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");

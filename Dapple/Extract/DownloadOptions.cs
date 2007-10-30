@@ -192,7 +192,6 @@ namespace Dapple.Extract
             }
          }
 
-
          // --- check to see if we require a new ---
 
          if (!bInvalidReprojection && MainForm.OpenMap)
@@ -208,7 +207,7 @@ namespace Dapple.Extract
 
          // --- check to see if this is a valid bounding box ---
 
-         if (bInvalidReprojection || (dProjMaxX > dProjMinX && dProjMaxY > dProjMinY))
+         if (bInvalidReprojection || !(dProjMaxX > dProjMinX && dProjMaxY > dProjMinY))
          {
             // --- invalid box ---
 

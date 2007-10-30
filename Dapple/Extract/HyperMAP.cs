@@ -84,7 +84,7 @@ namespace Dapple.Extract
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
-         oResolutionAttr.Value = oResolution.ResolutionValue.ToString();
+         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString();
 
          System.Xml.XmlAttribute oGroupElement = oDatasetElement.OwnerDocument.CreateAttribute("group");
          oGroupElement.Value = tbGroupName.Text;
