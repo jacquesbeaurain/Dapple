@@ -196,12 +196,7 @@ namespace Dapple.Extract
 
          if (!bInvalidReprojection && MainForm.OpenMap)
          {
-            if (IntersectMap(ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strProjCoordinateSystem))
-            {
-               bNewMap = false;
-            } else {
-               bInvalidReprojection = true;
-            }
+            bNewMap = !IntersectMap(ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strProjCoordinateSystem);
          }
 
 
