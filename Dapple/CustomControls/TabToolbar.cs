@@ -98,6 +98,11 @@ namespace Dapple.CustomControls
          m_aButtons[iButtonIndex].Image = oImage;
       }
 
+      public void SetToolTip(int iButtonIndex, String szToolTipText)
+      {
+         m_aButtons[iButtonIndex].ToolTipText = szToolTipText;
+      }
+
       #endregion
    }
 

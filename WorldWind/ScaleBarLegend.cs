@@ -16,10 +16,12 @@ namespace NASA.Plugins
 		System.Windows.Forms.MenuItem m_menuItem = null;
 		bool m_firstVisibility = false;
 
+      static System.Drawing.Point oDefaultLocation = new System.Drawing.Point(2, 2);
+
 		public override void Load()
 		{
 			m_form = new FormWidget("Scale Bar Legend");
-			m_form.Location = new System.Drawing.Point(DrawArgs.ParentControl.Width - 300, DrawArgs.ParentControl.Height - 70);
+			m_form.Location = oDefaultLocation;
 			m_form.ClientSize = new System.Drawing.Size(150, 60);
 			m_form.Text = "Scale Bar Legend";
 			m_form.BackgroundColor = World.Settings.WidgetBackgroundColor;
@@ -67,7 +69,7 @@ namespace NASA.Plugins
 			{
 				if (value && !m_firstVisibility)
 				{
-					m_form.Location = new System.Drawing.Point(DrawArgs.ParentControl.Width - 300, DrawArgs.ParentControl.Height - 70);
+					m_form.Location = oDefaultLocation;
 					m_firstVisibility = true;
 				}
 				m_menuItem.Checked = m_form.Visible = value;
@@ -79,7 +81,7 @@ namespace NASA.Plugins
 			m_menuItem.Checked = true;
 			if (!m_firstVisibility)
 			{
-				m_form.Location = new System.Drawing.Point(DrawArgs.ParentControl.Width - 300, DrawArgs.ParentControl.Height - 70);
+				m_form.Location = oDefaultLocation;
 				m_firstVisibility = true;
 			}
 			m_form.Visible = m_menuItem.Checked;

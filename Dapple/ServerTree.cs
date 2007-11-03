@@ -62,11 +62,10 @@ namespace Dapple
 		{
          InitializeComponent();
 
-			m_oParent = oParent;
+         m_oParent = oParent;
 			m_activeLayers = activeLayers;
          m_oServerListControl = oServerList;
          m_activeLayers.ActiveLayersChanged += new LayerList.ActiveLayersChangedHandler(UpdateTreeNodeColors);
-
 			this.SupportDatasetSelection = false;
 			this.AfterCollapse += new TreeViewEventHandler(OnAfterCollapse);
 

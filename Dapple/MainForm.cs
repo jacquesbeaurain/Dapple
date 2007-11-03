@@ -376,7 +376,8 @@ namespace Dapple
             m_oImageList.Images.Add("folder", Resources.folder);
             m_oImageList.Images.Add("folder_open", Resources.folder_open);
             m_oImageList.Images.Add("loading", Resources.loading);
-            m_oImageList.Images.Add("dap_arcgis", Resources.dap_spf);
+            m_oImageList.Images.Add("dap_arcgis", Resources.nasa);
+            m_oImageList.Images.Add("dap_imageserver", Resources.nasa);
             m_oImageList.Images.Add("kml", Resources.kml);
             m_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
             m_oImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
@@ -598,6 +599,8 @@ namespace Dapple
             this.cServerViewsTab = new JanaTab();
             this.cServerViewsTab.SetImage(0, Resources.tab_tree);
             this.cServerViewsTab.SetImage(1, Resources.tab_list);
+            this.cServerViewsTab.SetToolTip(0, "Server tree view");
+            this.cServerViewsTab.SetToolTip(1, "Server list view");
             this.cServerViewsTab.SetPage(0, this.tvServers);
             this.cServerViewsTab.SetPage(1, this.cServerListControl);
 
@@ -689,6 +692,8 @@ namespace Dapple
             loadCountryList();
             populateAoiComboBox();
             //#if !DEBUG
+
+
          }
          //#endif
       }
@@ -1715,45 +1720,37 @@ namespace Dapple
       /// <returns></returns>
       public static int ImageIndex(string strType)
       {
-         Int32 iRet = 3;
-
          switch (strType.ToLower())
          {
             case "database":
-               iRet = ImageListIndex("dap_database");
-               break;
+               return ImageListIndex("dap_database");
             case "document":
-               iRet = ImageListIndex("dap_document");
-               break;
+               return ImageListIndex("dap_document");
             case "generic":
-               iRet = ImageListIndex("dap_map");
-               break;
+               return ImageListIndex("dap_map");
             case "grid":
-               iRet = ImageListIndex("dap_grid");
-               break;
+               return ImageListIndex("dap_grid");
             case "gridsection":
-               iRet = ImageListIndex("dap_grid");
-               break;
+               return ImageListIndex("dap_grid");
             case "map":
-               iRet = ImageListIndex("dap_map");
-               break;
+               return ImageListIndex("dap_map");
             case "picture":
-               iRet = ImageListIndex("dap_picture");
-               break;
+               return ImageListIndex("dap_picture");
             case "picturesection":
-               iRet = ImageListIndex("dap_picture");
-               break;
+               return ImageListIndex("dap_picture");
             case "point":
-               iRet = ImageListIndex("dap_point");
-               break;
+               return ImageListIndex("dap_point");
             case "spf":
-               iRet = ImageListIndex("dap_spf");
-               break;
+               return ImageListIndex("dap_spf");
             case "voxel":
-               iRet = ImageListIndex("dap_voxel");
-               break;
+               return ImageListIndex("dap_voxel");
+            case "imageserver":
+               return ImageListIndex("nasa");
+            case "arcgis":
+               return ImageListIndex("nasa");
+            default:
+               return 3;
          }
-         return iRet;
       }
 
       private void AddTreeNode(TreeView tree, LayerBuilder builder, TreeNode parent)
@@ -3212,10 +3209,12 @@ namespace Dapple
       private void applySearchCriteria()
       {
          this.UseWaitCursor = true;
+         Application.DoEvents();
          this.tvServers.Search(m_oLastSearchROI, m_szLastSearchString);
          this.cServerListControl.setSearchCriteria(m_szLastSearchString, m_oLastSearchROI);
          this.cWebSearch.SetSearchParameters(m_szLastSearchString, m_oLastSearchROI);
          this.UseWaitCursor = false;
+         Application.DoEvents();
       }
 
       private String SearchKeyword

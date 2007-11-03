@@ -935,6 +935,7 @@ namespace Dapple
          }
 
          Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.SelectedLayers);
+         oDownloadDialog.ShowInTaskbar = false;
          oDownloadDialog.ShowDialog(this);
       }
 

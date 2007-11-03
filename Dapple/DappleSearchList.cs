@@ -62,6 +62,8 @@ namespace Dapple.CustomControls
          m_szDappleSearchURI = szDappleSearchURI;
          cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
          cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
+         cTabToolbar.SetToolTip(0, "Search results with thumbnails");
+         cTabToolbar.SetToolTip(1, "Search results without thumbnails");
          cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
          SetNoSearch();
          cNavigator.PageBack += new ThreadStart(BackPage);

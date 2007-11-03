@@ -157,7 +157,7 @@ namespace Dapple.Extract
             }
             else if (oDAPbuilder.DAPType.ToLower() == "arcgis")
             {
-               oControl = new PictureWithoutResolution(oDAPbuilder);
+               oControl = new ArcGIS(oDAPbuilder);
             }
             else if (oDAPbuilder.DAPType.ToLower() == "imageserver")
             {
@@ -266,10 +266,14 @@ namespace Dapple.Extract
             this.Close();
 
             DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
+            oDiscliamers.ShowInTaskbar = false;
+
             if (oDiscliamers.HasDisclaimer)
                oDiscliamers.ShowDialog();
             else
                oDiscliamers.DownloadDatasets();
+
+            MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
          }
          catch (Exception ex)
          {

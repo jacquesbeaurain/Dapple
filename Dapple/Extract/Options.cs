@@ -54,6 +54,17 @@ namespace Dapple.Extract
          public static string[] MIDownloadOptionStrings = new string[] { "Save as TAB file" };
       }
 
+      public class ArcGIS
+      {
+         public enum DownloadOptions
+         {
+            DownloadAndOpen,
+            DownloadOnly
+         }
+
+         public static string[] DownloadOptionStrings = new string[] { "Download And Open", "Download Only" };
+      }
+
       public class Grid
       {      
          public enum DisplayOptions

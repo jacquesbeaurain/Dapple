@@ -127,8 +127,6 @@ namespace Dapple.Extract
       {
          MainForm.MontajInterface.Download(m_oDownloadXml.OuterXml);
 
-         MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
          foreach (ListViewItem oItem in lvDatasets.Items)
          {
             try
