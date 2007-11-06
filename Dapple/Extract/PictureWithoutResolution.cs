@@ -71,7 +71,7 @@ namespace Dapple.Extract
          String szFileName = tbFilename.Text;
          foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
             szFileName = szFileName.Replace(ch, '_');
-         oAttr.Value = System.IO.Path.Combine(strDestFolder, szFileName);
+         oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(szFileName, TIF_EXT));
          oDatasetElement.Attributes.Append(oAttr);
 
          if (m_oNonDapBuilder is GeorefImageLayerBuilder)

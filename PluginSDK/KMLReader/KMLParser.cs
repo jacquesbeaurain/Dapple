@@ -39,6 +39,7 @@ namespace WorldWind.KMLReader
 			kml = kml.Replace("xmlns='http://earth.google.com/kml/2.0'", "");	// DOUBLE HACK
 			kml = kml.Replace("xmlns=\"http://earth.google.com/kml/2.1\"", "");	// MULTI HACK!
 			kml = kml.Replace("xmlns='http://earth.google.com/kml/2.1'", "");	// M-M-M-M-M-M-M-MONSTER HACK!!!!
+         kml = kml.Replace("xmlns=\"http://earth.google.com/kml/2.2\"", ""); // HOLY @#$! HACK!
 
 			// Open the downloaded xml in an XmlDocument to allow for XPath searching
 			XmlDocument doc = new XmlDocument();

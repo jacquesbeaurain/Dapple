@@ -71,11 +71,11 @@ namespace Dapple.Extract
          this.lFileName.AutoSize = true;
          this.lFileName.Location = new System.Drawing.Point(3, 6);
          this.lFileName.Name = "lFileName";
-         this.lFileName.Size = new System.Drawing.Size(55, 13);
+         this.lFileName.Size = new System.Drawing.Size(68, 13);
          this.lFileName.TabIndex = 0;
-         this.lFileName.Text = "File name:";
+         this.lFileName.Text = "Folder name:";
          // 
-         // Document
+         // ArcGIS
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -83,7 +83,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.lDownload);
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
-         this.Name = "Document";
+         this.Name = "ArcGIS";
          this.Size = new System.Drawing.Size(299, 59);
          this.ResumeLayout(false);
          this.PerformLayout();

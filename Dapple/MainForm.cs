@@ -80,6 +80,7 @@ namespace Dapple
       public const string NO_SEARCH = "--- Enter keyword ---";
       public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
       public const int MAX_MRU_TERMS = 8;
+      const bool OPEN_KML_ENABLED = false;
 
       /// <summary>
       /// Try to open url in web browser
@@ -169,6 +170,7 @@ namespace Dapple
 
       private string m_szLastSearchString = String.Empty;
       private GeographicBoundingBox m_oLastSearchROI = null;
+      private TreeView cKMLTree;
       #endregion
 
       #region Properties
@@ -671,11 +673,18 @@ namespace Dapple
                // Hide and disable the file menu
                toolStripMenuItemfile.Visible = false;
                toolStripMenuItemfile.Enabled = false;
+               toolStripMenuItemOpenSaved.Visible = false;
                toolStripMenuItemOpenSaved.Enabled = false;
+               cOpenHomeViewMenuItem.Visible = false;
                cOpenHomeViewMenuItem.Enabled = false;
+               setAsMyHomeViewToolStripMenuItem.Visible = false;
                setAsMyHomeViewToolStripMenuItem.Enabled = false;
+               toolStripMenuItemsave.Visible = false;
                toolStripMenuItemsave.Enabled = false;
+               toolStripMenuItemsend.Visible = false;
                toolStripMenuItemsend.Enabled = false;
+               toolStripMenuItemOpenKML.Visible = false;
+               toolStripMenuItemOpenKML.Enabled = false;
             }
             else
             {
@@ -693,6 +702,14 @@ namespace Dapple
             }
 
             #endregion
+
+            if (OPEN_KML_ENABLED)
+            {
+               toolStripMenuItemfile.Visible = true;
+               toolStripMenuItemfile.Enabled = true;
+               toolStripMenuItemOpenKML.Visible = true;
+               toolStripMenuItemOpenKML.Enabled = true;
+            }
 
             loadCountryList();
             populateAoiComboBox();
@@ -1416,9 +1433,9 @@ namespace Dapple
 
          if (this.openView.Length > 0)
             OpenView(this.openView, this.openGeoTiff.Length == 0, true);
-         else if (File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
+         else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
          {
-            if (Settings.AskLastViewAtStartup && !IsMontajChildProcess)
+            if (Settings.AskLastViewAtStartup)
             {
                Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
                msgBox.AllowSaveResponse = true;
@@ -3037,12 +3054,12 @@ namespace Dapple
 
       #region Temporary KML Code
 
-      /*private void tvLayers_MouseDoubleClick(object sender, MouseEventArgs e)
+      private void cKMLTree_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right)
 			{
 				GeographicBoundingBox extents = null;
-				TreeNode node = this.tvLayers.HitTest(e.Location).Node;
+				TreeNode node = cKMLTree.HitTest(e.Location).Node;
 
 				Type tp = node.Tag.GetType();
 
@@ -3061,30 +3078,38 @@ namespace Dapple
 				else if (node.Tag is LineFeature)
 				{
 					LineFeature line = node.Tag as LineFeature;
-					extents = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+               double dNorth = double.MinValue;
+               double dSouth = double.MaxValue;
+               double dEast = double.MinValue;
+               double dWest = double.MaxValue;
 					foreach (Point3d p in line.Points)
 					{
-						extents.North = Math.Max(p.Y, extents.North);
-						extents.South = Math.Min(p.Y, extents.South);
-						extents.East = Math.Max(p.X, extents.East);
-						extents.West = Math.Min(p.X, extents.West);
+						dNorth = Math.Max(p.Y, dNorth);
+						dSouth = Math.Min(p.Y, dSouth);
+						dEast = Math.Max(p.X, dEast);
+						dWest = Math.Min(p.X, dWest);
 					}
+               extents = new GeographicBoundingBox(dNorth, dSouth, dWest, dEast);
 				} 
 				else if (node.Tag is PolygonFeature)
 				{
 					Point3d pSph;
 					PolygonFeature pFeat = node.Tag as PolygonFeature;
-					extents = new GeographicBoundingBox(double.MinValue, double.MaxValue, double.MaxValue, double.MinValue);
+               double dNorth = double.MinValue;
+               double dSouth = double.MaxValue;
+               double dEast = double.MinValue;
+               double dWest = double.MaxValue;
 					foreach (Point3d p in pFeat.BoundingBox.corners)
 					{
 						pSph = MathEngine.CartesianToSpherical(p.X, p.Y, p.Z);
 						pSph.Y = MathEngine.RadiansToDegrees(pSph.Y);
 						pSph.Z = MathEngine.RadiansToDegrees(pSph.Z);
-						extents.North = Math.Max(pSph.Y, extents.North);
-						extents.South = Math.Min(pSph.Y, extents.South);
-						extents.East = Math.Max(pSph.Z, extents.East);
-						extents.West = Math.Min(pSph.Z, extents.West);
+						dNorth = Math.Max(pSph.Y, dNorth);
+						dSouth = Math.Min(pSph.Y, dSouth);
+						dEast = Math.Max(pSph.Z, dEast);
+						dWest = Math.Min(pSph.Z, dWest);
 					}
+               extents = new GeographicBoundingBox(dNorth, dSouth, dWest, dEast);
 				}
 
 				if (extents != null)
@@ -3098,7 +3123,9 @@ namespace Dapple
 			int iImage = ImageListIndex("kml");
 			foreach (RenderableObject ro in objectList.ChildObjects)
 			{
-				node = this.tvLayers.Add(parentNode, ro.Name, iImage, iImage, this.kmlPlugin.KMLIcons.IsOn ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+            node = parentNode.Nodes.Add(null, ro.Name, iImage, iImage);
+            node.Checked = ro.IsOn;
+				//node = this.tvLayers.Add(parentNode, ro.Name, iImage, iImage, this.kmlPlugin.KMLIcons.IsOn ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
 				node.Tag = ro;
 				if (ro is RenderableObjectList)
 					UpdateKMLNodes(node, ro as RenderableObjectList);
@@ -3107,19 +3134,27 @@ namespace Dapple
 
 		void UpdateKMLIcons()
 		{
-			this.tvLayers.BeginUpdate();
+         cKMLTree.BeginUpdate();
+			//this.tvLayers.BeginUpdate();
 
-			if (this.kmlNode != null)
-				this.tvLayers.Nodes.Remove(this.kmlNode);
+         if (cKMLTree.Nodes.Count > 0)
+            cKMLTree.Nodes.Clear();
+			//if (this.kmlNode != null)
+			//	this.tvLayers.Nodes.Remove(this.kmlNode);
 
 			if (this.kmlPlugin.KMLIcons.ChildObjects.Count > 0)
 			{
 				int iImage = ImageListIndex("kml");
-				this.kmlNode = this.tvLayers.AddTop(null, this.kmlPlugin.KMLIcons.Name, iImage, iImage, this.kmlPlugin.KMLIcons.IsOn ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
-				this.kmlNode.Tag = this.kmlPlugin.KMLIcons;
-				UpdateKMLNodes(this.kmlNode, this.kmlPlugin.KMLIcons);
+            TreeNode oRootNode = cKMLTree.Nodes.Add(null, kmlPlugin.KMLIcons.Name, iImage, iImage);
+				//this.kmlNode = this.tvLayers.AddTop(null, this.kmlPlugin.KMLIcons.Name, iImage, iImage, this.kmlPlugin.KMLIcons.IsOn ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
+            oRootNode.Checked = kmlPlugin.KMLIcons.IsOn; // new
+            oRootNode.Tag = this.kmlPlugin.KMLIcons;
+				//this.kmlNode.Tag = this.kmlPlugin.KMLIcons;
+				UpdateKMLNodes(oRootNode, this.kmlPlugin.KMLIcons);
 			}
-			this.tvLayers.EndUpdate();
+
+         cKMLTree.EndUpdate();
+			//this.tvLayers.EndUpdate();
 		}
 
 		private void toolStripMenuItemOpenKML_Click(object sender, EventArgs e)
@@ -3134,13 +3169,25 @@ namespace Dapple
 			if (result == DialogResult.OK)
 			{
 				this.kmlPlugin.KMLIcons.ChildObjects.Clear();
-				if (this.kmlNode != null)
-					this.tvLayers.Nodes.Remove(this.kmlNode);
+            if (cKMLTree.Nodes.Count > 0)
+               cKMLTree.Nodes.Clear();
+				//if (this.kmlNode != null)
+				//	this.tvLayers.Nodes.Remove(this.kmlNode);
 				int iImage = ImageListIndex("kml");
-				this.kmlNode = this.tvLayers.AddTop(null, "Please wait, loading KML file...", iImage, iImage, TriStateTreeView.CheckBoxState.None);
+            cKMLTree.Nodes.Add(null, "Please wait, loading KML file...", iImage, iImage);
+				//this.kmlNode = this.tvLayers.AddTop(null, "Please wait, loading KML file...", iImage, iImage, TriStateTreeView.CheckBoxState.None);
 				this.kmlPlugin.LoadDiskKM(fileDialog.FileName, new MethodInvoker(UpdateKMLIcons));
 			}
-		}*/
+		}
+
+      private void cKMLTree_AfterCheck(object sender, TreeViewEventArgs e)
+      {
+         if (e.Node.Tag != null) ((RenderableObject)e.Node.Tag).IsOn = e.Node.Checked;
+         foreach (TreeNode oChildNode in e.Node.Nodes)
+         {
+            oChildNode.Checked = e.Node.Checked;
+         }
+      }
 
       #endregion
 
@@ -3595,15 +3642,18 @@ namespace Dapple
 
       private void cOMServerMenu_DropDownOpening(object sender, EventArgs e)
       {
-         bool blServerSelected = tvServers.SelectedNode.Tag is Server || tvServers.SelectedNode.Tag is ServerBuilder;
+         bool blServerSelected = tvServers.SelectedNode != null &&
+            (tvServers.SelectedNode.Tag is Server || tvServers.SelectedNode.Tag is ServerBuilder);
          blServerSelected &= cSearchTabPane.SelectedIndex == 0;
          blServerSelected &= cServerViewsTab.SelectedIndex == 0;
+
+         bool blDAPServerSelected = blServerSelected && tvServers.SelectedNode.Tag is Server;
 
          propertiesToolStripMenuItem.Enabled = blServerSelected;
          refreshServerToolStripMenuItem.Enabled = blServerSelected;
          removeServerToolStripMenuItem.Enabled = blServerSelected;
          setAsFavoriteToolStripMenuItem.Enabled = blServerSelected;
-         addBrowserMapToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode.Tag is Server;
+         addBrowserMapToLayersToolStripMenuItem.Enabled = blDAPServerSelected;
 
          if (blServerSelected == false)
          {

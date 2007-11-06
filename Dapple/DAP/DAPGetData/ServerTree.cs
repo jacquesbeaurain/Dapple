@@ -363,6 +363,8 @@ namespace Geosoft.GX.DAPGetData
 
             m_oServerList.RemoveServer(oServer);
             m_oServerList.AddServer(oServer);
+
+            if (blEnabled) GetDatasetCount(oServer);
             PopulateServerList();
          }
          catch (Exception e)

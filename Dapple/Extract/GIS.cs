@@ -36,16 +36,9 @@ namespace Dapple.Extract
          cbOptions.DataSource = Options.GIS.OMDownloadOptionStrings;
          cbOptions.SelectedIndex = 0;
          tbGroupName.Text = oDAPbuilder.Name;
+         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, MAP_EXT);
 
-         if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
-         {
-            tbFilename.Text = System.IO.Path.GetFileName(MainForm.MapFileName);
-            tbFilename.Enabled = false;
-         }
-         else
-         {
-            tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, MAP_EXT);
-         }
+         ConfigureDialog();
       }
 
       /// <summary>
@@ -60,8 +53,20 @@ namespace Dapple.Extract
          base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
-
+         if (cbOptions.SelectedIndex == SAVE_AS_MAP)
+         {
+            // Not used for direct import
+            oPathAttr.Value = String.Empty;
+         }
+         else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)
+         {
+            // Shape file uses a namespace name, not a file name (produces oodles of files)
+            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text));
+         }
+         else if (cbOptions.SelectedIndex == SAVE_AS_TAB || cbOptions.SelectedIndex == SAVE_AS_TAB2)
+         {
+            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, TAB_EXT));
+         }
          oDatasetElement.Attributes.Append(oPathAttr);
 
          
@@ -85,17 +90,31 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void cbOptions_SelectedIndexChanged(object sender, EventArgs e)
       {
+         ConfigureDialog();
+      }
+
+      private void ConfigureDialog()
+      {
          if (cbOptions.SelectedIndex == SAVE_AS_MAP)
          {
-            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT);
+            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, null);
+            lFileName.Visible = false;
+            lFileName.Text = ":";
+            tbFilename.Visible = false;
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)
          {
-            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, SHP_EXT);
+            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, null);
+            lFileName.Visible = true;
+            lFileName.Text = "Namespace:";
+            tbFilename.Visible = true;
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_TAB || cbOptions.SelectedIndex == SAVE_AS_TAB2)
          {
             tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, TAB_EXT);
+            lFileName.Visible = true;
+            lFileName.Text = "File name:";
+            tbFilename.Visible = true;
          }
       }
    }
