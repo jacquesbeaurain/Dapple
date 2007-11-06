@@ -284,18 +284,24 @@ namespace WorldWind
          }
          set
          {
-            dappleSearchURL = value;
-
-            if (dappleSearchURL.Trim().Equals(String.Empty)) dappleSearchURL = String.Empty;
-
-            if (!Uri.IsWellFormedUriString(dappleSearchURL, UriKind.Absolute))
+            // Fix: Dapple 1.0.20 had nascent DappleSearch code that would set this value to null.  When saved and loaded, this would
+            // come back as setting it to empty string.  Going forward, disregard empty string.  DappleSearch MUST be configured.  If
+            // we ever want to turn it off, set a flag variable instead of using an empty value in this variable.
+            if (!String.IsNullOrEmpty(value))
             {
-               dappleSearchURL = String.Empty;
-            }
-            else
-            {
-               Uri parse = new Uri(dappleSearchURL);
-               dappleSearchURL = "http://" + parse.Authority + "/";
+               dappleSearchURL = value;
+
+               if (dappleSearchURL.Trim().Equals(String.Empty)) dappleSearchURL = String.Empty;
+
+               if (!Uri.IsWellFormedUriString(dappleSearchURL, UriKind.Absolute))
+               {
+                  dappleSearchURL = String.Empty;
+               }
+               else
+               {
+                  Uri parse = new Uri(dappleSearchURL);
+                  dappleSearchURL = "http://" + parse.Authority + "/";
+               }
             }
          }
       }

@@ -557,6 +557,11 @@ namespace Dapple
 
             #region OverviewPanel
 
+            // Fix: earlier versions of Dapple set the DataPath as an absolute reference, so if Dapple was uninstalled, OMapple could not find
+            // the file for the overview control.  To fix this, switch the variable to a relative reference if the absolute one doesn't resolve.
+            // Dapple will still work; the relative reference will be from whatever directory Dapple is being run.
+            if (!Directory.Exists(Settings.DataPath)) Settings.DataPath = "Data";
+
             this.overviewCtl = new OverviewControl(Settings.DataPath + @"\Earth\BmngBathy\world.topo.bathy.200407.jpg", worldWindow, panelOverview);
             this.overviewCtl.Dock = DockStyle.Fill;
             this.overviewCtl.TabStop = false;
