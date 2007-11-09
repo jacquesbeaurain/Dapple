@@ -43,8 +43,8 @@ namespace Dapple.CustomControls
       private int m_iCurrentPage;
       private int m_iAccessedPages;
       private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
-      private bool m_blDragDropEnabled = false;
-      private ServerTree m_hServerTree;
+      private Point m_oDragDropStartPoint = Point.Empty;
+      private LayerList m_hLayerList;
 
       private String m_szDappleSearchURI = null;
 
@@ -74,11 +74,11 @@ namespace Dapple.CustomControls
 
       #region Properties
 
-      public ServerTree ServerTree
+      public LayerList LayerList
       {
          set
          {
-            m_hServerTree = value;
+            m_hLayerList = value;
          }
       }
 
@@ -188,9 +188,9 @@ namespace Dapple.CustomControls
 
       private void cResultListBox_MouseMove(object sender, MouseEventArgs e)
       {
-         if (m_blDragDropEnabled && (e.Button & MouseButtons.Left) == MouseButtons.Left)
+         if (m_oDragDropStartPoint != Point.Empty && (m_oDragDropStartPoint.X != e.X || m_oDragDropStartPoint.Y != e.Y) && (e.Button & MouseButtons.Left) == MouseButtons.Left)
          {
-            m_blDragDropEnabled = false;
+            m_oDragDropStartPoint = Point.Empty;
 
             if (cResultListBox.SelectedIndices.Count > 0)
             {
@@ -208,7 +208,32 @@ namespace Dapple.CustomControls
 
       private void cResultListBox_MouseDown(object sender, MouseEventArgs e)
       {
-         m_blDragDropEnabled = (e.Button & MouseButtons.Left) == MouseButtons.Left;
+         if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+         {
+            m_oDragDropStartPoint = new Point(e.X, e.Y);
+         }
+      }
+
+      private void cResultListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+      {
+         CmdAddSelected();
+      }
+
+      private void cContextMenu_Opening(object sender, CancelEventArgs e)
+      {
+         if (cResultListBox.SelectedIndices.Count < 1)
+         {
+            e.Cancel = true;
+         }
+         else
+         {
+            addLayerToolStripMenuItem.Text = cResultListBox.SelectedIndices.Count > 1 ? "Add layers" : "Add layer";
+         }
+      }
+
+      private void addLayerToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         CmdAddSelected();
       }
 
       private void DisplayModeChanged(int iIndex)
@@ -246,18 +271,40 @@ namespace Dapple.CustomControls
          m_oSearchBoundingBox = oBoundingBox;
          m_szSearchString = szKeyword;
 
-         SearchResultSet oPage1 = SearchResultSet.doSearch(m_szDappleSearchURI, szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
-
-         InitSearch(oPage1);
-
-         RefreshResultList();
+         if (String.Empty.Equals(szKeyword) && oBoundingBox == null)
+         {
+            SetNoSearch();
+         }
+         else
+         {
+            SearchResultSet oPage1 = SearchResultSet.doSearch(m_szDappleSearchURI, szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
+            InitSearch(oPage1);
+            RefreshResultList();
+         }
       }
 
       #region helper functions
 
+      private void CmdAddSelected()
+      {
+         if (cResultListBox.SelectedIndices.Count > 0 && m_hLayerList != null)
+         {
+            List<LayerUri> oLayerUris = new List<LayerUri>();
+
+            foreach (int iIndex in cResultListBox.SelectedIndices)
+            {
+               oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
+            }
+
+            m_hLayerList.AddLayers(oLayerUris);
+         }
+      }
+
       private void RefreshResultList()
       {
          if (InvokeRequired) throw new InvalidOperationException("Tried to refresh result list off of the event thread");
+
+         if (String.Empty.Equals(m_szSearchString) && m_oSearchBoundingBox == null) return; // Nothing to refresh, no search set.
 
          cResultListBox.SuspendLayout();
          cResultListBox.Items.Clear();
@@ -268,22 +315,29 @@ namespace Dapple.CustomControls
             return;
          }
 
-         if (m_aPages.Length > 0 && m_aPages[m_iCurrentPage] != null)
+         if (m_aPages == null)
          {
-            foreach (SearchResult oResult in m_aPages[m_iCurrentPage].Results)
-            {
-               cResultListBox.Items.Add(oResult);
-            }
-            cNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
+            cNavigator.SetState("Error contacting search server");
          }
          else
          {
-            cNavigator.SetState("No results");
-         }
+            if (m_aPages.Length > 0 && m_aPages[m_iCurrentPage] != null)
+            {
+               foreach (SearchResult oResult in m_aPages[m_iCurrentPage].Results)
+               {
+                  cResultListBox.Items.Add(oResult);
+               }
+               cNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
+            }
+            else
+            {
+               cNavigator.SetState("No results");
+            }
 
-         if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
-         {
-            m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox, m_szDappleSearchURI);
+            if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
+            {
+               m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox, m_szDappleSearchURI);
+            }
          }
 
          cResultListBox.ResumeLayout();
@@ -294,6 +348,7 @@ namespace Dapple.CustomControls
          m_iCurrentPage = 0;
          m_iAccessedPages = 0;
          m_aPages = new SearchResultSet[0];
+         cResultListBox.Items.Clear();
 
          if (String.IsNullOrEmpty(m_szDappleSearchURI))
          {
@@ -331,7 +386,7 @@ namespace Dapple.CustomControls
             }
             else
             {
-               cNavigator.SetState("DappleSearch not configured");
+               m_aPages = null;
             }
          }
       }
@@ -554,12 +609,12 @@ namespace Dapple.CustomControls
             {
                String szUri = "gxwms://" + m_aCommonAttributes["url"];
                if (!szUri.Contains("?")) szUri += "?";
-               szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
+               //szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
                szUri += "&layer=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layername"]);
                szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
                szUri += "&" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["cgitokens"]);
 
-               if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)
+               /*if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)
                {
                   szUri += "&srs=";
                }
@@ -570,13 +625,13 @@ namespace Dapple.CustomControls
 
                if (m_aTypeSpecificAttributes.ContainsKey("specialcoord"))
                {
-                  szUri += HttpUtility.UrlEncode(m_aTypeSpecificAttributes["specialcoord"]);
+                  szUri += m_aTypeSpecificAttributes["specialcoord"];
                }
                else
                {
                   szUri += "EPSG:4326";
                   szUri += "&bbox=" + String.Format("{0},{1},{2},{3}", m_aCommonAttributes["minx"], m_aCommonAttributes["miny"], m_aCommonAttributes["maxx"], m_aCommonAttributes["maxy"]);
-               }
+               }*/
 
                WMSLayerUri oUri = new WMSLayerUri(szUri);
 

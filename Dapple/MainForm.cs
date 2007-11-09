@@ -612,6 +612,7 @@ namespace Dapple
             this.cServerViewsTab.SetPage(1, this.cServerListControl);
 
             cWebSearch = new DappleSearchList(Settings.DappleSearchURL);
+            cWebSearch.LayerList = cLayerList;
 
             cSearchTabPane.TabPages[0].Controls.Add(cServerViewsTab);
             cServerViewsTab.Dock = DockStyle.Fill;
@@ -666,9 +667,9 @@ namespace Dapple
                toolStripMenuItemOpenKML.Visible = false;
                toolStripMenuItemOpenKML.Enabled = false;
 
-               this.MinimizeBox = false;
+               /*this.MinimizeBox = false;
                this.MaximizeBox = false;
-               this.HelpButton = true;
+               this.HelpButton = true;*/
 
                // Hide and disable the file menu
                toolStripMenuItemfile.Visible = false;
@@ -685,6 +686,10 @@ namespace Dapple
                toolStripMenuItemsend.Enabled = false;
                toolStripMenuItemOpenKML.Visible = false;
                toolStripMenuItemOpenKML.Enabled = false;
+
+               // Show the OM help menu
+               OMhelpToolStripMenuItem.Enabled = true;
+               OMhelpToolStripMenuItem.Visible = true;
             }
             else
             {
@@ -713,6 +718,7 @@ namespace Dapple
 
             loadCountryList();
             populateAoiComboBox();
+            LoadMRUList();
             //#if !DEBUG
 
 
@@ -1113,7 +1119,8 @@ namespace Dapple
                strGeoTiffName = strNewName;
             }
 
-            builder.Opacity = 255;
+            if (bTmp) builder.Opacity = 128;
+            else builder.Opacity = 255;
             builder.Visible = true;
             builder.Temporary = bTmp;
 
@@ -2213,6 +2220,8 @@ namespace Dapple
          {
             File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
          }
+
+         SaveMRUList();
       }
 
       private void MainForm_Deactivate(object sender, EventArgs e)
@@ -3222,18 +3231,38 @@ namespace Dapple
          doSearch();
       }
 
+      private bool m_blSupressSearchSelectedIndexChanged = false;
+      private void cSearchTextComboBox_SelectedIndexChanged(object sender, EventArgs e)
+      {
+         if (m_blSupressSearchSelectedIndexChanged) return;
+         doSearch();
+      }
+
       private void doSearch()
       {
+         // --- Cancel if the search parameters are unchanged ---
+         GeographicBoundingBox oCurrSearchROI = GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox());
+         String szCurrSearchString = SearchKeyword;
+         if (oCurrSearchROI.Equals(m_oLastSearchROI) && szCurrSearchString.Equals(m_szLastSearchString)) return;
+
+         // --- Reorder the MRU list.  Supress index changed is important because removing the current MRU will raise the event again ---
+         m_blSupressSearchSelectedIndexChanged = true;
+         cSearchTextComboBox.SuspendLayout();
          if (!SearchKeyword.Equals(String.Empty))
          {
-            cSearchTextComboBox.Items.Remove(SearchKeyword);
+            cSearchTextComboBox.Items.Remove(szCurrSearchString);
 
             while (cSearchTextComboBox.Items.Count >= MAX_MRU_TERMS)
             {
                cSearchTextComboBox.Items.RemoveAt(cSearchTextComboBox.Items.Count - 1);
             }
-            cSearchTextComboBox.Items.Insert(0, cSearchTextComboBox.Text);
+            cSearchTextComboBox.Items.Insert(0, szCurrSearchString);
+            cSearchTextComboBox.Text = szCurrSearchString;
          }
+         cSearchTextComboBox.ResumeLayout();
+         m_blSupressSearchSelectedIndexChanged = false;
+
+         // --- Mop up and move out ---
 
          SetSearchable(false);
          SetSearchClearable(true);
@@ -3290,7 +3319,6 @@ namespace Dapple
       {
          cMetadataBrowser.Visible = false;
          cMetadataLoadingLabel.Text = szMessage;
-         //Application.DoEvents();
       }
 
       private void DisplayMetadataDocument(String szMessage)
@@ -3306,7 +3334,6 @@ namespace Dapple
             }
             cMetadataBrowser.Url = metaUri;
          }
-         //Application.DoEvents();
       }
 
       public delegate void LoadMetadataDelegate(IBuilder oBuilder);
@@ -3440,21 +3467,6 @@ namespace Dapple
       private void searchToolStripMenuItem_Click(object sender, EventArgs e)
       {
          doSearch();
-      }
-
-      private void toolStripNavButton_MouseRemoveCapture(object sender, MouseEventArgs e)
-      {
-
-      }
-
-      private void toolStripNavigation_Paint(object sender, PaintEventArgs e)
-      {
-
-      }
-
-      private void toolStripNavigation_PaintGrip(object sender, PaintEventArgs e)
-      {
-
       }
 
       /// <summary>
@@ -3705,6 +3717,53 @@ namespace Dapple
             m_oMontajRemoteInterface.DisplayHelp();
 
          e.Cancel = true;
+      }
+
+      private void SaveMRUList()
+      {
+         StreamWriter oOutput = null;
+         try
+         {
+            oOutput = new StreamWriter(Path.Combine(CurrentSettingsDirectory, "MRU.txt"), false);
+
+            foreach (String szMRU in cSearchTextComboBox.Items)
+            {
+               oOutput.WriteLine(szMRU);
+            }
+         }
+         catch (IOException)
+         {
+            // Do nothing, if a minor bug borks the MRU list, it's not the end of the world.
+         }
+         finally
+         {
+            if (oOutput != null) oOutput.Close();
+         }
+      }
+
+      private void LoadMRUList()
+      {
+         if (!File.Exists(Path.Combine(CurrentSettingsDirectory, "MRU.txt"))) return;
+
+         try
+         {
+            String[] aMRUs = File.ReadAllLines(Path.Combine(CurrentSettingsDirectory, "MRU.txt"));
+
+            for (int count = 0; count < aMRUs.Length && count < MAX_MRU_TERMS; count++)
+            {
+               cSearchTextComboBox.Items.Add(aMRUs[count]);
+            }
+         }
+         catch (IOException)
+         {
+            // Do nothing, if we can't read the MRU list, it's not the end of the world.
+         }
+      }
+
+      private void OMhelpToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         if (m_oMontajRemoteInterface != null)
+            m_oMontajRemoteInterface.DisplayHelp();
       }
    }
 }

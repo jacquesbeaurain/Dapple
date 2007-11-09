@@ -376,7 +376,7 @@ namespace Dapple
       {
          if (cLayersListView.SelectedIndices.Count == 1)
          {
-            if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[cLayersListView.SelectedIndices[0]]);
+            if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[cLayersListView.SelectedIndices[0] + LAYERS_PER_PAGE * m_iCurrPage]);
          }
       }
 

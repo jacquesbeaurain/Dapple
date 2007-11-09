@@ -110,6 +110,26 @@ namespace Dapple.Extract
          if (!MainForm.MontajInterface.GetExtents(m_oDAPLayer.DAPServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY))
             return false;
 
+         // --- Sanity check on the data ---
+
+         double dMapInWGS84_MinX = dMinX;
+         double dMapInWGS84_MinY = dMinY;
+         double dMapInWGS84_MaxX = dMaxX;
+         double dMapInWGS84_MaxY = dMaxY;
+         if (MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dMapInWGS84_MinX, ref dMapInWGS84_MinY, ref dMapInWGS84_MaxX, ref dMapInWGS84_MaxY, Resolution.WGS_84))
+         {
+            if (Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MinX - dMapInWGS84_MinX) > 1e-5 ||
+               Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MinY - dMapInWGS84_MinY) > 1e-5 ||
+               Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxX - dMapInWGS84_MaxX) > 1e-5 ||
+               Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxY - dMapInWGS84_MaxY) > 1e-5)
+            {
+               MessageBox.Show("It appears that the metadata for this layer is invalid.  It cannot be downloaded.  Contact the server administrator.", "Error downloading layer \"" + m_oDAPLayer.Name + "\"", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+               return false;
+            }
+         }
+
+         // End sanity check.  Insanity may resume.
+
          
          // --- calculate the extract area ---
 
@@ -239,6 +259,34 @@ namespace Dapple.Extract
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("coordinate_system");
          oAttr.Value = strProjCoordinateSystem;
          oDatasetElement.Attributes.Append(oAttr);
+
+#if DEBUG
+         System.Xml.XmlElement oDebugElement = oDatasetElement.OwnerDocument.CreateElement("debug");
+
+         double dMapBoundMinX_WGS84 = dMinX;
+         double dMapBoundMaxX_WGS84 = dMaxX;
+         double dMapBoundMinY_WGS84 = dMinY;
+         double dMapBoundMaxY_WGS84 = dMaxY;
+
+         double dClipBoundMinX_WGS84 = dProjMinX;
+         double dClipBoundMaxX_WGS84 = dProjMaxX;
+         double dClipBoundMinY_WGS84 = dProjMinY;
+         double dClipBoundMaxY_WGS84 = dProjMaxY;
+
+         MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dMapBoundMinX_WGS84, ref dMapBoundMinY_WGS84, ref dMapBoundMaxX_WGS84, ref dMapBoundMaxY_WGS84, Resolution.WGS_84);
+         MainForm.MontajInterface.ProjectBoundingRectangle(strProjCoordinateSystem, ref dClipBoundMinX_WGS84, ref dClipBoundMinY_WGS84, ref dClipBoundMaxX_WGS84, ref dClipBoundMaxY_WGS84, Resolution.WGS_84);
+
+         oDatasetElement.SetAttribute("map_wgs84_west", dMapBoundMinX_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("map_wgs84_south", dMapBoundMinY_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("map_wgs84_east", dMapBoundMaxX_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("map_wgs84_north", dMapBoundMaxY_WGS84.ToString("f5"));
+
+         oDatasetElement.SetAttribute("clip_wgs84_west", dClipBoundMinX_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("clip_wgs84_south", dClipBoundMinY_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("clip_wgs84_east", dClipBoundMaxX_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("clip_wgs84_north", dClipBoundMaxY_WGS84.ToString("f5"));
+#endif
+
          return true;
       }
 

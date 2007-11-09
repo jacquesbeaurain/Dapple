@@ -263,6 +263,16 @@ namespace Dapple.Extract
                   oExtractElement.AppendChild(oDatasetElement);
                }
             }
+#if DEBUG
+            System.Xml.XmlElement oDebugElement = oExtractDoc.CreateElement("debug");
+            WorldWind.GeographicBoundingBox oViewAOI = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+            oDebugElement.SetAttribute("wgs84_west", oViewAOI.West.ToString("f2"));
+            oDebugElement.SetAttribute("wgs84_south", oViewAOI.South.ToString("f2"));
+            oDebugElement.SetAttribute("wgs84_east", oViewAOI.East.ToString("f2"));
+            oDebugElement.SetAttribute("wgs84_north", oViewAOI.North.ToString("f2"));
+            oDebugElement.SetAttribute("clip_setting", eClip.ToString());
+            oExtractElement.AppendChild(oDebugElement);
+#endif
             this.Close();
 
             DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
@@ -271,9 +281,13 @@ namespace Dapple.Extract
             if (oDiscliamers.HasDisclaimer)
                oDiscliamers.ShowDialog();
             else
+            {
+               this.UseWaitCursor = true;
                oDiscliamers.DownloadDatasets();
+               this.UseWaitCursor = false;
+            }
 
-            MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
          }
          catch (Exception ex)
          {

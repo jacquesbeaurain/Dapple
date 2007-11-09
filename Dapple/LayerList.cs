@@ -1009,7 +1009,7 @@ namespace Dapple
          List<ExportEntry> aExportList = new List<ExportEntry>();
 
          // Gather info first
-         foreach (LayerBuilder oBuilder in this.SelectedLayers)
+         foreach (LayerBuilder oBuilder in this.AllLayers)
          {
             if (oBuilder.Visible)
             {
@@ -1068,7 +1068,7 @@ namespace Dapple
 
                // Determine output parameters
                GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
-               int iResolution = oExportDialog.Resolution;
+               int iResolution = -1;
                int iExportPixelsX, iExportPixelsY;
 
                // Minimize the estimated extents to what is available
@@ -1186,7 +1186,7 @@ namespace Dapple
                            imgAtt.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
                            oEIGraphics.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
 
-                           if (oExportDialog.KeepLayers)
+                           /*if (oExportDialog.KeepLayers)
                            {
                               using (Bitmap oIndividualLayerImage = new Bitmap(iExportPixelsX, iExportPixelsY))
                               {
@@ -1198,7 +1198,7 @@ namespace Dapple
 
                                  SaveGeoImage(oIndividualLayerImage, oExportDialog.OutputName + "_" + oExportEntry.Container.Name, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
                               }
-                           }
+                           }*/
                         }
                      }
                   }

@@ -22,6 +22,9 @@ namespace Dapple.LayerGeneration
       private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable();
       private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
       private int m_iIndexGenerator = 0;
+#if DEBUG
+      private List<String> m_oAddedServerDNSNames = new List<string>();
+#endif
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
@@ -33,6 +36,17 @@ namespace Dapple.LayerGeneration
 
       public BuilderDirectory AddServer(ArcIMSServerUri oUri, bool blEnabled)
       {
+#if DEBUG
+         System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(oUri.Host);
+         if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
+         {
+            MessageBox.Show("Newly added server " + oUri.ToString() + " has DNS name matching existing server in tree.  Check for duplicates", "Possible duplicated ArcIMS server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+         }
+         else
+         {
+            m_oAddedServerDNSNames.Add(oNewServer.HostName);
+         }
+#endif
          // create the cache directory
          String savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);

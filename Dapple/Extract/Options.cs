@@ -99,7 +99,7 @@ namespace Dapple.Extract
                                                                       "ER Mapper (*.ers)",
                                                                       "ER Mapper ECW Compressor (*.ecw)",
                                                                       "ER Mapper RGB Colour (*.ers)",
-                                                                      "Geopak (*.grd)", "*.grd",
+                                                                      "Geopak (*.grd)",
                                                                       "GXF Compressed (*.gxf)",
                                                                       "GXF Text (*.gxf)",
                                                                       "Landmark Zmap (*.dat)",
@@ -109,8 +109,8 @@ namespace Dapple.Extract
                                                                       "Surfer V6 (*.grd)",
                                                                       "Surfer V7 (*.grd)",
                                                                       "Texaco Startrax (*.grd)",
-                                                                      "USGS PC (*.*)", "*.*",
-                                                                      "USGS UNIX (*.*)", "*.*",
+                                                                      "USGS PC (*.*)",
+                                                                      "USGS UNIX (*.*)",
                                                                       "World Geoscience (*.h)"};
 
          public static string[] DownloadOptionExtension = new string[] {".grd",

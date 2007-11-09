@@ -106,6 +106,10 @@ namespace Dapple.LayerGeneration
             if (m_oVEQTS != null && m_oVEQTS.IsOn != value)
             {
                m_oVEQTS.IsOn = value;
+               if (value == true)
+               {
+                  m_oVEQTS.ForceRefresh();
+               }
                bChanged = true;
             }
 

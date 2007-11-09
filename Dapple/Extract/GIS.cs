@@ -99,7 +99,7 @@ namespace Dapple.Extract
          {
             tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, null);
             lFileName.Visible = false;
-            lFileName.Text = ":";
+            lFileName.Text = "Map name:";
             tbFilename.Visible = false;
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)

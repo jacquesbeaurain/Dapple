@@ -27,6 +27,9 @@ namespace Dapple.LayerGeneration
       private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable(); //<WebDownload, WMSServerBuilder>>
       private System.Collections.Hashtable m_oWMSListCache = new System.Collections.Hashtable(); //<WMSUri, WMSList>>
       private int m_iDownloadIndex = 0;
+#if DEBUG
+      private List<String> m_oAddedServerDNSNames = new List<string>();
+#endif
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
@@ -43,6 +46,17 @@ namespace Dapple.LayerGeneration
       /// <returns>A WMSServerBuilder for the server added.</returns>
       public BuilderDirectory AddServer(WMSServerUri oUri, bool blEnabled)
       {
+#if DEBUG
+         System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(oUri.Host);
+         if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
+         {
+            MessageBox.Show("Newly added server " + oUri.ToString() + " has DNS name matching existing server in tree.  Check for duplicates", "Possible duplicated WMS server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+         }
+         else
+         {
+            m_oAddedServerDNSNames.Add(oNewServer.HostName);
+         }
+#endif
          // create the cache directory
          string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);

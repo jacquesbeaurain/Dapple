@@ -118,7 +118,9 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bAccept_Click(object sender, EventArgs e)
       {
+         this.UseWaitCursor = true;
          DownloadDatasets();
+         this.UseWaitCursor = false;
 
          this.Close();
       }
