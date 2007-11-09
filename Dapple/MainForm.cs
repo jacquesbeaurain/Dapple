@@ -584,7 +584,6 @@ namespace Dapple
             this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList, cServerListControl);
             cServerListControl.ImageList = this.tvServers.ImageList;
             cLayerList.ImageList = this.tvServers.ImageList;
-            cLayerList.SetBaseLayer(new BlueMarbleBuilder());
             cLayerList.ServerTree = tvServers;
 
             m_oMetadataDisplay = new MetadataDisplayThread(this);
@@ -618,6 +617,8 @@ namespace Dapple
             cServerViewsTab.Dock = DockStyle.Fill;
             cSearchTabPane.TabPages[1].Controls.Add(cWebSearch);
             cWebSearch.Dock = DockStyle.Fill;
+
+            cLayerList.SetBaseLayer(new BlueMarbleBuilder());
 
             this.ResumeLayout(false);
 
@@ -719,6 +720,7 @@ namespace Dapple
             loadCountryList();
             populateAoiComboBox();
             LoadMRUList();
+            CenterNavigationToolStrip();
             //#if !DEBUG
 
 
@@ -1466,7 +1468,6 @@ namespace Dapple
          {
             CmdLoadHomeView();
          }
-
 
          if (this.openGeoTiff.Length > 0)
             AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);

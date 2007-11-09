@@ -441,7 +441,7 @@ namespace Dapple
            this.searchToolStripMenuItem.Image = global::Dapple.Properties.Resources.search;
            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
            this.searchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-           this.searchToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+           this.searchToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
            this.searchToolStripMenuItem.Text = "Search";
            this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
            // 
@@ -450,8 +450,8 @@ namespace Dapple
            this.addToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
            this.addToLayersToolStripMenuItem.Name = "addToLayersToolStripMenuItem";
            this.addToLayersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-           this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-           this.addToLayersToolStripMenuItem.Text = "Add to Layers";
+           this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+           this.addToLayersToolStripMenuItem.Text = "Add to Data Layers";
            this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
            // 
            // removeFromLayersToolStripMenuItem
@@ -459,25 +459,26 @@ namespace Dapple
            this.removeFromLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_remove;
            this.removeFromLayersToolStripMenuItem.Name = "removeFromLayersToolStripMenuItem";
            this.removeFromLayersToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-           this.removeFromLayersToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-           this.removeFromLayersToolStripMenuItem.Text = "Remove from Layers";
+           this.removeFromLayersToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+           this.removeFromLayersToolStripMenuItem.Text = "Remove from Data Layers";
            this.removeFromLayersToolStripMenuItem.Click += new System.EventHandler(this.removeFromLayersToolStripMenuItem_Click);
            // 
            // downloadToolStripMenuItem
            // 
            this.downloadToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_download;
            this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
-           this.downloadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
-           this.downloadToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-           this.downloadToolStripMenuItem.Text = "Download Layers...";
+           this.downloadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+           this.downloadToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+           this.downloadToolStripMenuItem.Text = "Extract Data Layers...";
            this.downloadToolStripMenuItem.Click += new System.EventHandler(this.downloadToolStripMenuItem_Click);
            // 
            // exportGeoTiffToolStripMenuItem
            // 
-           this.exportGeoTiffToolStripMenuItem.Image = global::Dapple.Properties.Resources.export;
+           this.exportGeoTiffToolStripMenuItem.Image = global::Dapple.Properties.Resources.snapshot;
            this.exportGeoTiffToolStripMenuItem.Name = "exportGeoTiffToolStripMenuItem";
-           this.exportGeoTiffToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-           this.exportGeoTiffToolStripMenuItem.Text = "Export to GeoTiff...";
+           this.exportGeoTiffToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.G)));
+           this.exportGeoTiffToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+           this.exportGeoTiffToolStripMenuItem.Text = "Create GeoTIFF Snapshot...";
            this.exportGeoTiffToolStripMenuItem.Click += new System.EventHandler(this.exportGeoTiffToolStripMenuItem_Click);
            // 
            // cOMServerMenu
@@ -532,7 +533,7 @@ namespace Dapple
            this.propertiesToolStripMenuItem.Image = global::Dapple.Properties.Resources.properties;
            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-           this.propertiesToolStripMenuItem.Text = "Properties";
+           this.propertiesToolStripMenuItem.Text = "Properties...";
            this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
            // 
            // setAsFavoriteToolStripMenuItem
@@ -1021,8 +1022,8 @@ namespace Dapple
            // 
            this.toolStripLabel1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
            this.toolStripLabel1.Name = "toolStripLabel1";
-           this.toolStripLabel1.Size = new System.Drawing.Size(45, 22);
-           this.toolStripLabel1.Text = "Layers";
+           this.toolStripLabel1.Size = new System.Drawing.Size(75, 22);
+           this.toolStripLabel1.Text = "Data Layers";
            // 
            // cLayerList
            // 
@@ -1112,7 +1113,7 @@ namespace Dapple
            this.cWorldMetadataSplitter.Panel2.Controls.Add(this.cMetadataLoadingLabel);
            this.cWorldMetadataSplitter.Panel2.Controls.Add(this.cToolStripMetadata);
            this.cWorldMetadataSplitter.Size = new System.Drawing.Size(662, 621);
-           this.cWorldMetadataSplitter.SplitterDistance = 442;
+           this.cWorldMetadataSplitter.SplitterDistance = 443;
            this.cWorldMetadataSplitter.TabIndex = 2;
            this.cWorldMetadataSplitter.SplitterMoving += new System.Windows.Forms.SplitterCancelEventHandler(this.cWorldMetadataSplitter_SplitterMoving);
            this.cWorldMetadataSplitter.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.cWorldMetadataSplitter_SplitterMoved);
@@ -1136,7 +1137,7 @@ namespace Dapple
            // 
            this.WorldResultsSplitPanel.Panel2.Controls.Add(this.SearchResultsBrowser);
            this.WorldResultsSplitPanel.Panel2Collapsed = true;
-           this.WorldResultsSplitPanel.Size = new System.Drawing.Size(662, 442);
+           this.WorldResultsSplitPanel.Size = new System.Drawing.Size(662, 443);
            this.WorldResultsSplitPanel.SplitterDistance = 221;
            this.WorldResultsSplitPanel.TabIndex = 1;
            this.WorldResultsSplitPanel.SplitterMoving += new System.Windows.Forms.SplitterCancelEventHandler(this.WorldResultsSplitPanel_SplitterMoving);
@@ -1161,7 +1162,7 @@ namespace Dapple
             this.toolStripButtonRotLeft,
             this.toolStripSeparator3,
             this.toolStripButtonResetCamera});
-           this.toolStripNavigation.Location = new System.Drawing.Point(195, 418);
+           this.toolStripNavigation.Location = new System.Drawing.Point(0, 418);
            this.toolStripNavigation.Name = "toolStripNavigation";
            this.toolStripNavigation.Size = new System.Drawing.Size(228, 25);
            this.toolStripNavigation.TabIndex = 1;
@@ -1321,7 +1322,7 @@ namespace Dapple
            this.cMetadataBrowser.Location = new System.Drawing.Point(0, 25);
            this.cMetadataBrowser.MinimumSize = new System.Drawing.Size(20, 20);
            this.cMetadataBrowser.Name = "cMetadataBrowser";
-           this.cMetadataBrowser.Size = new System.Drawing.Size(662, 150);
+           this.cMetadataBrowser.Size = new System.Drawing.Size(662, 149);
            this.cMetadataBrowser.TabIndex = 1;
            // 
            // cMetadataLoadingLabel
@@ -1329,7 +1330,7 @@ namespace Dapple
            this.cMetadataLoadingLabel.Dock = System.Windows.Forms.DockStyle.Fill;
            this.cMetadataLoadingLabel.Location = new System.Drawing.Point(0, 25);
            this.cMetadataLoadingLabel.Name = "cMetadataLoadingLabel";
-           this.cMetadataLoadingLabel.Size = new System.Drawing.Size(662, 150);
+           this.cMetadataLoadingLabel.Size = new System.Drawing.Size(662, 149);
            this.cMetadataLoadingLabel.TabIndex = 2;
            this.cMetadataLoadingLabel.Text = "I\'m the number four!";
            // 

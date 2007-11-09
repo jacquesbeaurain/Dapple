@@ -115,7 +115,7 @@ namespace Dapple
          // cExportButton
          // 
          this.cExportButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-         this.cExportButton.Image = global::Dapple.Properties.Resources.export;
+         this.cExportButton.Image = global::Dapple.Properties.Resources.snapshot;
          this.cExportButton.ImageTransparentColor = System.Drawing.Color.Magenta;
          this.cExportButton.Name = "cExportButton";
          this.cExportButton.Size = new System.Drawing.Size(23, 22);

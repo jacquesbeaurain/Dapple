@@ -99,22 +99,22 @@ namespace Dapple
             this.addToLayersToolStripMenuItem,
             this.viewLegendToolStripMenuItem});
          this.cLayerContextMenu.Name = "cLayerContextMenu";
-         this.cLayerContextMenu.Size = new System.Drawing.Size(147, 48);
+         this.cLayerContextMenu.Size = new System.Drawing.Size(170, 70);
          this.cLayerContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerContextMenu_Opening);
          // 
          // addToLayersToolStripMenuItem
          // 
          this.addToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
          this.addToLayersToolStripMenuItem.Name = "addToLayersToolStripMenuItem";
-         this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-         this.addToLayersToolStripMenuItem.Text = "Add To Layers";
+         this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+         this.addToLayersToolStripMenuItem.Text = "Add To Data Layers";
          this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
          // 
          // viewLegendToolStripMenuItem
          // 
          this.viewLegendToolStripMenuItem.Image = global::Dapple.Properties.Resources.legend;
          this.viewLegendToolStripMenuItem.Name = "viewLegendToolStripMenuItem";
-         this.viewLegendToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+         this.viewLegendToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
          this.viewLegendToolStripMenuItem.Text = "View Legend...";
          this.viewLegendToolStripMenuItem.Click += new System.EventHandler(this.viewLegendToolStripMenuItem_Click);
          // 

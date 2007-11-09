@@ -36,7 +36,7 @@ namespace Dapple
          catch
          {
          }
-         if (m_fEditControl != null)
+         if (m_fEditControl == null)
          {
             cFilenameControl.FileName = String.Empty;
             m_fEditControl.InitialDirectory = strInitialFolder;

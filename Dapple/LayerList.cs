@@ -104,7 +104,9 @@ namespace Dapple
       {
          get
          {
-            return m_oLayers;
+            List<LayerBuilder> oResult = new List<LayerBuilder>(m_oLayers);
+            if (m_hBaseLayer != null) oResult.Add(m_hBaseLayer);
+            return oResult;
          }
       }
 
@@ -142,7 +144,7 @@ namespace Dapple
          {
             int temp, temp2;
 
-            foreach (LayerBuilder oBuilder in this.SelectedLayers)
+            foreach (LayerBuilder oBuilder in this.AllLayers)
             {
                if (oBuilder.Visible && oBuilder.bIsDownloading(out temp, out temp2))
                   return true;
@@ -211,8 +213,8 @@ namespace Dapple
       {
          // TODO: remove an existing base layer, if necessary.
          m_hBaseLayer = oBaseLayer;
-         oBaseLayer.Temporary = true;
-         AddLayer(oBaseLayer, 0);
+         m_hBaseLayer.Temporary = true;
+         AddLayerToGlobe(oBaseLayer);
       }
 
       public void AddLayer(LayerBuilder oLayer)
@@ -229,32 +231,14 @@ namespace Dapple
          m_oLayers.Insert(iInsertIndex, oNewBuilder);
          cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Name);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
-         if (oNewBuilder.Equals(m_hBaseLayer))
-         {
-            cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("blue_marble");
-            cLayerList.Items[iInsertIndex].ForeColor = Color.Black;
-            cLayerList.Items[iInsertIndex].Font = new Font(cLayerList.Items[iInsertIndex].Font, FontStyle.Bold | FontStyle.Underline);
-         }
-         else
          {
             cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
             cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
          }
 
-         m_oLayers[iInsertIndex].SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
-
-         if (m_oLayers[iInsertIndex] is GeorefImageLayerBuilder)
+         if (!AddLayerToGlobe(m_oLayers[iInsertIndex]))
          {
-            if (m_oLayers[iInsertIndex].GetLayer() == null)
-               cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
-            else
-               m_oLayers[iInsertIndex].SyncAddLayer(true);
-
-            RefreshLayerRenderOrder();
-         }
-         else
-         {
-            m_oLayers[iInsertIndex].AsyncAddLayer();
+            cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
          }
 
          bool blSupressed = m_blSupressSelectedChanged;
@@ -268,6 +252,28 @@ namespace Dapple
 
          if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
+      }
+
+      private bool AddLayerToGlobe(LayerBuilder oBuilder)
+      {
+         return AddLayerToGlobe(oBuilder, oBuilder is GeorefImageLayerBuilder);
+      }
+
+      private bool AddLayerToGlobe(LayerBuilder oBuilder, bool blSync)
+      {
+         oBuilder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
+
+         if (oBuilder is GeorefImageLayerBuilder && oBuilder.GetLayer() == null) return false;
+         if (blSync)
+         {
+            oBuilder.SyncAddLayer(true);
+            RefreshLayerRenderOrder();
+         }
+         else
+         {
+            oBuilder.AsyncAddLayer();
+         }
+         return true;
       }
 
       #endregion
@@ -573,7 +579,6 @@ namespace Dapple
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
          cRemoveLayerButton.Enabled = this.RemoveAllowed;
          cExtractButton.Enabled = cLayerList.SelectedIndices.Count > 0;
-         cExportButton.Enabled = cLayerList.SelectedIndices.Count > 0;
       }
 
       /// <summary>
@@ -591,26 +596,36 @@ namespace Dapple
          else
          {
             // --- Get the updated builder's index ---
-            int iBuilderIndex = 0;
-            do
+            if (oBuilder.Equals(m_hBaseLayer))
             {
-               if (m_oLayers[iBuilderIndex] == oBuilder) break;
-               iBuilderIndex++;
-            } while (iBuilderIndex < m_oLayers.Count);
-            if (iBuilderIndex == m_oLayers.Count) return;
+               if (eChangeType == BuilderChangeType.LoadedASync)
+               {
+                  RefreshLayerRenderOrder();
+               }
+            }
+            else
+            {
+               int iBuilderIndex = 0;
+               do
+               {
+                  if (m_oLayers[iBuilderIndex] == oBuilder) break;
+                  iBuilderIndex++;
+               } while (iBuilderIndex < m_oLayers.Count);
+               if (iBuilderIndex == m_oLayers.Count) return;
 
-            if (eChangeType == BuilderChangeType.LoadedASync)
-            {
-               RefreshLayerRenderOrder();
-               cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(oBuilder.DisplayIconKey);
-            }
-            else if (eChangeType == BuilderChangeType.LoadedASyncFailed || eChangeType == BuilderChangeType.LoadedSyncFailed)
-            {
-               cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
-            }
-            else if (eChangeType == BuilderChangeType.VisibilityChanged)
-            {
-               cLayerList.Items[iBuilderIndex].Checked = m_oLayers[iBuilderIndex].Visible;
+               if (eChangeType == BuilderChangeType.LoadedASync)
+               {
+                  RefreshLayerRenderOrder();
+                  cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(oBuilder.DisplayIconKey);
+               }
+               else if (eChangeType == BuilderChangeType.LoadedASyncFailed || eChangeType == BuilderChangeType.LoadedSyncFailed)
+               {
+                  cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
+               }
+               else if (eChangeType == BuilderChangeType.VisibilityChanged)
+               {
+                  cLayerList.Items[iBuilderIndex].Checked = m_oLayers[iBuilderIndex].Visible;
+               }
             }
          }
       }
@@ -624,6 +639,7 @@ namespace Dapple
          {
             oLayer.PushBackInRenderOrder();
          }
+         if (m_hBaseLayer != null) m_hBaseLayer.PushBackInRenderOrder();
       }
 
       #endregion
@@ -954,8 +970,7 @@ namespace Dapple
 
          cLayerList.Items.Clear();
          m_oLayers.Clear();
-
-         AddLayer(m_hBaseLayer);
+         //TODO: Remove layers from the World renderable list?
 
          for (int i = 0; i < view.View.activelayers.datasetCount; i++)
          {
@@ -1275,9 +1290,6 @@ namespace Dapple
       /// </summary>
       private void CheckIsValid()
       {
-         if (m_hBaseLayer != null && !m_oLayers.Contains(m_hBaseLayer))
-            throw new ArgumentException("You've somehow managed to delete the base layer");
-
          if (m_oLayers.Count != cLayerList.Items.Count)
             throw new ArgumentException("Data no longer syncs");
 

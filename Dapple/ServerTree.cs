@@ -1513,14 +1513,14 @@ namespace Dapple
             this.cMenuItem_ToggleServerEnabled,
             this.cMenuItem_RemoveServer});
          this.cContextMenu_Server.Name = "contextMenuStripServers";
-         this.cContextMenu_Server.Size = new System.Drawing.Size(209, 148);
+         this.cContextMenu_Server.Size = new System.Drawing.Size(235, 148);
          this.cContextMenu_Server.Opening += new System.ComponentModel.CancelEventHandler(this.cContextMenu_Server_Opening);
          // 
          // cMenuItem_Properties
          // 
          this.cMenuItem_Properties.Image = global::Dapple.Properties.Resources.properties;
          this.cMenuItem_Properties.Name = "cMenuItem_Properties";
-         this.cMenuItem_Properties.Size = new System.Drawing.Size(208, 24);
+         this.cMenuItem_Properties.Size = new System.Drawing.Size(234, 24);
          this.cMenuItem_Properties.Text = "Properties...";
          this.cMenuItem_Properties.Click += new System.EventHandler(this.cMenuItem_Properties_Click);
          // 
@@ -1528,23 +1528,23 @@ namespace Dapple
          // 
          this.cMenuItem_SetDefault.Image = global::Dapple.Properties.Resources.server_favourite;
          this.cMenuItem_SetDefault.Name = "cMenuItem_SetDefault";
-         this.cMenuItem_SetDefault.Size = new System.Drawing.Size(208, 24);
+         this.cMenuItem_SetDefault.Size = new System.Drawing.Size(234, 24);
          this.cMenuItem_SetDefault.Text = "Set as Favourite";
-         this.cMenuItem_SetDefault.Click += new EventHandler(cMenuItem_SetDefault_Click);
+         this.cMenuItem_SetDefault.Click += new System.EventHandler(this.cMenuItem_SetDefault_Click);
          // 
          // cMenuItem_AddBrowserMap
          // 
          this.cMenuItem_AddBrowserMap.Image = global::Dapple.Properties.Resources.layers_bottom;
          this.cMenuItem_AddBrowserMap.Name = "cMenuItem_AddBrowserMap";
-         this.cMenuItem_AddBrowserMap.Size = new System.Drawing.Size(208, 24);
-         this.cMenuItem_AddBrowserMap.Text = "Add Browser Map to Layers";
+         this.cMenuItem_AddBrowserMap.Size = new System.Drawing.Size(234, 24);
+         this.cMenuItem_AddBrowserMap.Text = "Add Browser Map to Data Layers";
          this.cMenuItem_AddBrowserMap.Click += new System.EventHandler(this.cMenuItem_AddBrowserMap_Click);
          // 
          // cMenuItem_Refresh
          // 
          this.cMenuItem_Refresh.Image = global::Dapple.Properties.Resources.server_refresh;
          this.cMenuItem_Refresh.Name = "cMenuItem_Refresh";
-         this.cMenuItem_Refresh.Size = new System.Drawing.Size(208, 24);
+         this.cMenuItem_Refresh.Size = new System.Drawing.Size(234, 24);
          this.cMenuItem_Refresh.Text = "Refresh";
          this.cMenuItem_Refresh.Click += new System.EventHandler(this.cMenuItem_Refresh_Click);
          // 
@@ -1552,7 +1552,7 @@ namespace Dapple
          // 
          this.cMenuItem_ToggleServerEnabled.Image = global::Dapple.Properties.Resources.disserver;
          this.cMenuItem_ToggleServerEnabled.Name = "cMenuItem_ToggleServerEnabled";
-         this.cMenuItem_ToggleServerEnabled.Size = new System.Drawing.Size(208, 24);
+         this.cMenuItem_ToggleServerEnabled.Size = new System.Drawing.Size(234, 24);
          this.cMenuItem_ToggleServerEnabled.Text = "Disable";
          this.cMenuItem_ToggleServerEnabled.Click += new System.EventHandler(this.cMenuItem_ToggleServerEnabled_Click);
          // 
@@ -1560,7 +1560,7 @@ namespace Dapple
          // 
          this.cMenuItem_RemoveServer.Image = global::Dapple.Properties.Resources.server_remove;
          this.cMenuItem_RemoveServer.Name = "cMenuItem_RemoveServer";
-         this.cMenuItem_RemoveServer.Size = new System.Drawing.Size(208, 24);
+         this.cMenuItem_RemoveServer.Size = new System.Drawing.Size(234, 24);
          this.cMenuItem_RemoveServer.Text = "Remove";
          this.cMenuItem_RemoveServer.Click += new System.EventHandler(this.cMenuItem_RemoveServer_Click);
          // 
@@ -1586,22 +1586,22 @@ namespace Dapple
             this.cMenuItem_AddLayer,
             this.cMenuItem_ViewLegend});
          this.cContextMenu_Layer.Name = "cContextMenu_Layer";
-         this.cContextMenu_Layer.Size = new System.Drawing.Size(147, 48);
+         this.cContextMenu_Layer.Size = new System.Drawing.Size(168, 48);
          this.cContextMenu_Layer.Opening += new System.ComponentModel.CancelEventHandler(this.cContextMenu_Layer_Opening);
          // 
          // cMenuItem_AddLayer
          // 
          this.cMenuItem_AddLayer.Image = global::Dapple.Properties.Resources.layers_add;
          this.cMenuItem_AddLayer.Name = "cMenuItem_AddLayer";
-         this.cMenuItem_AddLayer.Size = new System.Drawing.Size(146, 22);
-         this.cMenuItem_AddLayer.Text = "Add to Layers";
+         this.cMenuItem_AddLayer.Size = new System.Drawing.Size(167, 22);
+         this.cMenuItem_AddLayer.Text = "Add to Data Layers";
          this.cMenuItem_AddLayer.Click += new System.EventHandler(this.cMenuItem_AddLayer_Click);
          // 
          // cMenuItem_ViewLegend
          // 
          this.cMenuItem_ViewLegend.Image = global::Dapple.Properties.Resources.legend;
          this.cMenuItem_ViewLegend.Name = "cMenuItem_ViewLegend";
-         this.cMenuItem_ViewLegend.Size = new System.Drawing.Size(146, 22);
+         this.cMenuItem_ViewLegend.Size = new System.Drawing.Size(167, 22);
          this.cMenuItem_ViewLegend.Text = "View Legend...";
          this.cMenuItem_ViewLegend.Click += new System.EventHandler(this.cMenuItem_ViewLegend_Click);
          // 

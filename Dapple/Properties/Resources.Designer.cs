@@ -686,6 +686,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap snapshot {
+            get {
+                object obj = ResourceManager.GetObject("snapshot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap tab_list {
             get {
                 object obj = ResourceManager.GetObject("tab_list", resourceCulture);
