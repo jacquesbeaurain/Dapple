@@ -90,7 +90,6 @@ namespace Dapple
            this.globalCloudsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.atmosphericEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripMenuItemedit = new System.Windows.Forms.ToolStripMenuItem();
-           this.toolStripMenuItemverticalExagerration = new System.Windows.Forms.ToolStripMenuItem();
            this.lastViewSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripMenuItemAskAtStartup = new System.Windows.Forms.ToolStripMenuItem();
            this.toolStripMenuItemLoadLastView = new System.Windows.Forms.ToolStripMenuItem();
@@ -159,6 +158,7 @@ namespace Dapple
            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
            this.timerNavigation = new System.Windows.Forms.Timer(this.components);
+           this.toolStripMenuItemverticalExagerration = new System.Windows.Forms.ToolStripMenuItem();
            this.statusStrip.SuspendLayout();
            this.menuStrip.SuspendLayout();
            this.splitContainerMain.Panel1.SuspendLayout();
@@ -588,7 +588,8 @@ namespace Dapple
             this.toolStripMenuItemtileActivity,
             this.toolStripSeparator16,
             this.sunshadingEffectsToolStripMenuItem,
-            this.atmosphereToolStripMenuItem});
+            this.atmosphereToolStripMenuItem,
+            this.toolStripMenuItemverticalExagerration});
            this.toolStripMenuItemoptions.Name = "toolStripMenuItemoptions";
            this.toolStripMenuItemoptions.Size = new System.Drawing.Size(41, 20);
            this.toolStripMenuItemoptions.Text = "View";
@@ -710,19 +711,11 @@ namespace Dapple
            // toolStripMenuItemedit
            // 
            this.toolStripMenuItemedit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemverticalExagerration,
             this.lastViewSettingsToolStripMenuItem,
             this.toolStripMenuItemadvancedSettings});
            this.toolStripMenuItemedit.Name = "toolStripMenuItemedit";
            this.toolStripMenuItemedit.Size = new System.Drawing.Size(58, 20);
            this.toolStripMenuItemedit.Text = "Settings";
-           // 
-           // toolStripMenuItemverticalExagerration
-           // 
-           this.toolStripMenuItemverticalExagerration.Image = global::Dapple.Properties.Resources.vertical_exag;
-           this.toolStripMenuItemverticalExagerration.Name = "toolStripMenuItemverticalExagerration";
-           this.toolStripMenuItemverticalExagerration.Size = new System.Drawing.Size(176, 22);
-           this.toolStripMenuItemverticalExagerration.Text = "Vertical Exagerration";
            // 
            // lastViewSettingsToolStripMenuItem
            // 
@@ -1473,6 +1466,13 @@ namespace Dapple
            // 
            this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
            // 
+           // toolStripMenuItemverticalExagerration
+           // 
+           this.toolStripMenuItemverticalExagerration.Image = global::Dapple.Properties.Resources.vertical_exag;
+           this.toolStripMenuItemverticalExagerration.Name = "toolStripMenuItemverticalExagerration";
+           this.toolStripMenuItemverticalExagerration.Size = new System.Drawing.Size(177, 22);
+           this.toolStripMenuItemverticalExagerration.Text = "Vertical Exaggeration";
+           // 
            // MainForm
            // 
            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1559,7 +1559,6 @@ namespace Dapple
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemabout;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemshowGridLines;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemshowPosition;
-       private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemverticalExagerration;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemcompass;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemtileActivity;
        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemadvancedSettings;
@@ -1676,6 +1675,7 @@ namespace Dapple
        private System.Windows.Forms.ToolStripMenuItem addBrowserMapToLayersToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem toggleDisableToolStripMenuItem;
        private System.Windows.Forms.ToolStripMenuItem OMhelpToolStripMenuItem;
+       private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemverticalExagerration;
     }
 }
 

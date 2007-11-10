@@ -110,6 +110,19 @@ namespace Dapple
          }
       }
 
+      public List<LayerBuilder> ExtractLayers
+      {
+         get
+         {
+            List<LayerBuilder> oResult = new List<LayerBuilder>();
+            foreach (LayerBuilder oBuilder in m_oLayers)
+            {
+               if (oBuilder.Visible) oResult.Add(oBuilder);
+            }
+            return oResult;
+         }
+      }
+
       public ImageList ImageList
       {
          set
@@ -364,7 +377,7 @@ namespace Dapple
 
       private void cExportButton_Click(object sender, EventArgs e)
       {
-         CmdExportSelected();
+         CmdTakeSnapshot();
       }
 
       #endregion
@@ -578,7 +591,7 @@ namespace Dapple
 
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
          cRemoveLayerButton.Enabled = this.RemoveAllowed;
-         cExtractButton.Enabled = cLayerList.SelectedIndices.Count > 0;
+         cExtractButton.Enabled = ExtractLayers.Count > 0;
       }
 
       /// <summary>
@@ -950,7 +963,7 @@ namespace Dapple
             return;
          }
 
-         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.SelectedLayers);
+         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.ExtractLayers);
          oDownloadDialog.ShowInTaskbar = false;
          oDownloadDialog.ShowDialog(this);
       }
@@ -1018,7 +1031,7 @@ namespace Dapple
       /// <summary>
       /// Extracts all the currently selected datasets (including blue marble).
       /// </summary>
-      public void CmdExportSelected()
+      public void CmdTakeSnapshot()
       {
          string szGeoTiff = null;
          List<ExportEntry> aExportList = new List<ExportEntry>();
@@ -1232,6 +1245,7 @@ namespace Dapple
                File.Delete(szGeoTiff);
 
             Cursor = Cursors.Default;
+            MessageBox.Show(this, "Snapshot created");
          }
       }
 

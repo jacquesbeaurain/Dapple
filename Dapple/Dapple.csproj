@@ -871,6 +871,7 @@
     <Content Include="Resources\folder.png" />
     <Content Include="Resources\folder_gray.png" />
     <Content Include="Resources\folder_open.png" />
+    <None Include="Resources\globe-snapshot.png" />
     <Content Include="Resources\help.png" />
     <Content Include="Resources\home.png" />
     <Content Include="Resources\arcims.ico" />

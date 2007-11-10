@@ -42,9 +42,9 @@ namespace Dapple.Extract
          // lMaxResolution
          // 
          this.lMaxResolution.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-         this.lMaxResolution.Location = new System.Drawing.Point(208, 79);
+         this.lMaxResolution.Location = new System.Drawing.Point(191, 79);
          this.lMaxResolution.Name = "lMaxResolution";
-         this.lMaxResolution.Size = new System.Drawing.Size(113, 13);
+         this.lMaxResolution.Size = new System.Drawing.Size(77, 13);
          this.lMaxResolution.TabIndex = 6;
          this.lMaxResolution.Text = "10";
          this.lMaxResolution.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -52,7 +52,7 @@ namespace Dapple.Extract
          // lMinResolution
          // 
          this.lMinResolution.AutoSize = true;
-         this.lMinResolution.Location = new System.Drawing.Point(86, 79);
+         this.lMinResolution.Location = new System.Drawing.Point(101, 79);
          this.lMinResolution.Name = "lMinResolution";
          this.lMinResolution.Size = new System.Drawing.Size(19, 13);
          this.lMinResolution.TabIndex = 5;
@@ -62,7 +62,7 @@ namespace Dapple.Extract
          // lSize
          // 
          this.lSize.AutoSize = true;
-         this.lSize.Location = new System.Drawing.Point(185, 97);
+         this.lSize.Location = new System.Drawing.Point(200, 92);
          this.lSize.Name = "lSize";
          this.lSize.Size = new System.Drawing.Size(19, 13);
          this.lSize.TabIndex = 4;
@@ -71,7 +71,7 @@ namespace Dapple.Extract
          // label1
          // 
          this.label1.AutoSize = true;
-         this.label1.Location = new System.Drawing.Point(86, 97);
+         this.label1.Location = new System.Drawing.Point(101, 92);
          this.label1.Name = "label1";
          this.label1.Size = new System.Drawing.Size(93, 13);
          this.label1.TabIndex = 3;
@@ -80,7 +80,7 @@ namespace Dapple.Extract
          // lUnit
          // 
          this.lUnit.AutoSize = true;
-         this.lUnit.Location = new System.Drawing.Point(156, 8);
+         this.lUnit.Location = new System.Drawing.Point(171, 8);
          this.lUnit.Name = "lUnit";
          this.lUnit.Size = new System.Drawing.Size(15, 13);
          this.lUnit.TabIndex = 2;
@@ -88,7 +88,7 @@ namespace Dapple.Extract
          // 
          // tbRes
          // 
-         this.tbRes.Location = new System.Drawing.Point(89, 5);
+         this.tbRes.Location = new System.Drawing.Point(104, 3);
          this.tbRes.Name = "tbRes";
          this.tbRes.Size = new System.Drawing.Size(61, 20);
          this.tbRes.TabIndex = 1;
@@ -98,10 +98,10 @@ namespace Dapple.Extract
          // 
          this.tbResolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
-         this.tbResolution.Location = new System.Drawing.Point(89, 31);
+         this.tbResolution.Location = new System.Drawing.Point(104, 31);
          this.tbResolution.Maximum = 100;
          this.tbResolution.Name = "tbResolution";
-         this.tbResolution.Size = new System.Drawing.Size(242, 45);
+         this.tbResolution.Size = new System.Drawing.Size(167, 45);
          this.tbResolution.TabIndex = 0;
          this.tbResolution.TickFrequency = 5;
          this.tbResolution.Scroll += new System.EventHandler(this.tbResolution_Scroll);
@@ -109,7 +109,7 @@ namespace Dapple.Extract
          // lResolution
          // 
          this.lResolution.AutoSize = true;
-         this.lResolution.Location = new System.Drawing.Point(-3, 8);
+         this.lResolution.Location = new System.Drawing.Point(3, 8);
          this.lResolution.Name = "lResolution";
          this.lResolution.Size = new System.Drawing.Size(60, 13);
          this.lResolution.TabIndex = 7;
@@ -128,7 +128,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.lSize);
          this.Controls.Add(this.label1);
          this.Name = "Resolution";
-         this.Size = new System.Drawing.Size(334, 124);
+         this.Size = new System.Drawing.Size(271, 105);
          ((System.ComponentModel.ISupportInitialize)(this.tbResolution)).EndInit();
          this.ResumeLayout(false);
          this.PerformLayout();

@@ -47,9 +47,9 @@ namespace Dapple.Extract
          // 
          this.tbFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
-         this.tbFilename.Location = new System.Drawing.Point(95, 3);
+         this.tbFilename.Location = new System.Drawing.Point(104, 3);
          this.tbFilename.Name = "tbFilename";
-         this.tbFilename.Size = new System.Drawing.Size(196, 20);
+         this.tbFilename.Size = new System.Drawing.Size(93, 20);
          this.tbFilename.TabIndex = 1;
          // 
          // lDisplayOptions
@@ -67,9 +67,9 @@ namespace Dapple.Extract
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.cbDisplayOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
          this.cbDisplayOptions.FormattingEnabled = true;
-         this.cbDisplayOptions.Location = new System.Drawing.Point(95, 29);
+         this.cbDisplayOptions.Location = new System.Drawing.Point(104, 29);
          this.cbDisplayOptions.Name = "cbDisplayOptions";
-         this.cbDisplayOptions.Size = new System.Drawing.Size(195, 21);
+         this.cbDisplayOptions.Size = new System.Drawing.Size(93, 21);
          this.cbDisplayOptions.TabIndex = 8;
          // 
          // PictureWithoutResolution
@@ -81,7 +81,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
          this.Name = "PictureWithoutResolution";
-         this.Size = new System.Drawing.Size(299, 86);
+         this.Size = new System.Drawing.Size(200, 300);
          this.ResumeLayout(false);
          this.PerformLayout();
 

@@ -43,7 +43,6 @@ namespace Dapple.Extract
 
          if (!MainForm.OpenMap)
          {
-            rbClipMapExtent.Enabled = false;
             rbReproject.Enabled = false;
          }
 
@@ -88,7 +87,6 @@ namespace Dapple.Extract
             DownloadOptions oControl = CreateUserControl(oBuilder);
             if (oControl != null)
             {
-
                // --- no errors, add this dataset to the list ---
 
                lvDatasets.Items.Add(oItem);
@@ -96,7 +94,6 @@ namespace Dapple.Extract
                
                oControl.Visible = false;
                oControl.Dock = DockStyle.Fill;
-               oControl.ResolutionEnabled = false;
                pSettings.Controls.Add(oControl);
             }
          }
@@ -225,16 +222,8 @@ namespace Dapple.Extract
       {
          try
          {
-            DownloadClip eClip = DownloadClip.None;
+            DownloadClip eClip = DownloadClip.ViewedArea;
             DownloadCoordinateSystem eCS = DownloadCoordinateSystem.Native;
-
-
-            // --- setup the global settings ---
-
-            if (rbClipMapExtent.Checked)
-               eClip = DownloadClip.OriginalMap;
-            else if (rbClipViewedArea.Checked)
-               eClip = DownloadClip.ViewedArea;
 
             if (rbReproject.Checked)
                eCS = DownloadCoordinateSystem.OriginalMap;
@@ -287,47 +276,18 @@ namespace Dapple.Extract
                this.UseWaitCursor = false;
             }
 
-            //MessageBox.Show(this, "The datasets have finished downloading.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(this, "Extraction complete");
          }
          catch (Exception ex)
          {
-            MessageBox.Show("An error has occurred: " + ex.Message, "Download Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-         }
-      }
-
-      /// <summary>
-      /// Handle user changing the resolution
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      private void Resolution_Changed(object sender, EventArgs e)
-      {
-         if (rbDefault.Checked)
-         {
-            foreach (DownloadOptions oDataset in m_oDownloadSettings)
-            {
-               oDataset.ResolutionEnabled = false;
-               oDataset.SetDefaultResolution();
-            }
-         }
-         else if (rbOriginal.Checked)
-         {
-            foreach (DownloadOptions oDataset in m_oDownloadSettings)
-            {
-               oDataset.ResolutionEnabled = false;
-               oDataset.SetNativeResolution();
-            }
-         }
-         else if (rbCustom.Checked)
-         {
-            foreach (DownloadOptions oDataset in m_oDownloadSettings)
-            {
-               oDataset.ResolutionEnabled = true;
-            }
+            MessageBox.Show(this, "An error has occurred: " + ex.Message, "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
          }
       }
       #endregion
 
-      
+      private void DownloadSettings_Shown(object sender, EventArgs e)
+      {
+         lvDatasets.Columns[0].Width = lvDatasets.ClientSize.Width;
+      }
    }
 }

@@ -34,7 +34,7 @@ namespace Dapple.Extract
          // lNoOptions
          // 
          this.lNoOptions.AutoSize = true;
-         this.lNoOptions.Location = new System.Drawing.Point(3, 6);
+         this.lNoOptions.Location = new System.Drawing.Point(3, 0);
          this.lNoOptions.Name = "lNoOptions";
          this.lNoOptions.Size = new System.Drawing.Size(60, 13);
          this.lNoOptions.TabIndex = 0;
@@ -46,7 +46,7 @@ namespace Dapple.Extract
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.Controls.Add(this.lNoOptions);
          this.Name = "Generic";
-         this.Size = new System.Drawing.Size(71, 26);
+         this.Size = new System.Drawing.Size(200, 300);
          this.ResumeLayout(false);
          this.PerformLayout();
 

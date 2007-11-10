@@ -51,7 +51,7 @@ namespace Dapple.Extract
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.tbFilename.Location = new System.Drawing.Point(104, 3);
          this.tbFilename.Name = "tbFilename";
-         this.tbFilename.Size = new System.Drawing.Size(187, 20);
+         this.tbFilename.Size = new System.Drawing.Size(93, 20);
          this.tbFilename.TabIndex = 1;
          // 
          // lGroupName
@@ -69,7 +69,7 @@ namespace Dapple.Extract
                      | System.Windows.Forms.AnchorStyles.Right)));
          this.tbGroupName.Location = new System.Drawing.Point(104, 29);
          this.tbGroupName.Name = "tbGroupName";
-         this.tbGroupName.Size = new System.Drawing.Size(187, 20);
+         this.tbGroupName.Size = new System.Drawing.Size(93, 20);
          this.tbGroupName.TabIndex = 3;
          // 
          // lOptions
@@ -89,7 +89,7 @@ namespace Dapple.Extract
          this.cbOptions.FormattingEnabled = true;
          this.cbOptions.Location = new System.Drawing.Point(104, 55);
          this.cbOptions.Name = "cbOptions";
-         this.cbOptions.Size = new System.Drawing.Size(187, 21);
+         this.cbOptions.Size = new System.Drawing.Size(93, 21);
          this.cbOptions.TabIndex = 6;
          this.cbOptions.SelectedIndexChanged += new System.EventHandler(this.cbOptions_SelectedIndexChanged);
          // 
@@ -104,7 +104,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
          this.Name = "GIS";
-         this.Size = new System.Drawing.Size(299, 85);
+         this.Size = new System.Drawing.Size(200, 300);
          this.ResumeLayout(false);
          this.PerformLayout();
 

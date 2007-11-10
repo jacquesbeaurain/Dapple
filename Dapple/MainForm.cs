@@ -1726,7 +1726,7 @@ namespace Dapple
 
       private void toolStripMenuItemExport_Click(object sender, EventArgs e)
       {
-         cLayerList.CmdExportSelected();
+         cLayerList.CmdTakeSnapshot();
       }
 
       #endregion
@@ -3541,7 +3541,7 @@ namespace Dapple
 
       private void exportGeoTiffToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         cLayerList.CmdExportSelected();
+         cLayerList.CmdTakeSnapshot();
       }
       
       private void removeFromLayersToolStripMenuItem_Click(object sender, EventArgs e)

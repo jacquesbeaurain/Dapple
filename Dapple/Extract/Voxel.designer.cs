@@ -46,9 +46,11 @@ namespace Dapple.Extract
          // 
          // tbFilename
          // 
-         this.tbFilename.Location = new System.Drawing.Point(95, 3);
+         this.tbFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                     | System.Windows.Forms.AnchorStyles.Right)));
+         this.tbFilename.Location = new System.Drawing.Point(104, 3);
          this.tbFilename.Name = "tbFilename";
-         this.tbFilename.Size = new System.Drawing.Size(195, 20);
+         this.tbFilename.Size = new System.Drawing.Size(93, 20);
          this.tbFilename.TabIndex = 1;
          // 
          // lGroupName
@@ -62,16 +64,20 @@ namespace Dapple.Extract
          // 
          // tbGroupName
          // 
-         this.tbGroupName.Location = new System.Drawing.Point(95, 29);
+         this.tbGroupName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                     | System.Windows.Forms.AnchorStyles.Right)));
+         this.tbGroupName.Location = new System.Drawing.Point(104, 29);
          this.tbGroupName.Name = "tbGroupName";
-         this.tbGroupName.Size = new System.Drawing.Size(195, 20);
+         this.tbGroupName.Size = new System.Drawing.Size(93, 20);
          this.tbGroupName.TabIndex = 3;
          // 
          // oResolution
          // 
-         this.oResolution.Location = new System.Drawing.Point(6, 55);
+         this.oResolution.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                     | System.Windows.Forms.AnchorStyles.Right)));
+         this.oResolution.Location = new System.Drawing.Point(0, 55);
          this.oResolution.Name = "oResolution";
-         this.oResolution.Size = new System.Drawing.Size(285, 122);
+         this.oResolution.Size = new System.Drawing.Size(200, 105);
          this.oResolution.TabIndex = 4;
          // 
          // Voxel
@@ -84,7 +90,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
          this.Name = "Voxel";
-         this.Size = new System.Drawing.Size(299, 180);
+         this.Size = new System.Drawing.Size(200, 300);
          this.ResumeLayout(false);
          this.PerformLayout();
 

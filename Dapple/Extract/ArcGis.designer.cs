@@ -37,7 +37,7 @@ namespace Dapple.Extract
          // lDownload
          // 
          this.lDownload.AutoSize = true;
-         this.lDownload.Location = new System.Drawing.Point(4, 33);
+         this.lDownload.Location = new System.Drawing.Point(3, 32);
          this.lDownload.Name = "lDownload";
          this.lDownload.Size = new System.Drawing.Size(95, 13);
          this.lDownload.TabIndex = 2;
@@ -52,18 +52,18 @@ namespace Dapple.Extract
          this.cbDownload.Items.AddRange(new object[] {
             "Download And Open",
             "Download Only"});
-         this.cbDownload.Location = new System.Drawing.Point(105, 30);
+         this.cbDownload.Location = new System.Drawing.Point(104, 29);
          this.cbDownload.Name = "cbDownload";
-         this.cbDownload.Size = new System.Drawing.Size(186, 21);
+         this.cbDownload.Size = new System.Drawing.Size(93, 21);
          this.cbDownload.TabIndex = 3;
          // 
          // tbFilename
          // 
          this.tbFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
-         this.tbFilename.Location = new System.Drawing.Point(105, 3);
+         this.tbFilename.Location = new System.Drawing.Point(104, 3);
          this.tbFilename.Name = "tbFilename";
-         this.tbFilename.Size = new System.Drawing.Size(186, 20);
+         this.tbFilename.Size = new System.Drawing.Size(93, 20);
          this.tbFilename.TabIndex = 1;
          // 
          // lFileName
@@ -84,7 +84,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
          this.Name = "ArcGIS";
-         this.Size = new System.Drawing.Size(299, 59);
+         this.Size = new System.Drawing.Size(200, 300);
          this.ResumeLayout(false);
          this.PerformLayout();
 

@@ -45,9 +45,9 @@ namespace Dapple.Extract
          // 
          this.tbFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                      | System.Windows.Forms.AnchorStyles.Right)));
-         this.tbFilename.Location = new System.Drawing.Point(61, 3);
+         this.tbFilename.Location = new System.Drawing.Point(104, 3);
          this.tbFilename.Name = "tbFilename";
-         this.tbFilename.Size = new System.Drawing.Size(230, 20);
+         this.tbFilename.Size = new System.Drawing.Size(93, 20);
          this.tbFilename.TabIndex = 1;
          // 
          // Database
@@ -57,7 +57,7 @@ namespace Dapple.Extract
          this.Controls.Add(this.tbFilename);
          this.Controls.Add(this.lFileName);
          this.Name = "Database";
-         this.Size = new System.Drawing.Size(299, 29);
+         this.Size = new System.Drawing.Size(200, 300);
          this.ResumeLayout(false);
          this.PerformLayout();
 
