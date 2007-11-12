@@ -1116,5 +1116,34 @@ namespace WorldWind.Renderable
 			}
 
 		}
+
+      public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+      {
+         if (File.Exists(_imagePath))
+         {
+            info.dMaxLat = this.maxLat;
+            info.dMaxLon = this.maxLon;
+            info.dMinLat = this.minLat;
+            info.dMinLon = this.minLon;
+
+            using (System.Drawing.Image oBitmap = System.Drawing.Image.FromFile(_imagePath))
+            {
+               info.iPixelsX = oBitmap.Width;
+               info.iPixelsY = oBitmap.Height;
+            }
+         }
+      }
+
+      public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
+      {
+         using (System.Drawing.Image oBitmap = System.Drawing.Image.FromFile(_imagePath))
+         {
+            int iWidth = (int)Math.Round((this.maxLon - this.minLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
+            int iHeight = (int)Math.Round((this.maxLat - this.minLat) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
+            int iX = (int)Math.Round((this.minLon - expInfo.dMinLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
+            int iY = (int)Math.Round((expInfo.dMaxLat - this.maxLat) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
+            expInfo.gr.DrawImage(oBitmap, new System.Drawing.Rectangle(iX, iY, iWidth, iHeight));
+         }
+      }
 	}
 }
