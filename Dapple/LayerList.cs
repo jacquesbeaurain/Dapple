@@ -62,6 +62,8 @@ namespace Dapple
       /// </summary>
       private bool m_blSupressSelectedChanged = false;
 
+      private bool m_blAllowExtract = true;
+
       private ServerTree m_hServerTree = null;
       private LayerBuilder m_hBaseLayer = null;
 
@@ -591,7 +593,7 @@ namespace Dapple
 
          cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
          cRemoveLayerButton.Enabled = this.RemoveAllowed;
-         cExtractButton.Enabled = ExtractLayers.Count > 0;
+         cExtractButton.Enabled = (ExtractLayers.Count > 0) && m_blAllowExtract;
       }
 
       /// <summary>
@@ -962,10 +964,19 @@ namespace Dapple
             MessageBox.Show(this, "It is not possible to extract data while there are still downloads in progress.\nPlease wait for the downloads to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
          }
-
-         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.ExtractLayers);
-         oDownloadDialog.ShowInTaskbar = false;
-         oDownloadDialog.ShowDialog(this);
+         try
+         {
+            Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.ExtractLayers);
+            oDownloadDialog.ShowInTaskbar = false;
+            oDownloadDialog.ShowDialog(this);
+            oDownloadDialog.Verify();
+         }
+         catch (System.Runtime.Remoting.RemotingException)
+         {
+            MessageBox.Show(Form.ActiveForm, "Connection to Oasis Montaj lost, unable to extract datasets");
+            m_blAllowExtract = false;
+            cExtractButton.Enabled = false;
+         }
       }
 
       /// <summary>
@@ -1080,7 +1091,14 @@ namespace Dapple
             ExportView oExportDialog = null;
             if (MainForm.MontajInterface != null)
             {
-               oExportDialog = new ExportView(MainApplication.Settings.ConfigPath, MainForm.MontajInterface.BaseDirectory());
+               try
+               {
+                  oExportDialog = new ExportView(MainApplication.Settings.ConfigPath, MainForm.MontajInterface.BaseDirectory());
+               }
+               catch (System.Runtime.Remoting.RemotingException e)
+               {
+                  oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
+               }
             }
             else
             {

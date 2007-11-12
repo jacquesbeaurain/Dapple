@@ -195,7 +195,10 @@ namespace Dapple
 
       public static RemoteInterface MontajInterface
       {
-         get { return m_oMontajRemoteInterface; }
+         get
+         {
+            return m_oMontajRemoteInterface;
+         }
       }
 
       /// <summary>
@@ -243,7 +246,6 @@ namespace Dapple
 
       public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
       {
-
          worldWindow = new WorldWindow();
 
          if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
@@ -3712,11 +3714,22 @@ namespace Dapple
          CmdSaveHomeView();
       }
 
+      private void CmdDisplayOMHelp()
+      {
+         try
+         {
+            MontajInterface.DisplayHelp();
+         }
+         catch (System.Runtime.Remoting.RemotingException)
+         {
+            MessageBox.Show(Form.ActiveForm, "Connection to Oasis Montaj lost, unable to display help");
+            OMhelpToolStripMenuItem.Enabled = false;
+         }
+      }
+
       private void MainForm_HelpButtonClicked(object sender, CancelEventArgs e)
       {
-         if (m_oMontajRemoteInterface != null)
-            m_oMontajRemoteInterface.DisplayHelp();
-
+         CmdDisplayOMHelp();
          e.Cancel = true;
       }
 
@@ -3763,8 +3776,7 @@ namespace Dapple
 
       private void OMhelpToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         if (m_oMontajRemoteInterface != null)
-            m_oMontajRemoteInterface.DisplayHelp();
+         CmdDisplayOMHelp();
       }
    }
 }

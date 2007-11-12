@@ -30,6 +30,7 @@ namespace Dapple.Extract
       List<Dapple.LayerGeneration.LayerBuilder> m_oLayersToDownload;
       private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
       private DownloadOptions m_oCurUserControl = null;
+      private Exception m_hException = null;
       #endregion
 
       /// <summary>
@@ -280,7 +281,9 @@ namespace Dapple.Extract
          }
          catch (Exception ex)
          {
-            MessageBox.Show(this, "An error has occurred: " + ex.Message, "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //MessageBox.Show(this, "An error has occurred: " + ex.Message, "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            m_hException = ex;
+            this.DialogResult = DialogResult.Cancel;
          }
       }
       #endregion
@@ -288,6 +291,17 @@ namespace Dapple.Extract
       private void DownloadSettings_Shown(object sender, EventArgs e)
       {
          lvDatasets.Columns[0].Width = lvDatasets.ClientSize.Width;
+      }
+
+      /// <summary>
+      /// Throws any exception caught by this dialog.  Used to ferry the message across the ShowDialog boundary.
+      /// </summary>
+      public void Verify()
+      {
+         if (m_hException != null)
+         {
+            throw m_hException;
+         }
       }
    }
 }

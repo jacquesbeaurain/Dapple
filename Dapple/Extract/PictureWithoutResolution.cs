@@ -74,9 +74,18 @@ namespace Dapple.Extract
          oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(szFileName, TIF_EXT));
          oDatasetElement.Attributes.Append(oAttr);
 
+         if (System.IO.File.Exists(oAttr.Value))
+            System.IO.File.Delete(oAttr.Value);
+         if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj")))
+            System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj"));
+         if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".gi")))
+            System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".gi"));
+         if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".tif.xml")))
+            System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".tif.xml"));
+
          if (m_oNonDapBuilder is GeorefImageLayerBuilder)
          {
-            System.IO.File.Copy(((GeorefImageLayerBuilder)m_oNonDapBuilder).FileName, oAttr.Value);
+            System.IO.File.Copy(((GeorefImageLayerBuilder)m_oNonDapBuilder).FileName, oAttr.Value, true);
          }
          else
          {
