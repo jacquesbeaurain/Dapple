@@ -55,8 +55,7 @@ namespace Dapple.Extract
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          if (cbOptions.SelectedIndex == SAVE_AS_MAP)
          {
-            // Not used for direct import
-            oPathAttr.Value = String.Empty;
+            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT));
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)
          {
@@ -69,11 +68,9 @@ namespace Dapple.Extract
          }
          oDatasetElement.Attributes.Append(oPathAttr);
 
-         
          System.Xml.XmlAttribute oGroupAttribute = oDatasetElement.OwnerDocument.CreateAttribute("group");
          oGroupAttribute.Value = tbGroupName.Text;
          oDatasetElement.Attributes.Append(oGroupAttribute);
-
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
          Options.GIS.OMDownloadOptions eOption = (Options.GIS.OMDownloadOptions)cbOptions.SelectedIndex;
@@ -97,10 +94,10 @@ namespace Dapple.Extract
       {
          if (cbOptions.SelectedIndex == SAVE_AS_MAP)
          {
-            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, null);
-            lFileName.Visible = false;
+            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT);
+            lFileName.Visible = true;
             lFileName.Text = "Map name:";
-            tbFilename.Visible = false;
+            tbFilename.Visible = true;
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)
          {

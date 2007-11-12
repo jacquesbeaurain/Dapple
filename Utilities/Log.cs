@@ -170,41 +170,39 @@ namespace Utility
 		/// Writes a log of an exception.
 		/// </summary>
 		/// <param name="caught"></param>
-		public static void Write( Exception caught )
-		{
-			try
-			{
-				if (caught is System.Threading.ThreadAbortException)
-					return;
+      public static void Write(Exception caught)
+      {
+         try
+         {
+            if (caught is System.Threading.ThreadAbortException)
+               return;
 
-                lock (logWriter)
-                {
-                    string functionName = "Unknown";
-                    string[] stacktrace = null;
-                    if (caught.StackTrace != null)
-                    {
-                        stacktrace = caught.StackTrace.Split('\n');
-                        string firstStackTraceLine = stacktrace[0];
-                        functionName = firstStackTraceLine.Trim().Split(" (".ToCharArray())[1];
-                    }
-                    string logFileName = string.Format("DEBUG_{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-ffff"));
-                    string logFullPath = Path.Combine(logPath, logFileName);
-                    using (StreamWriter sw = new StreamWriter(logFullPath, false))
-                    {
-                        sw.WriteLine(caught.ToString());
-                    }
+            lock (logWriter)
+            {
+               string[] stacktrace = new string[0];
+               if (caught.StackTrace != null)
+               {
+                  stacktrace = caught.StackTrace.Split('\n');
+               }
 
-                    Write(Log.Levels.Error, "caught exception: ");
-                    Write(Log.Levels.Error, caught.ToString());
-                    foreach (string line in stacktrace)
-                        Write(Log.Levels.Debug, line);
-                }
+               string logFileName = string.Format("DEBUG_{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-ffff"));
+               string logFullPath = Path.Combine(logPath, logFileName);
+               using (StreamWriter sw = new StreamWriter(logFullPath, false))
+               {
+                  sw.WriteLine(caught.ToString());
+               }
+
+               Write(Log.Levels.Error, "caught exception: ");
+               Write(Log.Levels.Error, caught.ToString());
+               foreach (string line in stacktrace)
+                  Write(Log.Levels.Debug, line);
             }
-			catch (Exception caught2)
-			{
-				throw new System.ApplicationException(String.Format("{0}\nUnexpected logging error on write(2)", caught.Message), caught2);
-			}
-		}
+         }
+         catch (Exception caught2)
+         {
+            throw new System.ApplicationException(String.Format("{0}\nUnexpected logging error on write(2)", caught.Message), caught2);
+         }
+      }
 
 		/// <summary>
 		/// Writes a debug log of an exception.
@@ -218,12 +216,6 @@ namespace Utility
 				if (caught is System.Threading.ThreadAbortException)
 					return;
 
-				string functionName = "Unknown";
-				if(caught.StackTrace != null)
-				{
-					string firstStackTraceLine = caught.StackTrace.Split('\n')[0];
-					functionName = firstStackTraceLine.Trim().Split(" (".ToCharArray())[1];
-				}
 				string logFileName = string.Format("DEBUG_{0}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") );
 				string logFullPath = Path.Combine(logPath, logFileName);
 				using (StreamWriter sw = new StreamWriter(logFullPath, false))
