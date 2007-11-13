@@ -47,13 +47,14 @@ namespace Dapple.Extract
             rbReproject.Enabled = false;
          }
 
-         if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
-         {
-            tbDestination.Text = System.IO.Path.GetDirectoryName(MainForm.MapFileName);
-         }
-         
-         if (string.IsNullOrEmpty(tbDestination.Text))
-            tbDestination.Text = MainForm.MontajInterface.BaseDirectory();
+			if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
+			{
+				cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MapFileName);
+			}
+			else
+			{
+				cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MontajInterface.BaseDirectory());
+			}
 
          lvDatasets.SmallImageList = MainForm.DataTypeImageList;
          lvDatasets.LargeImageList = MainForm.DataTypeImageList;
@@ -197,21 +198,6 @@ namespace Dapple.Extract
             oControl.Visible = true;
             m_oCurUserControl = oControl;
          }
-      }      
-
-      /// <summary>
-      /// Select the directory to save all the datasets to
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      private void bBrowseDestination_Click(object sender, EventArgs e)
-      {
-         FolderBrowserDialog oSelectFolder = new FolderBrowserDialog();
-         oSelectFolder.Description = "Select the folder to save the selected datasets to";
-         oSelectFolder.SelectedPath = tbDestination.Text;
-         oSelectFolder.ShowNewFolderButton = true;
-         if (oSelectFolder.ShowDialog() == DialogResult.OK)
-            tbDestination.Text = oSelectFolder.SelectedPath;
       }
       
       /// <summary>
@@ -237,18 +223,13 @@ namespace Dapple.Extract
             oExtractDoc.AppendChild(oRootElement);
             oRootElement.AppendChild(oExtractElement);
 
-
-            // --- verify inputs ---
-
-
-
-            // --- create xml document for each dataset ---
+				// --- create xml document for each dataset ---
 
             foreach (DownloadOptions oDataset in m_oDownloadSettings)
             {
                System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
 
-               if (oDataset.Save(oDatasetElement, tbDestination.Text, eClip, eCS))
+               if (oDataset.Save(oDatasetElement, cFolderControl.Value, eClip, eCS))
                {
                   oExtractElement.AppendChild(oDatasetElement);
                }
@@ -281,7 +262,6 @@ namespace Dapple.Extract
          }
          catch (Exception ex)
          {
-            //MessageBox.Show(this, "An error has occurred: " + ex.Message, "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             m_hException = ex;
             this.DialogResult = DialogResult.Cancel;
          }
@@ -302,6 +282,13 @@ namespace Dapple.Extract
          {
             throw m_hException;
          }
-      }
+		}
+
+		private void cFolderControl_Validating(object sender, CancelEventArgs e)
+		{
+			String szError = String.Empty;
+			e.Cancel = !cFolderControl.bIsValid(ref szError);
+			cErrorProvider.SetError(cFolderControl, szError);
+		}
    }
 }

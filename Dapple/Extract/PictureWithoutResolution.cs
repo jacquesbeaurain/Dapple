@@ -74,6 +74,7 @@ namespace Dapple.Extract
          oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(szFileName, TIF_EXT));
          oDatasetElement.Attributes.Append(oAttr);
 
+			// --- Delete all the files that OM generates, so we don't get invalid projections ---
          if (System.IO.File.Exists(oAttr.Value))
             System.IO.File.Delete(oAttr.Value);
          if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj")))

@@ -48,29 +48,6 @@ namespace Dapple
          }
 
          cFilenameControl.Name = "fEditControl";
-         cFilenameControl.FEditTextChanged += new Geosoft.OpenGX.UtilityForms.FEditControl.FEditTextChangedEventHandler(FEditTextChanged);
-
-         string strPath = "";
-         cFilenameControl.GetFilePath(ref strPath);
-         if (strPath.Length > 0 && strPath[strPath.Length-1] != Path.DirectorySeparatorChar)
-            this.btnOK.Enabled = true;
-         else
-            this.btnOK.Enabled = false;
-      }
-
-      private void ExportView_Load(object sender, EventArgs e)
-      {
-         //cmbRes.SelectedIndex = 1;
-      }
-
-      private void FEditTextChanged(object sender)
-      {
-         string strPath = "";
-         cFilenameControl.GetFilePath(ref strPath);
-         if (strPath.Length > 0 && strPath[strPath.Length - 1] != Path.DirectorySeparatorChar)
-            this.btnOK.Enabled = true;
-         else
-            this.btnOK.Enabled = false;
       }
 
       private void btnOK_Click(object sender, EventArgs e)
@@ -106,5 +83,20 @@ namespace Dapple
             Close();
          }
       }
+
+		private void cFilenameControl_Validating(object sender, CancelEventArgs e)
+		{
+			string strPath = "";
+			cFilenameControl.GetFilePath(ref strPath);
+			if (strPath.Length <= 0 || strPath[strPath.Length - 1] == Path.DirectorySeparatorChar)
+			{
+				cFilenameErrorProvider.SetError(cFilenameControl, "Must specify a filename.");
+				e.Cancel = true;
+			}
+			else
+			{
+				cFilenameErrorProvider.SetError(cFilenameControl, "");
+			}
+		}
    }
 }

@@ -1107,6 +1107,18 @@ namespace Dapple
 
             if (oExportDialog.ShowDialog(this) == DialogResult.OK)
             {
+					String szFilename = Path.Combine(oExportDialog.Folder, Path.ChangeExtension(oExportDialog.OutputName, ".tif"));
+
+					// --- Delete all the files that OM generates, so we don't get invalid projections ---
+					if (System.IO.File.Exists(szFilename))
+						System.IO.File.Delete(szFilename);
+					if (System.IO.File.Exists(System.IO.Path.ChangeExtension(szFilename, ".ipj")))
+						System.IO.File.Delete(System.IO.Path.ChangeExtension(szFilename, ".ipj"));
+					if (System.IO.File.Exists(System.IO.Path.ChangeExtension(szFilename, ".gi")))
+						System.IO.File.Delete(System.IO.Path.ChangeExtension(szFilename, ".gi"));
+					if (System.IO.File.Exists(System.IO.Path.ChangeExtension(szFilename, ".tif.xml")))
+						System.IO.File.Delete(System.IO.Path.ChangeExtension(szFilename, ".tif.xml"));
+
                Cursor = Cursors.WaitCursor;
 
                // Stop the camera
@@ -1250,6 +1262,8 @@ namespace Dapple
                   }
                   SaveGeoImage(oExportedImage, oExportDialog.OutputName, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
                }
+
+					MessageBox.Show(this, "Snapshot created");
             }
          }
          /*catch (Exception exc)
@@ -1263,7 +1277,6 @@ namespace Dapple
                File.Delete(szGeoTiff);
 
             Cursor = Cursors.Default;
-            MessageBox.Show(this, "Snapshot created");
          }
       }
 

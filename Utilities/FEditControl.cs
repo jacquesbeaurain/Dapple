@@ -24,7 +24,7 @@ namespace Geosoft.OpenGX.UtilityForms
    /// Summary description for FEditControl.
    /// </summary>
    [Serializable]
-   public class FEditControl : System.Windows.Forms.UserControl, ISerializable
+   public class FEditControl : System.Windows.Forms.UserControl, ISerializable, IRequirable
    {
       #region Member Variables
       protected string m_strDirectory = "";
@@ -40,6 +40,10 @@ namespace Geosoft.OpenGX.UtilityForms
       private IContainer components;
       public delegate void FEditTextChangedEventHandler(object sender);
       public event FEditTextChangedEventHandler FEditTextChanged;
+		/// <summary>
+		/// Fired when the <see cref="Required"/> property changes
+		/// </summary>
+		public event EventHandler RequiredChanged;
 
       #region Forms Variables
 
@@ -323,6 +327,8 @@ namespace Geosoft.OpenGX.UtilityForms
          set
          {
             m_bRequired = value;
+				if (RequiredChanged != null)
+					RequiredChanged(this, new EventArgs());
          }
       }
 
