@@ -380,7 +380,7 @@ namespace Dapple
             m_oImageList.Images.Add("folder", Resources.folder);
             m_oImageList.Images.Add("folder_open", Resources.folder_open);
             m_oImageList.Images.Add("loading", Resources.loading);
-            m_oImageList.Images.Add("dap_arcgis", Resources.nasa);
+				m_oImageList.Images.Add("dap_arcgis", global::Dapple.Properties.Resources.dap_arcgis);
             m_oImageList.Images.Add("dap_imageserver", Resources.nasa);
             m_oImageList.Images.Add("kml", Resources.kml);
             m_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
@@ -1779,7 +1779,7 @@ namespace Dapple
             case "imageserver":
                return ImageListIndex("nasa");
             case "arcgis":
-               return ImageListIndex("nasa");
+               return ImageListIndex("dap_arcgis");
             default:
                return 3;
          }

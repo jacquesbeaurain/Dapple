@@ -140,6 +140,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon dap_arcgis {
+            get {
+                object obj = ResourceManager.GetObject("dap_arcgis", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon dap_database {
             get {
                 object obj = ResourceManager.GetObject("dap_database", resourceCulture);

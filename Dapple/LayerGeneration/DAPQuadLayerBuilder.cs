@@ -25,7 +25,7 @@ namespace Dapple.LayerGeneration
 		public static readonly string CacheSubDir = "DAPImages";
 
       public const int DAP_TILE_SIZE = 256;
-      public const int DAP_TILE_LEVELS = 7;
+      public const int DAP_TILE_LEVELS = 14;
       public const double DAP_TILE_LZTS = 22.5;
 
 		#endregion

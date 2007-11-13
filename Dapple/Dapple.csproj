@@ -899,6 +899,7 @@
     <Content Include="Resources\metadata.ico" />
     <Content Include="Resources\metadata.png" />
     <Content Include="Resources\metadata2.ico" />
+    <None Include="Resources\mxd.ico" />
     <Content Include="Resources\nasa.ico" />
     <Content Include="Resources\nav-earth.png" />
     <Content Include="Resources\nav-north.png" />
