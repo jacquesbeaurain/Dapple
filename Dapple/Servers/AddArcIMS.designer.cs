@@ -62,7 +62,6 @@ namespace Dapple
          this.txtWmsURL.Size = new System.Drawing.Size(365, 20);
          this.txtWmsURL.TabIndex = 1;
          this.txtWmsURL.Text = "http://";
-         this.txtWmsURL.Leave += new System.EventHandler(this.txtWmsURL_Leave);
          // 
          // butCancel
          // 

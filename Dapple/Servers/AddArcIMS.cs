@@ -27,7 +27,10 @@ namespace Dapple
       {
          get
          {
-            return txtWmsURL.Text;
+				if (txtWmsURL.Text.EndsWith("/servlet/com.esri.esrimap.Esrimap"))
+					return txtWmsURL.Text;
+				else
+					return txtWmsURL.Text + "/servlet/com.esri.esrimap.Esrimap";
          }
       }
 
@@ -35,7 +38,7 @@ namespace Dapple
       {
          if (!txtWmsURL.Text.StartsWith("http://") || txtWmsURL.Text.Length <= "http://".Length)
          {
-            MessageBox.Show(this, "Please enter a valid URL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            MessageBox.Show(this, "Please enter a valid URL (including http://)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             DialogResult = DialogResult.None;
             return;
          }
@@ -51,14 +54,6 @@ namespace Dapple
       private void AddArcIMS_Load(object sender, EventArgs e)
       {
          this.txtWmsURL.SelectionStart = this.txtWmsURL.Text.Length;
-      }
-
-      private void txtWmsURL_Leave(object sender, EventArgs e)
-      {
-         if (!String.IsNullOrEmpty(txtWmsURL.Text) && !txtWmsURL.Text.EndsWith("/servlet/com.esri.esrimap.Esrimap"))
-         {
-            txtWmsURL.Text = txtWmsURL.Text + "/servlet/com.esri.esrimap.Esrimap";
-         }
       }
    }
 }

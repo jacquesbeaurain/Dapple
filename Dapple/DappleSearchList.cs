@@ -155,12 +155,14 @@ namespace Dapple.CustomControls
                e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
             }
 
-            // --- Title ---
+            // --- Title and URL ---
 
             e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
 
             Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
-            e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, (THUMBNAIL_SIZE - cResultListBox.Font.Height) / 2));
+				int iSpace = (THUMBNAIL_SIZE - 2 * cResultListBox.Font.Height) / 3;
+            e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
+				e.Graphics.DrawString(oResult.ServerUrl, new Font(oTitleFont, FontStyle.Regular), Brushes.Black, new PointF(0, iSpace * 2 + cResultListBox.Font.Height));
          }
          else if (m_eDisplayMode == DisplayMode.List)
          {
@@ -576,6 +578,7 @@ namespace Dapple.CustomControls
       public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
       public Bitmap Thumbnail { get { return m_oBitmap; } }
       public String Description { get { return m_aCommonAttributes["description"]; } }
+		public String ServerUrl { get { return "http:// " + m_aCommonAttributes["url"]; } }
 
       public LayerUri Uri
       {

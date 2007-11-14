@@ -648,6 +648,7 @@ namespace WorldWind.Net
 				Utility.Log.Write(Log.Levels.Debug, "NET", "AsyncResponseCallback(): WebException: " + e.Status.ToString());
 				webDL.SaveException(e);
 				webDL.Cancel();
+				webDL.CompleteCallback(webDL);
 			}
 		}
 
@@ -761,6 +762,8 @@ namespace WorldWind.Net
 				// Abort() was called.
 				Utility.Log.Write(Log.Levels.Debug, "NET", "DownloadAsync(): WebException: " + e.Status.ToString());
 				Cancel();
+				downloadException = e;
+				CompleteCallback(this);
 			}
 		}
 

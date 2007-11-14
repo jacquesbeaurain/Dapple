@@ -47,15 +47,19 @@ namespace Dapple.LayerGeneration
       public BuilderDirectory AddServer(WMSServerUri oUri, bool blEnabled)
       {
 #if DEBUG
-         System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(oUri.Host);
-         if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
-         {
-            MessageBox.Show("Newly added server " + oUri.ToString() + " has DNS name matching existing server in tree.  Check for duplicates", "Possible duplicated WMS server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-         }
-         else
-         {
-            m_oAddedServerDNSNames.Add(oNewServer.HostName);
-         }
+			try
+			{
+				System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(oUri.Host);
+				if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
+				{
+					MessageBox.Show("Newly added server " + oUri.ToString() + " has DNS name matching existing server in tree.  Check for duplicates", "Possible duplicated WMS server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
+				else
+				{
+					m_oAddedServerDNSNames.Add(oNewServer.HostName);
+				}
+			}
+			catch (System.Net.Sockets.SocketException) { }
 #endif
          // create the cache directory
          string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());

@@ -961,7 +961,7 @@ namespace Dapple
       {
          if (DownloadsInProgress)
          {
-            MessageBox.Show(this, "It is not possible to extract data while there are still downloads in progress.\nPlease wait for the downloads to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(this, "It is not possible to extract data while Dapple is getting tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
          }
          try

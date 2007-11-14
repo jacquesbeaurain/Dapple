@@ -339,15 +339,19 @@ namespace Geosoft.GX.DAPGetData
       public virtual bool AddDAPServer(string strUrl, out Server hRetServer, bool blEnabled)
       {
 #if DEBUG
-         System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(new Uri(strUrl).Host);
-         if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
-         {
-            MessageBox.Show("Newly added server " + strUrl + " has host name matching existing server in tree.  Check for duplicates", "Possible duplicated DAP server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-         }
-         else
-         {
-            m_oAddedServerDNSNames.Add(oNewServer.HostName);
-         }
+			try
+			{
+				System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(new Uri(strUrl).Host);
+				if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
+				{
+					MessageBox.Show("Newly added server " + strUrl + " has host name matching existing server in tree.  Check for duplicates", "Possible duplicated DAP server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
+				else
+				{
+					m_oAddedServerDNSNames.Add(oNewServer.HostName);
+				}
+			}
+			catch (System.Net.Sockets.SocketException) { }
 #endif
          bool bRet;
 
