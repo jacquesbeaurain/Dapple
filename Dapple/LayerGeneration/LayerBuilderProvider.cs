@@ -74,6 +74,8 @@ namespace Dapple.LayerGeneration
 
 	public abstract class LayerBuilder : IBuilder
 	{
+		#region Member Variables
+
 		protected string m_szTreeNodeText;
 		protected IBuilder m_Parent;
 		protected WorldWindow m_oWorldWindow;
@@ -91,15 +93,70 @@ namespace Dapple.LayerGeneration
 
 		private static int intObjectsRendered = 0;
 
+		#endregion
+
+		#region Events
+
 		private event BuilderChangedHandler BuilderChanged;
 
-      public LayerBuilder(String szTreeNodeText, WorldWindow oWorldWindow, IBuilder oParent)
+		#endregion
+
+		#region Constructor
+
+		public LayerBuilder(String szTreeNodeText, WorldWindow oWorldWindow, IBuilder oParent)
       {
          m_szTreeNodeText = szTreeNodeText;
          m_Parent = oParent;
          m_oWorldWindow = oWorldWindow;
-      }
+		}
 
+		#endregion
+
+		#region Properties
+
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether Dapple can display metadata for this data layer")]
+		public virtual bool SupportsMetaData
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether Dapple can display legend(s) for this data layer")]
+		public virtual bool SupportsLegend
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public abstract byte Opacity
+		{
+			get;
+			set;
+		}
+
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
+		public abstract bool Visible
+		{
+			get;
+			set;
+		}
+
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The title of this data layer")]
 		public string Name
 		{
 			get
@@ -108,24 +165,38 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-      private String RenderableObjectName
-      {
-         get
-         {
-            return "3 - " + m_intRenderPriority.ToString("0000000000");
-         }
-      }
-
-		public abstract byte Opacity
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public abstract GeographicBoundingBox Extents
 		{
 			get;
-			set;
 		}
 
-		public abstract bool Visible
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(false)] // Don't make this browsable until views have been reinstated.
+		[System.ComponentModel.Description("Indicates that this data layer will not be saved to views")]
+		public bool Temporary
+		{
+			get { return m_bTemporary; }
+			set { m_bTemporary = value; }
+		}
+
+		/*[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The server providing this data layer")]
+		public abstract String ServerURL
 		{
 			get;
-			set;
+		}*/
+
+		[System.ComponentModel.Browsable(false)]
+		private String RenderableObjectName
+		{
+			get
+			{
+				return "3 - " + m_intRenderPriority.ToString("0000000000");
+			}
 		}
 
 		[System.ComponentModel.Browsable(false)]
@@ -134,33 +205,17 @@ namespace Dapple.LayerGeneration
 			get;
 		}
 
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		public abstract string ServerTypeIconKey
 		{
 			get;
 		}
 
-      [System.ComponentModel.Browsable(false)]
-      public abstract string DisplayIconKey
-      {
-         get;
-      }
-
-      [System.ComponentModel.Browsable(true)]
-      public abstract GeographicBoundingBox Extents
-      {
-         get;
-      }
-
-      [System.ComponentModel.Browsable(false)]
-      public bool Temporary
-      {
-         get { return m_bTemporary; }
-         set { m_bTemporary = value; }
-      }
-
-      [System.ComponentModel.Browsable(false)]
-		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
+		[System.ComponentModel.Browsable(false)]
+		public abstract string DisplayIconKey
+		{
+			get;
+		}
 
 		[System.ComponentModel.Browsable(false)]
 		public IBuilder Parent
@@ -171,7 +226,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		public bool Failed
 		{
 			get
@@ -180,7 +235,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		public bool IsAdded
 		{
 			get
@@ -189,41 +244,29 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-      [System.ComponentModel.Browsable(true)]
-		public virtual bool SupportsMetaData
-		{
-			get
-			{
-				return false;
-			}
-		}
-
-		public virtual XmlNode GetMetaData(XmlDocument oDoc)
-		{
-			return null;
-		}
-
-      [System.ComponentModel.Browsable(true)]
-		public virtual bool SupportsLegend
-		{
-			get
-			{
-				return false;
-			}
-		}
-
-		public virtual string[] GetLegendURLs()
-		{
-			return null;
-		}
-
-      [System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.Browsable(false)]
 		public virtual string StyleSheetName
 		{
 			get
 			{
 				return null;
 			}
+		}
+
+		#endregion
+
+		#region Public Methods
+
+		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
+
+		public virtual XmlNode GetMetaData(XmlDocument oDoc)
+		{
+			return null;
+		}
+
+		public virtual string[] GetLegendURLs()
+		{
+			return null;
 		}
 
 		public abstract RenderableObject GetLayer();
@@ -422,6 +465,32 @@ namespace Dapple.LayerGeneration
 			return bReturn;
 		}
 
+		public void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
+		{
+			BuilderChanged += handler;
+		}
+
+		public void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
+		{
+			BuilderChanged -= handler;
+		}
+
+		protected void SendBuilderChanged(BuilderChangeType type)
+		{
+			if (BuilderChanged != null)
+			{
+				BuilderChanged.Invoke(this, type);
+			}
+		}
+
+		protected abstract void CleanUpLayer(bool bFinal);
+
+      public abstract override bool Equals(object obj);
+
+      public abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
+
+		#endregion
+
 		private void LoadLayer(object stateInfo)
 		{
 #if !DEBUG
@@ -443,10 +512,10 @@ namespace Dapple.LayerGeneration
 				if (!m_blnFailed)
 				{
 					layer.Name = this.RenderableObjectName;
-               m_oWorldWindow.CurrentWorld.RenderableObjects.Remove(this.RenderableObjectName);
+					m_oWorldWindow.CurrentWorld.RenderableObjects.Remove(this.RenderableObjectName);
 					if (m_blnIsLoading)
 					{
-                  m_oWorldWindow.CurrentWorld.RenderableObjects.Add(layer);
+						m_oWorldWindow.CurrentWorld.RenderableObjects.Add(layer);
 						m_blnIsAdded = true;
 					}
 					m_blnIsLoading = false;
@@ -475,30 +544,6 @@ namespace Dapple.LayerGeneration
 #endif
 		}
 
-		public void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
-		{
-			BuilderChanged += handler;
-		}
-
-		public void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
-		{
-			BuilderChanged -= handler;
-		}
-
-		protected void SendBuilderChanged(BuilderChangeType type)
-		{
-			if (BuilderChanged != null)
-			{
-				BuilderChanged.Invoke(this, type);
-			}
-		}
-
-		protected abstract void CleanUpLayer(bool bFinal);
-
-      public abstract override bool Equals(object obj);
-
-      public abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
-
 		#region ICloneable Members
 
       public object Clone()
@@ -516,7 +561,6 @@ namespace Dapple.LayerGeneration
 		#endregion
 
       #region IBuilder Members
-
 
       public TreeNode[] getChildTreeNodes()
       {

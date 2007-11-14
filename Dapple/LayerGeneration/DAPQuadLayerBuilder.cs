@@ -25,7 +25,6 @@ namespace Dapple.LayerGeneration
 		public static readonly string CacheSubDir = "DAPImages";
 
       public const int DAP_TILE_SIZE = 256;
-      public const int DAP_TILE_LEVELS = 14;
       public const double DAP_TILE_LZTS = 22.5;
 
 		#endregion
@@ -42,7 +41,9 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      public DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent)
+		#region Constructors
+
+		public DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent)
 			:
 		   this(dataSet, worldWindow,  server, parent, 0, 256, 0, 0)
 		{
@@ -63,98 +64,187 @@ namespace Dapple.LayerGeneration
          {
             m_iTextureSizePixels = DAP_TILE_SIZE;
             m_dLevelZeroTileSizeDegrees = DAP_TILE_LZTS;
-            m_iLevels = DAP_TILE_LEVELS;
+				m_iLevels = DappleUtils.TileLevels(m_oServer.Command, dataSet);
          }
-      }
+		}
 
-      #region ImageBuilder Implementations
+		#endregion
 
-      public override GeographicBoundingBox Extents
-      {
-         get
-         {
-            if (m_layer != null)
-            {
-               return new GeographicBoundingBox(m_layer.North,
-            m_layer.South,
-            m_layer.West,
-                m_layer.East);
-            }
-            return new GeographicBoundingBox(m_hDataSet.Boundary.MaxY,
-               m_hDataSet.Boundary.MinY,
-               m_hDataSet.Boundary.MinX,
-               m_hDataSet.Boundary.MaxX);
-         }
-      }
+		#region Properties
 
-      public override byte Opacity
-      {
-         get
-         {
-            if (m_layer != null)
-               return m_layer.Opacity;
-            return m_bOpacity;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_bOpacity != value)
-            {
-               m_bOpacity = value;
-               bChanged = true;
-            }
-            if (m_layer != null && m_layer.Opacity != value)
-            {
-               m_layer.Opacity = value;
-               bChanged = true;
-            }
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.OpacityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether Dapple can display metadata for this data layer")]
+		public override bool SupportsMetaData
+		{
+			get
+			{
+				return true;
+			}
+		}
 
-      public override bool Visible
-      {
-         get
-         {
-            if (m_layer != null)
-               return m_layer.IsOn;
-            return m_IsOn;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_IsOn != value)
-            {
-               m_IsOn = value;
-               bChanged = true;
-            }
-            if (m_layer != null && m_layer.IsOn != value)
-            {
-               m_layer.IsOn = value;
-               bChanged = true;
-            }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public override byte Opacity
+		{
+			get
+			{
+				if (m_layer != null)
+					return m_layer.Opacity;
+				return m_bOpacity;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_bOpacity != value)
+				{
+					m_bOpacity = value;
+					bChanged = true;
+				}
+				if (m_layer != null && m_layer.Opacity != value)
+				{
+					m_layer.Opacity = value;
+					bChanged = true;
+				}
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.OpacityChanged);
+			}
+		}
 
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
+		public override bool Visible
+		{
+			get
+			{
+				if (m_layer != null)
+					return m_layer.IsOn;
+				return m_IsOn;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_IsOn != value)
+				{
+					m_IsOn = value;
+					bChanged = true;
+				}
+				if (m_layer != null && m_layer.IsOn != value)
+				{
+					m_layer.IsOn = value;
+					bChanged = true;
+				}
 
-      [System.ComponentModel.Browsable(false)]
-      public override bool IsChanged
-      {
-         get { return m_layer == null; }
-      }
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.VisibilityChanged);
+			}
+		}
 
-      public override string ServerTypeIconKey
-      {
-         get { return "dap"; }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.ReadOnly(true)]
+		[System.ComponentModel.Description("The tile size, in degrees, of the topmost level")]
+		private double LevelZeroTileSize
+		{
+			get
+			{
+				if (m_dLevelZeroTileSizeDegrees == 0)
+					// Shared code in DappleUtils of dapxmlclient
+					m_dLevelZeroTileSizeDegrees = DappleUtils.LevelZeroTileSize(m_hDataSet);
+				return m_dLevelZeroTileSizeDegrees;
+			}
+			set
+			{
+				m_dLevelZeroTileSizeDegrees = value;
+			}
+		}
 
-      public override string DisplayIconKey
-      {
-         get { return "dap_" + m_hDataSet.Type.ToLower(); }
-      }
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public override GeographicBoundingBox Extents
+		{
+			get
+			{
+				if (m_layer != null)
+				{
+					return new GeographicBoundingBox(m_layer.North,
+				m_layer.South,
+				m_layer.West,
+					 m_layer.East);
+				}
+				return new GeographicBoundingBox(m_hDataSet.Boundary.MaxY,
+					m_hDataSet.Boundary.MinY,
+					m_hDataSet.Boundary.MinX,
+					m_hDataSet.Boundary.MaxX);
+			}
+		}
+
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The server providing this data layer")]
+		public /*override*/ string ServerURL
+		{
+			get
+			{
+				return m_hDataSet.Url;
+			}
+		}
+
+		[System.ComponentModel.Category("DAP")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The dataset name used to access this data layer on the DAP server")]
+		public string DatasetName
+		{
+			get
+			{
+				return m_hDataSet.Name;
+			}
+		}
+
+		[System.ComponentModel.Category("DAP")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The DAP type of this data layer")]
+		public string DAPType
+		{
+			get
+			{
+				return m_hDataSet.Type;
+			}
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override bool IsChanged
+		{
+			get { return m_layer == null; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return "dap"; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string DisplayIconKey
+		{
+			get { return "dap_" + m_hDataSet.Type.ToLower(); }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string StyleSheetName
+		{
+			get
+			{
+				return "dap_dataset.xsl";
+			}
+		}
+
+		#endregion
+
+		#region ImageBuilder Implementations
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
@@ -237,14 +327,6 @@ namespace Dapple.LayerGeneration
 
       #region ImageBuilder Overrides
 
-      public override bool SupportsMetaData
-      {
-         get
-         {
-            return true;
-         }
-      }
-
       public override XmlNode GetMetaData(XmlDocument oDoc)
       {
          XmlDocument responseDoc = m_oServer.Command.GetMetaData(m_hDataSet, null);
@@ -259,43 +341,7 @@ namespace Dapple.LayerGeneration
          return metaNode;
       }
 
-      public override string StyleSheetName
-      {
-         get
-         {
-            return "dap_dataset.xsl";
-         }
-      }
-
-      #endregion
-
-      #region Other Accessors
-
-      public string DAPServerURL
-		{
-			get
-			{
-				return m_hDataSet.Url;
-			}
-		}
-
-		public string DatasetName
-		{
-			get
-			{
-				return m_hDataSet.Name;
-			}
-		}
-      
-      public string DAPType
-		{
-			get
-			{
-				return m_hDataSet.Type;
-			}
-      }
-
-      #endregion
+		#endregion
 
       #region Private Members
 
@@ -338,21 +384,6 @@ namespace Dapple.LayerGeneration
             m_layer.Opacity = m_bOpacity;
          }
          return m_layer;
-      }
-
-      private double LevelZeroTileSize
-      {
-         get
-         {
-            if (m_dLevelZeroTileSizeDegrees == 0)
-               // Shared code in DappleUtils of dapxmlclient
-               m_dLevelZeroTileSizeDegrees = DappleUtils.LevelZeroTileSize(m_hDataSet);
-            return m_dLevelZeroTileSizeDegrees;
-         }
-         set
-         {
-            m_dLevelZeroTileSizeDegrees = value;
-         }
       }
 
       // Note: in practice this will never get called, as DAP layers use a separate metadata handling process.

@@ -60,9 +60,9 @@ namespace Dapple.Extract
          SortedList<double, int> oY;
          SortedList<double, int> oZ;
 
-         string strCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.DAPServerURL, m_oDAPLayer.DatasetName);
-         MainForm.MontajInterface.GetExtents(m_oDAPLayer.DAPServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY);
-         MainForm.MontajInterface.GetVoxelInfo(m_oDAPLayer.DAPServerURL, m_oDAPLayer.DatasetName, out oResolutionList, out oX, out oY, out oZ);
+         string strCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+         MainForm.MontajInterface.GetExtents(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY);
+         MainForm.MontajInterface.GetVoxelInfo(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out oResolutionList, out oX, out oY, out oZ);
 
          oResolution.Setup(strCoordinateSystem, dMinX, dMinY, dMaxX, dMaxY, oResolutionList, oX, oY, oZ);
       }

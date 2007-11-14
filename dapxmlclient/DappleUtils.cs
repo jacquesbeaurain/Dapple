@@ -38,6 +38,31 @@ namespace Geosoft.Dap.Common
          return 0.0;
       }
 
+		/// <summary>
+		/// Calculate the default number of levels for this dataset using the tiling system, which implies that the level zero tilesize is
+		/// always 22.5 degrees.
+		/// </summary>
+		/// <param name="oDapCommand"></param>
+		/// <param name="oDataset"></param>
+		/// <returns></returns>
+		public static int TileLevels(Command oDapCommand, DataSet oDataset)
+		{
+			int iLevels = 15;
+
+			// Determine the needed levels (function of tile size and resolution if available)
+			double dRes = GetResolution(oDapCommand, oDataset);
+			if (dRes > 0)
+			{
+				double dTileSize = 22.5;
+				iLevels = 1;
+				while ((double)dTileSize / Convert.ToDouble(256) > dRes / 4.0)
+				{
+					iLevels++;
+					dTileSize /= 2;
+				}
+			}
+			return iLevels;
+		}
 
       /// <summary>
       /// Calculate the default number of levels for this dataset

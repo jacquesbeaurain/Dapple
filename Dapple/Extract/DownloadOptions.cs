@@ -90,7 +90,7 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("url");
-         oAttr.Value = m_oDAPLayer.DAPServerURL;
+         oAttr.Value = m_oDAPLayer.ServerURL;
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("id");
@@ -100,14 +100,14 @@ namespace Dapple.Extract
          
          // --- get the dataset coordinate system ---
 
-         string strSrcCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.DAPServerURL, m_oDAPLayer.DatasetName);
+         string strSrcCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
          if (string.IsNullOrEmpty(strSrcCoordinateSystem))
             return false;
          
 
          // --- get the dataset extents ---
 
-         if (!MainForm.MontajInterface.GetExtents(m_oDAPLayer.DAPServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY))
+         if (!MainForm.MontajInterface.GetExtents(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY))
             return false;
 
          // --- Sanity check on the data ---

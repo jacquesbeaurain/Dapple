@@ -66,81 +66,174 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region ImageBuilder Implementations
+		#region Properties
 
-      public override GeographicBoundingBox Extents
-      {
-         get { return m_hBoundary; }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether Dapple can display metadata for this data layer")]
+		public override bool SupportsMetaData
+		{
+			get
+			{
+				return m_Server != null && m_Server.SupportsMetaData;
+			}
+		}
 
-      public override byte Opacity
-      {
-         get
-         {
-            if (m_oQuadTileSet != null)
-               return m_oQuadTileSet.Opacity;
-            return m_bOpacity;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_bOpacity != value)
-            {
-               m_bOpacity = value;
-               bChanged = true;
-            }
-            if (m_oQuadTileSet != null && m_oQuadTileSet.Opacity != value)
-            {
-               m_oQuadTileSet.Opacity = value;
-               bChanged = true;
-            }
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.OpacityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether Dapple can display legend(s) for this data layer")]
+		public override bool SupportsLegend
+		{
+			get
+			{
+				return m_wmsLayer != null && m_wmsLayer.HasLegend;
+			}
+		}
 
-      public override bool Visible
-      {
-         get
-         {
-            if (m_oQuadTileSet != null)
-               return m_oQuadTileSet.IsOn;
-            return m_IsOn;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_IsOn != value)
-            {
-               m_IsOn = value;
-               bChanged = true;
-            }
-            if (m_oQuadTileSet != null && m_oQuadTileSet.IsOn != value)
-            {
-               m_oQuadTileSet.IsOn = value;
-               bChanged = true;
-            }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public override byte Opacity
+		{
+			get
+			{
+				if (m_oQuadTileSet != null)
+					return m_oQuadTileSet.Opacity;
+				return m_bOpacity;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_bOpacity != value)
+				{
+					m_bOpacity = value;
+					bChanged = true;
+				}
+				if (m_oQuadTileSet != null && m_oQuadTileSet.Opacity != value)
+				{
+					m_oQuadTileSet.Opacity = value;
+					bChanged = true;
+				}
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.OpacityChanged);
+			}
+		}
 
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
+		public override bool Visible
+		{
+			get
+			{
+				if (m_oQuadTileSet != null)
+					return m_oQuadTileSet.IsOn;
+				return m_IsOn;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_IsOn != value)
+				{
+					m_IsOn = value;
+					bChanged = true;
+				}
+				if (m_oQuadTileSet != null && m_oQuadTileSet.IsOn != value)
+				{
+					m_oQuadTileSet.IsOn = value;
+					bChanged = true;
+				}
 
-      [System.ComponentModel.Browsable(false)]
-      public override bool IsChanged
-      {
-         get { return m_blnIsChanged; }
-      }
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.VisibilityChanged);
+			}
+		}
 
-      public override string ServerTypeIconKey
-      {
-         get { return "wms"; }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.ReadOnly(true)]
+		[System.ComponentModel.Description("The tile size, in degrees, of the topmost level")]
+		private double LevelZeroTileSize
+		{
+			get
+			{
+				// Round to ceiling of four decimals (>~ 10 meter resolution)
+				// Empirically determined as pretty good tile size choice for small data sets
+				double dLevelZero = Math.Ceiling(10000.0 * Math.Max(m_hBoundary.North - m_hBoundary.South, m_hBoundary.West - m_hBoundary.East)) / 10000.0;
 
-      public override string DisplayIconKey
-      {
-         get { return "layer"; }
-      }
+				// Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
+				double result = 22.5;
+
+				while (dLevelZero < result)
+					result /= 2;
+
+				return result;
+			}
+		}
+
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public override GeographicBoundingBox Extents
+		{
+			get { return m_hBoundary; }
+		}
+
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The server providing this data layer")]
+		public /*override*/ string ServerURL
+		{
+			get { return Layer.ParentWMSList.ServerGetCapabilitiesUrl; }
+		}
+
+		[System.ComponentModel.Category("WMS")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The name used to access this data layer on the WMS server")]
+		public String Name
+		{
+			get { return m_wmsLayer.Name; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override bool IsChanged
+		{
+			get { return m_blnIsChanged; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return "wms"; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string DisplayIconKey
+		{
+			get { return "layer"; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public WMSLayer Layer
+		{
+			get
+			{
+				return m_wmsLayer;
+			}
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string StyleSheetName
+		{
+			get
+			{
+				return "wms_layer_meta.xslt";
+			}
+		}
+
+		#endregion
+
+		#region ImageBuilder Implementations
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
@@ -214,14 +307,6 @@ namespace Dapple.LayerGeneration
          return result;
       }
 
-      public WMSLayer Layer
-      {
-         get
-         {
-            return m_wmsLayer;
-         }
-      }
-
       public override string GetCachePath()
       {
          WMSServerUri temp = new WMSServerUri(m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl);
@@ -255,15 +340,7 @@ namespace Dapple.LayerGeneration
 
       #region ImageBuilder Overrides
 
-      public override bool SupportsMetaData
-      {
-         get
-         {
-            return m_Server != null && m_Server.SupportsMetaData;
-         }
-      }
-
-      public override XmlNode GetMetaData(XmlDocument oDoc)
+		public override XmlNode GetMetaData(XmlDocument oDoc)
       {
          if (m_Server != null && m_wmsLayer != null)
          {
@@ -289,14 +366,6 @@ namespace Dapple.LayerGeneration
             return null;
       }
 
-      public override bool SupportsLegend
-      {
-         get
-         {
-            return m_wmsLayer != null && m_wmsLayer.HasLegend;
-         }
-      }
-
       public override string[] GetLegendURLs()
       {
          if (m_wmsLayer.HasLegend)
@@ -317,14 +386,6 @@ namespace Dapple.LayerGeneration
             }
          }
          return null;
-      }
-
-      public override string StyleSheetName
-      {
-         get
-         {
-            return "wms_layer_meta.xslt";
-         }
       }
 
       #endregion
@@ -374,25 +435,6 @@ namespace Dapple.LayerGeneration
 			foreach (XmlNode oNode in deleteList)
 				oParentNode.RemoveChild(oNode);
 		}
-
-		private double LevelZeroTileSize
-		{
-			get
-			{
-            double m_dLevelZeroTileSizeDegrees = 0;
-
-				// Round to ceiling of four decimals (>~ 10 meter resolution)
-				// Empirically determined as pretty good tile size choice for small data sets
-				double dLevelZero = Math.Ceiling(10000.0 * Math.Max(m_hBoundary.North - m_hBoundary.South, m_hBoundary.West - m_hBoundary.East)) / 10000.0;
-
-				// Optimum tile alignment when this is 180/(2^n), the first value is 180/2^3
-				m_dLevelZeroTileSizeDegrees = 22.5;
-				while (dLevelZero < m_dLevelZeroTileSizeDegrees)
-					m_dLevelZeroTileSizeDegrees /= 2;
-
-				return m_dLevelZeroTileSizeDegrees;
-			}
-      }
 
       public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {

@@ -45,10 +45,10 @@ namespace Dapple.Extract
             {
                Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
 
-               Geosoft.Dap.Command oCommand = new Geosoft.Dap.Command(oDAPbuilder.DAPServerURL, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, Dapple.MainForm.DOWNLOAD_TIMEOUT);
+               Geosoft.Dap.Command oCommand = new Geosoft.Dap.Command(oDAPbuilder.ServerURL, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, Dapple.MainForm.DOWNLOAD_TIMEOUT);
                Geosoft.Dap.Common.DataSet oDataset = new Geosoft.Dap.Common.DataSet();
                oDataset.Name = oDAPbuilder.Name;
-               oDataset.Url = oDAPbuilder.DAPServerURL;
+               oDataset.Url = oDAPbuilder.ServerURL;
                
                oReader = oCommand.GetDisclaimerEx(oDataset, strTempFile);
                if (oReader.ReadToFollowing("disclaimer"))
