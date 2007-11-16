@@ -38,7 +38,7 @@ namespace Dapple.Extract
          cbDisplayOptions.DataSource = Options.Picture.DisplayOptionStrings;
          cbDisplayOptions.SelectedIndex = 0;
 
-         tbFilename.Text = System.IO.Path.ChangeExtension(oBuilder.Name, TIF_EXT);
+         tbFilename.Text = System.IO.Path.ChangeExtension(oBuilder.Title, TIF_EXT);
       }
 
       /// <summary>
@@ -64,7 +64,7 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("title");
-         oAttr.Value = m_oNonDapBuilder.Name;
+         oAttr.Value = m_oNonDapBuilder.Title;
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
@@ -90,7 +90,11 @@ namespace Dapple.Extract
          }
          else
          {
-            m_oNonDapBuilder.exportToGeoTiff(oAttr.Value);
+				if (!m_oNonDapBuilder.exportToGeoTiff(oAttr.Value))
+				{
+					MessageBox.Show(this, "Could not download " + m_oNonDapBuilder.Title + ", data layer's extents do not intersect the viewed area.", "Extraction Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
          }
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");

@@ -86,7 +86,7 @@ namespace Dapple.Extract
          // --- set the server url ---
 
          System.Xml.XmlAttribute oAttr = oDatasetElement.OwnerDocument.CreateAttribute("title");
-         oAttr.Value = m_oDAPLayer.Name;
+         oAttr.Value = m_oDAPLayer.Title;
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("url");
@@ -118,12 +118,12 @@ namespace Dapple.Extract
          double dMapInWGS84_MaxY = dMaxY;
          if (MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dMapInWGS84_MinX, ref dMapInWGS84_MinY, ref dMapInWGS84_MaxX, ref dMapInWGS84_MaxY, Resolution.WGS_84))
          {
-            if (Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MinX - dMapInWGS84_MinX) > 1e-5 ||
-               Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MinY - dMapInWGS84_MinY) > 1e-5 ||
-               Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxX - dMapInWGS84_MaxX) > 1e-5 ||
-               Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxY - dMapInWGS84_MaxY) > 1e-5)
+            if (Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MinX - dMapInWGS84_MinX) > 0.01 ||
+					Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MinY - dMapInWGS84_MinY) > 0.01 ||
+					Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxX - dMapInWGS84_MaxX) > 0.01 ||
+					Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxY - dMapInWGS84_MaxY) > 0.01)
             {
-               MessageBox.Show("It appears that the metadata for this layer is invalid.  It cannot be downloaded.  Contact the server administrator.", "Error downloading layer \"" + m_oDAPLayer.Name + "\"", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+               MessageBox.Show("It appears that the metadata for this layer is invalid - the bounding box in the metadata does not match the bounds from the DAP server.  It cannot be downloaded.  Contact the server administrator.", "Error downloading layer \"" + m_oDAPLayer.Title + "\"", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                return false;
             }
          }

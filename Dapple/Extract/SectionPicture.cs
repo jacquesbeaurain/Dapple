@@ -33,7 +33,7 @@ namespace Dapple.Extract
          : base(oDAPbuilder)
       {
          InitializeComponent();
-         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, TIF_EXT);
+         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, TIF_EXT);
 
          cbDisplayOptions.DataSource = Options.SectionPicture.DisplayOptionStrings;
          cbDisplayOptions.SelectedIndex = 0;         

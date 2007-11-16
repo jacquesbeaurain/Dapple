@@ -133,6 +133,7 @@ namespace Dapple
 			this.cLayerList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.cColumnHeader});
 			this.cLayerList.ContextMenuStrip = this.cLayerListContextMenu;
+			this.cLayerList.ForeColor = System.Drawing.Color.ForestGreen;
 			this.cLayerList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.cLayerList.HideSelection = false;
 			this.cLayerList.Location = new System.Drawing.Point(0, 25);
@@ -267,6 +268,6 @@ namespace Dapple
       private System.Windows.Forms.ToolStripMenuItem cClearCacheToolStripMenuItem;
       private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
       private System.Windows.Forms.ToolStripButton cExportButton;
-      private System.Windows.Forms.ToolStripMenuItem cViewLegendToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem cViewLegendToolStripMenuItem;
    }
 }

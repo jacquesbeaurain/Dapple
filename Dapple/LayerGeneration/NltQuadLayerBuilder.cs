@@ -63,84 +63,135 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region ImageBuilder Implementations
+		#region Properties
 
-      public override GeographicBoundingBox Extents
-      {
-         get { return m_hBoundary; }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public override byte Opacity
+		{
+			get
+			{
+				if (m_oQuadTileSet != null)
+					return m_oQuadTileSet.Opacity;
+				return m_bOpacity;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_bOpacity != value)
+				{
+					m_bOpacity = value;
+					bChanged = true;
+				}
+				if (m_oQuadTileSet != null && m_oQuadTileSet.Opacity != value)
+				{
+					m_oQuadTileSet.Opacity = value;
+					bChanged = true;
+				}
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.OpacityChanged);
+			}
+		}
 
-      public override byte Opacity
-      {
-         get
-         {
-            if (m_oQuadTileSet != null)
-               return m_oQuadTileSet.Opacity;
-            return m_bOpacity;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_bOpacity != value)
-            {
-               m_bOpacity = value;
-               bChanged = true;
-            }
-            if (m_oQuadTileSet != null && m_oQuadTileSet.Opacity != value)
-            {
-               m_oQuadTileSet.Opacity = value;
-               bChanged = true;
-            }
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.OpacityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
+		public override bool Visible
+		{
+			get
+			{
+				if (m_oQuadTileSet != null)
+					return m_oQuadTileSet.IsOn;
 
-      public override bool Visible
-      {
-         get
-         {
-            if (m_oQuadTileSet != null)
-               return m_oQuadTileSet.IsOn;
+				return m_IsOn;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_IsOn != value)
+				{
+					m_IsOn = value;
+					bChanged = true;
+				}
+				if (m_oQuadTileSet != null && m_oQuadTileSet.IsOn != value)
+				{
+					m_oQuadTileSet.IsOn = value;
+					bChanged = true;
+				}
 
-            return m_IsOn;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_IsOn != value)
-            {
-               m_IsOn = value;
-               bChanged = true;
-            }
-            if (m_oQuadTileSet != null && m_oQuadTileSet.IsOn != value)
-            {
-               m_oQuadTileSet.IsOn = value;
-               bChanged = true;
-            }
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.VisibilityChanged);
+			}
+		}
 
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.ReadOnly(true)]
+		[System.ComponentModel.Description("The tile size, in degrees, of the topmost level")]
+		public double LevelZeroTileSize
+		{
+			get
+			{
+				return m_dLevelZeroTileSizeDegrees;
+			}
+		}
 
-      [System.ComponentModel.Browsable(false)]
-      public override bool IsChanged
-      {
-         get { return m_blnIsChanged; }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The number of tile levels in this data layer")]
+		public int Levels
+		{
+			get { return m_iLevels; }
+		}
 
-      public override string ServerTypeIconKey
-      {
-         get { return "tile"; }
-      }
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public override GeographicBoundingBox Extents
+		{
+			get { return m_hBoundary; }
+		}
 
-      public override string DisplayIconKey
-      {
-         get { return "layer"; }
-      }
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The server providing this data layer")]
+		public String ServerURL
+		{
+			get { return m_strServerUrl; }
+		}
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		[System.ComponentModel.Category("NLT")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The server providing this data layer")]
+		public String DatasetName
+		{
+			get { return m_strDatasetName; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override bool IsChanged
+		{
+			get { return m_blnIsChanged; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return "tile"; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string DisplayIconKey
+		{
+			get { return "layer"; }
+		}
+
+		#endregion
+
+		#region ImageBuilder Implementations
+
+		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_oQuadTileSet != null)
             return m_oQuadTileSet.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -206,33 +257,6 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region Other Public Members
-
-      public double LevelZeroTileSize
-      {
-         get
-         {
-            return m_dLevelZeroTileSizeDegrees;
-         }
-      }
-
-      public int Levels
-      {
-         get { return m_iLevels; }
-      }
-
-      public String Server
-      {
-         get { return m_strServerUrl; }
-      }
-
-      public String DatasetName
-      {
-         get { return m_strDatasetName; }
-      }
-
-      #endregion
-
       #region Private Members
 
       private static string getRenderablePathString(RenderableObject renderable)
@@ -251,14 +275,14 @@ namespace Dapple.LayerGeneration
       {
          if (builder.Parent == null)
          {
-            string strRet = builder.Name;
+            string strRet = builder.Title;
             foreach (char cInvalid in Path.GetInvalidPathChars())
                strRet = strRet.Replace(cInvalid, '_');
             return strRet;
          }
          else
          {
-            return GetBuilderPathString(builder.Parent) + Path.DirectorySeparatorChar + builder.Name;
+            return GetBuilderPathString(builder.Parent) + Path.DirectorySeparatorChar + builder.Title;
          }
       }
 
@@ -296,7 +320,7 @@ namespace Dapple.LayerGeneration
 
       internal void SaveToXml(XmlElement oServerElement)
       {
-         oServerElement.SetAttribute("name", Name);
+         oServerElement.SetAttribute("name", Title);
          oServerElement.SetAttribute("url", m_strServerUrl);
          oServerElement.SetAttribute("dataset", m_strDatasetName);
          oServerElement.SetAttribute("image_extension", m_strImageExt);

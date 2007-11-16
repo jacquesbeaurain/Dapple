@@ -185,7 +185,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public /*override*/ string ServerURL
+		public string ServerURL
 		{
 			get
 			{
@@ -333,7 +333,7 @@ namespace Dapple.LayerGeneration
          XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
          XmlNode metaNode = oDoc.CreateElement("dapmeta");
          XmlNode nameNode = oDoc.CreateElement("name");
-         nameNode.InnerText = Name;
+         nameNode.InnerText = Title;
          metaNode.AppendChild(nameNode);
          XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
          geoMetaNode.InnerXml = oNode.InnerXml;

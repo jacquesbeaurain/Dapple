@@ -350,8 +350,7 @@ namespace Dapple.LayerGeneration
    public class WMSLayerUri : LayerUri
    {
       private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
-         "layer",
-         "title"
+         "layer"
          });
 
       public WMSLayerUri(String strUri) : base(strUri) { }
@@ -669,21 +668,13 @@ namespace Dapple.LayerGeneration
       {
          get
          {
-            return File.Exists(m_oServer.LocalPath);
+            return true;
          }
       }
 
-      public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
-      {
-         String strFile = m_oServer.LocalPath;
-
-         // See if we have a valid geotif first
-         GeographicBoundingBox extents = GeorefImageLayerBuilder.GetExtentsFromGeotif(strFile);
-
-         if (extents != null)
-            return new GeorefImageLayerBuilder(strFile, false, oWindow, null);
-         else
-            return null;
-      }
+		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		{
+			return new GeorefImageLayerBuilder(m_oServer.LocalPath, false, oWindow, null);
+		}
    }
 }

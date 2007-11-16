@@ -79,7 +79,7 @@ namespace Dapple.Extract
                iImageIndex = MainForm.ImageListIndex("layer");
 
 
-            ListViewItem oItem = new ListViewItem(oBuilder.Name);
+            ListViewItem oItem = new ListViewItem(oBuilder.Title);
             oItem.ImageIndex = iImageIndex;
             oItem.Tag = oBuilder;
 

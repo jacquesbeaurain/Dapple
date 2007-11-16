@@ -40,7 +40,7 @@ namespace Dapple.Extract
          cbDownloadOptions.DataSource = Options.Picture.DownloadOptionStrings;
          cbDownloadOptions.SelectedIndex = 2;
 
-         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, TIF_EXT);
+         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, TIF_EXT);
 
          oResolution.SetDownloadOptions(this);
          SetDefaultResolution();

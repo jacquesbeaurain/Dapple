@@ -373,6 +373,7 @@ namespace Dapple
             m_oImageList.Images.Add("dap_document", Resources.dap_document);
             m_oImageList.Images.Add("dap_grid", Resources.dap_grid);
             m_oImageList.Images.Add("dap_map", Resources.dap_map);
+				m_oImageList.Images.Add("dap_generic", Resources.dap_map);
             m_oImageList.Images.Add("dap_picture", Resources.dap_picture);
             m_oImageList.Images.Add("dap_point", Resources.dap_point);
             m_oImageList.Images.Add("dap_spf", Resources.dap_spf);
@@ -1107,7 +1108,7 @@ namespace Dapple
                   bExist = false;
                   foreach (LayerBuilder container in cLayerList.AllLayers)
                   {
-                     if (container.Name == strNewName)
+                     if (container.Title == strNewName)
                      {
                         bExist = true;
                         break;
@@ -1802,7 +1803,7 @@ namespace Dapple
          else
             iImageIndex = ImageListIndex("layer");
 
-         treeNode = parent.Nodes.Add(builder.Name, builder.Name, iImageIndex, iImageIndex);
+         treeNode = parent.Nodes.Add(builder.Title, builder.Title, iImageIndex, iImageIndex);
          treeNode.Tag = builder;
       }
 
@@ -1930,7 +1931,7 @@ namespace Dapple
                if (!container.Temporary)
                {
                   datasetType dataset = lyrs.Newdataset();
-                  dataset.Addname(new SchemaString(container.Name));
+                  dataset.Addname(new SchemaString(container.Title));
                   opacityType op = dataset.Newopacity();
                   op.Value = container.Opacity;
                   dataset.Addopacity(op);
@@ -2413,7 +2414,7 @@ namespace Dapple
                   }
                   else
                   {
-                     this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Name;
+                     this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Title;
                      this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
                   }
                   this.toolStripStatusLabel6.Visible = true;
@@ -2438,7 +2439,7 @@ namespace Dapple
                   }
                   else
                   {
-                     this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Name;
+                     this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Title;
                      this.toolStripStatusLabel5.Image = this.tvServers.ImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
                   }
                   this.toolStripStatusLabel5.Visible = true;
@@ -2463,7 +2464,7 @@ namespace Dapple
                   }
                   else
                   {
-                     this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Name;
+                     this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Title;
                      this.toolStripStatusLabel4.Image = this.tvServers.ImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
                   }
                   this.toolStripStatusLabel4.Visible = true;
@@ -2488,7 +2489,7 @@ namespace Dapple
                   }
                   else
                   {
-                     this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Name;
+                     this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Title;
                      this.toolStripStatusLabel3.Image = this.tvServers.ImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
                   }
                   this.toolStripStatusLabel3.Visible = true;
@@ -2513,7 +2514,7 @@ namespace Dapple
                   }
                   else
                   {
-                     this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Name;
+                     this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Title;
                      this.toolStripStatusLabel2.Image = this.tvServers.ImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
                   }
                   this.toolStripStatusLabel2.Visible = true;
@@ -2538,7 +2539,7 @@ namespace Dapple
                   }
                   else
                   {
-                     this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Name;
+                     this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Title;
                      this.toolStripStatusLabel1.Image = this.tvServers.ImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
                   }
                   this.toolStripStatusLabel1.Visible = true;
@@ -3357,7 +3358,7 @@ namespace Dapple
                {
                   oNode = oBuilder.GetMetaData(oDoc);
                   strStyleSheet = oBuilder.StyleSheetName;
-                  DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Name);
+                  DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Title);
                }
                else
                {
@@ -3453,7 +3454,7 @@ namespace Dapple
 
       private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         cLayerList.CmdDownloadActiveLayers();
+         cLayerList.CmdExtractVisibleLayers();
       }
 
       private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)

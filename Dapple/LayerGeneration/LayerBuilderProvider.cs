@@ -14,7 +14,7 @@ namespace Dapple.LayerGeneration
 {
 	public interface IBuilder : ICloneable
 	{
-		string Name
+		string Title
 		{
 			get;
 		}
@@ -157,7 +157,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The title of this data layer")]
-		public string Name
+		public string Title
 		{
 			get
 			{
@@ -181,14 +181,6 @@ namespace Dapple.LayerGeneration
 			get { return m_bTemporary; }
 			set { m_bTemporary = value; }
 		}
-
-		/*[System.ComponentModel.Category("Common")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The server providing this data layer")]
-		public abstract String ServerURL
-		{
-			get;
-		}*/
 
 		[System.ComponentModel.Browsable(false)]
 		private String RenderableObjectName
@@ -273,6 +265,7 @@ namespace Dapple.LayerGeneration
 
       public bool exportToGeoTiff(String szFilename)
       {
+			if (!GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(this.Extents)) return false;
          String szTempMetaFilename = String.Empty;
          String szTempImageFile = String.Empty;
          szFilename = Path.ChangeExtension(szFilename, ".tif");

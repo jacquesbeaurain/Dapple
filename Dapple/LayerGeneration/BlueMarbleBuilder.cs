@@ -11,11 +11,17 @@ namespace Dapple.LayerGeneration
    /// Wraps the BMNG layer in a LayerBuilder.
    /// </summary>
    class BlueMarbleBuilder : LayerBuilder
-   {
-      private RenderableObject m_hObject;
-      private bool m_blIsChanged = true;
+	{
+		#region Member variables
 
-      public BlueMarbleBuilder()
+		private RenderableObject m_hObject;
+		private bool m_blIsChanged = true;
+
+		#endregion
+
+		#region Constructors
+
+		public BlueMarbleBuilder()
          : base("Blue Marble", MainForm.WorldWindowSingleton, null)
       {
          ImageLayer oBaseLayer = new WorldWind.Renderable.ImageLayer(
@@ -52,9 +58,16 @@ namespace Dapple.LayerGeneration
       public BlueMarbleBuilder(RenderableObject hObject) :base("Blue Marble", MainForm.WorldWindowSingleton, null)
       {
          m_hObject = hObject;
-      }
+		}
 
-      public override byte Opacity
+		#endregion
+
+		#region Properties
+
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public override byte Opacity
       {
          get
          {
@@ -66,6 +79,9 @@ namespace Dapple.LayerGeneration
          }
       }
 
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
       public override bool Visible
       {
          get
@@ -78,27 +94,35 @@ namespace Dapple.LayerGeneration
          }
       }
 
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public override WorldWind.GeographicBoundingBox Extents
+		{
+			get { return new WorldWind.GeographicBoundingBox(90, -90, -180, 180); }
+		}
+
+		[System.ComponentModel.Browsable(false)]
       public override bool IsChanged
       {
          get { return m_blIsChanged; }
       }
 
+		[System.ComponentModel.Browsable(false)]
       public override string ServerTypeIconKey
       {
          get { return "blue_marble"; }
       }
 
+		[System.ComponentModel.Browsable(false)]
       public override string DisplayIconKey
       {
          get { return "blue_marble"; }
       }
 
-      public override WorldWind.GeographicBoundingBox Extents
-      {
-         get { return new WorldWind.GeographicBoundingBox(90, -90, -180, 180); }
-      }
+		#endregion
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          return CascadeDownloading(m_hObject, out iBytesRead, out iTotalBytes);
       }

@@ -21,6 +21,17 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
+		#region Member Variables
+
+		ImageLayer m_Layer;
+		string m_strFileName;
+		string m_strCacheFileName;
+		bool m_bIsTmp;
+		bool m_blnIsChanged = true;
+		bool m_blMissingFile;
+
+		#endregion
+
       #region Constructor
 
       public GeorefImageLayerBuilder(string strDisplayName, string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
@@ -30,6 +41,7 @@ namespace Dapple.LayerGeneration
          m_strFileName = strFileName;
          m_bIsTmp = bTmp;
          m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
+			m_blMissingFile = !File.Exists(m_strFileName);
       }
 
       public GeorefImageLayerBuilder(string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
@@ -39,102 +51,123 @@ namespace Dapple.LayerGeneration
          m_strFileName = strFileName;
          m_bIsTmp = bTmp;
          m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
+			m_blMissingFile = !File.Exists(m_strFileName);
       }
 
       #endregion
 
-      #region Member Variables
+		#region Properties
 
-      ImageLayer m_Layer;
-      string m_strFileName;
-      string m_strCacheFileName;
-      bool m_bIsTmp;
-      bool m_blnIsChanged = true;
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public override byte Opacity
+		{
+			get
+			{
+				if (m_Layer != null)
+					return m_Layer.Opacity;
+				return m_bOpacity;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_bOpacity != value)
+				{
+					m_bOpacity = value;
+					bChanged = true;
+				}
+				if (m_Layer != null && m_Layer.Opacity != value)
+				{
+					m_Layer.Opacity = value;
+					bChanged = true;
+				}
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.OpacityChanged);
+			}
+		}
 
-      #endregion
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
+		public override bool Visible
+		{
+			get
+			{
+				if (m_Layer != null)
+					return m_Layer.IsOn;
+				return m_IsOn;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_IsOn != value)
+				{
+					m_IsOn = value;
+					bChanged = true;
+				}
+				if (m_Layer != null && m_Layer.IsOn != value)
+				{
+					m_Layer.IsOn = value;
+					bChanged = true;
+				}
 
-      #region ImageBuilder Implementations
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.VisibilityChanged);
+			}
+		}
 
-      public override GeographicBoundingBox Extents
-      {
-         get
-         {
-            if (m_Layer == null)
-               GetLayer();
-            return new GeographicBoundingBox(m_Layer.MaxLat, m_Layer.MinLat, m_Layer.MinLon, m_Layer.MaxLon);
-         }
-      }
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public override GeographicBoundingBox Extents
+		{
+			get
+			{
+				if (m_blMissingFile)
+				{
+					return new GeographicBoundingBox(90, -90, -180, 180);
+				}
+				else
+				{
+					if (m_Layer == null)
+						GetLayer();
+					return new GeographicBoundingBox(m_Layer.MaxLat, m_Layer.MinLat, m_Layer.MinLon, m_Layer.MaxLon);
+				}
+			}
+		}
 
-      public override byte Opacity
-      {
-         get
-         {
-            if (m_Layer != null)
-               return m_Layer.Opacity;
-            return m_bOpacity;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_bOpacity != value)
-            {
-               m_bOpacity = value;
-               bChanged = true;
-            }
-            if (m_Layer != null && m_Layer.Opacity != value)
-            {
-               m_Layer.Opacity = value;
-               bChanged = true;
-            }
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.OpacityChanged);
-         }
-      }
+		[System.ComponentModel.Category("GeoTIFF")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The filename of the GeoTIFF")]
+		public string FileName
+		{
+			get { return m_strFileName; }
+		}
 
-      public override bool Visible
-      {
-         get
-         {
-            if (m_Layer != null)
-               return m_Layer.IsOn;
-            return m_IsOn;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_IsOn != value)
-            {
-               m_IsOn = value;
-               bChanged = true;
-            }
-            if (m_Layer != null && m_Layer.IsOn != value)
-            {
-               m_Layer.IsOn = value;
-               bChanged = true;
-            }
+		[System.ComponentModel.Browsable(false)]
+		public override bool IsChanged
+		{
+			get { return m_blnIsChanged; }
+		}
 
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
-         }
-      }
+		[System.ComponentModel.Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return "georef_image"; }
+		}
 
-      [System.ComponentModel.Browsable(false)]
-      public override bool IsChanged
-      {
-         get { return m_blnIsChanged; }
-      }
+		[System.ComponentModel.Browsable(false)]
+		public override string DisplayIconKey
+		{
+			get { return "georef_image"; }
+		}
 
-      public override string ServerTypeIconKey
-      {
-         get { return "georef_image"; }
-      }
+		#endregion
 
-      public override string DisplayIconKey
-      {
-         get { return "georef_image"; }
-      }
+		#region ImageBuilder Implementations
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          iBytesRead = 0;
          iTotalBytes = 0;
@@ -362,11 +395,6 @@ namespace Dapple.LayerGeneration
          }
 
          return strReturn;
-      }
-
-      public string FileName
-      {
-         get { return m_strFileName; }
       }
 
       public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)

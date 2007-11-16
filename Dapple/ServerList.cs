@@ -560,7 +560,7 @@ namespace Dapple
          if (obj is Server)
             return ((Server)obj).Name;
          else if (obj is ServerBuilder)
-            return ((ServerBuilder)obj).Name;
+            return ((ServerBuilder)obj).Title;
          else
             throw new ArgumentException("obj is unknown type " + obj.GetType());
       }
@@ -585,7 +585,7 @@ namespace Dapple
          if (obj is Geosoft.Dap.Common.DataSet)
             return ((Geosoft.Dap.Common.DataSet)obj).Title;
          else if (obj is LayerBuilder)
-            return ((LayerBuilder)obj).Name;
+            return ((LayerBuilder)obj).Title;
          else
             throw new ArgumentException("obj is unknown type " + obj.GetType());
       }

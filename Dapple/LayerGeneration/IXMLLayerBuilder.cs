@@ -57,7 +57,7 @@ namespace Dapple.LayerGeneration
 
       #region IBuilder Members
 
-      public string Name
+      public string Title
       {
          get { return m_strName; }
       }
@@ -121,7 +121,7 @@ namespace Dapple.LayerGeneration
             (builder as BuilderDirectory).GetLayerCount(bInterSect, extents, strText, ref iCount);
          foreach (LayerBuilder builder in LayerBuilders)
          {
-            if ((strText != string.Empty && builder.Name.IndexOf(strText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
+            if ((strText != string.Empty && builder.Title.IndexOf(strText, 0, StringComparison.InvariantCultureIgnoreCase) == -1) ||
                 (extents != null && bInterSect && !extents.Intersects(builder.Extents) && !extents.Contains(builder.Extents)))
                continue;
 
@@ -150,7 +150,7 @@ namespace Dapple.LayerGeneration
       {
          foreach (LayerBuilder b in m_colChildren)
          {
-            if (layerName.Equals(b.Name)) return b;
+            if (layerName.Equals(b.Title)) return b;
          }
          foreach (BuilderDirectory bd in m_colSublist)
          {
@@ -187,13 +187,13 @@ namespace Dapple.LayerGeneration
          int index = 0;
          foreach(LayerBuilder childNode in m_colChildren)
          {
-            result[index] = new TreeNode(childNode.Name, MainForm.ImageListIndex(childNode.DisplayIconKey), MainForm.ImageListIndex(childNode.DisplayIconKey));
+            result[index] = new TreeNode(childNode.Title, MainForm.ImageListIndex(childNode.DisplayIconKey), MainForm.ImageListIndex(childNode.DisplayIconKey));
             result[index].Tag = childNode;
             index++;
          }
          foreach (BuilderDirectory childDir in m_colSublist)
          {
-            result[index] = new TreeNode(childDir.Name, MainForm.ImageListIndex(childDir.DisplayIconKey), MainForm.ImageListIndex(childDir.DisplayIconKey));
+            result[index] = new TreeNode(childDir.Title, MainForm.ImageListIndex(childDir.DisplayIconKey), MainForm.ImageListIndex(childDir.DisplayIconKey));
             result[index].Tag = childDir;
             index++;
          }
@@ -257,7 +257,7 @@ namespace Dapple.LayerGeneration
          {
             oParent.ImageIndex = MainForm.ImageListIndex("disserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("disserver");
-            oParent.Text = Name + " (Disabled)";
+            oParent.Text = Title + " (Disabled)";
          }
          else
          {
@@ -422,19 +422,19 @@ namespace Dapple.LayerGeneration
          {
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.Text = Name + "(Loading...)";
+            oParent.Text = Title + "(Loading...)";
          }
          else if (LoadingErrorOccurred)
          {
             oParent.ImageIndex = MainForm.ImageListIndex("offline");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("offline");
-            oParent.Text = Name + " (" + ErrorMessage + ")";
+            oParent.Text = Title + " (" + ErrorMessage + ")";
          }
          else
          {
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.Text = Name + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
+            oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
          }
       }
 

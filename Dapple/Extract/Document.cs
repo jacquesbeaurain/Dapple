@@ -22,7 +22,7 @@ namespace Dapple.Extract
       {
          InitializeComponent();
          
-         tbFilename.Text = oDAPbuilder.Name;
+         tbFilename.Text = oDAPbuilder.Title;
 
          cbDownload.DataSource = Options.Document.DownloadOptionStrings;
          cbDownload.SelectedIndex = 0;

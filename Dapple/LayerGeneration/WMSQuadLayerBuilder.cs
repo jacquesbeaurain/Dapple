@@ -182,7 +182,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public /*override*/ string ServerURL
+		public string ServerURL
 		{
 			get { return Layer.ParentWMSList.ServerGetCapabilitiesUrl; }
 		}

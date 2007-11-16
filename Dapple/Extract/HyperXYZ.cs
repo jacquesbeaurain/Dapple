@@ -25,7 +25,7 @@ namespace Dapple.Extract
          : base(oDAPbuilder)
       {
          InitializeComponent();
-         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, DATABASE_EXT);
+         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, DATABASE_EXT);
       }
 
       /// <summary>

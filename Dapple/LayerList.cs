@@ -117,9 +117,10 @@ namespace Dapple
          get
          {
             List<LayerBuilder> oResult = new List<LayerBuilder>();
+				GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
             foreach (LayerBuilder oBuilder in m_oLayers)
             {
-               if (oBuilder.Visible) oResult.Add(oBuilder);
+               if (oBuilder.Visible && oBuilder.Extents.Intersects(oViewedArea)) oResult.Add(oBuilder);
             }
             return oResult;
          }
@@ -244,11 +245,10 @@ namespace Dapple
          oNewBuilder.Reset();
 
          m_oLayers.Insert(iInsertIndex, oNewBuilder);
-         cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Name);
+         cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Title);
          cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
          {
             cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
-            cLayerList.Items[iInsertIndex].ForeColor = Color.ForestGreen;
          }
 
          if (!AddLayerToGlobe(m_oLayers[iInsertIndex]))
@@ -374,7 +374,7 @@ namespace Dapple
 
       private void cExtractButton_Click(object sender, EventArgs e)
       {
-         CmdDownloadActiveLayers();
+         CmdExtractVisibleLayers();
       }
 
       private void cExportButton_Click(object sender, EventArgs e)
@@ -957,16 +957,22 @@ namespace Dapple
       /// <summary>
       /// Open the download dialog.
       /// </summary>
-      public void CmdDownloadActiveLayers()
+      public void CmdExtractVisibleLayers()
       {
          if (DownloadsInProgress)
          {
-            MessageBox.Show(this, "It is not possible to extract data while Dapple is getting tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(this, "It is not possible to extract data while Dapple is getting tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.", "Tile Downloading In Progress", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
          }
+			List<LayerBuilder> aExtractLayers = this.ExtractLayers;
+			if (aExtractLayers.Count == 0)
+			{
+				MessageBox.Show(this, "None of the enabled layers intersect the current view.\nEither enable some disabled data layers, or move the view.", "No Data Layers to Extract", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
          try
          {
-            Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(this.ExtractLayers);
+            Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers);
             oDownloadDialog.ShowInTaskbar = false;
             oDownloadDialog.ShowDialog(this);
             oDownloadDialog.Verify();
@@ -996,6 +1002,7 @@ namespace Dapple
          m_oLayers.Clear();
          //TODO: Remove layers from the World renderable list?
 
+			int iInsertIndex = 0;
          for (int i = 0; i < view.View.activelayers.datasetCount; i++)
          {
             datasetType dataset = view.View.activelayers.GetdatasetAt(i);
@@ -1010,7 +1017,7 @@ namespace Dapple
             LayerBuilder oBuilder = oUri.getBuilder(MainForm.WorldWindowSingleton, oTree);
             oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
             oBuilder.Opacity = (byte)dataset.opacity.Value;
-            AddLayer(oBuilder, i);
+            AddLayer(oBuilder, iInsertIndex++);
          }
 
          m_blSupressSelectedChanged = false;
@@ -1340,7 +1347,7 @@ namespace Dapple
 
          for (int count = 0; count < m_oLayers.Count; count++)
          {
-            if (!m_oLayers[count].Name.Equals(cLayerList.Items[count].Text))
+            if (!m_oLayers[count].Title.Equals(cLayerList.Items[count].Text))
                throw new ArgumentException("Data no longer syncs");
          }
       }
@@ -1442,5 +1449,33 @@ namespace Dapple
             }
          }
       }
+
+		/*
+		private void toolStripButton1_Click(object sender, EventArgs e)
+		{
+			if (cLayerList.SelectedIndices.Count == 1)
+			{
+				LayerBuilder oBuilder = m_oLayers[cLayerList.SelectedIndices[0]];
+
+				LayerUri oBuilderRoundTrip = LayerUri.create(oBuilder.GetURI());
+
+				if (!oBuilderRoundTrip.IsValid)
+				{
+					MessageBox.Show(this, "Couldn't roundtrip the layer!", "Round Trip Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
+				}
+
+				LayerBuilder oRoundTripped = oBuilderRoundTrip.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree);
+
+				if (!oRoundTripped.Equals(oBuilder))
+				{
+					MessageBox.Show(this, "Round trip builder doesn't match original builder!", "Round Trip Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				else
+				{
+					MessageBox.Show(this, "Round trip successful", String.Empty, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+		}*/
    }
 }

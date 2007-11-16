@@ -22,7 +22,7 @@ namespace Dapple.Extract
       {
          InitializeComponent();
          
-         tbFilename.Text = oDAPbuilder.Name;
+         tbFilename.Text = oDAPbuilder.Title;
 
          cbDownload.DataSource = Options.ArcGIS.DownloadOptionStrings;
          cbDownload.SelectedIndex = 0;

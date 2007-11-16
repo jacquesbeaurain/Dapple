@@ -223,73 +223,77 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       private void InitializeComponent()
       {
-         this.components = new System.ComponentModel.Container();
-         this.m_tbFileName = new System.Windows.Forms.TextBox();
-         this.m_cmbFileName = new System.Windows.Forms.ComboBox();
-         this.btnBrowse = new System.Windows.Forms.Button();
-         this.m_saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-         this.m_openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-         this.m_errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-         ((System.ComponentModel.ISupportInitialize)(this.m_errorProvider)).BeginInit();
-         this.SuspendLayout();
-         // 
-         // m_tbFileName
-         // 
-         this.m_tbFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                     | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.m_tbFileName.Location = new System.Drawing.Point(0, 0);
-         this.m_tbFileName.MinimumSize = new System.Drawing.Size(50, 21);
-         this.m_tbFileName.Name = "m_tbFileName";
-         this.m_tbFileName.Size = new System.Drawing.Size(148, 21);
-         this.m_tbFileName.TabIndex = 0;
-         this.m_tbFileName.TextChanged += new System.EventHandler(this.m_tbFileName_TextChanged);
-         // 
-         // m_cmbFileName
-         // 
-         this.m_cmbFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                     | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.m_cmbFileName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-         this.m_cmbFileName.FormattingEnabled = true;
-         this.m_cmbFileName.Location = new System.Drawing.Point(0, 0);
-         this.m_cmbFileName.MinimumSize = new System.Drawing.Size(50, 0);
-         this.m_cmbFileName.Name = "m_cmbFileName";
-         this.m_cmbFileName.Size = new System.Drawing.Size(148, 21);
-         this.m_cmbFileName.TabIndex = 1;
-         this.m_cmbFileName.SelectedIndexChanged += new System.EventHandler(this.m_cmbFileName_SelectedIndexChanged);
-         this.m_cmbFileName.TextUpdate += new System.EventHandler(this.m_cmbFileName_TextUpdate);
-         // 
-         // btnBrowse
-         // 
-         this.btnBrowse.Dock = System.Windows.Forms.DockStyle.Right;
-         this.btnBrowse.Location = new System.Drawing.Point(150, 0);
-         this.btnBrowse.MaximumSize = new System.Drawing.Size(30, 21);
-         this.btnBrowse.MinimumSize = new System.Drawing.Size(30, 21);
-         this.btnBrowse.Name = "btnBrowse";
-         this.btnBrowse.Size = new System.Drawing.Size(30, 21);
-         this.btnBrowse.TabIndex = 2;
-         this.btnBrowse.Text = "...";
-         this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
-         // 
-         // m_errorProvider
-         // 
-         this.m_errorProvider.ContainerControl = this;
-         // 
-         // FEditControl
-         // 
-         this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-         this.Controls.Add(this.btnBrowse);
-         this.Controls.Add(this.m_cmbFileName);
-         this.Controls.Add(this.m_tbFileName);
-         this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-         this.MaximumSize = new System.Drawing.Size(400, 21);
-         this.MinimumSize = new System.Drawing.Size(50, 21);
-         this.Name = "FEditControl";
-         this.Size = new System.Drawing.Size(180, 21);
-         ((System.ComponentModel.ISupportInitialize)(this.m_errorProvider)).EndInit();
-         this.ResumeLayout(false);
-         this.PerformLayout();
+			this.components = new System.ComponentModel.Container();
+			this.m_tbFileName = new System.Windows.Forms.TextBox();
+			this.m_cmbFileName = new System.Windows.Forms.ComboBox();
+			this.btnBrowse = new System.Windows.Forms.Button();
+			this.m_saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.m_openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.m_errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+			((System.ComponentModel.ISupportInitialize)(this.m_errorProvider)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// m_tbFileName
+			// 
+			this.m_tbFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+							| System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.m_tbFileName.Location = new System.Drawing.Point(0, 0);
+			this.m_tbFileName.MinimumSize = new System.Drawing.Size(50, 21);
+			this.m_tbFileName.Name = "m_tbFileName";
+			this.m_tbFileName.Size = new System.Drawing.Size(148, 21);
+			this.m_tbFileName.TabIndex = 0;
+			this.m_tbFileName.TextChanged += new System.EventHandler(this.m_tbFileName_TextChanged);
+			// 
+			// m_cmbFileName
+			// 
+			this.m_cmbFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+							| System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.m_cmbFileName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+			this.m_cmbFileName.FormattingEnabled = true;
+			this.m_cmbFileName.Location = new System.Drawing.Point(0, 0);
+			this.m_cmbFileName.Margin = new System.Windows.Forms.Padding(0);
+			this.m_cmbFileName.MinimumSize = new System.Drawing.Size(50, 0);
+			this.m_cmbFileName.Name = "m_cmbFileName";
+			this.m_cmbFileName.Size = new System.Drawing.Size(157, 21);
+			this.m_cmbFileName.TabIndex = 1;
+			this.m_cmbFileName.SelectedIndexChanged += new System.EventHandler(this.m_cmbFileName_SelectedIndexChanged);
+			this.m_cmbFileName.TextUpdate += new System.EventHandler(this.m_cmbFileName_TextUpdate);
+			// 
+			// btnBrowse
+			// 
+			this.btnBrowse.Dock = System.Windows.Forms.DockStyle.Right;
+			this.btnBrowse.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnBrowse.Location = new System.Drawing.Point(159, 0);
+			this.btnBrowse.Margin = new System.Windows.Forms.Padding(2, 3, 3, 3);
+			this.btnBrowse.MaximumSize = new System.Drawing.Size(21, 21);
+			this.btnBrowse.MinimumSize = new System.Drawing.Size(21, 21);
+			this.btnBrowse.Name = "btnBrowse";
+			this.btnBrowse.Size = new System.Drawing.Size(21, 21);
+			this.btnBrowse.TabIndex = 2;
+			this.btnBrowse.Text = "...";
+			this.btnBrowse.UseCompatibleTextRendering = true;
+			this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+			// 
+			// m_errorProvider
+			// 
+			this.m_errorProvider.ContainerControl = this;
+			// 
+			// FEditControl
+			// 
+			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.btnBrowse);
+			this.Controls.Add(this.m_cmbFileName);
+			this.Controls.Add(this.m_tbFileName);
+			this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.MaximumSize = new System.Drawing.Size(400, 21);
+			this.MinimumSize = new System.Drawing.Size(50, 21);
+			this.Name = "FEditControl";
+			this.Size = new System.Drawing.Size(180, 21);
+			((System.ComponentModel.ISupportInitialize)(this.m_errorProvider)).EndInit();
+			this.ResumeLayout(false);
+			this.PerformLayout();
 
       }
       #endregion

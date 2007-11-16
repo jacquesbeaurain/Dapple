@@ -51,88 +51,111 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region ImageBuilder Implementations
+		#region Properties
 
-      public override GeographicBoundingBox Extents
-      {
-         get
-         {
-            return new GeographicBoundingBox(90.0, -90.0, -180.0, 180);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
+		public override byte Opacity
+		{
+			get
+			{
+				if (m_oVEQTS != null)
+					return m_oVEQTS.Opacity;
+				return m_bOpacity;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_bOpacity != value)
+				{
+					m_bOpacity = value;
+					bChanged = true;
+				}
+				if (m_oVEQTS != null && m_oVEQTS.Opacity != value)
+				{
+					m_oVEQTS.Opacity = value;
+					bChanged = true;
+				}
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.OpacityChanged);
+			}
+		}
 
-      public override byte Opacity
-      {
-         get
-         {
-            if (m_oVEQTS != null)
-               return m_oVEQTS.Opacity;
-            return m_bOpacity;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_bOpacity != value)
-            {
-               m_bOpacity = value;
-               bChanged = true;
-            }
-            if (m_oVEQTS != null && m_oVEQTS.Opacity != value)
-            {
-               m_oVEQTS.Opacity = value;
-               bChanged = true;
-            }
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.OpacityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
+		public override bool Visible
+		{
+			get
+			{
+				if (m_oVEQTS != null)
+					return m_oVEQTS.IsOn;
+				return m_IsOn;
+			}
+			set
+			{
+				bool bChanged = false;
+				if (m_IsOn != value)
+				{
+					m_IsOn = value;
+					bChanged = true;
+				}
+				if (m_oVEQTS != null && m_oVEQTS.IsOn != value)
+				{
+					m_oVEQTS.IsOn = value;
+					if (value == true)
+					{
+						m_oVEQTS.ForceRefresh();
+					}
+					bChanged = true;
+				}
 
-      public override bool Visible
-      {
-         get
-         {
-            if (m_oVEQTS != null)
-               return m_oVEQTS.IsOn;
-            return m_IsOn;
-         }
-         set
-         {
-            bool bChanged = false;
-            if (m_IsOn != value)
-            {
-               m_IsOn = value;
-               bChanged = true;
-            }
-            if (m_oVEQTS != null && m_oVEQTS.IsOn != value)
-            {
-               m_oVEQTS.IsOn = value;
-               if (value == true)
-               {
-                  m_oVEQTS.ForceRefresh();
-               }
-               bChanged = true;
-            }
+				if (bChanged)
+					SendBuilderChanged(BuilderChangeType.VisibilityChanged);
+			}
+		}
 
-            if (bChanged)
-               SendBuilderChanged(BuilderChangeType.VisibilityChanged);
-         }
-      }
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
+		public override GeographicBoundingBox Extents
+		{
+			get
+			{
+				return new GeographicBoundingBox(85.0, -85.0, -180.0, 180);
+			}
+		}
 
-      [System.ComponentModel.Browsable(false)]
-      public override bool IsChanged
-      {
-         get { return m_blnIsChanged; }
-      }
+		[System.ComponentModel.Category("VE")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Which virtual earth data layer this is")]
+		public String Type
+		{
+			get { return m_mapType.ToString(); }
+		}
 
-      public override string ServerTypeIconKey
-      {
-         get { return "live"; }
-      }
+		[System.ComponentModel.Browsable(false)]
+		public override bool IsChanged
+		{
+			get { return m_blnIsChanged; }
+		}
 
-      public override string DisplayIconKey
-      {
-         get { return "live"; }
-      }
+		[System.ComponentModel.Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return "live"; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override string DisplayIconKey
+		{
+			get { return "live"; }
+		}
+
+		#endregion
+
+		#region ImageBuilder Implementations
 
       public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {

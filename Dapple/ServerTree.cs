@@ -354,6 +354,8 @@ namespace Dapple
          Object oCurrentServer = this.SelectedServer;
 			if (oCurrentServer  == null) return;
 
+			SuspendLayout();
+
          if (oCurrentServer is WMSServerBuilder)
 			{
             WMSServerBuilder serverBuilder = oCurrentServer as WMSServerBuilder;
@@ -399,11 +401,13 @@ namespace Dapple
                RefreshTreeNodeText();
             }
          }
+
+			ResumeLayout();
 		}
 
 		public void RemoveCurrentServer()
 		{
-         Object oCurrentServer = this.SelectedServer;
+			Object oCurrentServer = this.SelectedServer;
 
          if (oCurrentServer == null)
 				return;
@@ -420,17 +424,15 @@ namespace Dapple
                WMSServerBuilder serverBuilder = oCurrentServer as WMSServerBuilder;
                m_wmsServers.Remove(serverBuilder);
                ((WMSCatalogBuilder)m_hWMSRootNode.Tag).UncacheServer(serverBuilder.Uri as WMSServerUri);
+					this.SelectedNode = m_hWMSRootNode;
             }
             else if (oCurrentServer is ArcIMSServerBuilder)
             {
                ArcIMSServerBuilder serverBuilder = oCurrentServer as ArcIMSServerBuilder;
                m_oArcIMSServers.Remove(serverBuilder);
                ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).UncacheServer(serverBuilder.Uri as ArcIMSServerUri);
+					this.SelectedNode = m_hArcIMSRootNode;
             }
-
-            TreeNode oNodeToDelete = this.SelectedNode;
-            (oNodeToDelete.Parent.Tag as BuilderDirectory).SubList.Remove(oNodeToDelete.Tag as BuilderDirectory);
-            oNodeToDelete.Parent.Nodes.Remove(oNodeToDelete);
          }
          finally
          {
@@ -1066,15 +1068,11 @@ namespace Dapple
          if (oPreNode == null) throw new ArgumentNullException("Preselect node unset");
          if (oPostNode == null) throw new ArgumentNullException("Postselect node unset");
 
-         bool blPreDapBranch = false;
-         bool blPostDapBranch = false;
-
-         TreeNode oIter = oPreNode;
+			TreeNode oIter = oPreNode;
          while (oIter != null)
          {
             if (oIter == m_hDAPRootNode)
             {
-               blPreDapBranch = true;
                break;
             }
             oIter = oIter.Parent;
@@ -1084,7 +1082,6 @@ namespace Dapple
          {
             if (oIter == m_hDAPRootNode)
             {
-               blPostDapBranch = true;
                break;
             }
             oIter = oIter.Parent;
@@ -1323,7 +1320,14 @@ namespace Dapple
             cMenuItem_ToggleServerEnabled.Image = Dapple.Properties.Resources.enserver;
          }
 
-         cMenuItem_Refresh.Enabled = blServerEnabled;
+			if (SelectedNode.Tag is AsyncBuilder)
+			{
+				cMenuItem_Refresh.Enabled = !((AsyncBuilder)SelectedNode.Tag).IsLoading;
+			}
+			else
+			{
+				cMenuItem_Refresh.Enabled = blServerEnabled;
+			}
 
          if (SelectedNode.Tag is Server)
          {

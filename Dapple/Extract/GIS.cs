@@ -35,8 +35,8 @@ namespace Dapple.Extract
 
          cbOptions.DataSource = Options.GIS.OMDownloadOptionStrings;
          cbOptions.SelectedIndex = 0;
-         tbGroupName.Text = oDAPbuilder.Name;
-         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Name, MAP_EXT);
+         tbGroupName.Text = oDAPbuilder.Title;
+         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, MAP_EXT);
 
          ConfigureDialog();
       }

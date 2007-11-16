@@ -141,7 +141,7 @@ namespace Dapple.Extract
 			this.bDownload.Name = "bDownload";
 			this.bDownload.Size = new System.Drawing.Size(75, 23);
 			this.bDownload.TabIndex = 0;
-			this.bDownload.Text = "Download";
+			this.bDownload.Text = "Extract";
 			this.bDownload.UseVisualStyleBackColor = true;
 			this.bDownload.Click += new System.EventHandler(this.bDownload_Click);
 			// 

@@ -149,7 +149,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public /*override*/ string ServerURL
+		public string ServerURL
 		{
 			get { return m_oServerUri.ToBaseUri(); }
 		}
@@ -242,7 +242,17 @@ namespace Dapple.LayerGeneration
 
       public override string GetURI()
       {
-         return m_oServerUri.ToServiceUri(m_szTreeNodeText).Replace("http://", URLProtocolName) + String.Format("&minx={0}&miny={1}&maxx={2}&maxy={3}", m_oEnvelope.West, m_oEnvelope.South, m_oEnvelope.East, m_oEnvelope.North);
+         return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
+				+ String.Format("&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
+				m_oEnvelope.West,
+				m_oEnvelope.South,
+				m_oEnvelope.East,
+				m_oEnvelope.North,
+				m_dMinScale,
+				m_dMaxScale,
+				System.Web.HttpUtility.UrlEncode(m_szLayerID),
+				System.Web.HttpUtility.UrlEncode(this.Title),
+				System.Web.HttpUtility.UrlEncode(m_szServiceName));
       }
 
       public override string GetCachePath()

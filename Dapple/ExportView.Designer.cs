@@ -33,9 +33,9 @@ namespace Dapple
 			this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOK = new System.Windows.Forms.Button();
+			this.labelControl1 = new Geosoft.OpenGX.UtilityForms.LabelControl();
 			this.cFilenameControl = new Geosoft.OpenGX.UtilityForms.FEditControl();
 			this.cFilenameErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-			this.labelControl1 = new Geosoft.OpenGX.UtilityForms.LabelControl();
 			((System.ComponentModel.ISupportInitialize)(this.cFilenameErrorProvider)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -62,6 +62,17 @@ namespace Dapple
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
 			// 
+			// labelControl1
+			// 
+			this.labelControl1.AutoSize = true;
+			this.labelControl1.BuddyControl = this.cFilenameControl;
+			this.labelControl1.Location = new System.Drawing.Point(16, 18);
+			this.labelControl1.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.labelControl1.Name = "labelControl1";
+			this.labelControl1.Size = new System.Drawing.Size(81, 13);
+			this.labelControl1.TabIndex = 32;
+			this.labelControl1.Text = "GeoTIFF name:";
+			// 
 			// cFilenameControl
 			// 
 			this.cFilenameControl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -87,20 +98,8 @@ namespace Dapple
 			this.cFilenameErrorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
 			this.cFilenameErrorProvider.ContainerControl = this.cFilenameControl;
 			// 
-			// labelControl1
-			// 
-			this.labelControl1.AutoSize = true;
-			this.labelControl1.BuddyControl = this.cFilenameControl;
-			this.labelControl1.Location = new System.Drawing.Point(16, 18);
-			this.labelControl1.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.labelControl1.Name = "labelControl1";
-			this.labelControl1.Size = new System.Drawing.Size(81, 13);
-			this.labelControl1.TabIndex = 32;
-			this.labelControl1.Text = "GeoTIFF name:";
-			// 
 			// ExportView
 			// 
-			this.AcceptButton = this.btnOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(319, 81);
