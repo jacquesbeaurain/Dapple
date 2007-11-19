@@ -511,9 +511,12 @@ namespace Dapple
             }
             finally
             {
-               this.placeNames.IsOn = World.Settings.ShowPlacenames;
-               this.placeNames.RenderPriority = RenderPriority.Placenames;
-               worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
+               if (this.placeNames != null)
+               {
+                  this.placeNames.IsOn = World.Settings.ShowPlacenames;
+                  this.placeNames.RenderPriority = RenderPriority.Placenames;
+                  worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
+               }
                this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
             }
 

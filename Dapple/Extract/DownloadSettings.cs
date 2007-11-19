@@ -243,22 +243,20 @@ namespace Dapple.Extract
             oDebugElement.SetAttribute("wgs84_north", oViewAOI.North.ToString("f2"));
             oDebugElement.SetAttribute("clip_setting", eClip.ToString());
             oExtractElement.AppendChild(oDebugElement);
-#endif
-            this.Close();
+#endif            
+				this.Close();
 
-            DatasetDisclaimer oDiscliamers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
-            oDiscliamers.ShowInTaskbar = false;
+            DatasetDisclaimer oDisclaimers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
+				oDisclaimers.ShowInTaskbar = false;
 
-            if (oDiscliamers.HasDisclaimer)
-               oDiscliamers.ShowDialog();
+				if (oDisclaimers.HasDisclaimer)
+					oDisclaimers.ShowDialog();
             else
             {
                this.UseWaitCursor = true;
-               oDiscliamers.DownloadDatasets();
+					oDisclaimers.DownloadDatasets();
                this.UseWaitCursor = false;
-            }
-
-            MessageBox.Show(this, "Extraction complete");
+            }				            
          }
          catch (Exception ex)
          {

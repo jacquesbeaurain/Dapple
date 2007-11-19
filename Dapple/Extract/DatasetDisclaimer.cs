@@ -47,7 +47,7 @@ namespace Dapple.Extract
 
                Geosoft.Dap.Command oCommand = new Geosoft.Dap.Command(oDAPbuilder.ServerURL, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, Dapple.MainForm.DOWNLOAD_TIMEOUT);
                Geosoft.Dap.Common.DataSet oDataset = new Geosoft.Dap.Common.DataSet();
-               oDataset.Name = oDAPbuilder.Title;
+               oDataset.Name = oDAPbuilder.DatasetName;
                oDataset.Url = oDAPbuilder.ServerURL;
                
                oReader = oCommand.GetDisclaimerEx(oDataset, strTempFile);
@@ -78,6 +78,7 @@ namespace Dapple.Extract
 
                      ListViewItem oItem = new ListViewItem();
                      oItem.Name = oDAPbuilder.DatasetName;
+							oItem.Text = oDAPbuilder.Title;
                      oItem.Tag = strTempHtmFile;
                      lvDatasets.Items.Add(oItem);
                   }
@@ -89,7 +90,8 @@ namespace Dapple.Extract
 
          if (lvDatasets.Items.Count > 0)
          {
-            lvDatasets.Items[0].Selected = true;
+				lvDatasets.Items[0].Selected = true;
+				wbDisclaimer.Navigate(lvDatasets.Items[0].Tag as string);
          }
       }
 
@@ -119,10 +121,11 @@ namespace Dapple.Extract
       private void bAccept_Click(object sender, EventArgs e)
       {
          this.UseWaitCursor = true;
+			this.Close();
          DownloadDatasets();
          this.UseWaitCursor = false;
 
-         this.Close();
+         
       }
 
       public void DownloadDatasets()
@@ -138,6 +141,8 @@ namespace Dapple.Extract
             }
             catch { }
          }
+
+			MessageBox.Show(this, "Extraction complete");
       }
 
       #endregion      

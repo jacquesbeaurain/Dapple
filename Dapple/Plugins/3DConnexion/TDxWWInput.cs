@@ -1324,12 +1324,16 @@ namespace ThreeDconnexion.Plugin
                     //get Com-Server from Registry
                     RegistryKey regKey
                        = Registry.LocalMachine.OpenSubKey("Software\\Classes\\CLSID\\{82C5AB54-C92C-4D52-AAC5-27E25E22604C}\\InprocServer32", false);
-                    string strTypeLibName = regKey.GetValue("").ToString();
-                    regKey.Close();
 
-                    LoadTypeLibEx(strTypeLibName
-                                  , RegKind.RegKind_None
-                                  , out typeLib);
+                    if (regKey != null)
+                    {
+                       string strTypeLibName = regKey.GetValue("").ToString();
+                       regKey.Close();
+
+                       LoadTypeLibEx(strTypeLibName
+                                     , RegKind.RegKind_None
+                                     , out typeLib);
+                    }
                 }
                 catch (Exception e)
                 {
