@@ -10,7 +10,8 @@ namespace Dapple.Extract
 {
    public partial class Resolution : UserControl
    {
-      public static string WGS_84 = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
+      //public static string WGS_84 = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
+		public static string WGS_84 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><projection type=\"GEOGRAPHIC\" name=\"WGS 84\" ellipsoid=\"WGS 84\" datum=\"WGS 84\" datumtrf=\"WGS 84\" datumtrf_description=\"[WGS 84] World\" radius=\"6378137\" eccentricity=\"0.081819190842621486\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:geo=\"http://www.geosoft.com/schema/geo\"><geo:units name=\"dega\" unit_scale=\"1\"></geo:units></projection>";
       private DownloadOptions m_oDownloadOptions;
       
       private string m_strDatasetProjection;
