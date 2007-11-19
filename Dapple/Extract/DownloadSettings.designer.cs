@@ -41,6 +41,7 @@ namespace Dapple.Extract
 			this.cFolderControl = new Geosoft.OpenGX.UtilityForms.FolderEditControl();
 			this.cErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
 			this.lDestination = new Geosoft.OpenGX.UtilityForms.LabelControl();
+			this.label1 = new System.Windows.Forms.Label();
 			this.pBottom.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.cErrorProvider)).BeginInit();
 			this.SuspendLayout();
@@ -96,10 +97,10 @@ namespace Dapple.Extract
 			this.lvDatasets.FullRowSelect = true;
 			this.lvDatasets.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.lvDatasets.HideSelection = false;
-			this.lvDatasets.Location = new System.Drawing.Point(16, 61);
+			this.lvDatasets.Location = new System.Drawing.Point(16, 74);
 			this.lvDatasets.MultiSelect = false;
 			this.lvDatasets.Name = "lvDatasets";
-			this.lvDatasets.Size = new System.Drawing.Size(511, 147);
+			this.lvDatasets.Size = new System.Drawing.Size(511, 134);
 			this.lvDatasets.TabIndex = 0;
 			this.lvDatasets.UseCompatibleStateImageBehavior = false;
 			this.lvDatasets.View = System.Windows.Forms.View.Details;
@@ -176,12 +177,23 @@ namespace Dapple.Extract
 			this.lDestination.TabIndex = 14;
 			this.lDestination.Text = "Destination folder:";
 			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
+			this.label1.Location = new System.Drawing.Point(13, 58);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(235, 13);
+			this.label1.TabIndex = 16;
+			this.label1.Text = "All data layers will be clipped to the viewed area.";
+			// 
 			// DownloadSettings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.bCancel;
 			this.ClientSize = new System.Drawing.Size(547, 498);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lDestination);
 			this.Controls.Add(this.cFolderControl);
 			this.Controls.Add(this.lvDatasets);
@@ -196,7 +208,7 @@ namespace Dapple.Extract
 			this.Name = "DownloadSettings";
 			this.ShowIcon = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Extract Data Layers...";
+			this.Text = "Extract Data Layers";
 			this.Shown += new System.EventHandler(this.DownloadSettings_Shown);
 			this.pBottom.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.cErrorProvider)).EndInit();
@@ -219,6 +231,7 @@ namespace Dapple.Extract
 		private Geosoft.OpenGX.UtilityForms.FolderEditControl cFolderControl;
 		private System.Windows.Forms.ErrorProvider cErrorProvider;
 		private Geosoft.OpenGX.UtilityForms.LabelControl lDestination;
+		private System.Windows.Forms.Label label1;
    }
 }
 

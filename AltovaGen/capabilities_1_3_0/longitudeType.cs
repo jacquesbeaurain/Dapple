@@ -54,11 +54,11 @@ namespace capabilities_1_3_0.wms
 		}
 		public  SchemaDouble GetMaxInclusive()
 		{
-			return new SchemaDouble("180");
+			return new SchemaDouble("360");
 		}
 		public  SchemaDouble GetMinInclusive()
 		{
-			return new SchemaDouble("-180");
+			return new SchemaDouble("-360");
 		}
 	}
 }

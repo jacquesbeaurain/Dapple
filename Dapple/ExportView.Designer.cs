@@ -29,7 +29,6 @@ namespace Dapple
       private void InitializeComponent()
       {
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportView));
 			this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOK = new System.Windows.Forms.Button();
@@ -108,7 +107,6 @@ namespace Dapple
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOK);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExportView";

@@ -15,6 +15,7 @@ using Geosoft.DotNetTools;
 
 using WorldWind.PluginEngine;
 using System.Collections;
+using System.Drawing;
 
 namespace Dapple
 {
@@ -287,6 +288,25 @@ namespace Dapple
          }
       }
 
+		public bool SelectedIsFavorite
+		{
+			get
+			{
+				if (SelectedNode.Tag is Server)
+				{
+					return ((Server)SelectedNode.Tag).Url.Equals(m_szDefaultServer);
+				}
+				else if (SelectedNode.Tag is ServerBuilder)
+				{
+					return ((ServerBuilder)SelectedNode.Tag).Uri.ToString().Equals(m_szDefaultServer);
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
 		#endregion
 
 		#region Catalog Load Handler
@@ -452,6 +472,7 @@ namespace Dapple
 			if (bUpdateTree)
 			{
 				treeNode = m_hWMSRootNode.Nodes.Add(strCapUrl);
+				treeNode.ForeColor = blEnabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
             treeNode.SelectedImageIndex = treeNode.ImageIndex = Dapple.MainForm.ImageListIndex("disserver");
 				treeNode.Tag = builder;
             this.SelectedServer = builder;
@@ -474,6 +495,7 @@ namespace Dapple
          if (bUpdateTree)
          {
             TreeNode treeNode = m_hArcIMSRootNode.Nodes.Add(serverUri.ToString());
+				treeNode.ForeColor = blEnabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
             treeNode.SelectedImageIndex = treeNode.ImageIndex = Dapple.MainForm.ImageListIndex("disserver");
             treeNode.Tag = builderEntry;
             this.SelectedServer = builderEntry;
@@ -1052,6 +1074,16 @@ namespace Dapple
                oNode.ForeColor = this.ForeColor;
             }
          }
+			else if (oNode.Tag is ServerBuilder)
+			{
+				oNode.ForeColor = ((ServerBuilder)oNode.Tag).Enabled ? this.ForeColor : System.Drawing.Color.Gray;
+				oNode.NodeFont = ((ServerBuilder)oNode.Tag).Uri.ToString().Equals(m_szDefaultServer) ? new Font(this.Font, FontStyle.Bold) : this.Font;
+			}
+			else if (oNode.Tag is Server)
+			{
+				oNode.ForeColor = ((Server)oNode.Tag).Enabled ? this.ForeColor : System.Drawing.Color.Gray;
+				oNode.NodeFont = ((Server)oNode.Tag).Url.Equals(m_szDefaultServer) ? new Font(this.Font, FontStyle.Bold) : this.Font;
+			}
          else
          {
             oNode.ForeColor = this.ForeColor;
@@ -1303,7 +1335,6 @@ namespace Dapple
 
       private void cContextMenu_Server_Opening(object sender, System.ComponentModel.CancelEventArgs e)
       {
-         cMenuItem_AddBrowserMap.Enabled = SelectedNode.Tag is Server;
 
          bool blServerEnabled = false;
          if (SelectedNode.Tag is ServerBuilder) blServerEnabled = ((ServerBuilder)SelectedNode.Tag).Enabled;
@@ -1331,13 +1362,14 @@ namespace Dapple
 
          if (SelectedNode.Tag is Server)
          {
-            cMenuItem_SetDefault.Enabled = !(m_szDefaultServer.Equals(((Server)SelectedNode.Tag).Url));
+            cMenuItem_SetDefault.Enabled = blServerEnabled && !(m_szDefaultServer.Equals(((Server)SelectedNode.Tag).Url));
          }
          else if (SelectedNode.Tag is ServerBuilder)
          {
-            cMenuItem_SetDefault.Enabled = !(m_szDefaultServer.Equals(((ServerBuilder)SelectedNode.Tag).Uri.ToString()));
+				cMenuItem_SetDefault.Enabled = blServerEnabled && !(m_szDefaultServer.Equals(((ServerBuilder)SelectedNode.Tag).Uri.ToString()));
          }
 
+			cMenuItem_AddBrowserMap.Enabled = blServerEnabled && SelectedNode.Tag is Server;
       }
 
       private void cContextMenu_Add_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1720,15 +1752,33 @@ namespace Dapple
 
       public void CmdToggleServerEnabled()
       {
-         if (SelectedNode.Tag is ServerBuilder)
+			if (SelectedNode.Tag is ServerBuilder)
          {
-            ((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
+				if (SelectedIsFavorite && ((ServerBuilder)SelectedNode.Tag).Enabled)
+				{
+					if (MessageBox.Show(this.TopLevelControl, "Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disabling Server", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+						return;
+
+					m_szDefaultServer = String.Empty;
+				}
+
+				((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
+				SelectedNode.ForeColor = ((ServerBuilder)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
 
             LoadFinished();
          }
          else if (SelectedNode.Tag is Server)
          {
+				if (SelectedIsFavorite && ((Server)SelectedNode.Tag).Enabled)
+				{
+					if (MessageBox.Show(this.TopLevelControl, "Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disabling Server", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+						return;
+
+					m_szDefaultServer = String.Empty;
+				}
+
             ((Server)SelectedNode.Tag).Enabled ^= true;
+				SelectedNode.ForeColor = ((Server)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
             GetCatalogHierarchy();
 
             LoadFinished();

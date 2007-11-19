@@ -78,6 +78,8 @@ namespace Dapple.Extract
             else
                iImageIndex = MainForm.ImageListIndex("layer");
 
+				if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
+					iImageIndex = MainForm.ImageListIndex("error");
 
             ListViewItem oItem = new ListViewItem(oBuilder.Title);
             oItem.ImageIndex = iImageIndex;
@@ -114,6 +116,11 @@ namespace Dapple.Extract
       /// <returns></returns>
       private DownloadOptions CreateUserControl(Dapple.LayerGeneration.LayerBuilder oBuilder)
       {
+			if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
+			{
+				return new Disabled();
+			}
+
          DownloadOptions oControl = null;
          if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder)
          {

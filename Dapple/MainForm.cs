@@ -375,9 +375,12 @@ namespace Dapple
             m_oImageList.Images.Add("dap_map", Resources.dap_map);
 				m_oImageList.Images.Add("dap_generic", Resources.dap_map);
             m_oImageList.Images.Add("dap_picture", Resources.dap_picture);
+				m_oImageList.Images.Add("dap_picturesection", Resources.dap_picture);
             m_oImageList.Images.Add("dap_point", Resources.dap_point);
             m_oImageList.Images.Add("dap_spf", Resources.dap_spf);
             m_oImageList.Images.Add("dap_voxel", Resources.dap_voxel);
+				m_oImageList.Images.Add("dap_imageserver", Resources.arcims);
+				m_oImageList.Images.Add("dap_gridsection", Resources.dap_grid);
             m_oImageList.Images.Add("folder", Resources.folder);
             m_oImageList.Images.Add("folder_open", Resources.folder_open);
             m_oImageList.Images.Add("loading", Resources.loading);
@@ -1781,7 +1784,7 @@ namespace Dapple
             case "voxel":
                return ImageListIndex("dap_voxel");
             case "imageserver":
-               return ImageListIndex("nasa");
+					return ImageListIndex("arcims");
             case "arcgis":
                return ImageListIndex("dap_arcgis");
             default:

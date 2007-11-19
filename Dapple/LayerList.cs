@@ -117,11 +117,11 @@ namespace Dapple
          get
          {
             List<LayerBuilder> oResult = new List<LayerBuilder>();
-				GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
-            foreach (LayerBuilder oBuilder in m_oLayers)
-            {
-               if (oBuilder.Visible && oBuilder.Extents.Intersects(oViewedArea)) oResult.Add(oBuilder);
-            }
+
+				foreach (LayerBuilder oBuilder in m_oLayers)
+				{
+					if (oBuilder.Visible) oResult.Add(oBuilder);
+				}
             return oResult;
          }
       }
@@ -162,7 +162,7 @@ namespace Dapple
 
             foreach (LayerBuilder oBuilder in this.AllLayers)
             {
-               if (oBuilder.Visible && oBuilder.bIsDownloading(out temp, out temp2))
+               if (oBuilder.Visible && !oBuilder.Equals(m_hBaseLayer) && oBuilder.bIsDownloading(out temp, out temp2))
                   return true;
             }
             return false;

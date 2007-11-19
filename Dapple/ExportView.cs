@@ -90,7 +90,7 @@ namespace Dapple
 			cFilenameControl.GetFilePath(ref strPath);
 			if (strPath.Length <= 0 || strPath[strPath.Length - 1] == Path.DirectorySeparatorChar)
 			{
-				cFilenameErrorProvider.SetError(cFilenameControl, "Must specify a filename.");
+				cFilenameErrorProvider.SetError(cFilenameControl, "A file name is required.");
 				e.Cancel = true;
 			}
 			else

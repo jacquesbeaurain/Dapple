@@ -89,6 +89,7 @@ namespace Dapple
 			  this.atmosphereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			  this.globalCloudsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			  this.atmosphericEffectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			  this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			  this.toolStripMenuItemverticalExagerration = new System.Windows.Forms.ToolStripMenuItem();
 			  this.toolStripMenuItemedit = new System.Windows.Forms.ToolStripMenuItem();
 			  this.lastViewSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -159,7 +160,6 @@ namespace Dapple
 			  this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			  this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			  this.timerNavigation = new System.Windows.Forms.Timer(this.components);
-			  this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			  this.statusStrip.SuspendLayout();
 			  this.menuStrip.SuspendLayout();
 			  this.splitContainerMain.Panel1.SuspendLayout();
@@ -347,7 +347,7 @@ namespace Dapple
             this.cOpenHomeViewMenuItem});
 			  this.toolStripMenuItemOpenView.Image = global::Dapple.Properties.Resources.openview;
 			  this.toolStripMenuItemOpenView.Name = "toolStripMenuItemOpenView";
-			  this.toolStripMenuItemOpenView.Size = new System.Drawing.Size(176, 22);
+			  this.toolStripMenuItemOpenView.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemOpenView.Text = "Open View";
 			  // 
 			  // toolStripMenuItemOpenSaved
@@ -370,7 +370,7 @@ namespace Dapple
 			  // 
 			  this.setAsMyHomeViewToolStripMenuItem.Image = global::Dapple.Properties.Resources.view_home;
 			  this.setAsMyHomeViewToolStripMenuItem.Name = "setAsMyHomeViewToolStripMenuItem";
-			  this.setAsMyHomeViewToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+			  this.setAsMyHomeViewToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			  this.setAsMyHomeViewToolStripMenuItem.Text = "Set as My Home View";
 			  this.setAsMyHomeViewToolStripMenuItem.Click += new System.EventHandler(this.setAsMyHomeViewToolStripMenuItem_Click);
 			  // 
@@ -378,7 +378,7 @@ namespace Dapple
 			  // 
 			  this.toolStripMenuItemsave.Image = global::Dapple.Properties.Resources.view_save;
 			  this.toolStripMenuItemsave.Name = "toolStripMenuItemsave";
-			  this.toolStripMenuItemsave.Size = new System.Drawing.Size(176, 22);
+			  this.toolStripMenuItemsave.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemsave.Text = "Save View As...";
 			  this.toolStripMenuItemsave.Click += new System.EventHandler(this.toolStripMenuItemsave_Click);
 			  // 
@@ -386,20 +386,20 @@ namespace Dapple
 			  // 
 			  this.toolStripMenuItemsend.Image = global::Dapple.Properties.Resources.email_view;
 			  this.toolStripMenuItemsend.Name = "toolStripMenuItemsend";
-			  this.toolStripMenuItemsend.Size = new System.Drawing.Size(176, 22);
+			  this.toolStripMenuItemsend.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemsend.Text = "Send View To...";
 			  this.toolStripMenuItemsend.Click += new System.EventHandler(this.toolStripMenuItemsend_Click);
 			  // 
 			  // toolStripSeparator10
 			  // 
 			  this.toolStripSeparator10.Name = "toolStripSeparator10";
-			  this.toolStripSeparator10.Size = new System.Drawing.Size(173, 6);
+			  this.toolStripSeparator10.Size = new System.Drawing.Size(174, 6);
 			  // 
 			  // toolStripMenuItemOpen
 			  // 
 			  this.toolStripMenuItemOpen.Image = global::Dapple.Properties.Resources.import;
 			  this.toolStripMenuItemOpen.Name = "toolStripMenuItemOpen";
-			  this.toolStripMenuItemOpen.Size = new System.Drawing.Size(176, 22);
+			  this.toolStripMenuItemOpen.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemOpen.Text = "Open Image...";
 			  this.toolStripMenuItemOpen.Click += new System.EventHandler(this.toolStripMenuItemOpen_Click);
 			  // 
@@ -414,13 +414,13 @@ namespace Dapple
 			  // toolStripSeparator12
 			  // 
 			  this.toolStripSeparator12.Name = "toolStripSeparator12";
-			  this.toolStripSeparator12.Size = new System.Drawing.Size(173, 6);
+			  this.toolStripSeparator12.Size = new System.Drawing.Size(174, 6);
 			  // 
 			  // toolStripMenuItemexit
 			  // 
 			  this.toolStripMenuItemexit.Image = global::Dapple.Properties.Resources.exit;
 			  this.toolStripMenuItemexit.Name = "toolStripMenuItemexit";
-			  this.toolStripMenuItemexit.Size = new System.Drawing.Size(176, 22);
+			  this.toolStripMenuItemexit.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemexit.Text = "Exit";
 			  this.toolStripMenuItemexit.Click += new System.EventHandler(this.toolStripMenuItemexit_Click);
 			  // 
@@ -615,7 +615,7 @@ namespace Dapple
 			  // scaleBarToolStripMenuItem
 			  // 
 			  this.scaleBarToolStripMenuItem.Name = "scaleBarToolStripMenuItem";
-			  this.scaleBarToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.scaleBarToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			  this.scaleBarToolStripMenuItem.Text = "Scale Bar";
 			  this.scaleBarToolStripMenuItem.Click += new System.EventHandler(this.scaleBarToolStripMenuItem_Click);
 			  // 
@@ -623,7 +623,7 @@ namespace Dapple
 			  // 
 			  this.toolStripCrossHairs.CheckOnClick = true;
 			  this.toolStripCrossHairs.Name = "toolStripCrossHairs";
-			  this.toolStripCrossHairs.Size = new System.Drawing.Size(177, 22);
+			  this.toolStripCrossHairs.Size = new System.Drawing.Size(179, 22);
 			  this.toolStripCrossHairs.Text = "Cross-hair";
 			  this.toolStripCrossHairs.Click += new System.EventHandler(this.toolStripCrossHairs_Click);
 			  // 
@@ -631,7 +631,7 @@ namespace Dapple
 			  // 
 			  this.toolStripMenuItemcompass.CheckOnClick = true;
 			  this.toolStripMenuItemcompass.Name = "toolStripMenuItemcompass";
-			  this.toolStripMenuItemcompass.Size = new System.Drawing.Size(177, 22);
+			  this.toolStripMenuItemcompass.Size = new System.Drawing.Size(179, 22);
 			  this.toolStripMenuItemcompass.Text = "Compass";
 			  this.toolStripMenuItemcompass.Click += new System.EventHandler(this.toolStripMenuItemcompass_Click);
 			  // 
@@ -654,7 +654,7 @@ namespace Dapple
 			  // toolStripSeparator16
 			  // 
 			  this.toolStripSeparator16.Name = "toolStripSeparator16";
-			  this.toolStripSeparator16.Size = new System.Drawing.Size(174, 6);
+			  this.toolStripSeparator16.Size = new System.Drawing.Size(176, 6);
 			  // 
 			  // sunshadingEffectsToolStripMenuItem
 			  // 
@@ -663,7 +663,7 @@ namespace Dapple
             this.syncSunShadingToTimeToolstripMenuItem,
             this.disableSunShadingToolStripMenuItem});
 			  this.sunshadingEffectsToolStripMenuItem.Name = "sunshadingEffectsToolStripMenuItem";
-			  this.sunshadingEffectsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.sunshadingEffectsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			  this.sunshadingEffectsToolStripMenuItem.Text = "Sunshading";
 			  // 
 			  // enableSunShadingToolStripMenuItem
@@ -677,7 +677,7 @@ namespace Dapple
 			  // 
 			  this.syncSunShadingToTimeToolstripMenuItem.Name = "syncSunShadingToTimeToolstripMenuItem";
 			  this.syncSunShadingToTimeToolstripMenuItem.Size = new System.Drawing.Size(259, 22);
-			  this.syncSunShadingToTimeToolstripMenuItem.Text = "Synced to current time";
+			  this.syncSunShadingToTimeToolstripMenuItem.Text = "Synced to Current Time";
 			  this.syncSunShadingToTimeToolstripMenuItem.Click += new System.EventHandler(this.syncSunShadingToTimeToolstripMenuItem_Click);
 			  // 
 			  // disableSunShadingToolStripMenuItem
@@ -693,7 +693,7 @@ namespace Dapple
             this.globalCloudsToolStripMenuItem,
             this.atmosphericEffectsToolStripMenuItem});
 			  this.atmosphereToolStripMenuItem.Name = "atmosphereToolStripMenuItem";
-			  this.atmosphereToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			  this.atmosphereToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			  this.atmosphereToolStripMenuItem.Text = "Atmosphere";
 			  // 
 			  // globalCloudsToolStripMenuItem
@@ -710,11 +710,16 @@ namespace Dapple
 			  this.atmosphericEffectsToolStripMenuItem.Text = "Atmospheric Scattering";
 			  this.atmosphericEffectsToolStripMenuItem.Click += new System.EventHandler(this.atmosphericEffectsToolStripMenuItem_Click);
 			  // 
+			  // toolStripSeparator5
+			  // 
+			  this.toolStripSeparator5.Name = "toolStripSeparator5";
+			  this.toolStripSeparator5.Size = new System.Drawing.Size(176, 6);
+			  // 
 			  // toolStripMenuItemverticalExagerration
 			  // 
 			  this.toolStripMenuItemverticalExagerration.Image = global::Dapple.Properties.Resources.vertical_exag;
 			  this.toolStripMenuItemverticalExagerration.Name = "toolStripMenuItemverticalExagerration";
-			  this.toolStripMenuItemverticalExagerration.Size = new System.Drawing.Size(177, 22);
+			  this.toolStripMenuItemverticalExagerration.Size = new System.Drawing.Size(179, 22);
 			  this.toolStripMenuItemverticalExagerration.Text = "Vertical Exaggeration";
 			  // 
 			  // toolStripMenuItemedit
@@ -1474,11 +1479,6 @@ namespace Dapple
 			  // timerNavigation
 			  // 
 			  this.timerNavigation.Tick += new System.EventHandler(this.timerNavigation_Tick);
-			  // 
-			  // toolStripSeparator5
-			  // 
-			  this.toolStripSeparator5.Name = "toolStripSeparator5";
-			  this.toolStripSeparator5.Size = new System.Drawing.Size(176, 6);
 			  // 
 			  // MainForm
 			  // 
