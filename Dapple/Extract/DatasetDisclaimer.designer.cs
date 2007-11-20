@@ -105,9 +105,9 @@ namespace Dapple.Extract
 			this.lDisclaimer.Dock = System.Windows.Forms.DockStyle.Top;
 			this.lDisclaimer.Location = new System.Drawing.Point(0, 148);
 			this.lDisclaimer.Name = "lDisclaimer";
-			this.lDisclaimer.Size = new System.Drawing.Size(55, 13);
+			this.lDisclaimer.Size = new System.Drawing.Size(176, 13);
 			this.lDisclaimer.TabIndex = 16;
-			this.lDisclaimer.Text = "Disclaimer";
+			this.lDisclaimer.Text = "Copyright / Restrictions / Disclaimer";
 			// 
 			// DatasetDisclaimer
 			// 
@@ -126,7 +126,7 @@ namespace Dapple.Extract
 			this.Name = "DatasetDisclaimer";
 			this.ShowIcon = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Download Settings";
+			this.Text = "Copyright / Restrictions / Disclaimer";
 			this.pBottom.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
