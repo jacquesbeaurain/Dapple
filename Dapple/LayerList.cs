@@ -1270,7 +1270,7 @@ namespace Dapple
                   SaveGeoImage(oExportedImage, oExportDialog.OutputName, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
                }
 
-					MessageBox.Show(this, "Snapshot created");
+					MessageBox.Show(this, "GeoTIFF snapshot created.");
             }
          }
          /*catch (Exception exc)
