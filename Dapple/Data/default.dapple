@@ -69,9 +69,6 @@
                <wmscatalog capabilitiesurl="http://apps1.gdr.nrcan.gc.ca/cgi-bin/canmin_en-ca_ows"/>
             </builderentry>
             <builderentry>
-               <wmscatalog capabilitiesurl="http://www.ga.gov.au/bin/getmap.pl"/>
-            </builderentry>
-            <builderentry>
                <wmscatalog capabilitiesurl="http://apps1.gdr.nrcan.gc.ca/cgi-bin/worldmin_en-ca_ows"/>
             </builderentry>
             <builderentry>
@@ -86,12 +83,24 @@
             <builderentry>
                <wmscatalog capabilitiesurl="http://wms.jpl.nasa.gov/wms.cgi"/>
             </builderentry>
-            <builderentry>
-               <arcimscatalog capabilitiesurl="http://gdr.ess.nrcan.gc.ca/servlet/com.esri.esrimap.Esrimap" />
-            </builderentry>
+				<builderentry>
+					<wmscatalog capabilitiesurl="http://demo.ermapper.com/imagex/ecw_wms.dll"/>
+				</builderentry>
             <builderentry>
                <arcimscatalog capabilitiesurl="http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap" />
             </builderentry>
+				<builderentry>
+					<arcimscatalog capabilitiesurl="http://gisdata.usgs.gov/servlet/com.esri.esrimap.Esrimap" />
+				</builderentry>
+				<builderentry>
+					<arcimscatalog capabilitiesurl="http://map.ngdc.noaa.gov/servlet/com.esri.esrimap.Esrimap" />
+				</builderentry>
+				<builderentry>
+					<arcimscatalog capabilitiesurl="http://mrdata.usgs.gov/servlet/com.esri.esrimap.Esrimap" />
+				</builderentry>
+				<builderentry>
+					<arcimscatalog capabilitiesurl="http://gdw.apfo.usda.gov/servlet/com.esri.esrimap.Esrimap" />
+				</builderentry>
          </builderdirectory>
       </builderentry>
    </servers>

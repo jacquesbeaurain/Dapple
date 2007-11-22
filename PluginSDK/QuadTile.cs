@@ -1745,11 +1745,13 @@ namespace WorldWind.Renderable
 						GeographicBoundingBox geoBox = new GeographicBoundingBox(this.north, this.south, this.west, this.east);
 						img = Image.FromFile(imageFilePath);
 
-						iWidth = (int)Math.Round((this.east - this.west) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
-						iHeight = (int)Math.Round((this.north - this.south) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
-						iX = (int)Math.Round((this.west - expInfo.dMinLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
-						iY = (int)Math.Round((expInfo.dMaxLat - this.north) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
-						expInfo.gr.DrawImage(img, new Rectangle(iX, iY, iWidth, iHeight));
+						iWidth = (int)Math.Ceiling((this.east - this.west) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
+						iHeight = (int)Math.Ceiling((this.north - this.south) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
+						iX = (int)Math.Floor((this.west - expInfo.dMinLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
+						iY = (int)Math.Floor((expInfo.dMaxLat - this.north) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
+						System.Drawing.Imaging.ImageAttributes oAttrs = new System.Drawing.Imaging.ImageAttributes();
+						oAttrs.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY); // This "eliminates" gaps between images
+						expInfo.gr.DrawImage(img, new Rectangle(iX, iY, iWidth, iHeight), 0.0f, 0.0f, (float)img.Width, (float)img.Height, GraphicsUnit.Pixel, oAttrs);
 					}
 					catch
 					{

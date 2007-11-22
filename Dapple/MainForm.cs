@@ -651,7 +651,7 @@ namespace Dapple
             if (IsMontajChildProcess)
             {
                cLayerList.OMFeaturesEnabled = true;
-               this.Text = "Find Data";
+               //this.Text = "Find Data";
 
                m_bOpenMap = false;
 

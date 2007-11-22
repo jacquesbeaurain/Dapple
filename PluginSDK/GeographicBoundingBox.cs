@@ -59,6 +59,21 @@ namespace WorldWind
             Math.Max(Math.Max(Math.Max(quad.X1, quad.X2), quad.X3), quad.X4));
       }
 
+		public double Longitude
+		{
+			get { return East - West; }
+		}
+
+		public double Latitude
+		{
+			get { return North - South; }
+		}
+
+		public double Height
+		{
+			get { return MaximumAltitude - MinimumAltitude; }
+		}
+
 		public bool Intersects(GeographicBoundingBox boundingBox)
 		{
 			if(North <= boundingBox.South ||

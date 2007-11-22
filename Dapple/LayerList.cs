@@ -472,6 +472,7 @@ namespace Dapple
       private void cLayerList_ItemCheck(object sender, ItemCheckEventArgs e)
       {
          m_oLayers[e.Index].Visible = e.NewValue == CheckState.Checked;
+			SetButtonState();
       }
 
       private void cLayerList_MouseMove(object sender, MouseEventArgs e)
@@ -1114,7 +1115,7 @@ namespace Dapple
 
             if (oExportDialog.ShowDialog(this) == DialogResult.OK)
             {
-					String szFilename = Path.Combine(oExportDialog.Folder, Path.ChangeExtension(oExportDialog.OutputName, ".tif"));
+					String szFilename = Path.ChangeExtension(oExportDialog.FullFileName, ".tif");
 
 					// --- Delete all the files that OM generates, so we don't get invalid projections ---
 					if (System.IO.File.Exists(szFilename))
@@ -1133,7 +1134,6 @@ namespace Dapple
 
                // Determine output parameters
                GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
-               int iResolution = -1;
                int iExportPixelsX, iExportPixelsY;
 
                // Minimize the estimated extents to what is available
@@ -1157,30 +1157,20 @@ namespace Dapple
                oViewedArea.South = Math.Max(oViewedArea.South, oExtractArea.South);
 
                // Determine the maximum resolution based on the highest res in layers
-               if (iResolution == -1)
+					double dPixelsPerDegree = -1;
+               foreach (ExportEntry oExportEntry in aExportList)
                {
-                  double dXRes, dYRes;
-                  foreach (ExportEntry oExportEntry in aExportList)
-                  {
-                     dXRes = (double)oExportEntry.Info.iPixelsX / (oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon);
-                     dYRes = (double)oExportEntry.Info.iPixelsY / (oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat);
-                     iResolution = Math.Max(iResolution, (int)Math.Round(Math.Max(dXRes * (oViewedArea.East - oViewedArea.West), dYRes * (oViewedArea.North - oViewedArea.South))));
-                  }
-               }
-               if (iResolution <= 0)
-                  return;
-
-               if (oViewedArea.North - oViewedArea.South > oViewedArea.East - oViewedArea.West)
-               {
-                  iExportPixelsY = iResolution;
-                  iExportPixelsX = (int)Math.Round((double)iResolution * (oViewedArea.East - oViewedArea.West) / (oViewedArea.North - oViewedArea.South));
-               }
-               else
-               {
-                  iExportPixelsX = iResolution;
-                  iExportPixelsY = (int)Math.Round((double)iResolution * (oViewedArea.North - oViewedArea.South) / (oViewedArea.East - oViewedArea.West));
+                  double dXRes = (double)oExportEntry.Info.iPixelsX / (oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon);
+                  double dYRes = (double)oExportEntry.Info.iPixelsY / (oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat);
+						dPixelsPerDegree = Math.Max(dPixelsPerDegree, Math.Max(dXRes, dYRes));
                }
 
+					double dMaxPixelsPerDegree = Math.Sqrt((5120 * 2560) / (oViewedArea.Latitude * oViewedArea.Longitude));
+					if (dPixelsPerDegree > dMaxPixelsPerDegree)
+						dPixelsPerDegree = dMaxPixelsPerDegree;
+
+					iExportPixelsX = (int)(oViewedArea.Longitude * dPixelsPerDegree);
+					iExportPixelsY = (int)(oViewedArea.Latitude * dPixelsPerDegree);
 
                // Make geotiff metadata file to use for georeferencing images
                szGeoTiff = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -1213,18 +1203,15 @@ namespace Dapple
                      oEIGraphics.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
                      foreach (ExportEntry oExportEntry in aExportList)
                      {
-                        // Limit info for layer to area we are looking at
+								// Clip layer export to viewed area
+								if (oExportEntry.Info.dMinLon < oViewedArea.West) oExportEntry.Info.dMinLon = oViewedArea.West;
+								if (oExportEntry.Info.dMaxLon > oViewedArea.East) oExportEntry.Info.dMaxLon = oViewedArea.East;
+								if (oExportEntry.Info.dMinLat < oViewedArea.South) oExportEntry.Info.dMinLat = oViewedArea.South;
+								if (oExportEntry.Info.dMaxLat > oViewedArea.North) oExportEntry.Info.dMaxLat = oViewedArea.North;
 
-                        double dExpXRes = (double)oExportEntry.Info.iPixelsX / (oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon);
-                        double dExpYRes = (double)oExportEntry.Info.iPixelsY / (oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat);
-                        int iExpOffsetX = (int)Math.Round((oViewedArea.West - oExportEntry.Info.dMinLon) * dExpXRes);
-                        int iExpOffsetY = (int)Math.Round((oExportEntry.Info.dMaxLat - oViewedArea.North) * dExpYRes);
-                        oExportEntry.Info.iPixelsX = (int)Math.Round((oViewedArea.East - oViewedArea.West) * dExpXRes);
-                        oExportEntry.Info.iPixelsY = (int)Math.Round((oViewedArea.North - oViewedArea.South) * dExpYRes);
-                        oExportEntry.Info.dMinLon = oExportEntry.Info.dMinLon + (double)iExpOffsetX / dExpXRes;
-                        oExportEntry.Info.dMaxLat = oExportEntry.Info.dMaxLat - (double)iExpOffsetY / dExpYRes;
-                        oExportEntry.Info.dMaxLon = oExportEntry.Info.dMinLon + (double)oExportEntry.Info.iPixelsX / dExpXRes;
-                        oExportEntry.Info.dMinLat = oExportEntry.Info.dMaxLat - (double)oExportEntry.Info.iPixelsY / dExpYRes;
+								// Re-scale pixels
+								oExportEntry.Info.iPixelsX = (int)((oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon) * dPixelsPerDegree);
+								oExportEntry.Info.iPixelsY = (int)((oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat) * dPixelsPerDegree);
 
                         using (Bitmap oLayerImage = new Bitmap(oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY))
                         {
@@ -1236,8 +1223,8 @@ namespace Dapple
 
                            iOffsetX = (int)Math.Round((oExportEntry.Info.dMinLon - oViewedArea.West) * (double)iExportPixelsX / (oViewedArea.East - oViewedArea.West));
                            iOffsetY = (int)Math.Round((oViewedArea.North - oExportEntry.Info.dMaxLat) * (double)iExportPixelsY / (oViewedArea.North - oViewedArea.South));
-                           iWidth = (int)Math.Round((oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon) * (double)iExportPixelsX / (oViewedArea.East - oViewedArea.West));
-                           iHeight = (int)Math.Round((oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat) * (double)iExportPixelsY / (oViewedArea.North - oViewedArea.South));
+                           iWidth = oExportEntry.Info.iPixelsX;
+									iHeight = oExportEntry.Info.iPixelsY;
 
                            ImageAttributes imgAtt = new ImageAttributes();
                            float[][] fMat = { 
@@ -1267,7 +1254,7 @@ namespace Dapple
                         }
                      }
                   }
-                  SaveGeoImage(oExportedImage, oExportDialog.OutputName, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
+                  SaveGeoImage(oExportedImage, szFilename, szGeoTiff);
                }
 
 					MessageBox.Show(this, "GeoTIFF snapshot created.");
@@ -1290,31 +1277,28 @@ namespace Dapple
       /// <summary>
       /// Saves a bitmap to a GeoTiff, or if another format has been requested, just saves it.
       /// </summary>
-      /// <param name="oBitmap"></param>
-      /// <param name="szName"></param>
-      /// <param name="strFolder"></param>
-      /// <param name="szFormat"></param>
-      /// <param name="szGeotiff"></param>
-      private void SaveGeoImage(Bitmap oBitmap, string szName, string strFolder, string szFormat, string szGeotiff)
+      private void SaveGeoImage(Bitmap oBitmap, string szResultFilename, string szGeotiff)
       {
-         ImageFormat eFormat = ImageFormat.Tiff;
+			if (!File.Exists(szGeotiff)) throw new ArgumentException("Could not find tiff to georefrerence");
 
-         if (szFormat.Equals(".bmp")) eFormat = ImageFormat.Bmp;
-         else if (szFormat.Equals(".png")) eFormat = ImageFormat.Png;
-         else if (szFormat.Equals(".gif")) eFormat = ImageFormat.Gif;
+			ImageFormat eFormat = ImageFormat.Tiff;
 
-         foreach (char c in Path.GetInvalidFileNameChars())
-            szName = szName.Replace(c, '_');
+			String szExtension = Path.GetExtension(szResultFilename);
+
+         if (szExtension.Equals("bmp", StringComparison.InvariantCultureIgnoreCase)) eFormat = ImageFormat.Bmp;
+			else if (szExtension.Equals("png", StringComparison.InvariantCultureIgnoreCase)) eFormat = ImageFormat.Png;
+			else if (szExtension.Equals("gif", StringComparison.InvariantCultureIgnoreCase)) eFormat = ImageFormat.Gif;
+
 
          if (eFormat == ImageFormat.Tiff)
          {
-            string szTempImageFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + szFormat);
+            string szTempImageFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + szExtension);
             oBitmap.Save(szTempImageFile, eFormat);
 
             ProcessStartInfo psi = new ProcessStartInfo(Path.GetDirectoryName(Application.ExecutablePath) + @"\System\geotifcp.exe");
             psi.UseShellExecute = false;
             psi.CreateNoWindow = true;
-            psi.Arguments = "-g \"" + szGeotiff + "\" \"" + szTempImageFile + "\" \"" + Path.Combine(strFolder, szName + szFormat) + "\"";
+            psi.Arguments = "-g \"" + szGeotiff + "\" \"" + szTempImageFile + "\" \"" + szResultFilename + "\"";
 
             using (Process p = Process.Start(psi))
                p.WaitForExit();
@@ -1329,7 +1313,7 @@ namespace Dapple
          }
          else
          {
-            oBitmap.Save(Path.Combine(strFolder, szName + szFormat), eFormat);
+            oBitmap.Save(szResultFilename, eFormat);
          }
       }
 

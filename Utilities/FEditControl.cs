@@ -241,7 +241,7 @@ namespace Geosoft.OpenGX.UtilityForms
 			this.m_tbFileName.Location = new System.Drawing.Point(0, 0);
 			this.m_tbFileName.MinimumSize = new System.Drawing.Size(50, 21);
 			this.m_tbFileName.Name = "m_tbFileName";
-			this.m_tbFileName.Size = new System.Drawing.Size(148, 21);
+			this.m_tbFileName.Size = new System.Drawing.Size(156, 21);
 			this.m_tbFileName.TabIndex = 0;
 			this.m_tbFileName.TextChanged += new System.EventHandler(this.m_tbFileName_TextChanged);
 			// 
@@ -256,7 +256,7 @@ namespace Geosoft.OpenGX.UtilityForms
 			this.m_cmbFileName.Margin = new System.Windows.Forms.Padding(0);
 			this.m_cmbFileName.MinimumSize = new System.Drawing.Size(50, 0);
 			this.m_cmbFileName.Name = "m_cmbFileName";
-			this.m_cmbFileName.Size = new System.Drawing.Size(157, 21);
+			this.m_cmbFileName.Size = new System.Drawing.Size(165, 21);
 			this.m_cmbFileName.TabIndex = 1;
 			this.m_cmbFileName.SelectedIndexChanged += new System.EventHandler(this.m_cmbFileName_SelectedIndexChanged);
 			this.m_cmbFileName.TextUpdate += new System.EventHandler(this.m_cmbFileName_TextUpdate);
@@ -265,8 +265,8 @@ namespace Geosoft.OpenGX.UtilityForms
 			// 
 			this.btnBrowse.Dock = System.Windows.Forms.DockStyle.Right;
 			this.btnBrowse.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnBrowse.Location = new System.Drawing.Point(159, 0);
-			this.btnBrowse.Margin = new System.Windows.Forms.Padding(2, 3, 3, 3);
+			this.btnBrowse.Location = new System.Drawing.Point(167, 0);
+			this.btnBrowse.Margin = new System.Windows.Forms.Padding(0);
 			this.btnBrowse.MaximumSize = new System.Drawing.Size(21, 21);
 			this.btnBrowse.MinimumSize = new System.Drawing.Size(21, 21);
 			this.btnBrowse.Name = "btnBrowse";
@@ -290,7 +290,7 @@ namespace Geosoft.OpenGX.UtilityForms
 			this.MaximumSize = new System.Drawing.Size(400, 21);
 			this.MinimumSize = new System.Drawing.Size(50, 21);
 			this.Name = "FEditControl";
-			this.Size = new System.Drawing.Size(180, 21);
+			this.Size = new System.Drawing.Size(188, 21);
 			((System.ComponentModel.ISupportInitialize)(this.m_errorProvider)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();

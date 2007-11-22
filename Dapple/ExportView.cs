@@ -12,10 +12,7 @@ namespace Dapple
 {
    public partial class ExportView : Form
    {
-      public string OutputName;
-      public string Folder;
-      public string OutputFormat;
-
+		private String m_szResult = null;
       private string m_strConfigDir;
 
       public ExportView(string szConfigDir): this(szConfigDir, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
@@ -48,35 +45,25 @@ namespace Dapple
          }
 
          cFilenameControl.Name = "fEditControl";
+			cFilenameControl.Filters = "GeoTIFF(*.tif)|*.tif";
       }
+
+		public String FullFileName
+		{
+			get
+			{
+				return m_szResult;
+			}
+		}
 
       private void btnOK_Click(object sender, EventArgs e)
       {
-         string strError = "";
+         string strError = String.Empty;
          if (cFilenameControl.bIsValid(ref strError))
          {
-            bool bStripExtension = true;
-            string strPath = "";
-
-            cFilenameControl.GetFilePath(ref strPath);
-
-            OutputFormat = Path.GetExtension(strPath);
-            if (!OutputFormat.Equals(".tif", StringComparison.InvariantCultureIgnoreCase) &&
-               !OutputFormat.Equals(".bmp", StringComparison.InvariantCultureIgnoreCase) &&
-               !OutputFormat.Equals(".gif", StringComparison.InvariantCultureIgnoreCase) &&
-               !OutputFormat.Equals(".png", StringComparison.InvariantCultureIgnoreCase))
-            {
-               OutputFormat = ".tif";
-               bStripExtension = false;
-            }
-
-            if (bStripExtension)
-               OutputName = Path.GetFileNameWithoutExtension(strPath);
-            else
-               OutputName = Path.GetFileName(strPath);
-
-            Folder = Path.GetDirectoryName(strPath);
-            if (!Directory.Exists(Folder)) Directory.CreateDirectory(Folder);
+				cFilenameControl.GetFilePath(ref m_szResult);
+            string szFolder = Path.GetDirectoryName(m_szResult);
+            if (!Directory.Exists(szFolder)) Directory.CreateDirectory(szFolder);
 
             cFilenameControl.Serialize(Path.Combine(m_strConfigDir, "exporthistory.cfg"));
             DialogResult = DialogResult.OK;
