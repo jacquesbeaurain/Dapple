@@ -1441,21 +1441,26 @@ namespace Geosoft.GX.DAPGetData
                   hCurrentNode = hCurrentNode.Parent;
                }
 
-               if (hCurrentNode != null)
-               {
-                  m_strHierarchy = strNewHierarchy;
-                  if (hCurrentNode.Tag is Server)
-                  {
-                     m_hCurServerTreeNode = hCurrentNode;
-                     if (m_hCurServerTreeNode.Tag as Server != m_oCurServer)
-                        SelectServer(m_hCurServerTreeNode.Tag as Server);
-                     else
-                        RefreshResults();
-                  }
-                  UpdateTreeNodeColors();
-               }
-               else
-                  AfterSelected(e.Node);
+					if (hCurrentNode != null)
+					{
+						m_strHierarchy = strNewHierarchy;
+						if (hCurrentNode.Tag is Server)
+						{
+							m_hCurServerTreeNode = hCurrentNode;
+							if (m_hCurServerTreeNode.Tag as Server != m_oCurServer)
+								SelectServer(m_hCurServerTreeNode.Tag as Server);
+							else
+								RefreshResults();
+						}
+						UpdateTreeNodeColors();
+					}
+					else
+					{
+						// We're not in the DAP branch, so let the subclass take care of it.
+						m_oCurServer = null;
+						m_hCurServerTreeNode = null;
+						AfterSelected(e.Node);
+					}
             }
             else
             {

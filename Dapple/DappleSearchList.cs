@@ -45,6 +45,7 @@ namespace Dapple.CustomControls
       private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
       private Point m_oDragDropStartPoint = Point.Empty;
       private LayerList m_hLayerList;
+		private ServerTree m_hServerTree;
 
       private String m_szDappleSearchURI = null;
 
@@ -81,6 +82,14 @@ namespace Dapple.CustomControls
             m_hLayerList = value;
          }
       }
+
+		public ServerTree ServerTree
+		{
+			set
+			{
+				m_hServerTree = value;
+			}
+		}
 
       public String DappleSearchURI
       {
@@ -203,7 +212,7 @@ namespace Dapple.CustomControls
                   oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
                }
 
-               DoDragDrop(oLayerUris, DragDropEffects.Copy);
+               DoDragDrop(CreateLayerBuilders(oLayerUris), DragDropEffects.Copy);
             }
          }
       }
@@ -287,7 +296,33 @@ namespace Dapple.CustomControls
 
       #region helper functions
 
-      private void CmdAddSelected()
+		/// <summary>
+		/// Turns a list of LayerUris into a list of LayerBuilders.
+		/// </summary>
+		/// <param name="oUris"></param>
+		/// <returns></returns>
+		private List<LayerBuilder> CreateLayerBuilders(List<LayerUri> oUris)
+		{
+			List<LayerBuilder> result = new List<LayerBuilder>();
+
+			foreach (LayerUri oUri in oUris)
+			{
+				LayerBuilder oLayerToAdd = null;
+				try
+				{
+					oLayerToAdd = oUri.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree);
+					result.Add(oLayerToAdd);
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(this.TopLevelControl, "Could not add layer from server " + oUri.Server.ToBaseUri().ToString() + ":" + Environment.NewLine + e.Message);
+				}
+			}
+
+			return result;
+		}
+
+      public void CmdAddSelected()
       {
          if (cResultListBox.SelectedIndices.Count > 0 && m_hLayerList != null)
          {
@@ -298,7 +333,7 @@ namespace Dapple.CustomControls
                oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
             }
 
-            m_hLayerList.AddLayers(oLayerUris);
+            m_hLayerList.AddLayers(CreateLayerBuilders(oLayerUris));
          }
       }
 
@@ -578,7 +613,7 @@ namespace Dapple.CustomControls
       public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
       public Bitmap Thumbnail { get { return m_oBitmap; } }
       public String Description { get { return m_aCommonAttributes["description"]; } }
-		public String ServerUrl { get { return "http:// " + m_aCommonAttributes["url"]; } }
+		public String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
 
       public LayerUri Uri
       {
@@ -614,7 +649,7 @@ namespace Dapple.CustomControls
                if (!szUri.Contains("?")) szUri += "?";
                //szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
                szUri += "&layer=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layername"]);
-               szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+               //szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
                szUri += "&" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["cgitokens"]);
 
                /*if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)

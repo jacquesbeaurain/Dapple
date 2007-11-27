@@ -77,7 +77,7 @@ namespace Dapple
       public const string SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
       public const string NEW_SERVER_GATEWAY = "AddNewServer.aspx";
       public const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
-      public const string NO_SEARCH = "--- Enter keyword ---";
+      public const string NO_SEARCH = "--- Enter keyword(s) ---";
       public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
       public const int MAX_MRU_TERMS = 8;
       const bool OPEN_KML_ENABLED = false;
@@ -620,6 +620,7 @@ namespace Dapple
             this.cServerViewsTab.SetPage(1, this.cServerListControl);
 
             cWebSearch = new DappleSearchList(Settings.DappleSearchURL);
+				cWebSearch.ServerTree = tvServers;
             cWebSearch.LayerList = cLayerList;
 
             cSearchTabPane.TabPages[0].Controls.Add(cServerViewsTab);
@@ -651,7 +652,7 @@ namespace Dapple
             if (IsMontajChildProcess)
             {
                cLayerList.OMFeaturesEnabled = true;
-               //this.Text = "Find Data";
+					this.MinimizeBox = false;
 
                m_bOpenMap = false;
 
@@ -676,10 +677,6 @@ namespace Dapple
                toolStripMenuItemOpen.Enabled = false;
                toolStripMenuItemOpenKML.Visible = false;
                toolStripMenuItemOpenKML.Enabled = false;
-
-               /*this.MinimizeBox = false;
-               this.MaximizeBox = false;
-               this.HelpButton = true;*/
 
                // Hide and disable the file menu
                toolStripMenuItemfile.Visible = false;
@@ -732,7 +729,7 @@ namespace Dapple
             CenterNavigationToolStrip();
             //#if !DEBUG
 
-
+				cSearchTextComboBox.Text = NO_SEARCH;
          }
          //#endif
       }
@@ -3430,7 +3427,7 @@ namespace Dapple
          }
          else if (cSearchTabPane.SelectedIndex == 1)
          {
-            cLayerList.AddLayers(cWebSearch.SelectedLayers);
+				cWebSearch.CmdAddSelected();
          }
       }
 
@@ -3579,13 +3576,16 @@ namespace Dapple
 
       private void cSearchTextComboBox_Enter(object sender, EventArgs e)
       {
-         cSearchTextComboBox.Text = String.Empty;
+			if (cSearchTextComboBox.Text.Equals(NO_SEARCH))
+			{
+				cSearchTextComboBox.Text = String.Empty;
+			}
          cSearchTextComboBox.ForeColor = SystemColors.ControlText;
       }
 
       private void cSearchTextComboBox_Leave(object sender, EventArgs e)
       {
-         if (cSearchTextComboBox.Text.Equals(String.Empty) && cSearchTextComboBox.Items.Count == 0)
+         if (cSearchTextComboBox.Text.Equals(String.Empty))
          {
             cSearchTextComboBox.Text = NO_SEARCH;
             cSearchTextComboBox.ForeColor = SystemColors.GrayText;

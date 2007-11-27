@@ -215,16 +215,6 @@ namespace Dapple
          cLayerList.EndUpdate();
       }
 
-      public void AddLayers(List<LayerUri> oUris)
-      {
-         AddLayers(oUris, 0);
-      }
-
-      public void AddLayers(List<LayerUri> oUris, int iInsertIndex)
-      {
-         this.AddLayers(CreateLayerBuilders(oUris), iInsertIndex);
-      }
-
       public void SetBaseLayer(LayerBuilder oBaseLayer)
       {
          // TODO: remove an existing base layer, if necessary.
@@ -438,18 +428,6 @@ namespace Dapple
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
             ShuffleSelectedLayers(iInsertPoint);
-
-            cLayerList.Focus();
-         }
-         else if (e.Data.GetDataPresent(typeof(List<LayerUri>)))
-         {
-            List<LayerUri> oDropData = e.Data.GetData(typeof(List<LayerUri>)) as List<LayerUri>;
-            Point oClientLocation = cLayerList.PointToClient(new Point(e.X, e.Y));
-            int iInsertPoint = GetDropIndex(oClientLocation.Y);
-
-            List<LayerBuilder> oListToAdd = CreateLayerBuilders(oDropData);
-
-            AddLayers(oListToAdd, iInsertPoint);
 
             cLayerList.Focus();
          }
@@ -800,23 +778,6 @@ namespace Dapple
          RefreshLayerRenderOrder();
 
          CheckIsValid();
-      }
-
-      /// <summary>
-      /// Turns a list of LayerUris into a list of LayerBuilders.
-      /// </summary>
-      /// <param name="oUris"></param>
-      /// <returns></returns>
-      private List<LayerBuilder> CreateLayerBuilders(List<LayerUri> oUris)
-      {
-         List<LayerBuilder> result = new List<LayerBuilder>();
-
-         foreach (LayerUri oUri in oUris)
-         {
-            result.Add(oUri.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree));
-         }
-
-         return result;
       }
 
       #endregion
