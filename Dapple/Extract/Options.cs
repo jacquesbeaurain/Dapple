@@ -49,9 +49,9 @@ namespace Dapple.Extract
             SaveAsTAB
          }
 
-         public static string[] OMDownloadOptionStrings = new string[] { "Import into map", "Save as shape file and import into map", "Save as TAB file and import into map", "Save as shape file", "Save as TAB file" };
-         public static string[] ArcDownloadOptionStrings = new string[] { "Save as shape file" };
-         public static string[] MIDownloadOptionStrings = new string[] { "Save as TAB file" };
+         public static string[] OMDownloadOptionStrings = new string[] { "Import into map", "Save as ArcGIS Shape file and import into map", "Save as MapInfo Tab file and import into map", "Save as ArcGIS Shape file", "Save as MapInfo tab file" };
+         public static string[] ArcDownloadOptionStrings = new string[] { "Save as ArcGIS Shape file" };
+         public static string[] MIDownloadOptionStrings = new string[] { "Save as MapInfo Tab file" };
       }
 
       public class ArcGIS

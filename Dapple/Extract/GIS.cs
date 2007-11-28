@@ -18,10 +18,10 @@ namespace Dapple.Extract
       private readonly string SHP_EXT = ".shp";
       private readonly string TAB_EXT = ".tab";      
       private readonly int SAVE_AS_MAP = 0;
-      private readonly int SAVE_AS_SHP = 1;
-      private readonly int SAVE_AS_SHP2 = 3;
-      private readonly int SAVE_AS_TAB = 2;
-      private readonly int SAVE_AS_TAB2 = 4;
+      private readonly int SAVE_AS_SHP_IMPORT = 1;
+      private readonly int SAVE_AS_SHP_NOIMPORT = 3;
+      private readonly int SAVE_AS_TAB_IMPORT = 2;
+      private readonly int SAVE_AS_TAB_NOIMPORT = 4;
       #endregion
 
       /// <summary>
@@ -57,12 +57,12 @@ namespace Dapple.Extract
          {
             oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT));
          }
-         else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)
+         else if (cbOptions.SelectedIndex == SAVE_AS_SHP_IMPORT || cbOptions.SelectedIndex == SAVE_AS_SHP_NOIMPORT)
          {
             // Shape file uses a namespace name, not a file name (produces oodles of files)
             oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text));
          }
-         else if (cbOptions.SelectedIndex == SAVE_AS_TAB || cbOptions.SelectedIndex == SAVE_AS_TAB2)
+         else if (cbOptions.SelectedIndex == SAVE_AS_TAB_IMPORT || cbOptions.SelectedIndex == SAVE_AS_TAB_NOIMPORT)
          {
             oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, TAB_EXT));
          }
@@ -92,6 +92,7 @@ namespace Dapple.Extract
 
       private void ConfigureDialog()
       {
+			// --- Set up the filename box ---
          if (cbOptions.SelectedIndex == SAVE_AS_MAP)
          {
             tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT);
@@ -99,20 +100,37 @@ namespace Dapple.Extract
             lFileName.Text = "Map name:";
             tbFilename.Visible = true;
          }
-         else if (cbOptions.SelectedIndex == SAVE_AS_SHP || cbOptions.SelectedIndex == SAVE_AS_SHP2)
+         else if (cbOptions.SelectedIndex == SAVE_AS_SHP_IMPORT || cbOptions.SelectedIndex == SAVE_AS_SHP_NOIMPORT)
          {
             tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, null);
             lFileName.Visible = true;
             lFileName.Text = "Namespace:";
             tbFilename.Visible = true;
          }
-         else if (cbOptions.SelectedIndex == SAVE_AS_TAB || cbOptions.SelectedIndex == SAVE_AS_TAB2)
+         else if (cbOptions.SelectedIndex == SAVE_AS_TAB_IMPORT || cbOptions.SelectedIndex == SAVE_AS_TAB_NOIMPORT)
          {
             tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, TAB_EXT);
             lFileName.Visible = true;
             lFileName.Text = "File name:";
             tbFilename.Visible = true;
          }
+
+			// --- Set up the group box ---
+
+			if (cbOptions.SelectedIndex == SAVE_AS_MAP || cbOptions.SelectedIndex == SAVE_AS_SHP_IMPORT || cbOptions.SelectedIndex == SAVE_AS_TAB_IMPORT)
+			{
+				lGroupName.Enabled = true;
+				tbGroupName.Enabled = true;
+			}
+			else
+			{
+				lGroupName.Enabled = false;
+				tbGroupName.Enabled = false;
+				if (tbGroupName.Text.Trim().Equals(String.Empty))
+				{
+					tbGroupName.Text = m_oDAPLayer.Title;
+				}
+			}
       }
    }
 }
