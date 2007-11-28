@@ -47,14 +47,7 @@ namespace Dapple.Extract
             rbReproject.Enabled = false;
          }
 
-			if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
-			{
-				cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MapFileName);
-			}
-			else
-			{
-				cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MontajInterface.BaseDirectory());
-			}
+			cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MontajInterface.BaseDirectory());
 
          lvDatasets.SmallImageList = MainForm.DataTypeImageList;
          lvDatasets.LargeImageList = MainForm.DataTypeImageList;
