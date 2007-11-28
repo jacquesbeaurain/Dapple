@@ -285,9 +285,17 @@ namespace Dapple.Extract
 
 		private void cFolderControl_Validating(object sender, CancelEventArgs e)
 		{
-			String szError = String.Empty;
-			e.Cancel = !cFolderControl.bIsValid(ref szError);
-			cErrorProvider.SetError(cFolderControl, szError);
+			if (cFolderControl.Value.Trim().Equals(String.Empty))
+			{
+				cErrorProvider.SetError(cFolderControl, "A directory is required.");
+				e.Cancel = true;
+			}
+			else
+			{
+				String szError = String.Empty;
+				e.Cancel = !cFolderControl.bIsValid(ref szError);
+				cErrorProvider.SetError(cFolderControl, szError);
+			}
 		}
    }
 }
