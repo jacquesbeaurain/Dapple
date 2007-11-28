@@ -141,8 +141,6 @@ namespace Dapple.Extract
             }
             catch { }
          }
-
-			MessageBox.Show(this, "Extraction complete");
       }
 
       #endregion      

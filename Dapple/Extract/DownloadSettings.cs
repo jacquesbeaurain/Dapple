@@ -256,7 +256,8 @@ namespace Dapple.Extract
                this.UseWaitCursor = true;
 					oDisclaimers.DownloadDatasets();
                this.UseWaitCursor = false;
-            }				            
+            }
+				MessageBox.Show(this, "Extraction complete");
          }
          catch (Exception ex)
          {
