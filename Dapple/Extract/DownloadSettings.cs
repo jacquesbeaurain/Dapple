@@ -207,6 +207,9 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bDownload_Click(object sender, EventArgs e)
       {
+			this.Visible = false;
+			Application.DoEvents();
+
          try
          {
             DownloadClip eClip = DownloadClip.ViewedArea;
@@ -257,7 +260,6 @@ namespace Dapple.Extract
 					oDisclaimers.DownloadDatasets();
                this.UseWaitCursor = false;
             }
-				MessageBox.Show(this, "Extraction complete");
          }
          catch (Exception ex)
          {

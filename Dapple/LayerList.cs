@@ -936,8 +936,12 @@ namespace Dapple
          {
             Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers);
             oDownloadDialog.ShowInTaskbar = false;
-            oDownloadDialog.ShowDialog(this);
+            DialogResult oResult = oDownloadDialog.ShowDialog(this);
             oDownloadDialog.Verify();
+				if (oResult == DialogResult.OK)
+				{
+					MessageBox.Show(this.TopLevelControl, "Extraction complete");
+				}
          }
          catch (System.Runtime.Remoting.RemotingException)
          {
