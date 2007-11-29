@@ -182,6 +182,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon dap_mxd {
+            get {
+                object obj = ResourceManager.GetObject("dap_mxd", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Icon dap_picture {
             get {
                 object obj = ResourceManager.GetObject("dap_picture", resourceCulture);

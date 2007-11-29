@@ -852,6 +852,7 @@
     <None Include="Resources\import.png" />
     <None Include="Resources\georef_image.ico" />
     <Content Include="Resources\addserver.png" />
+    <None Include="Resources\arcims_lyr.ico" />
     <Content Include="Resources\blue-marble.png" />
     <Content Include="Resources\blue-marble_checked.png" />
     <Content Include="Resources\blue-marble_unchecked.png" />
