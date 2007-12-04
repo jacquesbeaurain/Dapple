@@ -99,8 +99,10 @@ namespace Dapple
 			// 
 			// ExportView
 			// 
+			this.AcceptButton = this.btnOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(319, 81);
 			this.Controls.Add(this.labelControl1);
 			this.Controls.Add(this.cFilenameControl);
