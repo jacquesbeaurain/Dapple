@@ -130,8 +130,8 @@ namespace WorldWind.Renderable
 			this.level = _level;
 			this.quadTileSet = quadTileSet;
 
-			BoundingBox = new BoundingBox((float)south, (float)north, (float)west, (float)east,
-														(float)quadTileSet.LayerRadius, (float)quadTileSet.LayerRadius + 300000f);
+			// --- Make bounding box slightly larger so the tile won't blink in and out near the edges ---
+			BoundingBox = new BoundingBox(south - 1.0, north + 1.0, west - 1.0, east + 1.0, quadTileSet.LayerRadius, quadTileSet.LayerRadius + 300000.0);
 			//localOrigin = BoundingBox.CalculateCenter();
 			localOrigin = MathEngine.SphericalToCartesian(centerLatitude, centerLongitude, quadTileSet.LayerRadius);
 
@@ -163,8 +163,8 @@ namespace WorldWind.Renderable
 
         public override string ToString()
         {
-            return String.Format("QuadTile:Set={0} Level={1} X={2} Y={3}",
-                quadTileSet.Name, Level, Col, Row);
+            return String.Format("QuadTile:Set={0} Level={1} X={2} Y={3} NS EW={4},{5}  {6},{7}",
+                quadTileSet.Name, Level, Col, Row, North, South, East, West);
         }
 
 		public virtual void ResetCache()
@@ -1007,8 +1007,8 @@ namespace WorldWind.Renderable
 			CreateElevatedMesh(ChildLocation.NorthEast, northEastVertices, meshBaseRadius, heightData);
 			CreateElevatedMesh(ChildLocation.SouthEast, southEastVertices, meshBaseRadius, heightData);
 
-			BoundingBox = new BoundingBox((float)south, (float)north, (float)west, (float)east,
-													(float)layerRadius, (float)layerRadius + 10000 * this.verticalExaggeration);
+			// --- Make bounding box slightly larger so the tile won't blink in and out near the edges ---
+			BoundingBox = new BoundingBox(south - 1.0, north + 1.0, west - 1.0, east + 1.0, layerRadius, layerRadius + 10000.0 * this.verticalExaggeration);
 
 			quadTileSet.IsDownloadingElevation = false;
 
