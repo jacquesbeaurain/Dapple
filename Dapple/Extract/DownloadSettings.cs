@@ -52,6 +52,8 @@ namespace Dapple.Extract
          lvDatasets.SmallImageList = MainForm.DataTypeImageList;
          lvDatasets.LargeImageList = MainForm.DataTypeImageList;
 
+			bDownload.Enabled = false;
+
          foreach (Dapple.LayerGeneration.LayerBuilder oBuilder in oLayersToDownload)
          {
             int iImageIndex = 0;
@@ -73,6 +75,8 @@ namespace Dapple.Extract
 
 				if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
 					iImageIndex = MainForm.ImageListIndex("error");
+				else
+					bDownload.Enabled = true;
 
             ListViewItem oItem = new ListViewItem(oBuilder.Title);
             oItem.ImageIndex = iImageIndex;
