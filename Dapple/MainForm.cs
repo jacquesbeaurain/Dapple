@@ -408,7 +408,14 @@ namespace Dapple
 
 
             InitializeComponent();
-            this.SuspendLayout();
+				this.SuspendLayout();
+
+#if DEBUG
+				// --- Make the server tree HOOGE ---
+				this.splitContainerMain.SplitterDistance = 400;
+				this.splitContainerLeftMain.SplitterDistance = 400;
+#endif
+
             this.Icon = new System.Drawing.Icon(@"app.ico");
             this.toolStripRenderer = new DappleToolStripRenderer();
             toolStripServers.Renderer = this.toolStripRenderer;
@@ -1552,8 +1559,11 @@ namespace Dapple
 
       private void cWorldMetadataSplitter_SplitterMoved(object sender, SplitterEventArgs e)
       {
-         worldWindow.Visible = true;
-         worldWindow.SafeRender();
+			if (!m_bSizing)
+			{
+				worldWindow.Visible = true;
+				worldWindow.SafeRender();
+			}
       }
 
       private void WorldResultsSplitPanel_Panel1_Resize(object sender, EventArgs e)
