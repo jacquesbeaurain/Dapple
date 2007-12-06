@@ -127,24 +127,6 @@ namespace Dapple
                }
 
                oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iMontajPort));
-               try
-               {
-                  oRemoteInterface.StartConnection();
-               }
-               catch (System.Runtime.Remoting.RemotingException e)
-               {
-                  ErrorDisplay errorDialog = new ErrorDisplay();
-                  errorDialog.errorMessages
-                     (
-                     "Error initializing IPC:\n" + Environment.NewLine +
-                     "Exception: " + e.GetType().ToString() + Environment.NewLine +
-                     "Message: " + e.Message
-                     );
-                  Application.Run(errorDialog);
-                  
-                  oRemoteInterface = null;
-                  return;
-               }
             }
 
             if (cmdl["aoi"] != null)

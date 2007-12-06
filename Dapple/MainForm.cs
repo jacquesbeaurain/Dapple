@@ -1419,6 +1419,18 @@ namespace Dapple
 
       private void MainForm_Shown(object sender, EventArgs e)
       {
+			if (IsMontajChildProcess)
+			{
+				try
+				{
+					m_oMontajRemoteInterface.StartConnection();
+				}
+				catch (System.Runtime.Remoting.RemotingException ex)
+				{
+					throw new System.Runtime.Remoting.RemotingException("A communication error occurred between Dapple and OM during startup", ex);
+				}
+			}
+
          // Render once to not just show the atmosphere at startup (looks better) ---
          worldWindow.SafeRender();
 
