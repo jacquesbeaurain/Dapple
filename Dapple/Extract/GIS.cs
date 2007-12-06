@@ -41,6 +41,11 @@ namespace Dapple.Extract
          ConfigureDialog();
       }
 
+		public override bool OpenInMap
+		{
+			get { return cbOptions.SelectedIndex == SAVE_AS_MAP || cbOptions.SelectedIndex == SAVE_AS_SHP_IMPORT || cbOptions.SelectedIndex == SAVE_AS_TAB_IMPORT; }
+		}
+
       /// <summary>
       /// Write out settings for the GIS dataset
       /// </summary>

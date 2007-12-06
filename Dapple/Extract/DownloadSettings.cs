@@ -267,6 +267,7 @@ namespace Dapple.Extract
          }
          catch (Exception ex)
          {
+				MessageBox.Show(ex.StackTrace, ex.GetType().Name + ": " + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
             m_hException = ex;
             this.DialogResult = DialogResult.Cancel;
          }

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Dapple.Extract
 {
-   public partial class DownloadOptions : UserControl
+	public partial class DownloadOptions : UserControl
    {
       #region Member Variables
       protected Dapple.LayerGeneration.DAPQuadLayerBuilder m_oDAPLayer;
@@ -38,6 +38,14 @@ namespace Dapple.Extract
       {
          set { }
       }
+
+		/// <summary>
+		/// If this is false, the download XML will set blNewMap to false always.
+		/// </summary>
+		public virtual bool OpenInMap
+		{
+			get { return true; }
+		}
 
       #region Constructor
       private DownloadOptions()
@@ -237,7 +245,7 @@ namespace Dapple.Extract
          // --- save the extents and coordinate system ---
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("new_map");
-         oAttr.Value = bNewMap.ToString();
+         oAttr.Value = (bNewMap && OpenInMap).ToString();
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("minx");

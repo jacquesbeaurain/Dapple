@@ -23,6 +23,12 @@ namespace Dapple.Extract
          InitializeComponent();
       }
 
+
+		public override bool OpenInMap
+		{
+			get { return false; }
+		}
+
       /// <summary>
       /// Write out settings for the acquire dataset
       /// </summary>

@@ -25,6 +25,11 @@ namespace Dapple.Extract
          set { oResolution.Enabled = value; }
       }
 
+		public override bool OpenInMap
+		{
+			get { return (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex != Options.Picture.DisplayOptions.DoNotDisplay; }
+		}
+
       /// <summary>
       /// Default constructor
       /// </summary>

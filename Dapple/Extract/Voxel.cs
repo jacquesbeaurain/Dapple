@@ -25,6 +25,11 @@ namespace Dapple.Extract
          set { oResolution.Enabled = value; }
       }
 
+		public override bool OpenInMap
+		{
+			get { return true; }
+		}
+
       /// <summary>
       /// Default constructor
       /// </summary>

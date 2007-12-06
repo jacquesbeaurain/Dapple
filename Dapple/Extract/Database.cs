@@ -28,6 +28,11 @@ namespace Dapple.Extract
          tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, DATABASE_EXT);
       }
 
+		public override bool OpenInMap
+		{
+			get { return true; }
+		}
+
       /// <summary>
       /// Write out settings for the database
       /// </summary>

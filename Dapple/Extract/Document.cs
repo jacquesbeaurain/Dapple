@@ -28,6 +28,11 @@ namespace Dapple.Extract
          cbDownload.SelectedIndex = 0;
       }
 
+		public override bool OpenInMap
+		{
+			get { return (Options.Document.DownloadOptions)cbDownload.SelectedIndex != Options.Document.DownloadOptions.DownloadOnly; }
+		}
+
       /// <summary>
       /// Write out settings for the document
       /// </summary>

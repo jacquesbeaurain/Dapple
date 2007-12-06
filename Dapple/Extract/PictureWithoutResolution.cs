@@ -24,6 +24,11 @@ namespace Dapple.Extract
       private Dapple.LayerGeneration.LayerBuilder m_oNonDapBuilder;
       #endregion
 
+		public override bool OpenInMap
+		{
+			get { return (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex != Options.Picture.DisplayOptions.DoNotDisplay; }
+		}
+
       /// <summary>
       /// Default constructor
       /// </summary>

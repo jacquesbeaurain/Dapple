@@ -28,6 +28,11 @@ namespace Dapple.Extract
          cbDownload.SelectedIndex = 0;
       }
 
+		public override bool OpenInMap
+		{
+			get { return (Options.ArcGIS.DownloadOptions)cbDownload.SelectedIndex != Options.ArcGIS.DownloadOptions.DownloadOnly; }
+		}
+
       /// <summary>
       /// Write out settings for the document
       /// </summary>
