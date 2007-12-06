@@ -199,8 +199,9 @@ namespace Dapple.LayerGeneration
                   m_Layer.RenderPriority = RenderPriority.TerrainMappedImages;
                }
             }
-            catch
+            catch (Exception ex)
             {
+					MessageBox.Show(ex.StackTrace, ex.GetType().Name + ": " + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                if (File.Exists(m_strCacheFileName))
                   File.Delete(m_strCacheFileName);
                m_Layer = null;
@@ -324,9 +325,6 @@ namespace Dapple.LayerGeneration
                      return new GeographicBoundingBox(dNorth, dSouth, dWest, dEast);
                }
             }
-         }
-         catch
-         {
          }
          finally
          {
