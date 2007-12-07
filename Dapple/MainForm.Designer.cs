@@ -504,7 +504,7 @@ namespace Dapple
 			  // 
 			  this.toolStripMenuItemAddDAP.Image = global::Dapple.Properties.Resources.addserver;
 			  this.toolStripMenuItemAddDAP.Name = "toolStripMenuItemAddDAP";
-			  this.toolStripMenuItemAddDAP.Size = new System.Drawing.Size(206, 22);
+			  this.toolStripMenuItemAddDAP.Size = new System.Drawing.Size(232, 22);
 			  this.toolStripMenuItemAddDAP.Text = "Add DAP server...";
 			  this.toolStripMenuItemAddDAP.Click += new System.EventHandler(this.toolStripMenuItemAddDAP_Click);
 			  // 
@@ -512,7 +512,7 @@ namespace Dapple
 			  // 
 			  this.toolStripMenuItemAddWMS.Image = global::Dapple.Properties.Resources.addserver;
 			  this.toolStripMenuItemAddWMS.Name = "toolStripMenuItemAddWMS";
-			  this.toolStripMenuItemAddWMS.Size = new System.Drawing.Size(206, 22);
+			  this.toolStripMenuItemAddWMS.Size = new System.Drawing.Size(232, 22);
 			  this.toolStripMenuItemAddWMS.Text = "Add WMS server...";
 			  this.toolStripMenuItemAddWMS.Click += new System.EventHandler(this.toolStripMenuItemAddWMS_Click);
 			  // 
@@ -520,20 +520,20 @@ namespace Dapple
 			  // 
 			  this.addAnArcIMSServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.addserver;
 			  this.addAnArcIMSServerToolStripMenuItem.Name = "addAnArcIMSServerToolStripMenuItem";
-			  this.addAnArcIMSServerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			  this.addAnArcIMSServerToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			  this.addAnArcIMSServerToolStripMenuItem.Text = "Add ArcIMS server...";
 			  this.addAnArcIMSServerToolStripMenuItem.Click += new System.EventHandler(this.toolStripMenuItemAddArcIMS_Click);
 			  // 
 			  // toolStripSeparator4
 			  // 
 			  this.toolStripSeparator4.Name = "toolStripSeparator4";
-			  this.toolStripSeparator4.Size = new System.Drawing.Size(203, 6);
+			  this.toolStripSeparator4.Size = new System.Drawing.Size(229, 6);
 			  // 
 			  // propertiesToolStripMenuItem
 			  // 
 			  this.propertiesToolStripMenuItem.Image = global::Dapple.Properties.Resources.properties;
 			  this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-			  this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			  this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			  this.propertiesToolStripMenuItem.Text = "Properties...";
 			  this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
 			  // 
@@ -541,7 +541,7 @@ namespace Dapple
 			  // 
 			  this.setAsFavoriteToolStripMenuItem.Image = global::Dapple.Properties.Resources.server_favourite;
 			  this.setAsFavoriteToolStripMenuItem.Name = "setAsFavoriteToolStripMenuItem";
-			  this.setAsFavoriteToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			  this.setAsFavoriteToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			  this.setAsFavoriteToolStripMenuItem.Text = "Set as Favourite";
 			  this.setAsFavoriteToolStripMenuItem.Click += new System.EventHandler(this.setAsFavoriteToolStripMenuItem_Click);
 			  // 
@@ -549,15 +549,15 @@ namespace Dapple
 			  // 
 			  this.addBrowserMapToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_bottom;
 			  this.addBrowserMapToLayersToolStripMenuItem.Name = "addBrowserMapToLayersToolStripMenuItem";
-			  this.addBrowserMapToLayersToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
-			  this.addBrowserMapToLayersToolStripMenuItem.Text = "Add Browser Map to Layers";
+			  this.addBrowserMapToLayersToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+			  this.addBrowserMapToLayersToolStripMenuItem.Text = "Add Browser Map to Data Layers";
 			  this.addBrowserMapToLayersToolStripMenuItem.Click += new System.EventHandler(this.addBrowserMapToLayersToolStripMenuItem_Click);
 			  // 
 			  // refreshServerToolStripMenuItem
 			  // 
 			  this.refreshServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.server_refresh;
 			  this.refreshServerToolStripMenuItem.Name = "refreshServerToolStripMenuItem";
-			  this.refreshServerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			  this.refreshServerToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			  this.refreshServerToolStripMenuItem.Text = "Refresh";
 			  this.refreshServerToolStripMenuItem.Click += new System.EventHandler(this.refreshServerToolStripMenuItem_Click);
 			  // 
@@ -565,7 +565,7 @@ namespace Dapple
 			  // 
 			  this.toggleDisableToolStripMenuItem.Image = global::Dapple.Properties.Resources.disserver;
 			  this.toggleDisableToolStripMenuItem.Name = "toggleDisableToolStripMenuItem";
-			  this.toggleDisableToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			  this.toggleDisableToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			  this.toggleDisableToolStripMenuItem.Text = "Disable";
 			  this.toggleDisableToolStripMenuItem.Click += new System.EventHandler(this.toggleDisableToolStripMenuItem_Click);
 			  // 
@@ -573,7 +573,7 @@ namespace Dapple
 			  // 
 			  this.removeServerToolStripMenuItem.Image = global::Dapple.Properties.Resources.server_remove;
 			  this.removeServerToolStripMenuItem.Name = "removeServerToolStripMenuItem";
-			  this.removeServerToolStripMenuItem.Size = new System.Drawing.Size(206, 22);
+			  this.removeServerToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			  this.removeServerToolStripMenuItem.Text = "Remove";
 			  this.removeServerToolStripMenuItem.Click += new System.EventHandler(this.removeServerToolStripMenuItem_Click);
 			  // 
@@ -959,9 +959,9 @@ namespace Dapple
 			  this.cSearchTextComboBox.Size = new System.Drawing.Size(181, 21);
 			  this.cSearchTextComboBox.TabIndex = 0;
 			  this.cSearchTextComboBox.Text = "This space intentionally left blank.";
+			  this.cSearchTextComboBox.SelectedIndexChanged += new System.EventHandler(this.cSearchTextComboBox_SelectedIndexChanged);
 			  this.cSearchTextComboBox.Leave += new System.EventHandler(this.cSearchTextComboBox_Leave);
 			  this.cSearchTextComboBox.Enter += new System.EventHandler(this.cSearchTextComboBox_Enter);
-			  this.cSearchTextComboBox.SelectedIndexChanged += new System.EventHandler(this.cSearchTextComboBox_SelectedIndexChanged);
 			  this.cSearchTextComboBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cSearchTextComboBox_KeyPress);
 			  this.cSearchTextComboBox.TextUpdate += new System.EventHandler(this.cSearchTextComboBox_TextUpdate);
 			  // 
@@ -1493,15 +1493,15 @@ namespace Dapple
 			  this.StartPosition = System.Windows.Forms.FormStartPosition.WindowsDefaultBounds;
 			  this.Text = "Dapple";
 			  this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
+			  this.Load += new System.EventHandler(this.MainForm_Load);
 			  this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
 			  this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.MainForm_HelpButtonClicked);
 			  this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
-			  this.Resize += new System.EventHandler(this.MainForm_Resize);
 			  this.Shown += new System.EventHandler(this.MainForm_Shown);
 			  this.Activated += new System.EventHandler(this.MainForm_Activated);
 			  this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
+			  this.Resize += new System.EventHandler(this.MainForm_Resize);
 			  this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
-			  this.Load += new System.EventHandler(this.MainForm_Load);
 			  this.statusStrip.ResumeLayout(false);
 			  this.statusStrip.PerformLayout();
 			  this.menuStrip.ResumeLayout(false);
