@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Utility
 {
@@ -35,17 +36,7 @@ namespace Utility
          lock (abortsync)
          {
             Exception e;
-            string errorMessages;
 
-            // suspend other threads
-            Process currentProcess = Process.GetCurrentProcess();
-            /*
-            foreach (ProcessThread thread in currentProcess.Threads)
-            {
-               if (thread.Id != curthread.ManagedThreadId)
-                  thread.ThreadState = System.Diagnostics.ThreadState..Suspend();
-            }
-            */
             try
             {
                // log the error
@@ -55,38 +46,59 @@ namespace Utility
             {
                // ignore errors while trying to write the error to the log
             }
-            finally
+
+            //int i;
+            e = caught;
+				String errorMessages = FormatException(e) + Environment.NewLine;
+
+            if (e.InnerException != null)
             {
-               //int i;
-               e = caught;
-               errorMessages = "The following error(s) occurred:";
+               e = e.InnerException;
                do
                {
-                  errorMessages += "\r\n" + e.Message;
+						errorMessages += FormatException(e) + Environment.NewLine;
                   e = e.InnerException;
-               }
-               while (e != null);
-
-               errorMessages += "\r\n\r\nAt:\r\n";
-               if (caught.StackTrace != null)
-                  errorMessages += caught.StackTrace;
-               else
-                  errorMessages += "Unknown";
-
-               errorMessages += "\r\n\r\n" + (currentProcess.Threads.Count - 1).ToString() + " other threads :\r\n\r\n";
-               /* i = 0;
-                foreach (ProcessThread thread in currentProcess.Threads)
-                {
-                   if (thread != curthread)
-                   {
-                      errorMessages += "--------------- " + i.ToString() + " ---------------\r\n";
-                      errorMessages += "\r\n\r\n";
-                   }
-                }
-                */
-               Abort(errorMessages);
+               } while (e != null);
             }
+
+				errorMessages += "Thread count (including this one): " + Process.GetCurrentProcess().Threads.Count;
+
+            Abort(errorMessages);
          }
+      }
+
+      private static String FormatException(Exception e)
+      {
+         StringBuilder result = new StringBuilder();
+
+			String szExceptionName = e.GetType().ToString();
+
+			result.Append(e.GetType().ToString());
+         result.Append(": ");
+         result.Append(e.Message);
+         result.Append(Environment.NewLine);
+
+         if (e.StackTrace != null)
+         {
+            result.Append(e.StackTrace);
+            result.Append(Environment.NewLine);
+         }
+
+			if (e.Data.Count > 0)
+			{
+				result.Append("Additional data:");
+				foreach (String szKey in e.Data.Keys)
+				{
+					result.Append(Environment.NewLine);
+					result.Append("   ");
+					result.Append(szKey);
+					result.Append(": ");
+					result.Append(e.Data[szKey]);
+				}
+				result.Append(Environment.NewLine);
+			}
+
+         return result.ToString();
       }
 
       /// <summary>
