@@ -1142,7 +1142,7 @@ namespace Dapple
             cLayerList.AddLayer(builder);
 
             if (bGoto)
-               GoTo(builder);
+               GoTo(builder, false);
          }
          else
          {
@@ -1281,33 +1281,19 @@ namespace Dapple
 
       #region Go To
 
-      private void toolStripMenuItemgoToServer_Click(object sender, EventArgs e)
+		void GoTo(LayerBuilder builder)
+		{
+			GoTo(builder.Extents, false);
+		}
+
+      void GoTo(LayerBuilder builder, bool blImmediate)
       {
-         if (this.tvServers.SelectedNode != null)
-         {
-            if (this.tvServers.SelectedNode.Tag is LayerBuilder)
-               GoTo(this.tvServers.SelectedNode.Tag as LayerBuilder);
-            if (this.tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet)
-            {
-               Geosoft.Dap.Common.DataSet dataSet = this.tvServers.SelectedNode.Tag as Geosoft.Dap.Common.DataSet;
-               GeographicBoundingBox extents =
-                  new GeographicBoundingBox(dataSet.Boundary.MaxY,
-                dataSet.Boundary.MinY,
-                dataSet.Boundary.MinX,
-                dataSet.Boundary.MaxX);
-               GoTo(extents, -1.0);
-            }
-         }
+         GoTo(builder.Extents, blImmediate);
       }
 
-      void GoTo(LayerBuilder builder)
+      void GoTo(GeographicBoundingBox extents, bool blImmediate)
       {
-         GoTo(builder.Extents, (builder is NltQuadLayerBuilder) ? (builder as NltQuadLayerBuilder).LevelZeroTileSize : -1.0);
-      }
-
-      void GoTo(GeographicBoundingBox extents, double dLevelZeroTileSize)
-      {
-         worldWindow.GotoBoundingbox(extents.West, extents.South, extents.East, extents.North);
+         worldWindow.GotoBoundingbox(extents.West, extents.South, extents.East, extents.North, blImmediate);
       }
 
       #endregion
@@ -1516,8 +1502,10 @@ namespace Dapple
          if (strLayerToLoad.Length > 0)
             OpenDatasetLink(strLayerToLoad);
 
-         if (m_oOMMapExtentWGS84 != null)
-            GoTo(m_oOMMapExtentWGS84, 0);
+			if (m_oOMMapExtentWGS84 != null)
+			{
+				GoTo(m_oOMMapExtentWGS84, true);
+			}
       }
 
       bool m_bSizing = false;
@@ -1903,7 +1891,7 @@ namespace Dapple
       {
          if (((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value != null)
          {
-            GoTo(((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value, 0.0);
+            GoTo(((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value, false);
          }
       }
 
@@ -3151,7 +3139,7 @@ namespace Dapple
 				}
 
 				if (extents != null)
-					GoTo(extents, -1.0);
+					GoTo(extents, false);
 			}
 		}
 

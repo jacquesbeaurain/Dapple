@@ -296,7 +296,7 @@ namespace WorldWind
                   gotoPoint.X - dLongitudeAngle / 2.0,
                   gotoPoint.Y - dLatitudeAngle / 2.0,
                   gotoPoint.X + dLongitudeAngle / 2.0,
-                  gotoPoint.Y + dLatitudeAngle / 2.0);
+                  gotoPoint.Y + dLatitudeAngle / 2.0, false);
             }
 			}
 			else if(e.Button == MouseButtons.Left)
@@ -387,7 +387,7 @@ namespace WorldWind
 
 		private void m_RenderTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-         if (m_LeftMouseDownTime != System.DateTime.MaxValue || m_IsPanning || (m_WorldWindow != null && m_WorldWindow.DrawArgs != null && !((WorldWind.Camera.WorldCamera)m_WorldWindow.DrawArgs.WorldCamera).EpsilonTest()))
+			if (m_LeftMouseDownTime != System.DateTime.MaxValue || m_IsPanning || (m_WorldWindow != null && m_WorldWindow.DrawArgs != null && (!((WorldWind.Camera.WorldCamera)m_WorldWindow.DrawArgs.WorldCamera).EpsilonTest() || ((WorldWind.Camera.WorldCamera)m_WorldWindow.DrawArgs.WorldCamera).ForceRender)))
             Invalidate();
 
          if(m_LeftMouseDownTime != System.DateTime.MaxValue)

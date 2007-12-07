@@ -21,6 +21,7 @@ namespace WorldWind.Camera
 		protected Angle _targetFov;
 		protected Quaternion4d _targetOrientation;
       protected bool _firstUpdate = true;
+		protected bool m_blForceRender = false;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Camera.WorldCamera"/> class.
@@ -58,6 +59,26 @@ namespace WorldWind.Camera
 			if(!double.IsNaN(_altitude)) 
 				Altitude = _altitude;
 			this.Bank = Angle.FromDegrees(bank);
+		}
+
+		public override void SetPositionImmediate(double lat, double lon, double heading, double alt, double tilt, double bank)
+		{
+			this.SetPosition(lat, lon, heading, alt, tilt, bank);
+			NoSlerpToTargetOrientation();
+			m_blForceRender = true;
+		}
+
+		public bool ForceRender
+		{
+			get
+			{
+				if (m_blForceRender)
+				{
+					m_blForceRender = false;
+					return true;
+				}
+				else return false;
+			}
 		}
 
 		public override Angle Heading

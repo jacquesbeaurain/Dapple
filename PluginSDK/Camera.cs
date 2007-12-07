@@ -519,6 +519,8 @@ namespace WorldWind.Camera
          else
             trueViewRange = Angle.FromRadians(Math.PI);
 
+			bool blFireCameraChanged = false;
+
          if (CameraChanged != null)
          {
             if (World.Settings.cameraAltitudeMeters != Altitude ||
@@ -527,15 +529,18 @@ namespace WorldWind.Camera
                World.Settings.cameraHeading != _heading ||
                World.Settings.cameraTilt != _tilt)
             {
-               CameraChanged(this, new EventArgs());
+					blFireCameraChanged = true;
             }
          }
 
-         World.Settings.cameraAltitudeMeters = Altitude;
-         World.Settings.cameraLatitude = _latitude;
-         World.Settings.cameraLongitude = _longitude;
-         World.Settings.cameraHeading = _heading;
-         World.Settings.cameraTilt = _tilt;
+			World.Settings.cameraAltitudeMeters = Altitude;
+			World.Settings.cameraLatitude = _latitude;
+			World.Settings.cameraLongitude = _longitude;
+			World.Settings.cameraHeading = _heading;
+			World.Settings.cameraTilt = _tilt;
+
+			if (blFireCameraChanged)
+				CameraChanged(this, new EventArgs());
       }
 
       /// <summary>
@@ -657,6 +662,20 @@ namespace WorldWind.Camera
             this.Altitude = _altitude;
          this.Bank = Angle.FromDegrees(bank);
       }
+
+		/// <summary>
+		/// Set a camera position without all that tedious mucking about in hyperspace.
+		/// </summary>
+		/// <param name="lat"></param>
+		/// <param name="lon"></param>
+		/// <param name="heading"></param>
+		/// <param name="alt"></param>
+		/// <param name="tilt"></param>
+		/// <param name="bank"></param>
+		public virtual void SetPositionImmediate(double lat, double lon, double heading, double alt, double tilt, double bank)
+		{
+			SetPosition(lat, lon, heading, alt, tilt, bank);
+		}
 
       Matrix4d m_absoluteViewMatrix = Matrix4d.Identity;
       Matrix4d m_absoluteWorldMatrix = Matrix4d.Identity;

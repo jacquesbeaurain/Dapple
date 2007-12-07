@@ -886,14 +886,35 @@ namespace WorldWind
       /// <param name="dMinLat"></param>
       /// <param name="dMaxLon"></param>
       /// <param name="dMaxLat"></param>
-      public void GotoBoundingbox(double dMinLon, double dMinLat, double dMaxLon, double dMaxLat)
+      public void GotoBoundingbox(double dMinLon, double dMinLat, double dMaxLon, double dMaxLat, bool blImmediate)
       {
          double dLatitudeAngle = dMaxLat - dMinLat;
          double dLongitudeAngle = dMaxLon - dMinLon;
          double dLatitude = (dMinLat + dMaxLat) / 2.0;
          double dLongitude = (dMinLon + dMaxLon) / 2.0;
 
-         GotoLatLonHeadingAltitude(dLatitude, dLongitude, 0.0, CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle));
+			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+
+			if (blImmediate)
+			{
+				this.drawArgs.WorldCamera.SetPositionImmediate(
+					dLatitude,
+					dLongitude,
+					0.0,
+					CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle),
+					0.0,
+					0.0);
+			}
+			else
+			{
+				this.drawArgs.WorldCamera.SetPosition(
+					dLatitude,
+					dLongitude,
+					0.0,
+					CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle),
+					0.0,
+					0.0);
+			}
       }
 
       /// <summary>

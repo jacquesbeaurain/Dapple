@@ -30,7 +30,6 @@ namespace Dapple.Extract
       List<Dapple.LayerGeneration.LayerBuilder> m_oLayersToDownload;
       private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
       private DownloadOptions m_oCurUserControl = null;
-      private Exception m_hException = null;
       #endregion
 
       /// <summary>
@@ -265,11 +264,10 @@ namespace Dapple.Extract
                this.UseWaitCursor = false;
             }
          }
-         catch (Exception ex)
+         catch (System.Runtime.Remoting.RemotingException)
          {
-				MessageBox.Show(ex.StackTrace, ex.GetType().Name + ": " + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            m_hException = ex;
-            this.DialogResult = DialogResult.Cancel;
+				this.DialogResult = DialogResult.Abort;
+				return;
          }
       }
       #endregion
@@ -278,17 +276,6 @@ namespace Dapple.Extract
       {
          lvDatasets.Columns[0].Width = lvDatasets.ClientSize.Width;
       }
-
-      /// <summary>
-      /// Throws any exception caught by this dialog.  Used to ferry the message across the ShowDialog boundary.
-      /// </summary>
-      public void Verify()
-      {
-         if (m_hException != null)
-         {
-            throw m_hException;
-         }
-		}
 
 		private void cFolderControl_Validating(object sender, CancelEventArgs e)
 		{

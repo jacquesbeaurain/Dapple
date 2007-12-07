@@ -203,22 +203,10 @@ namespace Dapple
             Application.SetCompatibleTextRenderingDefault(false);
             if (bAbort)
             {
-               string strErrors = "";
+               string strErrors = File.ReadAllText(args[1]);
 #if !DEBUG
                aborting = true;
 #endif
-               using (StreamReader sr = new StreamReader(args[1]))
-               {
-                  String line;
-                  // Read and display lines from the file until the end of 
-                  // the file is reached.
-                  while ((line = sr.ReadLine()) != null)
-                  {
-                     strErrors += line + "\r\n";
-                  }
-               }
-               Application.EnableVisualStyles();
-               Application.SetCompatibleTextRenderingDefault(false);
                ErrorDisplay errorDialog = new ErrorDisplay();
                errorDialog.errorMessages(strErrors);
                Application.Run(errorDialog);

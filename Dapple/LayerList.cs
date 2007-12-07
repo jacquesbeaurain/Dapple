@@ -932,23 +932,20 @@ namespace Dapple
 				MessageBox.Show(this, "None of the enabled layers intersect the current view.\nEither enable some disabled data layers, or move the view.", "No Data Layers to Extract", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;
 			}
-         try
-         {
-            Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers);
-            oDownloadDialog.ShowInTaskbar = false;
-            DialogResult oResult = oDownloadDialog.ShowDialog(this);
-            oDownloadDialog.Verify();
-				if (oResult == DialogResult.OK)
-				{
-					MessageBox.Show(this.TopLevelControl, "Extraction complete");
-				}
-         }
-         catch (System.Runtime.Remoting.RemotingException)
-         {
-            MessageBox.Show(Form.ActiveForm, "Connection to Oasis Montaj lost, unable to extract datasets");
-            m_blAllowExtract = false;
-            cExtractButton.Enabled = false;
-         }
+
+         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers);
+         oDownloadDialog.ShowInTaskbar = false;
+         DialogResult oResult = oDownloadDialog.ShowDialog(this);
+			if (oResult == DialogResult.OK)
+			{
+				MessageBox.Show(this.TopLevelControl, "Extraction complete");
+			}
+			else if (oResult == DialogResult.Abort)
+			{
+				MessageBox.Show(Form.ActiveForm, "Connection to Oasis Montaj lost, unable to extract datasets");
+				m_blAllowExtract = false;
+				cExtractButton.Enabled = false;
+			}
       }
 
       /// <summary>
