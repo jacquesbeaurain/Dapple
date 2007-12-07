@@ -49,8 +49,11 @@ namespace Dapple.Extract
                Geosoft.Dap.Common.DataSet oDataset = new Geosoft.Dap.Common.DataSet();
                oDataset.Name = oDAPbuilder.DatasetName;
                oDataset.Url = oDAPbuilder.ServerURL;
-               
-               oReader = oCommand.GetDisclaimerEx(oDataset, strTempFile);
+
+					System.Xml.XmlDocument oDoc = oCommand.GetDisclaimer(oDataset);
+					oDoc.Save(strTempFile);
+					oReader = System.Xml.XmlReader.Create(strTempFile);
+
                if (oReader.ReadToFollowing("disclaimer"))
                {
                   if (string.Compare(oReader.GetAttribute("value"), "true", true) == 0)
