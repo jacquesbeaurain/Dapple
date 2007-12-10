@@ -1504,7 +1504,8 @@ namespace Dapple
 
 			if (m_oOMMapExtentWGS84 != null)
 			{
-				GoTo(m_oOMMapExtentWGS84, true);
+				doSearch(String.Empty, m_oOMMapExtentWGS84);
+				GoTo(m_oOMMapExtentWGS84, false);
 			}
       }
 
@@ -3254,6 +3255,27 @@ namespace Dapple
          if (m_blSupressSearchSelectedIndexChanged) return;
          doSearch();
       }
+
+		/// <summary>
+		/// Do a search programmatically.
+		/// </summary>
+		/// <remarks>
+		/// Doesn't update MRU list or supress repeated searches.
+		/// </remarks>
+		/// <param name="szKeywords"></param>
+		/// <param name="oAoI"></param>
+		private void doSearch(String szKeywords, GeographicBoundingBox oAoI)
+		{
+			// --- Mop up and move out ---
+
+			SetSearchable(false);
+			SetSearchClearable(true);
+
+			m_oLastSearchROI = oAoI;
+			m_szLastSearchString = szKeywords;
+
+			applySearchCriteria();
+		}
 
       private void doSearch()
       {

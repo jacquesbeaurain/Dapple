@@ -41,7 +41,7 @@ namespace Dapple.Extract
 
          foreach (Dapple.LayerGeneration.LayerBuilder oBuilder in oLayersToDownload)
          {
-            if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder)
+				if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder && ((Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder).ServerMajorVersion >= 11)
             {
                Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
 

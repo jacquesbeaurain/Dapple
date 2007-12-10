@@ -242,6 +242,15 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+		[System.ComponentModel.Browsable(false)]
+		public int ServerMajorVersion
+		{
+			get
+			{
+				return m_oServer.MajorVersion;
+			}
+		}
+
 		#endregion
 
 		#region ImageBuilder Implementations
