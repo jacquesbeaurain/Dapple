@@ -1158,75 +1158,80 @@ namespace Dapple
                }
 
                // Export image(s)
-               using (Bitmap oExportedImage = new Bitmap(iExportPixelsX, iExportPixelsY))
-               {
-                  using (Graphics oEIGraphics = Graphics.FromImage(oExportedImage))
-                  {
-                     oEIGraphics.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
-                     foreach (ExportEntry oExportEntry in aExportList)
-                     {
-								// Clip layer export to viewed area
-								if (oExportEntry.Info.dMinLon < oViewedArea.West) oExportEntry.Info.dMinLon = oViewedArea.West;
-								if (oExportEntry.Info.dMaxLon > oViewedArea.East) oExportEntry.Info.dMaxLon = oViewedArea.East;
-								if (oExportEntry.Info.dMinLat < oViewedArea.South) oExportEntry.Info.dMinLat = oViewedArea.South;
-								if (oExportEntry.Info.dMaxLat > oViewedArea.North) oExportEntry.Info.dMaxLat = oViewedArea.North;
+					try
+					{
+						using (Bitmap oExportedImage = new Bitmap(iExportPixelsX, iExportPixelsY))
+						{
+							using (Graphics oEIGraphics = Graphics.FromImage(oExportedImage))
+							{
+								oEIGraphics.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
+								foreach (ExportEntry oExportEntry in aExportList)
+								{
+									// Clip layer export to viewed area
+									if (oExportEntry.Info.dMinLon < oViewedArea.West) oExportEntry.Info.dMinLon = oViewedArea.West;
+									if (oExportEntry.Info.dMaxLon > oViewedArea.East) oExportEntry.Info.dMaxLon = oViewedArea.East;
+									if (oExportEntry.Info.dMinLat < oViewedArea.South) oExportEntry.Info.dMinLat = oViewedArea.South;
+									if (oExportEntry.Info.dMaxLat > oViewedArea.North) oExportEntry.Info.dMaxLat = oViewedArea.North;
 
-								// Re-scale pixels
-								oExportEntry.Info.iPixelsX = (int)((oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon) * dPixelsPerDegree);
-								oExportEntry.Info.iPixelsY = (int)((oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat) * dPixelsPerDegree);
+									// Re-scale pixels
+									oExportEntry.Info.iPixelsX = (int)((oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon) * dPixelsPerDegree);
+									oExportEntry.Info.iPixelsY = (int)((oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat) * dPixelsPerDegree);
 
-                        using (Bitmap oLayerImage = new Bitmap(oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY))
-                        {
-                           int iOffsetX, iOffsetY;
-                           int iWidth, iHeight;
+									try
+									{
+										using (Bitmap oLayerImage = new Bitmap(oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY))
+										{
+											int iOffsetX, iOffsetY;
+											int iWidth, iHeight;
 
-                           using (oExportEntry.Info.gr = Graphics.FromImage(oLayerImage))
-                              oExportEntry.RO.ExportProcess(MainForm.WorldWindowSingleton.DrawArgs, oExportEntry.Info);
+											using (oExportEntry.Info.gr = Graphics.FromImage(oLayerImage))
+												oExportEntry.RO.ExportProcess(MainForm.WorldWindowSingleton.DrawArgs, oExportEntry.Info);
 
-                           iOffsetX = (int)Math.Round((oExportEntry.Info.dMinLon - oViewedArea.West) * (double)iExportPixelsX / (oViewedArea.East - oViewedArea.West));
-                           iOffsetY = (int)Math.Round((oViewedArea.North - oExportEntry.Info.dMaxLat) * (double)iExportPixelsY / (oViewedArea.North - oViewedArea.South));
-                           iWidth = oExportEntry.Info.iPixelsX;
-									iHeight = oExportEntry.Info.iPixelsY;
+											iOffsetX = (int)Math.Round((oExportEntry.Info.dMinLon - oViewedArea.West) * (double)iExportPixelsX / (oViewedArea.East - oViewedArea.West));
+											iOffsetY = (int)Math.Round((oViewedArea.North - oExportEntry.Info.dMaxLat) * (double)iExportPixelsY / (oViewedArea.North - oViewedArea.South));
+											iWidth = oExportEntry.Info.iPixelsX;
+											iHeight = oExportEntry.Info.iPixelsY;
 
-                           ImageAttributes imgAtt = new ImageAttributes();
-                           float[][] fMat = { 
+											ImageAttributes imgAtt = new ImageAttributes();
+											float[][] fMat = { 
                                  new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
                                  new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
                                  new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
                                  new float[] {0.0f, 0.0f, 0.0f, (float)oExportEntry.Container.Opacity/255.0f, 0.0f},
                                  new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}
                               };
-                           ColorMatrix clrMatrix = new ColorMatrix(fMat);
-                           imgAtt.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-                           oEIGraphics.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
-
-                           /*if (oExportDialog.KeepLayers)
-                           {
-                              using (Bitmap oIndividualLayerImage = new Bitmap(iExportPixelsX, iExportPixelsY))
-                              {
-                                 using (Graphics grl = Graphics.FromImage(oIndividualLayerImage))
-                                 {
-                                    grl.FillRectangle(Brushes.White, new Rectangle(0, 0, iExportPixelsX, iExportPixelsY));
-                                    grl.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel);
-                                 }
-
-                                 SaveGeoImage(oIndividualLayerImage, oExportDialog.OutputName + "_" + oExportEntry.Container.Name, oExportDialog.Folder, oExportDialog.OutputFormat, szGeoTiff);
-                              }
-                           }*/
-                        }
-                     }
-                  }
-                  SaveGeoImage(oExportedImage, szFilename, szGeoTiff);
-               }
+											ColorMatrix clrMatrix = new ColorMatrix(fMat);
+											imgAtt.SetColorMatrix(clrMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+											oEIGraphics.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
+										}
+									}
+									catch (System.ArgumentException e)
+									{
+										String szLayers = String.Empty;
+										foreach (LayerBuilder oBuilder in this.AllLayers)
+										{
+											szLayers += "\"" + oBuilder.Title + "\"" + ", ";
+										}
+										throw new ArgumentException(String.Format("Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, oViewedArea.ToString(), szLayers));
+									}
+								}
+							}
+							SaveGeoImage(oExportedImage, szFilename, szGeoTiff);
+						}
+					}
+					catch (System.ArgumentException e)
+					{
+						String szLayers = String.Empty;
+						foreach (LayerBuilder oBuilder in this.AllLayers)
+						{
+							szLayers += "\"" + oBuilder.Title + "\"" + ", ";
+						}
+						throw new ArgumentException(String.Format("Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", iExportPixelsX, iExportPixelsY, oViewedArea.ToString(), szLayers));
+					}
 
 					MessageBox.Show(this, "GeoTIFF snapshot created.");
             }
          }
-         /*catch (Exception exc)
-         {
-            MessageBox.Show(this, "Export failed!\n" + exc.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            Cursor = Cursors.Default;
-         }*/
          finally
          {
             if (szGeoTiff != null && File.Exists(szGeoTiff))

@@ -15,8 +15,8 @@ using System.Runtime.Remoting;
 namespace Dapple
 {
    static class Program
-   {
-      /// <summary>
+	{
+		/// <summary>
       /// The main entry point for the application.
       /// Mutex code fragments taken from http://www.c-sharpcorner.com/FAQ/Create1InstanceAppSC.asp
       /// </summary>
@@ -213,6 +213,12 @@ namespace Dapple
             }
             else
             {
+					if (GetSystemMetrics(SM_REMOTESESSION) != 0)
+					{
+						MessageBox.Show("Dapple is unable to run through a remote connection.", "Dapple", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						return;
+					}
+
                Process instance = RunningInstance();
 
                if (RunningInstance() == null)
@@ -337,6 +343,11 @@ namespace Dapple
       private static extern bool SetForegroundWindow(IntPtr hWnd);
 
       private const int WS_SHOWNORMAL = 1;
+
+		[DllImport("user32.dll", EntryPoint = "GetSystemMetrics")]
+		private static extern int GetSystemMetrics(int nIndex);
+
+		private const int SM_REMOTESESSION = 0x1000;
    }
 
 
