@@ -123,28 +123,27 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bAccept_Click(object sender, EventArgs e)
       {
-         this.UseWaitCursor = true;
-			this.Close();
-         DownloadDatasets();
-         this.UseWaitCursor = false;
-
-         
+			DeleteTempDisclaimerFiles();  
       }
 
-      public void DownloadDatasets()
-      {
-         MainForm.MontajInterface.Download(m_oDownloadXml.OuterXml);
+		private void bCancel_Click(object sender, EventArgs e)
+		{
+			DeleteTempDisclaimerFiles();  
+		}
 
-         foreach (ListViewItem oItem in lvDatasets.Items)
-         {
-            try
-            {
-               string strFile = oItem.Tag as string;
-               System.IO.File.Delete(strFile);
-            }
-            catch { }
-         }
-      }
+
+		private void DeleteTempDisclaimerFiles()
+		{
+			foreach (ListViewItem oItem in lvDatasets.Items)
+			{
+				try
+				{
+					string strFile = oItem.Tag as string;
+					System.IO.File.Delete(strFile);
+				}
+				catch { }
+			}
+		}
 
       #endregion      
    }

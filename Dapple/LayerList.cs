@@ -933,7 +933,7 @@ namespace Dapple
 				return;
 			}
 
-         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers);
+         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers, this.TopLevelControl as Form);
          oDownloadDialog.ShowInTaskbar = false;
          DialogResult oResult = oDownloadDialog.ShowDialog(this);
 			if (oResult == DialogResult.OK)

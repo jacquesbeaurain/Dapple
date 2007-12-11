@@ -57,9 +57,11 @@ namespace Dapple.Extract
 			this.bCancel.TabIndex = 1;
 			this.bCancel.Text = "Cancel";
 			this.bCancel.UseVisualStyleBackColor = true;
+			this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
 			// 
 			// bAccept
 			// 
+			this.bAccept.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.bAccept.Location = new System.Drawing.Point(294, 6);
 			this.bAccept.Name = "bAccept";
 			this.bAccept.Size = new System.Drawing.Size(75, 23);

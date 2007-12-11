@@ -30,15 +30,19 @@ namespace Dapple.Extract
       List<Dapple.LayerGeneration.LayerBuilder> m_oLayersToDownload;
       private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
       private DownloadOptions m_oCurUserControl = null;
+		private Form m_oParentForm = null;
       #endregion
 
       /// <summary>
       /// Default constructor
       /// </summary>
       /// <param name="oLayersToDownload"></param>
-      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload)
+      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload, Form oParentForm)
       {
          InitializeComponent();
+
+			m_oParentForm = oParentForm;
+
          m_oLayersToDownload = oLayersToDownload;
 
          if (!MainForm.OpenMap)
@@ -210,9 +214,6 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bDownload_Click(object sender, EventArgs e)
       {
-			this.Visible = false;
-			Application.DoEvents();
-
          try
          {
             DownloadClip eClip = DownloadClip.ViewedArea;
@@ -249,20 +250,26 @@ namespace Dapple.Extract
             oDebugElement.SetAttribute("wgs84_north", oViewAOI.North.ToString("f2"));
             oDebugElement.SetAttribute("clip_setting", eClip.ToString());
             oExtractElement.AppendChild(oDebugElement);
-#endif            
-				this.Close();
+#endif
 
             DatasetDisclaimer oDisclaimers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
 				oDisclaimers.ShowInTaskbar = false;
 
 				if (oDisclaimers.HasDisclaimer)
-					oDisclaimers.ShowDialog();
-            else
-            {
-               this.UseWaitCursor = true;
-					oDisclaimers.DownloadDatasets();
-               this.UseWaitCursor = false;
-            }
+				{
+					if (oDisclaimers.ShowDialog(this) == DialogResult.OK)
+					{
+						DoDownload(oExtractDoc);
+					}
+					else
+					{
+						this.DialogResult = DialogResult.Cancel;
+					}
+				}
+				else
+				{
+					DoDownload(oExtractDoc);
+				}
          }
          catch (System.Runtime.Remoting.RemotingException)
          {
@@ -270,6 +277,15 @@ namespace Dapple.Extract
 				return;
          }
       }
+
+		private void DoDownload(System.Xml.XmlDocument oExtractDoc)
+		{
+			this.Hide();
+			m_oParentForm.Activate();
+			Application.DoEvents();
+			MainForm.MontajInterface.Download(oExtractDoc.OuterXml);
+		}
+
       #endregion
 
       private void DownloadSettings_Shown(object sender, EventArgs e)

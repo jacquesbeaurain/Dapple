@@ -236,10 +236,6 @@ namespace Dapple.CustomControls
          {
             e.Cancel = true;
          }
-         else
-         {
-            addLayerToolStripMenuItem.Text = cResultListBox.SelectedIndices.Count > 1 ? "Add layers" : "Add layer";
-         }
       }
 
       private void addLayerToolStripMenuItem_Click(object sender, EventArgs e)
