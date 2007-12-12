@@ -2234,10 +2234,19 @@ namespace Dapple
 
          worldWindow.Dispose();
 
-         if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
-         {
-            File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
-         }
+			// --- Delete all the temporary XML files the metadata viewer has been pumping out ---
+
+			foreach (String bob in Directory.GetFiles(metaviewerDir, "*.xml"))
+			{
+				try
+				{
+					File.Delete(bob);
+				}
+				catch (System.IO.IOException)
+				{
+					// Couldn't delete a temp file?  Not the end of the world.
+				}
+			}
 
          SaveMRUList();
       }
@@ -3369,7 +3378,7 @@ namespace Dapple
             // --- Delete the file we were pointing to before ---
             if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
             {
-               File.Delete(HttpUtility.UrlDecode(cMetadataBrowser.Url.AbsolutePath));
+               File.Delete(cMetadataBrowser.Url.LocalPath);
             }
             cMetadataBrowser.Url = metaUri;
          }
@@ -3595,15 +3604,6 @@ namespace Dapple
       private void removeServerToolStripMenuItem_Click(object sender, EventArgs e)
       {
          this.tvServers.RemoveCurrentServer();
-      }
-
-      /// <summary>
-      /// Anything that doesn't currently work calls this method.  That way, I can do a 'find references' on this
-      /// to figure out what I still need to do.
-      /// </summary>
-      public static void NotifyUnimplemented()
-      {
-         MessageBox.Show("This command is not currently implemented.");
       }
 
       private void cSearchTextComboBox_Enter(object sender, EventArgs e)

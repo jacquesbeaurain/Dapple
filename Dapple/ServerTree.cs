@@ -1753,7 +1753,7 @@ namespace Dapple
       public void CmdToggleServerEnabled()
       {
 			if (SelectedNode.Tag is ServerBuilder)
-         {
+			{
 				if (SelectedIsFavorite && ((ServerBuilder)SelectedNode.Tag).Enabled)
 				{
 					if (MessageBox.Show(this.TopLevelControl, "Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disabling Server", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
@@ -1765,10 +1765,10 @@ namespace Dapple
 				((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
 				SelectedNode.ForeColor = ((ServerBuilder)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
 
-            LoadFinished();
-         }
-         else if (SelectedNode.Tag is Server)
-         {
+				LoadFinished();
+			}
+			else if (SelectedNode.Tag is Server)
+			{
 				if (SelectedIsFavorite && ((Server)SelectedNode.Tag).Enabled)
 				{
 					if (MessageBox.Show(this.TopLevelControl, "Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disabling Server", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
@@ -1777,14 +1777,14 @@ namespace Dapple
 					m_szDefaultServer = String.Empty;
 				}
 
-            ((Server)SelectedNode.Tag).Enabled ^= true;
+				((Server)SelectedNode.Tag).Enabled ^= true;
 				SelectedNode.ForeColor = ((Server)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
-            GetCatalogHierarchy();
+				GetCatalogHierarchy();
 
-            LoadFinished();
-         }
-         else
-            MainForm.NotifyUnimplemented();
+				LoadFinished();
+			}
+			else
+				throw new ApplicationException("Don't know how to toggle server status of a " + SelectedNode.Tag.GetType().ToString());
       }
 
       #endregion
