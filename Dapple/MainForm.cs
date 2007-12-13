@@ -675,8 +675,8 @@ namespace Dapple
                }
                m_eClientType = eClientType;
 
-               toolStripMenuItemedit.Visible = false;
-               toolStripMenuItemedit.Enabled = false;
+					lastViewSettingsToolStripMenuItem.Enabled = false;
+					lastViewSettingsToolStripMenuItem.Visible = false;
                toolStripMenuItemhelp.Visible = false;
                toolStripMenuItemhelp.Enabled = false;
                toolStripSeparator10.Visible = false;
