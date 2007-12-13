@@ -105,5 +105,18 @@ namespace Dapple.Extract
          int iIndex = cbDownloadOptions.SelectedIndex;
          tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[iIndex]);
       }
+
+		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		{
+			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[cbDownloadOptions.SelectedIndex]));
+			if (System.IO.File.Exists(szFilename))
+			{
+				return QueryOverwriteFile("The file \"" + szFilename + "\" already exists.  Overwrite?", hExtractForm);
+			}
+			else
+			{
+				return DuplicateFileCheckResult.Yes;
+			}
+		}
    }
 }

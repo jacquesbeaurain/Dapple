@@ -56,5 +56,18 @@ namespace Dapple.Extract
 
          return true;
       }
+
+		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		{
+			String szFolderName = System.IO.Path.Combine(szExtractDirectory, tbFilename.Text);
+			if (System.IO.Directory.Exists(szFolderName))
+			{
+				return QueryOverwriteFile("The folder \"" + szFolderName + "\" already exists.  Contents of the folder may be overwritten.  Continue with extraction?", hExtractForm);
+			}
+			else
+			{
+				return DuplicateFileCheckResult.Yes;
+			}
+		}
    }
 }

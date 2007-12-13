@@ -214,6 +214,12 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bDownload_Click(object sender, EventArgs e)
       {
+			if (!DoFilenamePrompt())
+			{
+				this.DialogResult = DialogResult.None;
+				return;
+			}
+
          try
          {
             DownloadClip eClip = DownloadClip.ViewedArea;
@@ -277,6 +283,30 @@ namespace Dapple.Extract
 				return;
          }
       }
+
+		/// <summary>
+		/// Checks each dataset to download if its file already exists
+		/// </summary>
+		/// <returns></returns>
+		private bool DoFilenamePrompt()
+		{
+			for (int count = 0; count < m_oDownloadSettings.Count; count++)
+			{
+				DownloadOptions.DuplicateFileCheckResult oResult = m_oDownloadSettings[count].CheckForDuplicateFiles(cFolderControl.Value, this);
+
+				if (oResult == DownloadOptions.DuplicateFileCheckResult.YesAndStopAsking) return true;
+				if (oResult == DownloadOptions.DuplicateFileCheckResult.No)
+				{
+					this.SuspendLayout();
+					lvDatasets.SelectedIndices.Clear();
+					lvDatasets.SelectedIndices.Add(count);
+					this.ResumeLayout(true);
+					return false;
+				}
+			}
+
+			return true;
+		}
 
 		private void DoDownload(System.Xml.XmlDocument oExtractDoc)
 		{

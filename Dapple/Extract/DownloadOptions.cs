@@ -9,9 +9,20 @@ using System.Windows.Forms;
 namespace Dapple.Extract
 {
 	public partial class DownloadOptions : UserControl
-   {
-      #region Member Variables
-      protected Dapple.LayerGeneration.DAPQuadLayerBuilder m_oDAPLayer;
+	{
+		#region Enums
+
+		public enum DuplicateFileCheckResult
+		{
+			Yes,
+			YesAndStopAsking,
+			No
+		};
+
+		#endregion
+
+		#region Member Variables
+		protected Dapple.LayerGeneration.DAPQuadLayerBuilder m_oDAPLayer;
       protected WorldWind.GeographicBoundingBox m_oViewedAoi;
       protected WorldWind.GeographicBoundingBox m_oMapAoi;
       protected string m_strMapProjection;
@@ -45,6 +56,26 @@ namespace Dapple.Extract
 		public virtual bool OpenInMap
 		{
 			get { return true; }
+		}
+
+		public virtual DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		{
+			return DuplicateFileCheckResult.Yes;
+		}
+
+		protected static DuplicateFileCheckResult QueryOverwriteFile(String szMessage, Form hExtractForm)
+		{
+			OverwriteDialog oChecker = new OverwriteDialog(szMessage, hExtractForm);
+			switch (oChecker.ShowDialog())
+			{
+				case DialogResult.OK:
+					return DuplicateFileCheckResult.Yes;
+				case DialogResult.Cancel:
+					return DuplicateFileCheckResult.No;
+				case DialogResult.Ignore:
+					return DuplicateFileCheckResult.YesAndStopAsking;
+			}
+			return DuplicateFileCheckResult.No;
 		}
 
       #region Constructor

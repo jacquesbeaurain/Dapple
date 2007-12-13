@@ -12,7 +12,9 @@ namespace Dapple.Extract
    /// Set the options for downloading the selected document
    /// </summary>
    public partial class Document : DownloadOptions
-   {      
+   {
+		private String m_szExtension;
+
       /// <summary>
       /// Default constructor
       /// </summary>
@@ -21,8 +23,10 @@ namespace Dapple.Extract
          : base(oDAPbuilder)
       {
          InitializeComponent();
-         
-         tbFilename.Text = oDAPbuilder.Title;
+
+			MainForm.MontajInterface.GetDocumentExtension(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out m_szExtension);
+
+         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, m_szExtension);
 
          cbDownload.DataSource = Options.Document.DownloadOptionStrings;
          cbDownload.SelectedIndex = 0;
@@ -45,8 +49,7 @@ namespace Dapple.Extract
          base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
-
+         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, m_szExtension));
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
@@ -56,5 +59,18 @@ namespace Dapple.Extract
 
          return true;
       }
+
+		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		{
+			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, m_szExtension));
+			if (System.IO.File.Exists(szFilename))
+			{
+				return QueryOverwriteFile("The file \"" + szFilename + "\" already exists.  Overwrite?", hExtractForm);
+			}
+			else
+			{
+				return DuplicateFileCheckResult.Yes;
+			}
+		}
    }
 }

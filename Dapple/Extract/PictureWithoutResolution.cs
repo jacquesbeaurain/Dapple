@@ -73,10 +73,7 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         String szFileName = tbFilename.Text;
-         foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
-            szFileName = szFileName.Replace(ch, '_');
-         oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(szFileName, TIF_EXT));
+         oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, TIF_EXT));
          oDatasetElement.Attributes.Append(oAttr);
 
 			// --- Delete all the files that OM generates, so we don't get invalid projections ---
@@ -182,5 +179,18 @@ namespace Dapple.Extract
 
          return true;
       }
+
+		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		{
+			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, TIF_EXT));
+			if (System.IO.File.Exists(szFilename))
+			{
+				return QueryOverwriteFile("The file \"" + szFilename + "\" already exists.  Overwrite?", hExtractForm);
+			}
+			else
+			{
+				return DuplicateFileCheckResult.Yes;
+			}
+		}
    }
 }

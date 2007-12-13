@@ -81,6 +81,7 @@ namespace Dapple.Extract
       {
          base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
+			SetExtension();
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
          oDatasetElement.Attributes.Append(oPathAttr);
@@ -108,13 +109,32 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void cbDownloadOptions_SelectedIndexChanged(object sender, EventArgs e)
       {
-         string strOption = cbDownloadOptions.SelectedItem.ToString().ToLower();
-         if (strOption == Options.Picture.DownloadOptionStrings[3].ToLower())
-            tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
-         else if (strOption == Options.Picture.DownloadOptionStrings[4].ToLower())
-            tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
-         else
-            tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, "." + strOption.ToLower());
+			SetExtension();
       }
+
+		private void SetExtension()
+		{
+			string strOption = cbDownloadOptions.SelectedItem.ToString().ToLower();
+			if (strOption == Options.Picture.DownloadOptionStrings[3].ToLower())
+				tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
+			else if (strOption == Options.Picture.DownloadOptionStrings[4].ToLower())
+				tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
+			else
+				tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, "." + strOption.ToLower());
+		}
+
+		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		{
+			SetExtension();
+			String szFilename = System.IO.Path.Combine(szExtractDirectory, tbFilename.Text);
+			if (System.IO.File.Exists(szFilename))
+			{
+				return QueryOverwriteFile("The file \"" + szFilename + "\" already exists.  Overwrite?", hExtractForm);
+			}
+			else
+			{
+				return DuplicateFileCheckResult.Yes;
+			}
+		}
    }
 }
