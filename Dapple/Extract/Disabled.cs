@@ -36,9 +36,9 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public override bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
-         return false;         
+			return ExtractSaveResult.Ignore;         
       }
    }
 }

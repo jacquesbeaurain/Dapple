@@ -73,11 +73,10 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public override bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          // --- cannot reproject section data --- 
-
-         base.Save(oDatasetElement, strDestFolder, eClip, DownloadSettings.DownloadCoordinateSystem.Native);
+			ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, DownloadSettings.DownloadCoordinateSystem.Native);
 
          string strFileName = System.IO.Path.ChangeExtension(tbFilename.Text, GRD_EXT);         
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
@@ -93,7 +92,7 @@ namespace Dapple.Extract
          oDisplayElement.InnerText = eDisplayOption.ToString();
          oDatasetElement.AppendChild(oDisplayElement);
 
-         return true;
+			return result;
       }
 
 		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)

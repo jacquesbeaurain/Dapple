@@ -77,9 +77,9 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public override bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
-         base.Save(oDatasetElement, strDestFolder, eClip, eCS);
+         ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
 			SetExtension();
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
@@ -99,7 +99,8 @@ namespace Dapple.Extract
          Options.Picture.DisplayOptions eDisplayOption = (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex;
          oDisplayElement.InnerText = eDisplayOption.ToString();
          oDatasetElement.AppendChild(oDisplayElement);
-         return true;
+
+			return result;
       }
 
       /// <summary>

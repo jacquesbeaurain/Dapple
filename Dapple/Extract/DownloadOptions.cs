@@ -12,6 +12,25 @@ namespace Dapple.Extract
 	{
 		#region Enums
 
+		/// <summary>
+		/// The result of attempting to extract a dataset.
+		/// </summary>
+		public enum ExtractSaveResult
+		{
+			/// <summary>
+			/// Save was successful, tell DappleGetData to download the item.
+			/// </summary>
+			Extract,
+			/// <summary>
+			/// Don't donwload the item.
+			/// </summary>
+			Ignore,
+			/// <summary>
+			/// Error during save, abort extract command and switch to that dataset to correct problems.
+			/// </summary>
+			Cancel
+		};
+
 		public enum DuplicateFileCheckResult
 		{
 			Yes,
@@ -106,7 +125,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public virtual bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+      public virtual ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          double dMaxX, dMinX, dMaxY, dMinY;
          double dProjMinX, dProjMinY, dProjMaxX, dProjMaxY;
@@ -141,13 +160,13 @@ namespace Dapple.Extract
 
          string strSrcCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
          if (string.IsNullOrEmpty(strSrcCoordinateSystem))
-            return false;
+            return ExtractSaveResult.Ignore;
          
 
          // --- get the dataset extents ---
 
          if (!MainForm.MontajInterface.GetExtents(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY))
-            return false;
+				return ExtractSaveResult.Ignore;
 
          // --- Sanity check on the data ---
 
@@ -163,7 +182,7 @@ namespace Dapple.Extract
 					Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxY - dMapInWGS84_MaxY) > 0.01)
             {
                MessageBox.Show("It appears that the metadata for this layer is invalid - the bounding box in the metadata does not match the bounds from the DAP server.  It cannot be downloaded.  Contact the server administrator.", "Error downloading layer \"" + m_oDAPLayer.Title + "\"", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-               return false;
+					return ExtractSaveResult.Ignore;
             }
          }
 
@@ -212,7 +231,7 @@ namespace Dapple.Extract
                dProjMaxY = m_oMapAoi.North;
                dProjMinY = m_oMapAoi.South;
                if (!MainForm.MontajInterface.ProjectBoundingRectangle(m_strMapProjection, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strSrcCoordinateSystem))
-                  return true;
+						return ExtractSaveResult.Ignore;
 
                dProjMaxX = Math.Min(dMaxX, dProjMaxX);
                dProjMinX = Math.Max(dMinX, dProjMinX);
@@ -326,7 +345,7 @@ namespace Dapple.Extract
          oDatasetElement.SetAttribute("clip_wgs84_north", dClipBoundMaxY_WGS84.ToString("f5"));
 #endif
 
-         return true;
+			return ExtractSaveResult.Extract;
       }
 
       public virtual void SetDefaultResolution()

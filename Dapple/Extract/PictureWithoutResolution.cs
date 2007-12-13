@@ -62,7 +62,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public override bool Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          System.Xml.XmlAttribute oAttr = oDatasetElement.OwnerDocument.CreateAttribute("type");
          oAttr.Value = "geotiff";
@@ -77,14 +77,22 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
 			// --- Delete all the files that OM generates, so we don't get invalid projections ---
-         if (System.IO.File.Exists(oAttr.Value))
-            System.IO.File.Delete(oAttr.Value);
-         if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj")))
-            System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj"));
-         if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".gi")))
-            System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".gi"));
-         if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".tif.xml")))
-            System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".tif.xml"));
+			try
+			{
+				if (System.IO.File.Exists(oAttr.Value))
+					System.IO.File.Delete(oAttr.Value);
+				if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj")))
+					System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".ipj"));
+				if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".gi")))
+					System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".gi"));
+				if (System.IO.File.Exists(System.IO.Path.ChangeExtension(oAttr.Value, ".tif.xml")))
+					System.IO.File.Delete(System.IO.Path.ChangeExtension(oAttr.Value, ".tif.xml"));
+			}
+			catch (System.IO.IOException)
+			{
+				MessageBox.Show("Could not save file " + oAttr.Value + ", please choose a different filename.", "Extraction error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return ExtractSaveResult.Cancel;
+			}
 
          if (m_oNonDapBuilder is GeorefImageLayerBuilder)
          {
@@ -95,7 +103,7 @@ namespace Dapple.Extract
 				if (!m_oNonDapBuilder.exportToGeoTiff(oAttr.Value))
 				{
 					MessageBox.Show(this, "Could not download " + m_oNonDapBuilder.Title + ", data layer's extents do not intersect the viewed area.", "Extraction Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
+					return ExtractSaveResult.Ignore;
 				}
          }
 
@@ -177,7 +185,7 @@ namespace Dapple.Extract
          oAttr.Value = szLayerId;
          oDatasetElement.Attributes.Append(oAttr);
 
-         return true;
+			return ExtractSaveResult.Extract;
       }
 
 		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)

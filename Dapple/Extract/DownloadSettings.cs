@@ -238,15 +238,24 @@ namespace Dapple.Extract
 
 				// --- create xml document for each dataset ---
 
-            foreach (DownloadOptions oDataset in m_oDownloadSettings)
-            {
-               System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
+				for (int count = 0; count < m_oDownloadSettings.Count; count++)
+				{
+					System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
 
-               if (oDataset.Save(oDatasetElement, cFolderControl.Value, eClip, eCS))
-               {
-                  oExtractElement.AppendChild(oDatasetElement);
-               }
-            }
+					switch (m_oDownloadSettings[count].Save(oDatasetElement, cFolderControl.Value, eClip, eCS))
+					{
+						case DownloadOptions.ExtractSaveResult.Cancel:
+							SetActivePage(count);
+							DialogResult = DialogResult.None;
+							return;
+						case DownloadOptions.ExtractSaveResult.Extract:
+							oExtractElement.AppendChild(oDatasetElement);
+							break;
+						case DownloadOptions.ExtractSaveResult.Ignore:
+							continue;
+
+					}
+				}
 #if DEBUG
             System.Xml.XmlElement oDebugElement = oExtractDoc.CreateElement("debug");
             WorldWind.GeographicBoundingBox oViewAOI = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
@@ -297,15 +306,20 @@ namespace Dapple.Extract
 				if (oResult == DownloadOptions.DuplicateFileCheckResult.YesAndStopAsking) return true;
 				if (oResult == DownloadOptions.DuplicateFileCheckResult.No)
 				{
-					this.SuspendLayout();
-					lvDatasets.SelectedIndices.Clear();
-					lvDatasets.SelectedIndices.Add(count);
-					this.ResumeLayout(true);
+					SetActivePage(count);
 					return false;
 				}
 			}
 
 			return true;
+		}
+
+		private void SetActivePage(int count)
+		{
+			this.SuspendLayout();
+			lvDatasets.SelectedIndices.Clear();
+			lvDatasets.SelectedIndices.Add(count);
+			this.ResumeLayout(true);
 		}
 
 		private void DoDownload(System.Xml.XmlDocument oExtractDoc)
