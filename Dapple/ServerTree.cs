@@ -249,6 +249,8 @@ namespace Dapple
          }
          set
          {
+				if (value == this.SelectedServer) return; // Don't do anything if it's the same server
+
             if (value is Server)
             {
                this.SelectedNode = m_hDAPRootNode;

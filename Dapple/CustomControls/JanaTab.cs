@@ -19,9 +19,16 @@ namespace Dapple.CustomControls
 
       #endregion
 
-      #region Memeber variables
+		#region Events
 
-      private int m_iCurrentPage = 0;
+		public delegate void PageChangedDelegate(int iPage);
+		public event PageChangedDelegate PageChanged;
+
+		#endregion
+
+		#region Memeber variables
+
+		private int m_iCurrentPage = 0;
       private Control[] m_cControls = new Control[NUM_PAGES];
 
       #endregion
@@ -32,7 +39,7 @@ namespace Dapple.CustomControls
       {
          InitializeComponent();
 
-         cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(PageChanged);
+         cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(OnPageChanged);
       }
 
       #endregion
@@ -49,9 +56,9 @@ namespace Dapple.CustomControls
 
       #endregion
 
-      #region Events
+      #region Event Handlers
 
-      void PageChanged(int iIndex)
+      void OnPageChanged(int iIndex)
       {
          if (m_iCurrentPage == iIndex) return;
 
@@ -64,6 +71,8 @@ namespace Dapple.CustomControls
             if (m_cControls[count] != null && count != m_iCurrentPage)
                m_cControls[count].Visible = false;
          }
+
+			if (PageChanged != null) PageChanged(iIndex);
       }
 
       #endregion

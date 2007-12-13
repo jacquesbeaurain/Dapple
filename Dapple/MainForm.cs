@@ -625,6 +625,7 @@ namespace Dapple
             this.cServerViewsTab.SetToolTip(1, "Server list view");
             this.cServerViewsTab.SetPage(0, this.tvServers);
             this.cServerViewsTab.SetPage(1, this.cServerListControl);
+				cServerViewsTab.PageChanged += new JanaTab.PageChangedDelegate(ServerPageChanged);
 
             cWebSearch = new DappleSearchList(Settings.DappleSearchURL);
 				cWebSearch.ServerTree = tvServers;
@@ -3615,5 +3616,17 @@ namespace Dapple
       {
          CmdDisplayOMHelp();
       }
+
+		private void ServerPageChanged(int iIndex)
+		{
+			if (iIndex == 0) // Changed to tree view
+			{
+				tvServers.SelectedServer = cServerListControl.SelectedServer;
+			}
+			else if (iIndex == 1) // Changed to list view
+			{
+				cServerListControl.SelectedServer = tvServers.SelectedServer;
+			}
+		}
    }
 }
