@@ -471,10 +471,6 @@ namespace Dapple
 
 			if (bUpdateTree)
 			{
-				treeNode = m_hWMSRootNode.Nodes.Add(strCapUrl);
-				treeNode.ForeColor = blEnabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = Dapple.MainForm.ImageListIndex("disserver");
-				treeNode.Tag = builder;
             this.SelectedServer = builder;
 			}
          else if (m_szDefaultServer.Equals(strCapUrl))
@@ -494,10 +490,6 @@ namespace Dapple
 
          if (bUpdateTree)
          {
-            TreeNode treeNode = m_hArcIMSRootNode.Nodes.Add(serverUri.ToString());
-				treeNode.ForeColor = blEnabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
-            treeNode.SelectedImageIndex = treeNode.ImageIndex = Dapple.MainForm.ImageListIndex("disserver");
-            treeNode.Tag = builderEntry;
             this.SelectedServer = builderEntry;
          }
          else if (m_szDefaultServer.Equals(serverUri.ToString()))
