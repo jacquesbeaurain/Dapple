@@ -15,6 +15,7 @@ namespace Dapple.Extract
    {
       #region Constants
       private readonly string DATABASE_EXT = ".gdb";
+		private readonly string SHP_EXT = ".shp";
       #endregion
 
       /// <summary>
@@ -25,7 +26,7 @@ namespace Dapple.Extract
          : base(oDAPbuilder)
       {
          InitializeComponent();
-         tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, DATABASE_EXT);
+			tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, ExtensionForHXYZ);
       }
 
 		public override bool OpenInMap
@@ -45,7 +46,7 @@ namespace Dapple.Extract
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, DATABASE_EXT));
+			oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, ExtensionForHXYZ));
 
          oDatasetElement.Attributes.Append(oPathAttr);
 
@@ -54,7 +55,7 @@ namespace Dapple.Extract
 
 		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
-			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, DATABASE_EXT));
+			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, ExtensionForHXYZ));
 			if (System.IO.File.Exists(szFilename))
 			{
 				return QueryOverwriteFile("The file \"" + szFilename + "\" already exists.  Overwrite?", hExtractForm);
@@ -62,6 +63,17 @@ namespace Dapple.Extract
 			else
 			{
 				return DuplicateFileCheckResult.Yes;
+			}
+		}
+
+		private String ExtensionForHXYZ
+		{
+			get
+			{
+				if (MainForm.Client == Options.Client.ClientType.ArcMAP)
+					return SHP_EXT;
+				else
+					return DATABASE_EXT;
 			}
 		}
    }
