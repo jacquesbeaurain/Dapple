@@ -67,9 +67,10 @@ namespace Utility
 
          using (StreamWriter sw = new StreamWriter(tempAbortFile, false))
          {
-            // HACK Use this.errorLabel.Tag to avoid the "&" in the label's Text
-            string temp = this.Text + " " + strVersion + "\r\n" + this.errorLabel.Tag + "\r\n" + this.errorText.Text;
-            sw.Write(temp);
+				String szTemp = "DAPPLE " + strVersion + " ABORT" + Environment.NewLine +
+					Environment.NewLine + 
+					this.errorText.Text;
+            sw.Write(szTemp);
          }
 
          using (StreamWriter sw = new StreamWriter(tempBodyFile))

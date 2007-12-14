@@ -75,7 +75,7 @@ namespace Utility
 
 			result.Append(e.GetType().ToString());
          result.Append(": ");
-         result.Append(e.Message);
+			result.Append(e.Message.Replace(Environment.NewLine, "; "));
          result.Append(Environment.NewLine);
 
          if (e.StackTrace != null)
