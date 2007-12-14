@@ -3505,7 +3505,7 @@ namespace Dapple
          propertiesToolStripMenuItem.Enabled = blServerSelected;
          refreshServerToolStripMenuItem.Enabled = blServerSelected;
          removeServerToolStripMenuItem.Enabled = blServerSelected;
-         setAsFavoriteToolStripMenuItem.Enabled = blServerSelected;
+         setAsFavoriteToolStripMenuItem.Enabled = blServerSelected && !tvServers.SelectedIsFavorite;
          addBrowserMapToLayersToolStripMenuItem.Enabled = blDAPServerSelected;
 
          if (blServerSelected == false)
