@@ -328,11 +328,18 @@ namespace Dapple
       {
          m_oServerListControl.Servers = getServerList();
 
-         // Rebuild the tree, only the selected node hasn't changed
-         oPreNode = SelectedOrRoot;
-         oPostNode = SelectedOrRoot;
-         CMRebuildTree();
+			ReconstructTree();
       }
+
+		/// <summary>
+		/// Rebuilds tree when no change has been made to the selected node.
+		/// </summary>
+		private void ReconstructTree()
+		{
+			oPreNode = SelectedOrRoot;
+			oPostNode = SelectedOrRoot;
+			RebuildTreeAfterChange();
+		}
 
 		#endregion
 
@@ -1089,7 +1096,7 @@ namespace Dapple
          }
       }
 
-      private void CMRebuildTree()
+      private void RebuildTreeAfterChange()
       {
          if (oPreNode == null) throw new ArgumentNullException("Preselect node unset");
          if (oPostNode == null) throw new ArgumentNullException("Postselect node unset");
@@ -1241,7 +1248,7 @@ namespace Dapple
 
          oPostNode = SelectedOrRoot;
          FireViewMetadataEvent();
-         CMRebuildTree();
+         RebuildTreeAfterChange();
 		}
 		
 		protected void OnAfterCollapse(object sender, TreeViewEventArgs e)
@@ -1742,6 +1749,7 @@ namespace Dapple
                m_szDefaultServer = ((ServerBuilder)SelectedNode.Tag).Uri.ToString();
             }
          }
+			ReconstructTree();
       }
 
       public void CmdToggleServerEnabled()
