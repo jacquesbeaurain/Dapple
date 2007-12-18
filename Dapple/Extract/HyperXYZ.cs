@@ -16,6 +16,7 @@ namespace Dapple.Extract
       #region Constants
       private readonly string DATABASE_EXT = ".gdb";
 		private readonly string SHP_EXT = ".shp";
+		private readonly string TAB_EXT = ".tab";
       #endregion
 
       /// <summary>
@@ -70,10 +71,17 @@ namespace Dapple.Extract
 		{
 			get
 			{
-				if (MainForm.Client == Options.Client.ClientType.ArcMAP)
-					return SHP_EXT;
-				else
-					return DATABASE_EXT;
+				switch (MainForm.Client)
+				{
+					case Options.Client.ClientType.ArcMAP:
+						return SHP_EXT;
+					case Options.Client.ClientType.MapInfo:
+						return TAB_EXT;
+					case Options.Client.ClientType.OasisMontaj:
+						return DATABASE_EXT;
+					default:
+						throw new InvalidOperationException("Unprogrammed client type " + MainForm.Client.ToString());
+				}
 			}
 		}
    }
