@@ -84,6 +84,8 @@ namespace Geosoft.GX.DAPGetData
 
       protected string m_strSecureToken;
 
+		protected bool m_blAllowCollapse = false;
+
 #if DEBUG
       private List<String> m_oAddedServerDNSNames = new List<string>();
 #endif
@@ -1502,7 +1504,15 @@ namespace Geosoft.GX.DAPGetData
 
             OnDataSetSelected(ex);
          }
-      }      
+      }
+
+		protected override void OnBeforeCollapse(TreeViewCancelEventArgs e)
+		{
+			base.OnBeforeCollapse(e);
+
+			e.Cancel = !m_blAllowCollapse;
+		}
+
       #endregion
 
       private void InitializeComponent()

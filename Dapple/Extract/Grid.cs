@@ -85,7 +85,7 @@ namespace Dapple.Extract
          strFileName = string.Format("{0}({1})", strFileName, Options.Grid.DownloadOptionQualifier[iIndex]);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, GRD_EXT));
+         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, strFileName);
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");

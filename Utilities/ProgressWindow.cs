@@ -240,8 +240,8 @@ namespace MWA.Progress
 			// 
 			// progressBar
 			// 
-			this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+			this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar.Location = new System.Drawing.Point(8, 80);
 			this.progressBar.Name = "progressBar";
 			this.progressBar.Size = new System.Drawing.Size(192, 23);
@@ -249,9 +249,9 @@ namespace MWA.Progress
 			// 
 			// label
 			// 
-			this.label.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+			this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+							| System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
 			this.label.Location = new System.Drawing.Point(8, 8);
 			this.label.Name = "label";
 			this.label.Size = new System.Drawing.Size(272, 64);
@@ -260,11 +260,12 @@ namespace MWA.Progress
 			// 
 			// cancelButton
 			// 
-			this.cancelButton.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right);
+			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cancelButton.Enabled = false;
 			this.cancelButton.Location = new System.Drawing.Point(208, 80);
 			this.cancelButton.Name = "cancelButton";
+			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "Cancel";
 			// 
@@ -272,13 +273,15 @@ namespace MWA.Progress
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(290, 114);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																		  this.cancelButton,
-																		  this.progressBar,
-																		  this.label});
+			this.Controls.Add(this.cancelButton);
+			this.Controls.Add(this.progressBar);
+			this.Controls.Add(this.label);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "ProgressWindow";
+			this.ShowIcon = false;
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "ProgressWindow";
 			this.ResumeLayout(false);

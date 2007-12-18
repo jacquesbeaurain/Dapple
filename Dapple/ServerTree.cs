@@ -590,10 +590,14 @@ namespace Dapple
                // Collapse the first level nodes and clean the subnodes (we can restore them using the IBuilder parent/client relations ships from here on)
                foreach (TreeNode node in m_hRootNode.Nodes)
                {
-                  if (node == m_hDAPRootNode)
-                     node.Collapse();
-                  else
-                     node.Nodes.Clear();
+						if (node == m_hDAPRootNode)
+						{
+							m_blAllowCollapse = true;
+							node.Collapse();
+							m_blAllowCollapse = false;
+						}
+						else
+							node.Nodes.Clear();
                   foreach (TreeNode subNode in node.Nodes)
                      subNode.Nodes.Clear();
                }
@@ -1014,37 +1018,6 @@ namespace Dapple
 
 		#region Event Handlers
 
-      /// <summary>
-      /// Removes the child nodes of any TreeNode not in the path from the selected node to the root node.
-      /// </summary>
-      /// <remarks>
-      /// Doesn't remove children from Dap root node.  That makes it not work.  Just remove its grandchildren
-      /// and collapses it.
-      /// </remarks>
-      /// <param name="focus">The node to remove children from if not in openNodes.</param>
-      /// <param name="openNodes">The list of nodes in the path from the root node to the currently selected node.</param>
-      private void PruneClosedNodes(TreeNode focus, List<TreeNode> openNodes)
-      {
-         foreach (TreeNode child in focus.Nodes)
-         {
-            if (openNodes.Contains(child))
-               PruneClosedNodes(child, openNodes);
-            else
-            {
-               // Don't clear the DAP root node, just close it and clear it's subchildren
-               if (child == m_hDAPRootNode)
-               {
-                  child.Collapse();
-                  foreach (TreeNode subNode in child.Nodes)
-                     subNode.Nodes.Clear();
-               }
-               else
-                  child.Nodes.Clear();
-            }
-         }
-         if (focus != m_hRootNode && focus != m_hDAPRootNode) openNodes[0].Nodes.Clear();
-      }
-
       protected override void UpdateTreeNodeColors()
       {
          SuspendLayout();
@@ -1172,7 +1145,9 @@ namespace Dapple
          // --- Only collapse the DAP root node ---
          if (oNode == m_hDAPRootNode)
          {
-            oNode.Collapse();
+				m_blAllowCollapse = true;
+				oNode.Collapse();
+				m_blAllowCollapse = false;
             foreach (TreeNode oSubNode in oNode.Nodes)
                oSubNode.Nodes.Clear();
 
