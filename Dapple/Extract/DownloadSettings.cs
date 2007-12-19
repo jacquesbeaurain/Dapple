@@ -75,20 +75,23 @@ namespace Dapple.Extract
                iImageIndex = MainForm.ImageListIndex("georef_image");
             else
                iImageIndex = MainForm.ImageListIndex("layer");
-
-				if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
-					iImageIndex = MainForm.ImageListIndex("error");
-				else
-					bDownload.Enabled = true;
-
-            ListViewItem oItem = new ListViewItem(oBuilder.Title);
-            oItem.ImageIndex = iImageIndex;
-            oItem.Tag = oBuilder;
-
             
             // --- create the user control ---
+				DownloadOptions oControl = CreateUserControl(oBuilder);
 
-            DownloadOptions oControl = CreateUserControl(oBuilder);
+				if (oControl is Disabled)
+				{
+					iImageIndex = MainForm.ImageListIndex("error");
+				}
+				else
+				{
+					bDownload.Enabled = true;
+				}
+
+				ListViewItem oItem = new ListViewItem(oBuilder.Title);
+				oItem.ImageIndex = iImageIndex;
+				oItem.Tag = oBuilder;
+
             if (oControl != null)
             {
                // --- no errors, add this dataset to the list ---
@@ -118,13 +121,19 @@ namespace Dapple.Extract
       {
 			if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
 			{
-				return new Disabled();
+				return new Disabled("This data layer will not be downloaded because it does not intersect with the viewed area.");
 			}
 
          DownloadOptions oControl = null;
          if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder)
          {
             Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
+
+				double dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0;
+				if (MainForm.MontajInterface.GetExtents(oDAPbuilder.ServerURL, oDAPbuilder.DatasetName, out dummy1, out dummy2, out dummy3, out dummy4) == false)
+				{
+					return new Disabled("This data layer will not be downloaded because its metadata could not be accessed.  This usually indicates that you do not have the required permissions to access it.");
+				}
             
             if (oDAPbuilder.DAPType.ToLower() == "map") {
                oControl = new HyperMAP(oDAPbuilder);

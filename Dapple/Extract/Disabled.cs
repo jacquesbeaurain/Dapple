@@ -17,12 +17,17 @@ namespace Dapple.Extract
       /// Constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-		public Disabled()
-         : base(null)
+		public Disabled() : this("This data layer will not be extracted.")
       {
-         InitializeComponent();
       }
 
+		public Disabled(String szReason)
+			:base(null)
+		{
+			InitializeComponent();
+
+			lNoOptions.Text = szReason;
+		}
 
 		public override bool OpenInMap
 		{

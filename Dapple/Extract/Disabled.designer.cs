@@ -33,23 +33,23 @@ namespace Dapple.Extract
 			// 
 			// lNoOptions
 			// 
-			this.lNoOptions.AutoSize = true;
+			this.lNoOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+							| System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
 			this.lNoOptions.Location = new System.Drawing.Point(3, 0);
 			this.lNoOptions.Name = "lNoOptions";
-			this.lNoOptions.Size = new System.Drawing.Size(385, 13);
+			this.lNoOptions.Size = new System.Drawing.Size(163, 300);
 			this.lNoOptions.TabIndex = 0;
-			this.lNoOptions.Text = "This layer will not be extracted because it doesn\'t intersect with the viewed are" +
-				 "a.";
+			this.lNoOptions.Text = "This data layer will not be extracted.";
 			// 
-			// Generic
+			// Disabled
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.lNoOptions);
-			this.Name = "Generic";
-			this.Size = new System.Drawing.Size(200, 300);
+			this.Name = "Disabled";
+			this.Size = new System.Drawing.Size(169, 300);
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
       }
 
