@@ -3200,12 +3200,17 @@ namespace Dapple
                if (oBuilder.SupportsMetaData)
                {
                   oNode = oBuilder.GetMetaData(oDoc);
+						if (oNode == null)
+						{
+							DisplayMetadataMessage("You do not have permission to view the metadata for this data layer.");
+							return;
+						}
                   strStyleSheet = oBuilder.StyleSheetName;
-                  DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Title);
+                  DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Title + "...");
                }
                else
                {
-                  DisplayMetadataMessage("Metadata for the selected layer type is unsupported");
+                  DisplayMetadataMessage("Metadata for the selected layer type is unsupported.");
                   return;
                }
 
@@ -3560,7 +3565,7 @@ namespace Dapple
          }
          catch (System.Runtime.Remoting.RemotingException)
          {
-            MessageBox.Show(Form.ActiveForm, "Connection to Oasis Montaj lost, unable to display help");
+				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to display help");
             OMhelpToolStripMenuItem.Enabled = false;
          }
       }

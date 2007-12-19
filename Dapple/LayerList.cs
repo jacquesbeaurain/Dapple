@@ -942,7 +942,7 @@ namespace Dapple
 			}
 			else if (oResult == DialogResult.Abort)
 			{
-				MessageBox.Show(Form.ActiveForm, "Connection to Oasis Montaj lost, unable to extract datasets");
+				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to extract datasets");
 				m_blAllowExtract = false;
 				cExtractButton.Enabled = false;
 			}

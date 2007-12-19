@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel;
 
 namespace Dapple.Extract
 {
@@ -10,8 +11,11 @@ namespace Dapple.Extract
       {
          public enum ClientType
          {
+				[Description("Oasis Montaj")]
             OasisMontaj,
+				[Description("ArcMap")]
             ArcMAP,
+				[Description("MapInfo")]
             MapInfo,
             None
          }

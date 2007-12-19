@@ -336,19 +336,20 @@ namespace Dapple.LayerGeneration
 
       #region ImageBuilder Overrides
 
-      public override XmlNode GetMetaData(XmlDocument oDoc)
-      {
-         XmlDocument responseDoc = m_oServer.Command.GetMetaData(m_hDataSet, null);
-         XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
-         XmlNode metaNode = oDoc.CreateElement("dapmeta");
-         XmlNode nameNode = oDoc.CreateElement("name");
-         nameNode.InnerText = Title;
-         metaNode.AppendChild(nameNode);
-         XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
-         geoMetaNode.InnerXml = oNode.InnerXml;
-         metaNode.AppendChild(geoMetaNode);
-         return metaNode;
-      }
+		public override XmlNode GetMetaData(XmlDocument oDoc)
+		{
+			XmlDocument responseDoc = m_oServer.Command.GetMetaData(m_hDataSet, null);
+			XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
+			if (oNode == null) return null;
+			XmlNode metaNode = oDoc.CreateElement("dapmeta");
+			XmlNode nameNode = oDoc.CreateElement("name");
+			nameNode.InnerText = Title;
+			metaNode.AppendChild(nameNode);
+			XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
+			geoMetaNode.InnerXml = oNode.InnerXml;
+			metaNode.AppendChild(geoMetaNode);
+			return metaNode;
+		}
 
 		#endregion
 

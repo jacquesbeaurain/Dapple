@@ -111,6 +111,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataProtection.cs" />
+    <Compile Include="EnumUtils.cs" />
     <Compile Include="FolderEditControl.cs">
       <SubType>Component</SubType>
     </Compile>
