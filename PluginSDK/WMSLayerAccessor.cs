@@ -52,19 +52,19 @@ namespace WorldWind.Net.Wms
 
 			string projectionRequest = "";
 
-			if (m_version == "1.1.1")
-			{
-				if (GCSMappings.WMSWGS84Equivalents.Contains(m_srs))
-					projectionRequest = "srs=" + m_srs;
-				else
-					projectionRequest = "srs=EPSG:4326";
-			}
-			else
+			if (m_version == "1.3.0")
 			{
 				if (GCSMappings.WMSWGS84Equivalents.Contains(m_crs))
 					projectionRequest = "crs=" + m_crs;
 				else
 					projectionRequest = "crs=CRS:84";
+			}
+			else
+			{
+				if (GCSMappings.WMSWGS84Equivalents.Contains(m_srs))
+					projectionRequest = "srs=" + m_srs;
+				else
+					projectionRequest = "srs=EPSG:4326";
 			}
 
 			string wmsQuery = string.Format(

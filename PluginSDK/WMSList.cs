@@ -262,7 +262,14 @@ namespace WorldWind
          {
             WMS_MS_Capabilities.WMT_MS_CapabilitiesType root = new WMS_MS_Capabilities.WMT_MS_CapabilitiesType(doc.Load(oResponseXmlStream));
 
-            this._version = "1.1.1";
+				if (root.versionCount > 0)
+				{
+					this._version = root.version.Value;
+				}
+				else
+				{
+					this._version = "1.1.1";
+				}
             this._name = root.Service.Title.Value.Value;
 
             if (!root.HasCapability())
@@ -440,7 +447,14 @@ namespace WorldWind
          {
             capabilities_1_3_0.wms.WMS_CapabilitiesType root = new capabilities_1_3_0.wms.WMS_CapabilitiesType(doc.Load(oResponseXmlStream));
 
-            this._version = "1.3.0";
+				if (root.versionCount > 0)
+				{
+					this._version = root.version.Value;
+				}
+				else
+				{
+					this._version = "1.3.0";
+				}
             this._name = root.Service.Title.Value;
 
             if (!root.HasCapability())
