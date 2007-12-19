@@ -812,13 +812,10 @@ namespace WorldWind.Renderable
                      oTileIndicesToDelete.Add(key);
                   }
                }
-            }
-
             // Do updates before cleanup for performance reasons.
-            foreach (long key in oTilesToUpdate.Keys) m_topmostTiles[key].Update(drawArgs);
+               foreach (long key in oTilesToUpdate.Keys)
+                  m_topmostTiles[key].Update(drawArgs);
 
-            lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
-            {
                foreach (long key in oTileIndicesToDelete)
                {
                   if (m_topmostTiles.ContainsKey(key))
@@ -896,8 +893,11 @@ namespace WorldWind.Renderable
                   device.SetTextureStageState(1, TextureStageStates.TextureCoordinateIndex, 0);
                }
                device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-               foreach (QuadTile qt in m_topmostTiles.Values)
-                  qt.Render(drawArgs);
+					lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+					{
+						foreach (QuadTile qt in m_topmostTiles.Values)
+							qt.Render(drawArgs);
+					}
 
                // Restore device states
                device.SetTextureStageState(1, TextureStageStates.TextureCoordinateIndex, 1);
@@ -986,39 +986,42 @@ namespace WorldWind.Renderable
          this.sprite.End();
       }
 
-      public override void Dispose()
-      {
-         isInitialized = false;
+		public override void Dispose()
+		{
+			isInitialized = false;
 
-         // flush downloads
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
-            {
-                m_downloadRequests.Clear();
-         for (int i = 0; i < m_activeDownloads.Length; i++)
-         {
-            if (m_activeDownloads[i] != null)
-            {
-               m_activeDownloads[i].Dispose();
-               m_activeDownloads[i] = null;
-            }
-         }
-            }
+			// flush downloads
+			lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
+			{
+				m_downloadRequests.Clear();
+				for (int i = 0; i < m_activeDownloads.Length; i++)
+				{
+					if (m_activeDownloads[i] != null)
+					{
+						m_activeDownloads[i].Dispose();
+						m_activeDownloads[i] = null;
+					}
+				}
+			}
 
-         foreach (QuadTile qt in m_topmostTiles.Values)
-            qt.Dispose();
-         m_topmostTiles.Clear();
-         if (m_iconTexture != null)
-         {
-            m_iconTexture.Dispose();
-            m_iconTexture = null;
-         }
+			lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+			{
+				foreach (QuadTile qt in m_topmostTiles.Values)
+					qt.Dispose();
+				m_topmostTiles.Clear();
+			}
+			if (m_iconTexture != null)
+			{
+				m_iconTexture.Dispose();
+				m_iconTexture = null;
+			}
 
-         if (this.sprite != null)
-         {
-            this.sprite.Dispose();
-            this.sprite = null;
-         }
-      }
+			if (this.sprite != null)
+			{
+				this.sprite.Dispose();
+				this.sprite = null;
+			}
+		}
 
       public virtual void ResetCacheForCurrentView(WorldWind.Camera.CameraBase camera)
       {
