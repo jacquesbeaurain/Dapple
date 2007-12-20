@@ -282,8 +282,36 @@ namespace Dapple.Extract
             oDebugElement.SetAttribute("clip_setting", eClip.ToString());
             oExtractElement.AppendChild(oDebugElement);
 #endif
+				DatasetDisclaimer oDisclaimers = null;
+				try
+				{
+					oDisclaimers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
+				}
+				catch (System.Net.WebException ex)
+				{
+					String strErrorMessage = "Could not access disclaimer information for ";
+					if (ex.Data["dataset"] != null)
+					{
+						strErrorMessage += "data layer " + ex.Data["dataset"];
+					}
+					else
+					{
+						strErrorMessage += "one or more data layers";
+					}
 
-            DatasetDisclaimer oDisclaimers = new DatasetDisclaimer(m_oLayersToDownload, oExtractDoc);
+					if (ex.Message != null)
+					{
+						strErrorMessage += ":" + Environment.NewLine + ex.Message;
+					}
+					else
+					{
+						strErrorMessage += ".";
+					}
+
+					MessageBox.Show(strErrorMessage, "Error Accessing Disclaimer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					this.DialogResult = DialogResult.None;
+					return;
+				}
 				oDisclaimers.ShowInTaskbar = false;
 
 				if (oDisclaimers.HasDisclaimer)

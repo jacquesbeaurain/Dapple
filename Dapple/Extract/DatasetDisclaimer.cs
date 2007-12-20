@@ -50,7 +50,16 @@ namespace Dapple.Extract
                oDataset.Name = oDAPbuilder.DatasetName;
                oDataset.Url = oDAPbuilder.ServerURL;
 
-					System.Xml.XmlDocument oDoc = oCommand.GetDisclaimer(oDataset);
+					System.Xml.XmlDocument oDoc = null;
+					try
+					{
+						oDoc = oCommand.GetDisclaimer(oDataset);
+					}
+					catch (System.Net.WebException ex)
+					{
+						ex.Data["dataset"] = oBuilder.Title;
+						throw ex;
+					}
 					oDoc.Save(strTempFile);
 					oReader = System.Xml.XmlReader.Create(strTempFile);
 
