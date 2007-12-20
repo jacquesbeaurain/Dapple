@@ -224,7 +224,7 @@ namespace ConfigurationWizard
 
       private void butClearCache_Click(object sender, EventArgs e)
       {
-         Utility.FileSystem.DeleteFolderGUI(this, Wizard.Settings.CachePath);
+         Utility.FileSystem.DeleteFolderGUI(this, Wizard.Settings.CachePath, "Deleting Cached Data");
       }
 	}
 }

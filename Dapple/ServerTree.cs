@@ -423,7 +423,8 @@ namespace Dapple
          {
             if (((Server)oCurrentServer).Enabled)
             {
-               (oCurrentServer as Server).UpdateConfiguration();
+					// GetCatalogHierarchy will UpdateConfiguration if necessary, shouldn't need it here.
+               //(oCurrentServer as Server).UpdateConfiguration();
                ClearCatalog();
                GetCatalogHierarchy();
                GetDatasetCount(oCurrentServer as Server);

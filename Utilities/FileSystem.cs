@@ -23,14 +23,14 @@ namespace Utility
          }
       }
 
-      public static void DeleteFolderGUI(IWin32Window parent, string strFolder)
+      public static void DeleteFolderGUI(IWin32Window parent, string strFolder, string strTitle)
       {
          ProgressInfo pi = new ProgressInfo();
          pi.progress = new ProgressWindow();
          pi.strOrigFolder = pi.strFolder = strFolder;
          pi.lCounter = 0;
          pi.lTotalSize = 0;
-         pi.progress.Text = "Deleting contents of " + strFolder;
+         pi.progress.Text = strTitle;
          ThreadPool.QueueUserWorkItem(new WaitCallback(DeleteFolderRecursive), pi);
          pi.progress.ShowDialog(parent);
       }

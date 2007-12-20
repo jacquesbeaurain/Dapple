@@ -795,7 +795,7 @@ namespace Dapple
             string strCache = m_oLayers[iIndex].GetCachePath();
             if (!string.IsNullOrEmpty(strCache))
             {
-               Utility.FileSystem.DeleteFolderGUI(this, strCache);
+               Utility.FileSystem.DeleteFolderGUI(this, strCache, "Clearing Data Layer Cache");
                CmdRefreshLayer(iIndex);
             }
          }

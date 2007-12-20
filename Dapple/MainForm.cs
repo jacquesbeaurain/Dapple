@@ -311,7 +311,7 @@ namespace Dapple
                // We want to make sure the new cache path is writable
                Directory.CreateDirectory(Settings.NewCachePath);
                if (Directory.Exists(Settings.CachePath))
-                  Utility.FileSystem.DeleteFolderGUI(this, Settings.CachePath);
+                  Utility.FileSystem.DeleteFolderGUI(this, Settings.CachePath, "Deleting Existing Cache");
                Settings.CachePath = Settings.NewCachePath;
             }
             catch

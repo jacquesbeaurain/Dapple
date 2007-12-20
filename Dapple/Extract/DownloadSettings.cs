@@ -172,7 +172,14 @@ namespace Dapple.Extract
             }
             else if (oDAPbuilder.DAPType.ToLower() == "arcgis")
             {
-               oControl = new ArcGIS(oDAPbuilder);
+					if (MainForm.Client != Options.Client.ClientType.MapInfo)
+					{
+						oControl = new ArcGIS(oDAPbuilder);
+					}
+					else
+					{
+						oControl = new Disabled("This data layer will not be downloaded as LYR is not a supported format in MapInfo.");
+					}
             }
             else if (oDAPbuilder.DAPType.ToLower() == "imageserver")
             {

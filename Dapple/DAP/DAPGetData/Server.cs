@@ -215,8 +215,8 @@ namespace Geosoft.GX.DAPGetData
                   // --- If the edition change we need to reload the configuration ---
                   string strEdition, strConfigEdition;
                   m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-                  if (m_strCacheVersion != strConfigEdition)
-                     UpdateConfiguration();
+						if (m_strCacheVersion != strConfigEdition)
+							UpdateConfiguration();
                }
             }
          }
@@ -270,8 +270,8 @@ namespace Geosoft.GX.DAPGetData
 
                // --- If the edition change we need to reload the configuration ---
                m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-               if (m_strCacheVersion != strConfigEdition)
-                  UpdateConfiguration();
+					if (m_strCacheVersion != strConfigEdition)
+						UpdateConfiguration();
             }
          }
          catch
@@ -468,6 +468,9 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       public void UpdateConfiguration()
       {
+			// --- Delete the tile cache ---
+			Utility.FileSystem.DeleteFolderGUI(Dapple.MainForm.ActiveForm, Path.Combine(Path.Combine(m_strCacheRoot, Dapple.LayerGeneration.DAPQuadLayerBuilder.CacheSubDir), Url.Replace("http://", "")), "Deleting Stale Cache");
+
          // --- delete the browser map and configuration ---
 
          string strBrowserMapFile = Path.Combine(m_strCacheDir, BROWSERMAP_FILE);
