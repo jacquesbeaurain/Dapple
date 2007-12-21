@@ -38,6 +38,22 @@ namespace Dapple.Extract
          tbGroupName.Text = oDAPbuilder.Title;
          tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, MAP_EXT);
 
+			if (MainForm.Client == Options.Client.ClientType.MapInfo)
+			{
+				cbOptions.SelectedIndex = SAVE_AS_TAB_IMPORT;
+				lOptions.Visible = false;
+				cbOptions.Visible = false;
+				cbOptions.Enabled = false;
+			}
+
+			if (MainForm.Client == Options.Client.ClientType.ArcMAP)
+			{
+				cbOptions.SelectedIndex = SAVE_AS_SHP_IMPORT;
+				lOptions.Visible = false;
+				cbOptions.Visible = false;
+				cbOptions.Enabled = false;
+			}
+
          ConfigureDialog();
       }
 

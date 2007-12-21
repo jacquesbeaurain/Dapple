@@ -158,37 +158,37 @@ namespace Dapple.Extract
                                                                          "GRD;Type=SHORT;Comp=none",
                                                                          "GRD;Type=Byte",
                                                                          "GRD;Type=Short",
-                                                                         "GRD;Type=Long",
+                                                                         "GRD;Type=Long",//5
                                                                          "GRD;Type=Float",
                                                                          "GRD;Type=Color",
                                                                          "GRD;Comp=Size",
                                                                          "GRD;Type=color;Comp=Size",
-                                                                         "GRD;Type=Byte;Comp=Size",
+                                                                         "GRD;Type=Byte;Comp=Size",//10
                                                                          "GRD;Type=Short;Comp=Size",
                                                                          "GRD;Type=Long;Comp=Size",
                                                                          "GRD;Type=Float;Comp=Size",
                                                                          "GRD;Comp=Size7",
-                                                                         "GRD;Comp=Size10",
+                                                                         "GRD;Comp=Size10",//15
                                                                          "GRD;Comp=Size14",
                                                                          "GRD;Comp=Size17",
                                                                          "GRD;Comp=Size20",
                                                                          "ARC",
-                                                                         "SAT,T=0",
+                                                                         "SAT,T=0",//20
                                                                          "ERM",
                                                                          "ERM;Type=COMP",
                                                                          "ERM;Type=COLOR",
                                                                          "GPK",
-                                                                         "GXF",
+                                                                         "GXF",//25
                                                                          "GXF;Comp=0",
                                                                          "ZMP",
                                                                          "ODF;Type=PC",
                                                                          "ODF;Type=UNIX",
-                                                                         "PCI",
+                                                                         "PCI",//30
                                                                          "SRF;VER=V6",
                                                                          "SRF;VER=V7",
                                                                          "TXC",
                                                                          "USG;Type=PC",
-                                                                         "USG;Type=UNIX",
+                                                                         "USG;Type=UNIX",//35
                                                                          "WGC"};
       }
 
