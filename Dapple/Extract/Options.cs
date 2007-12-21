@@ -84,73 +84,74 @@ namespace Dapple.Extract
                                                                       "Geosoft DOS grid (*.grd)",
                                                                       "Geosoft BYTE grid (*.grd)",
                                                                       "Geosoft SHORT grid (*.grd)",
-                                                                      "Geosoft LONG grid (*.grd)",
+                                                                      "Geosoft LONG grid (*.grd)",//5
                                                                       "Geosoft FLOAT grid (*.grd)",
                                                                       "Geosoft Colour grid (*.grd)",
                                                                       "Geosoft Comp default grid (*.grd)",
                                                                       "Geosoft Comp colour grid (*.grd)",
-                                                                      "Geosoft Comp BYTE grid (*.grd)",
+                                                                      "Geosoft Comp BYTE grid (*.grd)",//10
                                                                       "Geosoft Comp SHORT grid (*.grd)",
                                                                       "Geosoft Comp LONG grid (*.grd)",
                                                                       "Geosoft Comp FLOAT grid (*.grd)",
                                                                       "Geosoft Comp 2 sig fig grid (*.grd)",
-                                                                      "Geosoft Comp 3 sig fig grid (*.grd)",
+                                                                      "Geosoft Comp 3 sig fig grid (*.grd)",//15
                                                                       "Geosoft Comp 4 sig fig grid (*.grd)",
                                                                       "Geosoft Comp 5 sig fig grid (*.grd)",
                                                                       "Geosoft Comp 6 sig fig grid (*.grd)",
                                                                       "ArcView Binary Raster Grid (*.flt)",
-                                                                      "BIL with INI header (*.*)",
+                                                                      "BIL with INI header (*.*)",//20
                                                                       "ER Mapper (*.ers)",
                                                                       "ER Mapper ECW Compressor (*.ecw)",
                                                                       "ER Mapper RGB Colour (*.ers)",
                                                                       "Geopak (*.grd)",
-                                                                      "GXF Compressed (*.gxf)",
+                                                                      "GXF Compressed (*.gxf)",//25
                                                                       "GXF Text (*.gxf)",
                                                                       "Landmark Zmap (*.dat)",
                                                                       "ODDF PC (*.*)",
                                                                       "ODDF UNIX (*.*)",
-                                                                      "PCIDSK (*.pix)",
+                                                                      "PCIDSK (*.pix)",//30
                                                                       "Surfer V6 (*.grd)",
                                                                       "Surfer V7 (*.grd)",
                                                                       "Texaco Startrax (*.grd)",
                                                                       "USGS PC (*.*)",
-                                                                      "USGS UNIX (*.*)",
+                                                                      "USGS UNIX (*.*)",//35
                                                                       "World Geoscience (*.h)"};
 
          public static string[] DownloadOptionExtension = new string[] {".grd",
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
+                                                                        ".grd",//5
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
+                                                                        ".grd",//10
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
-                                                                        ".grd",
-                                                                        ".grd",
-                                                                        ".grd",
+                                                                        ".grd",//15
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".flt",
-                                                                        string.Empty,
+                                                                        string.Empty,//20
                                                                         ".ers",
                                                                         ".ecw",
                                                                         ".ers",
                                                                         ".grd",
-                                                                        ".gxf",
+                                                                        ".gxf",//25
+				                                                            ".gxf",
                                                                         ".dat",
                                                                         string.Empty,
                                                                         string.Empty,
                                                                         ".pix",
-                                                                        ".grd",
+                                                                        ".grd",//30
                                                                         ".grd",
                                                                         ".grd",
                                                                         string.Empty,
-                                                                        string.Empty,
+                                                                        string.Empty,//35
                                                                         ".h"};
 
          public static string[] DownloadOptionQualifier = new string[] { "GRD",
