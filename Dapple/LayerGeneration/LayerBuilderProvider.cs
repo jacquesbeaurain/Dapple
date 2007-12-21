@@ -306,6 +306,11 @@ namespace Dapple.LayerGeneration
                   oExportInfo.iPixelsX = iImageWidth;
                   oExportInfo.iPixelsY = iImageHeight;
 
+						if (MainForm.Client == Dapple.Extract.Options.Client.ClientType.ArcMAP)
+						{
+							oEIGraphics.FillRectangle(new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(254, 254, 254)), new System.Drawing.Rectangle(0, 0, iImageWidth, iImageHeight));
+						}
+
                   oRObj.ExportProcess(MainForm.WorldWindowSingleton.DrawArgs, oExportInfo);
                }
 
