@@ -335,6 +335,7 @@ namespace WorldWind
       private bool renderWireFrame;
       private System.Timers.Timer m_FpsTimer = new System.Timers.Timer(250);
       private bool supressUpdates = false;
+		private Object m_oSceneLock = new Object();
       
       //		protected DownloadIndicator m_downloadIndicator;
 
@@ -993,7 +994,10 @@ namespace WorldWind
                }
                //}
                // Flip
-               drawArgs.Present();
+					lock (m_oSceneLock)
+					{
+						drawArgs.Present();
+					}
             }
          }
          catch (DeviceLostException)
@@ -1011,7 +1015,10 @@ namespace WorldWind
          try
          {
             Render();
-            drawArgs.Present();
+				lock (m_oSceneLock)
+				{
+					drawArgs.Present();
+				}
          }
          catch (DeviceLostException)
          {
@@ -1054,7 +1061,10 @@ namespace WorldWind
 
             // to prevent screen garbage when resizing
             //Render();
-            m_Device3d.Present();
+				lock (m_oSceneLock)
+				{
+					m_Device3d.Present();
+				}
          }
          catch (DeviceLostException)
          {
@@ -1063,9 +1073,12 @@ namespace WorldWind
                AttemptRecovery();
 
                // Our surface was lost, force re-render
-               Render();
+					Render();
 
-               m_Device3d.Present();
+					lock (m_oSceneLock)
+					{
+						m_Device3d.Present();
+					}
             }
             catch (DirectXException)
             {
@@ -1093,143 +1106,149 @@ namespace WorldWind
             PerformanceTimer.QueryPerformanceCounter(ref startTicks);
 
             try
-            {
-               this.drawArgs.BeginRender();
+				{
+					this.drawArgs.BeginRender();
 
-               // Render the sky according to view - example, close to earth, render sky blue, render space as black
-               System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
+					// Render the sky according to view - example, close to earth, render sky blue, render space as black
+					System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
 
-               /*if (drawArgs.WorldCamera != null &&
-                  drawArgs.WorldCamera.Altitude < 1000000f &&
-                  m_World != null &&
-                  m_World.Name.IndexOf("Earth") >= 0)
-               {
-                  float percent = 1 - (float)(drawArgs.WorldCamera.Altitude / 1000000);
-                  if (percent > 1.0f)
-                     percent = 1.0f;
-                  else if (percent < 0.0f)
-                     percent = 0.0f;
+					/*if (drawArgs.WorldCamera != null &&
+						drawArgs.WorldCamera.Altitude < 1000000f &&
+						m_World != null &&
+						m_World.Name.IndexOf("Earth") >= 0)
+					{
+						float percent = 1 - (float)(drawArgs.WorldCamera.Altitude / 1000000);
+						if (percent > 1.0f)
+							percent = 1.0f;
+						else if (percent < 0.0f)
+							percent = 0.0f;
 
-                  backgroundColor = System.Drawing.Color.FromArgb(
-                     (int)(World.Settings.SkyColor.R * percent),
-                     (int)(World.Settings.SkyColor.G * percent),
-                     (int)(World.Settings.SkyColor.B * percent));
-               }*/
+						backgroundColor = System.Drawing.Color.FromArgb(
+							(int)(World.Settings.SkyColor.R * percent),
+							(int)(World.Settings.SkyColor.G * percent),
+							(int)(World.Settings.SkyColor.B * percent));
+					}*/
 
-               m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
+					m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
 
-               if (m_World == null)
-               {
-                  m_Device3d.BeginScene();
-                  m_Device3d.EndScene();
-                  m_Device3d.Present();
-                  Thread.Sleep(25);
-                  return;
-               }
+					if (m_World == null)
+					{
+						lock (m_oSceneLock)
+						{
+							m_Device3d.BeginScene();
+							m_Device3d.EndScene();
+							m_Device3d.Present();
+						}
+						Thread.Sleep(25);
+						return;
+					}
 
-               if (m_WorkerThread == null)
-               {
-                  m_WorkerThreadRunning = true;
-                  m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
-                  m_WorkerThread.Name = "WorldWindow.WorkerThreadFunc";
-                  m_WorkerThread.IsBackground = true;
-                  if (World.Settings.UseBelowNormalPriorityUpdateThread)
-                  {
-                     m_WorkerThread.Priority = ThreadPriority.BelowNormal;
-                  }
-                  else
-                  {
-                     m_WorkerThread.Priority = ThreadPriority.Normal;
-                  }
-                  // BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
-                  // TODO: Implement dynamic FPS limiter (or different solution)
-                  m_WorkerThread.Start();
-               }
+					if (m_WorkerThread == null)
+					{
+						m_WorkerThreadRunning = true;
+						m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
+						m_WorkerThread.Name = "WorldWindow.WorkerThreadFunc";
+						m_WorkerThread.IsBackground = true;
+						if (World.Settings.UseBelowNormalPriorityUpdateThread)
+						{
+							m_WorkerThread.Priority = ThreadPriority.BelowNormal;
+						}
+						else
+						{
+							m_WorkerThread.Priority = ThreadPriority.Normal;
+						}
+						// BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
+						// TODO: Implement dynamic FPS limiter (or different solution)
+						m_WorkerThread.Start();
+					}
 
-               // Update camera view
-               this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
-               this.drawArgs.WorldCamera.Update(m_Device3d);
+					// Update camera view
+					this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
+					this.drawArgs.WorldCamera.Update(m_Device3d);
 
-               m_Device3d.BeginScene();
+					lock(m_oSceneLock)
+					{
+						m_Device3d.BeginScene();
 
-               // Set fill mode
-               if (renderWireFrame)
-                  m_Device3d.RenderState.FillMode = FillMode.WireFrame;
-               else
-                  m_Device3d.RenderState.FillMode = FillMode.Solid;
+						// Set fill mode
+						if (renderWireFrame)
+							m_Device3d.RenderState.FillMode = FillMode.WireFrame;
+						else
+							m_Device3d.RenderState.FillMode = FillMode.Solid;
 
-               drawArgs.RenderWireFrame = renderWireFrame;
+						drawArgs.RenderWireFrame = renderWireFrame;
 
-               // Render the current planet
-               m_World.Render(this.drawArgs);
+						// Render the current planet
+						m_World.Render(this.drawArgs);
 
-               if (World.Settings.ShowCrosshairs)
-                  this.DrawCrossHairs();
+						if (World.Settings.ShowCrosshairs)
+							this.DrawCrossHairs();
 
-               frameCounter++;
-               if (frameCounter == 30)
-               {
-                  fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
-                  frameCounter = 0;
-                  lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
-               }
+						frameCounter++;
+						if (frameCounter == 30)
+						{
+							fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
+							frameCounter = 0;
+							lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
+						}
 
-               m_RootWidget.Render(drawArgs);
-               m_NewRootWidget.Render(drawArgs);
+						m_RootWidget.Render(drawArgs);
+						m_NewRootWidget.Render(drawArgs);
 
-               if (saveScreenShotFilePath != null)
-                  SaveScreenShot();
+						if (saveScreenShotFilePath != null)
+							SaveScreenShot();
 
-               drawArgs.device.RenderState.ZBufferEnable = false;
+						drawArgs.device.RenderState.ZBufferEnable = false;
 
-               // 3D rendering complete, switch to 2D for UI rendering
+						// 3D rendering complete, switch to 2D for UI rendering
 
-               // Restore normal fill mode
-               if (renderWireFrame)
-                  m_Device3d.RenderState.FillMode = FillMode.Solid;
+						// Restore normal fill mode
+						if (renderWireFrame)
+							m_Device3d.RenderState.FillMode = FillMode.Solid;
 
-               // Disable fog for UI
-               m_Device3d.RenderState.FogEnable = false;
+						// Disable fog for UI
+						m_Device3d.RenderState.FogEnable = false;
 
-               /*
-                               if(World.Settings.ShowDownloadIndicator)
-                               {
-                                   if(m_downloadIndicator == null)
-                                       m_downloadIndicator = new DownloadIndicator();
-                                   m_downloadIndicator.Render(drawArgs);
-                               }
-               */
-               RenderPositionInfo();
+						/*
+											 if(World.Settings.ShowDownloadIndicator)
+											 {
+												  if(m_downloadIndicator == null)
+														m_downloadIndicator = new DownloadIndicator();
+												  m_downloadIndicator.Render(drawArgs);
+											 }
+						*/
+						RenderPositionInfo();
 
-               /*
-               _menuBar.Render(drawArgs);
-                */ 
-               m_FpsGraph.Render(drawArgs);
+						/*
+						_menuBar.Render(drawArgs);
+						 */
+						m_FpsGraph.Render(drawArgs);
 
-               if (m_World.OnScreenMessages != null)
-               {
-                  try
-                  {
-                     foreach (OnScreenMessage dm in m_World.OnScreenMessages)
-                     {
-                        int xPos = (int)Math.Round(dm.X * this.Width);
-                        int yPos = (int)Math.Round(dm.Y * this.Height);
-                        Rectangle posRect =
-                           new Rectangle(xPos, yPos, this.Width, this.Height);
-                        this.drawArgs.defaultDrawingFont.DrawText(null,
-                           dm.Message, posRect,
-                           DrawTextFormat.NoClip | DrawTextFormat.WordBreak,
-                           Color.White);
-                     }
-                  }
-                  catch (Exception)
-                  {
-                     // Don't let a script error cancel the frame.
-                  }
-               }
+						if (m_World.OnScreenMessages != null)
+						{
+							try
+							{
+								foreach (OnScreenMessage dm in m_World.OnScreenMessages)
+								{
+									int xPos = (int)Math.Round(dm.X * this.Width);
+									int yPos = (int)Math.Round(dm.Y * this.Height);
+									Rectangle posRect =
+										new Rectangle(xPos, yPos, this.Width, this.Height);
+									this.drawArgs.defaultDrawingFont.DrawText(null,
+										dm.Message, posRect,
+										DrawTextFormat.NoClip | DrawTextFormat.WordBreak,
+										Color.White);
+								}
+							}
+							catch (Exception)
+							{
+								// Don't let a script error cancel the frame.
+							}
+						}
 
-               m_Device3d.EndScene();
-            }
+						m_Device3d.EndScene();
+					}
+				}
             catch (Exception ex)
             {
                Log.Write(ex);

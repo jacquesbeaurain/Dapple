@@ -248,6 +248,9 @@ namespace WorldWind
 		/// <summary>
 		/// Displays the rendered image (call after EndRender)
 		/// </summary>
+		/// <remarks>
+		/// Calls to this method should have the WorldWindow's m_oSceneLock locked to prevent DirectX InvalidCallExceptions.
+		/// </remarks>
 		public void Present()
 		{
 			// Calculate frame time
