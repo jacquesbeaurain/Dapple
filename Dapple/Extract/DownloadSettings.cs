@@ -254,6 +254,7 @@ namespace Dapple.Extract
 
 				// --- create xml document for each dataset ---
 
+				int iCount = 0;
 				for (int count = 0; count < m_oDownloadSettings.Count; count++)
 				{
 					System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
@@ -265,6 +266,7 @@ namespace Dapple.Extract
 							DialogResult = DialogResult.None;
 							return;
 						case DownloadOptions.ExtractSaveResult.Extract:
+							iCount++;
 							oExtractElement.AppendChild(oDatasetElement);
 							break;
 						case DownloadOptions.ExtractSaveResult.Ignore:
@@ -272,6 +274,13 @@ namespace Dapple.Extract
 
 					}
 				}
+
+				if (iCount == 0)
+				{
+					this.DialogResult = DialogResult.None;
+					return;
+				}
+
 #if DEBUG
             System.Xml.XmlElement oDebugElement = oExtractDoc.CreateElement("debug");
             WorldWind.GeographicBoundingBox oViewAOI = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());

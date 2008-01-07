@@ -938,12 +938,14 @@ namespace Dapple
          DialogResult oResult = oDownloadDialog.ShowDialog(this);
 			if (oResult == DialogResult.OK)
 			{
-				MessageBox.Show(this.TopLevelControl, "Extraction complete");
-
 				if (MainForm.Client == Dapple.Extract.Options.Client.ClientType.MapInfo)
 				{
 					// Assumption: the layer list is on the main form of dapple.  If it's anywhere else, this'll need to be updated.
 					this.ParentForm.Close();
+				}
+				else
+				{
+					MessageBox.Show(this.TopLevelControl, "Extraction complete");
 				}
 			}
 			else if (oResult == DialogResult.Abort)
