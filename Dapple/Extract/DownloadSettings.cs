@@ -31,6 +31,7 @@ namespace Dapple.Extract
       private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
       private DownloadOptions m_oCurUserControl = null;
 		private Form m_oParentForm = null;
+		private bool m_blLayersDownloaded = true;
       #endregion
 
       /// <summary>
@@ -327,7 +328,7 @@ namespace Dapple.Extract
 				{
 					if (oDisclaimers.ShowDialog(this) == DialogResult.OK)
 					{
-						DoDownload(oExtractDoc);
+						m_blLayersDownloaded = DoDownload(oExtractDoc);
 					}
 					else
 					{
@@ -336,7 +337,7 @@ namespace Dapple.Extract
 				}
 				else
 				{
-					DoDownload(oExtractDoc);
+					m_blLayersDownloaded = DoDownload(oExtractDoc);
 				}
          }
          catch (System.Runtime.Remoting.RemotingException)
@@ -375,12 +376,12 @@ namespace Dapple.Extract
 			this.ResumeLayout(true);
 		}
 
-		private void DoDownload(System.Xml.XmlDocument oExtractDoc)
+		private bool DoDownload(System.Xml.XmlDocument oExtractDoc)
 		{
 			this.Hide();
 			m_oParentForm.Activate();
 			Application.DoEvents();
-			MainForm.MontajInterface.Download(oExtractDoc.OuterXml);
+			return MainForm.MontajInterface.Download(oExtractDoc.OuterXml) > 0;
 		}
 
       #endregion
@@ -403,6 +404,11 @@ namespace Dapple.Extract
 				e.Cancel = !cFolderControl.bIsValid(ref szError);
 				cErrorProvider.SetError(cFolderControl, szError);
 			}
+		}
+
+		public bool LayersDownloaded
+		{
+			get { return m_blLayersDownloaded; }
 		}
    }
 }

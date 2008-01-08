@@ -941,7 +941,8 @@ namespace Dapple
 				if (MainForm.Client == Dapple.Extract.Options.Client.ClientType.MapInfo)
 				{
 					// Assumption: the layer list is on the main form of dapple.  If it's anywhere else, this'll need to be updated.
-					this.ParentForm.Close();
+					if (oDownloadDialog.LayersDownloaded)
+						this.ParentForm.Close();
 				}
 				else
 				{
