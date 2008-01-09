@@ -81,11 +81,11 @@ namespace Dapple.Extract
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          int iIndex = cbDownloadOptions.SelectedIndex;
-         string strFileName = System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[iIndex]);
+         string strFileName = System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), Options.Grid.DownloadOptionExtension[iIndex]);
          strFileName = string.Format("{0}({1})", strFileName, Options.Grid.DownloadOptionQualifier[iIndex]);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, strFileName);
+			oPathAttr.Value = System.IO.Path.Combine(strDestFolder, strFileName);
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");

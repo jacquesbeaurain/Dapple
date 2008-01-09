@@ -135,5 +135,24 @@ namespace Utility
          foreach (DirectoryInfo disub in dis)
             SizeFolderContentsRecursive(disub.FullName, ref lSize);
       }
+
+		/// <summary>
+		/// Replaces all disallowed characters in a filename with '_'s.
+		/// </summary>
+		/// <param name="szFilename">The filename to sanitize.</param>
+		/// <returns>The sanitized filename.</returns>
+		public static String SanitizeFilename(String szFilename)
+		{
+			String result = szFilename;
+			foreach (Char c in Path.GetInvalidFileNameChars())
+			{
+				result = result.Replace(c, '_');
+			}
+			foreach (Char c in Path.GetInvalidPathChars())
+			{
+				result = result.Replace(c, '_');
+			}
+			return result;
+		}
    }
 }

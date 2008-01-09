@@ -73,7 +73,7 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, TIF_EXT));
+         oAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), TIF_EXT));
          oDatasetElement.Attributes.Append(oAttr);
 
 			// --- Delete all the files that OM generates, so we don't get invalid projections ---

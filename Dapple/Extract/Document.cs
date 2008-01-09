@@ -62,7 +62,7 @@ namespace Dapple.Extract
 
 		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
-			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, m_szExtension));
+			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), m_szExtension));
 			if (System.IO.File.Exists(szFilename))
 			{
 				return QueryOverwriteFile("The file \"" + szFilename + "\" already exists.  Overwrite?", hExtractForm);

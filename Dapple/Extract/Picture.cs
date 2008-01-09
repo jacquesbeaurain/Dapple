@@ -83,7 +83,7 @@ namespace Dapple.Extract
 
 			SetExtension();
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, tbFilename.Text);
+         oPathAttr.Value = System.IO.Path.Combine(strDestFolder, Utility.FileSystem.SanitizeFilename(tbFilename.Text));
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");

@@ -47,7 +47,7 @@ namespace Dapple.Extract
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
-			oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, ExtensionForHXYZ));
+			oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), ExtensionForHXYZ));
 
          oDatasetElement.Attributes.Append(oPathAttr);
 

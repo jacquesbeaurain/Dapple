@@ -76,21 +76,21 @@ namespace Dapple.Extract
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          if (cbOptions.SelectedIndex == SAVE_AS_MAP)
          {
-            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT));
+            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), MAP_EXT));
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_SHP_IMPORT || cbOptions.SelectedIndex == SAVE_AS_SHP_NOIMPORT)
          {
             // Shape file uses a namespace name, not a file name (produces oodles of files)
-            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text));
+            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.GetFileNameWithoutExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text)));
          }
          else if (cbOptions.SelectedIndex == SAVE_AS_TAB_IMPORT || cbOptions.SelectedIndex == SAVE_AS_TAB_NOIMPORT)
          {
-            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(tbFilename.Text, TAB_EXT));
+            oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), TAB_EXT));
          }
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oGroupAttribute = oDatasetElement.OwnerDocument.CreateAttribute("group");
-         oGroupAttribute.Value = tbGroupName.Text;
+         oGroupAttribute.Value = Utility.FileSystem.SanitizeFilename(tbGroupName.Text);
          oDatasetElement.Attributes.Append(oGroupAttribute);
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");
