@@ -1605,26 +1605,24 @@ namespace Dapple
          SaveCurrentView(tempViewFile, tempFile, "");
          Image img = Image.FromFile(tempFile);
          SaveViewForm form = new SaveViewForm(Settings.ConfigPath, img);
+
          if (form.ShowDialog(this) == DialogResult.OK)
          {
             if (File.Exists(form.OutputPath))
-               File.Delete(form.OutputPath);
-            File.Move(tempViewFile, form.OutputPath);
+					File.Delete(form.OutputPath);
 
             XmlDocument oDoc = new XmlDocument();
-            oDoc.Load(form.OutputPath);
+            oDoc.Load(tempViewFile);
             XmlNode oRoot = oDoc.DocumentElement;
             XmlNode oNode = oDoc.CreateElement("notes");
             oNode.InnerText = form.Notes;
             oRoot.AppendChild(oNode);
             oDoc.Save(form.OutputPath);
          }
-         else
-         {
-            File.Delete(tempViewFile);
-         }
+
          img.Dispose();
-         File.Delete(tempFile);
+         if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempViewFile)) File.Delete(tempViewFile);
       }
 
       private void toolStripMenuItemsend_Click(object sender, EventArgs e)
