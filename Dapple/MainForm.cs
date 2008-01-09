@@ -1171,7 +1171,7 @@ namespace Dapple
 
       #region Add Servers
 
-      private void AddDAPServer()
+      public void AddDAPServer()
       {
          AddDAP dlg = new AddDAP();
          if (dlg.ShowDialog(this) == DialogResult.OK)
@@ -1195,7 +1195,7 @@ namespace Dapple
          }
       }
 
-      private void AddWMSServer()
+      public void AddWMSServer()
       {
          TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.tvServers.Nodes);
 
@@ -1223,7 +1223,7 @@ namespace Dapple
          }
       }
 
-      private void AddArcIMSServer()
+      public void AddArcIMSServer()
       {
          TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(ArcIMSCatalogBuilder), this.tvServers.Nodes);
 
@@ -2705,8 +2705,6 @@ namespace Dapple
 
       #region DappleSearch code
 
-      private String m_strDappleSearchServerURL = null;
-
       delegate void UpdateTextDelegate(String text);
       private void setDappleSearchResultsLabelText(String text)
       {
@@ -2719,7 +2717,7 @@ namespace Dapple
             DappleSearchResultsLabel.Text = text;
          }
       }
-
+		/*
       private void doBackgroundSearch(out int hits, out int error, String keywords, GeographicBoundingBox ROI)
       {
          XmlDocument query = new XmlDocument();
@@ -2781,7 +2779,7 @@ namespace Dapple
             hits = 0; error = -1; return;
          }
       }
-
+		*/
       private void WorldResultsSplitPanel_SplitterMoving(object sender, SplitterCancelEventArgs e)
       {
          worldWindow.Visible = false;
@@ -2866,6 +2864,8 @@ namespace Dapple
 
       private void submitServerToSearchEngine(object param)
       {
+			if (String.IsNullOrEmpty(Settings.DappleSearchURL)) return;
+
          try
          {
             XmlDocument query = new XmlDocument();
@@ -2876,7 +2876,7 @@ namespace Dapple
             root.SetAttribute("type", ((String[])param)[1]);
             geoRoot.AppendChild(root);
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_strDappleSearchServerURL + NEW_SERVER_GATEWAY);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Settings.DappleSearchURL + NEW_SERVER_GATEWAY);
             request.Headers["GeosoftAddServerRequest"] = query.InnerXml;
             WebResponse response = request.GetResponse();
             response.Close();

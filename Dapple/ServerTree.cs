@@ -1634,25 +1634,21 @@ namespace Dapple
 
          if (oAddForm != null)
          {
-            if (oAddForm.ShowDialog() == DialogResult.OK)
+            if (oAddForm is AddDAP)
             {
-               if (oAddForm is AddDAP)
-               {
-                  Server oDummyVariable;
-                  AddDAPServer(((AddDAP)oAddForm).Url, out oDummyVariable, true);
-               }
-               else if (oAddForm is AddWMS)
-               {
-                  AddWMSServer(((AddWMS)oAddForm).WmsURL, true, true);
-               }
-               else if (oAddForm is AddArcIMS)
-               {
-                  AddArcIMSServer(new ArcIMSServerUri(((AddArcIMS)oAddForm).URL), true, true);
-               }
-               else
-               {
-                  throw new InvalidOperationException("Unknown server type");
-               }
+					m_oParent.AddDAPServer();
+            }
+            else if (oAddForm is AddWMS)
+            {
+					m_oParent.AddWMSServer();
+            }
+            else if (oAddForm is AddArcIMS)
+            {
+					m_oParent.AddArcIMSServer();
+            }
+            else
+            {
+               throw new InvalidOperationException("Unknown server type");
             }
          }
       }
