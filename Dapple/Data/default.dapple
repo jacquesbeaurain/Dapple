@@ -75,9 +75,6 @@
                <wmscatalog capabilitiesurl="http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap"/>
             </builderentry>
             <builderentry>
-               <wmscatalog capabilitiesurl="http://maps.customweather.com/image"/>
-            </builderentry>
-            <builderentry>
                <wmscatalog capabilitiesurl="http://cgkn.net/cgi-bin/cgkn_wms"/>
             </builderentry>
             <builderentry>
