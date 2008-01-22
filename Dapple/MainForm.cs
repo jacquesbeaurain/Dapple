@@ -170,7 +170,7 @@ namespace Dapple
 
       private string m_szLastSearchString = String.Empty;
       private GeographicBoundingBox m_oLastSearchROI = null;
-      private TreeView cKMLTree;
+      //private TreeView cKMLTree;
       #endregion
 
       #region Properties
@@ -412,8 +412,8 @@ namespace Dapple
 
 #if DEBUG
 				// --- Make the server tree HOOGE ---
-				this.splitContainerMain.SplitterDistance = 400;
-				this.splitContainerLeftMain.SplitterDistance = 400;
+				//this.splitContainerMain.SplitterDistance = 400;
+				//this.splitContainerLeftMain.SplitterDistance = 400;
 #endif
 
             this.Icon = new System.Drawing.Icon(@"app.ico");
@@ -729,6 +729,8 @@ namespace Dapple
                toolStripMenuItemfile.Enabled = true;
                toolStripMenuItemOpenKML.Visible = true;
                toolStripMenuItemOpenKML.Enabled = true;
+					cKMLTree.MouseDoubleClick += new MouseEventHandler(cKMLTree_MouseDoubleClick);
+					cKMLTree.AfterCheck += new TreeViewEventHandler(cKMLTree_AfterCheck);
             }
 
             loadCountryList();
@@ -1486,7 +1488,7 @@ namespace Dapple
 
 
          // Check for updates daily
-         if (Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
+         if (IsMontajChildProcess == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
             CheckForUpdates(false);
          Settings.UpdateCheckDate = System.DateTime.Now;
 
