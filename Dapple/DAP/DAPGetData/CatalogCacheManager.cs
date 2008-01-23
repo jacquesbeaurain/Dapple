@@ -311,8 +311,12 @@ namespace Geosoft.GX.DAPGetData
             {
                oRet = null;
 
-               if (File.Exists(strFile))
-                  File.Delete(strFile);
+					try
+					{
+						if (File.Exists(strFile))
+							File.Delete(strFile);
+					}
+					catch (IOException) { } // Bug report where this delete failed; suppress failed deletions.
             }
          }
 
