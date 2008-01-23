@@ -1383,6 +1383,10 @@ namespace Dapple
          {
             this.SelectedServer = hRetServer;
          }
+			if (result)
+			{
+				UpdateTreeNodeColors();
+			}
          return result;
       }
 
