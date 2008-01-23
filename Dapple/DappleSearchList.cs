@@ -31,6 +31,7 @@ namespace Dapple.CustomControls
 
       private const int THUMBNAIL_SIZE = 50;
       private const int BAR_WIDTH = 5;
+		private const int ICON_SIZE = 16;
 
       #endregion
 
@@ -186,14 +187,23 @@ namespace Dapple.CustomControls
 
       private void cResultListBox_MeasureItem(object sender, MeasureItemEventArgs e)
       {
+			SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
+
          if (m_eDisplayMode == DisplayMode.Thumbnail)
          {
             e.ItemHeight = THUMBNAIL_SIZE + 3;
+				e.ItemWidth = BAR_WIDTH + THUMBNAIL_SIZE + 3 + Math.Max(
+					(int)e.Graphics.MeasureString(oResult.Title, cResultListBox.Font).Width,
+					(int)e.Graphics.MeasureString(oResult.ServerUrl, new Font(cResultListBox.Font, FontStyle.Bold)).Width
+					);
+				cResultListBox.HorizontalExtent = Math.Max(cResultListBox.HorizontalExtent, e.ItemWidth);
          }
          else if (m_eDisplayMode == DisplayMode.List)
          {
-            // Use height of icon
-            e.ItemHeight = 16;
+				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font).Width;
+            e.ItemHeight = ICON_SIZE;
+				cResultListBox.HorizontalExtent = Math.Max(cResultListBox.HorizontalExtent, e.ItemWidth);
+
          }
       }
 
@@ -341,6 +351,7 @@ namespace Dapple.CustomControls
 
          cResultListBox.SuspendLayout();
          cResultListBox.Items.Clear();
+			cResultListBox.HorizontalExtent = 0;
 
          if (String.IsNullOrEmpty(m_szDappleSearchURI))
          {

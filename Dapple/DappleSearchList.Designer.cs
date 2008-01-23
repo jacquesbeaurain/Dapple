@@ -47,6 +47,7 @@ namespace Dapple.CustomControls
 			this.cResultListBox.ContextMenuStrip = this.cContextMenu;
 			this.cResultListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
 			this.cResultListBox.FormattingEnabled = true;
+			this.cResultListBox.HorizontalScrollbar = true;
 			this.cResultListBox.IntegralHeight = false;
 			this.cResultListBox.Location = new System.Drawing.Point(3, 32);
 			this.cResultListBox.Name = "cResultListBox";
