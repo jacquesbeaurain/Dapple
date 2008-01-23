@@ -46,7 +46,7 @@ namespace Dapple
 			this.btnCancel.Location = new System.Drawing.Point(224, 46);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 30;
+			this.btnCancel.TabIndex = 2;
 			this.btnCancel.Text = "C&ancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			// 
@@ -56,7 +56,7 @@ namespace Dapple
 			this.btnOK.Location = new System.Drawing.Point(143, 46);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
-			this.btnOK.TabIndex = 29;
+			this.btnOK.TabIndex = 1;
 			this.btnOK.Text = "&OK";
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -89,7 +89,7 @@ namespace Dapple
 			this.cFilenameControl.Name = "cFilenameControl";
 			this.cFilenameControl.Required = true;
 			this.cFilenameControl.Size = new System.Drawing.Size(196, 21);
-			this.cFilenameControl.TabIndex = 31;
+			this.cFilenameControl.TabIndex = 0;
 			this.cFilenameControl.Validating += new System.ComponentModel.CancelEventHandler(this.cFilenameControl_Validating);
 			// 
 			// cFilenameErrorProvider
