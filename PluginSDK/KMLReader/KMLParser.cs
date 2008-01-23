@@ -848,7 +848,7 @@ namespace WorldWind.KMLReader
 							 DrawArgs.CurrentWorldStatic,
 							 outerRing,
 							 innerRings,
-							 (style.PolyStyle.Color != null ? System.Drawing.Color.FromArgb(style.PolyStyle.Color.Color) : System.Drawing.Color.Yellow)
+							 style.PolyStyle.Fill ? (style.PolyStyle.Color != null ? System.Drawing.Color.FromArgb(style.PolyStyle.Color.Color) : System.Drawing.Color.Yellow) : System.Drawing.Color.Transparent
 							 );
 
 						polygonFeature.Extrude = extrude;
