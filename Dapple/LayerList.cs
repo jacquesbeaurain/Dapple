@@ -827,10 +827,14 @@ namespace Dapple
       /// </summary>
       private void CmdViewMetadata()
       {
-         if (cLayerList.SelectedIndices.Count == 1 && ViewMetadata != null && m_oLayers[cLayerList.SelectedIndices[0]] != null)
-         {
-            ViewMetadata(m_oLayers[cLayerList.SelectedIndices[0]]);
-         }
+			if (cLayerList.SelectedIndices.Count == 1 && ViewMetadata != null && m_oLayers[cLayerList.SelectedIndices[0]] != null)
+			{
+				ViewMetadata(m_oLayers[cLayerList.SelectedIndices[0]]);
+			}
+			else
+			{
+				ViewMetadata(null);
+			}
       }
 
       /// <summary>

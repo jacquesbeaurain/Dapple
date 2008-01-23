@@ -603,6 +603,7 @@ namespace Dapple
 				cLayerList.ServerTree = tvServers;
 
 				m_oMetadataDisplay = new MetadataDisplayThread(this);
+				m_oMetadataDisplay.addBuilder(null);
 				cServerListControl.LayerList = cLayerList;
 				cLayerList.GoTo += new LayerList.GoToHandler(this.GoTo);
 
@@ -3164,10 +3165,16 @@ namespace Dapple
 			toolStripNavigation.Location = newLocation;
 		}
 
+		public delegate void StringParamDelegate(String szString);
 		private void DisplayMetadataMessage(String szMessage)
 		{
-			cMetadataBrowser.Visible = false;
-			cMetadataLoadingLabel.Text = szMessage;
+			if (InvokeRequired)
+				this.Invoke(new StringParamDelegate(DisplayMetadataMessage), new Object[] { szMessage });
+			else
+			{
+				cMetadataBrowser.Visible = false;
+				cMetadataLoadingLabel.Text = szMessage;
+			}
 		}
 
 		private void DisplayMetadataDocument(String szMessage)
@@ -3212,7 +3219,7 @@ namespace Dapple
 					}
 					else
 					{
-						DisplayMetadataMessage("Metadata for the selected layer type is unsupported.");
+						DisplayMetadataMessage("Metadata for the selected object is unsupported.");
 						return;
 					}
 
@@ -3375,13 +3382,21 @@ namespace Dapple
 						m_oSignaller.Reset();
 					}
 
-					if (oCurrentBuilder is AsyncBuilder)
-						((AsyncBuilder)oCurrentBuilder).WaitUntilLoaded();
-
-					if (!oCurrentBuilder.Equals(oLastBuilder))
+					if (oCurrentBuilder == null)
 					{
-						m_hOwner.LoadMetadata(oCurrentBuilder);
+						m_hOwner.DisplayMetadataMessage("Select a dataset or server to view its associated metadata.");
 						oLastBuilder = oCurrentBuilder;
+					}
+					else
+					{
+						if (oCurrentBuilder is AsyncBuilder)
+							((AsyncBuilder)oCurrentBuilder).WaitUntilLoaded();
+
+						if (!oCurrentBuilder.Equals(oLastBuilder))
+						{
+							m_hOwner.LoadMetadata(oCurrentBuilder);
+							oLastBuilder = oCurrentBuilder;
+						}
 					}
 				}
 			}

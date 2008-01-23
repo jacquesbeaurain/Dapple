@@ -374,10 +374,14 @@ namespace Dapple
       /// <param name="e"></param>
       private void cLayersListView_SelectedIndexChanged(object sender, EventArgs e)
       {
-         if (cLayersListView.SelectedIndices.Count == 1)
-         {
-            if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[cLayersListView.SelectedIndices[0] + LAYERS_PER_PAGE * m_iCurrPage]);
-         }
+			if (cLayersListView.SelectedIndices.Count == 1)
+			{
+				if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[cLayersListView.SelectedIndices[0] + LAYERS_PER_PAGE * m_iCurrPage]);
+			}
+			else
+			{
+				if (ViewMetadata != null) ViewMetadata(null);
+			}
       }
 
       #endregion
