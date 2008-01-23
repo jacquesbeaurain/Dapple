@@ -40,12 +40,14 @@ namespace Dapple
 
       private void butOK_Click(object sender, EventArgs e)
       {
-         if (!txtDapURL.Text.StartsWith("http://") || txtDapURL.Text.Length <= "http://".Length)
-         {
-            MessageBox.Show(this, "Please enter a valid URL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            DialogResult = DialogResult.None;
-            return;
-         }
+			Uri oServerUrl = null;
+			if (!(Uri.TryCreate(txtDapURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtDapURL.Text, UriKind.Absolute, out oServerUrl)))
+			{
+				MessageBox.Show(this, "Unable to parse URL.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				DialogResult = DialogResult.None;
+				return;
+			}
+			txtDapURL.Text = oServerUrl.ToString();
       }
    }
 }

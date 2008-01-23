@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using WorldWind;
 using Dapple.LayerGeneration;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Dapple
 {
@@ -33,23 +34,20 @@ namespace Dapple
 
       private void butOK_Click(object sender, EventArgs e)
       {
-         /*m_WmsURL = txtWmsURL.Text;
-         WMSCatalogBuilder.TrimCapabilitiesURL(ref m_WmsURL);*/
-
-         if (!txtWmsURL.Text.StartsWith("http://") || txtWmsURL.Text.Length <= "http://".Length)
-         {
-            MessageBox.Show(this, "Please enter a valid URL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+         Uri oServerUrl = null;
+			if (!(Uri.TryCreate(txtWmsURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtWmsURL.Text, UriKind.Absolute, out oServerUrl)))
+			{
+            MessageBox.Show(this, "Unable to parse URL.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             DialogResult = DialogResult.None;
             return;
          }
-
-         //WMSList oServer = m_oParent.FindServer(m_WmsURL);
-         if (m_oParent.ContainsServer(new WMSServerUri(txtWmsURL.Text)))
+         if (m_oParent.ContainsServer(new WMSServerUri(oServerUrl.ToString())))
          {
             MessageBox.Show(this, "This WMS Server has already been added", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             DialogResult = DialogResult.None;
             return;
-         }        
+         }
+			txtWmsURL.Text = oServerUrl.ToString();
       }
 
       private void linkLabelHelpWMS_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

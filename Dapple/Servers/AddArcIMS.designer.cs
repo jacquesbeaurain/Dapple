@@ -30,7 +30,7 @@ namespace Dapple
       {
          this.label11 = new System.Windows.Forms.Label();
          this.butOK = new System.Windows.Forms.Button();
-         this.txtWmsURL = new System.Windows.Forms.TextBox();
+         this.txtArcIMSURL = new System.Windows.Forms.TextBox();
          this.butCancel = new System.Windows.Forms.Button();
          this.SuspendLayout();
          // 
@@ -57,11 +57,11 @@ namespace Dapple
          // 
          // txtWmsURL
          // 
-         this.txtWmsURL.Location = new System.Drawing.Point(15, 35);
-         this.txtWmsURL.Name = "txtWmsURL";
-         this.txtWmsURL.Size = new System.Drawing.Size(365, 20);
-         this.txtWmsURL.TabIndex = 1;
-         this.txtWmsURL.Text = "http://";
+         this.txtArcIMSURL.Location = new System.Drawing.Point(15, 35);
+         this.txtArcIMSURL.Name = "txtWmsURL";
+         this.txtArcIMSURL.Size = new System.Drawing.Size(365, 20);
+         this.txtArcIMSURL.TabIndex = 1;
+         this.txtArcIMSURL.Text = "http://";
          // 
          // butCancel
          // 
@@ -83,7 +83,7 @@ namespace Dapple
          this.ControlBox = false;
          this.Controls.Add(this.label11);
          this.Controls.Add(this.butOK);
-         this.Controls.Add(this.txtWmsURL);
+         this.Controls.Add(this.txtArcIMSURL);
          this.Controls.Add(this.butCancel);
          this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
          this.Name = "AddArcIMS";
@@ -100,7 +100,7 @@ namespace Dapple
 
       private System.Windows.Forms.Label label11;
       private System.Windows.Forms.Button butOK;
-      private System.Windows.Forms.TextBox txtWmsURL;
+      private System.Windows.Forms.TextBox txtArcIMSURL;
       private System.Windows.Forms.Button butCancel;
    }
 }

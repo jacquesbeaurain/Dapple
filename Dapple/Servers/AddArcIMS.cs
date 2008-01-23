@@ -14,6 +14,7 @@ namespace Dapple
    {
       WorldWindow m_worldWind;
       ArcIMSCatalogBuilder m_oParent;
+		public const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
 
       public AddArcIMS(WorldWind.WorldWindow worldWindow, ArcIMSCatalogBuilder oParent)
       {
@@ -27,33 +28,39 @@ namespace Dapple
       {
          get
          {
-				if (txtWmsURL.Text.EndsWith("/servlet/com.esri.esrimap.Esrimap"))
-					return txtWmsURL.Text;
-				else
-					return txtWmsURL.Text + "/servlet/com.esri.esrimap.Esrimap";
+				return txtArcIMSURL.Text;
          }
       }
 
       private void butOK_Click(object sender, EventArgs e)
       {
-         if (!txtWmsURL.Text.StartsWith("http://") || txtWmsURL.Text.Length <= "http://".Length)
-         {
-            MessageBox.Show(this, "Please enter a valid URL (including http://)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            DialogResult = DialogResult.None;
-            return;
-         }
+         Uri oServerUrl = null;
+			if (!(Uri.TryCreate(txtArcIMSURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtArcIMSURL.Text, UriKind.Absolute, out oServerUrl)))
+			{
+				MessageBox.Show(this, "Unable to parse URL.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				DialogResult = DialogResult.None;
+				return;
+			}
 
-         if (m_oParent.ContainsServer(new ArcIMSServerUri(txtWmsURL.Text)))
-         {
-            MessageBox.Show(this, "This ArcIMS Server has already been added", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            DialogResult = DialogResult.None;
-            return;
-         }        
+			if (oServerUrl.AbsolutePath.Equals("/"))
+			{
+				String szUpdatedPath = oServerUrl.ToString();
+				szUpdatedPath = szUpdatedPath.Substring(0, szUpdatedPath.Length - 1);
+				oServerUrl = new Uri(szUpdatedPath + DEFAULT_ARCIMS_PATH);
+			}
+
+			if (m_oParent.ContainsServer(new ArcIMSServerUri(oServerUrl.ToString())))
+			{
+				MessageBox.Show(this, "This arcIMS server has already been added.", "Server Already Added", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				DialogResult = DialogResult.None;
+				return;
+			}
+			txtArcIMSURL.Text = oServerUrl.ToString();
       }
 
       private void AddArcIMS_Load(object sender, EventArgs e)
       {
-         this.txtWmsURL.SelectionStart = this.txtWmsURL.Text.Length;
+         this.txtArcIMSURL.SelectionStart = this.txtArcIMSURL.Text.Length;
       }
    }
 }
