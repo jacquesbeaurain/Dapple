@@ -21,7 +21,6 @@ namespace WorldWind
 	public class PolygonFeature : WorldWind.Renderable.RenderableObject
 	{
 		System.Drawing.Color m_polygonColor = System.Drawing.Color.Yellow;
-		CustomVertex.PositionNormalColored[] m_vertices = null;
 		double m_distanceAboveSurface = 0;
 		float m_verticalExaggeration = World.Settings.VerticalExaggeration;
 		double m_minimumDisplayAltitude = 0;
@@ -47,12 +46,7 @@ namespace WorldWind
 		public bool Extrude
 		{
 			get { return m_extrude; }
-			set
-			{
-				m_extrude = value;
-				if (m_vertices != null)
-					UpdateVertices();
-			}
+			set { m_extrude = value; }
 		}
 
 		/// <summary>
@@ -61,12 +55,7 @@ namespace WorldWind
 		public bool ExtrudeUpwards
 		{
 			get { return m_extrudeUpwards; }
-			set
-			{
-				m_extrudeUpwards = value;
-				if (m_vertices != null)
-					UpdateVertices();
-			}
+			set { m_extrudeUpwards = value; }
 		}
 
 		/// <summary>
@@ -75,12 +64,7 @@ namespace WorldWind
 		public double ExtrudeHeight
 		{
 			get { return m_extrudeHeight; }
-			set
-			{
-				m_extrudeHeight = value;
-				if (m_vertices != null)
-					UpdateVertices();
-			}
+			set { m_extrudeHeight = value; }
 		}
 
 		/// <summary>
@@ -93,8 +77,6 @@ namespace WorldWind
 			{
 				m_extrude = value;
 				m_extrudeToGround = value;
-				if (m_vertices != null)
-					UpdateVertices();
 			}
 		}
 
@@ -108,12 +90,7 @@ namespace WorldWind
 		public bool Fill
 		{
 			get { return m_fill; }
-			set
-			{
-				m_fill = value;
-				if (m_vertices != null)
-					UpdateVertices();
-			}
+			set { m_fill = value; }
 		}
 
 		public AltitudeMode AltitudeMode
@@ -125,38 +102,19 @@ namespace WorldWind
 		public System.Drawing.Color OutlineColor
 		{
 			get { return m_outlineColor; }
-			set
-			{
-				m_outlineColor = value;
-				if (m_vertices != null)
-				{
-					UpdateVertices();
-				}
-			}
+			set { m_outlineColor = value; }
 		}
 
 		public bool Outline
 		{
 			get { return m_outline; }
-			set
-			{
-				m_outline = value;
-				if (m_vertices != null)
-				{
-					UpdateVertices();
-				}
-			}
+			set { m_outline = value; }
 		}
 
 		public double DistanceAboveSurface
 		{
 			get { return m_distanceAboveSurface; }
-			set
-			{
-				m_distanceAboveSurface = value;
-				if (m_vertices != null)
-					UpdateVertices();
-			}
+			set { m_distanceAboveSurface = value; }
 		}
 
 		public double MinimumDisplayAltitude
@@ -173,16 +131,8 @@ namespace WorldWind
 
 		public override byte Opacity
 		{
-			get
-			{
-				return base.Opacity;
-			}
-			set
-			{
-				base.Opacity = value;
-				if (m_vertices != null)
-					UpdateVertices();
-			}
+			get { return base.Opacity; }
+			set { base.Opacity = value; }
 		}
 
 		/// <summary>
@@ -553,9 +503,6 @@ namespace WorldWind
 				m_polygon.Outline = m_outline;
 				m_polygon.OutlineColor = m_outlineColor;
 				this.World.ProjectedVectorRenderer.Add(m_polygon);
-
-				if (m_vertices != null)
-					m_vertices = null;
 
 				if (m_lineFeature != null)
 				{
