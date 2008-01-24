@@ -1346,7 +1346,7 @@ namespace ThreeDconnexion.Plugin
                 if (typeLib == null)
                 {
                     Console.WriteLine("LoadTypeLibEx failed.");
-                    throw new NullReferenceException("Com- Server not found.");
+                    throw new NotSupportedException("Com- Server not found.");
                 }
 
                 TypeLibConverter converter = new TypeLibConverter();
