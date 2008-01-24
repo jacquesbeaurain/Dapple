@@ -3204,15 +3204,8 @@ namespace Altova.Types
 
 		public bool IsValueNumeric() 
 		{
-			try 
-			{
-				decimal tmp = Convert.ToDecimal(myValue, CultureInfo.InvariantCulture);
-			}
-			catch (FormatException) 
-			{
-				return false;
-			}
-			return true;
+			Decimal oDummy;
+			return Decimal.TryParse(myValue, out oDummy);
 		}
 
 
