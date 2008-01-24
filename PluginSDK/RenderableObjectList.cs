@@ -89,16 +89,10 @@ namespace WorldWind.Renderable
         /// <returns>The first <c>RenderableObject</c> that matched the specified name, or <c>nullk</c> if none was found.</returns>
 		public virtual RenderableObject GetObject(string name)
 		{
-			try
+			foreach (RenderableObject ro in this.m_children)
 			{
-				foreach(RenderableObject ro in this.m_children)
-				{
-					if(ro.Name.Equals(name))
-						return ro;
-				}
-			}
-			catch
-			{	
+				if (ro.Name.Equals(name))
+					return ro;
 			}
 			return null;
 		}
@@ -113,31 +107,27 @@ namespace WorldWind.Renderable
         /// <param name="name">The name of the <c>RenderableObject</c> to search for, or <c>null</c> if any name should match.</param>
         /// <param name="objectType">The object type to search for, or <c>null</c> if any type should match.</param>
         /// <returns>A list of all <c>RenderableObject</c>s that match the given search criteria (may be empty), or <c>null</c> if an error occurred.</returns>
-        public virtual RenderableObjectList GetObjects(string name, Type objectType)
-        {
-            RenderableObjectList result = new RenderableObjectList("results");
-            try
-            {
-                foreach (RenderableObject ro in this.m_children)
-                {
-                    if (ro.GetType() == typeof(RenderableObjectList))
-                    {
-                        RenderableObjectList sub = ro as RenderableObjectList;
+		public virtual RenderableObjectList GetObjects(string name, Type objectType)
+		{
+			RenderableObjectList result = new RenderableObjectList("results");
 
-                        RenderableObjectList subres = sub.GetObjects(name, objectType);
-                        foreach(RenderableObject hit in subres.ChildObjects)
-                            result.Add(hit);
-                    }
-                    if (ro.Name.Equals(name) && ((objectType==null) || (ro.GetType() == objectType)))
-                        result.Add(ro);
-                }
-                return result;
-            }
-            catch
-            {
-            }
-            return null;
-        }
+			foreach (RenderableObject ro in this.m_children)
+			{
+				if (ro.GetType() == typeof(RenderableObjectList))
+				{
+					RenderableObjectList sub = ro as RenderableObjectList;
+
+					RenderableObjectList subres = sub.GetObjects(name, objectType);
+					foreach (RenderableObject hit in subres.ChildObjects)
+						result.Add(hit);
+				}
+				if (ro.Name.Equals(name) && ((objectType == null) || (ro.GetType() == objectType)))
+					result.Add(ro);
+			}
+			return result;
+
+			return null;
+		}
 
 		/// <summary>
 		/// Enables layer with specified name
@@ -174,16 +164,12 @@ namespace WorldWind.Renderable
 
 		public virtual void RemoveAll()
 		{
-			try
-			{	
-				while(m_children.Count > 0)
-				{
-					RenderableObject ro = (RenderableObject)m_children[0];
-					m_children.RemoveAt(0);
-					ro.Dispose();
-				}
+			while (m_children.Count > 0)
+			{
+				RenderableObject ro = (RenderableObject)m_children[0];
+				m_children.RemoveAt(0);
+				ro.Dispose();
 			}
-			catch{}
 		}
 
         public override void BuildContextMenu(ContextMenu menu)
@@ -269,27 +255,25 @@ namespace WorldWind.Renderable
 
 		public override void Initialize(DrawArgs drawArgs)
 		{
-			if(!this.IsOn)
+			if (!this.IsOn)
 				return;
 
-			try
+			lock (this.m_children.SyncRoot)
 			{
-				foreach(RenderableObject ro in this.m_children)
+				foreach (RenderableObject ro in this.m_children)
 				{
 					try
 					{
-						if(ro.IsOn)
+						if (ro.IsOn)
 							ro.Initialize(drawArgs);
 					}
-					catch(Exception caught)
+					catch (Exception caught)
 					{
-						Log.Write(Log.Levels.Error, "ROBJ", string.Format("{0}: {1} ({2})", 
-							Name, caught.Message,  ro.Name));
+						Log.Write(Log.Levels.Error, "ROBJ", string.Format("{0}: {1} ({2})",
+							Name, caught.Message, ro.Name));
 					}
 				}
 			}
-			catch
-			{}
 
 			this.isInitialized = true;
 		}
@@ -297,101 +281,81 @@ namespace WorldWind.Renderable
 
 		public override void Update(DrawArgs drawArgs)
 		{
-			try
+
+			if (!this.IsOn)
+				return;
+
+			if (!this.isInitialized)
+				this.Initialize(drawArgs);
+
+			lock (this.m_children.SyncRoot)
 			{
-				if(!this.IsOn)
-					return;
-
-				if(!this.isInitialized)
-					this.Initialize(drawArgs);
-
-				
-				foreach(RenderableObject ro in this.m_children)
+				foreach (RenderableObject ro in this.m_children)
 				{
-					if(ro.ParentList == null)
+					if (ro.ParentList == null)
 						ro.ParentList = this;
 
-					if(ro.IsOn)
+					if (ro.IsOn)
 					{
 						ro.Update(drawArgs);
 					}
-                    else
-                    {
-                        // dispose renderable objects that aren't disabled
-                        // TODO: would be cool to retain them for a bit to allow
-                        // quick toggles without having to tear down / reload them!
-                        if (ro.isInitialized)
-                            ro.Dispose();
-                    }
+					else
+					{
+						// dispose renderable objects that aren't disabled
+						// TODO: would be cool to retain them for a bit to allow
+						// quick toggles without having to tear down / reload them!
+						if (ro.isInitialized)
+							ro.Dispose();
+					}
 				}
-			}
-			catch(Exception)
-			{
 			}
 		}
 
 		public override bool PerformSelectionAction(DrawArgs drawArgs)
 		{
-			try
-			{
-				if(!this.IsOn)
-					return false;
 
-				foreach(RenderableObject ro in this.m_children)
+			if (!this.IsOn)
+				return false;
+
+			lock (this.m_children.SyncRoot)
+			{
+				foreach (RenderableObject ro in this.m_children)
 				{
-					if(ro.IsOn && ro.isSelectable)
+					if (ro.IsOn && ro.isSelectable)
 					{
 						if (ro.PerformSelectionAction(drawArgs))
 							return true;
 					}
 				}
 			}
-			catch
-			{
-			}
+
 			return false;
 		}
 
 		public override void Render(DrawArgs drawArgs)
 		{
-#if !DEBUG
-			try
-			{
-#endif
-				if(!this.IsOn)
-					return;
+			if (!this.IsOn)
+				return;
 
-				lock(this.m_children.SyncRoot)
-				{
-					foreach(RenderableObject ro in this.m_children)
-					{
-						if(ro.IsOn)
-							ro.Render(drawArgs);
-					}
-				}
-#if !DEBUG
-			}
-			catch
+			lock (this.m_children.SyncRoot)
 			{
+				foreach (RenderableObject ro in this.m_children)
+				{
+					if (ro.IsOn)
+						ro.Render(drawArgs);
+				}
 			}
-#endif
-        }
+		}
 
 		public override void Dispose()
 		{
-			try
-			{
-				this.isInitialized = false;
+			this.isInitialized = false;
 
-				foreach(RenderableObject ro in this.m_children)
-					ro.Dispose();
+			foreach (RenderableObject ro in this.m_children)
+				ro.Dispose();
 
-				if(m_RefreshTimer != null && m_RefreshTimer.Enabled)
-					m_RefreshTimer.Stop();
-			}
-			catch
-			{
-			}
+			if (m_RefreshTimer != null && m_RefreshTimer.Enabled)
+				m_RefreshTimer.Stop();
 		}
 
 		/// <summary>
@@ -399,67 +363,61 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public virtual void Add(RenderableObject ro)
 		{
-			try
+			lock (this.m_children.SyncRoot)
 			{
-				lock(this.m_children.SyncRoot)
+				RenderableObjectList dupList = null;
+				RenderableObject duplicate = null;
+				ro.ParentList = this;
+				foreach (RenderableObject childRo in m_children)
 				{
-					RenderableObjectList dupList = null;
-					RenderableObject duplicate = null;
-					ro.ParentList = this;
-					foreach(RenderableObject childRo in m_children)
+					if (childRo is RenderableObjectList && childRo.Name == ro.Name)
 					{
-						if(childRo is RenderableObjectList && childRo.Name == ro.Name)
-						{
-							dupList = (RenderableObjectList)childRo;
-							break;
-						}
-						else if(childRo.Name == ro.Name)
-						{
-							duplicate = childRo;
-							break;
-						}
+						dupList = (RenderableObjectList)childRo;
+						break;
 					}
-
-					if(dupList != null)
+					else if (childRo.Name == ro.Name)
 					{
-						RenderableObjectList rol = (RenderableObjectList)ro;
-
-						foreach(RenderableObject childRo in rol.ChildObjects)
-						{
-							dupList.Add(childRo);
-						}
+						duplicate = childRo;
+						break;
 					}
-					else
+				}
+
+				if (dupList != null)
+				{
+					RenderableObjectList rol = (RenderableObjectList)ro;
+
+					foreach (RenderableObject childRo in rol.ChildObjects)
 					{
-						if(duplicate != null)
+						dupList.Add(childRo);
+					}
+				}
+				else
+				{
+					if (duplicate != null)
+					{
+						for (int i = 1; i < 100; i++)
 						{
-							for(int i = 1; i < 100; i++)
+							ro.Name = string.Format("{0} [{1}]", duplicate.Name, i);
+							bool found = false;
+							foreach (RenderableObject childRo in m_children)
 							{
-								ro.Name = string.Format("{0} [{1}]", duplicate.Name, i);
-								bool found = false;
-								foreach(RenderableObject childRo in m_children)
+								if (childRo.Name == ro.Name)
 								{
-									if(childRo.Name == ro.Name)
-									{
-										found = true;
-										break;
-									}
-								}
-							
-								if(!found)
-								{
+									found = true;
 									break;
 								}
 							}
+
+							if (!found)
+							{
+								break;
+							}
 						}
-						
-						m_children.Add(ro);
 					}
-					SortChildren();
+
+					m_children.Add(ro);
 				}
-			}
-			catch
-			{
+				SortChildren();
 			}
 		}
 
@@ -618,27 +576,22 @@ namespace WorldWind.Renderable
 
 		private void m_RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			if(!hasSkippedFirstRefresh)
+			if (!hasSkippedFirstRefresh)
 			{
 				hasSkippedFirstRefresh = true;
 				return;
 			}
 
-			try
-			{
-				string dataSource = m_DataSource;
 
-				RenderableObjectList newList = ConfigurationLoader.getRenderableFromLayerFile(dataSource, m_ParentWorld, m_Cache, false);
+			string dataSource = m_DataSource;
 
-				if(newList != null)
-				{
-					compareRefreshLists(newList, this);
-				}
-			}
-			catch(Exception ex)
+			RenderableObjectList newList = ConfigurationLoader.getRenderableFromLayerFile(dataSource, m_ParentWorld, m_Cache, false);
+
+			if (newList != null)
 			{
-				Log.Write(ex);
+				compareRefreshLists(newList, this);
 			}
+
 		}
 
       public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)

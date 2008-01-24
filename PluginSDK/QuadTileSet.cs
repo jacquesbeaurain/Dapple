@@ -613,228 +613,219 @@ namespace WorldWind.Renderable
          return false;
       }
 
-      public override void Update(DrawArgs drawArgs)
-      {
-            if (System.Threading.Thread.CurrentThread.Name != "WorldWindow.WorkerThreadFunc")
-                throw new System.InvalidOperationException("QTS.Update() must be called from WorkerThread!");
+		public override void Update(DrawArgs drawArgs)
+		{
+			if (System.Threading.Thread.CurrentThread.Name != "WorldWindow.WorkerThreadFunc")
+				throw new System.InvalidOperationException("QTS.Update() must be called from WorkerThread!");
 
-         if (!isInitialized)
-            Initialize(drawArgs);
+			if (!isInitialized)
+				Initialize(drawArgs);
 
-         ServiceDownloadQueue();
+			ServiceDownloadQueue();
 
-         if (m_effectEnabled && (m_effectPath != null) && !File.Exists(m_effectPath))
-         {
-            Log.Write(Log.Levels.Warning, string.Format("Effect {0} not found - disabled", m_effectPath));
-            m_effectEnabled = false;
-         }
+			if (m_effectEnabled && (m_effectPath != null) && !File.Exists(m_effectPath))
+			{
+				Log.Write(Log.Levels.Warning, string.Format("Effect {0} not found - disabled", m_effectPath));
+				m_effectEnabled = false;
+			}
 
-         if (m_effectEnabled && m_effectPath != null && m_effect == null)
-         {
-            string errs = string.Empty;
+			if (m_effectEnabled && m_effectPath != null && m_effect == null)
+			{
+				string errs = string.Empty;
 
-            m_effectHandles.Clear();
+				m_effectHandles.Clear();
 
-            try
-            {
-               Log.Write(Log.Levels.Warning, string.Format("Loading effect from {0}", m_effectPath));
-               m_effect = Effect.FromFile(DrawArgs.Device, m_effectPath, null, "", ShaderFlags.None, m_effectPool, out errs);
+				try
+				{
+					Log.Write(Log.Levels.Warning, string.Format("Loading effect from {0}", m_effectPath));
+					m_effect = Effect.FromFile(DrawArgs.Device, m_effectPath, null, "", ShaderFlags.None, m_effectPool, out errs);
 
-               // locate effect handles and store for rendering.
-               m_effectHandles.Add("WorldViewProj", m_effect.GetParameter(null, "WorldViewProj"));
-               m_effectHandles.Add("World", m_effect.GetParameter(null, "World"));
-               m_effectHandles.Add("ViewInverse", m_effect.GetParameter(null, "ViewInverse"));
-               for (int i = 0; i < 8; i++)
-               {
-                  string name = string.Format("Tex{0}", i);
-                  m_effectHandles.Add(name, m_effect.GetParameter(null, name));
-               }
-               m_effectHandles.Add("Brightness", m_effect.GetParameter(null, "Brightness"));
-               m_effectHandles.Add("Opacity", m_effect.GetParameter(null, "Opacity"));
-               m_effectHandles.Add("TileLevel", m_effect.GetParameter(null, "TileLevel"));
-               m_effectHandles.Add("LightDirection", m_effect.GetParameter(null, "LightDirection"));
-               m_effectHandles.Add("LocalOrigin", m_effect.GetParameter(null, "LocalOrigin"));
-               m_effectHandles.Add("LayerRadius", m_effect.GetParameter(null, "LayerRadius"));
-               m_effectHandles.Add("LocalFrameOrigin", m_effect.GetParameter(null, "LocalFrameOrigin"));
-               m_effectHandles.Add("LocalFrameXAxis", m_effect.GetParameter(null, "LocalFrameXAxis"));
-               m_effectHandles.Add("LocalFrameYAxis", m_effect.GetParameter(null, "LocalFrameYAxis"));
-               m_effectHandles.Add("LocalFrameZAxis", m_effect.GetParameter(null, "LocalFrameZAxis"));
-            }
-            catch (Exception ex)
-            {
-               Log.Write(Log.Levels.Error, "Effect load caused exception:" + ex.ToString());
-               Log.Write(Log.Levels.Warning, "Effect has been disabled.");
-               m_effectEnabled = false;
-            }
+					// locate effect handles and store for rendering.
+					m_effectHandles.Add("WorldViewProj", m_effect.GetParameter(null, "WorldViewProj"));
+					m_effectHandles.Add("World", m_effect.GetParameter(null, "World"));
+					m_effectHandles.Add("ViewInverse", m_effect.GetParameter(null, "ViewInverse"));
+					for (int i = 0; i < 8; i++)
+					{
+						string name = string.Format("Tex{0}", i);
+						m_effectHandles.Add(name, m_effect.GetParameter(null, name));
+					}
+					m_effectHandles.Add("Brightness", m_effect.GetParameter(null, "Brightness"));
+					m_effectHandles.Add("Opacity", m_effect.GetParameter(null, "Opacity"));
+					m_effectHandles.Add("TileLevel", m_effect.GetParameter(null, "TileLevel"));
+					m_effectHandles.Add("LightDirection", m_effect.GetParameter(null, "LightDirection"));
+					m_effectHandles.Add("LocalOrigin", m_effect.GetParameter(null, "LocalOrigin"));
+					m_effectHandles.Add("LayerRadius", m_effect.GetParameter(null, "LayerRadius"));
+					m_effectHandles.Add("LocalFrameOrigin", m_effect.GetParameter(null, "LocalFrameOrigin"));
+					m_effectHandles.Add("LocalFrameXAxis", m_effect.GetParameter(null, "LocalFrameXAxis"));
+					m_effectHandles.Add("LocalFrameYAxis", m_effect.GetParameter(null, "LocalFrameYAxis"));
+					m_effectHandles.Add("LocalFrameZAxis", m_effect.GetParameter(null, "LocalFrameZAxis"));
+				}
+				catch (Exception ex)
+				{
+					Log.Write(Log.Levels.Error, "Effect load caused exception:" + ex.ToString());
+					Log.Write(Log.Levels.Warning, "Effect has been disabled.");
+					m_effectEnabled = false;
+				}
 
-            if (errs != null && errs != string.Empty)
-            {
-               Log.Write(Log.Levels.Warning, "Could not load effect " + m_effectPath + ": " + errs);
-               Log.Write(Log.Levels.Warning, "Effect has been disabled.");
-               m_effectEnabled = false;
-               m_effect = null;
-            }
-         }
+				if (errs != null && errs != string.Empty)
+				{
+					Log.Write(Log.Levels.Warning, "Could not load effect " + m_effectPath + ": " + errs);
+					Log.Write(Log.Levels.Warning, "Effect has been disabled.");
+					m_effectEnabled = false;
+					m_effect = null;
+				}
+			}
 
-         if (ImageStores[0].LevelZeroTileSizeDegrees < 180)
-         {
-            // Check for layer outside view
-            double vrd = DrawArgs.Camera.ViewRange.Degrees;
-            double latitudeMax = DrawArgs.Camera.Latitude.Degrees + vrd;
-            double latitudeMin = DrawArgs.Camera.Latitude.Degrees - vrd;
-            double longitudeMax = DrawArgs.Camera.Longitude.Degrees + vrd;
-            double longitudeMin = DrawArgs.Camera.Longitude.Degrees - vrd;
-            if (latitudeMax < m_south || latitudeMin > m_north || longitudeMax < m_west || longitudeMin > m_east)
-               return;
-         }
+			if (ImageStores[0].LevelZeroTileSizeDegrees < 180)
+			{
+				// Check for layer outside view
+				double vrd = DrawArgs.Camera.ViewRange.Degrees;
+				double latitudeMax = DrawArgs.Camera.Latitude.Degrees + vrd;
+				double latitudeMin = DrawArgs.Camera.Latitude.Degrees - vrd;
+				double longitudeMax = DrawArgs.Camera.Longitude.Degrees + vrd;
+				double longitudeMin = DrawArgs.Camera.Longitude.Degrees - vrd;
+				if (latitudeMax < m_south || latitudeMin > m_north || longitudeMax < m_west || longitudeMin > m_east)
+					return;
+			}
 
-         if (!m_alwaysRenderBaseTiles && DrawArgs.Camera.ViewRange * 0.5f >
-               Angle.FromDegrees(TileDrawDistance * ImageStores[0].LevelZeroTileSizeDegrees))
-         {
-            lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
-            {
-               // Don't dispose of the quadtiles like WorldWind does here (they may be nice to look at)
-               // Do however clear the download requests
-               /*
-               foreach (QuadTile qt in m_topmostTiles.Values)
-                  qt.Dispose();
-               m_topmostTiles.Clear();
-                */
-               ClearDownloadRequests();
-            }
+			if (!m_alwaysRenderBaseTiles && DrawArgs.Camera.ViewRange * 0.5f >
+					Angle.FromDegrees(TileDrawDistance * ImageStores[0].LevelZeroTileSizeDegrees))
+			{
+				lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+				{
+					// Don't dispose of the quadtiles like WorldWind does here (they may be nice to look at)
+					// Do however clear the download requests
+					/*
+					foreach (QuadTile qt in m_topmostTiles.Values)
+						qt.Dispose();
+					m_topmostTiles.Clear();
+					 */
+					ClearDownloadRequests();
+				}
 
-            return;
-         }
+				return;
+			}
 
-         try
-         {
-            // VE Tiles are rectangular with respect to WW and top left is 0, 0
-            // For the purposes of the spiral algorithm the 0,0 row/col at the 
-            // bottom left is fine though, just increase the tilesize in longitude
-            bool blVEQTS = ImageStores[0] is VEImageStore;
+			// VE Tiles are rectangular with respect to WW and top left is 0, 0
+			// For the purposes of the spiral algorithm the 0,0 row/col at the 
+			// bottom left is fine though, just increase the tilesize in longitude
+			bool blVEQTS = ImageStores[0] is VEImageStore;
 
-            // 'Spiral' from the centre tile outward adding tiles that's in the view
-            // Defer the updates to after the loop to prevent tiles from updating twice
-            // If the tilespread is huge we are likely looking at a small dataset in the view 
-            // so just test all the tiles in the dataset.
-            int iTileSpread = Math.Max(5, (int)Math.Ceiling(drawArgs.WorldCamera.TrueViewRange.Degrees / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
+			// 'Spiral' from the centre tile outward adding tiles that's in the view
+			// Defer the updates to after the loop to prevent tiles from updating twice
+			// If the tilespread is huge we are likely looking at a small dataset in the view 
+			// so just test all the tiles in the dataset.
+			int iTileSpread = Math.Max(5, (int)Math.Ceiling(drawArgs.WorldCamera.TrueViewRange.Degrees / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
 
-            int iMiddleRow, iMiddleCol;
-            double dRowInc = ImageStores[0].LevelZeroTileSizeDegrees;
-            double dColInc = ImageStores[0].LevelZeroTileSizeDegrees;
+			int iMiddleRow, iMiddleCol;
+			double dRowInc = ImageStores[0].LevelZeroTileSizeDegrees;
+			double dColInc = ImageStores[0].LevelZeroTileSizeDegrees;
 
-            if (!blVEQTS && iTileSpread > 10)
-            {
-               iTileSpread = Math.Max(5, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
-               iMiddleRow = MathEngine.GetRowFromLatitude(South + (North - South) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
-               iMiddleCol = MathEngine.GetColFromLongitude(West + (East - West) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
-            }
-            else
-            {
-               iMiddleRow = MathEngine.GetRowFromLatitude(drawArgs.WorldCamera.Latitude, ImageStores[0].LevelZeroTileSizeDegrees);
-               iMiddleCol = MathEngine.GetColFromLongitude(drawArgs.WorldCamera.Longitude, ImageStores[0].LevelZeroTileSizeDegrees);
-            }
+			if (!blVEQTS && iTileSpread > 10)
+			{
+				iTileSpread = Math.Max(5, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
+				iMiddleRow = MathEngine.GetRowFromLatitude(South + (North - South) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
+				iMiddleCol = MathEngine.GetColFromLongitude(West + (East - West) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
+			}
+			else
+			{
+				iMiddleRow = MathEngine.GetRowFromLatitude(drawArgs.WorldCamera.Latitude, ImageStores[0].LevelZeroTileSizeDegrees);
+				iMiddleCol = MathEngine.GetColFromLongitude(drawArgs.WorldCamera.Longitude, ImageStores[0].LevelZeroTileSizeDegrees);
+			}
 
-            if (blVEQTS) dColInc *= 2.0;
+			if (blVEQTS) dColInc *= 2.0;
 
 
-            // --- Calculate the bounding box of the middle tile, and from this, its latitude and longitude size ---
-            double dMiddleSouth = -90.0f + iMiddleRow * dRowInc;
-            double dMiddleNorth = -90.0f + iMiddleRow * dRowInc + dRowInc;
-            double dMiddleWest = -180.0f + iMiddleCol * dColInc;
-            double dMiddleEast = -180.0f + iMiddleCol * dColInc + dColInc;
+			// --- Calculate the bounding box of the middle tile, and from this, its latitude and longitude size ---
+			double dMiddleSouth = -90.0f + iMiddleRow * dRowInc;
+			double dMiddleNorth = -90.0f + iMiddleRow * dRowInc + dRowInc;
+			double dMiddleWest = -180.0f + iMiddleCol * dColInc;
+			double dMiddleEast = -180.0f + iMiddleCol * dColInc + dColInc;
 
-            double dMiddleCenterLat = 0.5f * (dMiddleNorth + dMiddleSouth);
-            double dMiddleCenterLon = 0.5f * (dMiddleWest + dMiddleEast);
+			double dMiddleCenterLat = 0.5f * (dMiddleNorth + dMiddleSouth);
+			double dMiddleCenterLon = 0.5f * (dMiddleWest + dMiddleEast);
 
-            Dictionary<long, QuadTile> oTilesToUpdate = new Dictionary<long, QuadTile>();
+			Dictionary<long, QuadTile> oTilesToUpdate = new Dictionary<long, QuadTile>();
 
-            // --- Create tiles radially outward from the center tile ---
+			// --- Create tiles radially outward from the center tile ---
 
-            for (int iSpread = 0; iSpread < iTileSpread; iSpread++)
-            {
-               for (double dNewTileCenterLat = dMiddleCenterLat - iSpread * dRowInc; dNewTileCenterLat < dMiddleCenterLat + iSpread * dRowInc; dNewTileCenterLat += dRowInc)
-               {
-                  for (double dNewTileCenterLon = dMiddleCenterLon - iSpread * dColInc; dNewTileCenterLon < dMiddleCenterLon + iSpread * dColInc; dNewTileCenterLon += dColInc)
-                  {
-                     QuadTile qt;
-                     int iCurRow = MathEngine.GetRowFromLatitude(Angle.FromDegrees(dNewTileCenterLat), dRowInc);
-                     int iCurCol = MathEngine.GetColFromLongitude(Angle.FromDegrees(dNewTileCenterLon), dColInc);
+			for (int iSpread = 0; iSpread < iTileSpread; iSpread++)
+			{
+				for (double dNewTileCenterLat = dMiddleCenterLat - iSpread * dRowInc; dNewTileCenterLat < dMiddleCenterLat + iSpread * dRowInc; dNewTileCenterLat += dRowInc)
+				{
+					for (double dNewTileCenterLon = dMiddleCenterLon - iSpread * dColInc; dNewTileCenterLon < dMiddleCenterLon + iSpread * dColInc; dNewTileCenterLon += dColInc)
+					{
+						QuadTile qt;
+						int iCurRow = MathEngine.GetRowFromLatitude(Angle.FromDegrees(dNewTileCenterLat), dRowInc);
+						int iCurCol = MathEngine.GetColFromLongitude(Angle.FromDegrees(dNewTileCenterLon), dColInc);
 
-                     long lKey = ((long)iCurRow << 32) + iCurCol;  // Index keys by row-col packed into a single long
+						long lKey = ((long)iCurRow << 32) + iCurCol;  // Index keys by row-col packed into a single long
 
-                     if (m_topmostTiles.ContainsKey(lKey))
-                     {
-                        qt = m_topmostTiles[lKey];
-                        if (!oTilesToUpdate.ContainsKey(lKey))
-                           oTilesToUpdate.Add(lKey, qt);
-                        continue;
-                     }
+						if (m_topmostTiles.ContainsKey(lKey))
+						{
+							qt = m_topmostTiles[lKey];
+							if (!oTilesToUpdate.ContainsKey(lKey))
+								oTilesToUpdate.Add(lKey, qt);
+							continue;
+						}
 
-                     // Check for tile outside layer boundaries
-                     double west = -180.0 + iCurCol * dColInc;
-                     if (west > m_east)
-                        continue;
+						// Check for tile outside layer boundaries
+						double west = -180.0 + iCurCol * dColInc;
+						if (west > m_east)
+							continue;
 
-                     double east = west + dColInc;
-                     if (east < m_west)
-                        continue;
+						double east = west + dColInc;
+						if (east < m_west)
+							continue;
 
-                     double south = -90.0 + iCurRow * dRowInc;
-                     if (south > m_north)
-                        continue;
+						double south = -90.0 + iCurRow * dRowInc;
+						if (south > m_north)
+							continue;
 
-                     double north = south + dRowInc;
-                     if (north < m_south)
-                        continue;
+						double north = south + dRowInc;
+						if (north < m_south)
+							continue;
 
-                     qt = new QuadTile(south, north, west, east, 0, this);
-                     if (DrawArgs.Camera.ViewFrustum.Intersects(qt.BoundingBox))
-                     {
-                        lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
-                           m_topmostTiles.Add(lKey, qt);
-                        oTilesToUpdate.Add(lKey, qt);
-                     }
-                  }
-               }
-            }
+						qt = new QuadTile(south, north, west, east, 0, this);
+						if (DrawArgs.Camera.ViewFrustum.Intersects(qt.BoundingBox))
+						{
+							lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+								m_topmostTiles.Add(lKey, qt);
+							oTilesToUpdate.Add(lKey, qt);
+						}
+					}
+				}
+			}
 
-            List<long> oTileIndicesToDelete = new List<long>();
-            lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
-            {
-               foreach (long key in m_topmostTiles.Keys)
-               {
-                  QuadTile qt = (QuadTile)m_topmostTiles[key];
-                  if (!drawArgs.WorldCamera.ViewFrustum.Intersects(qt.BoundingBox))
-                  {
-                     if (oTilesToUpdate.ContainsKey(key))
-                        oTilesToUpdate.Remove(key);
-                     oTileIndicesToDelete.Add(key);
-                  }
-               }
-            // Do updates before cleanup for performance reasons.
-               foreach (long key in oTilesToUpdate.Keys)
-                  m_topmostTiles[key].Update(drawArgs);
+			List<long> oTileIndicesToDelete = new List<long>();
+			foreach (long key in m_topmostTiles.Keys)
+			{
+				QuadTile qt = (QuadTile)m_topmostTiles[key];
+				if (!drawArgs.WorldCamera.ViewFrustum.Intersects(qt.BoundingBox))
+				{
+					if (oTilesToUpdate.ContainsKey(key))
+						oTilesToUpdate.Remove(key);
+					oTileIndicesToDelete.Add(key);
+				}
+			}
+			// Do updates before cleanup for performance reasons.
 
-               foreach (long key in oTileIndicesToDelete)
-               {
-                  if (m_topmostTiles.ContainsKey(key))
-                  {
-                     QuadTile qt = (QuadTile)m_topmostTiles[key];
-                     m_topmostTiles.Remove(key);
-                     qt.Dispose();
-                  }
-               }
-            }            
-         }
-         catch (System.Threading.ThreadAbortException)
-         {
-         }
-         catch (Exception caught)
-         {
-            Log.Write(caught);
-         }
-      }
+			foreach (long key in oTilesToUpdate.Keys)
+				m_topmostTiles[key].Update(drawArgs);
+
+			lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+			{
+				foreach (long key in oTileIndicesToDelete)
+				{
+					if (m_topmostTiles.ContainsKey(key))
+					{
+						QuadTile qt = (QuadTile)m_topmostTiles[key];
+						m_topmostTiles.Remove(key);
+						qt.Dispose();
+					}
+				}
+			}
+		}
 
       public override void Render(DrawArgs drawArgs)
       {
@@ -913,9 +904,6 @@ namespace WorldWind.Renderable
                                                    device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
                                              }*/
             }
-         }
-         catch
-         {
          }
          finally
          {

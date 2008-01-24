@@ -169,44 +169,38 @@ namespace WorldWind.Renderable
 
 		public virtual void ResetCache()
 		{
-			try
+			m_isResetingCache = true;
+			this.isInitialized = false;
+
+			if (northEastChild != null)
 			{
-				m_isResetingCache = true;
-				this.isInitialized = false;
-
-				if (northEastChild != null)
-				{
-					northEastChild.ResetCache();
-				}
-
-				if (northWestChild != null)
-				{
-					northWestChild.ResetCache();
-				}
-
-				if (southEastChild != null)
-				{
-					southEastChild.ResetCache();
-				}
-
-				if (southWestChild != null)
-				{
-					southWestChild.ResetCache();
-				}
-
-				this.Dispose();
-
-				for (int i = 0; i < quadTileSet.ImageStores.Length; i++)
-				{
-					if ((quadTileSet.ImageStores[i] != null) && quadTileSet.ImageStores[i].IsDownloadableLayer)
-						quadTileSet.ImageStores[i].DeleteLocalCopy(this);
-				}
-
-				m_isResetingCache = false;
+				northEastChild.ResetCache();
 			}
-			catch
+
+			if (northWestChild != null)
 			{
+				northWestChild.ResetCache();
 			}
+
+			if (southEastChild != null)
+			{
+				southEastChild.ResetCache();
+			}
+
+			if (southWestChild != null)
+			{
+				southWestChild.ResetCache();
+			}
+
+			this.Dispose();
+
+			for (int i = 0; i < quadTileSet.ImageStores.Length; i++)
+			{
+				if ((quadTileSet.ImageStores[i] != null) && quadTileSet.ImageStores[i].IsDownloadableLayer)
+					quadTileSet.ImageStores[i].DeleteLocalCopy(this);
+			}
+
+			m_isResetingCache = false;
 		}
 
 		/// <summary>
@@ -249,25 +243,20 @@ namespace WorldWind.Renderable
 
 		public virtual void Dispose()
 		{
-			try
+			isInitialized = false;
+			if (textures != null)
 			{
-				isInitialized = false;
-				if (textures != null)
+				for (int i = 0; i < textures.Length; i++)
 				{
-					for (int i = 0; i < textures.Length; i++)
+					if (textures[i] != null && !textures[i].Disposed)
 					{
-						if (textures[i] != null && !textures[i].Disposed)
-						{
-							textures[i].Dispose();
-							textures[i] = null;
-						}
+						textures[i].Dispose();
+						textures[i] = null;
 					}
-					textures = null;
 				}
+				textures = null;
 			}
-			catch
-			{
-			}
+
 			if (northWestChild != null)
 			{
 				northWestChild.Dispose();
@@ -288,20 +277,15 @@ namespace WorldWind.Renderable
 				southEastChild.Dispose();
 				southEastChild = null;
 			}
-			try
+
+			if (downloadRequests != null)
 			{
-				if (downloadRequests != null)
+				foreach (GeoSpatialDownloadRequest request in downloadRequests)
 				{
-					foreach (GeoSpatialDownloadRequest request in downloadRequests)
-					{
-						quadTileSet.RemoveFromDownloadQueue(request, false);
-						request.Dispose();
-					}
-					downloadRequests.Clear();
+					quadTileSet.RemoveFromDownloadQueue(request, false);
+					request.Dispose();
 				}
-			}
-			catch
-			{
+				downloadRequests.Clear();
 			}
 		}
 
@@ -313,54 +297,45 @@ namespace WorldWind.Renderable
 			if (m_isResetingCache)
 				return;
 
-			try
+			if (downloadRequests.Count > 0)
 			{
-				if (downloadRequests.Count > 0)
-				{
-					// Waiting for download
-					return;
-				}
-				if (textures == null)
-				{
-					textures = new Texture[quadTileSet.ImageStores.Length];
+				// Waiting for download
+				return;
+			}
+			if (textures == null)
+			{
+				textures = new Texture[quadTileSet.ImageStores.Length];
 
-					// not strictly necessary
-					for (int i = 0; i < textures.Length; i++)
-						textures[i] = null;
-				}
-
-				// assume we're finished.
-				waitingForDownload = false;
-
-				// check for missing textures.
+				// not strictly necessary
 				for (int i = 0; i < textures.Length; i++)
-				{
-					Texture newTexture = quadTileSet.ImageStores[i].LoadFile(this);
-					if (newTexture == null)
-					{
-						// At least one texture missing, wait for download
-						waitingForDownload = true;
-					}
-
-					// not entirely sure if this is a good idea...
-					if (textures[i] != null)
-						textures[i].Dispose();
-
-					textures[i] = newTexture;
-				}
-				if (waitingForDownload)
-					return;
-
-				isDownloadingImage = false;
-				CreateTileMesh();
-                isInitialized = true;
+					textures[i] = null;
 			}
-			//catch (Microsoft.DirectX.Direct3D.Direct3DXException)
-			catch (Exception)
+
+			// assume we're finished.
+			waitingForDownload = false;
+
+			// check for missing textures.
+			for (int i = 0; i < textures.Length; i++)
 			{
-				//Log.Write(ex);
-				// Texture load failed.
+				Texture newTexture = quadTileSet.ImageStores[i].LoadFile(this);
+				if (newTexture == null)
+				{
+					// At least one texture missing, wait for download
+					waitingForDownload = true;
+				}
+
+				// not entirely sure if this is a good idea...
+				if (textures[i] != null)
+					textures[i].Dispose();
+
+				textures[i] = newTexture;
 			}
+			if (waitingForDownload)
+				return;
+
+			isDownloadingImage = false;
+			CreateTileMesh();
+			isInitialized = true;
 		}
 
 		/// <summary>
@@ -371,106 +346,100 @@ namespace WorldWind.Renderable
 			if (m_isResetingCache)
 				return;
 
-			try
+			double tileSize = north - south;
+
+			if (!isInitialized)
 			{
-				double tileSize = north - south;
+				if ((DrawArgs.Camera.ViewRange * 0.5f < Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize)
+						&& MathEngine.SphericalDistance(centerLatitude, centerLongitude, DrawArgs.Camera.Latitude, DrawArgs.Camera.Longitude) <
+						 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize * 1.25f)
+					 && DrawArgs.Camera.ViewFrustum.Intersects(BoundingBox))
+					|| (level == 0 && quadTileSet.AlwaysRenderBaseTiles)
+					 )
+					Initialize();
+			}
 
-				if (!isInitialized)
-				{
-					if ((DrawArgs.Camera.ViewRange * 0.5f < Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize)
-							&& MathEngine.SphericalDistance(centerLatitude, centerLongitude, DrawArgs.Camera.Latitude, DrawArgs.Camera.Longitude) <
-							 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize * 1.25f)
-						 && DrawArgs.Camera.ViewFrustum.Intersects(BoundingBox)) 
-						|| (level == 0 && quadTileSet.AlwaysRenderBaseTiles)
-						 )
-						Initialize();
-				}
+			if (isInitialized && World.Settings.VerticalExaggeration != verticalExaggeration ||
+				 m_CurrentOpacity != quadTileSet.Opacity ||
+				 quadTileSet.RenderStruts != renderStruts)
+			{
+				CreateTileMesh();
+			}
 
-				if (isInitialized && World.Settings.VerticalExaggeration != verticalExaggeration ||
-					 m_CurrentOpacity != quadTileSet.Opacity ||
-					 quadTileSet.RenderStruts != renderStruts)
+			if (isInitialized)
+			{
+				if (DrawArgs.Camera.ViewRange < Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize)
+			 && MathEngine.SphericalDistance(centerLatitude, centerLongitude,
+																DrawArgs.Camera.Latitude, DrawArgs.Camera.Longitude) <
+						 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize)
+					 && DrawArgs.Camera.ViewFrustum.Intersects(BoundingBox)
+			 )
 				{
-					CreateTileMesh();
-				}
-
-				if (isInitialized)
-				{
-					if (DrawArgs.Camera.ViewRange < Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize)
-				 && MathEngine.SphericalDistance(centerLatitude, centerLongitude,
-																	DrawArgs.Camera.Latitude, DrawArgs.Camera.Longitude) <
-							 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize)
-						 && DrawArgs.Camera.ViewFrustum.Intersects(BoundingBox)
-				 )
+					if (northEastChild == null || northWestChild == null || southEastChild == null ||
+						 southWestChild == null)
 					{
-						if (northEastChild == null || northWestChild == null || southEastChild == null ||
-							 southWestChild == null)
-						{
-							ComputeChildren(drawArgs);
-						}
-
-						if (northEastChild != null)
-						{
-							northEastChild.Update(drawArgs);
-						}
-
-						if (northWestChild != null)
-						{
-							northWestChild.Update(drawArgs);
-						}
-
-						if (southEastChild != null)
-						{
-							southEastChild.Update(drawArgs);
-						}
-
-						if (southWestChild != null)
-						{
-							southWestChild.Update(drawArgs);
-						}
+						ComputeChildren(drawArgs);
 					}
-					else
+
+					if (northEastChild != null)
 					{
-						if (northWestChild != null)
-						{
-							northWestChild.Dispose();
-							northWestChild = null;
-						}
+						northEastChild.Update(drawArgs);
+					}
 
-						if (northEastChild != null)
-						{
-							northEastChild.Dispose();
-							northEastChild = null;
-						}
+					if (northWestChild != null)
+					{
+						northWestChild.Update(drawArgs);
+					}
 
-						if (southEastChild != null)
-						{
-							southEastChild.Dispose();
-							southEastChild = null;
-						}
+					if (southEastChild != null)
+					{
+						southEastChild.Update(drawArgs);
+					}
 
-						if (southWestChild != null)
-						{
-							southWestChild.Dispose();
-							southWestChild = null;
-						}
+					if (southWestChild != null)
+					{
+						southWestChild.Update(drawArgs);
 					}
 				}
-
-				if (isInitialized)
+				else
 				{
-					if (DrawArgs.Camera.ViewRange / 2 > Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize * 1.5f)
-						 ||
-						 MathEngine.SphericalDistance(centerLatitude, centerLongitude, DrawArgs.Camera.Latitude,
-																DrawArgs.Camera.Longitude) >
-						 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize * 1.5f))
+					if (northWestChild != null)
 					{
-						if (level != 0 || (level == 0 && !quadTileSet.AlwaysRenderBaseTiles))
-							this.Dispose();
+						northWestChild.Dispose();
+						northWestChild = null;
+					}
+
+					if (northEastChild != null)
+					{
+						northEastChild.Dispose();
+						northEastChild = null;
+					}
+
+					if (southEastChild != null)
+					{
+						southEastChild.Dispose();
+						southEastChild = null;
+					}
+
+					if (southWestChild != null)
+					{
+						southWestChild.Dispose();
+						southWestChild = null;
 					}
 				}
 			}
-			catch
+
+			if (isInitialized)
 			{
+				if (DrawArgs.Camera.ViewRange / 2 > Angle.FromDegrees(quadTileSet.TileDrawDistance * tileSize * 1.5f)
+					 ||
+					 MathEngine.SphericalDistance(centerLatitude, centerLongitude, DrawArgs.Camera.Latitude,
+															DrawArgs.Camera.Longitude) >
+					 Angle.FromDegrees(quadTileSet.TileDrawSpread * tileSize * 1.5f))
+				{
+					if (level != 0 || (level == 0 && !quadTileSet.AlwaysRenderBaseTiles))
+						this.Dispose();
+				}
 			}
 		}
 
@@ -491,33 +460,36 @@ namespace WorldWind.Renderable
 		//}
 		public virtual void CreateTileMesh()
 		{
-			if (VerticeCache.ContainsKey(key) && World.Settings.VerticalExaggeration == verticalExaggeration)
+			lock (((System.Collections.ICollection)VerticeCache).SyncRoot)
 			{
-				this.northWestVertices = VerticeCache[key].northWestVertices;
-				this.southWestVertices = VerticeCache[key].southWestVertices;
-				this.northEastVertices = VerticeCache[key].northEastVertices;
-				this.southEastVertices = VerticeCache[key].southEastVertices;
-				this.vertexIndexes = VerticeCache[key].vertexIndexes;
+				if (VerticeCache.ContainsKey(key) && World.Settings.VerticalExaggeration == verticalExaggeration)
+				{
+					this.northWestVertices = VerticeCache[key].northWestVertices;
+					this.southWestVertices = VerticeCache[key].southWestVertices;
+					this.northEastVertices = VerticeCache[key].northEastVertices;
+					this.southEastVertices = VerticeCache[key].southEastVertices;
+					this.vertexIndexes = VerticeCache[key].vertexIndexes;
 
-				VerticeCache[key].EntryTime = DateTime.Now;
+					VerticeCache[key].EntryTime = DateTime.Now;
 
-				return;
+					return;
+				}
+
+				verticalExaggeration = World.Settings.VerticalExaggeration;
+				m_CurrentOpacity = quadTileSet.Opacity;
+				renderStruts = quadTileSet.RenderStruts;
+
+				Projection proj = quadTileSet.ImageStores[0].Projection;
+				bool bTerrain = quadTileSet.TerrainMapped && Math.Abs(verticalExaggeration) > 1e-3;
+				if (proj != null)
+					CreateProjectedMesh(proj, bTerrain);
+				else if (bTerrain)
+					CreateElevatedMesh();
+				else
+					CreateFlatMesh();
+
+				AddToCache();
 			}
-
-			verticalExaggeration = World.Settings.VerticalExaggeration;
-			m_CurrentOpacity = quadTileSet.Opacity;
-			renderStruts = quadTileSet.RenderStruts;
-
-			Projection proj = quadTileSet.ImageStores[0].Projection;
-			bool bTerrain = quadTileSet.TerrainMapped && Math.Abs(verticalExaggeration) > 1e-3;
-			if (proj != null)
-				CreateProjectedMesh(proj, bTerrain);
-			else if (bTerrain)
-				CreateElevatedMesh();
-			else
-				CreateFlatMesh();
-
-			AddToCache();
 		}
 
 		private void AddToCache()
