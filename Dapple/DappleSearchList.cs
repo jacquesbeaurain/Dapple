@@ -48,20 +48,13 @@ namespace Dapple.CustomControls
       private LayerList m_hLayerList;
 		private ServerTree m_hServerTree;
 
-      private String m_szDappleSearchURI = null;
-
       #endregion
 
       #region Constructors
 
-      public DappleSearchList() : this(String.Empty)
-      {
-      }
-
-      public DappleSearchList(String szDappleSearchURI)
+      public DappleSearchList()
       {
          InitializeComponent();
-         m_szDappleSearchURI = szDappleSearchURI;
          cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
          cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
          cTabToolbar.SetToolTip(0, "Search results with thumbnails");
@@ -91,14 +84,6 @@ namespace Dapple.CustomControls
 				m_hServerTree = value;
 			}
 		}
-
-      public String DappleSearchURI
-      {
-         set
-         {
-            m_szDappleSearchURI = value;
-         }
-      }
 
       public bool HasLayersSelected
       {
@@ -277,7 +262,7 @@ namespace Dapple.CustomControls
          if (m_iCurrentPage >= m_iAccessedPages)
          {
             m_iAccessedPages++;
-            SearchResultSet oPage = SearchResultSet.doSearch(m_szDappleSearchURI, m_szSearchString, m_oSearchBoundingBox, m_iCurrentPage * PageNavigator.ResultsPerPage, PageNavigator.ResultsPerPage);
+            SearchResultSet oPage = SearchResultSet.doSearch(MainForm.Settings.DappleSearchURL, m_szSearchString, m_oSearchBoundingBox, m_iCurrentPage * PageNavigator.ResultsPerPage, PageNavigator.ResultsPerPage);
             ExtendSearch(oPage, m_iCurrentPage);
          }
          RefreshResultList();
@@ -294,7 +279,7 @@ namespace Dapple.CustomControls
          }
          else
          {
-            SearchResultSet oPage1 = SearchResultSet.doSearch(m_szDappleSearchURI, szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
+            SearchResultSet oPage1 = SearchResultSet.doSearch(MainForm.Settings.DappleSearchURL, szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
             InitSearch(oPage1);
             RefreshResultList();
          }
@@ -353,9 +338,9 @@ namespace Dapple.CustomControls
          cResultListBox.Items.Clear();
 			cResultListBox.HorizontalExtent = 0;
 
-         if (String.IsNullOrEmpty(m_szDappleSearchURI))
+         if (!MainForm.Settings.UseDappleSearch)
          {
-            cNavigator.SetState("DappleSearch not configured");
+            cNavigator.SetState("DappleSearch is disabled");
             return;
          }
 
@@ -380,7 +365,7 @@ namespace Dapple.CustomControls
 
             if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
             {
-               m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox, m_szDappleSearchURI);
+               m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox);
             }
          }
 
@@ -394,9 +379,9 @@ namespace Dapple.CustomControls
          m_aPages = new SearchResultSet[0];
          cResultListBox.Items.Clear();
 
-         if (String.IsNullOrEmpty(m_szDappleSearchURI))
+         if (!MainForm.Settings.UseDappleSearch)
          {
-            cNavigator.SetState("DappleSearch not configured");
+            cNavigator.SetState("DappleSearch is disabled");
          }
          else
          {
@@ -490,7 +475,7 @@ namespace Dapple.CustomControls
 
       #region Asynchronous Thumbnail Loading
 
-      public void QueueThumbnails(ListBox oView, String szDappleSearchURI)
+      public void QueueThumbnails(ListBox oView)
       {
          lock (LOCK)
          {
@@ -500,7 +485,7 @@ namespace Dapple.CustomControls
 
                foreach (SearchResult oResult in m_aResults)
                {
-                  ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView, szDappleSearchURI });
+                  ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView });
                }
             }
          }
@@ -510,9 +495,8 @@ namespace Dapple.CustomControls
       {
          SearchResult oResult = ((Object[])oParams)[0] as SearchResult;
          ListBox oView = ((Object[])oParams)[1] as ListBox;
-         String szDappleSearchURI = ((Object[])oParams)[2] as String;
 
-         oResult.downloadThumbnail(szDappleSearchURI);
+         oResult.downloadThumbnail();
          oView.Invalidate();
       }
 
@@ -598,11 +582,11 @@ namespace Dapple.CustomControls
          }
       }
 
-      public void downloadThumbnail(String szDappleSearchURI)
+      public void downloadThumbnail()
       {
-         if (String.IsNullOrEmpty(szDappleSearchURI)) return;
+         if (!MainForm.Settings.UseDappleSearch) return;
 
-         WebRequest oRequest = WebRequest.Create(szDappleSearchURI + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
+         WebRequest oRequest = WebRequest.Create(MainForm.Settings.DappleSearchURL + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
          WebResponse oResponse = null;
          try
          {

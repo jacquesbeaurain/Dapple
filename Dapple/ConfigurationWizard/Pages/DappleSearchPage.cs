@@ -17,9 +17,27 @@ namespace ConfigurationWizard
 
       protected override void OnValidating(System.ComponentModel.CancelEventArgs e)
       {
+			// --- Add http:// if necessary --- 
+
+			if (!Uri.IsWellFormedUriString(DappleSearchURLTextbox.Text, UriKind.Absolute) &&
+					Uri.IsWellFormedUriString("http://" + DappleSearchURLTextbox.Text, UriKind.Absolute))
+			{
+				DappleSearchURLTextbox.Text = "http://" + DappleSearchURLTextbox.Text;
+			}
+
+			// --- Cancel if the URL isn't well-formed ---
+
+			if (!Uri.IsWellFormedUriString(DappleSearchURLTextbox.Text, UriKind.Absolute))
+			{
+				MessageBox.Show("The URL entered for DappleSearch is invalid", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				e.Cancel = true;
+				return;
+			}
+
          try
          {
             Wizard.Settings.DappleSearchURL = this.DappleSearchURLTextbox.Text;
+				Wizard.Settings.UseDappleSearch = UseDappleSearchCheckBox.Checked;
          }
          catch (Exception caught)
          {
@@ -31,9 +49,8 @@ namespace ConfigurationWizard
       protected override void OnLoad(EventArgs e)
       {
          this.DappleSearchURLTextbox.Text = Wizard.Settings.DappleSearchURL;
-         this.DappleSearchURLTextbox.Enabled =
-            (Wizard.Settings.DappleSearchURL != null && !Wizard.Settings.DappleSearchURL.Equals(String.Empty));
-         this.UseDappleSearchCheckBox.Checked = this.DappleSearchURLTextbox.Enabled;
+			this.DappleSearchURLTextbox.Enabled = Wizard.Settings.UseDappleSearch;
+			this.UseDappleSearchCheckBox.Checked = Wizard.Settings.UseDappleSearch;
       }
 
       private void UseDappleSearchCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -44,7 +61,6 @@ namespace ConfigurationWizard
          }
          else
          {
-            DappleSearchURLTextbox.Text = String.Empty;
             DappleSearchURLTextbox.Enabled = false;
          }
       }

@@ -274,8 +274,11 @@ namespace WorldWind
 		#endregion
 
       #region DappleSearch settings
-      private String dappleSearchURL = "http://dapplesearch.geosoft.com/";
+		private const String DAPPLE_SEARCH_DEFAULT_GATEWAY = "http://dapplesearch.geosoft.com/";
+      private String dappleSearchURL = DAPPLE_SEARCH_DEFAULT_GATEWAY;
 
+		[Browsable(true), Category("DappleSearch")]
+		[Description("The URL of the DappleSearch server to search from.")]
       public string DappleSearchURL
       {
          get
@@ -285,26 +288,31 @@ namespace WorldWind
          set
          {
             // Fix: Dapple 1.0.20 had nascent DappleSearch code that would set this value to null.  When saved and loaded, this would
-            // come back as setting it to empty string.  Going forward, disregard empty string.  DappleSearch MUST be configured.  If
-            // we ever want to turn it off, set a flag variable instead of using an empty value in this variable.
-            if (!String.IsNullOrEmpty(value))
+            // come back as setting it to empty string.  Going forward, disregard empty string.  DappleSearchURL must always be a
+				// valid URI, so only set its value if it passes a URI conversion.
+            if (value != null && Uri.IsWellFormedUriString(value, UriKind.Absolute))
             {
-               dappleSearchURL = value;
-
-               if (dappleSearchURL.Trim().Equals(String.Empty)) dappleSearchURL = String.Empty;
-
-               if (!Uri.IsWellFormedUriString(dappleSearchURL, UriKind.Absolute))
-               {
-                  dappleSearchURL = String.Empty;
-               }
-               else
-               {
-                  Uri parse = new Uri(dappleSearchURL);
-                  dappleSearchURL = "http://" + parse.Authority + "/";
-               }
+               Uri parse = new Uri(value);
+               dappleSearchURL = "http://" + parse.Authority + "/";
             }
          }
       }
+
+		private bool m_blUseDappleSearch = true;
+
+		[Browsable(true), Category("DappleSearch")]
+		[Description("Whether to allow searching using DappleSearch.")]
+		public bool UseDappleSearch
+		{
+			get
+			{
+				return m_blUseDappleSearch;
+			}
+			set
+			{
+				m_blUseDappleSearch = value;
+			}
+		}
       #endregion
 
       #region Miscellaneous settings

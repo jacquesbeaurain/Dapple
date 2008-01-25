@@ -246,8 +246,6 @@ namespace Dapple
 
 		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
 		{
-			worldWindow = new WorldWindow();
-
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
 				this.openView = strView;
 			this.openGeoTiff = strGeoTiff;
@@ -407,6 +405,7 @@ namespace Dapple
 				m_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
 
 
+				worldWindow = new WorldWindow();
 				InitializeComponent();
 				this.SuspendLayout();
 
@@ -628,7 +627,7 @@ namespace Dapple
 				this.cServerViewsTab.SetPage(1, this.cServerListControl);
 				cServerViewsTab.PageChanged += new JanaTab.PageChangedDelegate(ServerPageChanged);
 
-				cWebSearch = new DappleSearchList(Settings.DappleSearchURL);
+				cWebSearch = new DappleSearchList();
 				cWebSearch.ServerTree = tvServers;
 				cWebSearch.LayerList = cLayerList;
 
@@ -2178,22 +2177,6 @@ namespace Dapple
 			worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
 
 			this.tvServers.Load();
-
-			// --- Configure DappleSearch if it's enabled ---
-
-			if (!IsMontajChildProcess)
-			{
-				if (Settings.DappleSearchURL == null) Settings.DappleSearchURL = "http://dapplesearch.geosoft.com/";
-
-				/*if (!Settings.DappleSearchURL.Equals(String.Empty))
-				{
-					m_strDappleSearchServerURL = Settings.DappleSearchURL;
-					DappleSearchToolbar.Visible = true;
-					m_hDappleSearchBackgroundThread = new Thread(new ThreadStart(BackgroundSearchThreadMain));
-					m_hDappleSearchBackgroundThread.Name = "Background search thread";
-					m_hDappleSearchBackgroundThread.Start();
-				}*/
-			}
 		}
 
 		void MainForm_Closing(object sender, CancelEventArgs e)
@@ -2867,7 +2850,7 @@ namespace Dapple
 
 		private void submitServerToSearchEngine(object param)
 		{
-			if (String.IsNullOrEmpty(Settings.DappleSearchURL)) return;
+			if (!Settings.UseDappleSearch) return;
 
 			try
 			{
@@ -3471,7 +3454,10 @@ namespace Dapple
 
 		void WorldCamera_CameraChanged(object sender, EventArgs e)
 		{
-			SetSearchable(true);
+			if (m_oLastSearchROI != null)
+			{
+				SetSearchable(!GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox()).Equals( m_oLastSearchROI));
+			}
 		}
 
 		public void CmdSaveHomeView()
