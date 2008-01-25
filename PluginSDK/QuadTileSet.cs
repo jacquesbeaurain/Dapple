@@ -1038,10 +1038,9 @@ namespace WorldWind.Renderable
       public void ClearDownloadRequests()
       {
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
-            lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
-            {
-               m_downloadRequests.Clear();
-            }
+         {
+            m_downloadRequests.Clear();
+         }
       }
 
       public virtual void AddToDownloadQueue(CameraBase camera, GeoSpatialDownloadRequest newRequest)
@@ -1093,15 +1092,18 @@ namespace WorldWind.Renderable
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
          {
             IGeoSpatialDownloadTile key = removeRequest.Tile;
-            GeoSpatialDownloadRequest request = m_downloadRequests[key];
-            if (request != null)
-            {
-               m_downloadRequests.Remove(key);
-               request.Tile.DownloadRequests.Remove(request);
-            }
+				if (m_downloadRequests.ContainsKey(key))
+				{
+					GeoSpatialDownloadRequest request = m_downloadRequests[key];
+					if (request != null)
+					{
+						m_downloadRequests.Remove(key);
+						request.Tile.DownloadRequests.Remove(request);
+					}
+				}
 
-            if (serviceQueue)
-               ServiceDownloadQueue();
+				if (serviceQueue)
+					ServiceDownloadQueue();
          }
       }
 

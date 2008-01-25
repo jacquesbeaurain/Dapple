@@ -627,6 +627,11 @@ namespace WorldWind
       /// </summary>
       internal bool showPosition = false;
 
+		/// <summary>
+		/// Whether to display the scale bar in the globe.
+		/// </summary>
+		protected bool m_blShowScaleBar = false;
+
 
       /// <summary>
       /// Color of the sky at sea level
@@ -688,6 +693,14 @@ namespace WorldWind
          get { return showPosition; }
          set { showPosition = value; }
       }
+
+		[Browsable(true), Category("World")]
+		[Description("Whether to display the scale bar over the globe")]
+		public bool ShowScaleBar
+		{
+			get { return m_blShowScaleBar; }
+			set { m_blShowScaleBar = value; }
+		}
 
       [Browsable(true), Category("World")]
       [Description("Keep the original (unconverted) NASA SVS image files on disk (in addition to converted files). ")]

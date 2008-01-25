@@ -487,6 +487,7 @@ namespace Dapple
 
 				this.scalebarPlugin = new NASA.Plugins.ScaleBarLegend();
 				this.scalebarPlugin.PluginLoad(this, strPluginsDir);
+				this.scalebarPlugin.IsVisible = World.Settings.ShowScaleBar;
 
 				this.starsPlugin = new Stars3D.Plugin.Stars3D();
 				this.starsPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "Stars3D"));
@@ -1680,6 +1681,7 @@ namespace Dapple
 		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.scalebarPlugin.IsVisible = !this.scalebarPlugin.IsVisible;
+			World.Settings.ShowScaleBar = this.scalebarPlugin.IsVisible;
 			this.scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
 		}
 
@@ -2197,12 +2199,15 @@ namespace Dapple
 			//tvServers.SaveFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
 
 			// Ensure cleanup
+			// --- Save the ShowClouds property, because setting that RO's IsOn to false propagates to the setting ---
+			bool blShowClouds = World.Settings.ShowClouds;
 			for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
 			{
 				RenderableObject oRO = (RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i];
 				oRO.IsOn = false;
 				oRO.Dispose();
 			}
+			World.Settings.ShowClouds = blShowClouds;
 
 			World.Settings.ShowLatLonLines = bSaveGridLineState;
 
