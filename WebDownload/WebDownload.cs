@@ -715,13 +715,7 @@ namespace WorldWind.Net
 			}
 			else
 			{
-				try
-				{
-					CompleteCallback(this);
-				}
-				catch
-				{
-				}
+				CompleteCallback(this);
 			}
 
 			OnDownloadEnded(this);
@@ -766,8 +760,6 @@ namespace WorldWind.Net
 				CompleteCallback(this);
 			}
 		}
-
-
 
 		/// <summary>
 		/// Handle server errors that don't get trapped by the web request itself.

@@ -114,15 +114,12 @@ namespace Dapple
 		private JanaTab cServerViewsTab;
 		private DappleSearchList cWebSearch;
 		private static WorldWindow worldWindow;
-		private Thread m_hDappleSearchBackgroundThread;
 
 		public static WorldWindow WorldWindowSingleton
 		{
 			get { return worldWindow; }
 		}
 
-		private NASA.Plugins.BMNG bmngPlugin;
-		private NASA.Plugins.BmngLoader bmngLoader;
 		private NASA.Plugins.ScaleBarLegend scalebarPlugin;
 
 		private Murris.Plugins.Compass compassPlugin;
@@ -170,7 +167,6 @@ namespace Dapple
 
 		private string m_szLastSearchString = String.Empty;
 		private GeographicBoundingBox m_oLastSearchROI = null;
-		private TreeView cKMLTree;
 		#endregion
 
 		#region Properties
@@ -422,8 +418,7 @@ namespace Dapple
 				toolStripOverview.Renderer = this.toolStripRenderer;
 				cToolStripMetadata.Renderer = this.toolStripRenderer;
 
-				BorderlessToolStripRenderer bob = new BorderlessToolStripRenderer();
-				toolStripNavigation.Renderer = bob;
+				toolStripNavigation.Renderer = new BorderlessToolStripRenderer();
 
 				// set Upper and Lower limits for Cache size control, in bytes
 				long CacheUpperLimit = (long)Settings.CacheSizeGigaBytes * 1024L * 1024L * 1024L;
@@ -728,13 +723,13 @@ namespace Dapple
 
 				#endregion
 
-				if (OPEN_KML_ENABLED)
+				/*if (OPEN_KML_ENABLED)
 				{
 					toolStripMenuItemfile.Visible = true;
 					toolStripMenuItemfile.Enabled = true;
 					toolStripMenuItemOpenKML.Visible = true;
 					toolStripMenuItemOpenKML.Enabled = true;
-				}
+				}*/
 
 				loadCountryList();
 				populateAoiComboBox();
@@ -1578,12 +1573,6 @@ namespace Dapple
 			CenterNavigationToolStrip();
 		}
 
-
-		private void toolStripMenuItemeditBlueMarble_Click(object sender, EventArgs e)
-		{
-			this.bmngPlugin.ShowDialog(this);
-		}
-
 		private void toolStripMenuItemshowGridLines_Click(object sender, EventArgs e)
 		{
 			World.Settings.ShowLatLonLines = toolStripMenuItemshowGridLines.Checked;
@@ -2185,7 +2174,6 @@ namespace Dapple
 		{
 			// Turn off the metadata display thread and background search thread
 			m_oMetadataDisplay.abort();
-			if (m_hDappleSearchBackgroundThread != null) m_hDappleSearchBackgroundThread.Abort();
 
 			this.threeDConnPlugin.Unload();
 
@@ -2881,7 +2869,7 @@ namespace Dapple
 		#endregion
 
 		#region Temporary KML Code
-
+		/*
 		private void cKMLTree_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right)
@@ -3016,7 +3004,7 @@ namespace Dapple
 				oChildNode.Checked = e.Node.Checked;
 			}
 		}
-
+		*/
 		#endregion
 
 		/// <summary>

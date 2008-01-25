@@ -12,6 +12,7 @@ using System.Threading;
 using System.Drawing.Drawing2D;
 using Dapple.LayerGeneration;
 using System.Web;
+using WorldWind.Net;
 
 namespace Dapple.CustomControls
 {
@@ -47,6 +48,8 @@ namespace Dapple.CustomControls
       private Point m_oDragDropStartPoint = Point.Empty;
       private LayerList m_hLayerList;
 		private ServerTree m_hServerTree;
+
+		long m_lSearchIndex = 0;
 
       #endregion
 
@@ -259,17 +262,38 @@ namespace Dapple.CustomControls
       private void ForwardPage()
       {
          m_iCurrentPage++;
-         if (m_iCurrentPage >= m_iAccessedPages)
-         {
-            m_iAccessedPages++;
-            SearchResultSet oPage = SearchResultSet.doSearch(MainForm.Settings.DappleSearchURL, m_szSearchString, m_oSearchBoundingBox, m_iCurrentPage * PageNavigator.ResultsPerPage, PageNavigator.ResultsPerPage);
-            ExtendSearch(oPage, m_iCurrentPage);
-         }
-         RefreshResultList();
+			if (m_iCurrentPage >= m_iAccessedPages)
+			{
+				m_iAccessedPages++;
+				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, m_iCurrentPage, m_lSearchIndex);
+				SetSearching();
+				oDownload.BackgroundDownloadMemory(new DownloadCompleteHandler(ForwardPageComplete));
+			}
+			else
+			{
+				RefreshResultList();
+			}
       }
+
+		private void ForwardPageComplete(WebDownload oWebDownload)
+		{
+			DappleSearchWebDownload oDSWebDownload = oWebDownload as DappleSearchWebDownload;
+
+			// --- If the search indices don't match, it's because a new search was done before this one completed, so discard these results ---
+			if (oDSWebDownload.SearchIndex == m_lSearchIndex)
+			{
+				XmlDocument oDoc = new XmlDocument();
+				oDoc.Load(oWebDownload.ContentStream);
+				SearchResultSet oPage = new SearchResultSet(oDoc);
+				ExtendSearch(oPage, m_iCurrentPage);
+			}
+		}
 
       public void SetSearchParameters(String szKeyword, GeographicBoundingBox oBoundingBox)
       {
+			if (!MainForm.Settings.UseDappleSearch) return;
+
+			m_lSearchIndex++;
          m_oSearchBoundingBox = oBoundingBox;
          m_szSearchString = szKeyword;
 
@@ -279,11 +303,25 @@ namespace Dapple.CustomControls
          }
          else
          {
-            SearchResultSet oPage1 = SearchResultSet.doSearch(MainForm.Settings.DappleSearchURL, szKeyword, oBoundingBox, 0, PageNavigator.ResultsPerPage);
-            InitSearch(oPage1);
-            RefreshResultList();
+				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, 0, m_lSearchIndex);
+				SetSearching();
+				oDownload.BackgroundDownloadMemory(new DownloadCompleteHandler(SetSearchParametersComplete));
          }
       }
+
+		private void SetSearchParametersComplete(WebDownload oWebDownload)
+		{
+			DappleSearchWebDownload oDSWebDownload = oWebDownload as DappleSearchWebDownload;
+
+			// --- If the search indices don't match, it's because a new search was done before this one completed, so discard these results ---
+			if (oDSWebDownload.SearchIndex == m_lSearchIndex)
+			{
+				XmlDocument oDoc = new XmlDocument();
+				oDoc.Load(oWebDownload.ContentStream);
+				SearchResultSet oPage1 = new SearchResultSet(oDoc);
+				InitSearch(oPage1);
+			}
+		}
 
       #region helper functions
 
@@ -386,8 +424,16 @@ namespace Dapple.CustomControls
          else
          {
             cNavigator.SetState("Press Alt-S to search");
+				cResultListBox.HorizontalExtent = 0;
          }
       }
+
+		private void SetSearching()
+		{
+			cResultListBox.Items.Clear();
+			cNavigator.SetState("Searching...");
+			cResultListBox.HorizontalExtent = 0;
+		}
 
       private delegate void InitResultsDelegate(SearchResultSet oResults);
       private void InitSearch(SearchResultSet oResults)
@@ -417,6 +463,7 @@ namespace Dapple.CustomControls
             {
                m_aPages = null;
             }
+				RefreshResultList();
          }
       }
 
@@ -438,6 +485,7 @@ namespace Dapple.CustomControls
             {
                cNavigator.SetState("DappleSearch not configured");
             }
+				RefreshResultList();
          }
       }
 
@@ -453,7 +501,7 @@ namespace Dapple.CustomControls
       private Object LOCK = new Object();
       private bool m_blThumbnailsQueued = false;
 
-      private SearchResultSet(XmlDocument oSearchResult)
+      public SearchResultSet(XmlDocument oSearchResult)
       {
          if (oSearchResult.SelectSingleNode("/geosoft_xml/error") != null) throw new ArgumentException("Server sent error message");
 
@@ -501,62 +549,6 @@ namespace Dapple.CustomControls
       }
 
       #endregion
-
-      public static SearchResultSet doSearch(String szDappleSearchServerURL, String szSearchString, GeographicBoundingBox oSearchBoundingBox, int iOffset, int iNumResults)
-      {
-         if (String.IsNullOrEmpty(szDappleSearchServerURL)) return null;
-
-         XmlDocument query = new XmlDocument();
-         XmlElement geoRoot = query.CreateElement("geosoft_xml");
-         query.AppendChild(geoRoot);
-         XmlElement root = query.CreateElement("search_request");
-         root.SetAttribute("version", "1.0");
-         root.SetAttribute("handle", "cheese");
-         root.SetAttribute("maxcount", iNumResults.ToString());
-         root.SetAttribute("offset", iOffset.ToString());
-         geoRoot.AppendChild(root);
-
-         if (oSearchBoundingBox != null)
-         {
-            XmlElement boundingBox = query.CreateElement("bounding_box");
-            boundingBox.SetAttribute("minx", oSearchBoundingBox.West.ToString());
-            boundingBox.SetAttribute("miny", oSearchBoundingBox.South.ToString());
-            boundingBox.SetAttribute("maxx", oSearchBoundingBox.East.ToString());
-            boundingBox.SetAttribute("maxy", oSearchBoundingBox.North.ToString());
-            boundingBox.SetAttribute("crs", "WSG84");
-            root.AppendChild(boundingBox);
-         }
-
-         if (!String.IsNullOrEmpty(szSearchString))
-         {
-            XmlElement keyword = query.CreateElement("text_filter");
-            keyword.InnerText = szSearchString;
-            root.AppendChild(keyword);
-         }
-
-         // --- Do the request ---
-
-         WebResponse response = null;
-         try
-         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(szDappleSearchServerURL + MainForm.SEARCH_XML_GATEWAY);
-            request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;
-            response = request.GetResponse();
-
-            XmlDocument responseXML = new XmlDocument();
-            responseXML.Load(response.GetResponseStream());
-
-            return new SearchResultSet(responseXML);
-         }
-         catch
-         {
-            return null;
-         }
-         finally
-         {
-            if (response != null) response.Close();
-         }
-      }
    }
 
    class SearchResult
@@ -688,4 +680,82 @@ namespace Dapple.CustomControls
          }
       }
    }
+
+	class DappleSearchWebDownload : WebDownload
+	{
+		private GeographicBoundingBox m_oBoundingBox = null;
+		private String m_szKeywords = null;
+		private int m_iPage = 0;
+		private int m_iNumResults = PageNavigator.ResultsPerPage;
+		private long m_lSearchIndex;
+
+		public DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex) : base(MainForm.Settings.DappleSearchURL, true)
+		{
+			m_oBoundingBox = oBoundingBox;
+			m_szKeywords = szKeywords;
+			m_iPage = iPage;
+			m_lSearchIndex = lSearchIndex;
+		}
+
+		public long SearchIndex
+		{
+			get { return m_lSearchIndex; }
+		}
+
+		protected override HttpWebRequest BuildRequest()
+		{
+			// --- Create the document ---
+
+			XmlDocument query = new XmlDocument();
+			XmlElement geoRoot = query.CreateElement("geosoft_xml");
+			query.AppendChild(geoRoot);
+			XmlElement root = query.CreateElement("search_request");
+			root.SetAttribute("version", "1.0");
+			root.SetAttribute("handle", "cheese");
+			root.SetAttribute("maxcount", m_iNumResults.ToString());
+			root.SetAttribute("offset", (m_iPage * m_iNumResults).ToString());
+			geoRoot.AppendChild(root);
+
+			if (m_oBoundingBox != null)
+			{
+				XmlElement boundingBox = query.CreateElement("bounding_box");
+				boundingBox.SetAttribute("minx", m_oBoundingBox.West.ToString());
+				boundingBox.SetAttribute("miny", m_oBoundingBox.South.ToString());
+				boundingBox.SetAttribute("maxx", m_oBoundingBox.East.ToString());
+				boundingBox.SetAttribute("maxy", m_oBoundingBox.North.ToString());
+				boundingBox.SetAttribute("crs", "WSG84");
+				root.AppendChild(boundingBox);
+			}
+
+			if (!String.IsNullOrEmpty(m_szKeywords))
+			{
+				XmlElement keyword = query.CreateElement("text_filter");
+				keyword.InnerText = m_szKeywords;
+				root.AppendChild(keyword);
+			}
+
+			// --- Do the request ---
+
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MainForm.Settings.DappleSearchURL + MainForm.SEARCH_XML_GATEWAY);
+			request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;
+			request.UserAgent = UserAgent;
+
+			if (this.Compressed)
+			{
+				request.Headers.Add("Accept-Encoding", "gzip,deflate");
+			}
+
+			request.Proxy = ProxyHelper.DetermineProxyForUrl(
+				Url,
+				useWindowsDefaultProxy,
+				useDynamicProxy,
+				proxyUrl,
+				proxyUserName,
+				proxyPassword);
+
+			request.ProtocolVersion = HttpVersion.Version11;
+
+			return request;
+		}
+	}
 }

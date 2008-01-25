@@ -409,7 +409,6 @@ namespace Dapple
 			  this.toolStripMenuItemOpenKML.Name = "toolStripMenuItemOpenKML";
 			  this.toolStripMenuItemOpenKML.Size = new System.Drawing.Size(177, 22);
 			  this.toolStripMenuItemOpenKML.Text = "Open KML/KMZ File...";
-			  this.toolStripMenuItemOpenKML.Click += new System.EventHandler(this.toolStripMenuItemOpenKML_Click);
 			  // 
 			  // toolStripSeparator12
 			  // 

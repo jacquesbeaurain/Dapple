@@ -1104,7 +1104,7 @@ namespace Dapple
                {
                   oExportDialog = new ExportView(MainApplication.Settings.ConfigPath, MainForm.MontajInterface.BaseDirectory());
                }
-               catch (System.Runtime.Remoting.RemotingException e)
+               catch (System.Runtime.Remoting.RemotingException)
                {
                   oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
                }
@@ -1244,7 +1244,7 @@ namespace Dapple
 											oEIGraphics.DrawImage(oLayerImage, new Rectangle(iOffsetX, iOffsetY, iWidth, iHeight), 0, 0, oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, GraphicsUnit.Pixel, imgAtt);
 										}
 									}
-									catch (System.ArgumentException e)
+									catch (System.ArgumentException)
 									{
 										String szLayers = String.Empty;
 										foreach (LayerBuilder oBuilder in this.AllLayers)
@@ -1258,7 +1258,7 @@ namespace Dapple
 							SaveGeoImage(oExportedImage, szFilename, szGeoTiff);
 						}
 					}
-					catch (System.ArgumentException e)
+					catch (System.ArgumentException)
 					{
 						String szLayers = String.Empty;
 						foreach (LayerBuilder oBuilder in this.AllLayers)

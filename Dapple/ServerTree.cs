@@ -475,7 +475,6 @@ namespace Dapple
 			WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
          if (wmsBuilder.ContainsServer(new WMSServerUri(strCapUrl))) return false;// Don't add a server multiple times
 
-			TreeNode treeNode = null;
          WMSServerBuilder builder = wmsBuilder.AddServer(new WMSServerUri(strCapUrl), blEnabled) as WMSServerBuilder;
 			m_wmsServers.Add(builder);
 
