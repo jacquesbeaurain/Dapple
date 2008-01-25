@@ -254,7 +254,6 @@ namespace WorldWind.Renderable
 						textures[i] = null;
 					}
 				}
-				textures = null;
 			}
 
 			if (northWestChild != null)

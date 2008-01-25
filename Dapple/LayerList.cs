@@ -844,23 +844,37 @@ namespace Dapple
       {
          if (cLayerList.SelectedIndices.Count == 0) return;
 
-         cLayerList.BeginUpdate();
+			cLayerList.BeginUpdate();
          m_blSupressSelectedChanged = true;
+
+			// --- Get the list of layers to delete, and ListViewItems to not delete.
+
+			List<int> oIndices = new List<int>();
+			List<ListViewItem> oLVIs = new List<ListViewItem>();
 
          foreach (int iIndex in cLayerList.SelectedIndices)
          {
-            if (m_oLayers[iIndex].Equals(m_hBaseLayer))
-            {
-               cLayerList.SelectedIndices.Remove(iIndex);
-               break;
-            }
+				if (!m_oLayers[iIndex].Equals(m_hBaseLayer))
+				{
+					oIndices.Add(iIndex);
+				}
          }
+			for (int count = 0; count < cLayerList.Items.Count; count++)
+			{
+				if (!oIndices.Contains(count))
+				{
+					oLVIs.Add(cLayerList.Items[count]);
+				}
+			}
+
+			// --- Delete the layers bottom-up, because top-down will damage the indices ---
+
+			oIndices.Sort();
+			oIndices.Reverse();
 
          int iLastIndex = 0;
-         while (cLayerList.SelectedIndices.Count > 0)
-         {
-            int iIndexToDelete = cLayerList.SelectedIndices[0];
-
+			foreach (int iIndexToDelete in oIndices)
+			{
             if (m_oLayers[iIndexToDelete] != null)
             {
                m_oLayers[iIndexToDelete].UnsubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
@@ -868,14 +882,26 @@ namespace Dapple
             }
 
             m_oLayers.RemoveAt(iIndexToDelete);
-            cLayerList.Items.RemoveAt(iIndexToDelete);
             iLastIndex = iIndexToDelete;
          }
+
+			// --- Populate the ListView with those ListViewItems not deleted ---
+
+			cLayerList.SelectedIndices.Clear();
+			cLayerList.Items.Clear();
+
+			foreach (ListViewItem oItem in oLVIs)
+			{
+				cLayerList.Items.Add(oItem);
+			}
+
+			// --- Restore the "next item" selection if any items remain ---
+
          if (iLastIndex == cLayerList.Items.Count) iLastIndex--;
          if (iLastIndex != -1) cLayerList.SelectedIndices.Add(iLastIndex);
 
-         m_blSupressSelectedChanged = false;
-         cLayerList.EndUpdate();
+			m_blSupressSelectedChanged = false;
+			cLayerList.EndUpdate();
 
          RefreshLayerRenderOrder();
          SetButtonState();
