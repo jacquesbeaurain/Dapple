@@ -276,7 +276,7 @@ namespace KMLPlugin
 
 			ThreadStart threadStart = new ThreadStart(LoadKMLFile);
 			Thread kmlThread = new System.Threading.Thread(threadStart);
-			kmlThread.Name = "KMLImporter worker thread";
+			kmlThread.Name = ThreadNames.KMLImporterBackground;
 			kmlThread.IsBackground = true;
 			kmlThread.Start();
 

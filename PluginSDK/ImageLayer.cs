@@ -345,7 +345,7 @@ namespace WorldWind.Renderable
 				{
 					//attempt to redownload it
 					downloadThread = new Thread(new ThreadStart(DownloadImage));
-					downloadThread.Name = "ImageLayer.DownloadImage";
+					downloadThread.Name = ThreadNames.ImageLayerDownload;
 					
 					downloadThread.IsBackground = true;
 					downloadThread.Start();
@@ -374,7 +374,7 @@ namespace WorldWind.Renderable
 				{
 					//download it...
 					downloadThread = new Thread(new ThreadStart(DownloadImage));
-					downloadThread.Name = "ImageLayer.DownloadImage";
+					downloadThread.Name = ThreadNames.ImageLayerDownload;
 					
 					downloadThread.IsBackground = true;
 					downloadThread.Start();

@@ -152,6 +152,7 @@
     <Compile Include="StringHash.cs" />
     <Compile Include="Threading\Queue.cs" />
     <Compile Include="Threading\Semaphore.cs" />
+    <Compile Include="ThreadNames.cs" />
     <Compile Include="URI.cs" />
     <Compile Include="Win32Message.cs">
       <SubType>Code</SubType>

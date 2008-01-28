@@ -578,6 +578,7 @@ namespace Dapple.CustomControls
       {
          if (!MainForm.Settings.UseDappleSearch) return;
 
+			// --- This non-WebDownload download is permitted because this method is only called by threadpool threads ---
          WebRequest oRequest = WebRequest.Create(MainForm.Settings.DappleSearchURL + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
          WebResponse oResponse = null;
          try
@@ -734,7 +735,7 @@ namespace Dapple.CustomControls
 				root.AppendChild(keyword);
 			}
 
-			// --- Do the request ---
+			// --- Create the request ---
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MainForm.Settings.DappleSearchURL + MainForm.SEARCH_XML_GATEWAY);
 			request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;

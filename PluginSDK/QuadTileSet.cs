@@ -615,7 +615,7 @@ namespace WorldWind.Renderable
 
 		public override void Update(DrawArgs drawArgs)
 		{
-			if (System.Threading.Thread.CurrentThread.Name != "WorldWindow.WorkerThreadFunc")
+			if (!System.Threading.Thread.CurrentThread.Name.Equals(ThreadNames.WorldWindowBackground))
 				throw new System.InvalidOperationException("QTS.Update() must be called from WorkerThread!");
 
 			if (!isInitialized)

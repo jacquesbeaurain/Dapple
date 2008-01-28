@@ -1147,7 +1147,7 @@ namespace WorldWind
 					{
 						m_WorkerThreadRunning = true;
 						m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
-						m_WorkerThread.Name = "WorldWindow.WorkerThreadFunc";
+						m_WorkerThread.Name = ThreadNames.WorldWindowBackground;
 						m_WorkerThread.IsBackground = true;
 						if (World.Settings.UseBelowNormalPriorityUpdateThread)
 						{

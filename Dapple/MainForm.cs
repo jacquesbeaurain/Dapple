@@ -262,7 +262,7 @@ namespace Dapple
 				Release += " (BETA)";
 
 			// Name the main thread.
-			System.Threading.Thread.CurrentThread.Name = "Main Thread";
+			System.Threading.Thread.CurrentThread.Name = ThreadNames.EventDispatch;
 
 			// Copy/Update any configuration files and other files if needed now
 			CurrentSettingsDirectory = Path.Combine(UserPath, "Config");
@@ -505,25 +505,7 @@ namespace Dapple
 				//this.measurePlugin = new MeasureToolNewgen.Plugins.MeasureToolNG();
 				//this.measurePlugin.PluginLoad(this, strPluginsDir); 
 
-				try
-				{
-					this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
-				}
-				catch
-				{
-					this.placeNames = null;
-					this.showPlaceNamesToolStripMenuItem.Visible = false;
-				}
-				finally
-				{
-					if (this.placeNames != null)
-					{
-						this.placeNames.IsOn = World.Settings.ShowPlacenames;
-						this.placeNames.RenderPriority = RenderPriority.Placenames;
-						worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
-					}
-					this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
-				}
+				ThreadPool.QueueUserWorkItem(LoadPlacenames);
 
 				/*ServerTreePhoenix oFire = new ServerTreePhoenix();
 				oFire.ImageList = m_oImageList;
@@ -740,6 +722,24 @@ namespace Dapple
 				cSearchTextComboBox.Text = NO_SEARCH;
 			}
 			//#endif
+		}
+
+		private void LoadPlacenames(Object oParams)
+		{
+			this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
+			Invoke(new MethodInvoker(LoadPlacenamesCallback));
+		}
+
+		private void LoadPlacenamesCallback()
+		{
+			if (this.placeNames != null)
+			{
+				this.placeNames.IsOn = World.Settings.ShowPlacenames;
+				this.placeNames.RenderPriority = RenderPriority.Placenames;
+				worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
+				this.showPlaceNamesToolStripMenuItem.Enabled = true;
+			}
+			this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
 		}
 
 		#endregion
@@ -1181,9 +1181,7 @@ namespace Dapple
 				{
 					if (this.tvServers.AddDAPServer(dlg.Url, out oServer, true))
 					{
-						Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
-						t.Name = "Background add server thread";
-						t.Start(new String[] { dlg.Url, "DAP" });
+						ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.Url, "DAP" });
 					}
 				}
 				catch (Exception except)
@@ -1208,9 +1206,7 @@ namespace Dapple
 					{
 						if (this.tvServers.AddWMSServer(dlg.WmsURL, true, true))
 						{
-							Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
-							t.Name = "Background add server thread";
-							t.Start(new String[] { dlg.WmsURL, "WMS" });
+							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.WmsURL, "WMS" });
 						}
 					}
 					catch (Exception except)
@@ -1236,9 +1232,7 @@ namespace Dapple
 					{
 						if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true))
 						{
-							Thread t = new Thread(new ParameterizedThreadStart(submitServerToSearchEngine));
-							t.Name = "Background add server thread";
-							t.Start(new String[] { dlg.URL, "ArcIMS" });
+							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.URL, "ArcIMS" });
 						}
 					}
 					catch (Exception except)
@@ -1421,92 +1415,75 @@ namespace Dapple
 			// Render once to not just show the atmosphere at startup (looks better) ---
 			worldWindow.SafeRender();
 
-			/*if (IsMontajChildProcess)
-				OpenView(Path.Combine(Settings.DataPath, DefaultView), false, false);
-			else if (this.openView.Length > 0)
-				OpenView(openView, this.openGeoTiff.Length == 0, true);
-			else if (this.openGeoTiff.Length == 0 && File.Exists(Path.Combine(Settings.ConfigPath, LastView)))
-			{
-				if (Settings.AskLastViewAtStartup)
-				{
-					Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
-					msgBox.AllowSaveResponse = true;
-					msgBox.SaveResponseText = "Don't ask me again";
-					msgBox.Caption = this.Text;
-					msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
-					msgBox.AddButtons(MessageBoxButtons.YesNo);
-					msgBox.Text = "Would you like to open your last View?";
-					msgBox.Font = this.Font;
-					Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
-					if (msgBox.SaveResponse)
-						Settings.AskLastViewAtStartup = false;
-				}
-
-				if (Settings.LastViewAtStartup)
-					OpenView(Path.Combine(Settings.ConfigPath, LastView), true, true);
-				else
-					OpenView(Path.Combine(Settings.ConfigPath, LastView), false, false);
-			}
-			else
-				OpenView(Path.Combine(Settings.DataPath, DefaultView), this.openGeoTiff.Length == 0, true);*/
 
 			//tvServers.LoadFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
 
-			if (this.openView.Length > 0)
-				OpenView(this.openView, this.openGeoTiff.Length == 0, true);
-			else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
+			try
 			{
-				if (Settings.AskLastViewAtStartup)
-				{
-					Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
-					msgBox.AllowSaveResponse = true;
-					msgBox.SaveResponseText = "Don't ask me again";
-					msgBox.Caption = this.Text;
-					msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
-					msgBox.AddButtons(MessageBoxButtons.YesNo);
-					msgBox.Text = "Would you like to open your last View?";
-					msgBox.Font = this.Font;
-					Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
-					if (msgBox.SaveResponse)
-						Settings.AskLastViewAtStartup = false;
-				}
+				// --- Draw the screen, so it doesn't look damaged ---
+				UseWaitCursor = true;
+				Application.DoEvents();
 
-				if (Settings.LastViewAtStartup)
-					OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
+				if (this.openView.Length > 0)
+					OpenView(this.openView, this.openGeoTiff.Length == 0, true);
+				else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
+				{
+					if (Settings.AskLastViewAtStartup)
+					{
+						Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
+						msgBox.AllowSaveResponse = true;
+						msgBox.SaveResponseText = "Don't ask me again";
+						msgBox.Caption = this.Text;
+						msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
+						msgBox.AddButtons(MessageBoxButtons.YesNo);
+						msgBox.Text = "Would you like to open your last View?";
+						msgBox.Font = this.Font;
+						Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
+						if (msgBox.SaveResponse)
+							Settings.AskLastViewAtStartup = false;
+					}
+
+					if (Settings.LastViewAtStartup)
+						OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
+					else
+						CmdLoadHomeView();
+				}
 				else
-					CmdLoadHomeView();
-			}
-			else
-			{
-				CmdLoadHomeView();
-			}
-
-			if (this.openGeoTiff.Length > 0)
-				AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
-
-
-			// Check for updates daily
-			if (IsMontajChildProcess == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
-				CheckForUpdates(false);
-			Settings.UpdateCheckDate = System.DateTime.Now;
-
-			foreach (RenderableObject oRO in worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
-			{
-				if (oRO.Name == "1 - Grid Lines")
 				{
-					oRO.IsOn = World.Settings.ShowLatLonLines;
-					break;
+					CmdLoadHomeView();
+				}
+
+				if (this.openGeoTiff.Length > 0)
+					AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
+
+
+				// Check for updates daily
+				if (IsMontajChildProcess == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
+					CheckForUpdates(false);
+				Settings.UpdateCheckDate = System.DateTime.Now;
+
+				foreach (RenderableObject oRO in worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
+				{
+					if (oRO.Name == "1 - Grid Lines")
+					{
+						oRO.IsOn = World.Settings.ShowLatLonLines;
+						break;
+					}
+				}
+
+				// Load datasetlink, now that everything is laid out
+				if (strLayerToLoad.Length > 0)
+					OpenDatasetLink(strLayerToLoad);
+
+				if (m_oOMMapExtentWGS84 != null)
+				{
+					doSearch(String.Empty, m_oOMMapExtentWGS84);
+					GoTo(m_oOMMapExtentWGS84, false);
 				}
 			}
-
-			// Load datasetlink, now that everything is laid out
-			if (strLayerToLoad.Length > 0)
-				OpenDatasetLink(strLayerToLoad);
-
-			if (m_oOMMapExtentWGS84 != null)
+			finally
 			{
-				doSearch(String.Empty, m_oOMMapExtentWGS84);
-				GoTo(m_oOMMapExtentWGS84, false);
+				UseWaitCursor = false;
 			}
 		}
 
@@ -1662,6 +1639,8 @@ namespace Dapple
 
 		private void showPlaceNamesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (this.placeNames == null) return;
+
 			World.Settings.ShowPlacenames = !World.Settings.ShowPlacenames;
 			this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
 			this.placeNames.IsOn = World.Settings.ShowPlacenames;
@@ -2069,23 +2048,6 @@ namespace Dapple
 
 					if (view.View.Hasshowbluemarble())
 						bShowBlueMarble = view.View.showbluemarble.Value;
-
-					/*RenderableObject roBMNG = GetBMNG();
-					if (roBMNG != null)
-					{
-						if (bShowBlueMarble)
-							this.toolStripButtonBMNG.Image = global::Dapple.Properties.Resources.blue_marble_checked;
-						else
-							this.toolStripButtonBMNG.Image = global::Dapple.Properties.Resources.blue_marble_unchecked;
-						this.toolStripButtonBMNG.Checked = roBMNG.IsOn = bShowBlueMarble;
-						this.toolStripButtonBMNG.Enabled = true;
-					}
-					else
-					{
-						this.toolStripButtonBMNG.Image = global::Dapple.Properties.Resources.blue_marble_unchecked;
-						this.toolStripButtonBMNG.Checked = false;
-						this.toolStripButtonBMNG.Enabled = false;
-					}*/
 
 					if (bGoto && view.View.Hascameraorientation())
 					{
@@ -2855,6 +2817,7 @@ namespace Dapple
 				root.SetAttribute("type", ((String[])param)[1]);
 				geoRoot.AppendChild(root);
 
+				// --- This non-WebDownload download is permitted because this method is called from a threadpool thread ---
 				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Settings.DappleSearchURL + NEW_SERVER_GATEWAY);
 				request.Headers["GeosoftAddServerRequest"] = query.InnerXml;
 				WebResponse response = request.GetResponse();

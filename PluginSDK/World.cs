@@ -861,7 +861,7 @@ namespace WorldWind
 
 				active = true;
 				m_backgroundThread = new System.Threading.Thread(new System.Threading.ThreadStart(Updater));
-				m_backgroundThread.Name = "AtmosphericScatteringSphere Updater";
+				m_backgroundThread.Name = ThreadNames.AtmosphericScatteringBackground;
 				m_backgroundThread.Priority = System.Threading.ThreadPriority.Lowest;
 				m_backgroundThread.IsBackground = true;
 				m_backgroundThread.Start();

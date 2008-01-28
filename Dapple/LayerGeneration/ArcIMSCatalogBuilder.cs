@@ -19,12 +19,9 @@ namespace Dapple.LayerGeneration
       #endregion
 
       private WorldWindow m_oWorldWindow;
-      private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable();
+		private Dictionary<ArcIMSCatalogDownload, ServerBuilder> m_oCatalogDownloadsInProgress = new Dictionary<ArcIMSCatalogDownload, ServerBuilder>();
       private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
       private int m_iIndexGenerator = 0;
-#if DEBUG
-      private List<String> m_oAddedServerDNSNames = new List<string>();
-#endif
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
@@ -36,21 +33,6 @@ namespace Dapple.LayerGeneration
 
       public BuilderDirectory AddServer(ArcIMSServerUri oUri, bool blEnabled)
       {
-#if DEBUG
-			try
-			{
-				System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(oUri.Host);
-				if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
-				{
-					MessageBox.Show("Newly added server " + oUri.ToString() + " has DNS name matching existing server in tree.  Check for duplicates", "Possible duplicated ArcIMS server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				}
-				else
-				{
-					m_oAddedServerDNSNames.Add(oNewServer.HostName);
-				}
-			}
-			catch (System.Net.Sockets.SocketException) { }
-#endif
          // create the cache directory
          String savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);
@@ -80,8 +62,11 @@ namespace Dapple.LayerGeneration
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, oBuilder);
-         download.BackgroundDownloadFile();
+			lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
+			{
+				m_oCatalogDownloadsInProgress.Add(download, oBuilder);
+			}
+			download.BackgroundDownloadFile();
       }
 
       public bool ContainsServer(ArcIMSServerUri oUri)
@@ -122,10 +107,10 @@ namespace Dapple.LayerGeneration
       }
 
       public void cancelDownloads()
-      {
-         lock (m_oCatalogDownloadsInProgress.SyncRoot)
+		{
+			lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
          {
-            foreach (WebDownload oDownload in m_oCatalogDownloadsInProgress.Values)
+            foreach (WebDownload oDownload in m_oCatalogDownloadsInProgress.Keys)
             {
                oDownload.Cancel();
                oDownload.Dispose();
@@ -137,7 +122,7 @@ namespace Dapple.LayerGeneration
       {
          try
          {
-            ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[((ArcIMSCatalogDownload)download).IndexNumber] as ArcIMSServerBuilder;
+            ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[(ArcIMSCatalogDownload)download] as ArcIMSServerBuilder;
 
             try
             {
@@ -191,9 +176,9 @@ namespace Dapple.LayerGeneration
          {
             if (LoadFinished != null) LoadFinished();
 
-            lock (m_oCatalogDownloadsInProgress.SyncRoot)
-            {
-               m_oCatalogDownloadsInProgress.Remove(((ArcIMSCatalogDownload)download).IndexNumber);
+				lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
+				{
+               m_oCatalogDownloadsInProgress.Remove(((ArcIMSCatalogDownload)download));
                // dispose the download to release the catalog file's lock
                download.IsComplete = true;
                download.Dispose();

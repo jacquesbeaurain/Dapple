@@ -24,12 +24,9 @@ namespace Dapple.LayerGeneration
       #endregion
 
       private WorldWindow m_WorldWindow;
-      private System.Collections.Hashtable m_oCatalogDownloadsInProgress = new System.Collections.Hashtable(); //<WebDownload, WMSServerBuilder>>
+      private Dictionary<IndexedWebDownload, ServerBuilder> m_oCatalogDownloadsInProgress = new Dictionary<IndexedWebDownload,ServerBuilder>();
       private System.Collections.Hashtable m_oWMSListCache = new System.Collections.Hashtable(); //<WMSUri, WMSList>>
       private int m_iDownloadIndex = 0;
-#if DEBUG
-      private List<String> m_oAddedServerDNSNames = new List<string>();
-#endif
 
       public ServerTree.LoadFinishedCallbackHandler LoadFinished = null;
 
@@ -46,21 +43,6 @@ namespace Dapple.LayerGeneration
       /// <returns>A WMSServerBuilder for the server added.</returns>
       public BuilderDirectory AddServer(WMSServerUri oUri, bool blEnabled)
       {
-#if DEBUG
-			try
-			{
-				System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(oUri.Host);
-				if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
-				{
-					MessageBox.Show("Newly added server " + oUri.ToString() + " has DNS name matching existing server in tree.  Check for duplicates", "Possible duplicated WMS server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				}
-				else
-				{
-					m_oAddedServerDNSNames.Add(oNewServer.HostName);
-				}
-			}
-			catch (System.Net.Sockets.SocketException) { }
-#endif
          // create the cache directory
          string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
          Directory.CreateDirectory(savePath);
@@ -90,7 +72,10 @@ namespace Dapple.LayerGeneration
          download.SavedFilePath = xmlPath;
          download.CompleteCallback += new DownloadCompleteHandler(CatalogDownloadCompleteCallback);
 
-         m_oCatalogDownloadsInProgress.Add(download.IndexNumber, oBuilder);
+			lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
+			{
+				m_oCatalogDownloadsInProgress.Add(download, oBuilder);
+			}
          download.BackgroundDownloadFile();
       }
 
@@ -143,9 +128,9 @@ namespace Dapple.LayerGeneration
 
       public void cancelDownloads()
       {
-         lock (m_oCatalogDownloadsInProgress.SyncRoot)
+         lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
          {
-            foreach (WebDownload oDownload in m_oCatalogDownloadsInProgress.Values)
+            foreach (WebDownload oDownload in m_oCatalogDownloadsInProgress.Keys)
             {
                oDownload.Cancel();
                oDownload.Dispose();
@@ -157,7 +142,7 @@ namespace Dapple.LayerGeneration
       {
          try
          {
-            WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[((IndexedWebDownload)download).IndexNumber] as WMSServerBuilder;
+            WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[(IndexedWebDownload)download] as WMSServerBuilder;
 
             try
             {
@@ -210,9 +195,9 @@ namespace Dapple.LayerGeneration
          {
             if (LoadFinished != null) LoadFinished();
 
-            lock (m_oCatalogDownloadsInProgress.SyncRoot)
-            {
-               m_oCatalogDownloadsInProgress.Remove(((IndexedWebDownload)download).IndexNumber);
+				lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
+				{
+               m_oCatalogDownloadsInProgress.Remove((IndexedWebDownload)download);
                // dispose the download to release the catalog file's lock
                download.IsComplete = true;
                download.Dispose();

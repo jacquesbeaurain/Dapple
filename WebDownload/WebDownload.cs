@@ -42,10 +42,8 @@ namespace WorldWind.Net
 
 		public static string UserAgent = String.Format(
 			CultureInfo.InvariantCulture,
-			"World Wind v1.4.0.1 ({1}, {2})",
-			System.Windows.Forms.Application.ProductVersion,
-			Environment.OSVersion.ToString(),
-			CultureInfo.CurrentCulture.Name);
+			"Dapple/{0}",
+			System.Windows.Forms.Application.ProductVersion);
 
 
 		public string Url;
@@ -724,6 +722,12 @@ namespace WorldWind.Net
 
 		protected virtual void DownloadAsync()
 		{
+			// --- Get off the calling thread ASAP.  Even building a web request can delay it! ---
+			ThreadPool.QueueUserWorkItem(new WaitCallback(DownloadAsyncBody));
+		}
+
+		private void DownloadAsyncBody(Object oParams)
+		{
 			asyncInProgress = true;
 			Log.Write(Log.Levels.Debug, "Starting async download for " + this.Url);
 
@@ -886,5 +890,17 @@ namespace WorldWind.Net
       {
          get { return m_iIndexNumber; }
       }
+
+		public override int GetHashCode()
+		{
+			return m_iIndexNumber;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (!(obj is IndexedWebDownload))
+				return false;
+			return m_iIndexNumber.Equals(((IndexedWebDownload)obj).m_iIndexNumber);
+		}
    }
 }

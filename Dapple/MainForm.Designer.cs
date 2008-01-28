@@ -606,6 +606,7 @@ namespace Dapple
 			  // 
 			  // showPlaceNamesToolStripMenuItem
 			  // 
+			  this.showPlaceNamesToolStripMenuItem.Enabled = false;
 			  this.showPlaceNamesToolStripMenuItem.Name = "showPlaceNamesToolStripMenuItem";
 			  this.showPlaceNamesToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
 			  this.showPlaceNamesToolStripMenuItem.Text = "Show Place Names";
