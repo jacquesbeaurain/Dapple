@@ -727,7 +727,8 @@ namespace Dapple
 		private void LoadPlacenames(Object oParams)
 		{
 			this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
-			Invoke(new MethodInvoker(LoadPlacenamesCallback));
+			if (!this.IsDisposed)
+				Invoke(new MethodInvoker(LoadPlacenamesCallback));
 		}
 
 		private void LoadPlacenamesCallback()
