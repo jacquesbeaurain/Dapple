@@ -2821,8 +2821,8 @@ namespace Dapple
 				XmlElement geoRoot = query.CreateElement("geosoft_xml");
 				query.AppendChild(geoRoot);
 				XmlElement root = query.CreateElement("add_server");
-				root.SetAttribute("url", ((String[])param)[0]);
-				root.SetAttribute("type", ((String[])param)[1]);
+				root.SetAttribute("url", ((Object[])param)[0] as String);
+				root.SetAttribute("type", ((Object[])param)[1] as String);
 				geoRoot.AppendChild(root);
 
 				// --- This non-WebDownload download is permitted because this method is called from a threadpool thread ---
