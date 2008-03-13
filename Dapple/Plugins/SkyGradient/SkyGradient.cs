@@ -25,6 +25,7 @@ using WorldWind;
 using System.IO;
 using System.Drawing;
 using System;
+using System.Globalization;
 
 namespace Murris.Plugins
 {
@@ -160,7 +161,7 @@ namespace Murris.Plugins
 			{
 				string[] settingsList = line.Split(';');
 				string saveVersion = settingsList[0];   // version when settings where saved
-				if (settingsList[1] != null) thickness = double.Parse(settingsList[1]);
+				if (settingsList[1] != null) Double.TryParse(settingsList[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out thickness);
 				if (settingsList[2] != null) zenithColor = ColorFromPreset(settingsList[2]);
 				if (settingsList[3] != null) horizonColor = ColorFromPreset(settingsList[3]);
 			}
@@ -169,7 +170,11 @@ namespace Murris.Plugins
 		public Color ColorFromPreset(string s)
 		{
 			string[] values = s.Split(' ');
-			return Color.FromArgb(int.Parse(values[0]), int.Parse(values[1]), int.Parse(values[2]));
+			return Color.FromArgb(
+				int.Parse(values[0], NumberStyles.Any, CultureInfo.InvariantCulture),
+				int.Parse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture),
+				int.Parse(values[2], NumberStyles.Any, CultureInfo.InvariantCulture)
+				);
 		}
 
 		/// <summary>

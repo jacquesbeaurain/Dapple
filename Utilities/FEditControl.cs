@@ -98,16 +98,34 @@ namespace Geosoft.OpenGX.UtilityForms
          if (this.MaxHistory > 0)
          {
             int iHistory = (int)info.GetValue("History", typeof(int));
-            for (int i = 0; i < iHistory; i++)
-               m_hLST.Add((string)info.GetValue("History_" + i.ToString(), typeof(string)));
+				for (int i = 0; i < iHistory; i++)
+				{
+					String szHistory = (string)info.GetValue("History_" + i.ToString(), typeof(string));
+					if (File.Exists(szHistory))
+						m_hLST.Add(szHistory);
+				}
          }
+
+			String szLastFilename = (string)info.GetValue("File", typeof(string));
+			if (!File.Exists(Path.Combine(m_strDirectory, szLastFilename)))
+			{
+				if (m_hLST.Count > 0)
+				{
+					szLastFilename = Path.GetFileName(m_hLST[0]);
+					m_strDirectory = Path.GetDirectoryName(m_hLST[0]);
+					m_hLST.RemoveAt(0);
+				}
+				else
+					szLastFilename = String.Empty;
+			}
+
          if (m_hLST != null && m_hLST.Count > 0)
          {
             FillHistory();
-            m_cmbFileName.Text = (string)info.GetValue("File", typeof(string));
+            m_cmbFileName.Text = szLastFilename;
          }
          else
-            m_tbFileName.Text = (string)info.GetValue("File", typeof(string));
+            m_tbFileName.Text = szLastFilename;
       }
 
       [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
@@ -250,7 +268,6 @@ namespace Geosoft.OpenGX.UtilityForms
 			this.m_cmbFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 							| System.Windows.Forms.AnchorStyles.Left)
 							| System.Windows.Forms.AnchorStyles.Right)));
-			this.m_cmbFileName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
 			this.m_cmbFileName.FormattingEnabled = true;
 			this.m_cmbFileName.Location = new System.Drawing.Point(0, 0);
 			this.m_cmbFileName.Margin = new System.Windows.Forms.Padding(0);

@@ -86,10 +86,6 @@ namespace Geosoft.GX.DAPGetData
 
 		protected bool m_blAllowCollapse = false;
 
-#if DEBUG
-      private List<String> m_oAddedServerDNSNames = new List<string>();
-#endif
-
       #endregion
 
       #region Construction/Destruction
@@ -338,23 +334,8 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUrl"></param>
       /// <returns></returns>
-      public virtual bool AddDAPServer(string strUrl, out Server hRetServer, bool blEnabled)
+      protected virtual bool AddDAPServer(string strUrl, out Server hRetServer, bool blEnabled)
       {
-#if DEBUG
-			try
-			{
-				System.Net.IPHostEntry oNewServer = System.Net.Dns.GetHostEntry(new Uri(strUrl).Host);
-				if (m_oAddedServerDNSNames.Contains(oNewServer.HostName))
-				{
-					MessageBox.Show("Newly added server " + strUrl + " has host name matching existing server in tree.  Check for duplicates", "Possible duplicated DAP server detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				}
-				else
-				{
-					m_oAddedServerDNSNames.Add(oNewServer.HostName);
-				}
-			}
-			catch (System.Net.Sockets.SocketException) { }
-#endif
          bool bRet;
 
          bRet = true;

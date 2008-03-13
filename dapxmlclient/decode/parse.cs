@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Geosoft.Dap.Common;
 using Geosoft.Dap.Xml.Common;
+using System.Globalization;
 
 namespace Geosoft.Dap.Xml
 {
@@ -336,7 +337,7 @@ namespace Geosoft.Dap.Xml
             hAttr = hNode.Attributes.GetNamedItem(Constant.Attribute.VALUE_ATTR);
 
             if (hAttr == null) throw new DapException("Missing value attribute in cound element");
-            iNumDataSets = Int32.Parse(hAttr.Value);
+				iNumDataSets = Int32.Parse(hAttr.Value, NumberStyles.Any, CultureInfo.InvariantCulture);
          } 
          catch(Exception e)
          {

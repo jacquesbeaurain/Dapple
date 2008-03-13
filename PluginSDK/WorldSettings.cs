@@ -661,7 +661,7 @@ namespace WorldWind
          set { showPlanetAxis = value; }
       }
 
-      internal bool showClouds = true;
+      internal bool showClouds = false;
       [Browsable(true), Category("World")]
       [Description("Whether to show clouds.")]
       public bool ShowClouds

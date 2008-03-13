@@ -9,6 +9,7 @@ using WorldWind.PluginEngine;
 using System.Xml;
 using System.Collections;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -122,7 +123,11 @@ namespace Dapple.LayerGeneration
       {
          try
          {
-            ArcIMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[(ArcIMSCatalogDownload)download] as ArcIMSServerBuilder;
+				ArcIMSServerBuilder serverDir = null;
+				lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
+				{
+					serverDir = m_oCatalogDownloadsInProgress[(ArcIMSCatalogDownload)download] as ArcIMSServerBuilder;
+				}
 
             try
             {
@@ -359,10 +364,15 @@ namespace Dapple.LayerGeneration
                XmlElement oServiceEnvelope = hCatalog.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/ENVELOPE") as XmlElement;
                if (oServiceEnvelope != null)
                {
-                  oServiceBounds.North = Double.Parse(oServiceEnvelope.GetAttribute("maxy"));
-                  oServiceBounds.East = Double.Parse(oServiceEnvelope.GetAttribute("maxx"));
-                  oServiceBounds.South = Double.Parse(oServiceEnvelope.GetAttribute("miny"));
-                  oServiceBounds.West = Double.Parse(oServiceEnvelope.GetAttribute("minx"));
+						GeographicBoundingBox oRealServiceBounds = new GeographicBoundingBox();
+						bool blValid = true;
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.West);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.South);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.East);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.North);
+
+						if (blValid)
+							oServiceBounds = oRealServiceBounds;
                }
             }
 
@@ -375,17 +385,17 @@ namespace Dapple.LayerGeneration
                   if (String.IsNullOrEmpty(szTitle)) szTitle = "LayerID " + szID;
 
                   String szMinScale = nLayerElement.GetAttribute("minscale");
-                  double dMinScale = 0.0;
+                  double dMinScale = ArcIMSQuadLayerBuilder.DefaultMinScale;
                   if (!String.IsNullOrEmpty(szMinScale))
                   {
-                     dMinScale = Double.Parse(szMinScale);
+							Double.TryParse(szMinScale, NumberStyles.Any, CultureInfo.InvariantCulture, out dMinScale);
                   }
 
                   String szMaxScale = nLayerElement.GetAttribute("maxscale");
-                  double dMaxScale = double.MaxValue;
+                  double dMaxScale = ArcIMSQuadLayerBuilder.DefaultMaxScale;
                   if (!String.IsNullOrEmpty(szMaxScale))
                   {
-                     dMaxScale = Double.Parse(szMaxScale);
+							Double.TryParse(szMaxScale, NumberStyles.Any, CultureInfo.InvariantCulture, out dMaxScale);
                   }
 
                   GeographicBoundingBox oLayerBounds = oServiceBounds.Clone() as GeographicBoundingBox;
@@ -399,10 +409,14 @@ namespace Dapple.LayerGeneration
                         oLayerEnvelope = nLayerElement.SelectSingleNode("FCLASS/ENVELOPE") as XmlElement;
                      if (oLayerEnvelope != null)
                      {
-                        oLayerBounds.North = Double.Parse(oLayerEnvelope.GetAttribute("maxy"));
-                        oLayerBounds.East = Double.Parse(oLayerEnvelope.GetAttribute("maxx"));
-                        oLayerBounds.South = Double.Parse(oLayerEnvelope.GetAttribute("miny"));
-                        oLayerBounds.West = Double.Parse(oLayerEnvelope.GetAttribute("minx"));
+								GeographicBoundingBox oRealLayerBounds = new GeographicBoundingBox();
+								bool blValid = true;
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.West);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.South);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.East);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.North);
+								if (blValid)
+									oLayerBounds = oRealLayerBounds;
                      }
                   }
 

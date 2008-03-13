@@ -6,6 +6,7 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using ICSharpCode.SharpZipLib.Zip;
 using Utility;
+using System.Globalization;
 
 namespace WorldWind
 {
@@ -642,7 +643,7 @@ namespace WorldWind
 								{
 									if (m_ShapeTileArgs.ScaleMin == double.NaN || m_ShapeTileArgs.ScaleMax == double.NaN)
 									{
-										double data = double.Parse(fieldData);
+										double data = double.Parse(fieldData, NumberStyles.Any, CultureInfo.InvariantCulture);
 										if (m_ShapeTileArgs.ScaleMin == double.NaN && data < scalarMin)
 										{
 											scalarMin = data;
@@ -855,10 +856,10 @@ namespace WorldWind
 						ignoreRecord = true;
 						if (m_ShapeTileArgs.UseScalar)
 						{
-							double currentValue = double.Parse(newRecord.Value.ToString());
+							double currentValue = double.Parse(newRecord.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture);
 							foreach (string activeValueString in m_ShapeTileArgs.ActiveDataValues)
 							{
-								double activeValue = double.Parse(activeValueString);
+								double activeValue = double.Parse(activeValueString, NumberStyles.Any, CultureInfo.InvariantCulture);
 								if (activeValue == currentValue)
 								{
 									ignoreRecord = false;
@@ -883,7 +884,7 @@ namespace WorldWind
 					{
 						if (m_ShapeTileArgs.UseScalar)
 						{
-							double currentValue = double.Parse(newRecord.Value.ToString());
+							double currentValue = double.Parse(newRecord.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture);
 							if (m_ScalarFilterMin != double.NaN)
 							{
 								if (currentValue < m_ScalarFilterMin)
@@ -904,7 +905,7 @@ namespace WorldWind
 							{
 								foreach (string noDataValueString in m_ShapeTileArgs.NoDataValues)
 								{
-									double noDataValue = double.Parse(noDataValueString);
+									double noDataValue = double.Parse(noDataValueString, NumberStyles.Any, CultureInfo.InvariantCulture);
 									//TODO: might consider using epsilon if floating point errors occur
 									if (noDataValue == currentValue)
 									{
@@ -1038,7 +1039,7 @@ namespace WorldWind
 									{
 										if (m_ShapeTileArgs.ScaleMin == double.NaN || m_ShapeTileArgs.ScaleMax == double.NaN)
 										{
-											double data = double.Parse(fieldData);
+											double data = double.Parse(fieldData, NumberStyles.Any, CultureInfo.InvariantCulture);
 											if (m_ShapeTileArgs.ScaleMin == double.NaN && data < scalarMin)
 											{
 												scalarMin = data;
@@ -1228,10 +1229,10 @@ namespace WorldWind
 								ignoreRecord = true;
 								if (m_ShapeTileArgs.UseScalar)
 								{
-									double currentValue = double.Parse(newRecord.Value.ToString());
+									double currentValue = double.Parse(newRecord.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture);
 									foreach (string activeValueString in m_ShapeTileArgs.ActiveDataValues)
 									{
-										double activeValue = double.Parse(activeValueString);
+										double activeValue = double.Parse(activeValueString, NumberStyles.Any, CultureInfo.InvariantCulture);
 										if (activeValue == currentValue)
 										{
 											ignoreRecord = false;
@@ -1256,7 +1257,7 @@ namespace WorldWind
 							{
 								if (m_ShapeTileArgs.UseScalar)
 								{
-									double currentValue = double.Parse(newRecord.Value.ToString());
+									double currentValue = double.Parse(newRecord.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture);
 									if (m_ScalarFilterMin != double.NaN)
 									{
 										if (currentValue < m_ScalarFilterMin)
@@ -1277,7 +1278,7 @@ namespace WorldWind
 									{
 										foreach (string noDataValueString in m_ShapeTileArgs.NoDataValues)
 										{
-											double noDataValue = double.Parse(noDataValueString);
+											double noDataValue = double.Parse(noDataValueString, NumberStyles.Any, CultureInfo.InvariantCulture);
 											//TODO: might consider using epsilon if floating point errors occur
 											if (noDataValue == currentValue)
 											{
@@ -2162,7 +2163,7 @@ namespace WorldWind
 							//TODO: make this a function and abstract to allow multiple gradient mappings
 							double dv;
 
-							double curScalar = double.Parse(currentRecord.Value.ToString());
+							double curScalar = double.Parse(currentRecord.Value.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture);
 
 							if (curScalar < m_ShapeTileArgs.ScaleMin)
 								curScalar = m_ShapeTileArgs.ScaleMin;

@@ -49,6 +49,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DappleInstall.wxs" />
+    <Compile Include="Dapple_ExitDialog.wxs" />
+    <Compile Include="Dapple_FatalError.wxs" />
+    <Compile Include="Dapple_MaintenanceTypeDlg.wxs" />
+    <Compile Include="Dapple_UserExit.wxs" />
+    <Compile Include="Dapple_WelcomeEulaDlg.wxs" />
+    <Compile Include="WixUI_Dapple.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bitmaps\bannrbmp.bmp" />

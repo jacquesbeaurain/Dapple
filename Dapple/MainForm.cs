@@ -62,7 +62,7 @@ namespace Dapple
 		public const string FavouriteServerExt = ".dapple_serverlist";
 		public const string LastView = "lastview" + ViewExt;
 		public const string DefaultView = "default" + ViewExt;
-		public const string HomeView = "homeview" + ViewExt;
+		public const string HomeView = "homeview_2.0.0" + ViewExt;
 		public const string ViewFileDescr = "Dapple View";
 		public const string LinkFileDescr = "Dapple Link";
 		public const string WebsiteUrl = "http://dapple.geosoft.com/";
@@ -291,9 +291,9 @@ namespace Dapple
 			{
 				File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple_serverlist"), Path.Combine(CurrentSettingsDirectory, "user.dapple_serverlist"));
 			}*/
-			if (!File.Exists(Path.Combine(CurrentSettingsDirectory, "homeview.dapple")))
+			if (!File.Exists(Path.Combine(CurrentSettingsDirectory, HomeView)))
 			{
-				File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple"), Path.Combine(CurrentSettingsDirectory, "homeview.dapple"));
+				File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple"), Path.Combine(CurrentSettingsDirectory, HomeView));
 			}
 
 			InitSettings();
@@ -340,8 +340,6 @@ namespace Dapple
 				// TODO: should settings be saved now, in case of program crashes,
 				//	   and so that XML file on disk matches in-memory settings?
 			}
-
-			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
 			//#if !DEBUG
 			using (this.splashScreen = new Splash())
@@ -490,8 +488,18 @@ namespace Dapple
 				this.compassPlugin = new Murris.Plugins.Compass();
 				this.compassPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "Compass"));
 
-				this.cloudsPlugin = new Murris.Plugins.GlobalClouds();
-				this.cloudsPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "GlobalClouds"));
+				String szGlobalCloudsCacheDir = Path.Combine(Settings.CachePath, @"Plugins\GlobalClouds");
+				Directory.CreateDirectory(szGlobalCloudsCacheDir);
+				String szGlobalCloudsPluginDir = Path.Combine(CurrentSettingsDirectory, @"Plugins\GlobalClouds");
+				Directory.CreateDirectory(szGlobalCloudsPluginDir);
+
+				if (!File.Exists(Path.Combine(szGlobalCloudsPluginDir, Murris.Plugins.GlobalCloudsLayer.serverListFileName)))
+				{
+					File.Copy(Path.Combine(Path.Combine(strPluginsDir, "GlobalClouds"), Murris.Plugins.GlobalCloudsLayer.serverListFileName), Path.Combine(szGlobalCloudsPluginDir, Murris.Plugins.GlobalCloudsLayer.serverListFileName));
+				}
+
+				this.cloudsPlugin = new Murris.Plugins.GlobalClouds(szGlobalCloudsCacheDir);
+				this.cloudsPlugin.PluginLoad(this, szGlobalCloudsPluginDir);
 
 				this.skyPlugin = new Murris.Plugins.SkyGradient();
 				this.skyPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "SkyGradient"));
@@ -782,7 +790,7 @@ namespace Dapple
 				downloadInfo.Verify();
 				downloadInfo.SaveMemoryDownloadToFile(strTemp);
 
-				using (StreamReader sr = new StreamReader(Path.Combine(Path.GetDirectoryName(DirectoryPath), VersionFile)))
+				using (StreamReader sr = new StreamReader(Path.Combine(DirectoryPath, VersionFile)))
 				{
 					strVersion = sr.ReadLine();
 					tokens = strVersion.Split('.');
@@ -1058,7 +1066,7 @@ namespace Dapple
 
 		private void toolStripMenuItemOpen_Click(object sender, EventArgs e)
 		{
-			string strLastFolderCfg = Path.Combine(Settings.ConfigPath, "opengeotif.cfg");
+			string strLastFolderCfg = Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), "opengeotif.cfg");
 
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = "GeoTIFF Files|*.tif;*.tiff";
@@ -1180,7 +1188,7 @@ namespace Dapple
 				Geosoft.GX.DAPGetData.Server oServer;
 				try
 				{
-					if (this.tvServers.AddDAPServer(dlg.Url, out oServer, true))
+					if (this.tvServers.AddDAPServer(dlg.Url, out oServer, true, true))
 					{
 						ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.Url, "DAP" });
 					}
@@ -1190,7 +1198,6 @@ namespace Dapple
 					MessageBox.Show(this, "Error adding server \"" + dlg.Url + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 				SaveLastView();
-				CmdSaveHomeView();
 			}
 		}
 
@@ -1205,7 +1212,7 @@ namespace Dapple
 				{
 					try
 					{
-						if (this.tvServers.AddWMSServer(dlg.WmsURL, true, true))
+						if (this.tvServers.AddWMSServer(dlg.WmsURL, true, true, true))
 						{
 							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.WmsURL, "WMS" });
 						}
@@ -1214,7 +1221,6 @@ namespace Dapple
 					{
 						MessageBox.Show(this, "Error adding server \"" + dlg.WmsURL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
-					CmdSaveHomeView();
 					SaveLastView();
 				}
 			}
@@ -1231,7 +1237,7 @@ namespace Dapple
 				{
 					try
 					{
-						if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true))
+						if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true, true))
 						{
 							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.URL, "ArcIMS" });
 						}
@@ -1240,7 +1246,6 @@ namespace Dapple
 					{
 						MessageBox.Show(this, "Error adding server \"" + dlg.URL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					}
-					CmdSaveHomeView();
 					SaveLastView();
 				}
 			}
@@ -1268,7 +1273,6 @@ namespace Dapple
 		private void toolStripMenuItemremoveServer_Click(object sender, EventArgs e)
 		{
 			this.tvServers.RemoveCurrentServer();
-			CmdSaveHomeView();
 			SaveLastView();
 		}
 
@@ -1385,7 +1389,7 @@ namespace Dapple
 
 		private void toolStripMenuItemOpenSaved_Click(object sender, EventArgs e)
 		{
-			ViewOpenDialog dlgtest = new ViewOpenDialog(Settings.ConfigPath);
+			ViewOpenDialog dlgtest = new ViewOpenDialog(Path.Combine(UserPath, Settings.ConfigPath));
 			DialogResult res = dlgtest.ShowDialog(this);
 			if (dlgtest.ViewFile != null)
 			{
@@ -1576,7 +1580,7 @@ namespace Dapple
 			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
 			SaveCurrentView(tempViewFile, tempFile, "");
 			Image img = Image.FromFile(tempFile);
-			SaveViewForm form = new SaveViewForm(Settings.ConfigPath, img);
+			SaveViewForm form = new SaveViewForm(Path.Combine(UserPath, Settings.ConfigPath), img);
 
 			if (form.ShowDialog(this) == DialogResult.OK)
 			{
@@ -1602,7 +1606,7 @@ namespace Dapple
 			string tempBodyFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
 			string tempJpgFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
 			string tempViewFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ViewExt);
-			string strMailApp = Path.Combine(Path.Combine(Path.GetDirectoryName(DirectoryPath), "System"), "mailer.exe");
+			string strMailApp = Path.Combine(Path.Combine(DirectoryPath, "System"), "mailer.exe");
 
 			SaveCurrentView(tempViewFile, tempJpgFile, "");
 
@@ -1626,11 +1630,14 @@ namespace Dapple
 					tempJpgFile, ViewFileDescr + ".jpg", tempBodyFile);
 				using (Process p = Process.Start(psi))
 				{
+					// Let the screen draw so it doesn't look damaged.
+					Application.DoEvents();
 					p.WaitForExit();
 				}
 			}
-			catch
+			catch (Exception ex)
 			{
+				MessageBox.Show(ex.GetType().ToString() + ": " + ex.Message, "Error Sending View", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			File.Delete(tempBodyFile);
@@ -1804,7 +1811,13 @@ namespace Dapple
 				for (int count = 1; count < straCountries.Length - 1; count++)
 				{
 					String[] data = straCountries[count].Split(new char[] { ',' });
-					m_oCountryAOIs.Add(data[0], new GeographicBoundingBox(double.Parse(data[4]), double.Parse(data[2]), double.Parse(data[1]), double.Parse(data[3])));
+					double minX, minY, maxX, maxY;
+					if (!Double.TryParse(data[1], NumberStyles.Any, CultureInfo.InvariantCulture, out minX)) continue;
+					if (!Double.TryParse(data[2], NumberStyles.Any, CultureInfo.InvariantCulture, out minY)) continue;
+					if (!Double.TryParse(data[3], NumberStyles.Any, CultureInfo.InvariantCulture, out maxX)) continue;
+					if (!Double.TryParse(data[4], NumberStyles.Any, CultureInfo.InvariantCulture, out maxY)) continue;
+
+					m_oCountryAOIs.Add(data[0], new GeographicBoundingBox(maxY, minY, minX, maxX));
 				}
 			}
 		}
@@ -1881,7 +1894,7 @@ namespace Dapple
 
 			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
 			if (this.lastView.Length == 0)
-				SaveCurrentView(Path.Combine(Settings.ConfigPath, LastView), tempFile, string.Empty);
+				SaveCurrentView(Path.Combine(UserPath, Path.Combine(Settings.ConfigPath, LastView)), tempFile, string.Empty);
 			else
 				SaveCurrentView(this.lastView, tempFile, string.Empty);
 			File.Delete(tempFile);
@@ -2146,19 +2159,7 @@ namespace Dapple
 			this.WindowState = FormWindowState.Minimized;
 
 			SaveLastView();
-			CmdSaveHomeView();
 			//tvServers.SaveFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
-
-			// Ensure cleanup
-			// --- Save the ShowClouds property, because setting that RO's IsOn to false propagates to the setting ---
-			bool blShowClouds = World.Settings.ShowClouds;
-			for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
-			{
-				RenderableObject oRO = (RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i];
-				oRO.IsOn = false;
-				oRO.Dispose();
-			}
-			World.Settings.ShowClouds = blShowClouds;
 
 			World.Settings.ShowLatLonLines = bSaveGridLineState;
 
@@ -2175,7 +2176,9 @@ namespace Dapple
 
 			FinalizeSettings();
 
-			worldWindow.Dispose();
+			// Don't force-dispose the WorldWindow (or, really, anything), just let .NET free it up for us.
+			// Should kill the background worker thread though.
+			worldWindow.KillWorkerThread();
 
 			// --- Delete all the temporary XML files the metadata viewer has been pumping out ---
 
@@ -2302,8 +2305,12 @@ namespace Dapple
 				}
 			}
 
-
-			this.BeginInvoke(new UpdateDownloadIndicatorsHandler(UpdateDownloadIndicators), new object[] { bDownloading, iPos, iTotal, currentList });
+			// In rare cases, the WorldWindow's background worker thread might start sending back updates before the
+			// MainForm's window handle has been created.  Don't let it, or you'll cascade the system into failure.
+			if (this.IsHandleCreated)
+			{
+				this.BeginInvoke(new UpdateDownloadIndicatorsHandler(UpdateDownloadIndicators), new object[] { bDownloading, iPos, iTotal, currentList });
+			}
 		}
 
 		private delegate void UpdateDownloadIndicatorsHandler(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList);
@@ -2746,10 +2753,10 @@ namespace Dapple
 			String serverURL = displayMapElement.GetAttribute("server");
 			if (!serverURL.Contains("?")) serverURL += "?";
 			String layerTitle = displayMapElement.GetAttribute("layertitle");
-			float minx = Single.Parse(displayMapElement.GetAttribute("minx"));
-			float miny = Single.Parse(displayMapElement.GetAttribute("miny"));
-			float maxx = Single.Parse(displayMapElement.GetAttribute("maxx"));
-			float maxy = Single.Parse(displayMapElement.GetAttribute("maxy"));
+			float minx = Single.Parse(displayMapElement.GetAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture);
+			float miny = Single.Parse(displayMapElement.GetAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture);
+			float maxx = Single.Parse(displayMapElement.GetAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture);
+			float maxy = Single.Parse(displayMapElement.GetAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture);
 
 			if (serverType.Equals("DAP"))
 			{
@@ -2971,24 +2978,6 @@ namespace Dapple
 		*/
 		#endregion
 
-		/// <summary>
-		/// Occurs when an un-trapped thread exception is thrown, typically in UI event handlers.
-		/// </summary>
-		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
-		{
-#if DEBUG
-			Log.Write(e.Exception);
-#else
-			Log.Write( e.Exception );
-
-			//HACK
-			if (e.Exception is NullReferenceException)
-				return;
-
-			Utility.AbortUtility.Abort(e.Exception, Thread.CurrentThread);
-#endif
-		}
-
 		private void cSearchTextComboBox_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			if (e.KeyChar.Equals((char)13))
@@ -3146,7 +3135,12 @@ namespace Dapple
 					XmlNode oNode = null;
 					string strStyleSheet = null;
 
-					if (oBuilder.SupportsMetaData)
+					if ((oBuilder is AsyncBuilder) && (oBuilder as AsyncBuilder).LoadingErrorOccurred)
+					{
+						DisplayMetadataMessage("The selected object failed to load.");
+						return;
+					}
+					else if (oBuilder.SupportsMetaData)
 					{
 						oNode = oBuilder.GetMetaData(oDoc);
 						if (oNode == null)
@@ -3417,6 +3411,156 @@ namespace Dapple
 			}
 		}
 
+		public enum UpdateHomeViewType
+		{
+			AddServer,
+			RemoveServer,
+			ToggleServer,
+			ChangeFavorite
+		};
+
+		/// <summary>
+		/// This command modifies the home view, but doesn't do a full save.  Useful for changing the server list.
+		/// </summary>
+		/// <param name="eType"></param>
+		/// <param name="szServer"></param>
+
+		private Object LOCK = new object();
+		public void CmdUpdateHomeView(UpdateHomeViewType eType, Object[] data)
+		{
+			lock (LOCK)
+			{
+				XmlDocument oHomeViewDoc = new XmlDocument();
+				oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
+
+				switch (eType)
+				{
+					case UpdateHomeViewType.AddServer:
+						{
+							String szUrl = data[0] as String;
+							String szType = data[1] as String;
+
+							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
+							{
+								XmlElement oDAPRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"DAPServers\"]") as XmlElement;
+								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+								oDAPRoot.AppendChild(oBuilderEntry);
+								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("dapcatalog");
+								oDapCatalog.SetAttribute("url", szUrl);
+								oDapCatalog.SetAttribute("enabled", "true");
+								oBuilderEntry.AppendChild(oDapCatalog);
+							}
+							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
+								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+								oWMSRoot.AppendChild(oBuilderEntry);
+								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("wmscatalog");
+								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
+								oDapCatalog.SetAttribute("enabled", "true");
+								oBuilderEntry.AppendChild(oDapCatalog);
+							}
+							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
+								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+								oWMSRoot.AppendChild(oBuilderEntry);
+								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("arcimscatalog");
+								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
+								oDapCatalog.SetAttribute("enabled", "true");
+								oBuilderEntry.AppendChild(oDapCatalog);
+							}
+						}
+						break;
+					case UpdateHomeViewType.ChangeFavorite:
+						{
+							String szUrl = data[0] as String;
+
+							XmlElement oDocRoot = oHomeViewDoc.SelectSingleNode("/dappleview") as XmlElement;
+							oDocRoot.SetAttribute("favouriteserverurl", szUrl);
+						}
+						break;
+					case UpdateHomeViewType.RemoveServer:
+						{
+							String szUrl = data[0] as String;
+							String szType = data[1] as String;
+
+							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
+								{
+									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
+									{
+										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+									}
+								}
+							}
+							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+									}
+								}
+							}
+							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+									}
+								}
+							}							
+						}
+						break;
+					case UpdateHomeViewType.ToggleServer:
+						{
+							String szUrl = data[0] as String;
+							String szType = data[1] as String;
+							bool blStatus = (bool)data[2];
+
+							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
+								{
+									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
+									{
+										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+									}
+								}
+							}
+							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+									}
+								}
+							}
+							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+									}
+								}
+							}
+						}
+						break;
+				}
+
+				oHomeViewDoc.Save(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
+			}
+		}
+
 		public void CmdSaveHomeView()
 		{
 			SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
@@ -3424,7 +3568,7 @@ namespace Dapple
 
 		public void CmdLoadHomeView()
 		{
-			OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), false, false);
+			OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
 		}
 
 		private void setAsMyHomeViewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3514,7 +3658,6 @@ namespace Dapple
 		private void toggleDisableToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			tvServers.CmdToggleServerEnabled();
-			CmdSaveHomeView();
 		}
 
 		private void CmdDisplayOMHelp()

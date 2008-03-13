@@ -50,13 +50,19 @@ namespace Murris.Plugins
 		/// Name displayed in layer manager
 		/// </summary>
 		public static string LayerName = "GlobalClouds";
+		private String m_szCachePath = String.Empty;
+
+		public GlobalClouds(String szCachePath)
+		{
+			m_szCachePath = szCachePath;
+		}
 
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
 		/// </summary>
 		public override void Load()
 		{
-			if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
+			if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0 && !String.IsNullOrEmpty(m_szCachePath))
 			{
 				// Add layer visibility controller (and save it to make sure you can kill it later!)
 				//control.Visible = true;
@@ -66,7 +72,7 @@ namespace Murris.Plugins
 				//m_ToolbarItem = new WorldWind.WindowsControlMenuButton("Global Clouds", Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Data\Icons\Interface\earth-eastern.png"), control);
 				//m_Application.WorldWindow.MenuBar.AddToolsMenuButton(m_ToolbarItem);
 
-				layer = new GlobalCloudsLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
+				layer = new GlobalCloudsLayer(LayerName, PluginDirectory, m_szCachePath, ParentApplication.WorldWindow);
 				layer.IsOn = World.Settings.ShowClouds;
 				//ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0,layer);
 				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.Add(layer);
@@ -112,8 +118,9 @@ namespace Murris.Plugins
 	{
 		static string version = "0.6";
 		string settingsFileName = "GlobalClouds.ini";
-		string serverListFileName = "GlobalCloudsServers.txt";
-		string pluginPath;
+		public const String serverListFileName = "GlobalCloudsServers.txt";
+		String pluginPath;
+		String cachePath;
 		public World world;
 		public DrawArgs drawArgs;
 		Mesh layerMesh;
@@ -131,10 +138,11 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public GlobalCloudsLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
+		public GlobalCloudsLayer(string LayerName, string pluginPath, string _cachePath, WorldWindow worldWindow)
 			: base(LayerName)
 		{
 			this.pluginPath = pluginPath;
+			this.cachePath = _cachePath;
 			this.world = worldWindow.CurrentWorld;
 			this.drawArgs = worldWindow.DrawArgs;
 			this.RenderPriority = RenderPriority.AtmosphericImages;
@@ -152,7 +160,7 @@ namespace Murris.Plugins
 		/// </summary>
 		public void FindLatest()
 		{
-			DirectoryInfo di = new DirectoryInfo(pluginPath);
+			DirectoryInfo di = new DirectoryInfo(cachePath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
 			for (int i = 0; i < imgFiles.Length; i++)
 			{
@@ -184,26 +192,27 @@ namespace Murris.Plugins
 		public void CleanupHistory()
 		{
 			DateTime oldest = DateTime.Now.AddDays(-historyDays);
-			DirectoryInfo di = new DirectoryInfo(pluginPath);
+			DirectoryInfo di = new DirectoryInfo(cachePath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
 			for (int i = 0; i < imgFiles.Length; i++)
 			{
 				if (imgFiles[i].LastWriteTime < oldest)
 				{
-					File.Delete(Path.Combine(pluginPath, imgFiles[i].Name));
+					File.Delete(Path.Combine(cachePath, imgFiles[i].Name));
 				}
 			}
 		}
 		/// <summary>
 		/// Delete .jpg cloud maps
 		/// </summary>
+		//[System.Security.Permissions.FileIOPermission(System.Security.Permissions.SecurityAction.Deny, Write="D:\\")]
 		public void CleanupJpg()
 		{
-			DirectoryInfo di = new DirectoryInfo(pluginPath);
+			DirectoryInfo di = new DirectoryInfo(cachePath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.jpg");
 			for (int i = 0; i < imgFiles.Length; i++)
 			{
-				File.Delete(Path.Combine(pluginPath, imgFiles[i].Name));
+				File.Delete(Path.Combine(cachePath, imgFiles[i].Name));
 			}
 		}
 
@@ -212,15 +221,21 @@ namespace Murris.Plugins
 		/// </summary>
 		public void ReadSettings()
 		{
-			string line = "";
-			try
+			string line = String.Empty;
+			if (File.Exists(Path.Combine(pluginPath, settingsFileName)))
 			{
-				TextReader tr = File.OpenText(Path.Combine(pluginPath, settingsFileName));
-				line = tr.ReadLine();
-				tr.Close();
+				try
+				{
+					TextReader tr = File.OpenText(Path.Combine(pluginPath, settingsFileName));
+					line = tr.ReadLine();
+					tr.Close();
+				}
+				catch
+				{
+					// If you can't read the settings, don't worry, it'll fall back on default values.
+				}
 			}
-			catch { }
-			if (line != "")
+			if (!String.IsNullOrEmpty(line))
 			{
 				string[] settingsList = line.Split(';');
 				string saveVersion = settingsList[0];	// version when settings where saved
@@ -240,7 +255,10 @@ namespace Murris.Plugins
 				sw.Write(line);
 				sw.Close();
 			}
-			catch { }
+			catch
+			{
+				// If you can't read the settings, don't worry, it'll fall back on default values.
+			}
 		}
 
 		#region RenderableObject
@@ -259,7 +277,7 @@ namespace Murris.Plugins
 			{
 				if (retryCount < maxRetry && DateTime.Now > lastDownloadTime.AddSeconds(retryDelaySeconds))
 				{
-					StartDownload(pluginPath, "clouds_" + DateTimeStamp(DateTime.Now) + ".jpg");
+					StartDownload(cachePath, "clouds_" + DateTimeStamp(DateTime.Now) + ".jpg");
 				}
 			}
 
@@ -339,7 +357,7 @@ namespace Murris.Plugins
 			{
 				try
 				{
-					texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(pluginPath, textureFileName));
+					texture = TextureLoader.FromFile(drawArgs.device, Path.Combine(cachePath, textureFileName));
 					isInitialized = true;
 				}
 				catch
@@ -351,7 +369,7 @@ namespace Murris.Plugins
 			}
 			else
 			{
-				StartDownload(pluginPath, "clouds_" + DateTimeStamp(DateTime.Now) + ".jpg");
+				StartDownload(cachePath, "clouds_" + DateTimeStamp(DateTime.Now) + ".jpg");
 				isInitialized = true;
 			}
 		}
@@ -439,7 +457,7 @@ namespace Murris.Plugins
 				InitializeComponent();
 				//this.Icon = WorldWind.PluginEngine.Plugin.Icon;
 				// Init texture list with *.jpg and/or *.png
-				DirectoryInfo di = new DirectoryInfo(layer.pluginPath);
+				DirectoryInfo di = new DirectoryInfo(layer.cachePath);
 				FileInfo[] imgFiles = di.GetFiles("*.png");
 				cboTexture.Items.AddRange(imgFiles);
 				// select current bitmap
@@ -597,7 +615,7 @@ namespace Murris.Plugins
 		public void BuildHistoryList()
 		{
 			historyList = new ArrayList();
-			DirectoryInfo di = new DirectoryInfo(pluginPath);
+			DirectoryInfo di = new DirectoryInfo(cachePath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
 			for (int i = 0; i < imgFiles.Length; i++)
 			{

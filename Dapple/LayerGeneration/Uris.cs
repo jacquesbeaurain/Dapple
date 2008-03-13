@@ -7,6 +7,8 @@ using System.Collections;
 using WorldWind.PluginEngine;
 using WorldWind;
 using Geosoft.Dap.Common;
+using System.Collections.Specialized;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -29,7 +31,7 @@ namespace Dapple.LayerGeneration
       /// <returns></returns>
       public virtual String ToCacheDirectory()
       {
-         String result = base.Host + base.AbsolutePath;
+         String result = base.Host + base.AbsolutePath + base.Query;
 
          // Convert invalid characters to underscores
          foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
@@ -46,7 +48,7 @@ namespace Dapple.LayerGeneration
 
       public override bool Equals(object comparand)
       {
-         return base.Equals(comparand);
+			return base.Equals(comparand);
       }
 
       public override int GetHashCode()
@@ -58,8 +60,35 @@ namespace Dapple.LayerGeneration
    public class WMSServerUri : ServerUri
    {
       public WMSServerUri(String strValue)
-         : base(TrimCapabilitiesUri(strValue))
+         : base(GetFilteredUriBuilder(strValue))
+		{
+		}
+
+		public static UriBuilder GetFilteredUriBuilder(String strValue)
       {
+			UriBuilder oBuilder = new UriBuilder(strValue);
+			// --- Remove the service, version, and request query variables ---
+			NameValueCollection oTokens = HttpUtility.ParseQueryString(oBuilder.Query);
+			foreach (String szKey in oTokens.AllKeys)
+			{
+				if (szKey.Equals("service", StringComparison.InvariantCultureIgnoreCase) ||
+					szKey.Equals("version", StringComparison.InvariantCultureIgnoreCase) ||
+					szKey.Equals("request", StringComparison.InvariantCultureIgnoreCase))
+				{
+					oTokens.Remove(szKey);
+				}
+			}
+			String szFilteredQuery = String.Empty;
+			foreach (String szKey in oTokens.AllKeys)
+			{
+				szFilteredQuery += HttpUtility.UrlEncode(szKey) + "=" + HttpUtility.UrlEncode(oTokens[szKey]) + "&";
+			}
+			if (!String.IsNullOrEmpty(szFilteredQuery))
+				szFilteredQuery = szFilteredQuery.Substring(0, szFilteredQuery.Length - 2);
+
+			oBuilder.Query = szFilteredQuery;
+
+			return oBuilder;
       }
 
       public String ToCapabilitiesUri()
@@ -67,37 +96,6 @@ namespace Dapple.LayerGeneration
          return base.ToString()
             + (base.ToString().IndexOf("?") > 0 ? "&" : "?")
             + "request=GetCapabilities&service=WMS";
-      }
-
-      private static String TrimCapabilitiesUri(String serverUrl)
-      {
-         int iIndex;
-
-         // Remove request=getcapabilities query token
-         string strTemp = serverUrl.ToLower();
-         iIndex = strTemp.IndexOf("request=getcapabilities");
-
-         if (iIndex != -1)
-            serverUrl = serverUrl.Substring(0, iIndex) + serverUrl.Substring(iIndex + "request=getcapabilities".Length);
-
-         // Remove service=wms query token
-         strTemp = serverUrl.ToLower();
-         iIndex = strTemp.IndexOf("service=wms");
-         if (iIndex != -1)
-            serverUrl = serverUrl.Substring(0, iIndex) + serverUrl.Substring(iIndex + "service=wms".Length);
-
-         // Remove duplicate amphersands
-         while (serverUrl.IndexOf("&&") != -1)
-            serverUrl = serverUrl.Replace("&&", "&");
-
-         // Remove '&'s and '?'s from the end of the string
-         serverUrl = serverUrl.TrimEnd(new char[] { '?', '&' });
-         //serverUrl = serverUrl.TrimEnd(new char[] { '&' });
-
-         // Remove whitespace on either end
-         serverUrl = serverUrl.Trim();
-
-         return serverUrl;
       }
    }
 
@@ -210,7 +208,7 @@ namespace Dapple.LayerGeneration
          {
             if (variable.Trim().Equals(String.Empty)) continue;
 
-            if (!AdditionalUriTokens.Contains(variable))
+            if (!AdditionalUriTokens.Contains(variable) && !ObsoleteUriTokens.Contains(variable))
                reducedQuery += variable + "=" + m_oTokens[variable] + "&";
          }
 
@@ -236,7 +234,11 @@ namespace Dapple.LayerGeneration
             if (strToken.Contains("="))
             {
                String[] strParts = strToken.Split(new char[] { '=' });
-               m_oTokens[strParts[0].ToLower()] = HttpUtility.UrlDecode(strParts[1]);
+					strParts[0] = strParts[0].ToLower();
+               m_oTokens[strParts[0]] = HttpUtility.UrlDecode(strParts[1]);
+					// --- Fix for views that contain ArcIMS layers with maxscale = Double.MaxValue; set it to 1 ---
+					if (m_oTokens[strParts[0]].Equals("1.79769313486232E 308"))
+						m_oTokens[strParts[0]] = "1";
             }
             else
             {
@@ -284,6 +286,8 @@ namespace Dapple.LayerGeneration
 
       protected abstract List<String> AdditionalUriTokens { get; }
 
+		protected abstract List<String> ObsoleteUriTokens { get; }
+
       protected abstract ServerUri getServerUri(UriBuilder oBuilder);
 
       public abstract LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree);
@@ -322,6 +326,14 @@ namespace Dapple.LayerGeneration
          get { return m_lAdditionalTokens; }
       }
 
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
+
       public override string LayerType
       {
          get { return "ArcIMS"; }
@@ -334,16 +346,25 @@ namespace Dapple.LayerGeneration
 
       public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
+			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
+			double dMinScale, dMaxScale;
+			if (!Double.TryParse(getAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.West)) return null;
+			if (!Double.TryParse(getAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.South)) return null;
+			if (!Double.TryParse(getAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.East)) return null;
+			if (!Double.TryParse(getAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.North)) return null;
+			if (!Double.TryParse(getAttribute("minscale"), NumberStyles.Any, CultureInfo.InvariantCulture, out dMinScale)) return null;
+			if (!Double.TryParse(getAttribute("maxscale"), NumberStyles.Any, CultureInfo.InvariantCulture, out dMaxScale)) return null;
+
          return new ArcIMSQuadLayerBuilder(
             m_oServer as ArcIMSServerUri,
             getAttribute("servicename"),
             getAttribute("title"),
             getAttribute("layerid"),
-            new GeographicBoundingBox(double.Parse(getAttribute("maxy")), double.Parse(getAttribute("miny")), double.Parse(getAttribute("minx")), double.Parse(getAttribute("maxx"))),
+            oLayerBounds,
             oWindow,
             null,
-            Double.Parse(getAttribute("minscale")),
-            Double.Parse(getAttribute("maxscale")));
+            dMinScale,
+            dMaxScale);
       }
    }
 
@@ -352,6 +373,10 @@ namespace Dapple.LayerGeneration
       private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          "layer"
          });
+
+		private static List<String> m_oObsoleteTokens = new List<String>(new String[] {
+			"pixelsize"
+		});
 
       public WMSLayerUri(String strUri) : base(strUri) { }
 
@@ -370,6 +395,14 @@ namespace Dapple.LayerGeneration
          get { return m_lAdditionalTokens; }
       }
 
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return m_oObsoleteTokens;
+			}
+		}
+
       protected override ServerUri getServerUri(UriBuilder oBuilder)
       {
          return new WMSServerUri(oBuilder.Uri.ToString());
@@ -386,20 +419,20 @@ namespace Dapple.LayerGeneration
          WMSServerBuilder oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
          if (oServerBuilder == null)
          {
-            oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true, true);
+            oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true, true, false);
             oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
          }
 
          oServerBuilder.WaitUntilLoaded();
 
          // Throw the loading error up, if there was one
-         if (oServerBuilder.LoadingErrorOccurred)
-            throw new Exception("Could not access server " + m_oServer.ToBaseUri());
+			if (oServerBuilder.LoadingErrorOccurred)
+				return null;
 
          // Otherwise, make a layer and send it up now
          WMSLayer oLayer = WMSQuadLayerBuilder.GetLayer(getAttribute("layer"), oServerBuilder.List.Layers);
-         if (oLayer == null)
-            throw new Exception("Server doesn't have a layer named " + getAttribute("layer"));
+			if (oLayer == null)
+				return null;
 
          return new WMSQuadLayerBuilder(oLayer, oWindow, oServerBuilder, null);
       }
@@ -439,6 +472,14 @@ namespace Dapple.LayerGeneration
          get { return m_lAdditionalTokens; }
       }
 
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
+
       protected override ServerUri getServerUri(UriBuilder oBuilder)
       {
          return new TileServerUri(oBuilder.Uri.ToString());
@@ -451,14 +492,29 @@ namespace Dapple.LayerGeneration
 
       public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
       {
+			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
+			bool blTerrainMapped;
+			int iHeight, iLevels, iSize;
+			double dLvl0Tilesie;
+
+			if (!Double.TryParse(getAttribute("west"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.West)) return null;
+			if (!Double.TryParse(getAttribute("south"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.South)) return null;
+			if (!Double.TryParse(getAttribute("east"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.East)) return null;
+			if (!Double.TryParse(getAttribute("north"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.North)) return null;
+			if (!Int32.TryParse(getAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture, out iHeight)) return null;
+			if (!Int32.TryParse(getAttribute("levels"), NumberStyles.Any, CultureInfo.InvariantCulture, out iLevels)) return null;
+			if (!Int32.TryParse(getAttribute("size"), NumberStyles.Any, CultureInfo.InvariantCulture, out iSize)) return null;
+			if (!Boolean.TryParse(getAttribute("terrainmapped"), out blTerrainMapped)) return null;
+			if (!Double.TryParse(getAttribute("lvl0tilesize"), NumberStyles.Any, CultureInfo.InvariantCulture, out dLvl0Tilesie)) return null;
+
          return new NltQuadLayerBuilder(
             getAttribute("name"),
-            int.Parse(getAttribute("height")),
-            bool.Parse(getAttribute("terrainmapped")),
-            new GeographicBoundingBox(double.Parse(getAttribute("north")), double.Parse(getAttribute("south")), double.Parse(getAttribute("west")), double.Parse(getAttribute("east"))),
-            double.Parse(getAttribute("lvl0tilesize")),
-            int.Parse(getAttribute("levels")),
-            int.Parse(getAttribute("size")),
+            iHeight,
+            blTerrainMapped,
+            oLayerBounds,
+            dLvl0Tilesie,
+            iLevels,
+            iSize,
             m_oServer.ToBaseUri(),
             getAttribute("datasetname"),
             getAttribute("imgfileext"),
@@ -488,6 +544,14 @@ namespace Dapple.LayerGeneration
       {
          get { return m_lAdditionalTokens; }
       }
+
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
 
       protected override ServerUri getServerUri(UriBuilder oBuilder)
       {
@@ -554,6 +618,14 @@ namespace Dapple.LayerGeneration
          get { return m_lAdditionalTokens; }
       }
 
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
+
       protected override ServerUri getServerUri(UriBuilder oBuilder)
       {
          return new DapServerUri(oBuilder.Uri.ToString());
@@ -573,20 +645,24 @@ namespace Dapple.LayerGeneration
          hDataSet.Title = getAttribute("title");
          hDataSet.Edition = getAttribute("edition");
          hDataSet.Hierarchy = getAttribute("hierarchy");
-         hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(
-            double.Parse(getAttribute("east")),
-            double.Parse(getAttribute("north")),
-            double.Parse(getAttribute("west")),
-            double.Parse(getAttribute("south")));
 
-         int height = Convert.ToInt32(getAttribute("height"));
-         int size = Convert.ToInt32(getAttribute("size"));
-         int levels = int.Parse(getAttribute("levels"));
-         double lvl0tilesize = double.Parse(getAttribute("lvl0tilesize"));
+			double minX, minY, maxX, maxY;
+			if (!Double.TryParse(getAttribute("west"), NumberStyles.Any, CultureInfo.InvariantCulture, out minX)) return null;
+			if (!Double.TryParse(getAttribute("south"), NumberStyles.Any, CultureInfo.InvariantCulture, out minY)) return null;
+			if (!Double.TryParse(getAttribute("east"), NumberStyles.Any, CultureInfo.InvariantCulture, out maxX)) return null;
+			if (!Double.TryParse(getAttribute("north"), NumberStyles.Any, CultureInfo.InvariantCulture, out maxY)) return null;
+			hDataSet.Boundary = new Geosoft.Dap.Common.BoundingBox(maxX, maxY, minX, minY);
+
+			int height, size, levels;
+			double lvl0tilesize;
+			if (!Int32.TryParse(getAttribute("height"), NumberStyles.Any, CultureInfo.InvariantCulture, out height)) return null;
+			if (!Int32.TryParse(getAttribute("size"), NumberStyles.Any, CultureInfo.InvariantCulture, out size)) return null;
+			if (!Int32.TryParse(getAttribute("levels"), NumberStyles.Any, CultureInfo.InvariantCulture, out levels)) return null;
+			if (!Double.TryParse(getAttribute("lvl0tilesize"), NumberStyles.Any, CultureInfo.InvariantCulture, out lvl0tilesize)) return null;
 
          Geosoft.GX.DAPGetData.Server oServer = null;
          if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
-            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true);
+            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true, false);
          else
             oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
 
@@ -616,6 +692,14 @@ namespace Dapple.LayerGeneration
          get { return m_lAdditionalTokens; }
       }
 
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
+
       protected override ServerUri getServerUri(UriBuilder oBuilder)
       {
          return new DapServerUri(oBuilder.Uri.ToString());
@@ -630,7 +714,7 @@ namespace Dapple.LayerGeneration
       {
          Geosoft.GX.DAPGetData.Server oServer = null;
          if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
-            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true);
+            oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true, false);
          else
             oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
 
@@ -658,6 +742,14 @@ namespace Dapple.LayerGeneration
       {
          get { return m_lAdditionalTokens; }
       }
+
+		protected override List<String> ObsoleteUriTokens
+		{
+			get
+			{
+				return new List<string>();
+			}
+		}
 
       protected override ServerUri getServerUri(UriBuilder oBuilder)
       {

@@ -141,8 +141,12 @@ namespace Dapple.LayerGeneration
       private void CatalogDownloadCompleteCallback(WebDownload download)
       {
          try
-         {
-            WMSServerBuilder serverDir = m_oCatalogDownloadsInProgress[(IndexedWebDownload)download] as WMSServerBuilder;
+			{
+				WMSServerBuilder serverDir = null;
+				lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
+				{
+					serverDir = m_oCatalogDownloadsInProgress[(IndexedWebDownload)download] as WMSServerBuilder;
+				}
 
             try
             {

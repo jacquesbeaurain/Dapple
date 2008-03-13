@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -72,7 +73,7 @@ namespace Geosoft.GX.DAPGetData
 
          oAttr = oFolderNode.Attributes.GetNamedItem("value");
          if (oAttr == null) throw new ArgumentException();
-         m_iTimestamp = Int32.Parse(oAttr.Value);
+			m_iTimestamp = Int32.Parse(oAttr.Value, NumberStyles.Any, CultureInfo.InvariantCulture);
 
          foreach (System.Xml.XmlNode oChildNode in oFolderNode.ChildNodes)
          {

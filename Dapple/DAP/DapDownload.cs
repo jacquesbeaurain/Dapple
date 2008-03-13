@@ -150,7 +150,7 @@ namespace Dapple.DAP
 					return;
 				}
             Log.Write(Log.Levels.Error, "DGDR", "web exception occurred");
-            Log.Write(Log.Levels.Error, "DGDR", "Dataset Name: " + m_DapImageStore.DataSet.Name);
+				Log.Write(Log.Levels.Error, "DGDR", "Dataset Name: " + (m_DapImageStore.DataSet == null ? "Browser Map" : m_DapImageStore.DataSet.Name));
             Log.Write(Log.Levels.Error, "DGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
 				m_tile.TileSet.NumberRetries++;
 			}

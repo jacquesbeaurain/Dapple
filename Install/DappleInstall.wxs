@@ -1,36 +1,55 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-   <Product Id="ee5b25a5-f50d-4549-85aa-3c9c0419e2f2" Name="Dapple" Language="1033" Version="1.9.95" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
-      <Package InstallerVersion="200" Compressed="yes"  Description="Explore the earth" />
-
-      <Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
-
-      <Directory Id="TARGETDIR" Name="SourceDir">
-         <Directory Id="ProgramFilesFolder">
-            <Directory Id="INSTALLLOCATION" Name="Dapple">
-               <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
-            </Directory>
-         </Directory>
+  <Product Id="{ca334281-f2c0-44ee-9d8c-1988d9bf3f36}" Name="Dapple" Language="1033" Version="2.0.0" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
+    <Package InstallerVersion="200" Compressed="yes" Description="Explore the earth" />
+    <Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="Dapple">
+          <Directory Id="INSTALLDIR" Name=".">
+            <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
+            <Component Id="dapple_shortcut" Guid="{142546DC-93DE-47e3-8D24-A032FED210EE}">
+              <RegistryKey Root="HKCU" Key="Software\Geosoft\Dapple\Install" Action="createAndRemoveOnUninstall">
+                <RegistryValue Name="Env" Value="1" Type="integer" KeyPath="yes" />
+              </RegistryKey>
+              <Shortcut Id="NewShortcut1" Directory="newfolder1" Name="Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[DappleShortcut]" />
+              <Shortcut Id="NewShortcut2" Directory="DesktopFolder" Name="Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[DappleShortcut]" />
+              <RemoveFolder Directory="newfolder1" On="uninstall" Id="Remove_newfolder1" />
+            </Component>
+          </Directory>
+        </Directory>
       </Directory>
-
-      <Feature Id="Main" Title="Main Application" Level="1">
-         <MergeRef Id="DappleMergeModule"/>
-      </Feature>
-
-      <Upgrade Id="DFEA744A-F951-4BED-B156-44478FAB86D6">
-         <UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="1.0.20" IncludeMaximum="yes"/>
-      </Upgrade>
-
-      <InstallExecuteSequence>
-         <RemoveExistingProducts After='InstallValidate'/>
-      </InstallExecuteSequence>
-
-      <WixVariable Id="WixUILicenseRtf" Value="ui\License.rtf" />
-      <WixVariable Id="WixUIBannerBmp" Value="Bitmaps\bannrbmp.bmp" />
-      <WixVariable Id="WixUIDialogBmp" Value="Bitmaps\dlgbmp.bmp" />
-            
-      <UIRef Id="WixUI_Minimal" />
-      <UIRef Id="WixUI_ErrorProgressText" />
-   </Product>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="newfolder1" Name="Dapple">
+        </Directory>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+    <Property Id="DappleShortcut" Value="[INSTALLDIR]" />
+    <Property Id="BaseName" Value="Dapple" />
+    <Feature Id="Main" Title="Main Application" Level="1">
+      <MergeRef Id="DappleMergeModule" />
+      <ComponentRef Id="dapple_shortcut" />
+    </Feature>
+    <CustomAction Id="SetDappleShortcut" Property="DappleShortcut" Value="[INSTALLDIR]\Dapple.exe" />
+    <CustomAction Id="LaunchProgram" Directory="INSTALLDIR" ExeCommand="[INSTALLDIR]dapple.exe" Execute="immediate" Return="asyncNoWait" />
+    <CustomAction Id="SetSettingsFile" Return="check" Property="RemoveCacheDirectory" Value="SETTINGS_FILE=[LocalAppDataFolder]\DappleData\Config\WorldWind.xml"/>
+    <CustomAction Id="RemoveCacheDirectory" BinaryKey="GEOBINARY" DllEntry="DeleteCacheDirectory" Execute="deferred" Return="check" Impersonate="no" />
+    <Binary Id="GEOBINARY" SourceFile="custom\geodapple_customactions.dll" />
+    <Upgrade Id="DFEA744A-F951-4BED-B156-44478FAB86D6">
+      <UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="1.0.20" IncludeMaximum="yes" />
+    </Upgrade>
+    <InstallExecuteSequence>
+      <Custom Action="SetDappleShortcut" Before="RemoveShortcuts"></Custom>
+      <Custom Action="SetSettingsFile" After="RemoveFiles"></Custom>
+      <Custom Action="RemoveCacheDirectory" After="SetSettingsFile">REMOVE="ALL"</Custom>
+      <RemoveExistingProducts After="InstallValidate" />
+    </InstallExecuteSequence>
+    <WixVariable Id="WixUILicenseRtf" Value="ui\License.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Bitmaps\bannrbmp.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Bitmaps\dlgbmp.bmp" />
+    <UIRef Id="WixUI_Dapple" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <Icon Id="dapple_icon.ico" SourceFile="..\Dapple\app.ico" />
+  </Product>
 </Wix>
-

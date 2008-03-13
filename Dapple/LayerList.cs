@@ -63,6 +63,7 @@ namespace Dapple
       private bool m_blSupressSelectedChanged = false;
 
       private bool m_blAllowExtract = true;
+		private bool m_blLoadingFromView = false;
 
       private ServerTree m_hServerTree = null;
       private LayerBuilder m_hBaseLayer = null;
@@ -232,7 +233,8 @@ namespace Dapple
       {
          if (m_oLayers.Contains(oNewBuilder)) return;
 
-         oNewBuilder.Reset();
+			if (!m_blLoadingFromView)
+				oNewBuilder.Reset();
 
          m_oLayers.Insert(iInsertIndex, oNewBuilder);
          cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Title);
@@ -256,6 +258,8 @@ namespace Dapple
          cLayerList_SelectedIndexChanged(this, new EventArgs());
 
          if (ActiveLayersChanged != null) ActiveLayersChanged();
+
+			ResizeColumn();
          CheckIsValid();
       }
 
@@ -433,11 +437,6 @@ namespace Dapple
          }
       }
 
-      private void cLayerList_Resize(object sender, EventArgs e)
-      {
-         ResizeColumn();
-      }
-
       private void cLayerList_SelectedIndexChanged(object sender, EventArgs e)
       {
          if (!m_blSupressSelectedChanged)
@@ -548,7 +547,16 @@ namespace Dapple
       /// </summary>
       private void ResizeColumn()
       {
-         cLayerList.Columns[0].Width = cLayerList.ClientSize.Width;
+			cLayerList.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+			/*int iWidth = 0;
+
+			// Set the width to some hooge number, so that the Bounds values returned are valid.
+			cLayerList.Columns[0].Width = 9999;
+			foreach (ListViewItem oItem in cLayerList.Items)
+			{
+				iWidth = Math.Max(iWidth, oItem.Bounds.Width);
+			}
+         cLayerList.Columns[0].Width = iWidth;*/
       }
 
       /// <summary>
@@ -904,6 +912,7 @@ namespace Dapple
 			cLayerList.EndUpdate();
 
          RefreshLayerRenderOrder();
+			ResizeColumn();
          SetButtonState();
          CmdViewMetadata();
 
@@ -940,6 +949,7 @@ namespace Dapple
          cLayerList.EndUpdate();
 
          RefreshLayerRenderOrder();
+			ResizeColumn();
          SetButtonState();
 
          if (ActiveLayersChanged != null) ActiveLayersChanged();
@@ -999,10 +1009,12 @@ namespace Dapple
 
          cLayerList.BeginUpdate();
          m_blSupressSelectedChanged = true;
+			m_blLoadingFromView = true;
 
          cLayerList.Items.Clear();
+			foreach (LayerBuilder oBuilder in m_oLayers)
+				oBuilder.RemoveLayer();
          m_oLayers.Clear();
-         //TODO: Remove layers from the World renderable list?
 
 			int iInsertIndex = 0;
          for (int i = 0; i < view.View.activelayers.datasetCount; i++)
@@ -1017,11 +1029,15 @@ namespace Dapple
             }
 
             LayerBuilder oBuilder = oUri.getBuilder(MainForm.WorldWindowSingleton, oTree);
-            oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
-            oBuilder.Opacity = (byte)dataset.opacity.Value;
-            AddLayer(oBuilder, iInsertIndex++);
+				if (oBuilder != null)
+				{
+					oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
+					oBuilder.Opacity = (byte)dataset.opacity.Value;
+					AddLayer(oBuilder, iInsertIndex++);
+				}
          }
 
+			m_blLoadingFromView = false;
          m_blSupressSelectedChanged = false;
          cLayerList.EndUpdate();
 
@@ -1102,16 +1118,16 @@ namespace Dapple
             {
                try
                {
-                  oExportDialog = new ExportView(MainApplication.Settings.ConfigPath, MainForm.MontajInterface.BaseDirectory());
+                  oExportDialog = new ExportView(Path.Combine(MainForm.UserPath, MainApplication.Settings.ConfigPath), MainForm.MontajInterface.BaseDirectory());
                }
                catch (System.Runtime.Remoting.RemotingException)
                {
-                  oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
+						oExportDialog = new ExportView(Path.Combine(MainForm.UserPath, MainApplication.Settings.ConfigPath));
                }
             }
             else
             {
-               oExportDialog = new ExportView(MainApplication.Settings.ConfigPath);
+					oExportDialog = new ExportView(Path.Combine(MainForm.UserPath, MainApplication.Settings.ConfigPath));
             }
 
             if (oExportDialog.ShowDialog(this) == DialogResult.OK)
@@ -1173,6 +1189,9 @@ namespace Dapple
 					iExportPixelsX = (int)(oViewedArea.Longitude * dPixelsPerDegree);
 					iExportPixelsY = (int)(oViewedArea.Latitude * dPixelsPerDegree);
 
+					System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("fr-FR");
+					System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.CreateSpecificCulture("fr-FR");
+
                // Make geotiff metadata file to use for georeferencing images
                szGeoTiff = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                using (StreamWriter sw = new StreamWriter(szGeoTiff, false))
@@ -1183,9 +1202,17 @@ namespace Dapple
                   sw.WriteLine("Tagged_Information:");
                   sw.WriteLine("ModelTiepointTag (2,3):");
                   sw.WriteLine("0 0 0");
-                  sw.WriteLine(oViewedArea.West.ToString() + " " + oViewedArea.North.ToString() + " 0");
+						sw.WriteLine(String.Format(System.Globalization.CultureInfo.InvariantCulture,
+							"{0} {1} {2}",
+							oViewedArea.West,
+							oViewedArea.North,
+							0));
                   sw.WriteLine("ModelPixelScaleTag (1,3):");
-                  sw.WriteLine(((oViewedArea.East - oViewedArea.West) / (double)iExportPixelsX).ToString() + " " + ((oViewedArea.North - oViewedArea.South) / (double)iExportPixelsY).ToString() + " 0");
+						sw.WriteLine(String.Format(System.Globalization.CultureInfo.InvariantCulture,
+							"{0} {1} {2}",
+							(oViewedArea.East - oViewedArea.West) / (double)iExportPixelsX,
+							(oViewedArea.North - oViewedArea.South) / (double)iExportPixelsY,
+							0));
                   sw.WriteLine("End_Of_Tags.");
                   sw.WriteLine("Keyed_Information:");
                   sw.WriteLine("GTModelTypeGeoKey (Short,1): ModelTypeGeographic");
@@ -1215,6 +1242,9 @@ namespace Dapple
 									// Re-scale pixels
 									oExportEntry.Info.iPixelsX = (int)((oExportEntry.Info.dMaxLon - oExportEntry.Info.dMinLon) * dPixelsPerDegree);
 									oExportEntry.Info.iPixelsY = (int)((oExportEntry.Info.dMaxLat - oExportEntry.Info.dMinLat) * dPixelsPerDegree);
+
+									// Cancel if the layer doesn't intersect the viewed area
+									if (oExportEntry.Info.iPixelsX < 0 || oExportEntry.Info.iPixelsY < 0) continue;
 
 									try
 									{

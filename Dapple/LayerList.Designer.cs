@@ -144,7 +144,6 @@ namespace Dapple
 			this.cLayerList.View = System.Windows.Forms.View.Details;
 			this.cLayerList.DragEnter += new System.Windows.Forms.DragEventHandler(this.cLayerList_DragEnter);
 			this.cLayerList.DragDrop += new System.Windows.Forms.DragEventHandler(this.cLayerList_DragDrop);
-			this.cLayerList.Resize += new System.EventHandler(this.cLayerList_Resize);
 			this.cLayerList.DragOver += new System.Windows.Forms.DragEventHandler(this.cLayerList_DragOver);
 			this.cLayerList.SelectedIndexChanged += new System.EventHandler(this.cLayerList_SelectedIndexChanged);
 			this.cLayerList.DragLeave += new System.EventHandler(this.cLayerList_DragLeave);

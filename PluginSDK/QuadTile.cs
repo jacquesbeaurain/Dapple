@@ -131,7 +131,7 @@ namespace WorldWind.Renderable
 			this.quadTileSet = quadTileSet;
 
 			// --- Make bounding box slightly larger so the tile won't blink in and out near the edges ---
-			BoundingBox = new BoundingBox(south - 1.0, north + 1.0, west - 1.0, east + 1.0, quadTileSet.LayerRadius, quadTileSet.LayerRadius + 300000.0);
+			BoundingBox = new BoundingBox(south - LatitudeSpan / 8.0, north + LatitudeSpan / 8.0, west - LongitudeSpan / 8.0, east + LongitudeSpan / 8.0, quadTileSet.LayerRadius, quadTileSet.LayerRadius + 300000.0);
 			//localOrigin = BoundingBox.CalculateCenter();
 			localOrigin = MathEngine.SphericalToCartesian(centerLatitude, centerLongitude, quadTileSet.LayerRadius);
 

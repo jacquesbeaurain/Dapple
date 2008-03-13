@@ -293,6 +293,8 @@ namespace Dapple.LayerGeneration
             int iImageWidth = (int)(oExportInfo.iPixelsX * (oViewedArea.East - oViewedArea.West) / (oExportInfo.dMaxLon - oExportInfo.dMinLon));
             int iImageHeight = (int)(oExportInfo.iPixelsY * (oViewedArea.North - oViewedArea.South) / (oExportInfo.dMaxLat - oExportInfo.dMinLat));
 
+				if (iImageWidth < 0 || iImageHeight < 0) return false;
+
             // Export image
             using (System.Drawing.Bitmap oExportedImage = new System.Drawing.Bitmap(iImageWidth, iImageHeight))
             {

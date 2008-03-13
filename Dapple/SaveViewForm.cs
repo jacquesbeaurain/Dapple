@@ -45,6 +45,7 @@ namespace Dapple
          }
          catch
          {
+				// m_fOpenEditControl is most likely null!
          }
          m_fEditControl = new Geosoft.OpenGX.UtilityForms.FEditControl();
          m_fEditControl.FilterIndex = 1;
@@ -101,9 +102,12 @@ namespace Dapple
          {
             m_fEditControl.GetFilePath(ref m_strOutputPath);
             m_strNotes = this.txtNotes.Text;
-            m_fOpenEditControl.InitialDirectory = m_fEditControl.InitialDirectory;
-            m_fOpenEditControl.FileName = m_fEditControl.FileName;
-            m_fOpenEditControl.Serialize(Path.Combine(m_strConfigDir, "viewhistory.cfg"));
+				if (m_fOpenEditControl != null)
+				{
+					m_fOpenEditControl.InitialDirectory = m_fEditControl.InitialDirectory;
+					m_fOpenEditControl.FileName = m_fEditControl.FileName;
+					m_fOpenEditControl.Serialize(Path.Combine(m_strConfigDir, "viewhistory.cfg"));
+				}
             this.DialogResult = DialogResult.OK;
             Close();
          } else

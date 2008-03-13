@@ -30,7 +30,7 @@
   <ShowLatLonLines>false</ShowLatLonLines>
   <ShowTropicLines>true</ShowTropicLines>
   <ShowPlanetAxis>false</ShowPlanetAxis>
-  <ShowClouds>true</ShowClouds>
+  <ShowClouds>false</ShowClouds>
   <ShowPlacenames>true</ShowPlacenames>
   <ShowBoundaries>false</ShowBoundaries>
   <ShowPosition>false</ShowPosition>

@@ -417,6 +417,7 @@ namespace WorldWind.Net
 				proxyPassword);
 
 			request.ProtocolVersion = HttpVersion.Version11;
+			request.Timeout = 5000;
 
 			return request;
 		}
@@ -603,53 +604,6 @@ namespace WorldWind.Net
 			OnDownloadEnded(this);
 		}
 
-		private static void AsyncResponseCallback(IAsyncResult asyncResult)
-		{
-			WebDownload webDL = (WebDownload)asyncResult.AsyncState;
-
-			if (webDL.request == null)
-			{
-				Log.Write(Log.Levels.Debug, "AsyncResponseCallback: request was cancelled for " + webDL.Url);
-				return;
-			}
-
-			try
-			{
-				webDL.response = webDL.request.EndGetResponse(asyncResult) as HttpWebResponse;
-
-				// only if server responds 200 OK
-				if (webDL.response.StatusCode == HttpStatusCode.OK)
-				{
-					webDL.ContentType = webDL.response.ContentType;
-					webDL.ContentEncoding = webDL.response.ContentEncoding;
-
-					// Find the data size from the headers.
-					string strContentLength = webDL.response.Headers["Content-Length"];
-					if (strContentLength != null)
-					{
-						webDL.ContentLength = int.Parse(strContentLength, CultureInfo.InvariantCulture);
-					}
-
-					webDL.responseStream = webDL.response.GetResponseStream();
-
-					IAsyncResult result = webDL.responseStream.BeginRead(webDL.readBuffer, 0, webDL.readBuffer.Length, new AsyncCallback(AsyncReadCallback), webDL);
-					return;
-				}
-				else
-				{
-					webDL.response.Close();
-				}
-			}
-			catch (WebException e)
-			{
-				// request cancelled.
-				Utility.Log.Write(Log.Levels.Debug, "NET", "AsyncResponseCallback(): WebException: " + e.Status.ToString());
-				webDL.SaveException(e);
-				webDL.Cancel();
-				webDL.CompleteCallback(webDL);
-			}
-		}
-
 		private static void AsyncReadCallback(IAsyncResult asyncResult)
 		{
 			WebDownload webDL = (WebDownload)asyncResult.AsyncState;
@@ -672,16 +626,10 @@ namespace WorldWind.Net
 					webDL.AsyncFinishDownload();
 				}
 			}
-			catch (IOException ex)
+			catch (Exception ex)
 			{
+				Utility.Log.Write(Log.Levels.Debug, "NET", "AsyncReadCallback(): " + ex.GetType().Name + ": " + ex.Message);
 				webDL.SaveException(ex);
-				webDL.Cancel();
-			}
-			catch (WebException e)
-			{
-				// request cancelled.
-				Utility.Log.Write(Log.Levels.Debug, "NET", "AsyncReadCallback(): WebException: " + e.Status.ToString());
-				webDL.SaveException(e);
 				webDL.Cancel();
 			}
 		}
@@ -741,19 +689,25 @@ namespace WorldWind.Net
 
 				BuildContentStream();
 				request = BuildRequest();
-				request.Timeout = 5000;
 
 				readBuffer = new byte[1500];
 
-				// TODO: probably better done via BeginGetResponse() / EndGetResponse() because this may block for a while
-				// causing warnings in thread abortion.
-				IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(AsyncResponseCallback), this);
-			}
-			catch (System.Configuration.ConfigurationException)
-			{
-				// is thrown by WebRequest.Create if App.config is not in the correct format
-				// TODO: don't know what to do with it
-				throw;
+				response = (HttpWebResponse)request.GetResponse();
+
+				ContentType = response.ContentType;
+				ContentEncoding = response.ContentEncoding;
+
+				// Find the data size from the headers.
+				string strContentLength = response.Headers["Content-Length"];
+				if (strContentLength != null)
+				{
+					ContentLength = int.Parse(strContentLength, CultureInfo.InvariantCulture);
+				}
+
+				responseStream = response.GetResponseStream();
+
+				IAsyncResult result = responseStream.BeginRead(readBuffer, 0, readBuffer.Length, new AsyncCallback(AsyncReadCallback), this);
+				return;
 			}
 			catch (WebException e)
 			{

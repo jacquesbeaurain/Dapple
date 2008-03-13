@@ -13,72 +13,73 @@ using System.Drawing.Drawing2D;
 using Dapple.LayerGeneration;
 using System.Web;
 using WorldWind.Net;
+using System.Globalization;
 
 namespace Dapple.CustomControls
 {
-   public partial class DappleSearchList : UserControl
-   {
-      #region Enums
+	public partial class DappleSearchList : UserControl
+	{
+		#region Enums
 
-      private enum DisplayMode
-      {
-         Thumbnail = 0,
-         List = 1
-      }
+		private enum DisplayMode
+		{
+			Thumbnail = 0,
+			List = 1
+		}
 
-      #endregion
+		#endregion
 
-      #region Statics
+		#region Statics
 
-      private const int THUMBNAIL_SIZE = 50;
-      private const int BAR_WIDTH = 5;
+		private const int THUMBNAIL_SIZE = 50;
+		private const int BAR_WIDTH = 5;
 		private const int ICON_SIZE = 16;
 
-      #endregion
+		#endregion
 
-      #region Member variables
+		#region Member variables
 
-      private GeographicBoundingBox m_oSearchBoundingBox = new GeographicBoundingBox(90, -90, -180, 180);
-      private String m_szSearchString = String.Empty;
+		private GeographicBoundingBox m_oSearchBoundingBox = new GeographicBoundingBox(90, -90, -180, 180);
+		private String m_szSearchString = String.Empty;
 
-      private SearchResultSet[] m_aPages;
-      private int m_iCurrentPage;
-      private int m_iAccessedPages;
-      private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
-      private Point m_oDragDropStartPoint = Point.Empty;
-      private LayerList m_hLayerList;
+		private SearchResultSet[] m_aPages;
+		private int m_iCurrentPage;
+		private int m_iAccessedPages;
+		private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
+		private Point m_oDragDropStartPoint = Point.Empty;
+		private LayerList m_hLayerList;
 		private ServerTree m_hServerTree;
 
 		long m_lSearchIndex = 0;
 
-      #endregion
+		#endregion
 
-      #region Constructors
+		#region Constructors
 
-      public DappleSearchList()
-      {
-         InitializeComponent();
-         cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
-         cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
-         cTabToolbar.SetToolTip(0, "Search results with thumbnails");
-         cTabToolbar.SetToolTip(1, "Search results without thumbnails");
-         cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
-         SetNoSearch();
-         cNavigator.PageBack += new ThreadStart(BackPage);
-         cNavigator.PageForward += new ThreadStart(ForwardPage);
-      }
+		public DappleSearchList()
+		{
+			InitializeComponent();
+			cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
+			cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
+			cTabToolbar.SetToolTip(0, "Search results with thumbnails");
+			cTabToolbar.SetToolTip(1, "Search results without thumbnails");
+			cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
+			SetNoSearch();
+			cNavigator.PageBack += new ThreadStart(BackPage);
+			cNavigator.PageForward += new ThreadStart(ForwardPage);
+		}
 
-      #endregion
+		#endregion
 
-      #region Properties
+		#region Properties
 
-      public LayerList LayerList
-      {
-         set
-         {
-            m_hLayerList = value;
-         }
-      }
+		public LayerList LayerList
+		{
+			set
+			{
+				m_hLayerList = value;
+			}
+		}
 
 		public ServerTree ServerTree
 		{
@@ -88,180 +89,180 @@ namespace Dapple.CustomControls
 			}
 		}
 
-      public bool HasLayersSelected
-      {
-         get
-         {
-            return cResultListBox.SelectedIndices.Count > 0;
-         }
-      }
+		public bool HasLayersSelected
+		{
+			get
+			{
+				return cResultListBox.SelectedIndices.Count > 0;
+			}
+		}
 
-      public List<LayerUri> SelectedLayers
-      {
-         get
-         {
-            List<LayerUri> result = new List<LayerUri>();
+		public List<LayerUri> SelectedLayers
+		{
+			get
+			{
+				List<LayerUri> result = new List<LayerUri>();
 
-            foreach (int index in cResultListBox.SelectedIndices)
-            {
-               result.Add(m_aPages[m_iCurrentPage].Results[index].Uri);
-            }
+				foreach (int index in cResultListBox.SelectedIndices)
+				{
+					result.Add(m_aPages[m_iCurrentPage].Results[index].Uri);
+				}
 
-            return result;
-         }
-      }
+				return result;
+			}
+		}
 
-      #endregion
+		#endregion
 
-      #region Event handlers
+		#region Event handlers
 
-      private void cResultListBox_DrawItem(object sender, DrawItemEventArgs e)
-      {
-         if (e.Index == -1) return;
+		private void cResultListBox_DrawItem(object sender, DrawItemEventArgs e)
+		{
+			if (e.Index == -1) return;
 
-         SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
-         e.DrawBackground();
+			SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
+			e.DrawBackground();
 
-         Matrix oOrigTransform = e.Graphics.Transform;
-         e.Graphics.TranslateTransform(e.Bounds.X, e.Bounds.Y);
+			Matrix oOrigTransform = e.Graphics.Transform;
+			e.Graphics.TranslateTransform(e.Bounds.X, e.Bounds.Y);
 
-         if (m_eDisplayMode == DisplayMode.Thumbnail)
-         {
-            // --- Rating bar ---
+			if (m_eDisplayMode == DisplayMode.Thumbnail)
+			{
+				// --- Rating bar ---
 
-            e.Graphics.DrawRectangle(new Pen(Color.Black), new Rectangle(0, 0, BAR_WIDTH + 1, THUMBNAIL_SIZE + 1));
+				e.Graphics.DrawRectangle(new Pen(Color.Black), new Rectangle(0, 0, BAR_WIDTH + 1, THUMBNAIL_SIZE + 1));
 
-            double dPercentageRank = (double)oResult.Rank / (double)UInt16.MaxValue;
-            int iBarHeight = (int)(THUMBNAIL_SIZE * dPercentageRank);
-            int iStartPoint = THUMBNAIL_SIZE + 1 - iBarHeight;
+				double dPercentageRank = (double)oResult.Rank / (double)UInt16.MaxValue;
+				int iBarHeight = (int)(THUMBNAIL_SIZE * dPercentageRank);
+				int iStartPoint = THUMBNAIL_SIZE + 1 - iBarHeight;
 
-            e.Graphics.FillRectangle(Brushes.LightGray, new Rectangle(1, 1, BAR_WIDTH, THUMBNAIL_SIZE));
-            e.Graphics.FillRectangle(new LinearGradientBrush(new Point(BAR_WIDTH / 2, THUMBNAIL_SIZE + 2), new Point(BAR_WIDTH / 2 + 1, 0), Color.DarkGreen, Color.Lime), new Rectangle(1, iStartPoint, BAR_WIDTH, iBarHeight));
+				e.Graphics.FillRectangle(Brushes.LightGray, new Rectangle(1, 1, BAR_WIDTH, THUMBNAIL_SIZE));
+				e.Graphics.FillRectangle(new LinearGradientBrush(new Point(BAR_WIDTH / 2, THUMBNAIL_SIZE + 2), new Point(BAR_WIDTH / 2 + 1, 0), Color.DarkGreen, Color.Lime), new Rectangle(1, iStartPoint, BAR_WIDTH, iBarHeight));
 
-            // --- Thumbnail ---
+				// --- Thumbnail ---
 
-            e.Graphics.TranslateTransform(BAR_WIDTH + 1, 0, MatrixOrder.Append);
+				e.Graphics.TranslateTransform(BAR_WIDTH + 1, 0, MatrixOrder.Append);
 
-            e.Graphics.DrawRectangle(new Pen(Brushes.Black), new Rectangle(0, 0, THUMBNAIL_SIZE + 1, THUMBNAIL_SIZE + 1));
+				e.Graphics.DrawRectangle(new Pen(Brushes.Black), new Rectangle(0, 0, THUMBNAIL_SIZE + 1, THUMBNAIL_SIZE + 1));
 
-            if (oResult.Thumbnail == null)
-            {
-               e.Graphics.FillRectangle(Brushes.Orange, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
-            }
-            else
-            {
-               e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
-            }
+				if (oResult.Thumbnail == null)
+				{
+					e.Graphics.FillRectangle(Brushes.Orange, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+				}
+				else
+				{
+					e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+				}
 
-            // --- Title and URL ---
+				// --- Title and URL ---
 
-            e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
+				e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
 
-            Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
+				Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
 				int iSpace = (THUMBNAIL_SIZE - 2 * cResultListBox.Font.Height) / 3;
-            e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
+				e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
 				e.Graphics.DrawString(oResult.ServerUrl, new Font(oTitleFont, FontStyle.Regular), Brushes.Black, new PointF(0, iSpace * 2 + cResultListBox.Font.Height));
-         }
-         else if (m_eDisplayMode == DisplayMode.List)
-         {
-            e.Graphics.DrawIcon(Dapple.Properties.Resources.layer, new Rectangle(0, 0, e.Bounds.Height, e.Bounds.Height));
-            e.Graphics.TranslateTransform(e.Bounds.Height, 0, MatrixOrder.Append);
-            e.Graphics.DrawString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font, Brushes.Black, new PointF(0, 0));
-         }
+			}
+			else if (m_eDisplayMode == DisplayMode.List)
+			{
+				e.Graphics.DrawIcon(Dapple.Properties.Resources.layer, new Rectangle(0, 0, e.Bounds.Height, e.Bounds.Height));
+				e.Graphics.TranslateTransform(e.Bounds.Height, 0, MatrixOrder.Append);
+				e.Graphics.DrawString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font, Brushes.Black, new PointF(0, 0));
+			}
 
-         e.Graphics.Transform = oOrigTransform;
-         e.DrawFocusRectangle();
-      }
+			e.Graphics.Transform = oOrigTransform;
+			e.DrawFocusRectangle();
+		}
 
-      private void cResultListBox_MeasureItem(object sender, MeasureItemEventArgs e)
-      {
+		private void cResultListBox_MeasureItem(object sender, MeasureItemEventArgs e)
+		{
 			SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
 
-         if (m_eDisplayMode == DisplayMode.Thumbnail)
-         {
-            e.ItemHeight = THUMBNAIL_SIZE + 3;
+			if (m_eDisplayMode == DisplayMode.Thumbnail)
+			{
+				e.ItemHeight = THUMBNAIL_SIZE + 3;
 				e.ItemWidth = BAR_WIDTH + THUMBNAIL_SIZE + 3 + Math.Max(
 					(int)e.Graphics.MeasureString(oResult.Title, cResultListBox.Font).Width,
 					(int)e.Graphics.MeasureString(oResult.ServerUrl, new Font(cResultListBox.Font, FontStyle.Bold)).Width
 					);
 				cResultListBox.HorizontalExtent = Math.Max(cResultListBox.HorizontalExtent, e.ItemWidth);
-         }
-         else if (m_eDisplayMode == DisplayMode.List)
-         {
+			}
+			else if (m_eDisplayMode == DisplayMode.List)
+			{
 				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font).Width;
-            e.ItemHeight = ICON_SIZE;
+				e.ItemHeight = ICON_SIZE;
 				cResultListBox.HorizontalExtent = Math.Max(cResultListBox.HorizontalExtent, e.ItemWidth);
 
-         }
-      }
+			}
+		}
 
-      private void cResultListBox_MouseMove(object sender, MouseEventArgs e)
-      {
-         if (m_oDragDropStartPoint != Point.Empty && (m_oDragDropStartPoint.X != e.X || m_oDragDropStartPoint.Y != e.Y) && (e.Button & MouseButtons.Left) == MouseButtons.Left)
-         {
-            m_oDragDropStartPoint = Point.Empty;
+		private void cResultListBox_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (m_oDragDropStartPoint != Point.Empty && (m_oDragDropStartPoint.X != e.X || m_oDragDropStartPoint.Y != e.Y) && (e.Button & MouseButtons.Left) == MouseButtons.Left)
+			{
+				m_oDragDropStartPoint = Point.Empty;
 
-            if (cResultListBox.SelectedIndices.Count > 0)
-            {
-               List<LayerUri> oLayerUris = new List<LayerUri>();
+				if (cResultListBox.SelectedIndices.Count > 0)
+				{
+					List<LayerUri> oLayerUris = new List<LayerUri>();
 
-               foreach (int iIndex in cResultListBox.SelectedIndices)
-               {
-                  oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
-               }
+					foreach (int iIndex in cResultListBox.SelectedIndices)
+					{
+						oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
+					}
 
-               DoDragDrop(CreateLayerBuilders(oLayerUris), DragDropEffects.Copy);
-            }
-         }
-      }
+					DoDragDrop(CreateLayerBuilders(oLayerUris), DragDropEffects.Copy);
+				}
+			}
+		}
 
-      private void cResultListBox_MouseDown(object sender, MouseEventArgs e)
-      {
-         if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
-         {
-            m_oDragDropStartPoint = new Point(e.X, e.Y);
-         }
-      }
+		private void cResultListBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+			{
+				m_oDragDropStartPoint = new Point(e.X, e.Y);
+			}
+		}
 
-      private void cResultListBox_MouseDoubleClick(object sender, MouseEventArgs e)
-      {
-         CmdAddSelected();
-      }
+		private void cResultListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			CmdAddSelected();
+		}
 
-      private void cContextMenu_Opening(object sender, CancelEventArgs e)
-      {
-         if (cResultListBox.SelectedIndices.Count < 1)
-         {
-            e.Cancel = true;
-         }
-      }
+		private void cContextMenu_Opening(object sender, CancelEventArgs e)
+		{
+			if (cResultListBox.SelectedIndices.Count < 1)
+			{
+				e.Cancel = true;
+			}
+		}
 
-      private void addLayerToolStripMenuItem_Click(object sender, EventArgs e)
-      {
-         CmdAddSelected();
-      }
+		private void addLayerToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CmdAddSelected();
+		}
 
-      private void DisplayModeChanged(int iIndex)
-      {
-         DisplayMode eNewDisplayMode = (DisplayMode)Enum.Parse(typeof(DisplayMode), iIndex.ToString());
-         if (eNewDisplayMode != m_eDisplayMode)
-         {
-            m_eDisplayMode = eNewDisplayMode;
-            RefreshResultList();
-         }
-      }
+		private void DisplayModeChanged(int iIndex)
+		{
+			DisplayMode eNewDisplayMode = (DisplayMode)Enum.Parse(typeof(DisplayMode), iIndex.ToString());
+			if (eNewDisplayMode != m_eDisplayMode)
+			{
+				m_eDisplayMode = eNewDisplayMode;
+				RefreshResultList();
+			}
+		}
 
-      #endregion
+		#endregion
 
-      private void BackPage()
-      {
-         m_iCurrentPage--;
-         RefreshResultList();
-      }
+		private void BackPage()
+		{
+			m_iCurrentPage--;
+			RefreshResultList();
+		}
 
-      private void ForwardPage()
-      {
-         m_iCurrentPage++;
+		private void ForwardPage()
+		{
+			m_iCurrentPage++;
 			if (m_iCurrentPage >= m_iAccessedPages)
 			{
 				m_iAccessedPages++;
@@ -273,7 +274,7 @@ namespace Dapple.CustomControls
 			{
 				RefreshResultList();
 			}
-      }
+		}
 
 		private void ForwardPageComplete(WebDownload oWebDownload)
 		{
@@ -289,41 +290,53 @@ namespace Dapple.CustomControls
 			}
 		}
 
-      public void SetSearchParameters(String szKeyword, GeographicBoundingBox oBoundingBox)
-      {
+		public void SetSearchParameters(String szKeyword, GeographicBoundingBox oBoundingBox)
+		{
 			if (!MainForm.Settings.UseDappleSearch) return;
 
 			m_lSearchIndex++;
-         m_oSearchBoundingBox = oBoundingBox;
-         m_szSearchString = szKeyword;
+			m_oSearchBoundingBox = oBoundingBox;
+			m_szSearchString = szKeyword;
 
-         if (String.Empty.Equals(szKeyword) && oBoundingBox == null)
-         {
-            SetNoSearch();
-         }
-         else
-         {
+			if (String.Empty.Equals(szKeyword) && oBoundingBox == null)
+			{
+				SetNoSearch();
+			}
+			else
+			{
 				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, 0, m_lSearchIndex);
 				SetSearching();
 				oDownload.BackgroundDownloadMemory(new DownloadCompleteHandler(SetSearchParametersComplete));
-         }
-      }
-
-		private void SetSearchParametersComplete(WebDownload oWebDownload)
-		{
-			DappleSearchWebDownload oDSWebDownload = oWebDownload as DappleSearchWebDownload;
-
-			// --- If the search indices don't match, it's because a new search was done before this one completed, so discard these results ---
-			if (oDSWebDownload.SearchIndex == m_lSearchIndex)
-			{
-				XmlDocument oDoc = new XmlDocument();
-				oDoc.Load(oWebDownload.ContentStream);
-				SearchResultSet oPage1 = new SearchResultSet(oDoc);
-				InitSearch(oPage1);
 			}
 		}
 
-      #region helper functions
+		private void SetSearchParametersComplete(WebDownload oWebDownload)
+		{
+			try
+			{
+				DappleSearchWebDownload oDSWebDownload = oWebDownload as DappleSearchWebDownload;
+				oWebDownload.Verify();
+
+				// --- If the search indices don't match, it's because a new search was done before this one completed, so discard these results ---
+				if (oDSWebDownload.SearchIndex == m_lSearchIndex)
+				{
+					XmlDocument oDoc = new XmlDocument();
+					oDoc.Load(oWebDownload.ContentStream);
+					SearchResultSet oPage1 = new SearchResultSet(oDoc);
+					InitSearch(oPage1);
+				}
+			}
+			catch (WebException)
+			{
+				this.Invoke(new MethodInvoker(SetSearchFailed));
+			}
+			catch (XmlException)
+			{
+				this.Invoke(new MethodInvoker(SetSearchFailed));
+			}
+		}
+
+		#region helper functions
 
 		/// <summary>
 		/// Turns a list of LayerUris into a list of LayerBuilders.
@@ -337,96 +350,92 @@ namespace Dapple.CustomControls
 			foreach (LayerUri oUri in oUris)
 			{
 				LayerBuilder oLayerToAdd = null;
-				try
+				oLayerToAdd = oUri.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree);
+				if (oLayerToAdd != null)
 				{
-					oLayerToAdd = oUri.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree);
 					result.Add(oLayerToAdd);
-				}
-				catch (Exception e)
-				{
-					MessageBox.Show(this.TopLevelControl, "Could not add layer from server " + oUri.Server.ToBaseUri().ToString() + ":" + Environment.NewLine + e.Message);
 				}
 			}
 
 			return result;
 		}
 
-      public void CmdAddSelected()
-      {
-         if (cResultListBox.SelectedIndices.Count > 0 && m_hLayerList != null)
-         {
-            List<LayerUri> oLayerUris = new List<LayerUri>();
+		public void CmdAddSelected()
+		{
+			if (cResultListBox.SelectedIndices.Count > 0 && m_hLayerList != null)
+			{
+				List<LayerUri> oLayerUris = new List<LayerUri>();
 
-            foreach (int iIndex in cResultListBox.SelectedIndices)
-            {
-               oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
-            }
+				foreach (int iIndex in cResultListBox.SelectedIndices)
+				{
+					oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
+				}
 
-            m_hLayerList.AddLayers(CreateLayerBuilders(oLayerUris));
-         }
-      }
+				m_hLayerList.AddLayers(CreateLayerBuilders(oLayerUris));
+			}
+		}
 
-      private void RefreshResultList()
-      {
-         if (InvokeRequired) throw new InvalidOperationException("Tried to refresh result list off of the event thread");
+		private void RefreshResultList()
+		{
+			if (InvokeRequired) throw new InvalidOperationException("Tried to refresh result list off of the event thread");
 
-         if (String.Empty.Equals(m_szSearchString) && m_oSearchBoundingBox == null) return; // Nothing to refresh, no search set.
+			if (String.Empty.Equals(m_szSearchString) && m_oSearchBoundingBox == null) return; // Nothing to refresh, no search set.
 
-         cResultListBox.SuspendLayout();
-         cResultListBox.Items.Clear();
+			cResultListBox.SuspendLayout();
+			cResultListBox.Items.Clear();
 			cResultListBox.HorizontalExtent = 0;
 
-         if (!MainForm.Settings.UseDappleSearch)
-         {
-            cNavigator.SetState("DappleSearch is disabled");
-            return;
-         }
+			if (!MainForm.Settings.UseDappleSearch)
+			{
+				cNavigator.SetState("DappleSearch is disabled");
+				return;
+			}
 
-         if (m_aPages == null)
-         {
-            cNavigator.SetState("Error contacting search server");
-         }
-         else
-         {
-            if (m_aPages.Length > 0 && m_aPages[m_iCurrentPage] != null)
-            {
-               foreach (SearchResult oResult in m_aPages[m_iCurrentPage].Results)
-               {
-                  cResultListBox.Items.Add(oResult);
-               }
-               cNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
-            }
-            else
-            {
-               cNavigator.SetState("No results");
-            }
+			if (m_aPages == null)
+			{
+				cNavigator.SetState("Error contacting search server");
+			}
+			else
+			{
+				if (m_aPages.Length > 0 && m_aPages[m_iCurrentPage] != null)
+				{
+					foreach (SearchResult oResult in m_aPages[m_iCurrentPage].Results)
+					{
+						cResultListBox.Items.Add(oResult);
+					}
+					cNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
+				}
+				else
+				{
+					cNavigator.SetState("No results");
+				}
 
-            if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
-            {
-               m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox);
-            }
-         }
+				if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
+				{
+					m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox);
+				}
+			}
 
-         cResultListBox.ResumeLayout();
-      }
+			cResultListBox.ResumeLayout();
+		}
 
-      private void SetNoSearch()
-      {
-         m_iCurrentPage = 0;
-         m_iAccessedPages = 0;
-         m_aPages = new SearchResultSet[0];
-         cResultListBox.Items.Clear();
+		private void SetNoSearch()
+		{
+			m_iCurrentPage = 0;
+			m_iAccessedPages = 0;
+			m_aPages = new SearchResultSet[0];
+			cResultListBox.Items.Clear();
 
-         if (!MainForm.Settings.UseDappleSearch)
-         {
-            cNavigator.SetState("DappleSearch is disabled");
-         }
-         else
-         {
-            cNavigator.SetState("Press Alt-S to search");
+			if (!MainForm.Settings.UseDappleSearch)
+			{
+				cNavigator.SetState("DappleSearch is disabled");
+			}
+			else
+			{
+				cNavigator.SetState("Press Alt-S to search");
 				cResultListBox.HorizontalExtent = 0;
-         }
-      }
+			}
+		}
 
 		private void SetSearching()
 		{
@@ -435,252 +444,262 @@ namespace Dapple.CustomControls
 			cResultListBox.HorizontalExtent = 0;
 		}
 
-      private delegate void InitResultsDelegate(SearchResultSet oResults);
-      private void InitSearch(SearchResultSet oResults)
-      {
-         if (InvokeRequired)
-         {
-            this.Invoke(new InitResultsDelegate(InitSearch), new Object[] { oResults });
-            return;
-         }
-         else
-         {
-            m_iCurrentPage = 0;
-            m_iAccessedPages = 1;
+		private void SetSearchFailed()
+		{
+			m_iCurrentPage = 0;
+			m_iAccessedPages = 0;
+			m_aPages = new SearchResultSet[0];
+			cResultListBox.Items.Clear();
+			cNavigator.SetState("Error contacting DappleSearch server");
+			cResultListBox.HorizontalExtent = 0;
+		}
 
-            if (oResults != null)
-            {
-               int iNumPages = PageNavigator.PagesFromResults(oResults.TotalCount);
+		private delegate void InitResultsDelegate(SearchResultSet oResults);
+		private void InitSearch(SearchResultSet oResults)
+		{
+			if (InvokeRequired)
+			{
+				this.Invoke(new InitResultsDelegate(InitSearch), new Object[] { oResults });
+				return;
+			}
+			else
+			{
+				m_iCurrentPage = 0;
+				m_iAccessedPages = 1;
 
-               m_aPages = new SearchResultSet[iNumPages];
+				if (oResults != null)
+				{
+					int iNumPages = PageNavigator.PagesFromResults(oResults.TotalCount);
 
-               if (iNumPages > 0)
-               {
-                  m_aPages[0] = oResults;
-               }
-            }
-            else
-            {
-               m_aPages = null;
-            }
+					m_aPages = new SearchResultSet[iNumPages];
+
+					if (iNumPages > 0)
+					{
+						m_aPages[0] = oResults;
+					}
+				}
+				else
+				{
+					m_aPages = null;
+				}
 				RefreshResultList();
-         }
-      }
+			}
+		}
 
-      private delegate void UpdateResultsDelegate(SearchResultSet aResults, int iPage);
-      private void ExtendSearch(SearchResultSet oResults, int iPage)
-      {
-         if (InvokeRequired)
-         {
-            this.Invoke(new UpdateResultsDelegate(ExtendSearch), new Object[] { oResults, iPage });
-            return;
-         }
-         else
-         {
-            if (oResults != null)
-            {
-               m_aPages[iPage] = oResults;
-            }
-            else
-            {
-               cNavigator.SetState("DappleSearch not configured");
-            }
+		private delegate void UpdateResultsDelegate(SearchResultSet aResults, int iPage);
+		private void ExtendSearch(SearchResultSet oResults, int iPage)
+		{
+			if (InvokeRequired)
+			{
+				this.Invoke(new UpdateResultsDelegate(ExtendSearch), new Object[] { oResults, iPage });
+				return;
+			}
+			else
+			{
+				if (oResults != null)
+				{
+					m_aPages[iPage] = oResults;
+				}
+				else
+				{
+					cNavigator.SetState("DappleSearch not configured");
+				}
 				RefreshResultList();
-         }
-      }
+			}
+		}
 
-      #endregion
-   }
+		#endregion
+	}
 
-   class SearchResultSet
-   {
-      private int m_iOffset;
-      private int m_iTotalCount;
-      private List<SearchResult> m_aResults;
+	class SearchResultSet
+	{
+		private int m_iOffset;
+		private int m_iTotalCount;
+		private List<SearchResult> m_aResults;
 
-      private Object LOCK = new Object();
-      private bool m_blThumbnailsQueued = false;
+		private Object LOCK = new Object();
+		private bool m_blThumbnailsQueued = false;
 
-      public SearchResultSet(XmlDocument oSearchResult)
-      {
-         if (oSearchResult.SelectSingleNode("/geosoft_xml/error") != null) throw new ArgumentException("Server sent error message");
+		public SearchResultSet(XmlDocument oSearchResult)
+		{
+			if (oSearchResult.SelectSingleNode("/geosoft_xml/error") != null) throw new ArgumentException("Server sent error message");
 
-         XmlElement oRootElement = oSearchResult.SelectSingleNode("/geosoft_xml/search_result") as XmlElement;
+			XmlElement oRootElement = oSearchResult.SelectSingleNode("/geosoft_xml/search_result") as XmlElement;
 
-         m_iOffset = Int32.Parse(oRootElement.GetAttribute("offset"));
-         m_iTotalCount = Int32.Parse(oRootElement.GetAttribute("totalcount"));
-         m_aResults = new List<SearchResult>();
+			m_iOffset = Int32.Parse(oRootElement.GetAttribute("offset"), NumberStyles.Any, CultureInfo.InvariantCulture);
+			m_iTotalCount = Int32.Parse(oRootElement.GetAttribute("totalcount"), NumberStyles.Any, CultureInfo.InvariantCulture);
+			m_aResults = new List<SearchResult>();
 
-         foreach (XmlNode oResult in oRootElement.SelectNodes("/geosoft_xml/search_result/layers/layer"))
-         {
-            m_aResults.Add(new SearchResult(oResult as XmlElement));
-         }
-      }
+			foreach (XmlNode oResult in oRootElement.SelectNodes("/geosoft_xml/search_result/layers/layer"))
+			{
+				m_aResults.Add(new SearchResult(oResult as XmlElement));
+			}
+		}
 
-      public int TotalCount { get { return m_iTotalCount; } }
-      public List<SearchResult> Results { get { return m_aResults; } }
-      public int Offset { get { return m_iOffset; } }
+		public int TotalCount { get { return m_iTotalCount; } }
+		public List<SearchResult> Results { get { return m_aResults; } }
+		public int Offset { get { return m_iOffset; } }
 
-      #region Asynchronous Thumbnail Loading
+		#region Asynchronous Thumbnail Loading
 
-      public void QueueThumbnails(ListBox oView)
-      {
-         lock (LOCK)
-         {
-            if (!m_blThumbnailsQueued)
-            {
-               m_blThumbnailsQueued = true;
+		public void QueueThumbnails(ListBox oView)
+		{
+			lock (LOCK)
+			{
+				if (!m_blThumbnailsQueued)
+				{
+					m_blThumbnailsQueued = true;
 
-               foreach (SearchResult oResult in m_aResults)
-               {
-                  ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView });
-               }
-            }
-         }
-      }
+					foreach (SearchResult oResult in m_aResults)
+					{
+						ThreadPool.QueueUserWorkItem(new WaitCallback(AsyncLoadThumbnail), new Object[] { oResult, oView });
+					}
+				}
+			}
+		}
 
-      private void AsyncLoadThumbnail(Object oParams)
-      {
-         SearchResult oResult = ((Object[])oParams)[0] as SearchResult;
-         ListBox oView = ((Object[])oParams)[1] as ListBox;
+		private void AsyncLoadThumbnail(Object oParams)
+		{
+			SearchResult oResult = ((Object[])oParams)[0] as SearchResult;
+			ListBox oView = ((Object[])oParams)[1] as ListBox;
 
-         oResult.downloadThumbnail();
-         oView.Invalidate();
-      }
+			oResult.downloadThumbnail();
+			oView.Invalidate();
+		}
 
-      #endregion
-   }
+		#endregion
+	}
 
-   class SearchResult
-   {
-      private Bitmap m_oBitmap;
-      private Dictionary<String, String> m_aCommonAttributes = new Dictionary<string, string>();
-      private Dictionary<String, String> m_aTypeSpecificAttributes = new Dictionary<string, string>();
+	class SearchResult
+	{
+		private Bitmap m_oBitmap;
+		private Dictionary<String, String> m_aCommonAttributes = new Dictionary<string, string>();
+		private Dictionary<String, String> m_aTypeSpecificAttributes = new Dictionary<string, string>();
 
-      public SearchResult(XmlElement oLayerElement)
-      {
+		public SearchResult(XmlElement oLayerElement)
+		{
 
-         XmlElement oCommonElement = oLayerElement.SelectSingleNode("common") as XmlElement;
-         foreach (XmlAttribute oAttribute in oCommonElement.Attributes)
-         {
-            m_aCommonAttributes.Add(oAttribute.Name, oAttribute.Value);
-         }
-         m_aCommonAttributes.Add("rankingscore", oLayerElement.GetAttribute("rankingscore"));
+			XmlElement oCommonElement = oLayerElement.SelectSingleNode("common") as XmlElement;
+			foreach (XmlAttribute oAttribute in oCommonElement.Attributes)
+			{
+				m_aCommonAttributes.Add(oAttribute.Name, oAttribute.Value);
+			}
+			m_aCommonAttributes.Add("rankingscore", oLayerElement.GetAttribute("rankingscore"));
 
-         XmlElement oTypeElement = oLayerElement.SelectSingleNode(m_aCommonAttributes["type"].ToLower()) as XmlElement;
-         foreach (XmlAttribute oAttribute in oTypeElement.Attributes)
-         {
-            m_aTypeSpecificAttributes.Add(oAttribute.Name, oAttribute.Value);
-         }
-      }
+			XmlElement oTypeElement = oLayerElement.SelectSingleNode(m_aCommonAttributes["type"].ToLower()) as XmlElement;
+			foreach (XmlAttribute oAttribute in oTypeElement.Attributes)
+			{
+				m_aTypeSpecificAttributes.Add(oAttribute.Name, oAttribute.Value);
+			}
+		}
 
-      public void downloadThumbnail()
-      {
-         if (!MainForm.Settings.UseDappleSearch) return;
+		public void downloadThumbnail()
+		{
+			if (!MainForm.Settings.UseDappleSearch) return;
 
 			// --- This non-WebDownload download is permitted because this method is only called by threadpool threads ---
-         WebRequest oRequest = WebRequest.Create(MainForm.Settings.DappleSearchURL + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
-         WebResponse oResponse = null;
-         try
-         {
-            oResponse = oRequest.GetResponse();
-            m_oBitmap = new Bitmap(oResponse.GetResponseStream());
-         }
-         finally
-         {
-            if (oResponse != null) oResponse.Close();
-         }
-      }
+			WebRequest oRequest = WebRequest.Create(MainForm.Settings.DappleSearchURL + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
+			WebResponse oResponse = null;
+			try
+			{
+				oResponse = oRequest.GetResponse();
+				m_oBitmap = new Bitmap(oResponse.GetResponseStream());
+			}
+			finally
+			{
+				if (oResponse != null) oResponse.Close();
+			}
+		}
 
-      public String Title { get { return m_aCommonAttributes["layertitle"]; } }
-      public UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
-      public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
-      public Bitmap Thumbnail { get { return m_oBitmap; } }
-      public String Description { get { return m_aCommonAttributes["description"]; } }
+		public String Title { get { return m_aCommonAttributes["layertitle"]; } }
+		public UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
+		public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
+		public Bitmap Thumbnail { get { return m_oBitmap; } }
+		public String Description { get { return m_aCommonAttributes["description"]; } }
 		public String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
 
-      public LayerUri Uri
-      {
-         get
-         {
-            String szType = m_aCommonAttributes["type"];
+		public LayerUri Uri
+		{
+			get
+			{
+				String szType = m_aCommonAttributes["type"];
 
-            if (szType.Equals("dap", StringComparison.InvariantCultureIgnoreCase))
-            {
-               String szUri = "gxdap://" + m_aCommonAttributes["url"];
-               if (!szUri.Contains("?")) szUri += "?";
-               szUri += "&datasetname=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["datasetname"]);
-               szUri += "&height=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["height"]);
-               szUri += "&size=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["size"]);
-               szUri += "&type=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["type"]);
-               szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
-               szUri += "&edition=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["edition"]);
-               szUri += "&hierarchy=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["hierarchy"]);
-               szUri += "&levels=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["levels"]);
-               szUri += "&lvl0tilesize=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["lvlzerotilesize"]);
-               szUri += "&north=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxy"]);
-               szUri += "&east=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxx"]);
-               szUri += "&south=" + HttpUtility.UrlEncode(m_aCommonAttributes["miny"]);
-               szUri += "&west=" + HttpUtility.UrlEncode(m_aCommonAttributes["minx"]);
+				if (szType.Equals("dap", StringComparison.InvariantCultureIgnoreCase))
+				{
+					String szUri = "gxdap://" + m_aCommonAttributes["url"];
+					if (!szUri.Contains("?")) szUri += "?";
+					szUri += "&datasetname=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["datasetname"]);
+					szUri += "&height=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["height"]);
+					szUri += "&size=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["size"]);
+					szUri += "&type=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["type"]);
+					szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+					szUri += "&edition=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["edition"]);
+					szUri += "&hierarchy=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["hierarchy"]);
+					szUri += "&levels=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["levels"]);
+					szUri += "&lvl0tilesize=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["lvlzerotilesize"]);
+					szUri += "&north=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxy"]);
+					szUri += "&east=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxx"]);
+					szUri += "&south=" + HttpUtility.UrlEncode(m_aCommonAttributes["miny"]);
+					szUri += "&west=" + HttpUtility.UrlEncode(m_aCommonAttributes["minx"]);
 
-               DapLayerUri oUri = new DapLayerUri(szUri);
+					DapLayerUri oUri = new DapLayerUri(szUri);
 
-               return oUri;
-            }
-            else if (szType.Equals("wms", StringComparison.InvariantCultureIgnoreCase))
-            {
-               String szUri = "gxwms://" + m_aCommonAttributes["url"];
-               if (!szUri.Contains("?")) szUri += "?";
-               //szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
-               szUri += "&layer=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layername"]);
-               //szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
-               szUri += "&" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["cgitokens"]);
+					return oUri;
+				}
+				else if (szType.Equals("wms", StringComparison.InvariantCultureIgnoreCase))
+				{
+					String szUri = "gxwms://" + m_aCommonAttributes["url"];
+					if (!szUri.Contains("?")) szUri += "?";
+					//szUri += "&version=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["serverversion"]);
+					szUri += "&layer=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layername"]);
+					//szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+					szUri += "&" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["cgitokens"]);
 
-               /*if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)
-               {
-                  szUri += "&srs=";
-               }
-               else
-               {
-                  szUri += "&crs=";
-               }
+					/*if (String.Compare(m_aTypeSpecificAttributes["serverversion"], "1.3.0") == -1)
+					{
+						szUri += "&srs=";
+					}
+					else
+					{
+						szUri += "&crs=";
+					}
 
-               if (m_aTypeSpecificAttributes.ContainsKey("specialcoord"))
-               {
-                  szUri += m_aTypeSpecificAttributes["specialcoord"];
-               }
-               else
-               {
-                  szUri += "EPSG:4326";
-                  szUri += "&bbox=" + String.Format("{0},{1},{2},{3}", m_aCommonAttributes["minx"], m_aCommonAttributes["miny"], m_aCommonAttributes["maxx"], m_aCommonAttributes["maxy"]);
-               }*/
+					if (m_aTypeSpecificAttributes.ContainsKey("specialcoord"))
+					{
+						szUri += m_aTypeSpecificAttributes["specialcoord"];
+					}
+					else
+					{
+						szUri += "EPSG:4326";
+						szUri += "&bbox=" + String.Format("{0},{1},{2},{3}", m_aCommonAttributes["minx"], m_aCommonAttributes["miny"], m_aCommonAttributes["maxx"], m_aCommonAttributes["maxy"]);
+					}*/
 
-               WMSLayerUri oUri = new WMSLayerUri(szUri);
+					WMSLayerUri oUri = new WMSLayerUri(szUri);
 
-               return oUri;
-            }
-            else if (szType.Equals("arcims", StringComparison.InvariantCultureIgnoreCase))
-            {
-               String szUri = "gxarcims://" + m_aCommonAttributes["url"];
-               if (!szUri.Contains("?")) szUri += "?";
-               szUri += "&servicename=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["servicename"]);
-               szUri += "&layerid=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layerid"]);
-               szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
-               szUri += "&minx=" + HttpUtility.UrlEncode(m_aCommonAttributes["minx"]);
-               szUri += "&miny=" + HttpUtility.UrlEncode(m_aCommonAttributes["miny"]);
-               szUri += "&maxx=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxx"]);
-               szUri += "&maxy=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxy"]);
-               szUri += "&minscale=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["minscale"]);
-               szUri += "&maxscale=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["maxscale"]);
+					return oUri;
+				}
+				else if (szType.Equals("arcims", StringComparison.InvariantCultureIgnoreCase))
+				{
+					String szUri = "gxarcims://" + m_aCommonAttributes["url"];
+					if (!szUri.Contains("?")) szUri += "?";
+					szUri += "&servicename=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["servicename"]);
+					szUri += "&layerid=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["layerid"]);
+					szUri += "&title=" + HttpUtility.UrlEncode(m_aCommonAttributes["layertitle"]);
+					szUri += "&minx=" + HttpUtility.UrlEncode(m_aCommonAttributes["minx"]);
+					szUri += "&miny=" + HttpUtility.UrlEncode(m_aCommonAttributes["miny"]);
+					szUri += "&maxx=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxx"]);
+					szUri += "&maxy=" + HttpUtility.UrlEncode(m_aCommonAttributes["maxy"]);
+					szUri += "&minscale=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["minscale"]);
+					szUri += "&maxscale=" + HttpUtility.UrlEncode(m_aTypeSpecificAttributes["maxscale"]);
 
-               ArcIMSLayerUri oUri = new ArcIMSLayerUri(szUri);
+					ArcIMSLayerUri oUri = new ArcIMSLayerUri(szUri);
 
-               return oUri;
-            }
-            return null;
-         }
-      }
-   }
+					return oUri;
+				}
+				return null;
+			}
+		}
+	}
 
 	class DappleSearchWebDownload : WebDownload
 	{
@@ -690,7 +709,8 @@ namespace Dapple.CustomControls
 		private int m_iNumResults = PageNavigator.ResultsPerPage;
 		private long m_lSearchIndex;
 
-		public DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex) : base(MainForm.Settings.DappleSearchURL, true)
+		public DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex)
+			: base(MainForm.Settings.DappleSearchURL, true)
 		{
 			m_oBoundingBox = oBoundingBox;
 			m_szKeywords = szKeywords;

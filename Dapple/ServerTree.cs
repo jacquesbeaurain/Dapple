@@ -391,7 +391,7 @@ namespace Dapple
             if (serverBuilder.Enabled)
             {
                RemoveCurrentServer();
-               AddWMSServer(serverBuilder.Uri.ToBaseUri(), true, serverBuilder.Enabled);
+               AddWMSServer(serverBuilder.Uri.ToBaseUri(), true, serverBuilder.Enabled, true);
                foreach (TreeNode oNode in m_hWMSRootNode.Nodes)
                {
                   if (((WMSServerBuilder)oNode.Tag).Uri.Equals(serverBuilder.Uri))
@@ -408,7 +408,7 @@ namespace Dapple
             if (serverBuilder.Enabled)
             {
                RemoveCurrentServer();
-               AddArcIMSServer(serverBuilder.Uri as ArcIMSServerUri, true, serverBuilder.Enabled);
+               AddArcIMSServer(serverBuilder.Uri as ArcIMSServerUri, true, serverBuilder.Enabled, true);
                foreach (TreeNode oNode in m_hArcIMSRootNode.Nodes)
                {
                   if (((ArcIMSServerBuilder)oNode.Tag).Uri.Equals(serverBuilder.Uri))
@@ -447,12 +447,14 @@ namespace Dapple
             if (oCurrentServer is Server)
             {
                RemoveServer(oCurrentServer as Server);
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.RemoveServer, new Object[] { (oCurrentServer as Server).Url, "DAP" });
                return;
             }
             else if (oCurrentServer is WMSServerBuilder)
             {
                WMSServerBuilder serverBuilder = oCurrentServer as WMSServerBuilder;
                m_wmsServers.Remove(serverBuilder);
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.RemoveServer, new Object[] { (oCurrentServer as WMSServerBuilder).Uri.ToString(), "WMS" });
                ((WMSCatalogBuilder)m_hWMSRootNode.Tag).UncacheServer(serverBuilder.Uri as WMSServerUri);
 					this.SelectedNode = m_hWMSRootNode;
             }
@@ -460,6 +462,7 @@ namespace Dapple
             {
                ArcIMSServerBuilder serverBuilder = oCurrentServer as ArcIMSServerBuilder;
                m_oArcIMSServers.Remove(serverBuilder);
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.RemoveServer, new Object[] { (oCurrentServer as ArcIMSServerBuilder).Uri.ToString(), "ArcIMS" });
                ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).UncacheServer(serverBuilder.Uri as ArcIMSServerUri);
 					this.SelectedNode = m_hArcIMSRootNode;
             }
@@ -470,12 +473,18 @@ namespace Dapple
          }
 		}
 
-		public bool AddWMSServer(string strCapUrl, bool bUpdateTree, bool blEnabled)
+		public bool AddWMSServer(string strCapUrl, bool bUpdateTree, bool blEnabled, bool blUpdateHomeView)
 		{
 			WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
-         if (wmsBuilder.ContainsServer(new WMSServerUri(strCapUrl))) return false;// Don't add a server multiple times
+			WMSServerUri oUri = new WMSServerUri(strCapUrl);
+         if (wmsBuilder.ContainsServer(oUri))
+				return false;// Don't add a server multiple times
 
-         WMSServerBuilder builder = wmsBuilder.AddServer(new WMSServerUri(strCapUrl), blEnabled) as WMSServerBuilder;
+         WMSServerBuilder builder = wmsBuilder.AddServer(oUri, blEnabled) as WMSServerBuilder;
+			if (builder != null && blUpdateHomeView)
+			{
+				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new Object[] { builder.Uri.ToString(), "WMS" });
+			}
 			m_wmsServers.Add(builder);
 
 			if (bUpdateTree)
@@ -489,12 +498,16 @@ namespace Dapple
          return true;
 		}
 
-      public bool AddArcIMSServer(ArcIMSServerUri serverUri, bool bUpdateTree, bool blEnabled)
+      public bool AddArcIMSServer(ArcIMSServerUri serverUri, bool bUpdateTree, bool blEnabled, bool blUpdateHomeView)
       {
          ArcIMSCatalogBuilder arcimsBuilder = m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder;
          if (arcimsBuilder.ContainsServer(serverUri)) return false; // Don't add multiple times
 
          ArcIMSServerBuilder builderEntry = arcimsBuilder.AddServer(serverUri, blEnabled) as ArcIMSServerBuilder;
+			if (builderEntry != null && blUpdateHomeView)
+			{
+				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new Object[] { builderEntry.Uri.ToString(), "ArcIMS" });
+			}
          m_oArcIMSServers.Add(builderEntry);
 
          if (bUpdateTree)
@@ -515,7 +528,7 @@ namespace Dapple
 			try
 			{
 				// Clear Tree and WMS servers too
-				WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
+				/*WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
             wmsBuilder.cancelDownloads();
 				wmsBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
             wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null);
@@ -527,13 +540,14 @@ namespace Dapple
             arcIMSBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
             arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null);
             m_hArcIMSRootNode.Tag = arcIMSBuilder;
-            arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
+            arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);*/
 
-				foreach (TreeNode node in m_hRootNode.Nodes)
-					node.Nodes.Clear();
+				/*foreach (TreeNode node in m_hRootNode.Nodes)
+					node.Nodes.Clear();*/
+				m_hTileRootNode.Nodes.Clear();
 
 				// Reset First
-				m_bEntireCatalogMode = false;
+				/*m_bEntireCatalogMode = false;
 				m_bAOIFilter = false;
 				m_bPrevAOIFilter = false;
 				m_bTextFilter = false;
@@ -552,15 +566,14 @@ namespace Dapple
 				m_oValidServerList.Clear();
 				m_bSelect = false;
 				this.SelectedNode = m_hRootNode;
-				m_bSelect = true;
+				m_bSelect = true;*/
 				// m_hRootNode.Text = strName;
+				this.SelectedNode = m_hRootNode;
 
 				//if (view.View.Hasnotes())
 				//  m_hRootNode.ToolTipText = view.View.notes.Value;
 				// else
-				//   this.lblNotes.Text = strName;
-
-            ClearSearch();
+				//   this.lblNotes.Text = strName;            
 
             if (oView.View.Hasfavouriteserverurl())
             {
@@ -579,6 +592,8 @@ namespace Dapple
 						LoadServers(entry);
 					}
 				}
+
+				ClearSearch();
 			}
 			finally
 			{
@@ -871,12 +886,12 @@ namespace Dapple
          else if (entry.Hasdapcatalog())
          {
             Geosoft.GX.DAPGetData.Server dapServer;
-            AddDAPServer(entry.dapcatalog.url.Value, out dapServer, entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true);
+            AddDAPServer(entry.dapcatalog.url.Value, out dapServer, entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, false);
          }
          else if (entry.Haswmscatalog())
-            AddWMSServer(entry.wmscatalog.capabilitiesurl.Value, false, entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true);
+            AddWMSServer(entry.wmscatalog.capabilitiesurl.Value, false, entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true, false);
          else if (entry.Hasarcimscatalog())
-            AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), false, entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true);
+            AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), false, entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true, false);
       }
 		#endregion
 
@@ -1374,9 +1389,14 @@ namespace Dapple
 
 		#endregion
 
-      public override bool AddDAPServer(string strUrl, out Server hRetServer, bool blEnabled)
+      public bool AddDAPServer(string strUrl, out Server hRetServer, bool blEnabled, bool blUpdateHomeView)
       {
          bool result = base.AddDAPServer(strUrl, out hRetServer, blEnabled);
+			if (result && blUpdateHomeView)
+			{
+				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new Object[] { hRetServer.Url, "DAP" });
+			}
+
          this.m_oServerListControl.Servers = getServerList();
          if (hRetServer != null && hRetServer.Url.Equals(m_szDefaultServer))
          {
@@ -1725,6 +1745,8 @@ namespace Dapple
             }
          }
 			ReconstructTree();
+
+			m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ChangeFavorite, new Object[] { m_szDefaultServer });
       }
 
       public void CmdToggleServerEnabled()
@@ -1737,9 +1759,19 @@ namespace Dapple
 						return;
 
 					m_szDefaultServer = String.Empty;
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ChangeFavorite, new Object[] { String.Empty });
 				}
 
 				((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
+				if (SelectedNode.Tag is WMSServerBuilder)
+				{
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ToggleServer, new Object[] { ((ServerBuilder)SelectedNode.Tag).Uri.ToString(), "WMS", ((ServerBuilder)SelectedNode.Tag).Enabled });
+				}
+				else if (SelectedNode.Tag is ArcIMSServerBuilder)
+				{
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ToggleServer, new Object[] { ((ServerBuilder)SelectedNode.Tag).Uri.ToString(), "ArcIMS", ((ServerBuilder)SelectedNode.Tag).Enabled });
+				}
+				
 				SelectedNode.ForeColor = ((ServerBuilder)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
 
 				LoadFinished();
@@ -1752,9 +1784,11 @@ namespace Dapple
 						return;
 
 					m_szDefaultServer = String.Empty;
+					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ChangeFavorite, new Object[] { String.Empty });
 				}
 
 				((Server)SelectedNode.Tag).Enabled ^= true;
+				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ToggleServer, new Object[] { ((Server)SelectedNode.Tag).Url, "DAP", ((Server)SelectedNode.Tag).Enabled });
 				SelectedNode.ForeColor = ((Server)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
 				GetCatalogHierarchy();
 

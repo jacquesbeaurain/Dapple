@@ -40,8 +40,7 @@ namespace WorldWind
 		/// <param name="textureFileName">Path/filename to the image file</param>
 		public static Texture LoadTexture(string textureFileName)
 		{
-			Texture texture = LoadTexture(textureFileName, 0);
-			return texture;
+			return LoadTexture(textureFileName, 0, World.Settings.TextureFormat);
 		}
 
 		/// <summary>
@@ -57,20 +56,10 @@ namespace WorldWind
 				using (Stream imageStream = File.OpenRead(textureFileName))
 					return LoadTexture(imageStream, colorKey, textureFormat);
 			}
-			catch
+			catch (IOException)
 			{
-				throw new Microsoft.DirectX.Direct3D.InvalidDataException(string.Format("Error reading image file '{0}'.", textureFileName));
+				return null;
 			}
-		}
-
-		/// <summary>
-		/// Loads an image file from disk into a texture.
-		/// </summary>
-		/// <param name="textureFileName">Path/filename to the image file</param>
-		/// <param name="colorKey">Transparent color. Any pixels in the image with this color will be made transparent.</param>
-		public static Texture LoadTexture(string textureFilename, int colorKey)
-		{
-			return LoadTexture(textureFilename, colorKey, World.Settings.TextureFormat);
 		}
 
 		public static void CreateAlphaPngFromBrightness(string srcFilePath, string destinationPngFilePath)
@@ -209,8 +198,7 @@ namespace WorldWind
 		/// <param name="textureFileName">Stream containing the image file</param>
 		public static Texture LoadTexture(Stream textureStream)
 		{
-			Texture texture = LoadTexture(textureStream, 0, World.Settings.TextureFormat);
-			return texture;
+			return LoadTexture(textureStream, 0, World.Settings.TextureFormat);
 		}
 
 		/// <summary>
@@ -219,7 +207,7 @@ namespace WorldWind
 		/// <param name="textureStream">Stream containing the image file</param>
 		/// <param name="colorKey">Transparent color. Any pixels in the image with this color will be made transparent.</param>
 		/// <param name="textureFormat">Desired pixel format of the returned texture.</param>
-		public static Texture LoadTexture(Stream textureStream, int colorKey, Format textureFormat)
+		private static Texture LoadTexture(Stream textureStream, int colorKey, Format textureFormat)
 		{
 			try
 			{
@@ -238,15 +226,15 @@ namespace WorldWind
 				// Additional formats supported by GDI+: GIF, TIFF
 				// TODO: Support color keying.  See: System.Drawing.Imaging.ImageAttributes
 				using (Bitmap image = (Bitmap)Image.FromStream(textureStream))
-				{
-					Texture texture = new Texture(DrawArgs.Device, image, Usage.None, Pool.Managed);
-					return texture;
-				}
+					return new Texture(DrawArgs.Device, image, Usage.None, Pool.Managed);
 			}
 			catch
 			{
-				throw new Microsoft.DirectX.Direct3D.InvalidDataException("Error reading image stream.");
 			}
+
+			// Still can't get it?  Return dummy image
+			using (Bitmap image = CreateDefaultImage())
+				return new Texture(DrawArgs.Device, image, Usage.None, Pool.Managed);
 		}
 
 		/// <summary>
@@ -429,9 +417,15 @@ namespace WorldWind
 			Bitmap b = new Bitmap(32, 32);
 			using (Graphics g = Graphics.FromImage(b))
 			{
-				g.Clear(Color.FromArgb(88, 255, 255, 255));
-				g.DrawLine(Pens.Red, 0, 0, b.Width, b.Height);
-				g.DrawLine(Pens.Red, 0, b.Height, b.Width, 0);
+				g.Clear(Color.FromArgb(128, 128, 128, 128));
+				g.DrawLine(Pens.Red, 0, 0, b.Width - 1, b.Height - 1);
+				g.DrawLine(Pens.Red, 0, b.Height - 1, b.Width - 1, 0);
+
+				g.DrawLine(Pens.Red, 0, 0, b.Width - 1, 0);
+				g.DrawLine(Pens.Red, 0, 0, 0, b.Height - 1);
+
+				g.DrawLine(Pens.Red, b.Width - 1, b.Height - 1, b.Width - 1, 0);
+				g.DrawLine(Pens.Red, b.Width - 1, b.Height - 1, 0, b.Height - 1);
 			}
 			return b;
 		}

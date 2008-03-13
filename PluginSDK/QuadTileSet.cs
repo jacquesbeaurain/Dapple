@@ -790,8 +790,14 @@ namespace WorldWind.Renderable
 						if (DrawArgs.Camera.ViewFrustum.Intersects(qt.BoundingBox))
 						{
 							lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)
+							{
 								m_topmostTiles.Add(lKey, qt);
-							oTilesToUpdate.Add(lKey, qt);
+							}
+
+							if (!oTilesToUpdate.ContainsKey(lKey))
+							{
+								oTilesToUpdate.Add(lKey, qt);
+							}
 						}
 					}
 				}
@@ -1174,26 +1180,42 @@ namespace WorldWind.Renderable
       public virtual GeoSpatialDownloadRequest GetClosestDownloadRequest()
       {
          GeoSpatialDownloadRequest closestRequest = null;
-         double largestArea = double.MinValue;
+			double smallestDist = double.MaxValue;
 
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
          {
-            foreach (GeoSpatialDownloadRequest curRequest in m_downloadRequests.Values)
+				List<IGeoSpatialDownloadTile> oOutOfViewTiles = new List<IGeoSpatialDownloadTile>();
+
+				foreach (IGeoSpatialDownloadTile oTile in m_downloadRequests.Keys)
+				//foreach (GeoSpatialDownloadRequest curRequest in m_downloadRequests.Values)
             {
+					GeoSpatialDownloadRequest curRequest = m_downloadRequests[oTile];
+
                if (curRequest.IsDownloading)
                   continue;
 
                QuadTile qt = (QuadTile)curRequest.Tile;
-               if (!m_camera.ViewFrustum.Intersects(qt.BoundingBox))
-                  continue;
+					if (!m_camera.ViewFrustum.Intersects(qt.BoundingBox))
+					{
+						oOutOfViewTiles.Add(oTile);
+						continue;
+					}
 
-               double screenArea = qt.BoundingBox.CalcRelativeScreenArea(m_camera);
-               if (screenArea > largestArea)
-               {
-                  largestArea = screenArea;
-                  closestRequest = curRequest;
-               }
+               double dLatDist = (oTile.South + oTile.North) / 2.0 - m_camera.Latitude.Degrees;
+					double dLonDist = (oTile.East + oTile.West) / 2.0 - m_camera.Longitude.Degrees;
+					double dTileDist = Math.Sqrt(dLatDist * dLatDist + dLonDist * dLonDist);
+
+               if (dTileDist < smallestDist)
+					{
+						smallestDist = dTileDist;
+						closestRequest = curRequest;
+					}
             }
+
+				foreach (IGeoSpatialDownloadTile oOOVTile in oOutOfViewTiles)
+				{
+					m_downloadRequests.Remove(oOOVTile);
+				}
          }
 
          return closestRequest;

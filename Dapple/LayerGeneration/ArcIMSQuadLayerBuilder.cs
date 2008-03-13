@@ -29,6 +29,8 @@ namespace Dapple.LayerGeneration
 
       public static readonly string URLProtocolName = "gxarcims://";
       public static readonly string CacheSubDir = "ArcIMSImages";
+		public static readonly double DefaultMinScale = 0.0;
+		public static readonly double DefaultMaxScale = 1.0;
 
       #endregion
 
@@ -42,7 +44,11 @@ namespace Dapple.LayerGeneration
          m_szServiceName = strServiceName;
          m_oServerUri = oServerUri;
          m_dMinScale = dMinScale;
+			if (m_dMinScale < DefaultMinScale)
+				m_dMinScale = DefaultMinScale;
          m_dMaxScale = dMaxScale;
+			if (m_dMaxScale > DefaultMaxScale)
+				m_dMaxScale = DefaultMaxScale;
 
          m_dLevelZeroTileSizeDegrees = 22.5;
          m_iLevels = 1;
@@ -243,7 +249,7 @@ namespace Dapple.LayerGeneration
       public override string GetURI()
       {
          return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
-				+ String.Format("&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
+				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
 				m_oEnvelope.West,
 				m_oEnvelope.South,
 				m_oEnvelope.East,
@@ -255,9 +261,20 @@ namespace Dapple.LayerGeneration
 				System.Web.HttpUtility.UrlEncode(m_szServiceName));
       }
 
+		private String LayerCacheFolder
+		{
+			get
+			{
+				String result = m_szServiceName + " - " + m_szLayerID;
+				foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
+					result = result.Replace(ch.ToString(), "_");
+				return result;
+			}
+		}
+
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), m_szServiceName + " - " + m_szLayerID);
+         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), this.LayerCacheFolder);
       }
 
       protected override void CleanUpLayer(bool bFinal)

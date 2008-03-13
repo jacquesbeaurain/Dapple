@@ -401,6 +401,7 @@ namespace WorldWind
 				texture = ImageHelper.LoadTexture(filePath, tile.TileSet.ColorKey,
 				   TextureFormat);
 			}
+			if (texture == null) return null;
 
 			SurfaceDescription sd = texture.GetLevelDescription(0);
 			if (sd.Width != sd.Height)

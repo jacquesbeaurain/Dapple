@@ -626,8 +626,8 @@ namespace WorldWind
 		private static ImageStore getImageStoreFromXPathNodeIterator(string name, XPathNodeIterator imageAccessorIter, RenderableObjectList parentRenderable, Cache cache)
 		{
 			double levelZeroTileSizeDegrees = ParseDouble(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("LevelZeroTileSizeDegrees")));
-			int numberLevels = Int32.Parse(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("NumberLevels")));
-			int textureSizePixels = Int32.Parse(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("TextureSizePixels")));
+			int numberLevels = Int32.Parse(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("NumberLevels")), NumberStyles.Any, CultureInfo.InvariantCulture);
+			int textureSizePixels = Int32.Parse(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("TextureSizePixels")), NumberStyles.Any, CultureInfo.InvariantCulture);
 			string imageFileExtension = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("ImageFileExtension"));
 			string textureFormatSpec = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("TextureFormat"));
 			string permanentDirectory = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("PermanentDirectory"));
@@ -946,12 +946,12 @@ namespace WorldWind
 
 				if (iter.Current.Select("TransparentMinValue").Count > 0)
 				{
-					qts.ColorKey = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("TransparentMinValue")));
+					qts.ColorKey = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("TransparentMinValue")), NumberStyles.Any, CultureInfo.InvariantCulture);
 				}
 
 				if (iter.Current.Select("TransparentMaxValue").Count > 0)
 				{
-					qts.ColorKeyMax = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("TransparentMaxValue")));
+					qts.ColorKeyMax = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("TransparentMaxValue")), NumberStyles.Any, CultureInfo.InvariantCulture);
 				}
 
 				if (renderStrutsString != null)
@@ -1155,18 +1155,18 @@ namespace WorldWind
 
 					if (startXString != null && startYString != null)
 					{
-						int startX = int.Parse(startXString);
-						int startY = int.Parse(startYString);
+						int startX = int.Parse(startXString, NumberStyles.Any, CultureInfo.InvariantCulture);
+						int startY = int.Parse(startYString, NumberStyles.Any, CultureInfo.InvariantCulture);
 
 						WorldWind.Renderable.ScreenOverlay overlay = new ScreenOverlay(name, startX, startY, imageUri);
 
 						if (widthString != null)
 						{
-							overlay.Width = int.Parse(widthString);
+							overlay.Width = int.Parse(widthString, NumberStyles.Any, CultureInfo.InvariantCulture);
 						}
 						if (heightString != null)
 						{
-							overlay.Height = int.Parse(heightString);
+							overlay.Height = int.Parse(heightString, NumberStyles.Any, CultureInfo.InvariantCulture);
 						}
 
 						if (alignmentString != null)
@@ -1269,18 +1269,18 @@ namespace WorldWind
 
 					if (startXString != null && startYString != null)
 					{
-						int startX = int.Parse(startXString);
-						int startY = int.Parse(startYString);
+						int startX = int.Parse(startXString, NumberStyles.Any, CultureInfo.InvariantCulture);
+						int startY = int.Parse(startYString, NumberStyles.Any, CultureInfo.InvariantCulture);
 
 						WorldWind.Renderable.ScreenOverlay overlay = new ScreenOverlay(name, startX, startY, imageUri);
 
 						if (widthString != null)
 						{
-							overlay.Width = int.Parse(widthString);
+							overlay.Width = int.Parse(widthString, NumberStyles.Any, CultureInfo.InvariantCulture);
 						}
 						if (heightString != null)
 						{
-							overlay.Height = int.Parse(heightString);
+							overlay.Height = int.Parse(heightString, NumberStyles.Any, CultureInfo.InvariantCulture);
 						}
 
 						if (alignmentString != null)
@@ -1463,7 +1463,7 @@ namespace WorldWind
 			{
 
 				fd.FaceName = getInnerTextFromFirstChild(iter.Current.Select("Family"));
-				fd.Height = (int)(float.Parse(getInnerTextFromFirstChild(iter.Current.Select("Size"))) * 1.5f);
+				fd.Height = (int)(float.Parse(getInnerTextFromFirstChild(iter.Current.Select("Size")), NumberStyles.Any, CultureInfo.InvariantCulture) * 1.5f);
 
 				XPathNodeIterator styleIter = iter.Current.Select("Style");
 				if (styleIter.Count > 0)
@@ -1716,8 +1716,8 @@ namespace WorldWind
 					}
 
 					ic.TextureFileName = textureFilePath;
-					ic.Width = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("IconWidthPixels")));
-					ic.Height = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("IconHeightPixels")));
+					ic.Width = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("IconWidthPixels")), NumberStyles.Any, CultureInfo.InvariantCulture);
+					ic.Height = int.Parse(getInnerTextFromFirstChild(iter.Current.Select("IconHeightPixels")), NumberStyles.Any, CultureInfo.InvariantCulture);
 
 					if (refreshString != null && refreshString.Length > 0)
 					{
@@ -1994,7 +1994,7 @@ namespace WorldWind
 
 					if (extrudeHeightString != null)
 					{
-						double height = Double.Parse(extrudeHeightString);
+						double height = Double.Parse(extrudeHeightString, NumberStyles.Any, CultureInfo.InvariantCulture);
 						lf.ExtrudeHeight = height;
 					}
 
@@ -2139,7 +2139,7 @@ namespace WorldWind
 
 					if (extrudeHeightString != null)
 					{
-						double height = Double.Parse(extrudeHeightString);
+						double height = Double.Parse(extrudeHeightString, NumberStyles.Any, CultureInfo.InvariantCulture);
 						pf.ExtrudeHeight = height;
 					}
 

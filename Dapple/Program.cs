@@ -11,6 +11,7 @@ using WorldWind;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting;
+using System.Globalization;
 
 namespace Dapple
 {
@@ -23,6 +24,9 @@ namespace Dapple
       [STAThread]
       static void Main(string[] args)
       {
+			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
 #if !DEBUG
          bool aborting = false;
 #endif
@@ -112,7 +116,7 @@ namespace Dapple
 
             if (cmdl["montajport"] != null)
             {
-               int iMontajPort = int.Parse(cmdl["montajport"]);
+               int iMontajPort = int.Parse(cmdl["montajport"], NumberStyles.Any, CultureInfo.InvariantCulture);
 
                if (cmdl["dummyserver"] != null)
                {
@@ -329,6 +333,37 @@ namespace Dapple
          //Set the real intance to foreground window
          SetForegroundWindow(instance.MainWindowHandle);
       }
+
+		/// <summary>
+		/// Occurs when an un-trapped thread exception is thrown in UI event handlers.
+		/// </summary>
+		private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+		{
+			CrashAndBurn(e.Exception);
+		}
+
+		/// <summary>
+		/// Occurs when an un-trapped thread exception is thrown in ThreadPool threads.
+		/// </summary>
+		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			Exception ex = e.ExceptionObject as Exception;
+			// --- Don't report these, as they occur naturally in the .NET runtime.
+			if (ex is ThreadAbortException || ex is AppDomainUnloadedException) return;
+			CrashAndBurn(ex);
+		}
+
+		/// <summary>
+		/// Log the exception, and if this isn't a debug build, display an abort that users can send in.
+		/// </summary>
+		/// <param name="e"></param>
+		private static void CrashAndBurn(Exception e)
+		{
+			Log.Write(e);
+#if !DEBUG
+			Utility.AbortUtility.Abort(e, Thread.CurrentThread);
+#endif
+		}
 
       [DllImport("User32.dll")]
       private static extern bool ShowWindowAsync(IntPtr hWnd, int cmdShow);
