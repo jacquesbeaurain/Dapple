@@ -279,7 +279,10 @@ namespace WorldWind.Renderable
 					}
 
 					foreach (int deletionKey in deletionKeys)
-						m_fileHash.Remove(deletionKey);
+					{
+						if (!((WorldWindWFSPlacenameFile)m_fileHash[deletionKey]).DownloadInProgress)
+							m_fileHash.Remove(deletionKey);
+					}
 
 					lastView = drawArgs.WorldCamera.ViewMatrix;
 				}
@@ -570,7 +573,7 @@ namespace WorldWind.Renderable
 		protected World m_world;
 		protected Cache m_cache;
 
-        protected bool m_dlInProcess = false;
+		protected bool m_dlInProcess = false;
 
 		public WorldWindWFSPlacenameFile(
 			 string name,
@@ -596,6 +599,14 @@ namespace WorldWind.Renderable
 			wfsURL = wfsBaseUrl + "&OUTPUTFORMAT=GML2-GZIP&BBOX=" + west + "," + south + "," + east + "," + north;
 			this.m_world = world;
 			this.m_cache = cache;
+		}
+
+		public bool DownloadInProgress
+		{
+			get
+			{
+				return m_dlInProcess;
+			}
 		}
 
 		public WorldWindPlacename[] PlaceNames
@@ -661,8 +672,8 @@ namespace WorldWind.Renderable
 					return;
 				}
 
-                if (m_dlInProcess)
-                    return;
+				if (m_dlInProcess)
+					return;
 
 				//hard coded cache location
 				//string cachefilename = 
@@ -676,41 +687,43 @@ namespace WorldWind.Renderable
 					 string.Format("\\{0}\\WFS\\{1}\\{2}_{3}_{4}_{5}.xml.gz",
 					 this.m_world.Name, this.name, this.west, this.south, this.east, this.north);
 
-                if (!File.Exists(cachefilename))
-                {
-                    m_dlInProcess = true;
-                    WebDownload wfsdl = new WebDownload(this.wfsURL);
-                    wfsdl.SavedFilePath = cachefilename;
-                    wfsdl.BackgroundDownloadFile(new DownloadCompleteHandler(DownloadComplete));
-                }
-                else
-                    ProcessCacheFile();
-            }
-            catch //(Exception ex)
-            {
-                //Log.Write(ex);
-                if (m_placeNames == null)
-                    m_placeNames = new WorldWindPlacename[0];
-                m_failed = true;
-            }
-        }
+				if (!File.Exists(cachefilename))
+				{
+					m_dlInProcess = true;
+					WebDownload wfsdl = new WebDownload(this.wfsURL);
+					wfsdl.SavedFilePath = cachefilename;
+					wfsdl.BackgroundDownloadFile(new DownloadCompleteHandler(DownloadComplete));
+				}
+				else
+					ProcessCacheFile();
+			}
+			catch //(Exception ex)
+			{
+				//Log.Write(ex);
+				if (m_placeNames == null)
+					m_placeNames = new WorldWindPlacename[0];
+				m_failed = true;
+			}
+		}
 
-        private void DownloadComplete(WebDownload dl)
-        {
-            ProcessCacheFile();
-        }
+		private void DownloadComplete(WebDownload dl)
+		{
+			ProcessCacheFile();
+		}
 
-        private void ProcessCacheFile()
-        {
-            try
-            {
-                string cachefilename = m_cache.CacheDirectory +
-                    string.Format("\\{0}\\WFS\\{1}\\{2}_{3}_{4}_{5}.xml.gz",
-                    this.m_world.Name, this.name, this.west, this.south, this.east, this.north);
+		private void ProcessCacheFile()
+		{
+			try
+			{
+				string cachefilename = m_cache.CacheDirectory +
+					 string.Format("\\{0}\\WFS\\{1}\\{2}_{3}_{4}_{5}.xml.gz",
+					 this.m_world.Name, this.name, this.west, this.south, this.east, this.north);
 
-				GZipInputStream instream = new GZipInputStream(new FileStream(cachefilename, FileMode.Open));
 				XmlDocument gmldoc = new XmlDocument();
-				gmldoc.Load(instream);
+				using (GZipInputStream instream = new GZipInputStream(new FileStream(cachefilename, FileMode.Open)))
+				{
+					gmldoc.Load(instream);
+				}
 				XmlNamespaceManager xmlnsManager = new XmlNamespaceManager(gmldoc.NameTable);
 				xmlnsManager.AddNamespace("gml", "http://www.opengis.net/gml");
 				//HACK: Create namespace using first part of Label Field
@@ -775,10 +788,10 @@ namespace WorldWind.Renderable
 					m_placeNames = new WorldWindPlacename[0];
 				m_failed = true;
 			}
-            finally
-            {
-                m_dlInProcess = false;
-            }
-        }
+			finally
+			{
+				m_dlInProcess = false;
+			}
+		}
 	}
 }
