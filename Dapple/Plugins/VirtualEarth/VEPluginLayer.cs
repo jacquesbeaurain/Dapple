@@ -382,7 +382,7 @@ namespace bNb.Plugins_GD
 					for (int i = 0; i < veTiles.Count; i++)
 					{
 						veTile = (VeTile)veTiles[i];
-						if (veTile.IsNeeded == false)
+						if (veTile.IsNeeded == false && veTile.DownloadInProgress == false)
 						{
 							veTile.Dispose();
 							veTiles.RemoveAt(i);
@@ -1026,11 +1026,22 @@ namespace bNb.Plugins_GD
 	#region VETILE
 	public class VeTile : IDisposable
 	{
+		//Whether a download is currently in progress
+		private bool m_blDownloading = false;
+
       //these are the coordinate extents for the tile
       UV m_ul, m_ur, m_ll, m_lr;
 
 		private MD5 md5Hasher;
 		private static byte[] noTileMD5Hash = { 0xc1, 0x32, 0x69, 0x48, 0x1c, 0x73, 0xde, 0x6e, 0x18, 0x58, 0x9f, 0x9f, 0xbc, 0x3b, 0xdf, 0x7e };
+
+		public Boolean DownloadInProgress
+		{
+			get
+			{
+				return m_blDownloading;
+			}
+		}
 
 		/// <summary>
 		/// Coordinates at upper left edge of image
@@ -1242,6 +1253,7 @@ namespace bNb.Plugins_GD
 				t.Start();
 				*/
 
+				m_blDownloading = true;
 				download = new WebDownload(textureUrl);
 				download.DownloadType = DownloadType.Unspecified;
 				download.SavedFilePath = textureName + ".tmp"; //?
@@ -1344,6 +1356,7 @@ namespace bNb.Plugins_GD
 				//m_quadTile.QuadTileArgs.RemoveFromDownloadQueue(this);
 				//Immediately queue next download
 				//m_quadTile.QuadTileArgs.ServiceDownloadQueue();
+				m_blDownloading = false;
 			}
 
 
