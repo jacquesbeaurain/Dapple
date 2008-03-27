@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<xs:schema id="GeosoftXml" targetNamespace="http://tempuri.org/GeosoftXml.xsd" elementFormDefault="qualified"
-	xmlns="http://tempuri.org/GeosoftXml.xsd" xmlns:mstns="http://tempuri.org/GeosoftXml.xsd"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema id="GeosoftXml" targetNamespace="http://geosoft.com/schema/GeosoftXml.xsd" elementFormDefault="qualified"
+	xmlns="http://geosoft.com/schema/GeosoftXml.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="GEOSOFT_XML">
 		<xs:complexType>
-			<xs:attribute name="version" type="xs:string" />
-			<xs:choice>
-				<xs:element name="REQUEST" type="REQUEST" />
-				<xs:element name="RESPONSE" type="RESPONSE" />
-				<xs:element name="ERROR" type="ERROR"/>
-			</xs:choice>
+         <xs:choice>
+            <xs:element name="request" type="Request_Type" />
+            <xs:element name="response" type="Response_Type" />
+            <xs:element name="error" type="Error_Type"/>
+         </xs:choice>
+         <xs:attribute name="version" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="REQUEST">
+	<xs:element name="Request_Type">
 		<xs:complexType>
 			<xs:choice minOccurs="1" maxOccurs="1">
-				<xs:element name="GET_CATALOG" type="GET_CATALOG_REQUEST" />
-				<xs:element name="GET_METADATA" type="GET_METADATA_REQUEST" />
+				<xs:element name="catalog" type="CatalogRequest_Type" />
+				<xs:element name="metadata" type="MetadataRequest_Type" />
 				<xs:element name="GET_IMAGE" type="GET_IMAGE_REQUEST" />
 				<xs:element name="EXTRACT" type="EXTRACT_REQUEST" />
 				<xs:element name="EXTRACT_STATUS" type="EXTRACT_STATUS_REQUEST" />
@@ -26,6 +25,7 @@
 				<xs:element name="GET_DEFAULT_RESOLUTION" type="GET_DEFAULT_RESOLUTION_REQUEST" />
 				<xs:element name="GET_COORDINATE_SYSTEM_LIST" type="GET_COORDINATE_SYSTEM_LIST_REQUEST" />
 			</xs:choice>
+         <xs:attribute name="namespace" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="RESPONSE">
@@ -43,33 +43,64 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="ERROR" type="xs:string">
-		<xs:complexType>
-			<xs:attribute name="handle" type="xs:string" use="optional"/>
-			<xs:attribute name="code" type="xs:string" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="GET_CATALOG_REQUEST">
-		<xs:complexType>
-			<xs:attribute name="handle" type="xs:string" use="optional" />
-			<xs:attribute name="max_depth" type="xs:integer" use="optional" />
-			<xs:attribute name="max_results" type="xs:integer" use="optional" />
-			<xs:all>
-				<xs:element name="CATALOG" minOccurs="0">
-					<xs:complexType>
-						<xs:attribute name="path" type="xs:string" />
-					</xs:complexType>
-				</xs:element>
-			</xs:all>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="GET_METADATA_REQUEST">
-		<xs:complexType>
-			<xs:attribute name="handle" type="xs:string" use="optional" />
-			<xs:attribute name="name" type="xs:string" />
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="GET_IMAGE_REQUEST">
+   
+   <xs:complexType name="Error_Type">
+		<xs:attribute name="handle" type="xs:string" use="optional"/>
+		<xs:attribute name="code" type="xs:string" use="optional"/>
+	</xs:complexType>
+	
+   <xs:complexType name="Command_Type">
+      <xs:attribute name="handle" type="xs:string" use="optional"/>
+      <xs:attribute name="token" type="xs:string" use="optional"/>
+   </xs:complexType>
+
+   <xs:complexType name="CoordinateSystem_Type">
+      <xs:attribute name="datum" type="xs:string"/>
+      <xs:attribute name="projection" type="xs:string"/>
+      <xs:attribute name="units" type="xs:string"/>
+      <xs:attribute name="local_datum" type="xs:string"/>
+      <xs:attribute name="esri" type="xs:string"/>
+   </xs:complexType>
+   
+   <xs:complexType name="BoundingBox_Type">
+      <xs:sequence>
+         <xs:element name="coordinate_system" type="CoordinateSystem_Type"/>
+      </xs:sequence>
+      <xs:attribute name="maxX" type="xs:decimal"/>
+      <xs:attribute name="maxY" type="xs:decimal"/>
+      <xs:attribute name="minX" type="xs:decimal"/>
+      <xs:attribute name="minY" type="xs:decimal"/>
+   </xs:complexType>
+   
+   <xs:complexType name="CatalogRequest_Type">
+      <xs:complexContent>
+         <xs:extension base="Command_Type">
+            <xs:all>
+               <xs:element name="filter" minOccurs="0" maxOccurs="1">
+                  <xs:complexType>
+                     <xs:attribute name="path" type="xs:string"/>
+                     <xs:attribute name="depth" type="xs:integer"/>
+                  </xs:complexType>
+               </xs:element>
+               <xs:element name="bounding_box" type="BoundingBox_Type"/>
+            </xs:all>
+            <xs:attribute name="count" type="xs:integer" use="optional" />
+            <xs:attribute name="max_results" type="xs:integer" use="optional" />
+            <xs:attribute name="index" type="xs:integer" use="optional" />
+            <xs:attribute name="keywords" type="xs:string" use="optional" />
+         </xs:extension>
+      </xs:complexContent>      
+	</xs:complexType>
+   
+	<xs:complexType name="MetadataRequest_Type">
+      <xs:complexContent>
+         <xs:extension base="Command_Type">
+            <xs:attribute name="name" type="xs:string" />
+         </xs:extension>
+      </xs:complexContent>
+	</xs:complexType>
+	
+   <xs:element name="GET_IMAGE_REQUEST">
 		<xs:complexType>
 			<xs:attribute name="handle" type="xs:string" use="optional" />
 			<xs:all>

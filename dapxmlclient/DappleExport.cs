@@ -4,119 +4,120 @@ using System.Text;
 
 namespace Geosoft.Dap.Common
 {
-   /// <summary>
-   /// Export a result set to dapple
-   /// </summary>
-   public class DappleExport
-   {
-      /// <summary>
-      /// Get the xml for this list of datasets
-      /// </summary>\
-      /// <param name="oDapCommand"></param>
-      /// <param name="oDatasets"></param>
-      /// <param name="oSelectedDatasets"></param>
-      /// <returns></returns>
-      public static System.Xml.XmlDocument GetXml(Command oDapCommand, System.Collections.SortedList oDatasets, System.Collections.ArrayList oSelectedDatasets)
-      {
-         System.Xml.XmlDocument oOutputXml = new System.Xml.XmlDocument();         
+	/// <summary>
+	/// Export a result set to dapple
+	/// </summary>
+	public class DappleExport
+	{
+		/// <summary>
+		/// Get the xml for this list of datasets
+		/// </summary>\
+		/// <param name="oDapCommand"></param>
+		/// <param name="oDatasets"></param>
+		/// <param name="oSelectedDatasets"></param>
+		/// <returns></returns>
+		public static System.Xml.XmlDocument GetXml(Command oDapCommand, System.Collections.SortedList oDatasets, System.Collections.ArrayList oSelectedDatasets)
+		{
+			System.Xml.XmlDocument oOutputXml = new System.Xml.XmlDocument();
 
-         oOutputXml.AppendChild(oOutputXml.CreateXmlDeclaration("1.0", "UTF-8", string.Empty));
+			oOutputXml.AppendChild(oOutputXml.CreateXmlDeclaration("1.0", "UTF-8", string.Empty));
 
-         System.Xml.XmlElement oGeosoftXml = oOutputXml.CreateElement("geosoft_xml");
-         oOutputXml.AppendChild(oGeosoftXml);
-         
-         foreach (string strKey in oSelectedDatasets) {
-            Dap.Common.DataSet oDataset = (Dap.Common.DataSet)oDatasets[strKey];
+			System.Xml.XmlElement oGeosoftXml = oOutputXml.CreateElement("geosoft_xml");
+			oOutputXml.AppendChild(oGeosoftXml);
 
-            if (oDataset != null)
-               OutputDataset(oDapCommand, oGeosoftXml, oDataset);
-         }
-         return oOutputXml;
-      }
+			foreach (string strKey in oSelectedDatasets)
+			{
+				Dap.Common.DataSet oDataset = (Dap.Common.DataSet)oDatasets[strKey];
 
-      /// <summary>
-      /// Add this dataset into the kml document
-      /// </summary>
-      /// <param name="oDapCommand"></param>
-      /// <param name="oXmlNode"></param>
-      /// <param name="oDataset"></param>
-      private static void OutputDataset(Command oDapCommand, System.Xml.XmlNode oXmlNode, Dap.Common.DataSet oDataset)
-      {
-         System.Xml.XmlElement oDisplayMapNode;
-         System.Xml.XmlAttribute oAttr;
+				if (oDataset != null)
+					OutputDataset(oDapCommand, oGeosoftXml, oDataset);
+			}
+			return oOutputXml;
+		}
 
-         // --- write out the dataset node ---
+		/// <summary>
+		/// Add this dataset into the kml document
+		/// </summary>
+		/// <param name="oDapCommand"></param>
+		/// <param name="oXmlNode"></param>
+		/// <param name="oDataset"></param>
+		private static void OutputDataset(Command oDapCommand, System.Xml.XmlNode oXmlNode, Dap.Common.DataSet oDataset)
+		{
+			System.Xml.XmlElement oDisplayMapNode;
+			System.Xml.XmlAttribute oAttr;
 
-         oDisplayMapNode = oXmlNode.OwnerDocument.CreateElement("display_map");
+			// --- write out the dataset node ---
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("type");
-         oAttr.Value = "DAP";
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oDisplayMapNode = oXmlNode.OwnerDocument.CreateElement("display_map");
 
-         string strDapUrl = oDapCommand.Url;
-         if (strDapUrl.ToUpper().StartsWith("HTTP://"))
-            strDapUrl = strDapUrl.Substring(7);
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("server");
-         oAttr.Value = strDapUrl;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("type");
+			oAttr.Value = "DAP";
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("layername");
-         oAttr.Value = oDataset.Name;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			string strDapUrl = oDapCommand.Url;
+			if (strDapUrl.ToUpper().StartsWith("HTTP://"))
+				strDapUrl = strDapUrl.Substring(7);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("server");
+			oAttr.Value = strDapUrl;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("datasetname");
-         oAttr.Value = oDataset.Name;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("layername");
+			oAttr.Value = oDataset.Name;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("layertitle");
-         oAttr.Value = oDataset.Title;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("datasetname");
+			oAttr.Value = oDataset.Name;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("datasettype");
-         oAttr.Value = oDataset.Type;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("layertitle");
+			oAttr.Value = oDataset.Title;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("edition");
-         oAttr.Value = oDataset.Edition;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("datasettype");
+			oAttr.Value = oDataset.Type;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("hierarchy");
-         oAttr.Value = oDataset.Hierarchy;
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("edition");
+			oAttr.Value = oDataset.Edition;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("minx");
-         oAttr.Value = oDataset.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture);
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("hierarchy");
+			oAttr.Value = oDataset.Hierarchy;
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("miny");
-         oAttr.Value = oDataset.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture);
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("minx");
+			oAttr.Value = oDataset.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("maxx");
-         oAttr.Value = oDataset.Boundary.MaxX.ToString(System.Globalization.CultureInfo.InvariantCulture);
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("miny");
+			oAttr.Value = oDataset.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("maxy");
-         oAttr.Value = oDataset.Boundary.MaxY.ToString(System.Globalization.CultureInfo.InvariantCulture);
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("maxx");
+			oAttr.Value = oDataset.Boundary.MaxX.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("height");
-         oAttr.Value = "0";
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("maxy");
+			oAttr.Value = oDataset.Boundary.MaxY.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("size");
-         oAttr.Value = "256";
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("height");
+			oAttr.Value = "0";
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("levels");
-         oAttr.Value = DappleUtils.Levels(oDapCommand, oDataset).ToString();
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("size");
+			oAttr.Value = "256";
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oAttr = oXmlNode.OwnerDocument.CreateAttribute("levelzerotilesize");
-         oAttr.Value = DappleUtils.LevelZeroTileSize(oDataset).ToString(System.Globalization.CultureInfo.InvariantCulture);
-         oDisplayMapNode.Attributes.Append(oAttr);
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("levels");
+			oAttr.Value = DappleUtils.Levels(oDapCommand, oDataset).ToString();
+			oDisplayMapNode.Attributes.Append(oAttr);
 
-         oXmlNode.AppendChild(oDisplayMapNode);
-      }
-   }
+			oAttr = oXmlNode.OwnerDocument.CreateAttribute("levelzerotilesize");
+			oAttr.Value = DappleUtils.LevelZeroTileSize(oDataset).ToString(System.Globalization.CultureInfo.InvariantCulture);
+			oDisplayMapNode.Attributes.Append(oAttr);
+
+			oXmlNode.AppendChild(oDisplayMapNode);
+		}
+	}
 }
