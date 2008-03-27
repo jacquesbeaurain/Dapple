@@ -8,6 +8,10 @@
         <Directory Id="INSTALLLOCATION" Name="Dapple">
           <Directory Id="INSTALLDIR" Name=".">
             <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
+            <Component Id="dapple_registry" Guid="{972C51B4-7706-4114-B47A-3771FA696AA5}">
+              <RegistryValue Id="RegDapple" Name="InstallPath" Root="HKLM" Key="Software\Geosoft\Dapple" Value="[INSTALLDIR]" Type="string" KeyPath="yes"/>
+              <RemoveRegistryKey Root="HKLM" Key="Software\Geosoft\Dapple" Action="removeOnUninstall" />
+            </Component>
             <Component Id="dapple_shortcut" Guid="{142546DC-93DE-47e3-8D24-A032FED210EE}">
               <RegistryKey Root="HKCU" Key="Software\Geosoft\Dapple\Install" Action="createAndRemoveOnUninstall">
                 <RegistryValue Name="Env" Value="1" Type="integer" KeyPath="yes" />
@@ -30,6 +34,7 @@
     <Feature Id="Main" Title="Main Application" Level="1">
       <MergeRef Id="DappleMergeModule" />
       <ComponentRef Id="dapple_shortcut" />
+      <ComponentRef Id="dapple_registry" />
     </Feature>
     <CustomAction Id="SetDappleShortcut" Property="DappleShortcut" Value="[INSTALLDIR]\Dapple.exe" />
     <CustomAction Id="LaunchProgram" Directory="INSTALLDIR" ExeCommand="[INSTALLDIR]dapple.exe" Execute="immediate" Return="asyncNoWait" />
