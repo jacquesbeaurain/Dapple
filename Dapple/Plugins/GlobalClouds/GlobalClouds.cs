@@ -198,7 +198,14 @@ namespace Murris.Plugins
 			{
 				if (imgFiles[i].LastWriteTime < oldest)
 				{
-					File.Delete(Path.Combine(cachePath, imgFiles[i].Name));
+					try
+					{
+						File.Delete(Path.Combine(cachePath, imgFiles[i].Name));
+					}
+					catch (IOException)
+					{
+						// Can't delete an old temp file?  That's okay, try again later.
+					}
 				}
 			}
 		}
@@ -753,8 +760,6 @@ namespace Murris.Plugins
 				//MessageBox.Show("Error downloading cloud map from " + downloadInfo.Url + " (" + caugth.Message + ").", "Download failed.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 				Utility.Log.Write(Utility.Log.Levels.Warning, "Error downloading cloud map from " + downloadInfo.Url + " (" + caugth.Message + ").");
 
-				if (File.Exists(downloadInfo.SavedFilePath))
-					File.Delete(downloadInfo.SavedFilePath);
 				retryCount++;
 			}
 			finally
