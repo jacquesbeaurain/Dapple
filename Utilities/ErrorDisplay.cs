@@ -97,9 +97,15 @@ namespace Utility
             p.WaitForExit();
          }
 
-         File.Delete(tempBodyFile);
-         File.Delete(tempAbortFile);
-         
+			try
+			{
+				File.Delete(tempBodyFile);
+				File.Delete(tempAbortFile);
+			}
+			catch (IOException)
+			{
+				// File is in user's temp directory, so will get cleaned up eventually.  No big deal.
+			}
 		}
 
 		#region Windows Form Designer generated code
