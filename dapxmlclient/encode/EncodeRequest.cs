@@ -499,6 +499,28 @@ namespace Geosoft.Dap.Xml
 		}
 
 		/// <summary>
+		/// Encode the request to get the xml meta data for a particular dataset
+		/// </summary>
+		/// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>
+		/// <param name="szDataSet">The unique dataset name</param>
+		/// <returns>The GeosoftXML request</returns>
+		public System.Xml.XmlDocument XMLMetadata(string szHandle, string szDataSet)
+		{
+			// --- Create required nodes ---
+
+			System.Xml.XmlElement hGetMetaDataNode = CreateRequest(szHandle, Constant.Tag.XML_METADATA_TAG);
+
+			if (szDataSet != null && szDataSet.Length != 0)
+			{
+				System.Xml.XmlAttribute hAttr = hGetMetaDataNode.OwnerDocument.CreateAttribute(Constant.Attribute.NAME_ATTR);
+				hAttr.Value = szDataSet;
+
+				hGetMetaDataNode.SetAttributeNode(hAttr);
+			}
+			return hGetMetaDataNode.OwnerDocument;
+		}
+
+		/// <summary>
 		/// Encode the request to get the a disclaimer for a particular dataset
 		/// </summary>
 		/// <param name="szHandle">The handle which uniquly identifies this request/response pair</param>

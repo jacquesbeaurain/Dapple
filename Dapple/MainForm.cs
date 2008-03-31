@@ -403,11 +403,11 @@ namespace Dapple
 				InitializeComponent();
 				this.SuspendLayout();
 
-#if DEBUG
+/*#if DEBUG
 				// --- Make the server tree HOOGE ---
 				this.splitContainerMain.SplitterDistance = 400;
 				this.splitContainerLeftMain.SplitterDistance = 400;
-#endif
+#endif*/
 
 				this.Icon = new System.Drawing.Icon(@"app.ico");
 				this.toolStripRenderer = new DappleToolStripRenderer();
@@ -3094,6 +3094,89 @@ namespace Dapple
 			toolStripNavigation.Location = newLocation;
 		}
 
+		private void DumpTreeNode(TreeNode oNode, String strPrepend)
+		{
+			Console.Write(strPrepend + oNode.Text);
+			if (oNode.Tag != null)
+				Console.Write(" (" + oNode.Tag.GetType() + ")");
+			else
+				Console.Write(" (null)");
+			Console.WriteLine();
+
+			foreach (TreeNode oChild in oNode.Nodes)
+			{
+				DumpTreeNode(oChild, strPrepend + "  -");
+			}
+		}
+
+		#region UI Actions
+
+		private void AddDatasetAction()
+		{
+			if (cSearchTabPane.SelectedIndex == 0)
+			{
+				if (cServerViewsTab.SelectedIndex == 0)
+				{
+					tvServers.AddCurrentDataset();
+				}
+				else if (cServerViewsTab.SelectedIndex == 1)
+				{
+					cLayerList.AddLayers(cServerListControl.SelectedLayers);
+				}
+			}
+			else if (cSearchTabPane.SelectedIndex == 1)
+			{
+				cWebSearch.CmdAddSelected();
+			}
+		}
+
+		#endregion
+
+		private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			AddDatasetAction();
+		}
+
+		private void WorldResultsSplitPanel_Panel1_DragOver(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
+			{
+				e.Effect = DragDropEffects.Copy;
+			}
+		}
+
+		private void WorldResultsSplitPanel_Panel1_DragDrop(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
+			{
+				List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
+				cLayerList.AddLayers(oDropData);
+			}
+		}
+
+		private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			cLayerList.CmdExtractVisibleLayers();
+		}
+
+		private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)
+		{
+			IBuilder oBuilder = this.tvServers.SelectedNode.Tag as IBuilder;
+
+			if (oBuilder == null) return;
+
+			frmProperties form = new frmProperties();
+			form.SetObject = oBuilder;
+			form.ShowDialog(this);
+		}
+
+		private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			doSearch();
+		}
+
+		#region Metadata displayer
+
 		public delegate void StringParamDelegate(String szString);
 		private void DisplayMetadataMessage(String szMessage)
 		{
@@ -3183,87 +3266,6 @@ namespace Dapple
 			}
 		}
 
-		private void DumpTreeNode(TreeNode oNode, String strPrepend)
-		{
-			Console.Write(strPrepend + oNode.Text);
-			if (oNode.Tag != null)
-				Console.Write(" (" + oNode.Tag.GetType() + ")");
-			else
-				Console.Write(" (null)");
-			Console.WriteLine();
-
-			foreach (TreeNode oChild in oNode.Nodes)
-			{
-				DumpTreeNode(oChild, strPrepend + "  -");
-			}
-		}
-
-		#region UI Actions
-
-		private void AddDatasetAction()
-		{
-			if (cSearchTabPane.SelectedIndex == 0)
-			{
-				if (cServerViewsTab.SelectedIndex == 0)
-				{
-					tvServers.AddCurrentDataset();
-				}
-				else if (cServerViewsTab.SelectedIndex == 1)
-				{
-					cLayerList.AddLayers(cServerListControl.SelectedLayers);
-				}
-			}
-			else if (cSearchTabPane.SelectedIndex == 1)
-			{
-				cWebSearch.CmdAddSelected();
-			}
-		}
-
-		#endregion
-
-		private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			AddDatasetAction();
-		}
-
-		private void WorldResultsSplitPanel_Panel1_DragOver(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
-			{
-				e.Effect = DragDropEffects.Copy;
-			}
-		}
-
-		private void WorldResultsSplitPanel_Panel1_DragDrop(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
-			{
-				List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
-				cLayerList.AddLayers(oDropData);
-			}
-		}
-
-		private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			cLayerList.CmdExtractVisibleLayers();
-		}
-
-		private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)
-		{
-			IBuilder oBuilder = this.tvServers.SelectedNode.Tag as IBuilder;
-
-			if (oBuilder == null) return;
-
-			frmProperties form = new frmProperties();
-			form.SetObject = oBuilder;
-			form.ShowDialog(this);
-		}
-
-		private void searchToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			doSearch();
-		}
-
 		/// <summary>
 		/// Synchronization class which handles displaying the metadata for a layer.  Prevents loading a layer
 		/// multiple times, and supresses multiple loads when more than one layer change occurs in a short
@@ -3335,6 +3337,8 @@ namespace Dapple
 				}
 			}
 		}
+
+		#endregion
 
 		private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
 		{

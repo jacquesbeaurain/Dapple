@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using Geosoft.Dap;
+using System.Collections.Generic;
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -49,6 +50,7 @@ namespace Geosoft.GX.DAPGetData
       protected XmlDocument                     m_oBrowserMap = null;
       protected bool                            m_blEnabled;
       protected bool                            m_blConfigured = false;
+		protected SortedList<String, String> m_oStyleSheets = null;
 
       protected string m_strCacheDir;
       protected string m_strCacheRoot;
@@ -221,6 +223,23 @@ namespace Geosoft.GX.DAPGetData
             }
          }
       }
+
+		public SortedList<String, String> StyleSheets
+		{
+			get
+			{
+				if (m_oStyleSheets == null)
+				{
+					m_oCommand.ListStylesheets(out m_oStyleSheets);
+				}
+				return m_oStyleSheets;
+			}
+		}
+
+		public static String GetStyleSheetFilename(String szName, String szCRC)
+		{
+			return String.Format("{0}[{1}].xsl", szName, szCRC);
+		}
      
       #endregion
 

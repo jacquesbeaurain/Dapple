@@ -23,6 +23,7 @@ namespace Dapple.LayerGeneration
 
 		public static readonly string URISchemeName = "gxdap";
 		public static readonly string CacheSubDir = "DAPImages";
+		public static readonly string StylesheetCacheSubDir = "DAP Stylesheets";
 
       public const int DAP_TILE_SIZE = 256;
       public const double DAP_TILE_LZTS = 22.5;
@@ -38,6 +39,7 @@ namespace Dapple.LayerGeneration
 		private Server m_oServer;
 		private int m_iLevels;
 		private double m_dLevelZeroTileSizeDegrees;
+		private bool m_blUseXMLMeta = true;
 
       #endregion
 
@@ -66,6 +68,8 @@ namespace Dapple.LayerGeneration
             m_dLevelZeroTileSizeDegrees = DAP_TILE_LZTS;
 				m_iLevels = DappleUtils.TileLevels(m_oServer.Command, dataSet);
          }
+
+			m_blUseXMLMeta = !String.IsNullOrEmpty(m_hDataSet.Stylesheet);
 		}
 
 		#endregion
@@ -238,7 +242,43 @@ namespace Dapple.LayerGeneration
 		{
 			get
 			{
-				return "dap_dataset.xsl";
+				if (!m_blUseXMLMeta)
+				{
+					return "dap_dataset.xsl";
+				}
+				else
+				{
+					try
+					{
+						String strStylesheetCRC = m_oServer.StyleSheets[m_hDataSet.Stylesheet];
+						String szFilename = Path.Combine(GetStyleSheetCachePath(), Server.GetStyleSheetFilename(m_hDataSet.Stylesheet, strStylesheetCRC));
+
+						if (!File.Exists(Path.Combine(GetStyleSheetCachePath(), szFilename)))
+						{
+							Directory.CreateDirectory(Path.GetDirectoryName(szFilename));
+							XmlDocument oStyleSheet = m_oServer.Command.GetStylesheet(m_hDataSet.Stylesheet);
+							oStyleSheet.Save(szFilename);
+						}
+
+						return szFilename;
+					}
+					catch (Geosoft.Dap.DapException)
+					{
+						// --- Probably talking to an old server that doesn't understand this command, default to the ugly sheet ---
+						return "dap_dataset.xsl";
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// The name of the stylesheet, as found in the server's GetStylesheets response.
+		/// </summary>
+		public String StyleSheetID
+		{
+			get
+			{
+				return m_hDataSet.Stylesheet;
 			}
 		}
 
@@ -302,6 +342,11 @@ namespace Dapple.LayerGeneration
          return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServer.Url.Replace("http://", "")), m_hDataSet.GetHashCode().ToString());
       }
 
+		private String GetStyleSheetCachePath()
+		{
+			return Path.Combine(Path.Combine(m_strCacheRoot, StylesheetCacheSubDir), m_oServer.Url.Replace("http://", ""));
+		}
+
       protected override void CleanUpLayer(bool bFinal)
       {
          if (m_layer != null)
@@ -338,17 +383,31 @@ namespace Dapple.LayerGeneration
 
 		public override XmlNode GetMetaData(XmlDocument oDoc)
 		{
-			XmlDocument responseDoc = m_oServer.Command.GetMetaData(m_hDataSet, null);
-			XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
-			if (oNode == null) return null;
-			XmlNode metaNode = oDoc.CreateElement("dapmeta");
-			XmlNode nameNode = oDoc.CreateElement("name");
-			nameNode.InnerText = Title;
-			metaNode.AppendChild(nameNode);
-			XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
-			geoMetaNode.InnerXml = oNode.InnerXml;
-			metaNode.AppendChild(geoMetaNode);
-			return metaNode;
+			if (m_blUseXMLMeta)
+				{
+					try
+					{
+						return m_oServer.Command.GetXMLMetaData(m_hDataSet);
+					}
+					catch (Geosoft.Dap.DapException)
+					{
+						// Dataset doesn't have XML, default to the ugly type of metadata.
+						m_blUseXMLMeta = false;
+					}
+				}
+
+				// --- Doctor the metadata slightly to fit the default stylesheet ---
+				XmlDocument responseDoc = m_oServer.Command.GetMetaData(m_hDataSet, null);
+				XmlNode oNode = responseDoc.DocumentElement.FirstChild.FirstChild.FirstChild;
+				if (oNode == null) return null;
+				XmlNode metaNode = oDoc.CreateElement("dapmeta");
+				XmlNode nameNode = oDoc.CreateElement("name");
+				nameNode.InnerText = Title;
+				metaNode.AppendChild(nameNode);
+				XmlNode geoMetaNode = oDoc.CreateElement(oNode.Name);
+				geoMetaNode.InnerXml = oNode.InnerXml;
+				metaNode.AppendChild(geoMetaNode);
+				return metaNode;
 		}
 
 		#endregion

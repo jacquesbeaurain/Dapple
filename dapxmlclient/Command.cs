@@ -1101,6 +1101,99 @@ namespace Geosoft.Dap
 		}
 
 		/// <summary>
+		/// Get xml meta information for a particular dataset
+		/// </summary>
+		/// <param name="hDataSet">The dataset to retrieve meta information for</param>
+		/// <returns>The meta response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetXMLMetaData(DataSet hDataSet)
+		{
+			return GetXMLMetaData(hDataSet, null);
+		}
+
+		/// <summary>
+		/// Get xml meta information for a particular dataset
+		/// </summary>
+		/// <param name="hDataSet">The dataset to retrieve meta information for</param>
+		/// <param name="progressCallBack">Progress handler (may be null)</param>
+		/// <returns>The meta response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetXMLMetaData(DataSet hDataSet, UpdateProgessCallback progressCallBack)
+		{
+			// --- check to make sure that the dataset is located on the server this command is connected to ---
+
+			if (hDataSet.Url != Url)
+				throw new DapException("The dataset is not located on this server.");
+
+			return GetXMLMetaData(hDataSet.Name, progressCallBack);
+		}
+
+		/// <summary>
+		/// Get xml meta information for a particular dataset
+		/// </summary>
+		/// <param name="hItem">The item element within a catalog response</param>
+		/// <returns>The meta response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetXMLMetaData(System.Xml.XmlNode hItem)
+		{
+			return GetXMLMetaData(hItem, null);
+		}
+
+		/// <summary>
+		/// Get xml meta information for a particular dataset
+		/// </summary>
+		/// <param name="hItem">The item element within a catalog response</param>
+		/// <param name="progressCallBack">Progress handler (may be null)</param>
+		/// <returns>The meta response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetXMLMetaData(System.Xml.XmlNode hItem, UpdateProgessCallback progressCallBack)
+		{
+			if (hItem == null || hItem.Name != Constant.Tag.ITEM_TAG) throw new DapException("Invalid item element");
+
+
+			// --- get the dataset name ---
+
+			System.Xml.XmlNode hAttr = hItem.Attributes.GetNamedItem("name");
+			if (hAttr == null) throw new DapException("Missing name attribute in item element");
+
+			return GetXMLMetaData(hAttr.Value, progressCallBack);
+		}
+
+		/// <summary>
+		/// Get the xml meta information for a paricular dataset
+		/// </summary>
+		/// <param name="szDataSet">The unique name of the dataset</param>
+		/// <returns>The meta response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetXMLMetaData(string szDataSet)
+		{
+			return GetXMLMetaData(szDataSet, null);
+		}
+
+		/// <summary>
+		/// Get the xml meta information for a paricular dataset
+		/// </summary>
+		/// <param name="szDataSet">The unique name of the dataset</param>
+		/// <param name="progressCallBack">Progress handler (may be null)</param>
+		/// <returns>The meta response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetXMLMetaData(string szDataSet, UpdateProgessCallback progressCallBack)
+		{
+			string szUrl;
+			System.Xml.XmlDocument hRequestDocument;
+			System.Xml.XmlDocument hResponseDocument;
+
+
+			try
+			{
+				m_oLock.AcquireReaderLock(-1);
+				szUrl = CreateUrl(Constant.Request.META);
+
+				hRequestDocument = m_hEncodeRequest.XMLMetadata(null, szDataSet);
+				hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);
+			}
+			finally
+			{
+				m_oLock.ReleaseReaderLock();
+			}
+			return hResponseDocument;
+		}
+
+		/// <summary>
 		/// Get the image for a particular dataset from the catalog item element
 		/// </summary>
 		/// <param name="hItem">The item element within a catalog response</param>
@@ -2799,7 +2892,7 @@ namespace Geosoft.Dap
 		/// <returns>The configuration response in GeosoftXML</returns>
 		public System.Xml.XmlDocument GetStylesheet(string strName)
 		{
-			return GetStylesheet(null);
+			return GetStylesheet(strName, null);
 		}
 
 		/// <summary>

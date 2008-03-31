@@ -230,6 +230,9 @@ namespace Geosoft.Dap.Xml.Common
 			public const string METADATA_TAG = "metadata";
 
 			/// <summary></summary>
+			public const string XML_METADATA_TAG = "xml_metadata";
+
+			/// <summary></summary>
 			public const string VALUE_TAG = "value";
 
 			/// <summary></summary>

@@ -318,6 +318,13 @@ namespace Dapple.Extract
          oAttr.Value = strProjCoordinateSystem;
          oDatasetElement.Attributes.Append(oAttr);
 
+			if (m_oDAPLayer != null)
+			{
+				oAttr = oDatasetElement.OwnerDocument.CreateAttribute("meta_stylesheet_name");
+				oAttr.Value = m_oDAPLayer.StyleSheetID;
+				oDatasetElement.Attributes.Append(oAttr);
+			}
+
 #if DEBUG
          System.Xml.XmlElement oDebugElement = oDatasetElement.OwnerDocument.CreateElement("debug");
 
