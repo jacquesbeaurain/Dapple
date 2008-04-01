@@ -502,7 +502,17 @@ namespace Geosoft.GX.DAPGetData
          ConfigureServer();
       }
 
+		/// <summary>
+		/// Checks if the cached config information is stale, and updates if it is.
+		/// </summary>
+		public void UpdateConfigurationIfNecessary()
+		{
+			String strConfigEdition, strEdition;
+			m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
 
+			if (m_strCacheVersion != strConfigEdition)
+				UpdateConfiguration();
+		}
 
 
       /// <summary>
