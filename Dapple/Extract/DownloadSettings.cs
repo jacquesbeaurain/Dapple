@@ -46,10 +46,22 @@ namespace Dapple.Extract
 
          m_oLayersToDownload = oLayersToDownload;
 
-         if (!MainForm.OpenMap)
-         {
-            rbReproject.Enabled = false;
-         }
+			if (MainForm.Client != Options.Client.ClientType.OasisMontaj)
+			{
+				rbCSNative.Enabled = !MainForm.OpenMap;
+				rbReproject.Enabled = MainForm.OpenMap;
+				rbCSNative.Checked = rbCSNative.Enabled;
+				rbReproject.Checked = rbReproject.Enabled;
+			}
+			else
+			{
+				rbCSNative.Enabled = true;
+				rbReproject.Enabled = MainForm.OpenMap;
+				if (rbReproject.Enabled)
+					rbReproject.Checked = true;
+				else
+					rbCSNative.Checked = true;
+			}
 
 			cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MontajInterface.BaseDirectory());
 
