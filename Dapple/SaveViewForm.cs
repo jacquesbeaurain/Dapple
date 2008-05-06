@@ -101,7 +101,7 @@ namespace Dapple
          if (m_fEditControl.bIsValid(ref strError))
          {
             m_fEditControl.GetFilePath(ref m_strOutputPath);
-            m_strNotes = this.txtNotes.Text;
+            m_strNotes = this.c_tbNotes.Text;
 				if (m_fOpenEditControl != null)
 				{
 					m_fOpenEditControl.InitialDirectory = m_fEditControl.InitialDirectory;
@@ -119,16 +119,16 @@ namespace Dapple
          double scale;
          int x, y;
 
-         if (this.picPreview.ClientRectangle.Width <= 0 || this.picPreview.ClientRectangle.Height <= 0 ||
+         if (this.c_pbPreview.ClientRectangle.Width <= 0 || this.c_pbPreview.ClientRectangle.Height <= 0 ||
              m_imgPreview.Width <= 0 || m_imgPreview.Height <= 0)
             return;
 
-         double scaleH = (double)m_imgPreview.Height / (double)this.picPreview.ClientRectangle.Height;
-         double scaleW = (double)m_imgPreview.Width / (double)this.picPreview.ClientRectangle.Width;
+         double scaleH = (double)m_imgPreview.Height / (double)this.c_pbPreview.ClientRectangle.Height;
+         double scaleW = (double)m_imgPreview.Width / (double)this.c_pbPreview.ClientRectangle.Width;
          scale = Math.Max(scaleH, scaleW);
 
-         x = (int)Math.Round((double)this.picPreview.ClientRectangle.Width / 2.0 - (double)m_imgPreview.Width / (scale * 2.0));
-         y = (int)Math.Round((double)this.picPreview.ClientRectangle.Height / 2.0 - (double)m_imgPreview.Height / (scale * 2.0));
+         x = (int)Math.Round((double)this.c_pbPreview.ClientRectangle.Width / 2.0 - (double)m_imgPreview.Width / (scale * 2.0));
+         y = (int)Math.Round((double)this.c_pbPreview.ClientRectangle.Height / 2.0 - (double)m_imgPreview.Height / (scale * 2.0));
 
          e.Graphics.Clear(Color.Black);
          e.Graphics.DrawImage(m_imgPreview, new Rectangle(x, y, (int)Math.Round((double)m_imgPreview.Width / scale), (int)Math.Round((double)m_imgPreview.Height / scale)));

@@ -39,8 +39,61 @@ namespace Dapple
 {
 	public partial class MainForm : MainApplication
 	{
+		#region Win32 DLLImports
+
 		[DllImport("User32.dll")]
 		private static extern UInt32 RegisterWindowMessageW(String strMessage);
+
+		private struct RECT
+		{
+			public int left;
+			public int top;
+			public int right;
+			public int bottom;
+
+			public static implicit operator Rectangle(RECT rect)
+			{
+				return new Rectangle(rect.left, rect.top, rect.right - rect.left,
+				rect.bottom - rect.top);
+			}
+		}
+
+		private const int DCX_WINDOW = 0x00000001;
+		private const int DCX_CACHE = 0x00000002;
+		private const int DCX_LOCKWINDOWUPDATE = 0x00000400;
+		private const int SRCCOPY = 0x00CC0020;
+		private const int CAPTUREBLT = 0x40000000;
+
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		private static extern IntPtr GetDCEx(IntPtr hWnd, IntPtr hrgnClip, int
+		flags);
+
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		private static extern IntPtr GetDC(IntPtr hWnd);
+
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDc);
+
+		[System.Runtime.InteropServices.DllImport("gdi32.dll")]
+		private static extern bool BitBlt(
+		IntPtr hdcDest,
+		int nXDest,
+		int nYDest,
+		int nWidth,
+		int nHeight,
+		IntPtr hdcSrc,
+		int nXSrc,
+		int nYSrc,
+		int dwRop
+		);
+
+		#endregion
 
 		#region Delegates
 
@@ -52,13 +105,11 @@ namespace Dapple
 
 		#endregion
 
-		#region Statics
+		#region Constants
 
-		public static int DOWNLOAD_TIMEOUT = 30000;
-
-		public static UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
+		public const int MAX_MRU_TERMS = 8;
+		public const int DOWNLOAD_TIMEOUT = 30000;
 		public const string ViewExt = ".dapple";
-		public const string LinkExt = ".dapple_datasetlink";
 		public const string FavouriteServerExt = ".dapple_serverlist";
 		public const string LastView = "lastview" + ViewExt;
 		public const string DefaultView = "default" + ViewExt;
@@ -74,50 +125,26 @@ namespace Dapple
 		public const string WebsiteForumsHelpUrl = "https://dappleforums.geosoft.com/";
 		public const string WMSWebsiteHelpUrl = "http://dapple.geosoft.com/help/wms.asp";
 		public const string DAPWebsiteHelpUrl = "http://dapple.geosoft.com/help/dap.asp";
-		public const string SEARCH_HTML_GATEWAY = "SearchInterfaceHTML.aspx";
 		public const string NEW_SERVER_GATEWAY = "AddNewServer.aspx";
 		public const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
 		public const string NO_SEARCH = "--- Enter keyword(s) ---";
-		public static string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
-		public const int MAX_MRU_TERMS = 8;
-		const bool OPEN_KML_ENABLED = false;
-
-		/// <summary>
-		/// Try to open url in web browser
-		/// </summary>
-		/// <param name="url">The url to open in browser</param>
-		public static void BrowseTo(string url)
-		{
-			try
-			{
-				System.Diagnostics.Process.Start(url);
-			}
-			catch
-			{
-				try
-				{
-					System.Diagnostics.Process.Start("IExplore.exe", url);
-				}
-				catch
-				{
-				}
-			}
-		}
+		public static readonly UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
+		public static readonly string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
 
 		#endregion
 
 		#region Private Members
 
 		private Splash splashScreen;
-		private ServerTree tvServers;
-		private ServerList cServerListControl;
+		private ServerTree c_oServerTree;
+		private ServerList c_oServerList;
 		private JanaTab cServerViewsTab;
-		private DappleSearchList cWebSearch;
-		private static WorldWindow worldWindow;
+		private DappleSearchList c_oDappleSearch;
+		private static WorldWindow c_oWorldWindow;
 
 		public static WorldWindow WorldWindowSingleton
 		{
-			get { return worldWindow; }
+			get { return c_oWorldWindow; }
 		}
 
 		private NASA.Plugins.ScaleBarLegend scalebarPlugin;
@@ -131,29 +158,20 @@ namespace Dapple
 
 		private KMLPlugin.KMLImporter kmlPlugin;
 
-		//private MeasureToolNewgen.Plugins.MeasureToolNG measurePlugin;
-
 		private RenderableObjectList placeNames;
 
-		private WorldWind.OverviewControl overviewCtl;
 		private string openView = "";
 		private string openGeoTiff = "";
 		private string openGeoTiffName = "";
 		private bool openGeoTiffTmp = false;
 		private string lastView = "";
 		private string metaviewerDir = "";
-		private string strLayerToLoad = String.Empty;
 
 		private MetadataDisplayThread m_oMetadataDisplay;
 
 		Geosoft.GX.DAPGetData.GetDapError dapErrors;
 
 		private DappleToolStripRenderer toolStripRenderer;
-		/* private int iServerPanelLastMinSize, iServerPanelLastPos;
-		private int iLayerPanelLastMinSize, iLayerPanelLastPos;
-		private int iOverviewPanelLastMinSize, iOverviewPanelLastPos;
-      
-		*/
 
 		private static ImageList m_oImageList = new ImageList();
 		private static RemoteInterface m_oMontajRemoteInterface;
@@ -171,11 +189,14 @@ namespace Dapple
 
 		#region Properties
 
-		public MenuStrip MenuStrip
+		private String SearchKeyword
 		{
 			get
 			{
-				return this.menuStrip;
+				String result = c_tbSearchKeywords.Text.Trim();
+				if (result.Equals(NO_SEARCH)) result = String.Empty;
+
+				return result;
 			}
 		}
 
@@ -236,11 +257,63 @@ namespace Dapple
 		{
 			get { return m_strOpenMapFileName; }
 		}
+
+		#region Blue Marble
+
+		private RenderableObject GetBMNG()
+		{
+			for (int i = 0; i < c_oWorldWindow.CurrentWorld.RenderableObjects.Count; i++)
+			{
+				if (((RenderableObject)c_oWorldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
+					return c_oWorldWindow.CurrentWorld.RenderableObjects.ChildObjects[i] as RenderableObject;
+			}
+			return null;
+		}
+
+		private RenderableObject GetActiveBMNG()
+		{
+			RenderableObject roBMNG = GetBMNG();
+			if (roBMNG != null && roBMNG.IsOn)
+				return GetActiveBMNG(roBMNG);
+			else
+				return null;
+		}
+
+		private RenderableObjectList GetActiveBMNG(RenderableObject roBMNG)
+		{
+			if (roBMNG is RenderableObjectList)
+			{
+				if ((roBMNG as RenderableObjectList).ChildObjects.Count == 2 && roBMNG.isInitialized)
+					return roBMNG as RenderableObjectList;
+				for (int i = 0; i < (roBMNG as RenderableObjectList).Count; i++)
+				{
+					RenderableObject ro = (RenderableObject)(roBMNG as RenderableObjectList).ChildObjects[i];
+					if (ro is RenderableObjectList)
+					{
+						if ((ro as RenderableObjectList).ChildObjects.Count != 2)
+						{
+							for (int j = 0; j < (ro as RenderableObjectList).Count; j++)
+							{
+								RenderableObjectList roRet = GetActiveBMNG((RenderableObject)(ro as RenderableObjectList).ChildObjects[j]);
+								if (roRet != null)
+									return roRet;
+							}
+						}
+						else if (ro.isInitialized)
+							return ro as RenderableObjectList;
+					}
+				}
+			}
+			return null;
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Constructor
 
-		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, string strDatasetLink, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
+		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
 		{
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
 				this.openView = strView;
@@ -399,7 +472,10 @@ namespace Dapple
 				m_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
 
 
-				worldWindow = new WorldWindow();
+				c_oWorldWindow = new WorldWindow();
+				c_oWorldWindow.AllowDrop = true;
+				c_oWorldWindow.DragOver += new DragEventHandler(c_oWorldWindow_DragOver);
+				c_oWorldWindow.DragDrop += new DragEventHandler(c_oWorldWindow_DragDrop);
 				InitializeComponent();
 				this.SuspendLayout();
 
@@ -411,12 +487,12 @@ namespace Dapple
 
 				this.Icon = new System.Drawing.Icon(@"app.ico");
 				this.toolStripRenderer = new DappleToolStripRenderer();
-				toolStripServers.Renderer = this.toolStripRenderer;
-				toolStripLayerLabel.Renderer = this.toolStripRenderer;
-				toolStripOverview.Renderer = this.toolStripRenderer;
-				cToolStripMetadata.Renderer = this.toolStripRenderer;
+				c_tsSearch.Renderer = this.toolStripRenderer;
+				c_tsLayers.Renderer = this.toolStripRenderer;
+				c_tsOverview.Renderer = this.toolStripRenderer;
+				c_tsMetadata.Renderer = this.toolStripRenderer;
 
-				toolStripNavigation.Renderer = new BorderlessToolStripRenderer();
+				c_tsNavigation.Renderer = new BorderlessToolStripRenderer();
 
 				// set Upper and Lower limits for Cache size control, in bytes
 				long CacheUpperLimit = (long)Settings.CacheSizeGigaBytes * 1024L * 1024L * 1024L;
@@ -436,7 +512,7 @@ namespace Dapple
 				}
 
 				//Set up the cache
-				worldWindow.Cache = new Cache(
+				c_oWorldWindow.Cache = new Cache(
 					Settings.CachePath,
 					CacheLowerLimit,
 					CacheUpperLimit,
@@ -455,10 +531,6 @@ namespace Dapple
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open\\Command", "", "\"" + DirectoryPath + "\" \"%1\"");
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
 
-				//Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\" + FavouriteServerExt, "", "Dapple Favourite Server List");
-				//Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple Favourite Server List", "", "Dapple Favourite Server List");
-				//Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple Favourite Server List\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
-
 				this.dapErrors = new Geosoft.GX.DAPGetData.GetDapError(Path.Combine(Settings.CachePath, "DapErrors.log"));
 
 				WorldWind.Terrain.TerrainTileService terrainTileService = new WorldWind.Terrain.TerrainTileService("http://worldwind25.arc.nasa.gov/wwelevation/wwelevation.aspx", "srtm30pluszip", 20, 150, "bil", 12, Path.Combine(Settings.CachePath, "Earth\\TerrainAccessor\\SRTM"), TimeSpan.FromMinutes(30), "Int16");
@@ -467,16 +539,13 @@ namespace Dapple
 				WorldWind.World world = new WorldWind.World("Earth",
 					new Point3d(0, 0, 0), Quaternion4d.RotationYawPitchRoll(0, 0, 0),
 					(float)6378137,
-					System.IO.Path.Combine(worldWindow.Cache.CacheDirectory, "Earth"),
+					System.IO.Path.Combine(c_oWorldWindow.Cache.CacheDirectory, "Earth"),
 					terrainAccessor);
 
-				worldWindow.CurrentWorld = world;
-				worldWindow.DrawArgs.WorldCamera.CameraChanged += new EventHandler(WorldCamera_CameraChanged);
+				c_oWorldWindow.CurrentWorld = world;
+				c_oWorldWindow.DrawArgs.WorldCamera.CameraChanged += new EventHandler(c_oWorldWindow_CameraChanged);
 
 				string strPluginsDir = Path.Combine(DirectoryPath, "Plugins");
-				/*this.bmngLoader = new NASA.Plugins.BmngLoader();
-				this.bmngLoader.PluginLoad(this, Path.Combine(strPluginsDir, "BlueMarble"));
-				this.bmngPlugin = bmngLoader.BMNGForm;*/
 
 				this.scalebarPlugin = new NASA.Plugins.ScaleBarLegend();
 				this.scalebarPlugin.PluginLoad(this, strPluginsDir);
@@ -510,19 +579,10 @@ namespace Dapple
 				this.kmlPlugin = new KMLPlugin.KMLImporter();
 				this.kmlPlugin.PluginLoad(this, strPluginsDir);
 
-				//this.measurePlugin = new MeasureToolNewgen.Plugins.MeasureToolNG();
-				//this.measurePlugin.PluginLoad(this, strPluginsDir); 
-
 				ThreadPool.QueueUserWorkItem(LoadPlacenames);
 
-				/*ServerTreePhoenix oFire = new ServerTreePhoenix();
-				oFire.ImageList = m_oImageList;
-				oFire.Size = new Size(640, 480);
-				oFire.Location = new Point(0, 0);
-				this.WorldResultsSplitPanel.Panel1.Controls.Add(oFire);*/
-
-				this.WorldResultsSplitPanel.Panel1.Controls.Add(worldWindow);
-				worldWindow.Dock = DockStyle.Fill;
+				c_scWorldMetadata.Panel1.Controls.Add(c_oWorldWindow);
+				c_oWorldWindow.Dock = DockStyle.Fill;
 
 				#endregion
 
@@ -530,32 +590,32 @@ namespace Dapple
 				foreach (float multiplier in verticalExaggerationMultipliers)
 				{
 					ToolStripMenuItem curItem = new ToolStripMenuItem(multiplier.ToString("f1", System.Threading.Thread.CurrentThread.CurrentCulture) + "x", null, new EventHandler(menuItemVerticalExaggerationChange));
-					toolStripMenuItemverticalExagerration.DropDownItems.Add(curItem);
+					c_miVertExaggeration.DropDownItems.Add(curItem);
 					curItem.CheckOnClick = true;
 					if (Math.Abs(multiplier - World.Settings.VerticalExaggeration) < 0.1f)
 						curItem.Checked = true;
 				}
 
-				this.toolStripMenuItemcompass.Checked = World.Settings.ShowCompass;
-				this.toolStripMenuItemtileActivity.Checked = World.Settings.ShowDownloadIndicator;
-				this.toolStripCrossHairs.Checked = World.Settings.ShowCrosshairs;
-				this.toolStripMenuItemshowPosition.Checked = World.Settings.ShowPosition;
-				this.toolStripMenuItemshowGridLines.Checked = World.Settings.ShowLatLonLines;
-				this.globalCloudsToolStripMenuItem.Checked = World.Settings.ShowClouds;
+				this.c_miShowCompass.Checked = World.Settings.ShowCompass;
+				this.c_miShowDLProgress.Checked = World.Settings.ShowDownloadIndicator;
+				this.c_miShowCrosshair.Checked = World.Settings.ShowCrosshairs;
+				this.c_miShowInfoOverlay.Checked = World.Settings.ShowPosition;
+				this.c_miShowGridlines.Checked = World.Settings.ShowLatLonLines;
+				this.c_miShowGlobalClouds.Checked = World.Settings.ShowClouds;
 				if (World.Settings.EnableSunShading)
 				{
 					if (!World.Settings.SunSynchedWithTime)
-						this.enableSunShadingToolStripMenuItem.Checked = true;
+						this.c_miSunshadingEnabled.Checked = true;
 					else
-						this.syncSunShadingToTimeToolstripMenuItem.Checked = true;
+						this.c_miSunshadingSync.Checked = true;
 				}
 				else
-					this.disableSunShadingToolStripMenuItem.Checked = true;
-				this.atmosphericEffectsToolStripMenuItem.Checked = World.Settings.EnableAtmosphericScattering;
+					this.c_miSunshadingDisabled.Checked = true;
+				this.c_miShowAtmoScatter.Checked = World.Settings.EnableAtmosphericScattering;
 
-				this.toolStripMenuItemAskAtStartup.Checked = Settings.AskLastViewAtStartup;
+				this.c_miAskLastViewAtStartup.Checked = Settings.AskLastViewAtStartup;
 				if (!Settings.AskLastViewAtStartup)
-					this.toolStripMenuItemLoadLastView.Checked = Settings.LastViewAtStartup;
+					this.c_miOpenLastViewAtStartup.Checked = Settings.LastViewAtStartup;
 
 
 				#region OverviewPanel
@@ -565,87 +625,79 @@ namespace Dapple
 				// Dapple will still work; the relative reference will be from whatever directory Dapple is being run.
 				if (!Directory.Exists(Settings.DataPath)) Settings.DataPath = "Data";
 
-				this.overviewCtl = new OverviewControl(Settings.DataPath + @"\Earth\BmngBathy\world.topo.bathy.200407.jpg", worldWindow, panelOverview);
-				this.overviewCtl.Dock = DockStyle.Fill;
-				this.overviewCtl.TabStop = false;
-				this.panelOverview.Controls.Add(this.overviewCtl);
-
 				#endregion
 
 
-				worldWindow.MouseEnter += new EventHandler(this.worldWindow_MouseEnter);
-				worldWindow.MouseLeave += new EventHandler(this.worldWindow_MouseLeave);
+				c_oWorldWindow.MouseEnter += new EventHandler(this.c_oWorldWindow_MouseEnter);
+				c_oWorldWindow.MouseLeave += new EventHandler(this.c_oWorldWindow_MouseLeave);
 
-				worldWindow.ClearDevice();
+				c_oWorldWindow.ClearDevice();
+
+				c_oOverview.AOISelected += new Overview.AOISelectedDelegate(c_oOverview_AOISelected);
 
 				#region Search view setup
-				//---------------------------------------------------------------------------------------------
 
-				this.cServerListControl = new ServerList();
-				this.tvServers = new ServerTree(m_oImageList, Settings.CachePath, this, cLayerList, cServerListControl);
-				cServerListControl.ImageList = this.tvServers.ImageList;
-				cLayerList.ImageList = this.tvServers.ImageList;
-				cLayerList.ServerTree = tvServers;
+				this.c_oServerList = new ServerList();
+				this.c_oServerTree = new ServerTree(m_oImageList, Settings.CachePath, this, c_oLayerList, c_oServerList);
+				c_oServerList.ImageList = this.c_oServerTree.ImageList;
+				c_oLayerList.ImageList = this.c_oServerTree.ImageList;
+				c_oLayerList.ServerTree = c_oServerTree;
 
 				m_oMetadataDisplay = new MetadataDisplayThread(this);
-				m_oMetadataDisplay.addBuilder(null);
-				cServerListControl.LayerList = cLayerList;
-				cLayerList.GoTo += new LayerList.GoToHandler(this.GoTo);
+				m_oMetadataDisplay.AddBuilder(null);
+				c_oServerList.LayerList = c_oLayerList;
+				c_oLayerList.GoTo += new LayerList.GoToHandler(this.GoTo);
 
-				cLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
-				tvServers.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
-				cServerListControl.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.addBuilder);
+				c_oLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
+				c_oServerTree.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
+				c_oServerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
 
-				this.tvServers.AfterSelect += new TreeViewEventHandler(this.ServerTreeAfterSelected);
-				this.tvServers.Dock = System.Windows.Forms.DockStyle.Fill;
-				this.tvServers.ImageIndex = 0;
-				this.tvServers.Location = new System.Drawing.Point(0, 0);
-				this.tvServers.Name = "treeViewServers";
-				this.tvServers.SelectedImageIndex = 0;
-				this.tvServers.TabIndex = 0;
+				this.c_oServerTree.AfterSelect += new TreeViewEventHandler(this.c_oServerTree_AfterSelected);
+				this.c_oServerTree.Dock = System.Windows.Forms.DockStyle.Fill;
+				this.c_oServerTree.ImageIndex = 0;
+				this.c_oServerTree.Location = new System.Drawing.Point(0, 0);
+				this.c_oServerTree.Name = "treeViewServers";
+				this.c_oServerTree.SelectedImageIndex = 0;
+				this.c_oServerTree.TabIndex = 0;
 
 				this.cServerViewsTab = new JanaTab();
 				this.cServerViewsTab.SetImage(0, Resources.tab_tree);
 				this.cServerViewsTab.SetImage(1, Resources.tab_list);
 				this.cServerViewsTab.SetToolTip(0, "Server tree view");
 				this.cServerViewsTab.SetToolTip(1, "Server list view");
-				this.cServerViewsTab.SetPage(0, this.tvServers);
-				this.cServerViewsTab.SetPage(1, this.cServerListControl);
+				this.cServerViewsTab.SetPage(0, this.c_oServerTree);
+				this.cServerViewsTab.SetPage(1, this.c_oServerList);
 				cServerViewsTab.PageChanged += new JanaTab.PageChangedDelegate(ServerPageChanged);
 
-				cWebSearch = new DappleSearchList();
-				cWebSearch.ServerTree = tvServers;
-				cWebSearch.LayerList = cLayerList;
+				c_oDappleSearch = new DappleSearchList();
+				c_oDappleSearch.ServerTree = c_oServerTree;
+				c_oDappleSearch.LayerList = c_oLayerList;
 
-				cSearchTabPane.TabPages[0].Controls.Add(cServerViewsTab);
+				c_tcSearchViews.TabPages[0].Controls.Add(cServerViewsTab);
 				cServerViewsTab.Dock = DockStyle.Fill;
-				cSearchTabPane.TabPages[1].Controls.Add(cWebSearch);
-				cWebSearch.Dock = DockStyle.Fill;
+				c_tcSearchViews.TabPages[1].Controls.Add(c_oDappleSearch);
+				c_oDappleSearch.Dock = DockStyle.Fill;
 
-				cLayerList.SetBaseLayer(new BlueMarbleBuilder());
+				c_oLayerList.SetBaseLayer(new BlueMarbleBuilder());
 
 				this.ResumeLayout(false);
 
-				//---------------------------------------------------------------------------------------------
 				#endregion
 
 				this.PerformLayout();
-				strLayerToLoad = strDatasetLink;
 
-				//#if !DEBUG
 				while (!this.splashScreen.IsDone)
 					System.Threading.Thread.Sleep(50);
-				//#endif
 
 				// Force initial render to avoid showing random contents of frame buffer to user.
-				worldWindow.Render();
+				c_oWorldWindow.Render();
 				WorldWindow.Focus();
 
 				#region OM Forked Process configuration
 
 				if (IsMontajChildProcess)
 				{
-					cLayerList.OMFeaturesEnabled = true;
+					c_oLayerList.OMFeaturesEnabled = true;
 					this.MinimizeBox = false;
 
 					m_bOpenMap = false;
@@ -662,53 +714,44 @@ namespace Dapple
 					}
 					m_eClientType = eClientType;
 
-					lastViewSettingsToolStripMenuItem.Enabled = false;
-					lastViewSettingsToolStripMenuItem.Visible = false;
-					toolStripMenuItemhelp.Visible = false;
-					toolStripMenuItemhelp.Enabled = false;
+					c_miLastView.Enabled = false;
+					c_miLastView.Visible = false;
+					c_miDappleHelp.Visible = false;
+					c_miDappleHelp.Enabled = false;
 					toolStripSeparator10.Visible = false;
-					toolStripMenuItemOpen.Visible = false;
-					toolStripMenuItemOpen.Enabled = false;
-					toolStripMenuItemOpenKML.Visible = false;
-					toolStripMenuItemOpenKML.Enabled = false;
+					c_miOpenImage.Visible = false;
+					c_miOpenImage.Enabled = false;
+					c_miOpenKeyhole.Visible = false;
+					c_miOpenKeyhole.Enabled = false;
 
 					// Hide and disable the file menu
-					toolStripMenuItemfile.Visible = false;
-					toolStripMenuItemfile.Enabled = false;
-					toolStripMenuItemOpenSaved.Visible = false;
-					toolStripMenuItemOpenSaved.Enabled = false;
-					cOpenHomeViewMenuItem.Visible = false;
-					cOpenHomeViewMenuItem.Enabled = false;
-					setAsMyHomeViewToolStripMenuItem.Visible = false;
-					setAsMyHomeViewToolStripMenuItem.Enabled = false;
-					toolStripMenuItemsave.Visible = false;
-					toolStripMenuItemsave.Enabled = false;
-					toolStripMenuItemsend.Visible = false;
-					toolStripMenuItemsend.Enabled = false;
-					toolStripMenuItemOpenKML.Visible = false;
-					toolStripMenuItemOpenKML.Enabled = false;
+					c_miFile.Visible = false;
+					c_miFile.Enabled = false;
+					c_miOpenSavedView.Visible = false;
+					c_miOpenSavedView.Enabled = false;
+					c_miOpenHomeView.Visible = false;
+					c_miOpenHomeView.Enabled = false;
+					c_miSetHomeView.Visible = false;
+					c_miSetHomeView.Enabled = false;
+					c_miSaveView.Visible = false;
+					c_miSaveView.Enabled = false;
+					c_miSendViewTo.Visible = false;
+					c_miSendViewTo.Enabled = false;
+					c_miOpenKeyhole.Visible = false;
+					c_miOpenKeyhole.Enabled = false;
 
 					// Show the OM help menu
-					OMhelpToolStripMenuItem.Enabled = true;
-					OMhelpToolStripMenuItem.Visible = true;
+					c_miGetDatahelp.Enabled = true;
+					c_miGetDatahelp.Visible = true;
 
 					// Don't let the user check for updates.  EVER.
-					checkForUpdatesToolStripMenuItem.Visible = false;
-					checkForUpdatesToolStripMenuItem.Enabled = false;
+					c_miCheckForUpdates.Visible = false;
+					c_miCheckForUpdates.Enabled = false;
 				}
 				else
 				{
-					downloadToolStripMenuItem.Visible = false;
-					downloadToolStripMenuItem.Enabled = false;
-
-					// register handler for dataset links
-
-					Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Mime\\Database\\Content Type\\text/Geosoft_datasetlink", "Extension", LinkExt);
-					Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\" + LinkExt, "", "Dapple DataSetLink");
-					Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink", "", "Geosoft Dapple Dataset Link XML");
-					Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open", "", "Open Dapple Dataset Link");
-					Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\Shell\\Open\\Command", "", "\"" + AppDomain.CurrentDomain.BaseDirectory + "Dapple.exe\" -datasetlink=\"%1\"");
-					Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple DataSetLink\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
+					c_miExtractLayers.Visible = false;
+					c_miExtractLayers.Enabled = false;
 				}
 
 				#endregion
@@ -727,42 +770,19 @@ namespace Dapple
 				CenterNavigationToolStrip();
 				//#if !DEBUG
 
-				cSearchTextComboBox.Text = NO_SEARCH;
+				c_tbSearchKeywords.Text = NO_SEARCH;
 			}
 			//#endif
-		}
-
-		private void LoadPlacenames(Object oParams)
-		{
-			this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
-			if (!this.IsDisposed)
-				Invoke(new MethodInvoker(LoadPlacenamesCallback));
-		}
-
-		private void LoadPlacenamesCallback()
-		{
-			if (this.placeNames != null)
-			{
-				this.placeNames.IsOn = World.Settings.ShowPlacenames;
-				this.placeNames.RenderPriority = RenderPriority.Placenames;
-				worldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
-				this.showPlaceNamesToolStripMenuItem.Enabled = true;
-			}
-			this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
 		}
 
 		#endregion
 
 		#region Updates
 
-		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			CheckForUpdates(true);
-		}
-
 		bool m_bUpdateFromMenu;
-		delegate void InvokeNotifyUpdate(string strVersion);
-		void NotifyUpdate(string strVersion)
+		delegate void NotifyUpdateDelegate(string strVersion);
+
+		private void NotifyUpdate(string strVersion)
 		{
 			UpdateDialog dlg = new UpdateDialog(strVersion);
 
@@ -770,8 +790,7 @@ namespace Dapple
 				MainForm.BrowseTo(MainForm.WebsiteUrl);
 		}
 
-		delegate void InvokeNotifyUpdateNotAvailable();
-		void NotifyUpdateNotAvailable()
+		private void NotifyUpdateNotAvailable()
 		{
 			MessageBox.Show(this, "There is no update for Dapple available at this time.", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
@@ -811,7 +830,7 @@ namespace Dapple
 				if (iCurVer1 > iHaveVer1 || (iCurVer1 == iHaveVer1 && iCurVer2 > iHaveVer2) ||
 					(iCurVer1 == iHaveVer1 && iCurVer2 == iHaveVer2 && iCurVer3 > iHaveVer3))
 				{
-					this.BeginInvoke(new InvokeNotifyUpdate(NotifyUpdate), new object[] { strVersion });
+					this.BeginInvoke(new NotifyUpdateDelegate(NotifyUpdate), new object[] { strVersion });
 					bUpdate = true;
 				}
 
@@ -826,11 +845,11 @@ namespace Dapple
 			finally
 			{
 				if (!bUpdate && m_bUpdateFromMenu)
-					this.BeginInvoke(new InvokeNotifyUpdateNotAvailable(NotifyUpdateNotAvailable));
+					this.BeginInvoke(new MethodInvoker(NotifyUpdateNotAvailable));
 			}
 		}
 
-		void CheckForUpdates(bool bFromMenu)
+		private void CheckForUpdates(bool bFromMenu)
 		{
 			m_bUpdateFromMenu = bFromMenu;
 			WebDownload download = new WebDownload(WebsiteUrl + VersionFile);
@@ -838,1408 +857,7 @@ namespace Dapple
 			download.CompleteCallback += new DownloadCompleteHandler(UpdateDownloadComplete);
 			download.BackgroundDownloadMemory();
 		}
-		#endregion
 
-		#region World Window Events
-
-		void worldWindow_MouseLeave(object sender, EventArgs e)
-		{
-			splitContainerMain.Panel1.Select();
-		}
-
-		void worldWindow_MouseEnter(object sender, EventArgs e)
-		{
-			worldWindow.Select();
-		}
-
-		#endregion
-
-		#region Context menus and buttons
-
-		#region Nav Strip Buttons
-
-		enum NavMode
-		{
-			None,
-			ZoomIn,
-			ZoomOut,
-			RotateLeft,
-			RotateRight,
-			TiltUp,
-			TiltDown
-		}
-
-		private NavMode eNavMode = NavMode.None;
-		private bool bNavTimer = false;
-
-		private void toolStripButtonRestoreTilt_Click(object sender, EventArgs e)
-		{
-			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			worldWindow.DrawArgs.WorldCamera.SetPosition(
-					 worldWindow.Latitude,
-					 worldWindow.Longitude,
-					  worldWindow.DrawArgs.WorldCamera.Heading.Degrees,
-					  worldWindow.DrawArgs.WorldCamera.Altitude,
-					  0);
-
-		}
-
-		private void toolStripButtonRestoreNorth_Click(object sender, EventArgs e)
-		{
-			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			worldWindow.DrawArgs.WorldCamera.SetPosition(
-					 worldWindow.Latitude,
-					 worldWindow.Longitude,
-					  0,
-					  worldWindow.DrawArgs.WorldCamera.Altitude,
-					  worldWindow.DrawArgs.WorldCamera.Tilt.Degrees);
-		}
-
-		private void toolStripButtonResetCamera_Click(object sender, EventArgs e)
-		{
-			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			worldWindow.DrawArgs.WorldCamera.Reset();
-		}
-
-
-		private void timerNavigation_Tick(object sender, EventArgs e)
-		{
-			this.bNavTimer = true;
-			worldWindow.DrawArgs.WorldCamera.SlerpPercentage = 1.0;
-			switch (this.eNavMode)
-			{
-				case NavMode.ZoomIn:
-					worldWindow.DrawArgs.WorldCamera.Zoom(0.2f);
-					return;
-				case NavMode.ZoomOut:
-					worldWindow.DrawArgs.WorldCamera.Zoom(-0.2f);
-					return;
-				case NavMode.RotateLeft:
-					Angle rotateClockwise = Angle.FromRadians(-0.01f);
-					worldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
-					worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
-					return;
-				case NavMode.RotateRight:
-					Angle rotateCounterclockwise = Angle.FromRadians(0.01f);
-					worldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
-					worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
-					return;
-				case NavMode.TiltUp:
-					worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
-					return;
-				case NavMode.TiltDown:
-					worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(1.0f);
-					return;
-				default:
-					return;
-			}
-		}
-
-		private void toolStripNavButton_MouseRemoveCapture(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.timerNavigation.Enabled = false;
-			this.eNavMode = NavMode.None;
-		}
-
-		private void toolStripButtonRotLeft_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.bNavTimer = false;
-			this.eNavMode = NavMode.RotateLeft;
-		}
-
-		private void toolStripButtonRotRight_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.bNavTimer = false;
-			this.eNavMode = NavMode.RotateRight;
-		}
-
-		private void toolStripButtonTiltDown_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.bNavTimer = false;
-			this.eNavMode = NavMode.TiltDown;
-		}
-
-		private void toolStripButtonTiltUp_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.bNavTimer = false;
-			this.eNavMode = NavMode.TiltUp;
-		}
-
-		private void toolStripButtonZoomOut_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.bNavTimer = false;
-			this.eNavMode = NavMode.ZoomOut;
-		}
-
-		private void toolStripButtonZoomIn_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.timerNavigation.Enabled = true;
-			this.bNavTimer = false;
-			this.eNavMode = NavMode.ZoomIn;
-		}
-
-		private void toolStripButtonZoomIn_Click(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = false;
-			if (!this.bNavTimer)
-			{
-				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				worldWindow.DrawArgs.WorldCamera.Zoom(2.0f);
-			}
-			else
-				this.bNavTimer = false;
-		}
-
-		private void toolStripButtonZoomOut_Click(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = false;
-			if (!this.bNavTimer)
-			{
-				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				worldWindow.DrawArgs.WorldCamera.Zoom(-2.0f);
-			}
-			else
-				this.bNavTimer = false;
-		}
-
-		private void toolStripButtonRotLeft_Click(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = false;
-			if (!this.bNavTimer)
-			{
-				Angle rotateClockwise = Angle.FromRadians(-0.2f);
-				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				worldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
-				worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
-			}
-			else
-				this.bNavTimer = false;
-		}
-
-		private void toolStripButtonRotRight_Click(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = false;
-			if (!this.bNavTimer)
-			{
-				Angle rotateCounterclockwise = Angle.FromRadians(0.2f);
-				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				worldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
-				worldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
-			}
-			else
-				this.bNavTimer = false;
-		}
-
-		private void toolStripButtonTiltUp_Click(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = false;
-			if (!this.bNavTimer)
-			{
-				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-10.0f);
-			}
-			else
-				this.bNavTimer = false;
-		}
-
-		private void toolStripButtonTiltDown_Click(object sender, EventArgs e)
-		{
-			this.timerNavigation.Enabled = false;
-			if (!this.bNavTimer)
-			{
-				worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-				worldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(10.0f);
-			}
-			else
-				this.bNavTimer = false;
-		}
-
-		#endregion
-
-		#region Add Layers
-
-		private void toolStripMenuItemOpen_Click(object sender, EventArgs e)
-		{
-			string strLastFolderCfg = Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), "opengeotif.cfg");
-
-			OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.Filter = "GeoTIFF Files|*.tif;*.tiff";
-			openFileDialog.Title = "Open GeoTIFF File in Current View...";
-			openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			openFileDialog.RestoreDirectory = true;
-			if (File.Exists(strLastFolderCfg))
-			{
-				try
-				{
-					using (StreamReader sr = new StreamReader(strLastFolderCfg))
-					{
-						string strDir = sr.ReadLine();
-						if (Directory.Exists(strDir))
-							openFileDialog.InitialDirectory = strDir;
-					}
-				}
-				catch
-				{
-				}
-			}
-
-			if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-			{
-				AddGeoTiff(openFileDialog.FileName, "", false, true);
-				try
-				{
-					using (StreamWriter sw = new StreamWriter(strLastFolderCfg))
-					{
-						sw.WriteLine(Path.GetDirectoryName(openFileDialog.FileName));
-					}
-				}
-				catch
-				{
-				}
-			}
-		}
-
-		void AddGeoTiff(string strGeoTiff, string strGeoTiffName, bool bTmp, bool bGoto)
-		{
-			LayerBuilder builder = new GeorefImageLayerBuilder(strGeoTiffName, strGeoTiff, bTmp, worldWindow, null);
-
-			Cursor = Cursors.WaitCursor;
-			if (builder.GetLayer() != null)
-			{
-				Cursor = Cursors.Default;
-
-				// If the file is already there remove it 
-				cLayerList.CmdRemoveGeoTiff(strGeoTiff);
-
-				// If there is already a layer by that name find unique name
-				if (strGeoTiffName.Length > 0)
-				{
-					int iCount = 0;
-					string strNewName = strGeoTiffName;
-					bool bExist = true;
-					while (bExist)
-					{
-						bExist = false;
-						foreach (LayerBuilder container in cLayerList.AllLayers)
-						{
-							if (container.Title == strNewName)
-							{
-								bExist = true;
-								break;
-							}
-						}
-
-						if (bExist)
-						{
-							iCount++;
-							strNewName = strGeoTiffName + "_" + iCount.ToString();
-						}
-					}
-					strGeoTiffName = strNewName;
-				}
-
-				if (bTmp) builder.Opacity = 128;
-				else builder.Opacity = 255;
-				builder.Visible = true;
-				builder.Temporary = bTmp;
-
-				cLayerList.AddLayer(builder);
-
-				if (bGoto)
-					GoTo(builder, false);
-			}
-			else
-			{
-				Cursor = Cursors.Default;
-				string strMessage = "Error adding the file: '" + strGeoTiff + "'.\nOnly WGS 84 geographic images can be displayed at this time.";
-				string strGeoInfo = GeorefImageLayerBuilder.GetGeorefInfoFromGeotif(strGeoTiff);
-				if (strGeoInfo.Length > 0)
-					strMessage += "\nThis image is:\n\n" + strGeoInfo;
-				MessageBox.Show(this, strMessage, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
-
-		private void toolStripMenuItemAddLayer_Click(object sender, EventArgs e)
-		{
-			AddDatasetAction();
-		}
-
-		public void AddLayerBuilder(LayerBuilder oLayer)
-		{
-			cLayerList.AddLayer(oLayer);
-
-			SaveLastView();
-		}
-		#endregion
-
-		#region Add Servers
-
-		public void AddDAPServer()
-		{
-			AddDAP dlg = new AddDAP();
-			if (dlg.ShowDialog(this) == DialogResult.OK)
-			{
-				Geosoft.GX.DAPGetData.Server oServer;
-				try
-				{
-					if (this.tvServers.AddDAPServer(dlg.Url, out oServer, true, true))
-					{
-						ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.Url, "DAP" });
-					}
-				}
-				catch (Exception except)
-				{
-					MessageBox.Show(this, "Error adding server \"" + dlg.Url + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-				SaveLastView();
-			}
-		}
-
-		public void AddWMSServer()
-		{
-			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.tvServers.Nodes);
-
-			if (treeNode != null)
-			{
-				AddWMS dlg = new AddWMS(worldWindow, treeNode.Tag as WMSCatalogBuilder);
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					try
-					{
-						if (this.tvServers.AddWMSServer(dlg.WmsURL, true, true, true))
-						{
-							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.WmsURL, "WMS" });
-						}
-					}
-					catch (Exception except)
-					{
-						MessageBox.Show(this, "Error adding server \"" + dlg.WmsURL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-					SaveLastView();
-				}
-			}
-		}
-
-		public void AddArcIMSServer()
-		{
-			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(ArcIMSCatalogBuilder), this.tvServers.Nodes);
-
-			if (treeNode != null)
-			{
-				AddArcIMS dlg = new AddArcIMS(worldWindow, treeNode.Tag as ArcIMSCatalogBuilder);
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					try
-					{
-						if (this.tvServers.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true, true))
-						{
-							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.URL, "ArcIMS" });
-						}
-					}
-					catch (Exception except)
-					{
-						MessageBox.Show(this, "Error adding server \"" + dlg.URL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-					SaveLastView();
-				}
-			}
-		}
-
-		private void toolStripMenuItemAddDAP_Click(object sender, EventArgs e)
-		{
-			AddDAPServer();
-		}
-
-		private void toolStripMenuItemAddWMS_Click(object sender, EventArgs e)
-		{
-			AddWMSServer();
-		}
-
-		private void toolStripMenuItemAddArcIMS_Click(object sender, EventArgs e)
-		{
-			AddArcIMSServer();
-		}
-
-		#endregion
-
-		#region Remove Items
-
-		private void toolStripMenuItemremoveServer_Click(object sender, EventArgs e)
-		{
-			this.tvServers.RemoveCurrentServer();
-			SaveLastView();
-		}
-
-
-		#endregion
-
-		#region Go To
-
-		void GoTo(LayerBuilder builder)
-		{
-			GoTo(builder.Extents, false);
-		}
-
-		void GoTo(LayerBuilder builder, bool blImmediate)
-		{
-			GoTo(builder.Extents, blImmediate);
-		}
-
-		void GoTo(GeographicBoundingBox extents, bool blImmediate)
-		{
-			worldWindow.GotoBoundingbox(extents.West, extents.South, extents.East, extents.North, blImmediate);
-		}
-
-		#endregion
-
-		#region Refresh
-
-		private void toolStripMenuItemRefreshCatalog_Click(object sender, EventArgs e)
-		{
-			this.tvServers.RefreshCurrentServer();
-		}
-
-		#endregion
-
-		#region Metadata, legend and properties
-
-		private void toolStripMenuItemServerLegend_Click(object sender, EventArgs e)
-		{
-			if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is LayerBuilder)
-			{
-				if ((this.tvServers.SelectedNode.Tag as LayerBuilder).SupportsLegend)
-				{
-					string[] strLegendArr = (this.tvServers.SelectedNode.Tag as LayerBuilder).GetLegendURLs();
-					foreach (string strLegend in strLegendArr)
-					{
-						if (!String.IsNullOrEmpty(strLegend))
-							MainForm.BrowseTo(strLegend);
-					}
-				}
-			}
-		}
-
-		#endregion
-
-		#endregion
-
-		#region Main Menu Item Click events
-
-		private void toolStripMenuItemAskAtStartup_Click(object sender, EventArgs e)
-		{
-			toolStripMenuItemLoadLastView.Checked = false;
-			Settings.AskLastViewAtStartup = toolStripMenuItemAskAtStartup.Checked;
-		}
-
-		private void toolStripMenuItemLoadLastView_Click(object sender, EventArgs e)
-		{
-			Settings.AskLastViewAtStartup = false;
-			this.toolStripMenuItemAskAtStartup.Checked = false;
-			Settings.LastViewAtStartup = toolStripMenuItemLoadLastView.Checked;
-		}
-
-		private void toolStripMenuItemadvancedSettings_Click(object sender, EventArgs e)
-		{
-			Wizard wiz = new Wizard(Settings);
-			wiz.ShowDialog(this);
-		}
-
-		/// <summary>
-		/// Handler for a change in the selection of the vertical exaggeration from the main menu
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		void menuItemVerticalExaggerationChange(object sender, EventArgs e)
-		{
-			foreach (ToolStripMenuItem item in toolStripMenuItemverticalExagerration.DropDownItems)
-			{
-				if (item != sender)
-				{
-					item.Checked = false;
-				}
-				else
-				{
-					World.Settings.VerticalExaggeration = Convert.ToSingle(item.Text.Replace("x", string.Empty));
-				}
-			}
-			worldWindow.Invalidate();
-		}
-
-		private void toolStripMenuItemcompass_Click(object sender, EventArgs e)
-		{
-			World.Settings.ShowCompass = toolStripMenuItemcompass.Checked;
-			this.compassPlugin.Layer.IsOn = World.Settings.ShowCompass;
-		}
-
-		private void toolStripMenuItemtileActivity_Click(object sender, EventArgs e)
-		{
-			World.Settings.ShowDownloadIndicator = toolStripMenuItemtileActivity.Checked;
-		}
-
-		private void toolStripCrossHairs_Click(object sender, EventArgs e)
-		{
-			World.Settings.ShowCrosshairs = toolStripCrossHairs.Checked;
-		}
-
-		private void toolStripMenuItemOpenSaved_Click(object sender, EventArgs e)
-		{
-			ViewOpenDialog dlgtest = new ViewOpenDialog(Path.Combine(UserPath, Settings.ConfigPath));
-			DialogResult res = dlgtest.ShowDialog(this);
-			if (dlgtest.ViewFile != null)
-			{
-				if (res == DialogResult.OK)
-					OpenView(dlgtest.ViewFile, true, true);
-			}
-		}
-
-		private void cOpenHomeViewMenuItem_Click(object sender, EventArgs e)
-		{
-			CmdLoadHomeView();
-		}
-
-		private void MainForm_Shown(object sender, EventArgs e)
-		{
-			if (IsMontajChildProcess)
-			{
-				try
-				{
-					m_oMontajRemoteInterface.StartConnection();
-				}
-				catch (System.Runtime.Remoting.RemotingException ex)
-				{
-					throw new System.Runtime.Remoting.RemotingException("A communication error occurred between Dapple and OM during startup", ex);
-				}
-			}
-
-			// Render once to not just show the atmosphere at startup (looks better) ---
-			worldWindow.SafeRender();
-
-
-			//tvServers.LoadFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
-
-			try
-			{
-				// --- Draw the screen, so it doesn't look damaged ---
-				UseWaitCursor = true;
-				Application.DoEvents();
-
-				if (this.openView.Length > 0)
-					OpenView(this.openView, this.openGeoTiff.Length == 0, true);
-				else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
-				{
-					if (Settings.AskLastViewAtStartup)
-					{
-						Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
-						msgBox.AllowSaveResponse = true;
-						msgBox.SaveResponseText = "Don't ask me again";
-						msgBox.Caption = this.Text;
-						msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
-						msgBox.AddButtons(MessageBoxButtons.YesNo);
-						msgBox.Text = "Would you like to open your last View?";
-						msgBox.Font = this.Font;
-						Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
-						if (msgBox.SaveResponse)
-							Settings.AskLastViewAtStartup = false;
-					}
-
-					if (Settings.LastViewAtStartup)
-						OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
-					else
-						CmdLoadHomeView();
-				}
-				else
-				{
-					CmdLoadHomeView();
-				}
-
-				if (this.openGeoTiff.Length > 0)
-					AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
-
-
-				// Check for updates daily
-				if (IsMontajChildProcess == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
-					CheckForUpdates(false);
-				Settings.UpdateCheckDate = System.DateTime.Now;
-
-				foreach (RenderableObject oRO in worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
-				{
-					if (oRO.Name == "1 - Grid Lines")
-					{
-						oRO.IsOn = World.Settings.ShowLatLonLines;
-						break;
-					}
-				}
-
-				// Load datasetlink, now that everything is laid out
-				if (strLayerToLoad.Length > 0)
-					OpenDatasetLink(strLayerToLoad);
-
-				if (m_oOMMapExtentWGS84 != null)
-				{
-					doSearch(String.Empty, m_oOMMapExtentWGS84);
-					GoTo(m_oOMMapExtentWGS84, false);
-				}
-			}
-			finally
-			{
-				UseWaitCursor = false;
-			}
-		}
-
-		bool m_bSizing = false;
-		private void MainForm_ResizeBegin(object sender, EventArgs e)
-		{
-			m_bSizing = true;
-			worldWindow.Visible = false;
-		}
-
-		private void MainForm_ResizeEnd(object sender, EventArgs e)
-		{
-			m_bSizing = false;
-			worldWindow.Visible = true;
-			worldWindow.SafeRender();
-		}
-
-		private void MainForm_Resize(object sender, EventArgs e)
-		{
-			worldWindow.Visible = false;
-		}
-
-		private void MainForm_SizeChanged(object sender, EventArgs e)
-		{
-			if (!m_bSizing)
-			{
-				worldWindow.Visible = true;
-				worldWindow.SafeRender();
-			}
-		}
-
-		private void splitContainerMain_SplitterMoving(object sender, SplitterCancelEventArgs e)
-		{
-			worldWindow.Visible = false;
-		}
-
-		private void splitContainerMain_SplitterMoved(object sender, SplitterEventArgs e)
-		{
-			if (!m_bSizing)
-			{
-				worldWindow.Visible = true;
-				worldWindow.SafeRender();
-				if (this.overviewCtl != null)
-					this.overviewCtl.Refresh();
-			}
-		}
-
-		private void cWorldMetadataSplitter_SplitterMoving(object sender, SplitterCancelEventArgs e)
-		{
-			worldWindow.Visible = false;
-		}
-
-		private void cWorldMetadataSplitter_SplitterMoved(object sender, SplitterEventArgs e)
-		{
-			if (!m_bSizing)
-			{
-				worldWindow.Visible = true;
-				worldWindow.SafeRender();
-			}
-		}
-
-		private void WorldResultsSplitPanel_Panel1_Resize(object sender, EventArgs e)
-		{
-			CenterNavigationToolStrip();
-		}
-
-		private void toolStripMenuItemshowGridLines_Click(object sender, EventArgs e)
-		{
-			World.Settings.ShowLatLonLines = toolStripMenuItemshowGridLines.Checked;
-			foreach (RenderableObject oRO in worldWindow.CurrentWorld.RenderableObjects.ChildObjects)
-			{
-				if (oRO.Name == "1 - Grid Lines")
-				{
-					oRO.IsOn = toolStripMenuItemshowGridLines.Checked;
-					break;
-				}
-			}
-		}
-
-		private void toolStripMenuItemshowPosition_Click(object sender, EventArgs e)
-		{
-			World.Settings.ShowPosition = toolStripMenuItemshowPosition.Checked;
-			worldWindow.Invalidate();
-		}
-
-		private void toolStripMenuItemsave_Click(object sender, EventArgs e)
-		{
-			string tempViewFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ViewExt);
-			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
-			SaveCurrentView(tempViewFile, tempFile, "");
-			Image img = Image.FromFile(tempFile);
-			SaveViewForm form = new SaveViewForm(Path.Combine(UserPath, Settings.ConfigPath), img);
-
-			if (form.ShowDialog(this) == DialogResult.OK)
-			{
-				if (File.Exists(form.OutputPath))
-					File.Delete(form.OutputPath);
-
-				XmlDocument oDoc = new XmlDocument();
-				oDoc.Load(tempViewFile);
-				XmlNode oRoot = oDoc.DocumentElement;
-				XmlNode oNode = oDoc.CreateElement("notes");
-				oNode.InnerText = form.Notes;
-				oRoot.AppendChild(oNode);
-				oDoc.Save(form.OutputPath);
-			}
-
-			img.Dispose();
-			if (File.Exists(tempFile)) File.Delete(tempFile);
-			if (File.Exists(tempViewFile)) File.Delete(tempViewFile);
-		}
-
-		private void toolStripMenuItemsend_Click(object sender, EventArgs e)
-		{
-			string tempBodyFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
-			string tempJpgFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
-			string tempViewFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ViewExt);
-			string strMailApp = Path.Combine(Path.Combine(DirectoryPath, "System"), "mailer.exe");
-
-			SaveCurrentView(tempViewFile, tempJpgFile, "");
-
-
-			using (StreamWriter sw = new StreamWriter(tempBodyFile))
-			{
-				sw.WriteLine();
-				sw.WriteLine();
-				sw.WriteLine("Get Dapple to view the attachment: " + WebsiteUrl + ".");
-			}
-
-			try
-			{
-				ProcessStartInfo psi = new ProcessStartInfo(strMailApp);
-				psi.UseShellExecute = false;
-				psi.CreateNoWindow = true;
-				psi.Arguments = String.Format(CultureInfo.InvariantCulture,
-					" \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" \"{5}\" \"{6}\" \"{7}\"",
-					ViewFileDescr, "", "",
-					tempViewFile, ViewFileDescr + ViewExt,
-					tempJpgFile, ViewFileDescr + ".jpg", tempBodyFile);
-				using (Process p = Process.Start(psi))
-				{
-					// Let the screen draw so it doesn't look damaged.
-					Application.DoEvents();
-					p.WaitForExit();
-				}
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.GetType().ToString() + ": " + ex.Message, "Error Sending View", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-
-			File.Delete(tempBodyFile);
-			File.Delete(tempJpgFile);
-			File.Delete(tempViewFile);
-		}
-
-		private void showPlaceNamesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (this.placeNames == null) return;
-
-			World.Settings.ShowPlacenames = !World.Settings.ShowPlacenames;
-			this.showPlaceNamesToolStripMenuItem.Checked = World.Settings.ShowPlacenames;
-			this.placeNames.IsOn = World.Settings.ShowPlacenames;
-		}
-
-		private void scaleBarToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.scalebarPlugin.IsVisible = !this.scalebarPlugin.IsVisible;
-			World.Settings.ShowScaleBar = this.scalebarPlugin.IsVisible;
-			this.scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
-		}
-
-		private void enableSunShadingToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			World.Settings.EnableSunShading = true;
-			World.Settings.SunSynchedWithTime = false;
-			this.enableSunShadingToolStripMenuItem.Checked = true;
-			this.syncSunShadingToTimeToolstripMenuItem.Checked = false;
-			this.disableSunShadingToolStripMenuItem.Checked = false;
-		}
-
-		private void syncSunShadingToTimeToolstripMenuItem_Click(object sender, EventArgs e)
-		{
-			World.Settings.EnableSunShading = true;
-			World.Settings.SunSynchedWithTime = true;
-			this.enableSunShadingToolStripMenuItem.Checked = false;
-			this.syncSunShadingToTimeToolstripMenuItem.Checked = true;
-			this.disableSunShadingToolStripMenuItem.Checked = false;
-		}
-
-		private void disableSunShadingToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			World.Settings.EnableSunShading = false;
-			World.Settings.SunSynchedWithTime = false;
-			this.enableSunShadingToolStripMenuItem.Checked = false;
-			this.syncSunShadingToTimeToolstripMenuItem.Checked = false;
-			this.disableSunShadingToolStripMenuItem.Checked = true;
-		}
-
-		private void atmosphericEffectsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			World.Settings.EnableAtmosphericScattering = !World.Settings.EnableAtmosphericScattering;
-			this.atmosphericEffectsToolStripMenuItem.Checked = World.Settings.EnableAtmosphericScattering;
-		}
-
-		private void globalCloudsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			World.Settings.ShowClouds = !World.Settings.ShowClouds;
-			this.globalCloudsToolStripMenuItem.Checked = World.Settings.ShowClouds;
-			this.cloudsPlugin.layer.IsOn = World.Settings.ShowClouds;
-		}
-
-		private void toolStripMenuItemexit_Click(object sender, EventArgs e)
-		{
-			Close();
-		}
-
-		private void toolStripMenuItemoptions_DropDownOpening(object sender, EventArgs e)
-		{
-			this.scaleBarToolStripMenuItem.Checked = this.scalebarPlugin.IsVisible;
-		}
-
-		void ServerTreeAfterSelected(object sender, TreeViewEventArgs e)
-		{
-			populateAoiComboBox();
-			cOMToolsMenu_DropDownOpening(this, new EventArgs());
-			cOMServerMenu_DropDownOpening(this, new EventArgs());
-		}
-
-		#endregion
-
-		#region Export
-
-		private void toolStripMenuItemExport_Click(object sender, EventArgs e)
-		{
-			cLayerList.CmdTakeSnapshot();
-		}
-
-		#endregion
-
-		#region Private (Helper) Methods
-
-		/// <summary>
-		/// Returns imagelist index from key name
-		/// </summary>
-		/// <param name="strKey"></param>
-		/// <returns></returns>
-		public static int ImageListIndex(string strKey)
-		{
-			return m_oImageList.Images.IndexOfKey(strKey);
-		}
-
-		/// <summary>
-		/// Returns imagelist index from dap dataset type
-		/// </summary>
-		/// <param name="strType"></param>
-		/// <returns></returns>
-		public static int ImageIndex(string strType)
-		{
-			switch (strType.ToLower())
-			{
-				case "database":
-					return ImageListIndex("dap_database");
-				case "document":
-					return ImageListIndex("dap_document");
-				case "generic":
-					return ImageListIndex("dap_map");
-				case "grid":
-					return ImageListIndex("dap_grid");
-				case "gridsection":
-					return ImageListIndex("dap_grid");
-				case "map":
-					return ImageListIndex("dap_map");
-				case "picture":
-					return ImageListIndex("dap_picture");
-				case "picturesection":
-					return ImageListIndex("dap_picture");
-				case "point":
-					return ImageListIndex("dap_point");
-				case "spf":
-					return ImageListIndex("dap_spf");
-				case "voxel":
-					return ImageListIndex("dap_voxel");
-				case "imageserver":
-					return ImageListIndex("arcims");
-				case "arcgis":
-					return ImageListIndex("dap_arcgis");
-				default:
-					return 3;
-			}
-		}
-
-		private void AddTreeNode(TreeView tree, LayerBuilder builder, TreeNode parent)
-		{
-			int iImageIndex;
-			TreeNode treeNode = null;
-			if (builder is DAPQuadLayerBuilder)
-			{
-				DAPQuadLayerBuilder dapbuilder = (DAPQuadLayerBuilder)builder;
-
-				iImageIndex = ImageIndex(dapbuilder.DAPType.ToLower());
-				if (iImageIndex == -1)
-					ImageListIndex("layer");
-			}
-			else if (builder is VEQuadLayerBuilder)
-				iImageIndex = ImageListIndex("live");
-			else
-				iImageIndex = ImageListIndex("layer");
-
-			treeNode = parent.Nodes.Add(builder.Title, builder.Title, iImageIndex, iImageIndex);
-			treeNode.Tag = builder;
-		}
-
-		private void loadCountryList()
-		{
-			if (m_oCountryAOIs == null)
-			{
-				m_oCountryAOIs = new Dictionary<string, GeographicBoundingBox>();
-				String[] straCountries = Resources.aoi_region.Split(new String[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-				for (int count = 1; count < straCountries.Length - 1; count++)
-				{
-					String[] data = straCountries[count].Split(new char[] { ',' });
-					double minX, minY, maxX, maxY;
-					if (!Double.TryParse(data[1], NumberStyles.Any, CultureInfo.InvariantCulture, out minX)) continue;
-					if (!Double.TryParse(data[2], NumberStyles.Any, CultureInfo.InvariantCulture, out minY)) continue;
-					if (!Double.TryParse(data[3], NumberStyles.Any, CultureInfo.InvariantCulture, out maxX)) continue;
-					if (!Double.TryParse(data[4], NumberStyles.Any, CultureInfo.InvariantCulture, out maxY)) continue;
-
-					m_oCountryAOIs.Add(data[0], new GeographicBoundingBox(maxY, minY, minX, maxX));
-				}
-			}
-		}
-
-		private void populateAoiComboBox()
-		{
-			cAoiList.BeginUpdate();
-
-			cAoiList.Items.Clear();
-			cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Select a specific region ---", null));
-
-			if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
-			{
-				Server oServer = this.tvServers.SelectedNode.Tag as Server;
-				if (oServer.Status == Server.ServerStatus.OnLine)
-				{
-					cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Server extent", new GeographicBoundingBox(oServer.ServerExtents.MaxY, oServer.ServerExtents.MinY, oServer.ServerExtents.MinX, oServer.ServerExtents.MaxX)));
-				}
-			}
-
-			if (IsMontajChildProcess && m_oOMMapExtentWGS84 != null) cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
-
-			cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>("-----------------------------", null));
-
-			if (this.tvServers.SelectedNode != null && this.tvServers.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
-			{
-				if (((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine &&
-					((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).Enabled)
-				{
-					ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetAreaList();
-					foreach (String strAOI in aAOIs)
-					{
-						double minX, minY, maxX, maxY;
-						String strCoord;
-						((Geosoft.GX.DAPGetData.Server)this.tvServers.SelectedNode.Tag).ServerConfiguration.GetBoundingBox(strAOI, out maxX, out maxY, out minX, out minY, out strCoord);
-						if (strCoord.Equals("WGS 84"))
-						{
-							GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
-							cAoiList.Items.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
-						}
-					}
-				}
-			}
-			else
-			{
-				foreach (KeyValuePair<String, GeographicBoundingBox> country in m_oCountryAOIs)
-				{
-					cAoiList.Items.Add(country);
-				}
-			}
-
-			cAoiList.SelectedIndex = 0;
-			cAoiList.DisplayMember = "Key";
-
-			cAoiList.EndUpdate();
-		}
-
-		private void cAoiList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value != null)
-			{
-				GoTo(((KeyValuePair<String, GeographicBoundingBox>)cAoiList.SelectedItem).Value, false);
-			}
-		}
-
-		#endregion
-
-		#region Open/Save View Methods
-
-		void SaveLastView()
-		{
-			// --- Don't save views when we're running inside OM ---
-			if (IsMontajChildProcess) return;
-
-			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
-			if (this.lastView.Length == 0)
-				SaveCurrentView(Path.Combine(UserPath, Path.Combine(Settings.ConfigPath, LastView)), tempFile, string.Empty);
-			else
-				SaveCurrentView(this.lastView, tempFile, string.Empty);
-			File.Delete(tempFile);
-		}
-
-		/// <summary>
-		/// Saves the current view to an xml file, 
-		/// this requires that worldWindow was created in the same thread as the caller
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <param name="notes"></param>
-		void SaveCurrentView(string fileName, string picFileName, string notes)
-		{
-			DappleView view = new DappleView();
-
-			// blue marble
-			RenderableObject roBMNG = GetBMNG();
-			if (roBMNG != null)
-				view.View.Addshowbluemarble(new SchemaBoolean(roBMNG.IsOn));
-
-			WorldWind.Camera.MomentumCamera camera = worldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
-
-			//stop the camera
-			camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
-
-			//store the servers
-			this.tvServers.SaveToView(view);
-
-			// store the current layers
-			if (cLayerList.AllLayers.Count > 0)
-			{
-				activelayersType lyrs = view.View.Newactivelayers();
-				foreach (LayerBuilder container in cLayerList.AllLayers)
-				{
-					if (!container.Temporary)
-					{
-						datasetType dataset = lyrs.Newdataset();
-						dataset.Addname(new SchemaString(container.Title));
-						opacityType op = dataset.Newopacity();
-						op.Value = container.Opacity;
-						dataset.Addopacity(op);
-						dataset.Adduri(new SchemaString(container.GetURI()));
-						dataset.Addinvisible(new SchemaBoolean(!container.Visible));
-						lyrs.Adddataset(dataset);
-					}
-				}
-				view.View.Addactivelayers(lyrs);
-			}
-
-			// store the camera information
-			cameraorientationType cameraorient = view.View.Newcameraorientation();
-			cameraorient.Addlat(new SchemaDouble(camera.Latitude.Degrees));
-			cameraorient.Addlon(new SchemaDouble(camera.Longitude.Degrees));
-			cameraorient.Addaltitude(new SchemaDouble(camera.Altitude));
-			cameraorient.Addheading(new SchemaDouble(camera.Heading.Degrees));
-			cameraorient.Addtilt(new SchemaDouble(camera.Tilt.Degrees));
-			view.View.Addcameraorientation(cameraorient);
-
-			if (notes.Length > 0)
-				view.View.Addnotes(new SchemaString(notes));
-
-			// Save screen capture (The regular WorldWind method crashes some systems, use interop)
-			//this.worldWindow.SaveScreenshot(picFileName);
-			//this.worldWindow.Render();
-
-			using (Image img = TakeSnapshot(worldWindow.Handle))
-				img.Save(picFileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-
-			FileStream fs = new FileStream(picFileName, FileMode.Open);
-			BinaryReader br = new BinaryReader(fs);
-			byte[] buffer = new byte[fs.Length];
-			br.Read(buffer, 0, Convert.ToInt32(fs.Length));
-			br.Close();
-			fs.Close();
-			view.View.Addpreview(new SchemaBase64Binary(buffer));
-
-			view.Save(fileName);
-		}
-
-		private struct RECT
-		{
-			public int left;
-			public int top;
-			public int right;
-			public int bottom;
-
-			public static implicit operator Rectangle(RECT rect)
-			{
-				return new Rectangle(rect.left, rect.top, rect.right - rect.left,
-				rect.bottom - rect.top);
-			}
-		}
-
-		private const int DCX_WINDOW = 0x00000001;
-		private const int DCX_CACHE = 0x00000002;
-		private const int DCX_LOCKWINDOWUPDATE = 0x00000400;
-		private const int SRCCOPY = 0x00CC0020;
-		private const int CAPTUREBLT = 0x40000000;
-
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern IntPtr GetDCEx(IntPtr hWnd, IntPtr hrgnClip, int
-		flags);
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern IntPtr GetDC(IntPtr hWnd);
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDc);
-
-		[System.Runtime.InteropServices.DllImport("gdi32.dll")]
-		private static extern bool BitBlt(
-		IntPtr hdcDest,
-		int nXDest,
-		int nYDest,
-		int nWidth,
-		int nHeight,
-		IntPtr hdcSrc,
-		int nXSrc,
-		int nYSrc,
-		int dwRop
-		);
-
-		public static Image TakeSnapshot(IntPtr handle)
-		{
-			RECT tempRect;
-			GetWindowRect(handle, out tempRect);
-			Rectangle windowRect = tempRect;
-			IntPtr formDC = GetDCEx(handle, IntPtr.Zero, DCX_CACHE | DCX_WINDOW);
-			Graphics grfx = Graphics.FromHdc(formDC);
-
-			Bitmap bmp = new Bitmap(windowRect.Width, windowRect.Height, grfx);
-			using (grfx = Graphics.FromImage(bmp))
-			{
-				IntPtr bmpDC = grfx.GetHdc();
-
-				BitBlt(bmpDC, 0, 0, bmp.Width, bmp.Height, formDC, 0, 0, CAPTUREBLT |
-				SRCCOPY);
-				grfx.ReleaseHdc(bmpDC);
-				ReleaseDC(handle, formDC);
-			}
-			return bmp;
-		}
-
-		/*bool OpenView(string filename, bool bGoto)
-		{
-			return OpenView(filename, bGoto, true);
-		}*/
-
-		bool OpenView(string filename, bool bGoto, bool bLoadLayers)
-		{
-			bool bOldView = false;
-			try
-			{
-				if (File.Exists(filename))
-				{
-					DappleView view = new DappleView(filename);
-					bool bShowBlueMarble = true;
-
-					if (view.View.Hasshowbluemarble())
-						bShowBlueMarble = view.View.showbluemarble.Value;
-
-					if (bGoto && view.View.Hascameraorientation())
-					{
-						cameraorientationType orient = view.View.cameraorientation;
-						worldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-						worldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
-					}
-
-					this.tvServers.LoadFromView(view);
-					if (bLoadLayers && view.View.Hasactivelayers())
-					{
-						bOldView = cLayerList.CmdLoadFromView(view, tvServers);
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-				{
-					return OpenView(Path.Combine(Settings.DataPath, DefaultView), true, true);
-				}
-			}
-
-			if (bOldView)
-				MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			return true;
-		}
-
-		#endregion
-
-		#region MainForm Events
-		private void toolStripMenuItemabout_Click(object sender, EventArgs e)
-		{
-			AboutDialog dlg = new AboutDialog();
-			dlg.ShowDialog(this);
-		}
-
-		private void splitContainerLeftMain_SizeChanged(object sender, EventArgs e)
-		{
-			if (splitContainerLeftMain.SplitterWidth == 1)
-				splitContainerLeftMain.SplitterDistance = toolStripServers.Height;
-		}
-
-		private void splitContainerLeft_SizeChanged(object sender, EventArgs e)
-		{
-			if (splitContainerLeft.SplitterWidth == 1)
-				splitContainerLeft.SplitterDistance = toolStripOverview.Height;
-		}
-
-		private void MainForm_Load(object sender, EventArgs e)
-		{
-
-			worldWindow.IsRenderDisabled = false;
-
-			this.toolStripProgressBar.Visible = false;
-			this.toolStripStatusLabel1.Visible = false;
-			this.toolStripStatusLabel1.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusLabel2.Visible = false;
-			this.toolStripStatusLabel2.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusLabel3.Visible = false;
-			this.toolStripStatusLabel3.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusLabel4.Visible = false;
-			this.toolStripStatusLabel4.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusLabel5.Visible = false;
-			this.toolStripStatusLabel5.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusLabel6.Visible = false;
-			this.toolStripStatusLabel6.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusSpin1.Visible = false;
-			this.toolStripStatusSpin1.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusSpin2.Visible = false;
-			this.toolStripStatusSpin2.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusSpin3.Visible = false;
-			this.toolStripStatusSpin3.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusSpin4.Visible = false;
-			this.toolStripStatusSpin4.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusSpin5.Visible = false;
-			this.toolStripStatusSpin5.Alignment = ToolStripItemAlignment.Right;
-			this.toolStripStatusSpin6.Visible = false;
-			this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right;
-			worldWindow.Updated += new WorldWindow.UpdatedDelegate(OnUpdated);
-
-			this.tvServers.Load();
-		}
-
-		void MainForm_Closing(object sender, CancelEventArgs e)
-		{
-			// Turn off the metadata display thread and background search thread
-			m_oMetadataDisplay.abort();
-
-			this.threeDConnPlugin.Unload();
-
-			// Turning off the layers will set this
-			bool bSaveGridLineState = World.Settings.ShowLatLonLines;
-
-			this.WindowState = FormWindowState.Minimized;
-
-			SaveLastView();
-			//tvServers.SaveFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
-
-			World.Settings.ShowLatLonLines = bSaveGridLineState;
-
-			// Register the cache location to make it easy for uninstall to clear the cache for at least the current user
-			try
-			{
-				RegistryKey keySW = Registry.CurrentUser.CreateSubKey("Software");
-				RegistryKey keyDapple = keySW.CreateSubKey("Dapple");
-				keyDapple.SetValue("CachePathForUninstall", Settings.CachePath);
-			}
-			catch
-			{
-			}
-
-			FinalizeSettings();
-
-			// Don't force-dispose the WorldWindow (or, really, anything), just let .NET free it up for us.
-			// Should kill the background worker thread though.
-			worldWindow.KillWorkerThread();
-
-			// --- Delete all the temporary XML files the metadata viewer has been pumping out ---
-
-			foreach (String bob in Directory.GetFiles(metaviewerDir, "*.xml"))
-			{
-				try
-				{
-					File.Delete(bob);
-				}
-				catch (System.IO.IOException)
-				{
-					// Couldn't delete a temp file?  Not the end of the world.
-				}
-			}
-
-			SaveMRUList();
-		}
-
-		private void MainForm_Deactivate(object sender, EventArgs e)
-		{
-			worldWindow.IsRenderDisabled = true;
-		}
-
-		private void MainForm_Activated(object sender, EventArgs e)
-		{
-			worldWindow.IsRenderDisabled = false;
-		}
-
-		#endregion
-
-		#region Base Overrides
-		protected override void WndProc(ref System.Windows.Forms.Message m)
-		{
-			if (m.Msg == OpenViewMessage)
-			{
-				try
-				{
-					Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Attach, 0);
-
-					string[] strData = (string[])s.GetData();
-
-					string strView = strData[0];
-					string strGeoTiff = strData[1];
-					string strGeoTiffName = strData[2];
-					bool bGeotiffTmp = strData[3] == "YES";
-					this.lastView = strData[4];
-					string strDatasetLink = strData[5];
-
-					if (strView.Length > 0)
-						OpenView(strView, strGeoTiff.Length == 0, true);
-					if (strGeoTiff.Length > 0)
-						AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
-					if (strDatasetLink.Length > 0)
-						OpenDatasetLink(strDatasetLink);
-				}
-				catch
-				{
-				}
-			}
-			base.WndProc(ref m);
-		}
 		#endregion
 
 		#region Download Progress
@@ -2257,64 +875,13 @@ namespace Dapple
 				return (y.iTotal - y.iPos).CompareTo(x.iTotal - x.iPos);
 			}
 		}
+
 		bool m_bDownloadUpdating = false;
 		List<ActiveDownload> m_downloadList = new List<ActiveDownload>();
 		int m_iPos = 0, m_iTotal = 0;
 		bool m_bDownloading = false;
 
-		void OnUpdated()
-		{
-			int iBuilderPos, iBuilderTotal;
-			// Do the work in the update thread and just invoke to update the GUI
-
-
-			int iPos = 0;
-			int iTotal = 0;
-			bool bDownloading = false;
-			List<ActiveDownload> currentList = new List<ActiveDownload>();
-			RenderableObject roBMNG = GetActiveBMNG();
-
-			if (roBMNG != null && roBMNG.IsOn && ((QuadTileSet)((RenderableObjectList)roBMNG).ChildObjects[1]).bIsDownloading(out iBuilderPos, out iBuilderTotal))
-			{
-				bDownloading = true;
-				iPos += iBuilderPos;
-				iTotal += iBuilderTotal;
-				ActiveDownload dl = new ActiveDownload();
-				dl.builder = null;
-				dl.iPos = iBuilderPos;
-				dl.iTotal = iBuilderTotal;
-				dl.bOn = true;
-				dl.bRead = false;
-				currentList.Add(dl);
-			}
-
-			foreach (LayerBuilder oBuilder in cLayerList.AllLayers)
-			{
-				if (oBuilder.bIsDownloading(out iBuilderPos, out iBuilderTotal))
-				{
-					bDownloading = true;
-					iPos += iBuilderPos;
-					iTotal += iBuilderTotal;
-					ActiveDownload dl = new ActiveDownload();
-					dl.builder = oBuilder;
-					dl.iPos = iBuilderPos;
-					dl.iTotal = iBuilderTotal;
-					dl.bOn = true;
-					dl.bRead = false;
-					currentList.Add(dl);
-				}
-			}
-
-			// In rare cases, the WorldWindow's background worker thread might start sending back updates before the
-			// MainForm's window handle has been created.  Don't let it, or you'll cascade the system into failure.
-			if (this.IsHandleCreated)
-			{
-				this.BeginInvoke(new UpdateDownloadIndicatorsHandler(UpdateDownloadIndicators), new object[] { bDownloading, iPos, iTotal, currentList });
-			}
-		}
-
-		private delegate void UpdateDownloadIndicatorsHandler(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList);
-
+		private delegate void UpdateDownloadIndicatorsDelegate(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList);
 		private void UpdateDownloadIndicators(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList)
 		{
 			// --- This always happens in main thread (but protect it anyway) ---
@@ -2383,12 +950,12 @@ namespace Dapple
 						if (m_downloadList[5].builder == null)
 						{
 							this.toolStripStatusLabel6.ToolTipText = "Base Image";
-							this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images["marble"];
+							this.toolStripStatusLabel6.Image = this.c_oServerTree.ImageList.Images["marble"];
 						}
 						else
 						{
 							this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Title;
-							this.toolStripStatusLabel6.Image = this.tvServers.ImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel6.Image = this.c_oServerTree.ImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel6.Visible = true;
 						this.toolStripStatusSpin6.Text = "";
@@ -2413,7 +980,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Title;
-							this.toolStripStatusLabel5.Image = this.tvServers.ImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel5.Image = this.c_oServerTree.ImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel5.Visible = true;
 						this.toolStripStatusSpin5.Text = "";
@@ -2438,7 +1005,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Title;
-							this.toolStripStatusLabel4.Image = this.tvServers.ImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel4.Image = this.c_oServerTree.ImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel4.Visible = true;
 						this.toolStripStatusSpin4.Text = "";
@@ -2463,7 +1030,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Title;
-							this.toolStripStatusLabel3.Image = this.tvServers.ImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel3.Image = this.c_oServerTree.ImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel3.Visible = true;
 						this.toolStripStatusSpin3.Text = "";
@@ -2488,7 +1055,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Title;
-							this.toolStripStatusLabel2.Image = this.tvServers.ImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel2.Image = this.c_oServerTree.ImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel2.Visible = true;
 						this.toolStripStatusSpin2.Text = "";
@@ -2513,7 +1080,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Title;
-							this.toolStripStatusLabel1.Image = this.tvServers.ImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel1.Image = this.c_oServerTree.ImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel1.Visible = true;
 						this.toolStripStatusSpin1.Text = "";
@@ -2530,94 +1097,11 @@ namespace Dapple
 				m_bDownloadUpdating = false;
 			}
 		}
-		#endregion
-
-		#region Blue Marble
-
-		/*private void toolStripButtonBMNG_Click(object sender, EventArgs e)
-		{
-			this.toolStripButtonBMNG.Checked = !toolStripButtonBMNG.Checked;
-
-			if (this.toolStripButtonBMNG.Checked)
-				this.toolStripButtonBMNG.Image = global::Dapple.Properties.Resources.blue_marble_checked;
-			else
-				this.toolStripButtonBMNG.Image = global::Dapple.Properties.Resources.blue_marble_unchecked;
-
-
-			RenderableObject roBMNG = GetBMNG();
-			if (roBMNG != null)
-				roBMNG.IsOn = this.toolStripButtonBMNG.Checked;
-		}*/
-
-		private RenderableObject GetBMNG()
-		{
-			for (int i = 0; i < worldWindow.CurrentWorld.RenderableObjects.Count; i++)
-			{
-				if (((RenderableObject)worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i]).Name == "4 - The Blue Marble")
-					return worldWindow.CurrentWorld.RenderableObjects.ChildObjects[i] as RenderableObject;
-			}
-			return null;
-		}
-
-		private RenderableObject GetActiveBMNG()
-		{
-			RenderableObject roBMNG = GetBMNG();
-			if (roBMNG != null && roBMNG.IsOn)
-				return GetActiveBMNG(roBMNG);
-			else
-				return null;
-		}
-
-		private RenderableObjectList GetActiveBMNG(RenderableObject roBMNG)
-		{
-			if (roBMNG is RenderableObjectList)
-			{
-				if ((roBMNG as RenderableObjectList).ChildObjects.Count == 2 && roBMNG.isInitialized)
-					return roBMNG as RenderableObjectList;
-				for (int i = 0; i < (roBMNG as RenderableObjectList).Count; i++)
-				{
-					RenderableObject ro = (RenderableObject)(roBMNG as RenderableObjectList).ChildObjects[i];
-					if (ro is RenderableObjectList)
-					{
-						if ((ro as RenderableObjectList).ChildObjects.Count != 2)
-						{
-							for (int j = 0; j < (ro as RenderableObjectList).Count; j++)
-							{
-								RenderableObjectList roRet = GetActiveBMNG((RenderableObject)(ro as RenderableObjectList).ChildObjects[j]);
-								if (roRet != null)
-									return roRet;
-							}
-						}
-						else if (ro.isInitialized)
-							return ro as RenderableObjectList;
-					}
-				}
-			}
-			return null;
-		}
 
 		#endregion
-
-		#region Help
-
-		private void toolStripMenuItemWeb_Click(object sender, EventArgs e)
-		{
-			MainForm.BrowseTo(MainForm.WebsiteUrl);
-		}
-
-		private void toolStripMenuItemWebForums_Click(object sender, EventArgs e)
-		{
-			MainForm.BrowseTo(MainForm.WebsiteForumsHelpUrl);
-		}
-
-		private void toolStripMenuItemWebDoc_Click(object sender, EventArgs e)
-		{
-			MainForm.BrowseTo(MainForm.WebsiteHelpUrl);
-		}
-
-		#endregion
-
+	
 		#region MainApplication Implementation
+
 		/// <summary>
 		/// MainApplication's System.Windows.Forms.Form
 		/// </summary>
@@ -2636,7 +1120,7 @@ namespace Dapple
 		{
 			get
 			{
-				return worldWindow;
+				return c_oWorldWindow;
 			}
 		}
 
@@ -2650,164 +1134,1935 @@ namespace Dapple
 				return splashScreen;
 			}
 		}
+
 		#endregion
 
-		#region DappleSearch code
+		#region Metadata displayer
 
-		delegate void UpdateTextDelegate(String text);
-		private void setDappleSearchResultsLabelText(String text)
+		public delegate void StringParamDelegate(String szString);
+		public delegate void LoadMetadataDelegate(IBuilder oBuilder);
+
+		private void DisplayMetadataMessage(String szMessage)
 		{
 			if (InvokeRequired)
+				this.Invoke(new StringParamDelegate(DisplayMetadataMessage), new Object[] { szMessage });
+			else
 			{
-				Invoke(new UpdateTextDelegate(setDappleSearchResultsLabelText), new Object[] { text });
+				c_wbMetadata.Visible = false;
+				c_lMetadata.Text = szMessage;
+			}
+		}
+
+		private void DisplayMetadataDocument(String szMessage)
+		{
+			c_wbMetadata.Visible = true;
+			Uri metaUri = new Uri(szMessage);
+			if (!metaUri.Equals(c_wbMetadata.Url))
+			{
+				// --- Delete the file we were pointing to before ---
+				if (c_wbMetadata.Url != null && c_wbMetadata.Url.Scheme.Equals("file"))
+				{
+					File.Delete(c_wbMetadata.Url.LocalPath);
+				}
+				c_wbMetadata.Url = metaUri;
+			}
+		}
+		
+		private void LoadMetadata(IBuilder oBuilder)
+		{
+			if (InvokeRequired)
+				this.Invoke(new LoadMetadataDelegate(LoadMetadata), new Object[] { oBuilder });
+			else
+			{
+				try
+				{
+					XmlDocument oDoc = new XmlDocument();
+					oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
+					XmlNode oNode = null;
+					string strStyleSheet = null;
+
+					if ((oBuilder is AsyncBuilder) && (oBuilder as AsyncBuilder).LoadingErrorOccurred)
+					{
+						DisplayMetadataMessage("The selected object failed to load.");
+						return;
+					}
+					else if (oBuilder.SupportsMetaData)
+					{
+						oNode = oBuilder.GetMetaData(oDoc);
+						if (oNode == null)
+						{
+							DisplayMetadataMessage("You do not have permission to view the metadata for this data layer.");
+							return;
+						}
+						strStyleSheet = oBuilder.StyleSheetName;
+						DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Title + "...");
+					}
+					else
+					{
+						DisplayMetadataMessage("Metadata for the selected object is unsupported.");
+						return;
+					}
+
+					if (oNode is XmlDocument)
+					{
+						oDoc = oNode as XmlDocument;
+					}
+					else if (oNode is XmlElement)
+					{
+						oDoc.AppendChild(oNode);
+					}
+					if (strStyleSheet != null)
+					{
+						XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, strStyleSheet) + "'");
+						oDoc.InsertBefore(oRef, oDoc.DocumentElement);
+					}
+
+					string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
+					filePath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".xml");
+					oDoc.Save(filePath);
+					DisplayMetadataDocument(filePath);
+				}
+				catch (Exception e)
+				{
+					DisplayMetadataMessage("An error occurred while accessing metadata: " + e.Message);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Synchronization class which handles displaying the metadata for a layer.  Prevents loading a layer
+		/// multiple times, and supresses multiple loads when more than one layer change occurs in a short
+		/// time period.
+		/// </summary>
+		class MetadataDisplayThread
+		{
+			private Object LOCK = new Object();
+			private ManualResetEvent m_oSignaller = new ManualResetEvent(false);
+			private List<IBuilder> m_hLayerToLoad = new List<IBuilder>();
+			private Thread m_hThread;
+			private MainForm m_hOwner;
+
+			public MetadataDisplayThread(MainForm hOwner)
+			{
+				m_hOwner = hOwner;
+
+				m_hThread = new Thread(new ThreadStart(ThreadMain));
+				m_hThread.IsBackground = true;
+				m_hThread.Start();
+			}
+
+			public void AddBuilder(IBuilder oBuilder)
+			{
+				lock (LOCK)
+				{
+					m_hLayerToLoad.Add(oBuilder);
+					m_oSignaller.Set();
+				}
+			}
+
+			public void Abort()
+			{
+				m_hThread.Abort();
+			}
+
+			private void ThreadMain()
+			{
+				IBuilder oCurrentBuilder = null;
+				IBuilder oLastBuilder = null;
+
+				while (true)
+				{
+					m_oSignaller.WaitOne();
+
+					lock (LOCK)
+					{
+						oCurrentBuilder = m_hLayerToLoad[m_hLayerToLoad.Count - 1];
+						m_hLayerToLoad.Clear();
+						m_oSignaller.Reset();
+					}
+
+					if (oCurrentBuilder == null)
+					{
+						m_hOwner.DisplayMetadataMessage("Select a dataset or server to view its associated metadata.");
+						oLastBuilder = oCurrentBuilder;
+					}
+					else
+					{
+						if (oCurrentBuilder is AsyncBuilder)
+							((AsyncBuilder)oCurrentBuilder).WaitUntilLoaded();
+
+						if (!oCurrentBuilder.Equals(oLastBuilder))
+						{
+							m_hOwner.LoadMetadata(oCurrentBuilder);
+							oLastBuilder = oCurrentBuilder;
+						}
+					}
+				}
+			}
+		}
+
+		#endregion
+
+		#region Menu Item Event Handlers
+
+		private void c_miCheckForUpdates_Click(object sender, EventArgs e)
+		{
+			CheckForUpdates(true);
+		}
+
+		private void c_miOpenImage_Click(object sender, EventArgs e)
+		{
+			string strLastFolderCfg = Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), "opengeotif.cfg");
+
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Filter = "GeoTIFF Files|*.tif;*.tiff";
+			openFileDialog.Title = "Open GeoTIFF File in Current View...";
+			openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			openFileDialog.RestoreDirectory = true;
+			if (File.Exists(strLastFolderCfg))
+			{
+				try
+				{
+					using (StreamReader sr = new StreamReader(strLastFolderCfg))
+					{
+						string strDir = sr.ReadLine();
+						if (Directory.Exists(strDir))
+							openFileDialog.InitialDirectory = strDir;
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+			{
+				AddGeoTiff(openFileDialog.FileName, "", false, true);
+				try
+				{
+					using (StreamWriter sw = new StreamWriter(strLastFolderCfg))
+					{
+						sw.WriteLine(Path.GetDirectoryName(openFileDialog.FileName));
+					}
+				}
+				catch
+				{
+				}
+			}
+		}
+
+		private void c_miAddDAPServer_Click(object sender, EventArgs e)
+		{
+			AddDAPServer();
+		}
+
+		private void c_miAddWMSServer_Click(object sender, EventArgs e)
+		{
+			AddWMSServer();
+		}
+
+		private void c_miAddArcIMSServer_Click(object sender, EventArgs e)
+		{
+			AddArcIMSServer();
+		}
+
+		private void c_miAskLastViewAtStartup_Click(object sender, EventArgs e)
+		{
+			c_miOpenLastViewAtStartup.Checked = false;
+			Settings.AskLastViewAtStartup = c_miAskLastViewAtStartup.Checked;
+		}
+
+		private void c_miOpenLastViewAtStartup_Click(object sender, EventArgs e)
+		{
+			Settings.AskLastViewAtStartup = false;
+			this.c_miAskLastViewAtStartup.Checked = false;
+			Settings.LastViewAtStartup = c_miOpenLastViewAtStartup.Checked;
+		}
+
+		private void c_miAdvancedSettings_Click(object sender, EventArgs e)
+		{
+			Wizard wiz = new Wizard(Settings);
+			wiz.ShowDialog(this);
+		}
+
+		/// <summary>
+		/// Handler for a change in the selection of the vertical exaggeration from the main menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void menuItemVerticalExaggerationChange(object sender, EventArgs e)
+		{
+			foreach (ToolStripMenuItem item in c_miVertExaggeration.DropDownItems)
+			{
+				if (item != sender)
+				{
+					item.Checked = false;
+				}
+				else
+				{
+					World.Settings.VerticalExaggeration = Convert.ToSingle(item.Text.Replace("x", string.Empty));
+				}
+			}
+			c_oWorldWindow.Invalidate();
+		}
+
+		private void c_miShowCompass_Click(object sender, EventArgs e)
+		{
+			World.Settings.ShowCompass = c_miShowCompass.Checked;
+			this.compassPlugin.Layer.IsOn = World.Settings.ShowCompass;
+		}
+
+		private void c_miShowDLProgress_Click(object sender, EventArgs e)
+		{
+			World.Settings.ShowDownloadIndicator = c_miShowDLProgress.Checked;
+		}
+
+		private void c_miShowCrosshair_Click(object sender, EventArgs e)
+		{
+			World.Settings.ShowCrosshairs = c_miShowCrosshair.Checked;
+		}
+
+		private void c_miOpenSavedView_Click(object sender, EventArgs e)
+		{
+			ViewOpenDialog dlgtest = new ViewOpenDialog(Path.Combine(UserPath, Settings.ConfigPath));
+			DialogResult res = dlgtest.ShowDialog(this);
+			if (dlgtest.ViewFile != null)
+			{
+				if (res == DialogResult.OK)
+					OpenView(dlgtest.ViewFile, true, true);
+			}
+		}
+
+		private void c_miOpenHomeView_Click(object sender, EventArgs e)
+		{
+			CmdLoadHomeView();
+		}
+
+		private void c_miShowGridLines_Click(object sender, EventArgs e)
+		{
+			World.Settings.ShowLatLonLines = c_miShowGridlines.Checked;
+			foreach (RenderableObject oRO in c_oWorldWindow.CurrentWorld.RenderableObjects.ChildObjects)
+			{
+				if (oRO.Name == "1 - Grid Lines")
+				{
+					oRO.IsOn = c_miShowGridlines.Checked;
+					break;
+				}
+			}
+		}
+
+		private void c_miShowInfoOverlay_Click(object sender, EventArgs e)
+		{
+			World.Settings.ShowPosition = c_miShowInfoOverlay.Checked;
+			c_oWorldWindow.Invalidate();
+		}
+
+		private void c_miSaveView_Click(object sender, EventArgs e)
+		{
+			string tempViewFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ViewExt);
+			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
+			SaveCurrentView(tempViewFile, tempFile, "");
+			Image img = Image.FromFile(tempFile);
+			SaveViewForm form = new SaveViewForm(Path.Combine(UserPath, Settings.ConfigPath), img);
+
+			if (form.ShowDialog(this) == DialogResult.OK)
+			{
+				if (File.Exists(form.OutputPath))
+					File.Delete(form.OutputPath);
+
+				XmlDocument oDoc = new XmlDocument();
+				oDoc.Load(tempViewFile);
+				XmlNode oRoot = oDoc.DocumentElement;
+				XmlNode oNode = oDoc.CreateElement("notes");
+				oNode.InnerText = form.Notes;
+				oRoot.AppendChild(oNode);
+				oDoc.Save(form.OutputPath);
+			}
+
+			img.Dispose();
+			if (File.Exists(tempFile)) File.Delete(tempFile);
+			if (File.Exists(tempViewFile)) File.Delete(tempViewFile);
+		}
+
+		private void c_miSendViewTo_Click(object sender, EventArgs e)
+		{
+			string tempBodyFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
+			string tempJpgFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
+			string tempViewFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ViewExt);
+			string strMailApp = Path.Combine(Path.Combine(DirectoryPath, "System"), "mailer.exe");
+
+			SaveCurrentView(tempViewFile, tempJpgFile, "");
+
+
+			using (StreamWriter sw = new StreamWriter(tempBodyFile))
+			{
+				sw.WriteLine();
+				sw.WriteLine();
+				sw.WriteLine("Get Dapple to view the attachment: " + WebsiteUrl + ".");
+			}
+
+			try
+			{
+				ProcessStartInfo psi = new ProcessStartInfo(strMailApp);
+				psi.UseShellExecute = false;
+				psi.CreateNoWindow = true;
+				psi.Arguments = String.Format(CultureInfo.InvariantCulture,
+					" \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" \"{5}\" \"{6}\" \"{7}\"",
+					ViewFileDescr, "", "",
+					tempViewFile, ViewFileDescr + ViewExt,
+					tempJpgFile, ViewFileDescr + ".jpg", tempBodyFile);
+				using (Process p = Process.Start(psi))
+				{
+					// Let the screen draw so it doesn't look damaged.
+					Application.DoEvents();
+					p.WaitForExit();
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.GetType().ToString() + ": " + ex.Message, "Error Sending View", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			File.Delete(tempBodyFile);
+			File.Delete(tempJpgFile);
+			File.Delete(tempViewFile);
+		}
+
+		private void c_miShowPlaceNames_Click(object sender, EventArgs e)
+		{
+			if (this.placeNames == null) return;
+
+			World.Settings.ShowPlacenames = !World.Settings.ShowPlacenames;
+			this.c_miShowPlaceNames.Checked = World.Settings.ShowPlacenames;
+			this.placeNames.IsOn = World.Settings.ShowPlacenames;
+		}
+
+		private void c_miShowScaleBar_Click(object sender, EventArgs e)
+		{
+			this.scalebarPlugin.IsVisible = !this.scalebarPlugin.IsVisible;
+			World.Settings.ShowScaleBar = this.scalebarPlugin.IsVisible;
+			this.c_miShowScaleBar.Checked = this.scalebarPlugin.IsVisible;
+		}
+
+		private void c_miSunshadingEnabled_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableSunShading = true;
+			World.Settings.SunSynchedWithTime = false;
+			this.c_miSunshadingEnabled.Checked = true;
+			this.c_miSunshadingSync.Checked = false;
+			this.c_miSunshadingDisabled.Checked = false;
+		}
+
+		private void c_miSunshadingSync_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableSunShading = true;
+			World.Settings.SunSynchedWithTime = true;
+			this.c_miSunshadingEnabled.Checked = false;
+			this.c_miSunshadingSync.Checked = true;
+			this.c_miSunshadingDisabled.Checked = false;
+		}
+
+		private void c_miSunshadingDisabled_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableSunShading = false;
+			World.Settings.SunSynchedWithTime = false;
+			this.c_miSunshadingEnabled.Checked = false;
+			this.c_miSunshadingSync.Checked = false;
+			this.c_miSunshadingDisabled.Checked = true;
+		}
+
+		private void c_miShowAtmoScatter_Click(object sender, EventArgs e)
+		{
+			World.Settings.EnableAtmosphericScattering = !World.Settings.EnableAtmosphericScattering;
+			this.c_miShowAtmoScatter.Checked = World.Settings.EnableAtmosphericScattering;
+		}
+
+		private void c_miShowGlobalClouds_Click(object sender, EventArgs e)
+		{
+			World.Settings.ShowClouds = !World.Settings.ShowClouds;
+			this.c_miShowGlobalClouds.Checked = World.Settings.ShowClouds;
+			this.cloudsPlugin.layer.IsOn = World.Settings.ShowClouds;
+		}
+
+		private void c_miExit_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
+
+		private void c_miView_DropDownOpening(object sender, EventArgs e)
+		{
+			this.c_miShowScaleBar.Checked = this.scalebarPlugin.IsVisible;
+		}
+
+		private void c_miHelpAbout_Click(object sender, EventArgs e)
+		{
+			AboutDialog dlg = new AboutDialog();
+			dlg.ShowDialog(this);
+		}
+
+		private void c_miHelpHomepage_Click(object sender, EventArgs e)
+		{
+			MainForm.BrowseTo(MainForm.WebsiteUrl);
+		}
+
+		private void c_miHelpForums_Click(object sender, EventArgs e)
+		{
+			MainForm.BrowseTo(MainForm.WebsiteForumsHelpUrl);
+		}
+
+		private void c_miHelpWebDocs_Click(object sender, EventArgs e)
+		{
+			MainForm.BrowseTo(MainForm.WebsiteHelpUrl);
+		}
+
+		private void c_miAddLayer_Click(object sender, EventArgs e)
+		{
+			AddDatasetAction();
+		}
+
+		private void c_miExtractLayers_Click(object sender, EventArgs e)
+		{
+			c_oLayerList.CmdExtractVisibleLayers();
+		}
+
+		private void c_miSearch_Click(object sender, EventArgs e)
+		{
+			doSearch();
+		}
+
+		private void c_miViewProperties_Click(object sender, EventArgs e)
+		{
+			this.c_oServerTree.CmdServerProperties();
+		}
+
+		private void c_miTakeSnapshot_Click(object sender, EventArgs e)
+		{
+			c_oLayerList.CmdTakeSnapshot();
+		}
+
+		private void c_miRemoveLayer_Click(object sender, EventArgs e)
+		{
+			c_oLayerList.CmdRemoveSelectedLayers();
+		}
+
+		private void c_miRefreshServer_Click(object sender, EventArgs e)
+		{
+			this.c_oServerTree.RefreshCurrentServer();
+		}
+
+		private void c_miRemoveServer_Click(object sender, EventArgs e)
+		{
+			this.c_oServerTree.RemoveCurrentServer();
+		}
+
+		private void c_miSetHomeView_Click(object sender, EventArgs e)
+		{
+			CmdSaveHomeView();
+		}
+
+		private void c_miTools_DropDownOpening(object sender, EventArgs e)
+		{
+			c_miAddLayer.Enabled = false;
+			if (c_tcSearchViews.SelectedIndex == 0)
+			{
+				if (cServerViewsTab.SelectedIndex == 0)
+				{
+					c_miAddLayer.Enabled = c_oServerTree.SelectedNode != null && (c_oServerTree.SelectedNode.Tag is LayerBuilder || c_oServerTree.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
+				}
+				else if (cServerViewsTab.SelectedIndex == 1)
+				{
+					c_miAddLayer.Enabled = c_oServerList.SelectedLayers.Count > 0;
+				}
+			}
+			else if (c_tcSearchViews.SelectedIndex == 1)
+			{
+				c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
 			}
 			else
 			{
-				DappleSearchResultsLabel.Text = text;
+				c_miAddLayer.Enabled = false;
 			}
-		}
-		/*
-      private void doBackgroundSearch(out int hits, out int error, String keywords, GeographicBoundingBox ROI)
-      {
-         XmlDocument query = new XmlDocument();
-         XmlElement geoRoot = query.CreateElement("geosoft_xml");
-         query.AppendChild(geoRoot);
-         XmlElement root = query.CreateElement("search_request");
-         root.SetAttribute("version", "1.0");
-         root.SetAttribute("handle", "cheese");
-         root.SetAttribute("maxcount", "0");
-         root.SetAttribute("offset", "0");
-         geoRoot.AppendChild(root);
 
-         if (ROI != null)
-         {
-            XmlElement boundingBox = query.CreateElement("bounding_box");
-            boundingBox.SetAttribute("minx", ROI.West.ToString());
-            boundingBox.SetAttribute("miny", ROI.South.ToString());
-            boundingBox.SetAttribute("maxx", ROI.East.ToString());
-            boundingBox.SetAttribute("maxy", ROI.North.ToString());
-            boundingBox.SetAttribute("crs", "WSG84");
-            root.AppendChild(boundingBox);
-         }
-
-         if (keywords != null)
-         {
-            XmlElement keyword = query.CreateElement("text_filter");
-            keyword.InnerText = keywords;
-            root.AppendChild(keyword);
-         }
-
-         // --- Do the request ---
-
-         try
-         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_strDappleSearchServerURL + SEARCH_XML_GATEWAY);
-            request.Headers["GeosoftMapSearchRequest"] = query.InnerXml;
-            WebResponse response = request.GetResponse();
-
-            XmlDocument responseXML = new XmlDocument();
-            responseXML.Load(response.GetResponseStream());
-
-            System.Xml.XPath.XPathNavigator navcom = responseXML.CreateNavigator();
-            if (navcom.MoveToFollowing("error", ""))
-            {
-               String errorString = navcom.GetAttribute("code", "");
-               hits = -1;
-               error = Int32.Parse(errorString);
-            }
-            else
-            {
-               navcom.MoveToFollowing("search_result", "");
-               String countString = navcom.GetAttribute("totalcount", "");
-               hits = Int32.Parse(countString);
-               error = 0;
-            }
-         }
-         catch
-         {
-            hits = 0; error = -1; return;
-         }
-      }
-		*/
-		private void WorldResultsSplitPanel_SplitterMoving(object sender, SplitterCancelEventArgs e)
-		{
-			worldWindow.Visible = false;
+			c_miRemoveLayer.Enabled = c_oLayerList.RemoveAllowed;
 		}
 
-		private void WorldResultsSplitPanel_SplitterMoved(object sender, SplitterEventArgs e)
+		private void c_miServers_DropDownOpening(object sender, EventArgs e)
 		{
-			worldWindow.Visible = true;
-			worldWindow.SafeRender();
-		}
+			bool blServerSelected = c_oServerTree.SelectedNode != null &&
+				(c_oServerTree.SelectedNode.Tag is Server || c_oServerTree.SelectedNode.Tag is ServerBuilder);
+			blServerSelected &= c_tcSearchViews.SelectedIndex == 0;
+			blServerSelected &= cServerViewsTab.SelectedIndex == 0;
 
-		private void OpenDatasetLink(String linkFilename)
-		{
-			if (!File.Exists(linkFilename)) return;
-			XmlDocument linkData = new XmlDocument();
-			linkData.Load(linkFilename);
+			bool blDAPServerSelected = blServerSelected && c_oServerTree.SelectedNode.Tag is Server;
 
-			XmlElement searchElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/search_params");
-			XmlElement displayMapElement = (XmlElement)linkData.SelectSingleNode("//geosoft_xml/display_map");
+			c_miViewProperties.Enabled = blServerSelected;
+			c_miRefreshServer.Enabled = blServerSelected;
+			c_miRemoveServer.Enabled = blServerSelected;
+			c_miSetFavouriteServer.Enabled = blServerSelected && !c_oServerTree.SelectedIsFavorite;
+			c_miAddBrowserMap.Enabled = blDAPServerSelected;
 
-			String serverType = displayMapElement.GetAttribute("type");
-			String serverURL = displayMapElement.GetAttribute("server");
-			if (!serverURL.Contains("?")) serverURL += "?";
-			String layerTitle = displayMapElement.GetAttribute("layertitle");
-			float minx = Single.Parse(displayMapElement.GetAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture);
-			float miny = Single.Parse(displayMapElement.GetAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture);
-			float maxx = Single.Parse(displayMapElement.GetAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture);
-			float maxy = Single.Parse(displayMapElement.GetAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture);
-
-			if (serverType.Equals("DAP"))
+			if (blServerSelected == false)
 			{
-				String layerName = displayMapElement.GetAttribute("datasetname");
-				String strHeight = displayMapElement.GetAttribute("height");
-				String strSize = displayMapElement.GetAttribute("size");
-				String datasetType = displayMapElement.GetAttribute("datasettype");
-				String edition = displayMapElement.GetAttribute("edition");
-				String hierarchy = displayMapElement.GetAttribute("hierarchy");
-				String strLevels = displayMapElement.GetAttribute("levels");
-				String strLevelZeroTilesize = displayMapElement.GetAttribute("levelzerotilesize");
-
-				String strUri = "gxdap://" + serverURL +
-					"&datasetname=" + HttpUtility.UrlEncode(layerName) +
-					"&height=" + strHeight +
-					"&size=" + strSize +
-					"&type=" + datasetType +
-					"&title=" + HttpUtility.UrlEncode(layerTitle) +
-					"&edition=" + HttpUtility.UrlEncode(edition) +
-					"&hierarchy=" + HttpUtility.UrlEncode(hierarchy) +
-					"&north=" + maxy +
-					"&east=" + maxx +
-					"&south=" + miny +
-					"&west=" + minx +
-					"&levels=" + strLevels +
-					"&lvl0tilesize=" + strLevelZeroTilesize;
-
-				cLayerList.AddLayer(LayerUri.create(strUri).getBuilder(this.WorldWindow, tvServers));
-			}
-			else if (serverType.Equals("WMS"))
-			{
-				String layerName = displayMapElement.GetAttribute("layername");
-				String strUri = "gxwms://" + serverURL + "&layer=" + layerName + "&pixelsize=256";
-
-				cLayerList.AddLayer(LayerUri.create(strUri).getBuilder(this.WorldWindow, tvServers));
-			}
-			else if (serverType.Equals("ArcIMS"))
-			{
-				String serviceName = displayMapElement.GetAttribute("servicename");
-				String strUri = "gxarcims://" + serverURL +
-					"&servicename=" + serviceName +
-					"&minx=" + minx.ToString() +
-					"&miny=" + miny.ToString() +
-					"&maxx=" + maxx.ToString() +
-					"&maxy=" + maxy.ToString();
-
-				cLayerList.AddLayer(LayerUri.create(strUri).getBuilder(this.WorldWindow, tvServers));
+				c_miToggleServerStatus.Text = "Disable";
+				c_miToggleServerStatus.Image = Resources.disserver;
+				c_miToggleServerStatus.Enabled = false;
 			}
 			else
 			{
-				MessageBox.Show("Unable to view layer: unknown server type '" + serverType + "'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				bool blServerEnabled = true;
+				if (c_oServerTree.SelectedNode.Tag is Server)
+					blServerEnabled = ((Server)c_oServerTree.SelectedNode.Tag).Enabled;
+				else if (c_oServerTree.SelectedNode.Tag is ServerBuilder)
+					blServerEnabled = ((ServerBuilder)c_oServerTree.SelectedNode.Tag).Enabled;
+
+				if (blServerEnabled)
+				{
+					c_miToggleServerStatus.Text = "Disable";
+					c_miToggleServerStatus.Image = Resources.disserver;
+				}
+				else
+				{
+					c_miToggleServerStatus.Text = "Enable";
+					c_miToggleServerStatus.Image = Resources.enserver;
+				}
+				c_miToggleServerStatus.Enabled = true;
+			}
+		}
+
+		private void c_miAddBrowserMap_Click(object sender, EventArgs e)
+		{
+			c_oServerTree.CmdAddBrowserMap();
+		}
+
+		private void c_miGetDataHelp_Click(object sender, EventArgs e)
+		{
+			CmdDisplayOMHelp();
+		}
+
+		private void c_miSetFavouriteServer_Click(object sender, EventArgs e)
+		{
+			c_oServerTree.CmdSetFavoriteServer();
+		}
+
+		private void c_miToggleServerStatus_Click(object sender, EventArgs e)
+		{
+			c_oServerTree.CmdToggleServerEnabled();
+		}
+
+		#endregion
+
+		#region MainForm Event Handlers
+
+		private void MainForm_Shown(object sender, EventArgs e)
+		{
+			if (IsMontajChildProcess)
+			{
+				try
+				{
+					m_oMontajRemoteInterface.StartConnection();
+				}
+				catch (System.Runtime.Remoting.RemotingException ex)
+				{
+					throw new System.Runtime.Remoting.RemotingException("A communication error occurred between Dapple and OM during startup", ex);
+				}
+			}
+
+			// Render once to not just show the atmosphere at startup (looks better) ---
+			c_oWorldWindow.SafeRender();
+
+
+			//tvServers.LoadFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
+
+			try
+			{
+				// --- Draw the screen, so it doesn't look damaged ---
+				UseWaitCursor = true;
+				Application.DoEvents();
+
+				if (this.openView.Length > 0)
+					OpenView(this.openView, this.openGeoTiff.Length == 0, true);
+				else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
+				{
+					if (Settings.AskLastViewAtStartup)
+					{
+						Utils.MessageBoxExLib.MessageBoxEx msgBox = Utils.MessageBoxExLib.MessageBoxExManager.CreateMessageBox(null);
+						msgBox.AllowSaveResponse = true;
+						msgBox.SaveResponseText = "Don't ask me again";
+						msgBox.Caption = this.Text;
+						msgBox.Icon = Utils.MessageBoxExLib.MessageBoxExIcon.Question;
+						msgBox.AddButtons(MessageBoxButtons.YesNo);
+						msgBox.Text = "Would you like to open your last View?";
+						msgBox.Font = this.Font;
+						Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
+						if (msgBox.SaveResponse)
+							Settings.AskLastViewAtStartup = false;
+					}
+
+					if (Settings.LastViewAtStartup)
+						OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView), true, true);
+					else
+						CmdLoadHomeView();
+				}
+				else
+				{
+					CmdLoadHomeView();
+				}
+
+				if (this.openGeoTiff.Length > 0)
+					AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
+
+
+				// Check for updates daily
+				if (IsMontajChildProcess == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
+					CheckForUpdates(false);
+				Settings.UpdateCheckDate = System.DateTime.Now;
+
+				foreach (RenderableObject oRO in c_oWorldWindow.CurrentWorld.RenderableObjects.ChildObjects)
+				{
+					if (oRO.Name == "1 - Grid Lines")
+					{
+						oRO.IsOn = World.Settings.ShowLatLonLines;
+						break;
+					}
+				}
+
+				if (m_oOMMapExtentWGS84 != null)
+				{
+					doSearch(String.Empty, m_oOMMapExtentWGS84);
+					GoTo(m_oOMMapExtentWGS84, false);
+				}
+			}
+			finally
+			{
+				UseWaitCursor = false;
+			}
+		}
+
+		bool m_bSizing = false;
+		private void MainForm_ResizeBegin(object sender, EventArgs e)
+		{
+			m_bSizing = true;
+			c_oWorldWindow.Visible = false;
+		}
+
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+			m_bSizing = false;
+			c_oWorldWindow.Visible = true;
+			c_oWorldWindow.SafeRender();
+		}
+
+		private void MainForm_Resize(object sender, EventArgs e)
+		{
+			c_oWorldWindow.Visible = false;
+		}
+
+		private void MainForm_SizeChanged(object sender, EventArgs e)
+		{
+			if (!m_bSizing)
+			{
+				c_oWorldWindow.Visible = true;
+				c_oWorldWindow.SafeRender();
+			}
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+
+			c_oWorldWindow.IsRenderDisabled = false;
+
+			this.toolStripProgressBar.Visible = false;
+			this.toolStripStatusLabel1.Visible = false;
+			this.toolStripStatusLabel1.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusLabel2.Visible = false;
+			this.toolStripStatusLabel2.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusLabel3.Visible = false;
+			this.toolStripStatusLabel3.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusLabel4.Visible = false;
+			this.toolStripStatusLabel4.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusLabel5.Visible = false;
+			this.toolStripStatusLabel5.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusLabel6.Visible = false;
+			this.toolStripStatusLabel6.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusSpin1.Visible = false;
+			this.toolStripStatusSpin1.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusSpin2.Visible = false;
+			this.toolStripStatusSpin2.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusSpin3.Visible = false;
+			this.toolStripStatusSpin3.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusSpin4.Visible = false;
+			this.toolStripStatusSpin4.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusSpin5.Visible = false;
+			this.toolStripStatusSpin5.Alignment = ToolStripItemAlignment.Right;
+			this.toolStripStatusSpin6.Visible = false;
+			this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right;
+			c_oWorldWindow.Updated += new WorldWindow.UpdatedDelegate(c_oWorldWindow_Updated);
+
+			this.c_oServerTree.Load();
+		}
+
+		private void MainForm_Closing(object sender, CancelEventArgs e)
+		{
+			// Turn off the metadata display thread and background search thread
+			m_oMetadataDisplay.Abort();
+
+			this.threeDConnPlugin.Unload();
+
+			// Turning off the layers will set this
+			bool bSaveGridLineState = World.Settings.ShowLatLonLines;
+
+			this.WindowState = FormWindowState.Minimized;
+
+			SaveLastView();
+			//tvServers.SaveFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
+
+			World.Settings.ShowLatLonLines = bSaveGridLineState;
+
+			// Register the cache location to make it easy for uninstall to clear the cache for at least the current user
+			try
+			{
+				RegistryKey keySW = Registry.CurrentUser.CreateSubKey("Software");
+				RegistryKey keyDapple = keySW.CreateSubKey("Dapple");
+				keyDapple.SetValue("CachePathForUninstall", Settings.CachePath);
+			}
+			catch
+			{
+			}
+
+			FinalizeSettings();
+
+			// Don't force-dispose the WorldWindow (or, really, anything), just let .NET free it up for us.
+			// Should kill the background worker thread though.
+			c_oWorldWindow.KillWorkerThread();
+
+			// --- Delete all the temporary XML files the metadata viewer has been pumping out ---
+
+			foreach (String bob in Directory.GetFiles(metaviewerDir, "*.xml"))
+			{
+				try
+				{
+					File.Delete(bob);
+				}
+				catch (System.IO.IOException)
+				{
+					// Couldn't delete a temp file?  Not the end of the world.
+				}
+			}
+
+			SaveMRUList();
+		}
+
+		private void MainForm_Deactivate(object sender, EventArgs e)
+		{
+			c_oWorldWindow.IsRenderDisabled = true;
+		}
+
+		private void MainForm_Activated(object sender, EventArgs e)
+		{
+			c_oWorldWindow.IsRenderDisabled = false;
+		}
+
+		protected override void WndProc(ref System.Windows.Forms.Message m)
+		{
+			if (m.Msg == OpenViewMessage)
+			{
+				try
+				{
+					Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Attach, 0);
+
+					string[] strData = (string[])s.GetData();
+
+					string strView = strData[0];
+					string strGeoTiff = strData[1];
+					string strGeoTiffName = strData[2];
+					bool bGeotiffTmp = strData[3] == "YES";
+					this.lastView = strData[4];
+
+					if (strView.Length > 0)
+						OpenView(strView, strGeoTiff.Length == 0, true);
+					if (strGeoTiff.Length > 0)
+						AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
+				}
+				catch
+				{
+				}
+			}
+			base.WndProc(ref m);
+		}
+
+		#endregion
+
+		#region World Window Event Handlers
+
+		private void c_oWorldWindow_MouseLeave(object sender, EventArgs e)
+		{
+			c_scMain.Panel1.Select();
+		}
+
+		private void c_oWorldWindow_MouseEnter(object sender, EventArgs e)
+		{
+			c_oWorldWindow.Select();
+		}
+
+		private void c_oWorldWindow_Updated()
+		{
+			int iBuilderPos, iBuilderTotal;
+			// Do the work in the update thread and just invoke to update the GUI
+
+
+			int iPos = 0;
+			int iTotal = 0;
+			bool bDownloading = false;
+			List<ActiveDownload> currentList = new List<ActiveDownload>();
+			RenderableObject roBMNG = GetActiveBMNG();
+
+			if (roBMNG != null && roBMNG.IsOn && ((QuadTileSet)((RenderableObjectList)roBMNG).ChildObjects[1]).bIsDownloading(out iBuilderPos, out iBuilderTotal))
+			{
+				bDownloading = true;
+				iPos += iBuilderPos;
+				iTotal += iBuilderTotal;
+				ActiveDownload dl = new ActiveDownload();
+				dl.builder = null;
+				dl.iPos = iBuilderPos;
+				dl.iTotal = iBuilderTotal;
+				dl.bOn = true;
+				dl.bRead = false;
+				currentList.Add(dl);
+			}
+
+			foreach (LayerBuilder oBuilder in c_oLayerList.AllLayers)
+			{
+				if (oBuilder.bIsDownloading(out iBuilderPos, out iBuilderTotal))
+				{
+					bDownloading = true;
+					iPos += iBuilderPos;
+					iTotal += iBuilderTotal;
+					ActiveDownload dl = new ActiveDownload();
+					dl.builder = oBuilder;
+					dl.iPos = iBuilderPos;
+					dl.iTotal = iBuilderTotal;
+					dl.bOn = true;
+					dl.bRead = false;
+					currentList.Add(dl);
+				}
+			}
+
+			// In rare cases, the WorldWindow's background worker thread might start sending back updates before the
+			// MainForm's window handle has been created.  Don't let it, or you'll cascade the system into failure.
+			if (this.IsHandleCreated)
+			{
+				this.BeginInvoke(new UpdateDownloadIndicatorsDelegate(UpdateDownloadIndicators), new object[] { bDownloading, iPos, iTotal, currentList });
+			}
+		}
+
+		private void c_oWorldWindow_DragOver(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
+			{
+				e.Effect = DragDropEffects.Copy;
+			}
+		}
+
+		private void c_oWorldWindow_DragDrop(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
+			{
+				List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
+				c_oLayerList.AddLayers(oDropData);
+			}
+		}
+
+		void c_oWorldWindow_CameraChanged(object sender, EventArgs e)
+		{
+			if (m_oLastSearchROI != null)
+			{
+				SetSearchable(!GeographicBoundingBox.FromQuad(c_oWorldWindow.GetSearchBox()).Equals(m_oLastSearchROI));
+			}
+		}
+
+		#endregion
+
+		#region Other Event Handlers
+
+		#region Nav Strip Buttons
+
+		enum NavMode
+		{
+			None,
+			ZoomIn,
+			ZoomOut,
+			RotateLeft,
+			RotateRight,
+			TiltUp,
+			TiltDown
+		}
+
+		private NavMode eNavMode = NavMode.None;
+		private bool bNavTimer = false;
+
+		private void c_bResetTilt_Click(object sender, EventArgs e)
+		{
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(
+					 c_oWorldWindow.Latitude,
+					 c_oWorldWindow.Longitude,
+					  c_oWorldWindow.DrawArgs.WorldCamera.Heading.Degrees,
+					  c_oWorldWindow.DrawArgs.WorldCamera.Altitude,
+					  0);
+
+		}
+
+		private void c_bResetRotation_Click(object sender, EventArgs e)
+		{
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(
+					 c_oWorldWindow.Latitude,
+					 c_oWorldWindow.Longitude,
+					  0,
+					  c_oWorldWindow.DrawArgs.WorldCamera.Altitude,
+					  c_oWorldWindow.DrawArgs.WorldCamera.Tilt.Degrees);
+		}
+
+		private void c_bResetCamera_Click(object sender, EventArgs e)
+		{
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			c_oWorldWindow.DrawArgs.WorldCamera.Reset();
+		}
+
+		private void timerNavigation_Tick(object sender, EventArgs e)
+		{
+			this.bNavTimer = true;
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = 1.0;
+			switch (this.eNavMode)
+			{
+				case NavMode.ZoomIn:
+					c_oWorldWindow.DrawArgs.WorldCamera.Zoom(0.2f);
+					return;
+				case NavMode.ZoomOut:
+					c_oWorldWindow.DrawArgs.WorldCamera.Zoom(-0.2f);
+					return;
+				case NavMode.RotateLeft:
+					Angle rotateClockwise = Angle.FromRadians(-0.01f);
+					c_oWorldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
+					c_oWorldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
+					return;
+				case NavMode.RotateRight:
+					Angle rotateCounterclockwise = Angle.FromRadians(0.01f);
+					c_oWorldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
+					c_oWorldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
+					return;
+				case NavMode.TiltUp:
+					c_oWorldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
+					return;
+				case NavMode.TiltDown:
+					c_oWorldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(1.0f);
+					return;
+				default:
+					return;
+			}
+		}
+
+		private void toolStripNavButton_MouseRemoveCapture(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.timerNavigation.Enabled = false;
+			this.eNavMode = NavMode.None;
+		}
+
+		private void c_bRotateRight_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.bNavTimer = false;
+			this.eNavMode = NavMode.RotateLeft;
+		}
+
+		private void c_bRotateLeft_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.bNavTimer = false;
+			this.eNavMode = NavMode.RotateRight;
+		}
+
+		private void c_bTiltDown_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.bNavTimer = false;
+			this.eNavMode = NavMode.TiltDown;
+		}
+
+		private void c_bTiltUp_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.bNavTimer = false;
+			this.eNavMode = NavMode.TiltUp;
+		}
+
+		private void c_bZoomOut_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.bNavTimer = false;
+			this.eNavMode = NavMode.ZoomOut;
+		}
+
+		private void c_bZoomIn_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.timerNavigation.Enabled = true;
+			this.bNavTimer = false;
+			this.eNavMode = NavMode.ZoomIn;
+		}
+
+		private void c_bZoomIn_Click(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = false;
+			if (!this.bNavTimer)
+			{
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.Zoom(2.0f);
+			}
+			else
+				this.bNavTimer = false;
+		}
+
+		private void c_bZoomOut_Click(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = false;
+			if (!this.bNavTimer)
+			{
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.Zoom(-2.0f);
+			}
+			else
+				this.bNavTimer = false;
+		}
+
+		private void c_bRotateRight_Click(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = false;
+			if (!this.bNavTimer)
+			{
+				Angle rotateClockwise = Angle.FromRadians(-0.2f);
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
+				c_oWorldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
+			}
+			else
+				this.bNavTimer = false;
+		}
+
+		private void c_bRotateLeft_Click(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = false;
+			if (!this.bNavTimer)
+			{
+				Angle rotateCounterclockwise = Angle.FromRadians(0.2f);
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
+				c_oWorldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
+			}
+			else
+				this.bNavTimer = false;
+		}
+
+		private void c_bTiltUp_Click(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = false;
+			if (!this.bNavTimer)
+			{
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-10.0f);
+			}
+			else
+				this.bNavTimer = false;
+		}
+
+		private void c_bTiltDown_Click(object sender, EventArgs e)
+		{
+			this.timerNavigation.Enabled = false;
+			if (!this.bNavTimer)
+			{
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(10.0f);
+			}
+			else
+				this.bNavTimer = false;
+		}
+
+		#endregion
+
+		private void ServerPageChanged(int iIndex)
+		{
+			if (iIndex == 0) // Changed to tree view
+			{
+				c_oServerTree.SelectedServer = c_oServerList.SelectedServer;
+			}
+			else if (iIndex == 1) // Changed to list view
+			{
+				c_oServerList.SelectedServer = c_oServerTree.SelectedServer;
+			}
+		}
+
+		private void c_scWorldMetadata_Panel1_Resize(object sender, EventArgs e)
+		{
+			CenterNavigationToolStrip();
+		}
+
+		private void c_oOverview_AOISelected(object sender, GeographicBoundingBox bounds)
+		{
+			GoTo(bounds, false);
+		}
+
+		private void c_tbSearchKeywords_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar.Equals((char)13))
+			{
+				doSearch();
+			}
+		}
+
+		private void c_bSearch_Click(object sender, EventArgs e)
+		{
+			doSearch();
+		}
+
+		private bool m_blSupressSearchSelectedIndexChanged = false;
+		private void c_tbSearchKeywords_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (m_blSupressSearchSelectedIndexChanged) return;
+			doSearch();
+		}
+
+		#region Globe visibility disabling
+
+		private void c_scMain_SplitterMoving(object sender, SplitterCancelEventArgs e)
+		{
+			c_oWorldWindow.Visible = false;
+		}
+
+		private void c_scMain_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			if (!m_bSizing)
+			{
+				c_oWorldWindow.Visible = true;
+				c_oWorldWindow.SafeRender();
+			}
+		}
+
+		private void c_scWorldMetadata_SplitterMoving(object sender, SplitterCancelEventArgs e)
+		{
+			c_oWorldWindow.Visible = false;
+		}
+
+		private void c_scWorldMetadata_SplitterMoved(object sender, SplitterEventArgs e)
+		{
+			if (!m_bSizing)
+			{
+				c_oWorldWindow.Visible = true;
+				c_oWorldWindow.SafeRender();
+			}
+		}
+
+		#endregion
+
+		private void c_oServerTree_AfterSelected(object sender, TreeViewEventArgs e)
+		{
+			populateAoiComboBox();
+			c_miTools_DropDownOpening(this, new EventArgs());
+			c_miServers_DropDownOpening(this, new EventArgs());
+		}
+
+		private void c_tbSearchKeywords_Enter(object sender, EventArgs e)
+		{
+			if (c_tbSearchKeywords.Text.Equals(NO_SEARCH))
+			{
+				c_tbSearchKeywords.Text = String.Empty;
+			}
+			c_tbSearchKeywords.ForeColor = SystemColors.ControlText;
+		}
+
+		private void c_tbSearchKeywords_Leave(object sender, EventArgs e)
+		{
+			if (c_tbSearchKeywords.Text.Equals(String.Empty))
+			{
+				c_tbSearchKeywords.Text = NO_SEARCH;
+				c_tbSearchKeywords.ForeColor = SystemColors.GrayText;
+			}
+		}
+
+		private void c_bClearSearch_Click(object sender, EventArgs e)
+		{
+			clearSearch();
+		}
+
+		private void c_tbSearchKeywords_TextUpdate(object sender, EventArgs e)
+		{
+			if (!SearchKeyword.Equals(m_szLastSearchString))
+			{
+				SetSearchable(true);
+			}
+		}
+
+		#endregion
+
+		#region Commands
+
+		#region ImageList Queries
+
+		/// <summary>
+		/// Returns imagelist index from key name
+		/// </summary>
+		/// <param name="strKey"></param>
+		/// <returns></returns>
+		public static int ImageListIndex(string strKey)
+		{
+			return m_oImageList.Images.IndexOfKey(strKey);
+		}
+
+		/// <summary>
+		/// Returns imagelist index from dap dataset type
+		/// </summary>
+		/// <param name="strType"></param>
+		/// <returns></returns>
+		public static int ImageIndex(string strType)
+		{
+			switch (strType.ToLower())
+			{
+				case "database":
+					return ImageListIndex("dap_database");
+				case "document":
+					return ImageListIndex("dap_document");
+				case "generic":
+					return ImageListIndex("dap_map");
+				case "grid":
+					return ImageListIndex("dap_grid");
+				case "gridsection":
+					return ImageListIndex("dap_grid");
+				case "map":
+					return ImageListIndex("dap_map");
+				case "picture":
+					return ImageListIndex("dap_picture");
+				case "picturesection":
+					return ImageListIndex("dap_picture");
+				case "point":
+					return ImageListIndex("dap_point");
+				case "spf":
+					return ImageListIndex("dap_spf");
+				case "voxel":
+					return ImageListIndex("dap_voxel");
+				case "imageserver":
+					return ImageListIndex("arcims");
+				case "arcgis":
+					return ImageListIndex("dap_arcgis");
+				default:
+					return 3;
+			}
+		}
+
+		#endregion
+
+		#region AOIs
+
+		private void loadCountryList()
+		{
+			if (m_oCountryAOIs == null)
+			{
+				m_oCountryAOIs = new Dictionary<string, GeographicBoundingBox>();
+				String[] straCountries = Resources.aoi_region.Split(new String[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+				for (int count = 1; count < straCountries.Length - 1; count++)
+				{
+					String[] data = straCountries[count].Split(new char[] { ',' });
+					double minX, minY, maxX, maxY;
+					if (!Double.TryParse(data[1], NumberStyles.Any, CultureInfo.InvariantCulture, out minX)) continue;
+					if (!Double.TryParse(data[2], NumberStyles.Any, CultureInfo.InvariantCulture, out minY)) continue;
+					if (!Double.TryParse(data[3], NumberStyles.Any, CultureInfo.InvariantCulture, out maxX)) continue;
+					if (!Double.TryParse(data[4], NumberStyles.Any, CultureInfo.InvariantCulture, out maxY)) continue;
+
+					m_oCountryAOIs.Add(data[0], new GeographicBoundingBox(maxY, minY, minX, maxX));
+				}
+			}
+		}
+
+		private void populateAoiComboBox()
+		{
+			List<KeyValuePair<String, GeographicBoundingBox>> oAois = new List<KeyValuePair<string, GeographicBoundingBox>>();
+
+			oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Select a specific region ---", null));
+
+			if (this.c_oServerTree.SelectedNode != null && this.c_oServerTree.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+			{
+				Server oServer = this.c_oServerTree.SelectedNode.Tag as Server;
+				if (oServer.Status == Server.ServerStatus.OnLine)
+				{
+					oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Server extent", new GeographicBoundingBox(oServer.ServerExtents.MaxY, oServer.ServerExtents.MinY, oServer.ServerExtents.MinX, oServer.ServerExtents.MaxX)));
+				}
+			}
+
+			if (IsMontajChildProcess && m_oOMMapExtentWGS84 != null) oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
+
+			oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("-----------------------------", null));
+
+			if (this.c_oServerTree.SelectedNode != null && this.c_oServerTree.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+			{
+				if (((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine &&
+					((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).Enabled)
+				{
+					ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).ServerConfiguration.GetAreaList();
+					foreach (String strAOI in aAOIs)
+					{
+						double minX, minY, maxX, maxY;
+						String strCoord;
+						((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).ServerConfiguration.GetBoundingBox(strAOI, out maxX, out maxY, out minX, out minY, out strCoord);
+						if (strCoord.Equals("WGS 84"))
+						{
+							GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
+							oAois.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
+						}
+					}
+				}
+			}
+			else
+			{
+				foreach (KeyValuePair<String, GeographicBoundingBox> country in m_oCountryAOIs)
+				{
+					oAois.Add(country);
+				}
+			}
+
+			c_oOverview.SetAOIList(oAois);
+		}
+
+		#endregion
+
+		#region Placename Loading
+
+		private void LoadPlacenames(Object oParams)
+		{
+			this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
+			if (!this.IsDisposed)
+				Invoke(new MethodInvoker(LoadPlacenamesCallback));
+		}
+
+		private void LoadPlacenamesCallback()
+		{
+			if (this.placeNames != null)
+			{
+				this.placeNames.IsOn = World.Settings.ShowPlacenames;
+				this.placeNames.RenderPriority = RenderPriority.Placenames;
+				c_oWorldWindow.CurrentWorld.RenderableObjects.Add(this.placeNames);
+				this.c_miShowPlaceNames.Enabled = true;
+			}
+			this.c_miShowPlaceNames.Checked = World.Settings.ShowPlacenames;
+		}
+
+		#endregion
+
+		#region Open/Save View Methods
+
+		private void SaveLastView()
+		{
+			// --- Don't save views when we're running inside OM ---
+			if (IsMontajChildProcess) return;
+
+			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
+			if (this.lastView.Length == 0)
+				SaveCurrentView(Path.Combine(UserPath, Path.Combine(Settings.ConfigPath, LastView)), tempFile, string.Empty);
+			else
+				SaveCurrentView(this.lastView, tempFile, string.Empty);
+			File.Delete(tempFile);
+		}
+
+		/// <summary>
+		/// Saves the current view to an xml file, 
+		/// this requires that worldWindow was created in the same thread as the caller
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <param name="notes"></param>
+		private void SaveCurrentView(string fileName, string picFileName, string notes)
+		{
+			DappleView view = new DappleView();
+
+			// blue marble
+			RenderableObject roBMNG = GetBMNG();
+			if (roBMNG != null)
+				view.View.Addshowbluemarble(new SchemaBoolean(roBMNG.IsOn));
+
+			WorldWind.Camera.MomentumCamera camera = c_oWorldWindow.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
+
+			//stop the camera
+			camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
+
+			//store the servers
+			this.c_oServerTree.SaveToView(view);
+
+			// store the current layers
+			if (c_oLayerList.AllLayers.Count > 0)
+			{
+				activelayersType lyrs = view.View.Newactivelayers();
+				foreach (LayerBuilder container in c_oLayerList.AllLayers)
+				{
+					if (!container.Temporary)
+					{
+						datasetType dataset = lyrs.Newdataset();
+						dataset.Addname(new SchemaString(container.Title));
+						opacityType op = dataset.Newopacity();
+						op.Value = container.Opacity;
+						dataset.Addopacity(op);
+						dataset.Adduri(new SchemaString(container.GetURI()));
+						dataset.Addinvisible(new SchemaBoolean(!container.Visible));
+						lyrs.Adddataset(dataset);
+					}
+				}
+				view.View.Addactivelayers(lyrs);
+			}
+
+			// store the camera information
+			cameraorientationType cameraorient = view.View.Newcameraorientation();
+			cameraorient.Addlat(new SchemaDouble(camera.Latitude.Degrees));
+			cameraorient.Addlon(new SchemaDouble(camera.Longitude.Degrees));
+			cameraorient.Addaltitude(new SchemaDouble(camera.Altitude));
+			cameraorient.Addheading(new SchemaDouble(camera.Heading.Degrees));
+			cameraorient.Addtilt(new SchemaDouble(camera.Tilt.Degrees));
+			view.View.Addcameraorientation(cameraorient);
+
+			if (notes.Length > 0)
+				view.View.Addnotes(new SchemaString(notes));
+
+			// Save screen capture (The regular WorldWind method crashes some systems, use interop)
+			//this.worldWindow.SaveScreenshot(picFileName);
+			//this.worldWindow.Render();
+
+			using (Image img = TakeSnapshot(c_oWorldWindow.Handle))
+				img.Save(picFileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+			FileStream fs = new FileStream(picFileName, FileMode.Open);
+			BinaryReader br = new BinaryReader(fs);
+			byte[] buffer = new byte[fs.Length];
+			br.Read(buffer, 0, Convert.ToInt32(fs.Length));
+			br.Close();
+			fs.Close();
+			view.View.Addpreview(new SchemaBase64Binary(buffer));
+
+			view.Save(fileName);
+		}
+
+		private static Image TakeSnapshot(IntPtr handle)
+		{
+			RECT tempRect;
+			GetWindowRect(handle, out tempRect);
+			Rectangle windowRect = tempRect;
+			IntPtr formDC = GetDCEx(handle, IntPtr.Zero, DCX_CACHE | DCX_WINDOW);
+			Graphics grfx = Graphics.FromHdc(formDC);
+
+			Bitmap bmp = new Bitmap(windowRect.Width, windowRect.Height, grfx);
+			using (grfx = Graphics.FromImage(bmp))
+			{
+				IntPtr bmpDC = grfx.GetHdc();
+
+				BitBlt(bmpDC, 0, 0, bmp.Width, bmp.Height, formDC, 0, 0, CAPTUREBLT |
+				SRCCOPY);
+				grfx.ReleaseHdc(bmpDC);
+				ReleaseDC(handle, formDC);
+			}
+			return bmp;
+		}
+
+		private bool OpenView(string filename, bool bGoto, bool bLoadLayers)
+		{
+			bool bOldView = false;
+			try
+			{
+				if (File.Exists(filename))
+				{
+					DappleView view = new DappleView(filename);
+					bool bShowBlueMarble = true;
+
+					if (view.View.Hasshowbluemarble())
+						bShowBlueMarble = view.View.showbluemarble.Value;
+
+					if (bGoto && view.View.Hascameraorientation())
+					{
+						cameraorientationType orient = view.View.cameraorientation;
+						c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+						c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
+					}
+
+					this.c_oServerTree.LoadFromView(view);
+					if (bLoadLayers && view.View.Hasactivelayers())
+					{
+						bOldView = c_oLayerList.CmdLoadFromView(view, c_oServerTree);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+				{
+					return OpenView(Path.Combine(Settings.DataPath, DefaultView), true, true);
+				}
+			}
+
+			if (bOldView)
+				MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			return true;
+		}
+
+		#endregion
+
+		#region Add Layers
+
+		private void AddGeoTiff(string strGeoTiff, string strGeoTiffName, bool bTmp, bool bGoto)
+		{
+			LayerBuilder builder = new GeorefImageLayerBuilder(strGeoTiffName, strGeoTiff, bTmp, c_oWorldWindow, null);
+
+			Cursor = Cursors.WaitCursor;
+			if (builder.GetLayer() != null)
+			{
+				Cursor = Cursors.Default;
+
+				// If the file is already there remove it 
+				c_oLayerList.CmdRemoveGeoTiff(strGeoTiff);
+
+				// If there is already a layer by that name find unique name
+				if (strGeoTiffName.Length > 0)
+				{
+					int iCount = 0;
+					string strNewName = strGeoTiffName;
+					bool bExist = true;
+					while (bExist)
+					{
+						bExist = false;
+						foreach (LayerBuilder container in c_oLayerList.AllLayers)
+						{
+							if (container.Title == strNewName)
+							{
+								bExist = true;
+								break;
+							}
+						}
+
+						if (bExist)
+						{
+							iCount++;
+							strNewName = strGeoTiffName + "_" + iCount.ToString();
+						}
+					}
+					strGeoTiffName = strNewName;
+				}
+
+				if (bTmp) builder.Opacity = 128;
+				else builder.Opacity = 255;
+				builder.Visible = true;
+				builder.Temporary = bTmp;
+
+				c_oLayerList.AddLayer(builder);
+
+				if (bGoto)
+					GoTo(builder, false);
+			}
+			else
+			{
+				Cursor = Cursors.Default;
+				string strMessage = "Error adding the file: '" + strGeoTiff + "'.\nOnly WGS 84 geographic images can be displayed at this time.";
+				string strGeoInfo = GeorefImageLayerBuilder.GetGeorefInfoFromGeotif(strGeoTiff);
+				if (strGeoInfo.Length > 0)
+					strMessage += "\nThis image is:\n\n" + strGeoInfo;
+				MessageBox.Show(this, strMessage, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		public void AddLayerBuilder(LayerBuilder oLayer)
+		{
+			c_oLayerList.AddLayer(oLayer);
+
+			SaveLastView();
+		}
+
+		#endregion
+
+		#region Go To
+
+		void GoTo(LayerBuilder builder)
+		{
+			GoTo(builder.Extents, false);
+		}
+
+		void GoTo(LayerBuilder builder, bool blImmediate)
+		{
+			GoTo(builder.Extents, blImmediate);
+		}
+
+		void GoTo(GeographicBoundingBox extents, bool blImmediate)
+		{
+			c_oWorldWindow.GotoBoundingbox(extents.West, extents.South, extents.East, extents.North, blImmediate);
+		}
+
+		#endregion
+
+		#region Add Servers
+
+		public void AddDAPServer()
+		{
+			AddDAP dlg = new AddDAP();
+			if (dlg.ShowDialog(this) == DialogResult.OK)
+			{
+				Geosoft.GX.DAPGetData.Server oServer;
+				try
+				{
+					if (this.c_oServerTree.AddDAPServer(dlg.Url, out oServer, true, true))
+					{
+						ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.Url, "DAP" });
+					}
+				}
+				catch (Exception except)
+				{
+					MessageBox.Show(this, "Error adding server \"" + dlg.Url + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				SaveLastView();
+			}
+		}
+
+		public void AddWMSServer()
+		{
+			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.c_oServerTree.Nodes);
+
+			if (treeNode != null)
+			{
+				AddWMS dlg = new AddWMS(c_oWorldWindow, treeNode.Tag as WMSCatalogBuilder);
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					try
+					{
+						if (this.c_oServerTree.AddWMSServer(dlg.WmsURL, true, true, true))
+						{
+							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.WmsURL, "WMS" });
+						}
+					}
+					catch (Exception except)
+					{
+						MessageBox.Show(this, "Error adding server \"" + dlg.WmsURL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+					SaveLastView();
+				}
+			}
+		}
+
+		public void AddArcIMSServer()
+		{
+			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(ArcIMSCatalogBuilder), this.c_oServerTree.Nodes);
+
+			if (treeNode != null)
+			{
+				AddArcIMS dlg = new AddArcIMS(c_oWorldWindow, treeNode.Tag as ArcIMSCatalogBuilder);
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					try
+					{
+						if (this.c_oServerTree.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true, true))
+						{
+							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.URL, "ArcIMS" });
+						}
+					}
+					catch (Exception except)
+					{
+						MessageBox.Show(this, "Error adding server \"" + dlg.URL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+					SaveLastView();
+				}
+			}
+		}
+
+		#endregion
+
+		#region Updating the home view
+
+		public enum UpdateHomeViewType
+		{
+			AddServer,
+			RemoveServer,
+			ToggleServer,
+			ChangeFavorite
+		};
+
+		private Object LOCK = new object();
+		/// <summary>
+		/// This command modifies the home view, but doesn't do a full save.  Useful for changing the server list.
+		/// </summary>
+		/// <param name="eType"></param>
+		/// <param name="szServer"></param>
+		public void CmdUpdateHomeView(UpdateHomeViewType eType, Object[] data)
+		{
+			lock (LOCK)
+			{
+				XmlDocument oHomeViewDoc = new XmlDocument();
+				oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
+
+				switch (eType)
+				{
+					case UpdateHomeViewType.AddServer:
+						{
+							String szUrl = data[0] as String;
+							String szType = data[1] as String;
+
+							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
+							{
+								XmlElement oDAPRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"DAPServers\"]") as XmlElement;
+								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+								oDAPRoot.AppendChild(oBuilderEntry);
+								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("dapcatalog");
+								oDapCatalog.SetAttribute("url", szUrl);
+								oDapCatalog.SetAttribute("enabled", "true");
+								oBuilderEntry.AppendChild(oDapCatalog);
+							}
+							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
+								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+								oWMSRoot.AppendChild(oBuilderEntry);
+								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("wmscatalog");
+								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
+								oDapCatalog.SetAttribute("enabled", "true");
+								oBuilderEntry.AppendChild(oDapCatalog);
+							}
+							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
+								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+								oWMSRoot.AppendChild(oBuilderEntry);
+								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("arcimscatalog");
+								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
+								oDapCatalog.SetAttribute("enabled", "true");
+								oBuilderEntry.AppendChild(oDapCatalog);
+							}
+						}
+						break;
+					case UpdateHomeViewType.ChangeFavorite:
+						{
+							String szUrl = data[0] as String;
+
+							XmlElement oDocRoot = oHomeViewDoc.SelectSingleNode("/dappleview") as XmlElement;
+							oDocRoot.SetAttribute("favouriteserverurl", szUrl);
+						}
+						break;
+					case UpdateHomeViewType.RemoveServer:
+						{
+							String szUrl = data[0] as String;
+							String szType = data[1] as String;
+
+							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
+								{
+									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
+									{
+										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+									}
+								}
+							}
+							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+									}
+								}
+							}
+							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+									}
+								}
+							}
+						}
+						break;
+					case UpdateHomeViewType.ToggleServer:
+						{
+							String szUrl = data[0] as String;
+							String szType = data[1] as String;
+							bool blStatus = (bool)data[2];
+
+							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
+								{
+									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
+									{
+										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+									}
+								}
+							}
+							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+									}
+								}
+							}
+							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
+							{
+								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
+								{
+									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
+									{
+										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+									}
+								}
+							}
+						}
+						break;
+				}
+
+				oHomeViewDoc.Save(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Try to open url in web browser
+		/// </summary>
+		/// <param name="url">The url to open in browser</param>
+		public static void BrowseTo(string url)
+		{
+			try
+			{
+				System.Diagnostics.Process.Start(url);
+			}
+			catch
+			{
+				try
+				{
+					System.Diagnostics.Process.Start("IExplore.exe", url);
+				}
+				catch
+				{
+				}
+			}
+		}
+
+		private void AddDatasetAction()
+		{
+			if (c_tcSearchViews.SelectedIndex == 0)
+			{
+				if (cServerViewsTab.SelectedIndex == 0)
+				{
+					c_oServerTree.AddCurrentDataset();
+				}
+				else if (cServerViewsTab.SelectedIndex == 1)
+				{
+					c_oLayerList.AddLayers(c_oServerList.SelectedLayers);
+				}
+			}
+			else if (c_tcSearchViews.SelectedIndex == 1)
+			{
+				c_oDappleSearch.CmdAddSelected();
 			}
 		}
 
@@ -2837,10 +3092,172 @@ namespace Dapple
 			}
 		}
 
-		#endregion
+		public void CmdSaveHomeView()
+		{
+			SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
+		}
 
-		#region Temporary KML Code
-		/*
+		public void CmdLoadHomeView()
+		{
+			OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
+		}
+
+		private void CmdDisplayOMHelp()
+		{
+			try
+			{
+				MontajInterface.DisplayHelp();
+			}
+			catch (System.Runtime.Remoting.RemotingException)
+			{
+				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to display help");
+				c_miGetDatahelp.Enabled = false;
+			}
+		}
+
+		private void SaveMRUList()
+		{
+			StreamWriter oOutput = null;
+			try
+			{
+				oOutput = new StreamWriter(Path.Combine(CurrentSettingsDirectory, "MRU.txt"), false);
+
+				foreach (String szMRU in c_tbSearchKeywords.Items)
+				{
+					oOutput.WriteLine(szMRU);
+				}
+			}
+			catch (IOException)
+			{
+				// Do nothing, if a minor bug borks the MRU list, it's not the end of the world.
+			}
+			finally
+			{
+				if (oOutput != null) oOutput.Close();
+			}
+		}
+
+		private void LoadMRUList()
+		{
+			if (!File.Exists(Path.Combine(CurrentSettingsDirectory, "MRU.txt"))) return;
+
+			try
+			{
+				String[] aMRUs = File.ReadAllLines(Path.Combine(CurrentSettingsDirectory, "MRU.txt"));
+
+				for (int count = 0; count < aMRUs.Length && count < MAX_MRU_TERMS; count++)
+				{
+					c_tbSearchKeywords.Items.Add(aMRUs[count]);
+				}
+			}
+			catch (IOException)
+			{
+				// Do nothing, if we can't read the MRU list, it's not the end of the world.
+			}
+		}
+
+		private void SetSearchable(bool blValue)
+		{
+			c_miSearch.Enabled = blValue;
+			c_bSearch.Enabled = blValue;
+		}
+
+		private void SetSearchClearable(bool blValue)
+		{
+			c_bClearSearch.Enabled = blValue;
+		}
+
+		private void CenterNavigationToolStrip()
+		{
+			Point newLocation = new Point((c_tsNavigation.Parent.Width - c_tsNavigation.Width) / 2, c_tsNavigation.Parent.Height - c_tsNavigation.Height);
+			c_tsNavigation.Location = newLocation;
+		}
+
+		/// <summary>
+		/// Do a search programmatically.
+		/// </summary>
+		/// <remarks>
+		/// Doesn't update MRU list or supress repeated searches.
+		/// </remarks>
+		/// <param name="szKeywords"></param>
+		/// <param name="oAoI"></param>
+		private void doSearch(String szKeywords, GeographicBoundingBox oAoI)
+		{
+			SetSearchable(false);
+			SetSearchClearable(true);
+
+			m_oLastSearchROI = oAoI;
+			m_szLastSearchString = szKeywords;
+
+			applySearchCriteria();
+		}
+
+		private void doSearch()
+		{
+			// --- Cancel if the search parameters are unchanged ---
+			GeographicBoundingBox oCurrSearchROI = GeographicBoundingBox.FromQuad(c_oWorldWindow.GetSearchBox());
+			String szCurrSearchString = SearchKeyword;
+			if (oCurrSearchROI.Equals(m_oLastSearchROI) && szCurrSearchString.Equals(m_szLastSearchString)) return;
+
+			// --- Reorder the MRU list.  Supress index changed is important because removing the current MRU will raise the event again ---
+			m_blSupressSearchSelectedIndexChanged = true;
+			c_tbSearchKeywords.SuspendLayout();
+			if (!SearchKeyword.Equals(String.Empty))
+			{
+				c_tbSearchKeywords.Items.Remove(szCurrSearchString);
+
+				while (c_tbSearchKeywords.Items.Count >= MAX_MRU_TERMS)
+				{
+					c_tbSearchKeywords.Items.RemoveAt(c_tbSearchKeywords.Items.Count - 1);
+				}
+				c_tbSearchKeywords.Items.Insert(0, szCurrSearchString);
+				c_tbSearchKeywords.Text = szCurrSearchString;
+			}
+			c_tbSearchKeywords.ResumeLayout();
+			m_blSupressSearchSelectedIndexChanged = false;
+
+			// --- Mop up and move out ---
+
+			SetSearchable(false);
+			SetSearchClearable(true);
+
+			m_oLastSearchROI = GeographicBoundingBox.FromQuad(c_oWorldWindow.GetSearchBox());
+			m_szLastSearchString = SearchKeyword;
+
+			applySearchCriteria();
+		}
+
+		private void clearSearch()
+		{
+			SetSearchable(true);
+			SetSearchClearable(false);
+
+			m_oLastSearchROI = null;
+			m_szLastSearchString = String.Empty;
+
+			c_tbSearchKeywords.Text = NO_SEARCH;
+			c_tbSearchKeywords.ForeColor = SystemColors.GrayText;
+
+			applySearchCriteria();
+		}
+
+		private void applySearchCriteria()
+		{
+			this.UseWaitCursor = true;
+			Application.DoEvents();
+			this.c_oServerTree.Search(m_oLastSearchROI, m_szLastSearchString);
+			this.c_oServerList.setSearchCriteria(m_szLastSearchString, m_oLastSearchROI);
+			this.c_oDappleSearch.SetSearchParameters(m_szLastSearchString, m_oLastSearchROI);
+			this.UseWaitCursor = false;
+			Application.DoEvents();
+		}
+
+		#endregion
+	}
+}
+
+#region Temporary KML Code
+/*
 		private void cKMLTree_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right)
@@ -2976,769 +3393,4 @@ namespace Dapple
 			}
 		}
 		*/
-		#endregion
-
-		private void cSearchTextComboBox_KeyPress(object sender, KeyPressEventArgs e)
-		{
-			if (e.KeyChar.Equals((char)13))
-			{
-				doSearch();
-			}
-		}
-
-		private void cSearchButton_Click(object sender, EventArgs e)
-		{
-			doSearch();
-		}
-
-		private bool m_blSupressSearchSelectedIndexChanged = false;
-		private void cSearchTextComboBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (m_blSupressSearchSelectedIndexChanged) return;
-			doSearch();
-		}
-
-		/// <summary>
-		/// Do a search programmatically.
-		/// </summary>
-		/// <remarks>
-		/// Doesn't update MRU list or supress repeated searches.
-		/// </remarks>
-		/// <param name="szKeywords"></param>
-		/// <param name="oAoI"></param>
-		private void doSearch(String szKeywords, GeographicBoundingBox oAoI)
-		{
-			SetSearchable(false);
-			SetSearchClearable(true);
-
-			m_oLastSearchROI = oAoI;
-			m_szLastSearchString = szKeywords;
-
-			applySearchCriteria();
-		}
-
-		private void doSearch()
-		{
-			// --- Cancel if the search parameters are unchanged ---
-			GeographicBoundingBox oCurrSearchROI = GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox());
-			String szCurrSearchString = SearchKeyword;
-			if (oCurrSearchROI.Equals(m_oLastSearchROI) && szCurrSearchString.Equals(m_szLastSearchString)) return;
-
-			// --- Reorder the MRU list.  Supress index changed is important because removing the current MRU will raise the event again ---
-			m_blSupressSearchSelectedIndexChanged = true;
-			cSearchTextComboBox.SuspendLayout();
-			if (!SearchKeyword.Equals(String.Empty))
-			{
-				cSearchTextComboBox.Items.Remove(szCurrSearchString);
-
-				while (cSearchTextComboBox.Items.Count >= MAX_MRU_TERMS)
-				{
-					cSearchTextComboBox.Items.RemoveAt(cSearchTextComboBox.Items.Count - 1);
-				}
-				cSearchTextComboBox.Items.Insert(0, szCurrSearchString);
-				cSearchTextComboBox.Text = szCurrSearchString;
-			}
-			cSearchTextComboBox.ResumeLayout();
-			m_blSupressSearchSelectedIndexChanged = false;
-
-			// --- Mop up and move out ---
-
-			SetSearchable(false);
-			SetSearchClearable(true);
-
-			m_oLastSearchROI = GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox());
-			m_szLastSearchString = SearchKeyword;
-
-			applySearchCriteria();
-		}
-
-		private void clearSearch()
-		{
-			SetSearchable(true);
-			SetSearchClearable(false);
-
-			m_oLastSearchROI = null;
-			m_szLastSearchString = String.Empty;
-
-			cSearchTextComboBox.Text = NO_SEARCH;
-			cSearchTextComboBox.ForeColor = SystemColors.GrayText;
-
-			applySearchCriteria();
-		}
-
-		private void applySearchCriteria()
-		{
-			this.UseWaitCursor = true;
-			Application.DoEvents();
-			this.tvServers.Search(m_oLastSearchROI, m_szLastSearchString);
-			this.cServerListControl.setSearchCriteria(m_szLastSearchString, m_oLastSearchROI);
-			this.cWebSearch.SetSearchParameters(m_szLastSearchString, m_oLastSearchROI);
-			this.UseWaitCursor = false;
-			Application.DoEvents();
-		}
-
-		private String SearchKeyword
-		{
-			get
-			{
-				String result = cSearchTextComboBox.Text.Trim();
-				if (result.Equals(NO_SEARCH)) result = String.Empty;
-
-				return result;
-			}
-		}
-
-		private void CenterNavigationToolStrip()
-		{
-			Point newLocation = new Point((WorldResultsSplitPanel.Panel1.Width - toolStripNavigation.Width) / 2, WorldResultsSplitPanel.Height - toolStripNavigation.Height);
-			toolStripNavigation.Location = newLocation;
-		}
-
-		private void DumpTreeNode(TreeNode oNode, String strPrepend)
-		{
-			Console.Write(strPrepend + oNode.Text);
-			if (oNode.Tag != null)
-				Console.Write(" (" + oNode.Tag.GetType() + ")");
-			else
-				Console.Write(" (null)");
-			Console.WriteLine();
-
-			foreach (TreeNode oChild in oNode.Nodes)
-			{
-				DumpTreeNode(oChild, strPrepend + "  -");
-			}
-		}
-
-		#region UI Actions
-
-		private void AddDatasetAction()
-		{
-			if (cSearchTabPane.SelectedIndex == 0)
-			{
-				if (cServerViewsTab.SelectedIndex == 0)
-				{
-					tvServers.AddCurrentDataset();
-				}
-				else if (cServerViewsTab.SelectedIndex == 1)
-				{
-					cLayerList.AddLayers(cServerListControl.SelectedLayers);
-				}
-			}
-			else if (cSearchTabPane.SelectedIndex == 1)
-			{
-				cWebSearch.CmdAddSelected();
-			}
-		}
-
-		#endregion
-
-		private void addToLayersToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			AddDatasetAction();
-		}
-
-		private void WorldResultsSplitPanel_Panel1_DragOver(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
-			{
-				e.Effect = DragDropEffects.Copy;
-			}
-		}
-
-		private void WorldResultsSplitPanel_Panel1_DragDrop(object sender, DragEventArgs e)
-		{
-			if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
-			{
-				List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
-				cLayerList.AddLayers(oDropData);
-			}
-		}
-
-		private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			cLayerList.CmdExtractVisibleLayers();
-		}
-
-		private void toolStripMenuItempropertiesServer_Click(object sender, EventArgs e)
-		{
-			IBuilder oBuilder = this.tvServers.SelectedNode.Tag as IBuilder;
-
-			if (oBuilder == null) return;
-
-			frmProperties form = new frmProperties();
-			form.SetObject = oBuilder;
-			form.ShowDialog(this);
-		}
-
-		private void searchToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			doSearch();
-		}
-
-		#region Metadata displayer
-
-		public delegate void StringParamDelegate(String szString);
-		private void DisplayMetadataMessage(String szMessage)
-		{
-			if (InvokeRequired)
-				this.Invoke(new StringParamDelegate(DisplayMetadataMessage), new Object[] { szMessage });
-			else
-			{
-				cMetadataBrowser.Visible = false;
-				cMetadataLoadingLabel.Text = szMessage;
-			}
-		}
-
-		private void DisplayMetadataDocument(String szMessage)
-		{
-			cMetadataBrowser.Visible = true;
-			Uri metaUri = new Uri(szMessage);
-			if (!metaUri.Equals(cMetadataBrowser.Url))
-			{
-				// --- Delete the file we were pointing to before ---
-				if (cMetadataBrowser.Url != null && cMetadataBrowser.Url.Scheme.Equals("file"))
-				{
-					File.Delete(cMetadataBrowser.Url.LocalPath);
-				}
-				cMetadataBrowser.Url = metaUri;
-			}
-		}
-
-		public delegate void LoadMetadataDelegate(IBuilder oBuilder);
-		public void LoadMetadata(IBuilder oBuilder)
-		{
-			if (InvokeRequired)
-				this.Invoke(new LoadMetadataDelegate(LoadMetadata), new Object[] { oBuilder });
-			else
-			{
-				try
-				{
-					XmlDocument oDoc = new XmlDocument();
-					oDoc.AppendChild(oDoc.CreateXmlDeclaration("1.0", "UTF-8", "yes"));
-					XmlNode oNode = null;
-					string strStyleSheet = null;
-
-					if ((oBuilder is AsyncBuilder) && (oBuilder as AsyncBuilder).LoadingErrorOccurred)
-					{
-						DisplayMetadataMessage("The selected object failed to load.");
-						return;
-					}
-					else if (oBuilder.SupportsMetaData)
-					{
-						oNode = oBuilder.GetMetaData(oDoc);
-						if (oNode == null)
-						{
-							DisplayMetadataMessage("You do not have permission to view the metadata for this data layer.");
-							return;
-						}
-						strStyleSheet = oBuilder.StyleSheetName;
-						DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Title + "...");
-					}
-					else
-					{
-						DisplayMetadataMessage("Metadata for the selected object is unsupported.");
-						return;
-					}
-
-					if (oNode is XmlDocument)
-					{
-						oDoc = oNode as XmlDocument;
-					}
-					else if (oNode is XmlElement)
-					{
-						oDoc.AppendChild(oNode);
-					}
-					if (strStyleSheet != null)
-					{
-						XmlNode oRef = oDoc.CreateProcessingInstruction("xml-stylesheet", "type='text/xsl' href='" + Path.Combine(this.metaviewerDir, strStyleSheet) + "'");
-						oDoc.InsertBefore(oRef, oDoc.DocumentElement);
-					}
-
-					string filePath = Path.Combine(this.metaviewerDir, Path.GetRandomFileName());
-					filePath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".xml");
-					oDoc.Save(filePath);
-					DisplayMetadataDocument(filePath);
-				}
-				catch (Exception e)
-				{
-					DisplayMetadataMessage("An error occurred while accessing metadata: " + e.Message);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Synchronization class which handles displaying the metadata for a layer.  Prevents loading a layer
-		/// multiple times, and supresses multiple loads when more than one layer change occurs in a short
-		/// time period.
-		/// </summary>
-		class MetadataDisplayThread
-		{
-			private Object LOCK = new Object();
-			private ManualResetEvent m_oSignaller = new ManualResetEvent(false);
-			private List<IBuilder> m_hLayerToLoad = new List<IBuilder>();
-			private Thread m_hThread;
-			private MainForm m_hOwner;
-
-			public MetadataDisplayThread(MainForm hOwner)
-			{
-				m_hOwner = hOwner;
-
-				m_hThread = new Thread(new ThreadStart(ThreadMain));
-				m_hThread.IsBackground = true;
-				m_hThread.Start();
-			}
-
-			public void addBuilder(IBuilder oBuilder)
-			{
-				lock (LOCK)
-				{
-					m_hLayerToLoad.Add(oBuilder);
-					m_oSignaller.Set();
-				}
-			}
-
-			public void abort()
-			{
-				m_hThread.Abort();
-			}
-
-			private void ThreadMain()
-			{
-				IBuilder oCurrentBuilder = null;
-				IBuilder oLastBuilder = null;
-
-				while (true)
-				{
-					m_oSignaller.WaitOne();
-
-					lock (LOCK)
-					{
-						oCurrentBuilder = m_hLayerToLoad[m_hLayerToLoad.Count - 1];
-						m_hLayerToLoad.Clear();
-						m_oSignaller.Reset();
-					}
-
-					if (oCurrentBuilder == null)
-					{
-						m_hOwner.DisplayMetadataMessage("Select a dataset or server to view its associated metadata.");
-						oLastBuilder = oCurrentBuilder;
-					}
-					else
-					{
-						if (oCurrentBuilder is AsyncBuilder)
-							((AsyncBuilder)oCurrentBuilder).WaitUntilLoaded();
-
-						if (!oCurrentBuilder.Equals(oLastBuilder))
-						{
-							m_hOwner.LoadMetadata(oCurrentBuilder);
-							oLastBuilder = oCurrentBuilder;
-						}
-					}
-				}
-			}
-		}
-
-		#endregion
-
-		private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.tvServers.CmdServerProperties();
-		}
-
-		private void exportGeoTiffToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			cLayerList.CmdTakeSnapshot();
-		}
-
-		private void removeFromLayersToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			cLayerList.CmdRemoveSelectedLayers();
-		}
-
-		private void refreshServerToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.tvServers.RefreshCurrentServer();
-		}
-
-		private void removeServerToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.tvServers.RemoveCurrentServer();
-		}
-
-		private void cSearchTextComboBox_Enter(object sender, EventArgs e)
-		{
-			if (cSearchTextComboBox.Text.Equals(NO_SEARCH))
-			{
-				cSearchTextComboBox.Text = String.Empty;
-			}
-			cSearchTextComboBox.ForeColor = SystemColors.ControlText;
-		}
-
-		private void cSearchTextComboBox_Leave(object sender, EventArgs e)
-		{
-			if (cSearchTextComboBox.Text.Equals(String.Empty))
-			{
-				cSearchTextComboBox.Text = NO_SEARCH;
-				cSearchTextComboBox.ForeColor = SystemColors.GrayText;
-			}
-		}
-
-		private void cClearSearchButton_Click(object sender, EventArgs e)
-		{
-			clearSearch();
-		}
-
-		private void cSearchTextComboBox_TextUpdate(object sender, EventArgs e)
-		{
-			if (!SearchKeyword.Equals(m_szLastSearchString))
-			{
-				SetSearchable(true);
-			}
-		}
-
-		private void SetSearchable(bool blValue)
-		{
-			searchToolStripMenuItem.Enabled = blValue;
-			cSearchButton.Enabled = blValue;
-		}
-
-		private void SetSearchClearable(bool blValue)
-		{
-			cClearSearchButton.Enabled = blValue;
-		}
-
-		void WorldCamera_CameraChanged(object sender, EventArgs e)
-		{
-			if (m_oLastSearchROI != null)
-			{
-				SetSearchable(!GeographicBoundingBox.FromQuad(worldWindow.GetSearchBox()).Equals( m_oLastSearchROI));
-			}
-		}
-
-		public enum UpdateHomeViewType
-		{
-			AddServer,
-			RemoveServer,
-			ToggleServer,
-			ChangeFavorite
-		};
-
-		/// <summary>
-		/// This command modifies the home view, but doesn't do a full save.  Useful for changing the server list.
-		/// </summary>
-		/// <param name="eType"></param>
-		/// <param name="szServer"></param>
-
-		private Object LOCK = new object();
-		public void CmdUpdateHomeView(UpdateHomeViewType eType, Object[] data)
-		{
-			lock (LOCK)
-			{
-				XmlDocument oHomeViewDoc = new XmlDocument();
-				oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
-
-				switch (eType)
-				{
-					case UpdateHomeViewType.AddServer:
-						{
-							String szUrl = data[0] as String;
-							String szType = data[1] as String;
-
-							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
-							{
-								XmlElement oDAPRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"DAPServers\"]") as XmlElement;
-								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-								oDAPRoot.AppendChild(oBuilderEntry);
-								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("dapcatalog");
-								oDapCatalog.SetAttribute("url", szUrl);
-								oDapCatalog.SetAttribute("enabled", "true");
-								oBuilderEntry.AppendChild(oDapCatalog);
-							}
-							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
-								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-								oWMSRoot.AppendChild(oBuilderEntry);
-								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("wmscatalog");
-								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
-								oDapCatalog.SetAttribute("enabled", "true");
-								oBuilderEntry.AppendChild(oDapCatalog);
-							}
-							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
-								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-								oWMSRoot.AppendChild(oBuilderEntry);
-								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("arcimscatalog");
-								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
-								oDapCatalog.SetAttribute("enabled", "true");
-								oBuilderEntry.AppendChild(oDapCatalog);
-							}
-						}
-						break;
-					case UpdateHomeViewType.ChangeFavorite:
-						{
-							String szUrl = data[0] as String;
-
-							XmlElement oDocRoot = oHomeViewDoc.SelectSingleNode("/dappleview") as XmlElement;
-							oDocRoot.SetAttribute("favouriteserverurl", szUrl);
-						}
-						break;
-					case UpdateHomeViewType.RemoveServer:
-						{
-							String szUrl = data[0] as String;
-							String szType = data[1] as String;
-
-							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
-								{
-									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
-									{
-										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-									}
-								}
-							}
-							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-									}
-								}
-							}
-							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-									}
-								}
-							}							
-						}
-						break;
-					case UpdateHomeViewType.ToggleServer:
-						{
-							String szUrl = data[0] as String;
-							String szType = data[1] as String;
-							bool blStatus = (bool)data[2];
-
-							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
-								{
-									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
-									{
-										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-									}
-								}
-							}
-							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-									}
-								}
-							}
-							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-									}
-								}
-							}
-						}
-						break;
-				}
-
-				oHomeViewDoc.Save(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
-			}
-		}
-
-		public void CmdSaveHomeView()
-		{
-			SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
-		}
-
-		public void CmdLoadHomeView()
-		{
-			OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
-		}
-
-		private void setAsMyHomeViewToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			CmdSaveHomeView();
-		}
-
-		private void cOMToolsMenu_DropDownOpening(object sender, EventArgs e)
-		{
-			addToLayersToolStripMenuItem.Enabled = false;
-			if (cSearchTabPane.SelectedIndex == 0)
-			{
-				if (cServerViewsTab.SelectedIndex == 0)
-				{
-					addToLayersToolStripMenuItem.Enabled = tvServers.SelectedNode != null && (tvServers.SelectedNode.Tag is LayerBuilder || tvServers.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
-				}
-				else if (cServerViewsTab.SelectedIndex == 1)
-				{
-					addToLayersToolStripMenuItem.Enabled = cServerListControl.SelectedLayers.Count > 0;
-				}
-			}
-			else if (cSearchTabPane.SelectedIndex == 1)
-			{
-				addToLayersToolStripMenuItem.Enabled = cWebSearch.HasLayersSelected;
-			}
-			else
-			{
-				addToLayersToolStripMenuItem.Enabled = false;
-			}
-
-			removeFromLayersToolStripMenuItem.Enabled = cLayerList.RemoveAllowed;
-		}
-
-		private void cOMServerMenu_DropDownOpening(object sender, EventArgs e)
-		{
-			bool blServerSelected = tvServers.SelectedNode != null &&
-				(tvServers.SelectedNode.Tag is Server || tvServers.SelectedNode.Tag is ServerBuilder);
-			blServerSelected &= cSearchTabPane.SelectedIndex == 0;
-			blServerSelected &= cServerViewsTab.SelectedIndex == 0;
-
-			bool blDAPServerSelected = blServerSelected && tvServers.SelectedNode.Tag is Server;
-
-			propertiesToolStripMenuItem.Enabled = blServerSelected;
-			refreshServerToolStripMenuItem.Enabled = blServerSelected;
-			removeServerToolStripMenuItem.Enabled = blServerSelected;
-			setAsFavoriteToolStripMenuItem.Enabled = blServerSelected && !tvServers.SelectedIsFavorite;
-			addBrowserMapToLayersToolStripMenuItem.Enabled = blDAPServerSelected;
-
-			if (blServerSelected == false)
-			{
-				toggleDisableToolStripMenuItem.Text = "Disable";
-				toggleDisableToolStripMenuItem.Image = Resources.disserver;
-				toggleDisableToolStripMenuItem.Enabled = false;
-			}
-			else
-			{
-				bool blServerEnabled = true;
-				if (tvServers.SelectedNode.Tag is Server)
-					blServerEnabled = ((Server)tvServers.SelectedNode.Tag).Enabled;
-				else if (tvServers.SelectedNode.Tag is ServerBuilder)
-					blServerEnabled = ((ServerBuilder)tvServers.SelectedNode.Tag).Enabled;
-
-				if (blServerEnabled)
-				{
-					toggleDisableToolStripMenuItem.Text = "Disable";
-					toggleDisableToolStripMenuItem.Image = Resources.disserver;
-				}
-				else
-				{
-					toggleDisableToolStripMenuItem.Text = "Enable";
-					toggleDisableToolStripMenuItem.Image = Resources.enserver;
-				}
-				toggleDisableToolStripMenuItem.Enabled = true;
-			}
-		}
-
-		private void setAsFavoriteToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			tvServers.CmdSetFavoriteServer();
-		}
-
-		private void addBrowserMapToLayersToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			tvServers.CmdAddBrowserMap();
-		}
-
-		private void toggleDisableToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			tvServers.CmdToggleServerEnabled();
-		}
-
-		private void CmdDisplayOMHelp()
-		{
-			try
-			{
-				MontajInterface.DisplayHelp();
-			}
-			catch (System.Runtime.Remoting.RemotingException)
-			{
-				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to display help");
-				OMhelpToolStripMenuItem.Enabled = false;
-			}
-		}
-
-		private void MainForm_HelpButtonClicked(object sender, CancelEventArgs e)
-		{
-			CmdDisplayOMHelp();
-			e.Cancel = true;
-		}
-
-		private void SaveMRUList()
-		{
-			StreamWriter oOutput = null;
-			try
-			{
-				oOutput = new StreamWriter(Path.Combine(CurrentSettingsDirectory, "MRU.txt"), false);
-
-				foreach (String szMRU in cSearchTextComboBox.Items)
-				{
-					oOutput.WriteLine(szMRU);
-				}
-			}
-			catch (IOException)
-			{
-				// Do nothing, if a minor bug borks the MRU list, it's not the end of the world.
-			}
-			finally
-			{
-				if (oOutput != null) oOutput.Close();
-			}
-		}
-
-		private void LoadMRUList()
-		{
-			if (!File.Exists(Path.Combine(CurrentSettingsDirectory, "MRU.txt"))) return;
-
-			try
-			{
-				String[] aMRUs = File.ReadAllLines(Path.Combine(CurrentSettingsDirectory, "MRU.txt"));
-
-				for (int count = 0; count < aMRUs.Length && count < MAX_MRU_TERMS; count++)
-				{
-					cSearchTextComboBox.Items.Add(aMRUs[count]);
-				}
-			}
-			catch (IOException)
-			{
-				// Do nothing, if we can't read the MRU list, it's not the end of the world.
-			}
-		}
-
-		private void OMhelpToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			CmdDisplayOMHelp();
-		}
-
-		private void ServerPageChanged(int iIndex)
-		{
-			if (iIndex == 0) // Changed to tree view
-			{
-				tvServers.SelectedServer = cServerListControl.SelectedServer;
-			}
-			else if (iIndex == 1) // Changed to list view
-			{
-				cServerListControl.SelectedServer = tvServers.SelectedServer;
-			}
-		}
-	}
-}
+#endregion

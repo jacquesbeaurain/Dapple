@@ -50,8 +50,8 @@ namespace Dapple
       public ServerList()
       {
          InitializeComponent();
-         cPageNavigator.PageBack += new System.Threading.ThreadStart(BackPage);
-         cPageNavigator.PageForward += new System.Threading.ThreadStart(ForwardPage);
+         c_oPageNavigator.PageBack += new System.Threading.ThreadStart(BackPage);
+         c_oPageNavigator.PageForward += new System.Threading.ThreadStart(ForwardPage);
 
          m_strSearchString = String.Empty;
          m_oSearchBox = null;
@@ -76,8 +76,8 @@ namespace Dapple
       {
          set
          {
-            cLayersListView.SmallImageList = value;
-            cLayersListView.LargeImageList = value;
+            c_lvLayers.SmallImageList = value;
+            c_lvLayers.LargeImageList = value;
          }
       }
 
@@ -93,7 +93,7 @@ namespace Dapple
 
             if (m_oSelectedServer != null && m_oServerList.Contains(m_oSelectedServer))
             {
-               cServersComboBox.SelectedIndex = m_oServerList.IndexOf(m_oSelectedServer);
+               c_cbServers.SelectedIndex = m_oServerList.IndexOf(m_oSelectedServer);
             }
             else
             {
@@ -116,9 +116,9 @@ namespace Dapple
          {
             int iSelectedIndex = m_oServerList.IndexOf(value);
 
-            if (iSelectedIndex != cServersComboBox.SelectedIndex)
+            if (iSelectedIndex != c_cbServers.SelectedIndex)
             {
-               cServersComboBox.SelectedIndex = iSelectedIndex;
+               c_cbServers.SelectedIndex = iSelectedIndex;
                cServersComboBox_SelectedIndexChanged(this, new EventArgs());
             }
          }
@@ -131,7 +131,7 @@ namespace Dapple
       {
          get 
          {
-            return cLayersListView.SelectedIndices.Count > 0;
+            return c_lvLayers.SelectedIndices.Count > 0;
          }
       }
 
@@ -144,7 +144,7 @@ namespace Dapple
          {
             List<LayerBuilder> result = new List<LayerBuilder>();
 
-            foreach (int index in cLayersListView.SelectedIndices)
+            foreach (int index in c_lvLayers.SelectedIndices)
             {
                result.Add(m_oCurrServerLayers[index + m_iCurrPage * LAYERS_PER_PAGE]);
             }
@@ -191,7 +191,7 @@ namespace Dapple
          {
             m_strSearchString = strKeywords;
             m_oSearchBox = oBounds;
-            if (cServersComboBox.SelectedIndex != -1)
+            if (c_cbServers.SelectedIndex != -1)
             {
                InitLayerList();
                FillLayerList();
@@ -205,7 +205,7 @@ namespace Dapple
       /// </summary>
       public void UpdateActiveLayers()
       {
-         cLayersListView.SuspendLayout();
+         c_lvLayers.SuspendLayout();
 
          if (m_oCurrServerLayers != null)
          {
@@ -215,17 +215,17 @@ namespace Dapple
                {
                   if (m_hLayerList.AllLayers.Contains(m_oCurrServerLayers[count]))
                   {
-                     cLayersListView.Items[count % LAYERS_PER_PAGE].ForeColor = Color.ForestGreen;
+                     c_lvLayers.Items[count % LAYERS_PER_PAGE].ForeColor = Color.ForestGreen;
                   }
                   else
                   {
-                     cLayersListView.Items[count % LAYERS_PER_PAGE].ForeColor = cLayersListView.ForeColor;
+                     c_lvLayers.Items[count % LAYERS_PER_PAGE].ForeColor = c_lvLayers.ForeColor;
                   }
                }
             }
          }
 
-         cLayersListView.ResumeLayout();
+         c_lvLayers.ResumeLayout();
       }
 
       #endregion
@@ -239,14 +239,14 @@ namespace Dapple
       /// <param name="e"></param>
       private void cServersComboBox_SelectedIndexChanged(object sender, EventArgs e)
       {
-         if (cServersComboBox.SelectedIndex == -1)
+         if (c_cbServers.SelectedIndex == -1)
          {
             SetNoServer();
             m_oSelectedServer = null;
          }
          else
          {
-            Object oNewSelectedServer = m_oServerList[cServersComboBox.SelectedIndex];
+            Object oNewSelectedServer = m_oServerList[c_cbServers.SelectedIndex];
             if (!oNewSelectedServer.Equals(m_oSelectedServer))
             {
                SetSearching();
@@ -333,9 +333,9 @@ namespace Dapple
       /// <param name="e"></param>
       private void cLayerContextMenu_Opening(object sender, CancelEventArgs e)
       {
-         if (cLayersListView.SelectedIndices.Count == 0) e.Cancel = true;
+         if (c_lvLayers.SelectedIndices.Count == 0) e.Cancel = true;
 
-         viewLegendToolStripMenuItem.Enabled = (cLayersListView.SelectedIndices.Count == 1 && m_oCurrServerLayers[cLayersListView.SelectedIndices[0]].SupportsLegend);
+         c_miViewLegend.Enabled = (c_lvLayers.SelectedIndices.Count == 1 && m_oCurrServerLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend);
       }
 
       /// <summary>
@@ -358,7 +358,7 @@ namespace Dapple
       /// <param name="e"></param>
       private void viewLegendToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         LayerBuilder oBuilder = m_oCurrServerLayers[cLayersListView.SelectedIndices[0]];
+         LayerBuilder oBuilder = m_oCurrServerLayers[c_lvLayers.SelectedIndices[0]];
 
          string[] aLegends = oBuilder.GetLegendURLs();
          foreach (string szLegend in aLegends)
@@ -374,9 +374,9 @@ namespace Dapple
       /// <param name="e"></param>
       private void cLayersListView_SelectedIndexChanged(object sender, EventArgs e)
       {
-			if (cLayersListView.SelectedIndices.Count == 1)
+			if (c_lvLayers.SelectedIndices.Count == 1)
 			{
-				if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[cLayersListView.SelectedIndices[0] + LAYERS_PER_PAGE * m_iCurrPage]);
+				if (ViewMetadata != null) ViewMetadata(m_oCurrServerLayers[c_lvLayers.SelectedIndices[0] + LAYERS_PER_PAGE * m_iCurrPage]);
 			}
 			else
 			{
@@ -417,9 +417,9 @@ namespace Dapple
       /// </summary>
       private void SetNoServer()
       {
-         cServersComboBox.SelectedIndex = -1;
-         cLayersListView.Items.Clear();
-         cPageNavigator.SetState(String.Empty);
+         c_cbServers.SelectedIndex = -1;
+         c_lvLayers.Items.Clear();
+         c_oPageNavigator.SetState(String.Empty);
 
          m_oCurrServerLayers = new List<LayerBuilder>();
       }
@@ -429,8 +429,8 @@ namespace Dapple
       /// </summary>
       private void SetSearching()
       {
-         cLayersListView.Items.Clear();
-         cPageNavigator.SetState("Searching...");
+         c_lvLayers.Items.Clear();
+         c_oPageNavigator.SetState("Searching...");
 
          Refresh();
       }
@@ -451,11 +451,11 @@ namespace Dapple
       {
          if (m_oCurrServerLayers.Count > 0)
          {
-            cPageNavigator.SetState(m_iCurrPage, m_oCurrServerLayers.Count);
+            c_oPageNavigator.SetState(m_iCurrPage, m_oCurrServerLayers.Count);
          }
          else
          {
-            cPageNavigator.SetState("No results");
+            c_oPageNavigator.SetState("No results");
          }
       }
 
@@ -464,18 +464,18 @@ namespace Dapple
       /// </summary>
       private void FillLayerList()
       {
-         cLayersListView.SuspendLayout();
-         cLayersListView.Items.Clear();
+         c_lvLayers.SuspendLayout();
+         c_lvLayers.Items.Clear();
 
          if (m_oCurrServerLayers != null)
          {
             for (int count = m_iCurrPage * LAYERS_PER_PAGE; count < m_iCurrPage * LAYERS_PER_PAGE + LAYERS_PER_PAGE; count++)
             {
-               if (count < m_oCurrServerLayers.Count) cLayersListView.Items.Add(getLayerTitle(m_oCurrServerLayers[count]), cLayersListView.SmallImageList.Images.IndexOfKey(m_oCurrServerLayers[count].DisplayIconKey));
+               if (count < m_oCurrServerLayers.Count) c_lvLayers.Items.Add(getLayerTitle(m_oCurrServerLayers[count]), c_lvLayers.SmallImageList.Images.IndexOfKey(m_oCurrServerLayers[count].DisplayIconKey));
             }
          }
 
-         cLayersListView.ResumeLayout();
+         c_lvLayers.ResumeLayout();
 
          UpdateActiveLayers();
       }
@@ -485,7 +485,7 @@ namespace Dapple
       /// </summary>
       private void ResizeColumn()
       {
-         cLayersListView.Columns[0].Width = cLayersListView.ClientSize.Width;
+         c_lvLayers.Columns[0].Width = c_lvLayers.ClientSize.Width;
       }
 
       /// <summary>
@@ -493,15 +493,15 @@ namespace Dapple
       /// </summary>
       private void FillServerList()
       {
-         cServersComboBox.SuspendLayout();
-         cServersComboBox.Items.Clear();
+         c_cbServers.SuspendLayout();
+         c_cbServers.Items.Clear();
 
          foreach (Object obj in m_oServerList)
          {
-            cServersComboBox.Items.Add(getServerName(obj));
+            c_cbServers.Items.Add(getServerName(obj));
          }
 
-         cServersComboBox.ResumeLayout();
+         c_cbServers.ResumeLayout();
       }
 
       #endregion
@@ -514,7 +514,7 @@ namespace Dapple
       /// </summary>
       private void InitLayerList()
       {
-         Object obj = m_oServerList[cServersComboBox.SelectedIndex];
+         Object obj = m_oServerList[c_cbServers.SelectedIndex];
 
          try
          {
@@ -547,7 +547,7 @@ namespace Dapple
             m_oCurrServerLayers = null;
             m_iCurrPage = 0;
             m_iNumPages = -1;
-            cPageNavigator.SetState("Error occurred");
+            c_oPageNavigator.SetState("Error occurred");
          }
       }
 
@@ -602,9 +602,9 @@ namespace Dapple
       private int getImageIndex(Object obj)
       {
          if (obj is Geosoft.Dap.Common.DataSet)
-            return cLayersListView.SmallImageList.Images.IndexOfKey("dap_" + ((Geosoft.Dap.Common.DataSet)obj).Type.ToLower());
+            return c_lvLayers.SmallImageList.Images.IndexOfKey("dap_" + ((Geosoft.Dap.Common.DataSet)obj).Type.ToLower());
          else if (obj is LayerBuilder)
-            return cLayersListView.SmallImageList.Images.IndexOfKey("layer");
+            return c_lvLayers.SmallImageList.Images.IndexOfKey("layer");
          else
             throw new ArgumentException("obj is unknown type " + obj.GetType());
       }

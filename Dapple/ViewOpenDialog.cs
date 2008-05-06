@@ -95,18 +95,18 @@ namespace Dapple
                m_viewImage = null;
 
             if (view.View.Hasnotes())
-               this.lblNotes.Text = view.View.notes.Value;
+               this.c_lNotes.Text = view.View.notes.Value;
             else
-               this.lblNotes.Text = "";
+               this.c_lNotes.Text = "";
             m_strViewFile = strView;
-            this.butOK.Enabled = true;
+            this.c_bOK.Enabled = true;
          }
          catch
          {
-            this.butOK.Enabled = false;
+            this.c_bOK.Enabled = false;
             m_strViewFile = null;
             m_viewImage = null;
-            this.lblNotes.Text = "";
+            this.c_lNotes.Text = "";
          }
       }
 
@@ -123,31 +123,31 @@ namespace Dapple
             double scale;
             int    x, y;
 
-            if (this.pictureBox.ClientRectangle.Width <= 0 || this.pictureBox.ClientRectangle.Height <= 0 ||
+            if (this.c_pbPreview.ClientRectangle.Width <= 0 || this.c_pbPreview.ClientRectangle.Height <= 0 ||
                 m_viewImage.Width <= 0 || m_viewImage.Height <= 0)
                return;
 
-            double scaleH = (double)m_viewImage.Height / (double)pictureBox.ClientRectangle.Height;
-            double scaleW = (double)m_viewImage.Width / (double)this.pictureBox.ClientRectangle.Width;
+            double scaleH = (double)m_viewImage.Height / (double)c_pbPreview.ClientRectangle.Height;
+            double scaleW = (double)m_viewImage.Width / (double)this.c_pbPreview.ClientRectangle.Width;
             scale = Math.Max(scaleH, scaleW);
 
-            x = (int)Math.Round((double)this.pictureBox.ClientRectangle.Width / 2.0 - (double)m_viewImage.Width / (scale * 2.0));
-            y = (int) Math.Round((double)this.pictureBox.ClientRectangle.Height / 2.0 - (double)m_viewImage.Height / (scale * 2.0));
+            x = (int)Math.Round((double)this.c_pbPreview.ClientRectangle.Width / 2.0 - (double)m_viewImage.Width / (scale * 2.0));
+            y = (int) Math.Round((double)this.c_pbPreview.ClientRectangle.Height / 2.0 - (double)m_viewImage.Height / (scale * 2.0));
 
             e.Graphics.Clear(Color.Black);
             e.Graphics.DrawImage(m_viewImage, new Rectangle(x, y, (int)Math.Round((double)m_viewImage.Width / scale), (int)Math.Round((double)m_viewImage.Height / scale)));
          }
          else if (m_strViewFile != null && m_strViewFile.Length > 0)
-            e.Graphics.DrawString("No preview available in this view", this.Font, Brushes.Black, this.pictureBox.ClientRectangle, format);
+            e.Graphics.DrawString("No preview available in this view", this.Font, Brushes.Black, this.c_pbPreview.ClientRectangle, format);
          else
-            e.Graphics.DrawString("Select Dapple view for preview", this.Font, Brushes.Black, this.pictureBox.ClientRectangle, format);
+            e.Graphics.DrawString("Select Dapple view for preview", this.Font, Brushes.Black, this.c_pbPreview.ClientRectangle, format);
 
-         e.Graphics.DrawRectangle(Pens.Black, this.pictureBox.ClientRectangle.Left, this.pictureBox.ClientRectangle.Top, this.pictureBox.ClientRectangle.Width - 1, this.pictureBox.ClientRectangle.Height - 1);
+         e.Graphics.DrawRectangle(Pens.Black, this.c_pbPreview.ClientRectangle.Left, this.c_pbPreview.ClientRectangle.Top, this.c_pbPreview.ClientRectangle.Width - 1, this.c_pbPreview.ClientRectangle.Height - 1);
       }
 
       private void pictureBox_SizeChanged(object sender, EventArgs e)
       {
-         this.pictureBox.Invalidate();
+         this.c_pbPreview.Invalidate();
       }
       
       private void butOK_Click(object sender, EventArgs e)
@@ -161,7 +161,7 @@ namespace Dapple
          m_fEditControl.GetFilePath(ref strPath);
          if (strPath.Length > 0 && (String.IsNullOrEmpty(m_strViewFile) || !m_strViewFile.Equals(strPath)))
             ValidateView(strPath);
-         this.pictureBox.Invalidate();
+         this.c_pbPreview.Invalidate();
       }
       #endregion
    }

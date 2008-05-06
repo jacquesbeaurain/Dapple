@@ -70,9 +70,9 @@ namespace Dapple
          }
          else
          {
-            cBackButton.Enabled = blCanBack;
-            cForwardButton.Enabled = blCanForward;
-            cPageLabel.Text = szMessage;
+            c_bBack.Enabled = blCanBack;
+            c_bForward.Enabled = blCanForward;
+            c_lStatusMessage.Text = szMessage;
          }
       }
 

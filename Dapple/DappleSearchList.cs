@@ -59,14 +59,14 @@ namespace Dapple.CustomControls
 		public DappleSearchList()
 		{
 			InitializeComponent();
-			cTabToolbar.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
-			cTabToolbar.SetImage(1, Dapple.Properties.Resources.tab_list);
-			cTabToolbar.SetToolTip(0, "Search results with thumbnails");
-			cTabToolbar.SetToolTip(1, "Search results without thumbnails");
-			cTabToolbar.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
+			c_tsTabToolstrip.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
+			c_tsTabToolstrip.SetImage(1, Dapple.Properties.Resources.tab_list);
+			c_tsTabToolstrip.SetToolTip(0, "Search results with thumbnails");
+			c_tsTabToolstrip.SetToolTip(1, "Search results without thumbnails");
+			c_tsTabToolstrip.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
 			SetNoSearch();
-			cNavigator.PageBack += new ThreadStart(BackPage);
-			cNavigator.PageForward += new ThreadStart(ForwardPage);
+			c_oPageNavigator.PageBack += new ThreadStart(BackPage);
+			c_oPageNavigator.PageForward += new ThreadStart(ForwardPage);
 		}
 
 		#endregion
@@ -93,7 +93,7 @@ namespace Dapple.CustomControls
 		{
 			get
 			{
-				return cResultListBox.SelectedIndices.Count > 0;
+				return c_lbResults.SelectedIndices.Count > 0;
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace Dapple.CustomControls
 			{
 				List<LayerUri> result = new List<LayerUri>();
 
-				foreach (int index in cResultListBox.SelectedIndices)
+				foreach (int index in c_lbResults.SelectedIndices)
 				{
 					result.Add(m_aPages[m_iCurrentPage].Results[index].Uri);
 				}
@@ -120,7 +120,7 @@ namespace Dapple.CustomControls
 		{
 			if (e.Index == -1) return;
 
-			SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
+			SearchResult oResult = c_lbResults.Items[e.Index] as SearchResult;
 			e.DrawBackground();
 
 			Matrix oOrigTransform = e.Graphics.Transform;
@@ -158,16 +158,16 @@ namespace Dapple.CustomControls
 
 				e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
 
-				Font oTitleFont = new Font(cResultListBox.Font, FontStyle.Bold);
-				int iSpace = (THUMBNAIL_SIZE - 2 * cResultListBox.Font.Height) / 3;
+				Font oTitleFont = new Font(c_lbResults.Font, FontStyle.Bold);
+				int iSpace = (THUMBNAIL_SIZE - 2 * c_lbResults.Font.Height) / 3;
 				e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
-				e.Graphics.DrawString(oResult.ServerUrl, new Font(oTitleFont, FontStyle.Regular), Brushes.Black, new PointF(0, iSpace * 2 + cResultListBox.Font.Height));
+				e.Graphics.DrawString(oResult.ServerUrl, new Font(oTitleFont, FontStyle.Regular), Brushes.Black, new PointF(0, iSpace * 2 + c_lbResults.Font.Height));
 			}
 			else if (m_eDisplayMode == DisplayMode.List)
 			{
 				e.Graphics.DrawIcon(Dapple.Properties.Resources.layer, new Rectangle(0, 0, e.Bounds.Height, e.Bounds.Height));
 				e.Graphics.TranslateTransform(e.Bounds.Height, 0, MatrixOrder.Append);
-				e.Graphics.DrawString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font, Brushes.Black, new PointF(0, 0));
+				e.Graphics.DrawString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font, Brushes.Black, new PointF(0, 0));
 			}
 
 			e.Graphics.Transform = oOrigTransform;
@@ -176,22 +176,22 @@ namespace Dapple.CustomControls
 
 		private void cResultListBox_MeasureItem(object sender, MeasureItemEventArgs e)
 		{
-			SearchResult oResult = cResultListBox.Items[e.Index] as SearchResult;
+			SearchResult oResult = c_lbResults.Items[e.Index] as SearchResult;
 
 			if (m_eDisplayMode == DisplayMode.Thumbnail)
 			{
 				e.ItemHeight = THUMBNAIL_SIZE + 3;
 				e.ItemWidth = BAR_WIDTH + THUMBNAIL_SIZE + 3 + Math.Max(
-					(int)e.Graphics.MeasureString(oResult.Title, cResultListBox.Font).Width,
-					(int)e.Graphics.MeasureString(oResult.ServerUrl, new Font(cResultListBox.Font, FontStyle.Bold)).Width
+					(int)e.Graphics.MeasureString(oResult.Title, c_lbResults.Font).Width,
+					(int)e.Graphics.MeasureString(oResult.ServerUrl, new Font(c_lbResults.Font, FontStyle.Bold)).Width
 					);
-				cResultListBox.HorizontalExtent = Math.Max(cResultListBox.HorizontalExtent, e.ItemWidth);
+				c_lbResults.HorizontalExtent = Math.Max(c_lbResults.HorizontalExtent, e.ItemWidth);
 			}
 			else if (m_eDisplayMode == DisplayMode.List)
 			{
-				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), cResultListBox.Font).Width;
+				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font).Width;
 				e.ItemHeight = ICON_SIZE;
-				cResultListBox.HorizontalExtent = Math.Max(cResultListBox.HorizontalExtent, e.ItemWidth);
+				c_lbResults.HorizontalExtent = Math.Max(c_lbResults.HorizontalExtent, e.ItemWidth);
 
 			}
 		}
@@ -202,11 +202,11 @@ namespace Dapple.CustomControls
 			{
 				m_oDragDropStartPoint = Point.Empty;
 
-				if (cResultListBox.SelectedIndices.Count > 0)
+				if (c_lbResults.SelectedIndices.Count > 0)
 				{
 					List<LayerUri> oLayerUris = new List<LayerUri>();
 
-					foreach (int iIndex in cResultListBox.SelectedIndices)
+					foreach (int iIndex in c_lbResults.SelectedIndices)
 					{
 						oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
 					}
@@ -231,7 +231,7 @@ namespace Dapple.CustomControls
 
 		private void cContextMenu_Opening(object sender, CancelEventArgs e)
 		{
-			if (cResultListBox.SelectedIndices.Count < 1)
+			if (c_lbResults.SelectedIndices.Count < 1)
 			{
 				e.Cancel = true;
 			}
@@ -362,11 +362,11 @@ namespace Dapple.CustomControls
 
 		public void CmdAddSelected()
 		{
-			if (cResultListBox.SelectedIndices.Count > 0 && m_hLayerList != null)
+			if (c_lbResults.SelectedIndices.Count > 0 && m_hLayerList != null)
 			{
 				List<LayerUri> oLayerUris = new List<LayerUri>();
 
-				foreach (int iIndex in cResultListBox.SelectedIndices)
+				foreach (int iIndex in c_lbResults.SelectedIndices)
 				{
 					oLayerUris.Add(m_aPages[m_iCurrentPage].Results[iIndex].Uri);
 				}
@@ -381,19 +381,19 @@ namespace Dapple.CustomControls
 
 			if (String.Empty.Equals(m_szSearchString) && m_oSearchBoundingBox == null) return; // Nothing to refresh, no search set.
 
-			cResultListBox.SuspendLayout();
-			cResultListBox.Items.Clear();
-			cResultListBox.HorizontalExtent = 0;
+			c_lbResults.SuspendLayout();
+			c_lbResults.Items.Clear();
+			c_lbResults.HorizontalExtent = 0;
 
 			if (!MainForm.Settings.UseDappleSearch)
 			{
-				cNavigator.SetState("DappleSearch is disabled");
+				c_oPageNavigator.SetState("DappleSearch is disabled");
 				return;
 			}
 
 			if (m_aPages == null)
 			{
-				cNavigator.SetState("Error contacting search server");
+				c_oPageNavigator.SetState("Error contacting search server");
 			}
 			else
 			{
@@ -401,22 +401,22 @@ namespace Dapple.CustomControls
 				{
 					foreach (SearchResult oResult in m_aPages[m_iCurrentPage].Results)
 					{
-						cResultListBox.Items.Add(oResult);
+						c_lbResults.Items.Add(oResult);
 					}
-					cNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
+					c_oPageNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
 				}
 				else
 				{
-					cNavigator.SetState("No results");
+					c_oPageNavigator.SetState("No results");
 				}
 
 				if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
 				{
-					m_aPages[m_iCurrentPage].QueueThumbnails(cResultListBox);
+					m_aPages[m_iCurrentPage].QueueThumbnails(c_lbResults);
 				}
 			}
 
-			cResultListBox.ResumeLayout();
+			c_lbResults.ResumeLayout();
 		}
 
 		private void SetNoSearch()
@@ -424,24 +424,24 @@ namespace Dapple.CustomControls
 			m_iCurrentPage = 0;
 			m_iAccessedPages = 0;
 			m_aPages = new SearchResultSet[0];
-			cResultListBox.Items.Clear();
+			c_lbResults.Items.Clear();
 
 			if (!MainForm.Settings.UseDappleSearch)
 			{
-				cNavigator.SetState("DappleSearch is disabled");
+				c_oPageNavigator.SetState("DappleSearch is disabled");
 			}
 			else
 			{
-				cNavigator.SetState("Press Alt-S to search");
-				cResultListBox.HorizontalExtent = 0;
+				c_oPageNavigator.SetState("Press Alt-S to search");
+				c_lbResults.HorizontalExtent = 0;
 			}
 		}
 
 		private void SetSearching()
 		{
-			cResultListBox.Items.Clear();
-			cNavigator.SetState("Searching...");
-			cResultListBox.HorizontalExtent = 0;
+			c_lbResults.Items.Clear();
+			c_oPageNavigator.SetState("Searching...");
+			c_lbResults.HorizontalExtent = 0;
 		}
 
 		private void SetSearchFailed()
@@ -449,9 +449,9 @@ namespace Dapple.CustomControls
 			m_iCurrentPage = 0;
 			m_iAccessedPages = 0;
 			m_aPages = new SearchResultSet[0];
-			cResultListBox.Items.Clear();
-			cNavigator.SetState("Error contacting DappleSearch server");
-			cResultListBox.HorizontalExtent = 0;
+			c_lbResults.Items.Clear();
+			c_oPageNavigator.SetState("Error contacting DappleSearch server");
+			c_lbResults.HorizontalExtent = 0;
 		}
 
 		private delegate void InitResultsDelegate(SearchResultSet oResults);
@@ -502,7 +502,7 @@ namespace Dapple.CustomControls
 				}
 				else
 				{
-					cNavigator.SetState("DappleSearch not configured");
+					c_oPageNavigator.SetState("DappleSearch not configured");
 				}
 				RefreshResultList();
 			}

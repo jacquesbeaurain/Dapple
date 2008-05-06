@@ -29,79 +29,80 @@ namespace Dapple
       private void InitializeComponent()
       {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProperties));
-			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnOk = new System.Windows.Forms.Button();
-			this.panel1.SuspendLayout();
+			this.c_pgProperties = new System.Windows.Forms.PropertyGrid();
+			this.c_pButtons = new System.Windows.Forms.Panel();
+			this.c_bCancel = new System.Windows.Forms.Button();
+			this.c_bOK = new System.Windows.Forms.Button();
+			this.c_pButtons.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// propertyGrid1
+			// c_pgProperties
 			// 
-			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-			this.propertyGrid1.Name = "propertyGrid1";
-			this.propertyGrid1.Size = new System.Drawing.Size(570, 353);
-			this.propertyGrid1.TabIndex = 0;
+			this.c_pgProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.c_pgProperties.Location = new System.Drawing.Point(0, 0);
+			this.c_pgProperties.Name = "c_pgProperties";
+			this.c_pgProperties.Size = new System.Drawing.Size(570, 353);
+			this.c_pgProperties.TabIndex = 0;
 			// 
-			// panel1
+			// c_pButtons
 			// 
-			this.panel1.BackColor = System.Drawing.Color.Transparent;
-			this.panel1.Controls.Add(this.btnCancel);
-			this.panel1.Controls.Add(this.btnOk);
-			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 353);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(570, 29);
-			this.panel1.TabIndex = 1;
+			this.c_pButtons.BackColor = System.Drawing.Color.Transparent;
+			this.c_pButtons.Controls.Add(this.c_bCancel);
+			this.c_pButtons.Controls.Add(this.c_bOK);
+			this.c_pButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.c_pButtons.Location = new System.Drawing.Point(0, 353);
+			this.c_pButtons.Name = "c_pButtons";
+			this.c_pButtons.Size = new System.Drawing.Size(570, 29);
+			this.c_pButtons.TabIndex = 1;
 			// 
-			// btnCancel
+			// c_bCancel
 			// 
-			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(483, 3);
-			this.btnCancel.Name = "btnCancel";
-			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 1;
-			this.btnCancel.Text = "&Cancel";
-			this.btnCancel.UseVisualStyleBackColor = true;
-			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+			this.c_bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.c_bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.c_bCancel.Location = new System.Drawing.Point(483, 3);
+			this.c_bCancel.Name = "c_bCancel";
+			this.c_bCancel.Size = new System.Drawing.Size(75, 23);
+			this.c_bCancel.TabIndex = 1;
+			this.c_bCancel.Text = "&Cancel";
+			this.c_bCancel.UseVisualStyleBackColor = true;
+			this.c_bCancel.Click += new System.EventHandler(this.btnCancel_Click);
 			// 
-			// btnOk
+			// c_bOK
 			// 
-			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnOk.Location = new System.Drawing.Point(402, 3);
-			this.btnOk.Name = "btnOk";
-			this.btnOk.Size = new System.Drawing.Size(75, 23);
-			this.btnOk.TabIndex = 0;
-			this.btnOk.Text = "&OK";
-			this.btnOk.UseVisualStyleBackColor = true;
-			this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+			this.c_bOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.c_bOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.c_bOK.Location = new System.Drawing.Point(402, 3);
+			this.c_bOK.Name = "c_bOK";
+			this.c_bOK.Size = new System.Drawing.Size(75, 23);
+			this.c_bOK.TabIndex = 0;
+			this.c_bOK.Text = "&OK";
+			this.c_bOK.UseVisualStyleBackColor = true;
+			this.c_bOK.Click += new System.EventHandler(this.btnOk_Click);
 			// 
 			// frmProperties
 			// 
-			this.AcceptButton = this.btnOk;
+			this.AcceptButton = this.c_bOK;
+			this.CancelButton = this.c_bCancel;
 			this.ClientSize = new System.Drawing.Size(570, 382);
-			this.Controls.Add(this.propertyGrid1);
-			this.Controls.Add(this.panel1);
+			this.Controls.Add(this.c_pgProperties);
+			this.Controls.Add(this.c_pButtons);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "frmProperties";
 			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Properties";
-			this.panel1.ResumeLayout(false);
+			this.c_pButtons.ResumeLayout(false);
 			this.ResumeLayout(false);
 
       }
 
       #endregion
 
-      private System.Windows.Forms.PropertyGrid propertyGrid1;
-      private System.Windows.Forms.Panel panel1;
-      private System.Windows.Forms.Button btnCancel;
-      private System.Windows.Forms.Button btnOk;
+      private System.Windows.Forms.PropertyGrid c_pgProperties;
+      private System.Windows.Forms.Panel c_pButtons;
+      private System.Windows.Forms.Button c_bCancel;
+      private System.Windows.Forms.Button c_bOK;
    }
 }
 

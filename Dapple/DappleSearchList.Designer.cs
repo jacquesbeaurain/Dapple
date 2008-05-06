@@ -29,96 +29,96 @@ namespace Dapple.CustomControls
       private void InitializeComponent()
       {
 			this.components = new System.ComponentModel.Container();
-			this.cResultListBox = new System.Windows.Forms.ListBox();
-			this.cContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.addLayerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.cNavigator = new Dapple.PageNavigator();
-			this.cTabToolbar = new Dapple.CustomControls.TabToolStrip();
-			this.cContextMenu.SuspendLayout();
-			this.panel1.SuspendLayout();
+			this.c_lbResults = new System.Windows.Forms.ListBox();
+			this.c_msContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.c_miAddLayer = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_pBase = new System.Windows.Forms.Panel();
+			this.c_oPageNavigator = new Dapple.PageNavigator();
+			this.c_tsTabToolstrip = new Dapple.CustomControls.TabToolStrip();
+			this.c_msContext.SuspendLayout();
+			this.c_pBase.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// cResultListBox
+			// c_lbResults
 			// 
-			this.cResultListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.c_lbResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 							| System.Windows.Forms.AnchorStyles.Left)
 							| System.Windows.Forms.AnchorStyles.Right)));
-			this.cResultListBox.ContextMenuStrip = this.cContextMenu;
-			this.cResultListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-			this.cResultListBox.FormattingEnabled = true;
-			this.cResultListBox.HorizontalScrollbar = true;
-			this.cResultListBox.IntegralHeight = false;
-			this.cResultListBox.Location = new System.Drawing.Point(3, 32);
-			this.cResultListBox.Name = "cResultListBox";
-			this.cResultListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.cResultListBox.Size = new System.Drawing.Size(192, 138);
-			this.cResultListBox.TabIndex = 0;
-			this.cResultListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDoubleClick);
-			this.cResultListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cResultListBox_DrawItem);
-			this.cResultListBox.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.cResultListBox_MeasureItem);
-			this.cResultListBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseMove);
-			this.cResultListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDown);
+			this.c_lbResults.ContextMenuStrip = this.c_msContext;
+			this.c_lbResults.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+			this.c_lbResults.FormattingEnabled = true;
+			this.c_lbResults.HorizontalScrollbar = true;
+			this.c_lbResults.IntegralHeight = false;
+			this.c_lbResults.Location = new System.Drawing.Point(3, 32);
+			this.c_lbResults.Name = "c_lbResults";
+			this.c_lbResults.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.c_lbResults.Size = new System.Drawing.Size(192, 138);
+			this.c_lbResults.TabIndex = 0;
+			this.c_lbResults.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDoubleClick);
+			this.c_lbResults.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cResultListBox_DrawItem);
+			this.c_lbResults.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.cResultListBox_MeasureItem);
+			this.c_lbResults.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseMove);
+			this.c_lbResults.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDown);
 			// 
-			// cContextMenu
+			// c_msContext
 			// 
-			this.cContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addLayerToolStripMenuItem});
-			this.cContextMenu.Name = "cContextMenu";
-			this.cContextMenu.Size = new System.Drawing.Size(168, 26);
-			this.cContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cContextMenu_Opening);
+			this.c_msContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.c_miAddLayer});
+			this.c_msContext.Name = "cContextMenu";
+			this.c_msContext.Size = new System.Drawing.Size(168, 48);
+			this.c_msContext.Opening += new System.ComponentModel.CancelEventHandler(this.cContextMenu_Opening);
 			// 
-			// addLayerToolStripMenuItem
+			// c_miAddLayer
 			// 
-			this.addLayerToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
-			this.addLayerToolStripMenuItem.Name = "addLayerToolStripMenuItem";
-			this.addLayerToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-			this.addLayerToolStripMenuItem.Text = "Add to Data Layers";
-			this.addLayerToolStripMenuItem.Click += new System.EventHandler(this.addLayerToolStripMenuItem_Click);
+			this.c_miAddLayer.Image = global::Dapple.Properties.Resources.layers_add;
+			this.c_miAddLayer.Name = "c_miAddLayer";
+			this.c_miAddLayer.Size = new System.Drawing.Size(167, 22);
+			this.c_miAddLayer.Text = "Add to Data Layers";
+			this.c_miAddLayer.Click += new System.EventHandler(this.addLayerToolStripMenuItem_Click);
 			// 
-			// panel1
+			// c_pBase
 			// 
-			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.c_pBase.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 							| System.Windows.Forms.AnchorStyles.Left)
 							| System.Windows.Forms.AnchorStyles.Right)));
-			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panel1.Controls.Add(this.cResultListBox);
-			this.panel1.Controls.Add(this.cNavigator);
-			this.panel1.Location = new System.Drawing.Point(0, 0);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(200, 175);
-			this.panel1.TabIndex = 3;
+			this.c_pBase.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.c_pBase.Controls.Add(this.c_lbResults);
+			this.c_pBase.Controls.Add(this.c_oPageNavigator);
+			this.c_pBase.Location = new System.Drawing.Point(0, 0);
+			this.c_pBase.Name = "c_pBase";
+			this.c_pBase.Size = new System.Drawing.Size(200, 175);
+			this.c_pBase.TabIndex = 3;
 			// 
-			// cNavigator
+			// c_oPageNavigator
 			// 
-			this.cNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+			this.c_oPageNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 							| System.Windows.Forms.AnchorStyles.Right)));
-			this.cNavigator.Location = new System.Drawing.Point(3, 3);
-			this.cNavigator.Name = "cNavigator";
-			this.cNavigator.Size = new System.Drawing.Size(192, 23);
-			this.cNavigator.TabIndex = 1;
+			this.c_oPageNavigator.Location = new System.Drawing.Point(3, 3);
+			this.c_oPageNavigator.Name = "c_oPageNavigator";
+			this.c_oPageNavigator.Size = new System.Drawing.Size(192, 23);
+			this.c_oPageNavigator.TabIndex = 1;
 			// 
-			// cTabToolbar
+			// c_tsTabToolstrip
 			// 
-			this.cTabToolbar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.cTabToolbar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.cTabToolbar.Location = new System.Drawing.Point(0, 175);
-			this.cTabToolbar.Name = "cTabToolbar";
-			this.cTabToolbar.Size = new System.Drawing.Size(200, 25);
-			this.cTabToolbar.TabIndex = 2;
-			this.cTabToolbar.TabStop = true;
-			this.cTabToolbar.Text = "tabToolbar1";
+			this.c_tsTabToolstrip.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.c_tsTabToolstrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.c_tsTabToolstrip.Location = new System.Drawing.Point(0, 175);
+			this.c_tsTabToolstrip.Name = "c_tsTabToolstrip";
+			this.c_tsTabToolstrip.Size = new System.Drawing.Size(200, 25);
+			this.c_tsTabToolstrip.TabIndex = 2;
+			this.c_tsTabToolstrip.TabStop = true;
+			this.c_tsTabToolstrip.Text = "tabToolbar1";
 			// 
 			// DappleSearchList
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.panel1);
-			this.Controls.Add(this.cTabToolbar);
+			this.Controls.Add(this.c_pBase);
+			this.Controls.Add(this.c_tsTabToolstrip);
 			this.Name = "DappleSearchList";
 			this.Size = new System.Drawing.Size(200, 200);
-			this.cContextMenu.ResumeLayout(false);
-			this.panel1.ResumeLayout(false);
+			this.c_msContext.ResumeLayout(false);
+			this.c_pBase.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -126,11 +126,11 @@ namespace Dapple.CustomControls
 
       #endregion
 
-      private System.Windows.Forms.ListBox cResultListBox;
-      private PageNavigator cNavigator;
-      private TabToolStrip cTabToolbar;
-      private System.Windows.Forms.Panel panel1;
-      private System.Windows.Forms.ContextMenuStrip cContextMenu;
-      private System.Windows.Forms.ToolStripMenuItem addLayerToolStripMenuItem;
+      private System.Windows.Forms.ListBox c_lbResults;
+      private PageNavigator c_oPageNavigator;
+      private TabToolStrip c_tsTabToolstrip;
+      private System.Windows.Forms.Panel c_pBase;
+      private System.Windows.Forms.ContextMenuStrip c_msContext;
+      private System.Windows.Forms.ToolStripMenuItem c_miAddLayer;
    }
 }

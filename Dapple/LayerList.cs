@@ -95,7 +95,7 @@ namespace Dapple
          get
          {
             List<LayerBuilder> result = new List<LayerBuilder>();
-            foreach (int index in cLayerList.SelectedIndices)
+            foreach (int index in c_lvLayers.SelectedIndices)
             {
                result.Add(m_oLayers[index]);
             }
@@ -131,8 +131,8 @@ namespace Dapple
       {
          set
          {
-            cLayerList.SmallImageList = value;
-            cLayerList.LargeImageList = value;
+            c_lvLayers.SmallImageList = value;
+            c_lvLayers.LargeImageList = value;
          }
       }
 
@@ -140,7 +140,7 @@ namespace Dapple
       {
          set
          {
-            cExtractButton.Visible = value;
+            c_bExtract.Visible = value;
          }
       }
 
@@ -151,7 +151,7 @@ namespace Dapple
       {
          get
          {
-            return cLayerList.SelectedIndices.Count > 1 || (cLayerList.SelectedIndices.Count == 1 && !m_oLayers[cLayerList.SelectedIndices[0]].Equals(m_hBaseLayer));
+            return c_lvLayers.SelectedIndices.Count > 1 || (c_lvLayers.SelectedIndices.Count == 1 && !m_oLayers[c_lvLayers.SelectedIndices[0]].Equals(m_hBaseLayer));
          }
       }
 
@@ -195,7 +195,7 @@ namespace Dapple
          }
          if (oLayers.Count == 0) return;
 
-         cLayerList.BeginUpdate();
+         c_lvLayers.BeginUpdate();
          m_blSupressSelectedChanged = true;
 
          for (int count = 0; count < oLayers.Count; count++)
@@ -203,17 +203,17 @@ namespace Dapple
             AddLayer(oLayers[count], iInsertIndex + count);
          }
 
-         cLayerList.SelectedIndices.Clear();
+         c_lvLayers.SelectedIndices.Clear();
 
          for (int count = iInsertIndex; count < iInsertIndex + oLayers.Count; count++)
          {
-            cLayerList.Items[count].Selected = true;
+            c_lvLayers.Items[count].Selected = true;
          }
 
          m_blSupressSelectedChanged = false;
 
          cLayerList_SelectedIndexChanged(this, new EventArgs());
-         cLayerList.EndUpdate();
+         c_lvLayers.EndUpdate();
       }
 
       public void SetBaseLayer(LayerBuilder oBaseLayer)
@@ -237,22 +237,22 @@ namespace Dapple
 				oNewBuilder.Reset();
 
          m_oLayers.Insert(iInsertIndex, oNewBuilder);
-         cLayerList.Items.Insert(iInsertIndex, oNewBuilder.Title);
-         cLayerList.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
+         c_lvLayers.Items.Insert(iInsertIndex, oNewBuilder.Title);
+         c_lvLayers.Items[iInsertIndex].Checked = m_oLayers[iInsertIndex].Visible;
          {
-            cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
+            c_lvLayers.Items[iInsertIndex].ImageIndex = c_lvLayers.SmallImageList.Images.IndexOfKey(m_oLayers[iInsertIndex].DisplayIconKey);
          }
 
          if (!AddLayerToGlobe(m_oLayers[iInsertIndex]))
          {
-            cLayerList.Items[iInsertIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
+            c_lvLayers.Items[iInsertIndex].ImageIndex = c_lvLayers.SmallImageList.Images.IndexOfKey("error");
          }
 
          bool blSupressed = m_blSupressSelectedChanged;
          m_blSupressSelectedChanged = true;
 
-         cLayerList.SelectedIndices.Clear();
-         cLayerList.Items[iInsertIndex].Selected = true;
+         c_lvLayers.SelectedIndices.Clear();
+         c_lvLayers.Items[iInsertIndex].Selected = true;
 
          m_blSupressSelectedChanged = blSupressed;
          cLayerList_SelectedIndexChanged(this, new EventArgs());
@@ -306,18 +306,18 @@ namespace Dapple
          // Be careful accessing any properties in here (e.g. Value) as it may cause native messages to be sent in which case the loop may be broken
 
          Graphics g = e.Graphics;
-         int iPos = 8 + m_iLastTransparency * (cTransparencySlider.Bounds.Width - 26) / 255;
+         int iPos = 8 + m_iLastTransparency * (c_tbTransparency.Bounds.Width - 26) / 255;
 
          // Attempt to match the toolstrip next to it by drawing with same colors, bottom line and separator
-         g.FillRectangle(SystemBrushes.ButtonFace, cTransparencySlider.Bounds.X, cTransparencySlider.Bounds.Y, cTransparencySlider.Bounds.Width, cTransparencySlider.Bounds.Height);
-         g.DrawLine(Pens.LightGray, cTransparencySlider.Bounds.X, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height - 2, cTransparencySlider.Bounds.X + cTransparencySlider.Bounds.Width, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height - 2);
-         g.DrawLine(Pens.White, cTransparencySlider.Bounds.X, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height - 1, cTransparencySlider.Bounds.X + cTransparencySlider.Bounds.Width, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height - 1);
-         Rectangle rect = new Rectangle(cTransparencySlider.Bounds.X + 3, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height / 2 - 8, cTransparencySlider.Bounds.Width - 7, 16);
-         if (cTransparencySlider.Enabled)
+         g.FillRectangle(SystemBrushes.ButtonFace, c_tbTransparency.Bounds.X, c_tbTransparency.Bounds.Y, c_tbTransparency.Bounds.Width, c_tbTransparency.Bounds.Height);
+         g.DrawLine(Pens.LightGray, c_tbTransparency.Bounds.X, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height - 2, c_tbTransparency.Bounds.X + c_tbTransparency.Bounds.Width, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height - 2);
+         g.DrawLine(Pens.White, c_tbTransparency.Bounds.X, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height - 1, c_tbTransparency.Bounds.X + c_tbTransparency.Bounds.Width, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height - 1);
+         Rectangle rect = new Rectangle(c_tbTransparency.Bounds.X + 3, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height / 2 - 8, c_tbTransparency.Bounds.Width - 7, 16);
+         if (c_tbTransparency.Enabled)
          {
             using (LinearGradientBrush lgb = new LinearGradientBrush(rect, SystemColors.ButtonFace, SystemColors.ControlDarkDark, LinearGradientMode.Horizontal))
                g.FillRectangle(lgb, rect);
-            if (cTransparencySlider.Focused)
+            if (c_tbTransparency.Focused)
             {
                g.DrawRectangle(SystemPens.ActiveCaption, rect);
             }
@@ -325,31 +325,31 @@ namespace Dapple
             {
                g.DrawRectangle(SystemPens.InactiveCaption, rect);
             }
-            g.FillRectangle(SystemBrushes.ControlDarkDark, cTransparencySlider.Bounds.X + 9, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height / 2 - 1, cTransparencySlider.Bounds.Width - 17, 2);
-            g.DrawImage(global::Dapple.Properties.Resources.trackbutton, cTransparencySlider.Bounds.X + iPos, cTransparencySlider.Bounds.Y + 1, global::Dapple.Properties.Resources.trackbutton.Width, cTransparencySlider.Bounds.Height - 3);
+            g.FillRectangle(SystemBrushes.ControlDarkDark, c_tbTransparency.Bounds.X + 9, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height / 2 - 1, c_tbTransparency.Bounds.Width - 17, 2);
+            g.DrawImage(global::Dapple.Properties.Resources.trackbutton, c_tbTransparency.Bounds.X + iPos, c_tbTransparency.Bounds.Y + 1, global::Dapple.Properties.Resources.trackbutton.Width, c_tbTransparency.Bounds.Height - 3);
          }
          else
          {
             using (LinearGradientBrush lgb = new LinearGradientBrush(rect, SystemColors.ButtonFace, SystemColors.ControlDark, LinearGradientMode.Horizontal))
                g.FillRectangle(lgb, rect);
             g.DrawRectangle(SystemPens.ControlDark, rect);
-            g.FillRectangle(SystemBrushes.ControlDark, cTransparencySlider.Bounds.X + 9, cTransparencySlider.Bounds.Y + cTransparencySlider.Bounds.Height / 2 - 1, cTransparencySlider.Bounds.Width - 17, 2);
-            g.DrawImage(global::Dapple.Properties.Resources.trackbutton_disable, cTransparencySlider.Bounds.X + iPos, cTransparencySlider.Bounds.Y + 1, global::Dapple.Properties.Resources.trackbutton.Width, cTransparencySlider.Bounds.Height - 3);
+            g.FillRectangle(SystemBrushes.ControlDark, c_tbTransparency.Bounds.X + 9, c_tbTransparency.Bounds.Y + c_tbTransparency.Bounds.Height / 2 - 1, c_tbTransparency.Bounds.Width - 17, 2);
+            g.DrawImage(global::Dapple.Properties.Resources.trackbutton_disable, c_tbTransparency.Bounds.X + iPos, c_tbTransparency.Bounds.Y + 1, global::Dapple.Properties.Resources.trackbutton.Width, c_tbTransparency.Bounds.Height - 3);
          }
          if (e.ClipRectangle.X > 0)
-            cTransparencySlider.Invalidate();
+            c_tbTransparency.Invalidate();
       }
 
       private void cTransparencySlider_ValueChanged(object sender, EventArgs e)
       {
-         m_iLastTransparency = cTransparencySlider.Value;
-         if (cTransparencySlider.Enabled)
+         m_iLastTransparency = c_tbTransparency.Value;
+         if (c_tbTransparency.Enabled)
          {
-            m_oTransparencyDriver.OpacityChanged((byte)cTransparencySlider.Value);
+            m_oTransparencyDriver.OpacityChanged((byte)c_tbTransparency.Value);
          }
 
          // Invalidate to make sure our custom paintjob is fresh
-         cTransparencySlider.Invalidate();
+         c_tbTransparency.Invalidate();
       }
 
       #endregion
@@ -419,21 +419,21 @@ namespace Dapple
          if (e.Data.GetDataPresent(typeof(List<LayerBuilder>)))
          {
             List<LayerBuilder> oDropData = e.Data.GetData(typeof(List<LayerBuilder>)) as List<LayerBuilder>;
-            Point oClientLocation = cLayerList.PointToClient(new Point(e.X, e.Y));
+            Point oClientLocation = c_lvLayers.PointToClient(new Point(e.X, e.Y));
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
             AddLayers(oDropData, iInsertPoint);
 
-            cLayerList.Focus();
+            c_lvLayers.Focus();
          }
          else if (e.Data.GetDataPresent(typeof(LayerListInternalShuffleToken)))
          {
-            Point oClientLocation = cLayerList.PointToClient(new Point(e.X, e.Y));
+            Point oClientLocation = c_lvLayers.PointToClient(new Point(e.X, e.Y));
             int iInsertPoint = GetDropIndex(oClientLocation.Y);
 
             ShuffleSelectedLayers(iInsertPoint);
 
-            cLayerList.Focus();
+            c_lvLayers.Focus();
          }
       }
 
@@ -454,7 +454,7 @@ namespace Dapple
 
       private void cLayerList_MouseMove(object sender, MouseEventArgs e)
       {
-         if ((e.Button & MouseButtons.Left) == MouseButtons.Left && cLayerList.SelectedIndices.Count > 0)
+         if ((e.Button & MouseButtons.Left) == MouseButtons.Left && c_lvLayers.SelectedIndices.Count > 0)
          {
             DoDragDrop(new LayerListInternalShuffleToken(), DragDropEffects.Move);
          }
@@ -474,16 +474,16 @@ namespace Dapple
 
       private void cLayerListContextMenu_Opening(object sender, CancelEventArgs e)
       {
-         if (cLayerList.SelectedIndices.Count == 0)
+         if (c_lvLayers.SelectedIndices.Count == 0)
          {
             e.Cancel = true;
             return;
          }
 
-         cRemoveToolStripMenuItem.Enabled = this.RemoveAllowed;
-         cGoToToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1;
-         cViewPropertiesToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1;
-         cViewLegendToolStripMenuItem.Enabled = cLayerList.SelectedIndices.Count == 1 && m_oLayers[cLayerList.SelectedIndices[0]].SupportsLegend;
+         c_miRemoveLayer.Enabled = this.RemoveAllowed;
+         c_miGoToLayer.Enabled = c_lvLayers.SelectedIndices.Count == 1;
+         c_miProperties.Enabled = c_lvLayers.SelectedIndices.Count == 1;
+         c_miViewLegend.Enabled = c_lvLayers.SelectedIndices.Count == 1 && m_oLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend;
       }
 
       private void cGoToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -493,14 +493,14 @@ namespace Dapple
 
       private void cViewPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         LayerBuilder oBuilder = m_oLayers[cLayerList.SelectedIndices[0]];
+         LayerBuilder oBuilder = m_oLayers[c_lvLayers.SelectedIndices[0]];
          if (oBuilder == null) return;
 
          frmProperties.DisplayForm(oBuilder);
 
          if (oBuilder.IsChanged)
          {
-            CmdRefreshLayer(cLayerList.SelectedIndices[0]);
+            CmdRefreshLayer(c_lvLayers.SelectedIndices[0]);
          }
       }
 
@@ -511,7 +511,7 @@ namespace Dapple
 
       private void cRefreshToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         foreach (int iIndex in cLayerList.SelectedIndices)
+         foreach (int iIndex in c_lvLayers.SelectedIndices)
          {
             CmdRefreshLayer(iIndex);
          }
@@ -519,7 +519,7 @@ namespace Dapple
 
       private void cClearCacheToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         foreach (int iIndex in cLayerList.SelectedIndices)
+         foreach (int iIndex in c_lvLayers.SelectedIndices)
          {
             CmdClearLayerCache(iIndex);
          }
@@ -527,7 +527,7 @@ namespace Dapple
 
       private void cViewLegendToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         string[] aLegends = m_oLayers[cLayerList.SelectedIndices[0]].GetLegendURLs();
+         string[] aLegends = m_oLayers[c_lvLayers.SelectedIndices[0]].GetLegendURLs();
          foreach (string szLegend in aLegends)
          {
             if (!String.IsNullOrEmpty(szLegend)) MainForm.BrowseTo(szLegend);
@@ -547,7 +547,7 @@ namespace Dapple
       /// </summary>
       private void ResizeColumn()
       {
-			cLayerList.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+			c_lvLayers.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
 			/*int iWidth = 0;
 
 			// Set the width to some hooge number, so that the Bounds values returned are valid.
@@ -564,23 +564,23 @@ namespace Dapple
       /// </summary>
       private void SetButtonState()
       {
-         cTransparencySlider.Enabled = cLayerList.SelectedIndices.Count > 0;
+         c_tbTransparency.Enabled = c_lvLayers.SelectedIndices.Count > 0;
 
-         if (cTransparencySlider.Enabled)
+         if (c_tbTransparency.Enabled)
          {
             List<LayerBuilder> oSelectedLayers = new List<LayerBuilder>();
-            foreach (int iIndex in cLayerList.SelectedIndices)
+            foreach (int iIndex in c_lvLayers.SelectedIndices)
             {
                oSelectedLayers.Add(m_oLayers[iIndex]);
             }
 
             m_oTransparencyDriver.SetBuilders(oSelectedLayers);
-            cTransparencySlider.Value = m_oTransparencyDriver.ReferenceValue;
+            c_tbTransparency.Value = m_oTransparencyDriver.ReferenceValue;
          }
 
-         cGoToButton.Enabled = cLayerList.SelectedIndices.Count == 1;
-         cRemoveLayerButton.Enabled = this.RemoveAllowed;
-         cExtractButton.Enabled = (ExtractLayers.Count > 0) && m_blAllowExtract;
+         c_bGoToLayer.Enabled = c_lvLayers.SelectedIndices.Count == 1;
+         c_RemoveLayer.Enabled = this.RemoveAllowed;
+         c_bExtract.Enabled = (ExtractLayers.Count > 0) && m_blAllowExtract;
       }
 
       /// <summary>
@@ -618,15 +618,15 @@ namespace Dapple
                if (eChangeType == BuilderChangeType.LoadedASync)
                {
                   RefreshLayerRenderOrder();
-                  cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey(oBuilder.DisplayIconKey);
+                  c_lvLayers.Items[iBuilderIndex].ImageIndex = c_lvLayers.SmallImageList.Images.IndexOfKey(oBuilder.DisplayIconKey);
                }
                else if (eChangeType == BuilderChangeType.LoadedASyncFailed || eChangeType == BuilderChangeType.LoadedSyncFailed)
                {
-                  cLayerList.Items[iBuilderIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("error");
+                  c_lvLayers.Items[iBuilderIndex].ImageIndex = c_lvLayers.SmallImageList.Images.IndexOfKey("error");
                }
                else if (eChangeType == BuilderChangeType.VisibilityChanged)
                {
-                  cLayerList.Items[iBuilderIndex].Checked = m_oLayers[iBuilderIndex].Visible;
+                  c_lvLayers.Items[iBuilderIndex].Checked = m_oLayers[iBuilderIndex].Visible;
                }
             }
          }
@@ -656,7 +656,7 @@ namespace Dapple
       private void SetDropLocation(int iX, int iY)
       {
          m_oDropLocation = new Point(iX, iY);
-         cLayerList.Refresh();
+         c_lvLayers.Refresh();
          DrawDropHint();
       }
 
@@ -666,7 +666,7 @@ namespace Dapple
       private void ClearDropLocation()
       {
          m_oDropLocation = NO_DROP_LOCATION;
-         cLayerList.Refresh();
+         c_lvLayers.Refresh();
       }
 
       /// <summary>
@@ -676,9 +676,9 @@ namespace Dapple
       /// <returns></returns>
       private int GetDropIndex(int iClientY)
       {
-         int result = cLayerList.Items.IndexOf(cLayerList.GetItemAt(35, iClientY));
-         if (result == -1) return cLayerList.Items.Count;
-         Rectangle oItemBounds = cLayerList.GetItemRect(result);
+         int result = c_lvLayers.Items.IndexOf(c_lvLayers.GetItemAt(35, iClientY));
+         if (result == -1) return c_lvLayers.Items.Count;
+         Rectangle oItemBounds = c_lvLayers.GetItemRect(result);
          // --- Offset to the next number if we're below halfway ---
          if (iClientY - oItemBounds.Top > oItemBounds.Height / 2) result++;
          return result;
@@ -690,24 +690,24 @@ namespace Dapple
       private void DrawDropHint()
       {
          if (m_oDropLocation == NO_DROP_LOCATION) return;
-         Point oClientDropLocation = cLayerList.PointToClient(m_oDropLocation);
-         Graphics oGraphics = cLayerList.CreateGraphics();
+         Point oClientDropLocation = c_lvLayers.PointToClient(m_oDropLocation);
+         Graphics oGraphics = c_lvLayers.CreateGraphics();
          if (!oGraphics.VisibleClipBounds.Contains(oClientDropLocation)) return;
          
          int iLineWidth = (int)oGraphics.VisibleClipBounds.Width;
          int iLineY = 0;
 
-         if (cLayerList.Items.Count != 0)
+         if (c_lvLayers.Items.Count != 0)
          {
             int iInsertPoint = GetDropIndex(oClientDropLocation.Y);
 
-            if (iInsertPoint == cLayerList.Items.Count)
+            if (iInsertPoint == c_lvLayers.Items.Count)
             {
-               iLineY = cLayerList.GetItemRect(iInsertPoint - 1).Bottom;
+               iLineY = c_lvLayers.GetItemRect(iInsertPoint - 1).Bottom;
             }
             else
             {
-               iLineY = cLayerList.GetItemRect(iInsertPoint).Top;
+               iLineY = c_lvLayers.GetItemRect(iInsertPoint).Top;
             }
          }
          oGraphics.DrawLine(new System.Drawing.Pen(System.Drawing.Brushes.Black, 3.0f), new System.Drawing.Point(0, iLineY), new System.Drawing.Point(iLineWidth, iLineY));
@@ -722,17 +722,17 @@ namespace Dapple
       /// </remarks>
       private void ShuffleSelectedLayers(int iDropIndex)
       {
-         if (cLayerList.SelectedIndices.Count < 1) throw new InvalidOperationException("No layers are selected");
+         if (c_lvLayers.SelectedIndices.Count < 1) throw new InvalidOperationException("No layers are selected");
 
          // --- Check if the selection is continuous ---
 
-         bool blContinuousSelection = cLayerList.SelectedIndices[cLayerList.SelectedIndices.Count - 1] - cLayerList.SelectedIndices[0] + 1 == cLayerList.SelectedIndices.Count;
+         bool blContinuousSelection = c_lvLayers.SelectedIndices[c_lvLayers.SelectedIndices.Count - 1] - c_lvLayers.SelectedIndices[0] + 1 == c_lvLayers.SelectedIndices.Count;
          
          // --- Don't do anything if the selection is continuous and the drop index selected wouldn't move the items ---
 
          if (blContinuousSelection)
          {
-            if (iDropIndex >= cLayerList.SelectedIndices[0] && iDropIndex <= cLayerList.SelectedIndices[cLayerList.SelectedIndices.Count - 1] + 1)
+            if (iDropIndex >= c_lvLayers.SelectedIndices[0] && iDropIndex <= c_lvLayers.SelectedIndices[c_lvLayers.SelectedIndices.Count - 1] + 1)
             {
                return;
             }
@@ -741,7 +741,7 @@ namespace Dapple
          // --- If the drop index is below a selected layer, decrement it, as removing the layer from the list before the insert changes the indices ---
 
          int iDecrement = 0;
-         foreach (int iSelectedIndex in cLayerList.SelectedIndices)
+         foreach (int iSelectedIndex in c_lvLayers.SelectedIndices)
          {
             if (iDropIndex > iSelectedIndex) iDecrement++; 
          }
@@ -752,21 +752,21 @@ namespace Dapple
          List<LayerBuilder> oMovedContainers = new List<LayerBuilder>();
          List<ListViewItem> oMovedItems = new List<ListViewItem>();
 
-         foreach (int iSelectedIndex in cLayerList.SelectedIndices)
+         foreach (int iSelectedIndex in c_lvLayers.SelectedIndices)
          {
             oMovedContainers.Add(m_oLayers[iSelectedIndex]);
-            oMovedItems.Add(cLayerList.Items[iSelectedIndex]);
+            oMovedItems.Add(c_lvLayers.Items[iSelectedIndex]);
          }
 
          // --- Remove the selected layers ---
 
-         cLayerList.SuspendLayout();
+         c_lvLayers.SuspendLayout();
          m_blSupressSelectedChanged = true;
 
-         while (cLayerList.SelectedIndices.Count > 0)
+         while (c_lvLayers.SelectedIndices.Count > 0)
          {
-            m_oLayers.RemoveAt(cLayerList.SelectedIndices[0]);
-            cLayerList.Items.RemoveAt(cLayerList.SelectedIndices[0]);
+            m_oLayers.RemoveAt(c_lvLayers.SelectedIndices[0]);
+            c_lvLayers.Items.RemoveAt(c_lvLayers.SelectedIndices[0]);
          }
 
          // --- Reinsert and reselect the selected layers ---
@@ -774,12 +774,12 @@ namespace Dapple
          for (int count = 0; count < oMovedContainers.Count; count++)
          {
             m_oLayers.Insert(count + iDropIndex, oMovedContainers[count]);
-            cLayerList.Items.Insert(count + iDropIndex, oMovedItems[count]);
-            cLayerList.SelectedIndices.Add(count + iDropIndex);
+            c_lvLayers.Items.Insert(count + iDropIndex, oMovedItems[count]);
+            c_lvLayers.SelectedIndices.Add(count + iDropIndex);
          }
 
          m_blSupressSelectedChanged = false;
-         cLayerList.ResumeLayout();
+         c_lvLayers.ResumeLayout();
 
          // --- Update the globe ---
 
@@ -798,7 +798,7 @@ namespace Dapple
       /// <param name="iIndex"></param>
       private void CmdClearLayerCache(int iIndex)
       {
-         if (m_oLayers[cLayerList.SelectedIndices[0]] != null)
+         if (m_oLayers[c_lvLayers.SelectedIndices[0]] != null)
          {
             string strCache = m_oLayers[iIndex].GetCachePath();
             if (!string.IsNullOrEmpty(strCache))
@@ -815,7 +815,7 @@ namespace Dapple
       /// <param name="iIndex"></param>
       private void CmdRefreshLayer(int iIndex)
       {
-         cLayerList.Items[iIndex].ImageIndex = cLayerList.SmallImageList.Images.IndexOfKey("time");
+         c_lvLayers.Items[iIndex].ImageIndex = c_lvLayers.SmallImageList.Images.IndexOfKey("time");
          m_oLayers[iIndex].RefreshLayer();
       }
 
@@ -824,9 +824,9 @@ namespace Dapple
       /// </summary>
       private void CmdGoTo()
       {
-         if (cLayerList.SelectedIndices.Count == 1 && GoTo != null && m_oLayers[cLayerList.SelectedIndices[0]] != null)
+         if (c_lvLayers.SelectedIndices.Count == 1 && GoTo != null && m_oLayers[c_lvLayers.SelectedIndices[0]] != null)
          {
-            GoTo(m_oLayers[cLayerList.SelectedIndices[0]]);
+            GoTo(m_oLayers[c_lvLayers.SelectedIndices[0]]);
          }
       }
 
@@ -835,9 +835,9 @@ namespace Dapple
       /// </summary>
       private void CmdViewMetadata()
       {
-			if (cLayerList.SelectedIndices.Count == 1 && ViewMetadata != null && m_oLayers[cLayerList.SelectedIndices[0]] != null)
+			if (c_lvLayers.SelectedIndices.Count == 1 && ViewMetadata != null && m_oLayers[c_lvLayers.SelectedIndices[0]] != null)
 			{
-				ViewMetadata(m_oLayers[cLayerList.SelectedIndices[0]]);
+				ViewMetadata(m_oLayers[c_lvLayers.SelectedIndices[0]]);
 			}
 			else
 			{
@@ -850,9 +850,9 @@ namespace Dapple
       /// </summary>
       public void CmdRemoveSelectedLayers()
       {
-         if (cLayerList.SelectedIndices.Count == 0) return;
+         if (c_lvLayers.SelectedIndices.Count == 0) return;
 
-			cLayerList.BeginUpdate();
+			c_lvLayers.BeginUpdate();
          m_blSupressSelectedChanged = true;
 
 			// --- Get the list of layers to delete, and ListViewItems to not delete.
@@ -860,18 +860,18 @@ namespace Dapple
 			List<int> oIndices = new List<int>();
 			List<ListViewItem> oLVIs = new List<ListViewItem>();
 
-         foreach (int iIndex in cLayerList.SelectedIndices)
+         foreach (int iIndex in c_lvLayers.SelectedIndices)
          {
 				if (!m_oLayers[iIndex].Equals(m_hBaseLayer))
 				{
 					oIndices.Add(iIndex);
 				}
          }
-			for (int count = 0; count < cLayerList.Items.Count; count++)
+			for (int count = 0; count < c_lvLayers.Items.Count; count++)
 			{
 				if (!oIndices.Contains(count))
 				{
-					oLVIs.Add(cLayerList.Items[count]);
+					oLVIs.Add(c_lvLayers.Items[count]);
 				}
 			}
 
@@ -895,21 +895,21 @@ namespace Dapple
 
 			// --- Populate the ListView with those ListViewItems not deleted ---
 
-			cLayerList.SelectedIndices.Clear();
-			cLayerList.Items.Clear();
+			c_lvLayers.SelectedIndices.Clear();
+			c_lvLayers.Items.Clear();
 
 			foreach (ListViewItem oItem in oLVIs)
 			{
-				cLayerList.Items.Add(oItem);
+				c_lvLayers.Items.Add(oItem);
 			}
 
 			// --- Restore the "next item" selection if any items remain ---
 
-         if (iLastIndex == cLayerList.Items.Count) iLastIndex--;
-         if (iLastIndex != -1) cLayerList.SelectedIndices.Add(iLastIndex);
+         if (iLastIndex == c_lvLayers.Items.Count) iLastIndex--;
+         if (iLastIndex != -1) c_lvLayers.SelectedIndices.Add(iLastIndex);
 
 			m_blSupressSelectedChanged = false;
-			cLayerList.EndUpdate();
+			c_lvLayers.EndUpdate();
 
          RefreshLayerRenderOrder();
 			ResizeColumn();
@@ -926,7 +926,7 @@ namespace Dapple
       /// <param name="szFilename">The filename of the GeoTiff to remove.</param>
       public void CmdRemoveGeoTiff(String szFilename)
       {
-         cLayerList.BeginUpdate();
+         c_lvLayers.BeginUpdate();
          m_blSupressSelectedChanged = true;
 
          int iIndex = m_oLayers.Count - 1;
@@ -939,14 +939,14 @@ namespace Dapple
                m_oLayers[iIndex].RemoveLayer();
 
                m_oLayers.RemoveAt(iIndex);
-               cLayerList.Items.RemoveAt(iIndex);
+               c_lvLayers.Items.RemoveAt(iIndex);
             }
 
             iIndex--;
          }
 
          m_blSupressSelectedChanged = false;
-         cLayerList.EndUpdate();
+         c_lvLayers.EndUpdate();
 
          RefreshLayerRenderOrder();
 			ResizeColumn();
@@ -993,7 +993,7 @@ namespace Dapple
 			{
 				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to extract datasets");
 				m_blAllowExtract = false;
-				cExtractButton.Enabled = false;
+				c_bExtract.Enabled = false;
 			}
       }
 
@@ -1007,11 +1007,11 @@ namespace Dapple
       {
          bool blIncompleteLoad = false;
 
-         cLayerList.BeginUpdate();
+         c_lvLayers.BeginUpdate();
          m_blSupressSelectedChanged = true;
 			m_blLoadingFromView = true;
 
-         cLayerList.Items.Clear();
+         c_lvLayers.Items.Clear();
 			foreach (LayerBuilder oBuilder in m_oLayers)
 				oBuilder.RemoveLayer();
          m_oLayers.Clear();
@@ -1039,7 +1039,7 @@ namespace Dapple
 
 			m_blLoadingFromView = false;
          m_blSupressSelectedChanged = false;
-         cLayerList.EndUpdate();
+         c_lvLayers.EndUpdate();
 
          CheckIsValid();
 
@@ -1362,12 +1362,12 @@ namespace Dapple
       /// </summary>
       private void CheckIsValid()
       {
-         if (m_oLayers.Count != cLayerList.Items.Count)
+         if (m_oLayers.Count != c_lvLayers.Items.Count)
             throw new ArgumentException("Data no longer syncs");
 
          for (int count = 0; count < m_oLayers.Count; count++)
          {
-            if (!m_oLayers[count].Title.Equals(cLayerList.Items[count].Text))
+            if (!m_oLayers[count].Title.Equals(c_lvLayers.Items[count].Text))
                throw new ArgumentException("Data no longer syncs");
          }
       }

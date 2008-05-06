@@ -28,142 +28,142 @@ namespace Dapple
       /// </summary>
       private void InitializeComponent()
       {
-         this.components = new System.ComponentModel.Container();
-         System.Windows.Forms.Label label1;
-         this.cServersComboBox = new System.Windows.Forms.ComboBox();
-         this.cLayersListView = new System.Windows.Forms.ListView();
-         this.cLayerNameColumnHeader = new System.Windows.Forms.ColumnHeader();
-         this.cLayerContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-         this.addToLayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.viewLegendToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.panel1 = new System.Windows.Forms.Panel();
-         this.cPageNavigator = new Dapple.PageNavigator();
-         label1 = new System.Windows.Forms.Label();
-         this.cLayerContextMenu.SuspendLayout();
-         this.panel1.SuspendLayout();
-         this.SuspendLayout();
-         // 
-         // label1
-         // 
-         label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-         label1.AutoSize = true;
-         label1.Location = new System.Drawing.Point(3, 177);
-         label1.Name = "label1";
-         label1.Size = new System.Drawing.Size(41, 13);
-         label1.TabIndex = 0;
-         label1.Text = "Server:";
-         // 
-         // cServersComboBox
-         // 
-         this.cServersComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.cServersComboBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-         this.cServersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-         this.cServersComboBox.FormattingEnabled = true;
-         this.cServersComboBox.Location = new System.Drawing.Point(49, 174);
-         this.cServersComboBox.Name = "cServersComboBox";
-         this.cServersComboBox.Size = new System.Drawing.Size(146, 21);
-         this.cServersComboBox.TabIndex = 1;
-         this.cServersComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cServersComboBox_DrawItem);
-         this.cServersComboBox.SelectedIndexChanged += new System.EventHandler(this.cServersComboBox_SelectedIndexChanged);
-         // 
-         // cLayersListView
-         // 
-         this.cLayersListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
-         this.cLayersListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                     | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.cLayersListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.cLayerNameColumnHeader});
-         this.cLayersListView.ContextMenuStrip = this.cLayerContextMenu;
-         this.cLayersListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-         this.cLayersListView.Location = new System.Drawing.Point(3, 32);
-         this.cLayersListView.Name = "cLayersListView";
-         this.cLayersListView.Size = new System.Drawing.Size(192, 136);
-         this.cLayersListView.TabIndex = 2;
-         this.cLayersListView.UseCompatibleStateImageBehavior = false;
-         this.cLayersListView.View = System.Windows.Forms.View.Details;
-         this.cLayersListView.DoubleClick += new System.EventHandler(this.cLayersListView_DoubleClick);
-         this.cLayersListView.Resize += new System.EventHandler(this.cLayersListView_Resize);
-         this.cLayersListView.SelectedIndexChanged += new System.EventHandler(this.cLayersListView_SelectedIndexChanged);
-         this.cLayersListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cLayersListView_MouseMove);
-         this.cLayersListView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cLayersListView_MouseDown);
-         // 
-         // cLayerNameColumnHeader
-         // 
-         this.cLayerNameColumnHeader.Text = "Layer";
-         // 
-         // cLayerContextMenu
-         // 
-         this.cLayerContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addToLayersToolStripMenuItem,
-            this.viewLegendToolStripMenuItem});
-         this.cLayerContextMenu.Name = "cLayerContextMenu";
-         this.cLayerContextMenu.Size = new System.Drawing.Size(170, 70);
-         this.cLayerContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerContextMenu_Opening);
-         // 
-         // addToLayersToolStripMenuItem
-         // 
-         this.addToLayersToolStripMenuItem.Image = global::Dapple.Properties.Resources.layers_add;
-         this.addToLayersToolStripMenuItem.Name = "addToLayersToolStripMenuItem";
-         this.addToLayersToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-         this.addToLayersToolStripMenuItem.Text = "Add To Data Layers";
-         this.addToLayersToolStripMenuItem.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
-         // 
-         // viewLegendToolStripMenuItem
-         // 
-         this.viewLegendToolStripMenuItem.Image = global::Dapple.Properties.Resources.legend;
-         this.viewLegendToolStripMenuItem.Name = "viewLegendToolStripMenuItem";
-         this.viewLegendToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-         this.viewLegendToolStripMenuItem.Text = "View Legend...";
-         this.viewLegendToolStripMenuItem.Click += new System.EventHandler(this.viewLegendToolStripMenuItem_Click);
-         // 
-         // panel1
-         // 
-         this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-         this.panel1.Controls.Add(this.cPageNavigator);
-         this.panel1.Controls.Add(this.cLayersListView);
-         this.panel1.Controls.Add(label1);
-         this.panel1.Controls.Add(this.cServersComboBox);
-         this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.panel1.Location = new System.Drawing.Point(0, 0);
-         this.panel1.Name = "panel1";
-         this.panel1.Size = new System.Drawing.Size(200, 200);
-         this.panel1.TabIndex = 4;
-         // 
-         // cPageNavigator
-         // 
-         this.cPageNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.cPageNavigator.Location = new System.Drawing.Point(3, 3);
-         this.cPageNavigator.Name = "cPageNavigator";
-         this.cPageNavigator.Size = new System.Drawing.Size(192, 23);
-         this.cPageNavigator.TabIndex = 3;
-         // 
-         // ServerList
-         // 
-         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.Controls.Add(this.panel1);
-         this.Name = "ServerList";
-         this.Size = new System.Drawing.Size(200, 200);
-         this.Load += new System.EventHandler(this.ServerList_Load);
-         this.cLayerContextMenu.ResumeLayout(false);
-         this.panel1.ResumeLayout(false);
-         this.panel1.PerformLayout();
-         this.ResumeLayout(false);
+			this.components = new System.ComponentModel.Container();
+			System.Windows.Forms.Label label1;
+			this.c_cbServers = new System.Windows.Forms.ComboBox();
+			this.c_lvLayers = new System.Windows.Forms.ListView();
+			this.c_chLayers = new System.Windows.Forms.ColumnHeader();
+			this.c_msContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.c_miAddLayer = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miViewLegend = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_pBase = new System.Windows.Forms.Panel();
+			this.c_oPageNavigator = new Dapple.PageNavigator();
+			label1 = new System.Windows.Forms.Label();
+			this.c_msContext.SuspendLayout();
+			this.c_pBase.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// label1
+			// 
+			label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			label1.AutoSize = true;
+			label1.Location = new System.Drawing.Point(3, 177);
+			label1.Name = "label1";
+			label1.Size = new System.Drawing.Size(41, 13);
+			label1.TabIndex = 0;
+			label1.Text = "Server:";
+			// 
+			// c_cbServers
+			// 
+			this.c_cbServers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.c_cbServers.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.c_cbServers.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.c_cbServers.FormattingEnabled = true;
+			this.c_cbServers.Location = new System.Drawing.Point(49, 174);
+			this.c_cbServers.Name = "c_cbServers";
+			this.c_cbServers.Size = new System.Drawing.Size(146, 21);
+			this.c_cbServers.TabIndex = 1;
+			this.c_cbServers.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cServersComboBox_DrawItem);
+			this.c_cbServers.SelectedIndexChanged += new System.EventHandler(this.cServersComboBox_SelectedIndexChanged);
+			// 
+			// c_lvLayers
+			// 
+			this.c_lvLayers.Alignment = System.Windows.Forms.ListViewAlignment.Left;
+			this.c_lvLayers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+							| System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.c_lvLayers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.c_chLayers});
+			this.c_lvLayers.ContextMenuStrip = this.c_msContext;
+			this.c_lvLayers.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.c_lvLayers.Location = new System.Drawing.Point(3, 32);
+			this.c_lvLayers.Name = "c_lvLayers";
+			this.c_lvLayers.Size = new System.Drawing.Size(192, 136);
+			this.c_lvLayers.TabIndex = 2;
+			this.c_lvLayers.UseCompatibleStateImageBehavior = false;
+			this.c_lvLayers.View = System.Windows.Forms.View.Details;
+			this.c_lvLayers.Resize += new System.EventHandler(this.cLayersListView_Resize);
+			this.c_lvLayers.SelectedIndexChanged += new System.EventHandler(this.cLayersListView_SelectedIndexChanged);
+			this.c_lvLayers.DoubleClick += new System.EventHandler(this.cLayersListView_DoubleClick);
+			this.c_lvLayers.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cLayersListView_MouseMove);
+			this.c_lvLayers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cLayersListView_MouseDown);
+			// 
+			// c_chLayers
+			// 
+			this.c_chLayers.Text = "Layer";
+			// 
+			// c_msContext
+			// 
+			this.c_msContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.c_miAddLayer,
+            this.c_miViewLegend});
+			this.c_msContext.Name = "cLayerContextMenu";
+			this.c_msContext.Size = new System.Drawing.Size(170, 48);
+			this.c_msContext.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerContextMenu_Opening);
+			// 
+			// c_miAddLayer
+			// 
+			this.c_miAddLayer.Image = global::Dapple.Properties.Resources.layers_add;
+			this.c_miAddLayer.Name = "c_miAddLayer";
+			this.c_miAddLayer.Size = new System.Drawing.Size(169, 22);
+			this.c_miAddLayer.Text = "Add To Data Layers";
+			this.c_miAddLayer.Click += new System.EventHandler(this.addToLayersToolStripMenuItem_Click);
+			// 
+			// c_miViewLegend
+			// 
+			this.c_miViewLegend.Image = global::Dapple.Properties.Resources.legend;
+			this.c_miViewLegend.Name = "c_miViewLegend";
+			this.c_miViewLegend.Size = new System.Drawing.Size(169, 22);
+			this.c_miViewLegend.Text = "View Legend...";
+			this.c_miViewLegend.Click += new System.EventHandler(this.viewLegendToolStripMenuItem_Click);
+			// 
+			// c_pBase
+			// 
+			this.c_pBase.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.c_pBase.Controls.Add(this.c_oPageNavigator);
+			this.c_pBase.Controls.Add(this.c_lvLayers);
+			this.c_pBase.Controls.Add(label1);
+			this.c_pBase.Controls.Add(this.c_cbServers);
+			this.c_pBase.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.c_pBase.Location = new System.Drawing.Point(0, 0);
+			this.c_pBase.Name = "c_pBase";
+			this.c_pBase.Size = new System.Drawing.Size(200, 200);
+			this.c_pBase.TabIndex = 4;
+			// 
+			// c_oPageNavigator
+			// 
+			this.c_oPageNavigator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.c_oPageNavigator.Location = new System.Drawing.Point(3, 3);
+			this.c_oPageNavigator.Name = "c_oPageNavigator";
+			this.c_oPageNavigator.Size = new System.Drawing.Size(192, 23);
+			this.c_oPageNavigator.TabIndex = 3;
+			// 
+			// ServerList
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.c_pBase);
+			this.Name = "ServerList";
+			this.Size = new System.Drawing.Size(200, 200);
+			this.Load += new System.EventHandler(this.ServerList_Load);
+			this.c_msContext.ResumeLayout(false);
+			this.c_pBase.ResumeLayout(false);
+			this.c_pBase.PerformLayout();
+			this.ResumeLayout(false);
 
       }
 
       #endregion
 
-      private System.Windows.Forms.ComboBox cServersComboBox;
-      private System.Windows.Forms.ListView cLayersListView;
-      private System.Windows.Forms.ColumnHeader cLayerNameColumnHeader;
-      private System.Windows.Forms.ContextMenuStrip cLayerContextMenu;
-      private System.Windows.Forms.ToolStripMenuItem addToLayersToolStripMenuItem;
-      private PageNavigator cPageNavigator;
-      private System.Windows.Forms.Panel panel1;
-      private System.Windows.Forms.ToolStripMenuItem viewLegendToolStripMenuItem;
+      private System.Windows.Forms.ComboBox c_cbServers;
+      private System.Windows.Forms.ListView c_lvLayers;
+      private System.Windows.Forms.ColumnHeader c_chLayers;
+      private System.Windows.Forms.ContextMenuStrip c_msContext;
+      private System.Windows.Forms.ToolStripMenuItem c_miAddLayer;
+      private PageNavigator c_oPageNavigator;
+      private System.Windows.Forms.Panel c_pBase;
+      private System.Windows.Forms.ToolStripMenuItem c_miViewLegend;
    }
 }

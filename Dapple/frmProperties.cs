@@ -87,7 +87,7 @@ namespace Dapple
                   m_isChangableTable.Add(p.Name, false);
                
             }
-            propertyGrid1.SelectedObject = bag;
+            c_pgProperties.SelectedObject = bag;
          }
       }
 

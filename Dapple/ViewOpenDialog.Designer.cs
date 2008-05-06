@@ -28,76 +28,76 @@ namespace Dapple
       /// </summary>
       private void InitializeComponent()
       {
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
-			this.pictureBox = new System.Windows.Forms.PictureBox();
-			this.groupBoxNotes = new System.Windows.Forms.GroupBox();
-			this.lblNotes = new System.Windows.Forms.Label();
+			this.c_bCancel = new System.Windows.Forms.Button();
+			this.c_bOK = new System.Windows.Forms.Button();
+			this.c_pbPreview = new System.Windows.Forms.PictureBox();
+			this.c_gbNotes = new System.Windows.Forms.GroupBox();
+			this.c_lNotes = new System.Windows.Forms.Label();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.label1 = new System.Windows.Forms.Label();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-			this.groupBoxNotes.SuspendLayout();
+			this.c_lView = new System.Windows.Forms.Label();
+			((System.ComponentModel.ISupportInitialize)(this.c_pbPreview)).BeginInit();
+			this.c_gbNotes.SuspendLayout();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// butCancel
+			// c_bCancel
 			// 
-			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.butCancel.Location = new System.Drawing.Point(386, 456);
-			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 23);
-			this.butCancel.TabIndex = 10;
-			this.butCancel.Text = "&Cancel";
+			this.c_bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.c_bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.c_bCancel.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.c_bCancel.Location = new System.Drawing.Point(386, 456);
+			this.c_bCancel.Name = "c_bCancel";
+			this.c_bCancel.Size = new System.Drawing.Size(75, 23);
+			this.c_bCancel.TabIndex = 10;
+			this.c_bCancel.Text = "&Cancel";
 			// 
-			// butOK
+			// c_bOK
 			// 
-			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.butOK.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.butOK.Location = new System.Drawing.Point(305, 456);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 23);
-			this.butOK.TabIndex = 9;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			this.c_bOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.c_bOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.c_bOK.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.c_bOK.Location = new System.Drawing.Point(305, 456);
+			this.c_bOK.Name = "c_bOK";
+			this.c_bOK.Size = new System.Drawing.Size(75, 23);
+			this.c_bOK.TabIndex = 9;
+			this.c_bOK.Text = "&OK";
+			this.c_bOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
-			// pictureBox
+			// c_pbPreview
 			// 
-			this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pictureBox.Location = new System.Drawing.Point(0, 0);
-			this.pictureBox.Name = "pictureBox";
-			this.pictureBox.Size = new System.Drawing.Size(470, 359);
-			this.pictureBox.TabIndex = 0;
-			this.pictureBox.TabStop = false;
-			this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
-			this.pictureBox.SizeChanged += new System.EventHandler(this.pictureBox_SizeChanged);
+			this.c_pbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.c_pbPreview.Location = new System.Drawing.Point(0, 0);
+			this.c_pbPreview.Name = "c_pbPreview";
+			this.c_pbPreview.Size = new System.Drawing.Size(470, 359);
+			this.c_pbPreview.TabIndex = 0;
+			this.c_pbPreview.TabStop = false;
+			this.c_pbPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+			this.c_pbPreview.SizeChanged += new System.EventHandler(this.pictureBox_SizeChanged);
 			// 
-			// groupBoxNotes
+			// c_gbNotes
 			// 
-			this.groupBoxNotes.Controls.Add(this.lblNotes);
-			this.groupBoxNotes.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBoxNotes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.groupBoxNotes.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.groupBoxNotes.Location = new System.Drawing.Point(0, 0);
-			this.groupBoxNotes.Name = "groupBoxNotes";
-			this.groupBoxNotes.Size = new System.Drawing.Size(470, 87);
-			this.groupBoxNotes.TabIndex = 13;
-			this.groupBoxNotes.TabStop = false;
-			this.groupBoxNotes.Text = "Notes";
+			this.c_gbNotes.Controls.Add(this.c_lNotes);
+			this.c_gbNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.c_gbNotes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.c_gbNotes.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.c_gbNotes.Location = new System.Drawing.Point(0, 0);
+			this.c_gbNotes.Name = "c_gbNotes";
+			this.c_gbNotes.Size = new System.Drawing.Size(470, 87);
+			this.c_gbNotes.TabIndex = 13;
+			this.c_gbNotes.TabStop = false;
+			this.c_gbNotes.Text = "Notes";
 			// 
-			// lblNotes
+			// c_lNotes
 			// 
-			this.lblNotes.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lblNotes.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblNotes.Location = new System.Drawing.Point(3, 17);
-			this.lblNotes.Name = "lblNotes";
-			this.lblNotes.Size = new System.Drawing.Size(464, 67);
-			this.lblNotes.TabIndex = 1;
-			this.lblNotes.Text = "Some notes";
+			this.c_lNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.c_lNotes.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.c_lNotes.Location = new System.Drawing.Point(3, 17);
+			this.c_lNotes.Name = "c_lNotes";
+			this.c_lNotes.Size = new System.Drawing.Size(464, 67);
+			this.c_lNotes.TabIndex = 1;
+			this.c_lNotes.Text = "Some notes";
 			// 
 			// splitContainer1
 			// 
@@ -110,37 +110,37 @@ namespace Dapple
 			// 
 			// splitContainer1.Panel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.pictureBox);
+			this.splitContainer1.Panel1.Controls.Add(this.c_pbPreview);
 			// 
 			// splitContainer1.Panel2
 			// 
-			this.splitContainer1.Panel2.Controls.Add(this.groupBoxNotes);
+			this.splitContainer1.Panel2.Controls.Add(this.c_gbNotes);
 			this.splitContainer1.Size = new System.Drawing.Size(470, 450);
 			this.splitContainer1.SplitterDistance = 359;
 			this.splitContainer1.TabIndex = 14;
 			// 
-			// label1
+			// c_lView
 			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(32, 460);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(30, 13);
-			this.label1.TabIndex = 16;
-			this.label1.Text = "View";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.c_lView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.c_lView.AutoSize = true;
+			this.c_lView.Location = new System.Drawing.Point(32, 460);
+			this.c_lView.Name = "c_lView";
+			this.c_lView.Size = new System.Drawing.Size(30, 13);
+			this.c_lView.TabIndex = 16;
+			this.c_lView.Text = "View";
+			this.c_lView.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// ViewOpenDialog
 			// 
-			this.AcceptButton = this.butOK;
+			this.AcceptButton = this.c_bOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = this.butCancel;
+			this.CancelButton = this.c_bCancel;
 			this.ClientSize = new System.Drawing.Size(473, 482);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this.c_lView);
 			this.Controls.Add(this.splitContainer1);
-			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.c_bCancel);
+			this.Controls.Add(this.c_bOK);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(481, 516);
@@ -149,8 +149,8 @@ namespace Dapple
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Open View";
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-			this.groupBoxNotes.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.c_pbPreview)).EndInit();
+			this.c_gbNotes.ResumeLayout(false);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			this.splitContainer1.ResumeLayout(false);
@@ -161,12 +161,12 @@ namespace Dapple
 
       #endregion
 
-      private System.Windows.Forms.PictureBox pictureBox;
-      private System.Windows.Forms.GroupBox groupBoxNotes;
-      private System.Windows.Forms.Label lblNotes;
-      private System.Windows.Forms.Button butCancel;
-      private System.Windows.Forms.Button butOK;
+      private System.Windows.Forms.PictureBox c_pbPreview;
+      private System.Windows.Forms.GroupBox c_gbNotes;
+      private System.Windows.Forms.Label c_lNotes;
+      private System.Windows.Forms.Button c_bCancel;
+      private System.Windows.Forms.Button c_bOK;
       private System.Windows.Forms.SplitContainer splitContainer1;
-      private System.Windows.Forms.Label label1;
+      private System.Windows.Forms.Label c_lView;
    }
 }
