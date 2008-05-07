@@ -162,12 +162,6 @@ namespace Collab.jhuapl.Whiteboard
 
 		bool m_drawModeChange = false;
 
-		/// <summary>
-		/// The DrawArgs from the parent application
-		/// </summary>
-		//private DrawArgs m_drawArgs;
-
-
 		#region Properties
 
 		/// <summary>

@@ -159,12 +159,6 @@ namespace jhuapl.util
 		}
 
 		/// <summary>
-		/// Longer description of icon (addition to name)
-		/// </summary>
-        // inherited from RenderableObject.
-		// public new string Description;
-
-		/// <summary>
 		/// Icon bitmap path. (Overrides Image)
 		/// </summary>
 		public string TextureFileName;
