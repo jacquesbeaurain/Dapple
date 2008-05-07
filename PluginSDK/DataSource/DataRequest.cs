@@ -222,7 +222,6 @@ namespace WorldWind.DataSource
                 m_priority = 50;
         }
 
-        [Obsolete]
         public void Cancel()
         {
             this.State = DataRequestState.Cancelled;
