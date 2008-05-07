@@ -102,6 +102,11 @@ namespace WorldWind
          return North == castObj.North && East == castObj.East && South == castObj.South && West == castObj.West;
       }
 
+		public override int GetHashCode()
+		{
+			return North.GetHashCode() ^ East.GetHashCode() ^ South.GetHashCode() ^ West.GetHashCode() ^ MinimumAltitude.GetHashCode() ^ MaximumAltitude.GetHashCode();
+		}
+
       public override string ToString()
       {
          return String.Format("({0:F2} {4},{1:F2} {5}) -> ({2:F2} {6},{3:F2} {7})", Math.Abs(West), Math.Abs(South), Math.Abs(East), Math.Abs(North),

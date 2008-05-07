@@ -220,26 +220,19 @@ namespace WorldWind.Renderable
 					return;
 					//throw new Exception("Delete cancelled.");
 
-				//MessageBox.Show("Checking xml source of " + this.Name);
-
 				if (xmlConfigFile.Contains("http"))
 					throw new Exception("Can't delete network layers.");
 
-				//MessageBox.Show("Found " + xmlConfigFile);
 				if (File.Exists(xmlConfigFile.Replace(".xml", ".bak")))
 				{
-					//MessageBox.Show("Deleting old .bak");
 					File.Delete(xmlConfigFile.Replace(".xml", ".bak"));
 
 				}
-				//MessageBox.Show("Moving old .xml");
 				File.Move(xmlConfigFile, xmlConfigFile.Replace(".xml", ".bak"));
 
-				//MessageBox.Show("File backed up, now removing from LM");
 				this.ParentList.Remove(this);
 				//World.RenderableObjects.Remove(this);
 
-				//MessageBox.Show("Removed");
 			}
 			else if (xmlConfigFile == null)
 			{
@@ -255,49 +248,6 @@ namespace WorldWind.Renderable
 			{
 				throw new Exception("Can't delete this sub-item from the layer manager.  Try deleting the top-level entry for this layer.");
 			}
-
-
-
-
-			// Needs re-thinking...
-			/*
-			string xmlConfigFile = (string)MetaData["XmlSource"];
-			//MessageBox.Show(xmlConfigFile);
-			if(xmlConfigFile == null)
-				xmlConfigFile = (string)ParentList.MetaData["XmlSource"];																					   
-				
-			if(xmlConfigFile == null || !File.Exists(xmlConfigFile))
-				throw new ApplicationException("Error deleting layer.");
-				
-			XmlDocument doc = new XmlDocument();
-			doc.Load(xmlConfigFile);
-
-			XmlNodeList list;
-			XmlElement root = doc.DocumentElement;
-			list = root.SelectNodes("//ChildLayerSet[@Name='" + namestring + "'] || //*[Name='" + namestring + "']");
-			MessageBox.Show("Checked childlayersets, returned " + list[0].ToString());
-
-			ParentList.Remove(Name);
-			MessageBox.Show("Removed " + Name + ", now changing " + xmlConfigFile);
-
-			if (list != null)
-				MessageBox.Show("Removing " + list[0].ToString() + " from xml");
-
-			list[0].ParentNode.RemoveChild(list[0]);
-			MessageBox.Show("node removed, now saving file");
-
-			if (File.Exists(xmlConfigFile.Replace(".xml", ".bak")))
-			{
-				MessageBox.Show("Deleting old .bak");
-				File.Delete(xmlConfigFile.Replace(".xml", ".bak"));
-
-			}
-			MessageBox.Show("Moving old .xml");
-			File.Move(xmlConfigFile, xmlConfigFile.Replace(".xml",".bak"));
-
-			MessageBox.Show("Saving new xml");
-			doc.Save(xmlConfigFile);
-			*/
 		}
 
 		/// <summary>

@@ -478,9 +478,6 @@ namespace WorldWind
 
 			m_topVertices = new CustomVertex.PositionColored[m_numPoints];
 
-			// wall vertex index.
-			int wi = 0;
-
 			// precalculate feature center (at zero elev)
 			Point3d center = new Point3d(0, 0, 0);
 			for (int i = 0; i < m_numPoints; i++)

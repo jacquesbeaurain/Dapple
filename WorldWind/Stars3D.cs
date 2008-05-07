@@ -126,7 +126,10 @@ namespace Stars3D.Plugin
 				sw.Write(line);
 				sw.Close();
 			}
-			catch (Exception caught) { }
+			catch
+			{
+				// Not the end of the world for the Stars plugin settings to not be saved.
+			}
 		}
 
 		#region RenderableObject
@@ -232,8 +235,6 @@ namespace Stars3D.Plugin
 			catch
 			{
 				isOn = false;
-				MessageBox.Show("Error loading texture " + Path.Combine(pluginPath, textureFileName) + ".", "Layer initialization failed.", MessageBoxButtons.OK,
-					MessageBoxIcon.Error);
 			}
 		}
 
@@ -416,8 +417,7 @@ namespace Stars3D.Plugin
 				if (line.Substring(0, 3) == "---") isData = 1;
 			}
 			tr.Close();
-			//MessageBox.Show("FlareCount : " + FlareCount.ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Error );
-
+			
 
 			// Set vertex buffer for stars
 			StarListVB.SetData(verts, 0, LockFlags.None);
@@ -635,7 +635,6 @@ namespace Stars3D.Plugin
 			{
 				if (cboTexture.SelectedItem != null)
 				{
-					//System.Windows.Forms.MessageBox.Show("Texture : " + cboTexture.SelectedItem.ToString());
 					layer.Dispose();
 					layer.catalogFileName = cboTexture.SelectedItem.ToString();
 					layer.showFlares = chkFlares.Checked;

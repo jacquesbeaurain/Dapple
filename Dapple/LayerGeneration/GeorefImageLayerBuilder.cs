@@ -199,9 +199,8 @@ namespace Dapple.LayerGeneration
                   m_Layer.RenderPriority = RenderPriority.TerrainMappedImages;
                }
             }
-            catch (Exception ex)
+            catch
             {
-					MessageBox.Show(ex.StackTrace, ex.GetType().Name + ": " + ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                if (File.Exists(m_strCacheFileName))
                   File.Delete(m_strCacheFileName);
                m_Layer = null;
@@ -246,6 +245,11 @@ namespace Dapple.LayerGeneration
          // -- Equal if they're the same local file --
          return this.m_strFileName.Equals(castObj.m_strFileName);
       }
+
+		public override int GetHashCode()
+		{
+			return m_strFileName.GetHashCode();
+		}
 
       #endregion
 

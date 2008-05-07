@@ -37,7 +37,12 @@ namespace Dapple
          Uri oServerUrl = null;
 			if (!(Uri.TryCreate(txtArcIMSURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtArcIMSURL.Text, UriKind.Absolute, out oServerUrl)))
 			{
-				MessageBox.Show(this, "Unable to parse URL.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Program.ShowMessageBox(
+					"Please enter a valid URL.",
+					"Add ArcIMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
 				DialogResult = DialogResult.None;
 				return;
 			}
@@ -51,7 +56,12 @@ namespace Dapple
 
 			if (m_oParent.ContainsServer(new ArcIMSServerUri(oServerUrl.ToString())))
 			{
-				MessageBox.Show(this, "This arcIMS server has already been added.", "Server Already Added", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Program.ShowMessageBox(
+					"The specified server has already been added.",
+					"Add ArcIMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Information);
 				DialogResult = DialogResult.None;
 				return;
 			}

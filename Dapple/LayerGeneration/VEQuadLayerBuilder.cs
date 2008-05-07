@@ -246,6 +246,11 @@ namespace Dapple.LayerGeneration
          return m_mapType == castObj.m_mapType;
       }
 
+		public override int GetHashCode()
+		{
+			return m_mapType.ToString().GetHashCode() ^ "VELAYER".GetHashCode();
+		}
+
       public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "ve";

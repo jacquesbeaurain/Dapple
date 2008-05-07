@@ -1316,7 +1316,6 @@ namespace ThreeDconnexion.Plugin
 
             private bool InitializeTDxInputWrapper()
             {
-                //MessageBox.Show("start initialization ...");
                 bool bReturn = false;
                 Object typeLib = null;
                 try
@@ -1376,10 +1375,7 @@ namespace ThreeDconnexion.Plugin
                     TheType = m_OKeyboard.GetType();
                     //TheMethods = TheType.GetMethods();
                     bReturn = true;
-                    //MessageBox.Show("Com initialized");
                 }
-                else
-                    MessageBox.Show("din't get the Device");
 
                 return bReturn;
             }//constructor

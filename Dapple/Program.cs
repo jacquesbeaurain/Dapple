@@ -38,7 +38,12 @@ namespace Dapple
             oTemp.Append(arg);
             oTemp.Append(Environment.NewLine);
          }
-         MessageBox.Show("Dapple is being invoked with the following command-line parameters:" + Environment.NewLine + oTemp.ToString() + Environment.NewLine + Environment.NewLine + "Attach debugger if desired, then press OK to continue");
+			ShowMessageBox(
+				"Dapple is being invoked with the following command-line parameters:" + Environment.NewLine + oTemp.ToString() + Environment.NewLine + Environment.NewLine + "Attach debugger if desired, then press OK to continue.",
+				"Dapple Startup",
+				MessageBoxButtons.OK,
+				MessageBoxDefaultButton.Button1,
+				MessageBoxIcon.Information);
 #endif
 
 			MontajRemote.RemoteInterface oRemoteInterface = null;
@@ -157,7 +162,12 @@ namespace Dapple
 					String[] strValues = cmdl["aoi"].Split(new char[] { ',' });
 					if (strValues.Length != 4)
 					{
-						MessageBox.Show("Error in AOI command-line argument: incorrect number of components");
+						ShowMessageBox(
+							"The -aoi command line argument has incorrect number of components.",
+							"Dapple Startup",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 						return;
 					}
 					double dMinX = 180, dMinY = 90, dMaxX = -180, dMaxY = -90;
@@ -179,13 +189,23 @@ namespace Dapple
 					}
 					else
 					{
-						MessageBox.Show("Error in AOI command-line argument: number format incorrect");
+						ShowMessageBox(
+							"The -aoi command line argument has incorrectly-formatted component(s).",
+							"Dapple Startup",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 						return;
 					}
 
 					if (oAoi.North < oAoi.South || oAoi.East < oAoi.West)
 					{
-						MessageBox.Show("Error in AOI command-line argument: invalid bounding box");
+						ShowMessageBox(
+							"The -aoi command line argument specifies an incorrect bounding box.",
+							"Dapple Startup",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 						return;
 					}
 
@@ -196,7 +216,12 @@ namespace Dapple
 
 					if (string.IsNullOrEmpty(strAoiCoordinateSystem))
 					{
-						MessageBox.Show("Error in AOI command-line argument: missing coordinate system");
+						ShowMessageBox(
+							"The -aoi_cs command line parameter must be present when using -aoi parameter.",
+							"Dapple Startup",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 						return;
 					}
 
@@ -214,7 +239,12 @@ namespace Dapple
 					}
 					catch
 					{
-						MessageBox.Show("Error in client command-line argument: invalid client type");
+						ShowMessageBox(
+							"The -client command line is invalid.",
+							"Dapple Startup",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 						return;
 					}
 				}
@@ -238,7 +268,12 @@ namespace Dapple
 				{
 					if (GetSystemMetrics(SM_REMOTESESSION) != 0)
 					{
-						MessageBox.Show("Dapple is unable to run through a remote connection.", "Dapple", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						ShowMessageBox(
+							"Dapple cannot be run over a remote connection.",
+							"Dapple Startup",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 						return;
 					}
 
@@ -305,18 +340,22 @@ namespace Dapple
 
       public static void PrintUsage()
       {
-         MessageBox.Show(null, "Dapple command line usage:\n" +
-                        "\n" +
-                        "Dapple -h -geotiff=file -exitview=view view\n" +
-                        "\n" +
-                        "-h\t\tthis help\n" +
-                        "-geotiff=file\tpath to a geotiff in WGS84 to be loaded in the current or start-up view\n" +
-                        "–geotifftmp=name:tmpfilename Layer name and path to a temporary geotiff filename\n" +
-                        "                             (will be deleted on Dapple exit) in WGS84 to be loaded\n" +
-                        "                             in current or start-up view.\n" + 
-                        "-exitview=view\tpath to a Dapple view file in which to place the last view\n" +
-                        "view\t\tpath to a Dapple view file to load as start-up view\n" +
-                        "\n", "Dapple", MessageBoxButtons.OK, MessageBoxIcon.Information);
+         ShowMessageBox("Dapple command line usage:\n" +
+				"\n" +
+				"Dapple -h -geotiff=file -exitview=view view\n" +
+				"\n" +
+				"-h\t\tthis help\n" +
+				"-geotiff=file\tpath to a geotiff in WGS84 to be loaded in the current or start-up view\n" +
+				"–geotifftmp=name:tmpfilename Layer name and path to a temporary geotiff filename\n" +
+				"                             (will be deleted on Dapple exit) in WGS84 to be loaded\n" +
+				"                             in current or start-up view.\n" + 
+				"-exitview=view\tpath to a Dapple view file in which to place the last view\n" +
+				"view\t\tpath to a Dapple view file to load as start-up view\n" +
+				"\n",
+				"Dapple Command Line Usage",
+				MessageBoxButtons.OK,
+				MessageBoxDefaultButton.Button1,
+				MessageBoxIcon.Information);
       }
 
       public static Process RunningInstance()
@@ -401,7 +440,19 @@ namespace Dapple
 		private static extern int GetSystemMetrics(int nIndex);
 
 		private const int SM_REMOTESESSION = 0x1000;
-   }
 
-	
+		/// <summary>
+		/// Shows a MessageBox.
+		/// </summary>
+		/// <param name="strTitle"></param>
+		/// <param name="strMessage"></param>
+		/// <param name="eButtons"></param>
+		/// <param name="eIcon"></param>
+		/// <param name="eDefBuffon"></param>
+		/// <returns></returns>
+		public static DialogResult ShowMessageBox(String strMessage, String strCaption, MessageBoxButtons eButtons, MessageBoxDefaultButton eDefBuffon, MessageBoxIcon eIcon)
+		{
+			return MessageBox.Show(strMessage, strCaption, eButtons, eIcon, eDefBuffon);
+		}
+   }
 }

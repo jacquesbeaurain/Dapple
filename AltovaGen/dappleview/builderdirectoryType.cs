@@ -21,7 +21,7 @@ namespace dappleview
 	public class builderdirectoryType : builderdirectoryBaseType
 	{
 		#region Documentation
-		public static string GetAnnoDocumentation() { return ""; }
+		public static new string GetAnnoDocumentation() { return ""; }
 		#endregion
 
 		#region Forward constructors

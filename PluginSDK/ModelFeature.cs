@@ -212,7 +212,6 @@ namespace WorldWind.Renderable
         {
             if (errorMsg != null)
             {
-                //System.Windows.Forms.MessageBox.Show( errorMsg, "Model failed to load.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 errorMsg = null;
                 IsOn = false;
                 isInitialized = false;

@@ -157,6 +157,11 @@ namespace Dapple.LayerGeneration
          return true; // There can be only one
       }
 
+		public override int GetHashCode()
+		{
+			return "BLUEMARBLE".GetHashCode();
+		}
+
       public override object CloneSpecific()
       {
          return new BlueMarbleBuilder(m_hObject);

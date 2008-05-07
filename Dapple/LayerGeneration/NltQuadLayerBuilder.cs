@@ -255,6 +255,11 @@ namespace Dapple.LayerGeneration
          return this.m_strServerUrl.Equals(castObj.m_strServerUrl) && this.m_strDatasetName.Equals(castObj.m_strDatasetName);
       }
 
+		public override int GetHashCode()
+		{
+			return m_strServerUrl.GetHashCode() ^ m_strDatasetName.GetHashCode();
+		}
+
       #endregion
 
       #region Private Members

@@ -330,7 +330,12 @@ namespace Dapple.Extract
 						strErrorMessage += ".";
 					}
 
-					MessageBox.Show(strErrorMessage, "Error Accessing Disclaimer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Program.ShowMessageBox(
+						strErrorMessage,
+						"Extract Layers",
+						MessageBoxButtons.OK,
+						MessageBoxDefaultButton.Button1,
+						MessageBoxIcon.Error);
 					this.DialogResult = DialogResult.None;
 					return;
 				}

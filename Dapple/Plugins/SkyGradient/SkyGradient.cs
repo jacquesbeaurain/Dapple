@@ -74,7 +74,6 @@ namespace Murris.Plugins
 				s += l.Name + ", ";
 				if (l.Name.IndexOf(name) != -1) return i;
 			}
-			//MessageBox.Show("Names :  " + s, "Layer list", MessageBoxButtons.OK, MessageBoxIcon.Error );
 			return -1;
 		}
 	}
@@ -507,7 +506,6 @@ namespace Murris.Plugins
 			{
 				if (cboFiles.SelectedItem != null)
 				{
-					//System.Windows.Forms.MessageBox.Show("Texture : " + cboFiles.SelectedItem.ToString());
 					layer.Dispose();
 					layer.presetFileName = cboFiles.SelectedItem.ToString();
 					layer.Initialize(layer.drawArgs);
@@ -523,11 +521,6 @@ namespace Murris.Plugins
 				// Close this form
 				this.Close();
 			}
-
-
-
-
-
 		}
 
 

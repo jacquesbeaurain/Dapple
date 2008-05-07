@@ -125,8 +125,6 @@ namespace WorldWind.Renderable
 					result.Add(ro);
 			}
 			return result;
-
-			return null;
 		}
 
 		/// <summary>

@@ -37,13 +37,23 @@ namespace Dapple
          Uri oServerUrl = null;
 			if (!(Uri.TryCreate(txtWmsURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtWmsURL.Text, UriKind.Absolute, out oServerUrl)))
 			{
-            MessageBox.Show(this, "Unable to parse URL.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Program.ShowMessageBox(
+					"Please enter a valid URL.",
+					"Add WMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
             DialogResult = DialogResult.None;
             return;
          }
          if (m_oParent.ContainsServer(new WMSServerUri(oServerUrl.ToString())))
          {
-            MessageBox.Show(this, "This WMS Server has already been added", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Program.ShowMessageBox(
+					"The specified server has already been added.",
+					"Add ArcIMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Information);
             DialogResult = DialogResult.None;
             return;
          }

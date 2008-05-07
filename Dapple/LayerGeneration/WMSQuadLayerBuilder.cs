@@ -336,6 +336,11 @@ namespace Dapple.LayerGeneration
             this.m_wmsLayer.Name.Equals(castObj.m_wmsLayer.Name);
       }
 
+		public override int GetHashCode()
+		{
+			return m_Server.Uri.ToString().GetHashCode() ^ m_wmsLayer.Name.GetHashCode();
+		}
+
       #endregion
 
       #region ImageBuilder Overrides

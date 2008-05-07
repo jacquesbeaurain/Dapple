@@ -963,13 +963,23 @@ namespace Dapple
       {
          if (DownloadsInProgress)
          {
-            MessageBox.Show(this, "It is not possible to extract data while Dapple is getting tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.", "Tile Downloading In Progress", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				Program.ShowMessageBox(
+					"It is not possible to extract data while Dapple is downloading tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.",
+					"Extract Layers",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Warning);
             return;
          }
 			List<LayerBuilder> aExtractLayers = this.ExtractLayers;
 			if (aExtractLayers.Count == 0)
 			{
-				MessageBox.Show(this, "None of the enabled layers intersect the current view.\nEither enable some disabled data layers, or move the view.", "No Data Layers to Extract", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				Program.ShowMessageBox(
+					"None of the enabled layers intersect the current view.\nEither enable some disabled data layers, or move the view.",
+					"Extract Layers",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Warning);
 				return;
 			}
 
@@ -986,12 +996,22 @@ namespace Dapple
 				}
 				else
 				{
-					MessageBox.Show(this.TopLevelControl, "Extraction complete");
+					Program.ShowMessageBox(
+						"Extraction complete.",
+						"Extract Layers",
+						MessageBoxButtons.OK,
+						MessageBoxDefaultButton.Button1,
+						MessageBoxIcon.Information);
 				}
 			}
 			else if (oResult == DialogResult.Abort)
 			{
-				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to extract datasets");
+				Program.ShowMessageBox(
+					"Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to extract datasets.",
+					"Extract Layers",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
 				m_blAllowExtract = false;
 				c_bExtract.Enabled = false;
 			}
@@ -1091,7 +1111,12 @@ namespace Dapple
 
          if (aExportList.Count == 0)
          {
-            MessageBox.Show(this, "There are no visible layers to export.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Program.ShowMessageBox(
+					"There are no visible layers to export.",
+					"Create GeoTIFF Snapshot",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Warning);
             return;
          }
 
@@ -1100,14 +1125,24 @@ namespace Dapple
 
          if (DownloadsInProgress)
          {
-            MessageBox.Show(this, "It is not possible to export a view while there are still downloads in progress.\nPlease wait for the downloads to complete and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Program.ShowMessageBox(
+					"It is not possible to create a snapshot while Dapple is downloading tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.",
+					"Create GeoTIFF Snapshot",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Warning);
             return;
          }
 
          WorldWind.Camera.MomentumCamera camera = MainForm.WorldWindowSingleton.DrawArgs.WorldCamera as WorldWind.Camera.MomentumCamera;
          if (camera.Tilt.Degrees > 5.0)
          {
-            MessageBox.Show(this, "It is not possible to export a tilted view. Reset the tilt using the navigation buttons\nor by using Right-Mouse-Button and drag and try again.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				Program.ShowMessageBox(
+					"It is not possible to create a snapshot of a tilted view.\nPlease reset the tilt using the navigation buttons and try again.",
+					"Create GeoTIFF Snapshot",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Warning);
             return;
          }
 
@@ -1298,7 +1333,12 @@ namespace Dapple
 						throw new ArgumentException(String.Format("Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", iExportPixelsX, iExportPixelsY, oViewedArea.ToString(), szLayers));
 					}
 
-					MessageBox.Show(this, "GeoTIFF snapshot created.");
+					Program.ShowMessageBox(
+						"GeoTIFF snapshot created.",
+						"Create GeoTIFF Snapshot",
+						MessageBoxButtons.OK,
+						MessageBoxDefaultButton.Button1,
+						MessageBoxIcon.Information);
             }
          }
          finally
@@ -1469,33 +1509,5 @@ namespace Dapple
             }
          }
       }
-
-		/*
-		private void toolStripButton1_Click(object sender, EventArgs e)
-		{
-			if (cLayerList.SelectedIndices.Count == 1)
-			{
-				LayerBuilder oBuilder = m_oLayers[cLayerList.SelectedIndices[0]];
-
-				LayerUri oBuilderRoundTrip = LayerUri.create(oBuilder.GetURI());
-
-				if (!oBuilderRoundTrip.IsValid)
-				{
-					MessageBox.Show(this, "Couldn't roundtrip the layer!", "Round Trip Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				LayerBuilder oRoundTripped = oBuilderRoundTrip.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree);
-
-				if (!oRoundTripped.Equals(oBuilder))
-				{
-					MessageBox.Show(this, "Round trip builder doesn't match original builder!", "Round Trip Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-				else
-				{
-					MessageBox.Show(this, "Round trip successful", String.Empty, MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-			}
-		}*/
    }
 }

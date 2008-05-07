@@ -43,7 +43,12 @@ namespace Dapple
 			Uri oServerUrl = null;
 			if (!(Uri.TryCreate(txtDapURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtDapURL.Text, UriKind.Absolute, out oServerUrl)))
 			{
-				MessageBox.Show(this, "Unable to parse URL.", "Invalid URL", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Program.ShowMessageBox(
+					"Please enter a valid URL.",
+					"Add DAP Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
 				DialogResult = DialogResult.None;
 				return;
 			}

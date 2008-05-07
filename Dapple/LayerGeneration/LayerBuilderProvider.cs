@@ -487,6 +487,8 @@ namespace Dapple.LayerGeneration
 
       public abstract override bool Equals(object obj);
 
+		public abstract override int GetHashCode();
+
       public abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
 
 		#endregion

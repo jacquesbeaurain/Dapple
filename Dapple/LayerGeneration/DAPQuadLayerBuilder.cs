@@ -377,6 +377,11 @@ namespace Dapple.LayerGeneration
          return this.m_hDataSet.UniqueName.Equals(castObj.m_hDataSet.UniqueName);
       }
 
+		public override int GetHashCode()
+		{
+			return m_hDataSet.UniqueName.GetHashCode();
+		}
+
       #endregion
 
       #region ImageBuilder Overrides

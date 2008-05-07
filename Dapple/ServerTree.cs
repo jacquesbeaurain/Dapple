@@ -702,8 +702,6 @@ namespace Dapple
       /*
       public void LoadFavoritesList(String szFilename)
       {
-         try
-         {
             XmlDocument oDocument = new XmlDocument();
             oDocument.Load(szFilename);
 
@@ -757,11 +755,6 @@ namespace Dapple
             {
                this.SelectedNode = RootNode;
             }
-         }
-         catch (XmlException e)
-         {
-            MessageBox.Show(e.Message);
-         }
       }
       */
 		public void SaveToView(DappleView oView)
@@ -1754,7 +1747,7 @@ namespace Dapple
 			{
 				if (SelectedIsFavorite && ((ServerBuilder)SelectedNode.Tag).Enabled)
 				{
-					if (MessageBox.Show(this.TopLevelControl, "Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disabling Server", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+					if (Program.ShowMessageBox("Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disable Server", MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button1, MessageBoxIcon.Warning) == DialogResult.No)
 						return;
 
 					m_szDefaultServer = String.Empty;
@@ -1779,7 +1772,7 @@ namespace Dapple
 			{
 				if (SelectedIsFavorite && ((Server)SelectedNode.Tag).Enabled)
 				{
-					if (MessageBox.Show(this.TopLevelControl, "Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disabling Server", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+					if (Program.ShowMessageBox("Disabling a favourite server will remove the favourite setting.\nAre you sure you want to disable this server?", "Disable Server", MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button1, MessageBoxIcon.Warning) == DialogResult.No)
 						return;
 
 					m_szDefaultServer = String.Empty;

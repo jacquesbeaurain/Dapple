@@ -299,6 +299,11 @@ namespace Dapple.LayerGeneration
          return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
       }
 
+		public override int GetHashCode()
+		{
+			return m_oServerUri.ToString().GetHashCode() ^ m_szServiceName.GetHashCode() ^ m_szLayerID.GetHashCode();
+		}
+
       #endregion
 
       #region Private Members

@@ -173,15 +173,7 @@ namespace ConfigurationWizard
 
 		protected override void OnValidating(System.ComponentModel.CancelEventArgs e)
 		{
-			try
-			{
-				Wizard.Settings.CacheSizeGigaBytes = (int)this.cacheSizeGigaBytes.Value;
-			}
-			catch(Exception caught)
-			{
-				MessageBox.Show(caught.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
-				e.Cancel = true;
-			}
+			Wizard.Settings.CacheSizeGigaBytes = (int)this.cacheSizeGigaBytes.Value;
 		}
 
 		private void CachePage_Load(object sender, System.EventArgs e)

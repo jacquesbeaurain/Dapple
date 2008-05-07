@@ -1917,9 +1917,7 @@ namespace WorldWind.Menu
 				float menuWidth = (MenuButton.NormalSize+_outerPadding)*totalNumberButtons+_outerPadding;
 				if(menuWidth>drawArgs.screenWidth)
 				{
-					//MessageBox.Show(drawArgs.screenWidth.ToString());
 					MenuButton.NormalSize = (drawArgs.screenWidth)/((padRatio+1)*totalNumberButtons+padRatio);
-					//MessageBox.Show(MenuButton.NormalSize.ToString());
 					_outerPadding = MenuButton.NormalSize*padRatio;
 				}
 

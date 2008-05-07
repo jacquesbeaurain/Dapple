@@ -394,12 +394,6 @@ namespace NASA.Plugins
 
         #endregion
 
-        int samples = 16;
-        CustomVertex.PositionColored[] m_nVertices = null;
-        CustomVertex.PositionColored[] m_wVertices = null;
-        CustomVertex.PositionColored[] m_eVertices = null;
-        CustomVertex.PositionColored[] m_sVertices = null;
-        CustomVertex.PositionColored[] m_arrowVertices = null;
         CustomVertex.PositionColoredTextured[] m_compassVertices = null;
         float outerRadius = 1f;
         float innerRadius = 0.7f;

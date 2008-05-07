@@ -151,8 +151,6 @@ namespace Murris.Plugins
 			FindLatest();
 			ReadSettings();
 			if (textureFileName == "" && latestFileName != "") textureFileName = latestFileName;
-
-			//MessageBox.Show("Server url : " + GetServerUrl(),"Info.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 		}
 
 		/// <summary>
@@ -369,8 +367,6 @@ namespace Murris.Plugins
 				}
 				catch
 				{
-					//isOn = false;
-					//MessageBox.Show("Error loading texture " + Path.Combine(pluginPath, textureFileName) + ".","Layer initialization failed.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 					textureFileName = "";
 				}
 			}
@@ -747,8 +743,6 @@ namespace Murris.Plugins
 				//if(response!=null && response.StatusCode==System.Net.HttpStatusCode.NotFound)
 				if (response != null)
 				{
-					// display response.StatusDescription;
-					//MessageBox.Show("Error downloading cloud map from " + downloadInfo.Url + " (" + response.StatusDescription + ").", "Download failed.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 					Utility.Log.Write(Utility.Log.Levels.Warning, "Error downloading cloud map from " + downloadInfo.Url + " (" + response.StatusDescription + ").");
 
 					//return;
@@ -757,7 +751,6 @@ namespace Murris.Plugins
 			}
 			catch (Exception caugth)
 			{
-				//MessageBox.Show("Error downloading cloud map from " + downloadInfo.Url + " (" + caugth.Message + ").", "Download failed.", MessageBoxButtons.OK, MessageBoxIcon.Error );
 				Utility.Log.Write(Utility.Log.Levels.Warning, "Error downloading cloud map from " + downloadInfo.Url + " (" + caugth.Message + ").");
 
 				retryCount++;

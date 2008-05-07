@@ -211,6 +211,11 @@ namespace Dapple.LayerGeneration
          return this.m_oServer.Url.Equals(castObj.m_oServer.Url);
       }
 
+		public override int GetHashCode()
+		{
+			return m_oServer.Url.GetHashCode() ^ "BROWSERMAP".GetHashCode();
+		}
+
       public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "dap";

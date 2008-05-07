@@ -792,7 +792,12 @@ namespace Dapple
 
 		private void NotifyUpdateNotAvailable()
 		{
-			MessageBox.Show(this, "There is no update for Dapple available at this time.", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			Program.ShowMessageBox(
+				"Your version of Dapple is up-to-date.",
+				"Check For Updates",
+				MessageBoxButtons.OK,
+				MessageBoxDefaultButton.Button1,
+				MessageBoxIcon.Information);
 		}
 
 		private void UpdateDownloadComplete(WebDownload downloadInfo)
@@ -1520,7 +1525,12 @@ namespace Dapple
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.GetType().ToString() + ": " + ex.Message, "Error Sending View", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				Program.ShowMessageBox(
+					"An unexpected error occurred sending the view:\n" + ex.Message,
+					"Send View To",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
 			}
 
 			File.Delete(tempBodyFile);
@@ -2764,8 +2774,16 @@ namespace Dapple
 				string strMessage = "Error adding the file: '" + strGeoTiff + "'.\nOnly WGS 84 geographic images can be displayed at this time.";
 				string strGeoInfo = GeorefImageLayerBuilder.GetGeorefInfoFromGeotif(strGeoTiff);
 				if (strGeoInfo.Length > 0)
+				{
 					strMessage += "\nThis image is:\n\n" + strGeoInfo;
-				MessageBox.Show(this, strMessage, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+
+				Program.ShowMessageBox(
+					strMessage,
+					"Open GeoTIFF Image",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
 			}
 		}
 
@@ -2814,7 +2832,12 @@ namespace Dapple
 				}
 				catch (Exception except)
 				{
-					MessageBox.Show(this, "Error adding server \"" + dlg.Url + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Program.ShowMessageBox(
+						"Error adding server \"" + dlg.Url + "\":\n" + except.Message,
+						"Add DAP Server",
+						MessageBoxButtons.OK,
+						MessageBoxDefaultButton.Button1,
+						MessageBoxIcon.Error);
 				}
 				SaveLastView();
 			}
@@ -2838,7 +2861,12 @@ namespace Dapple
 					}
 					catch (Exception except)
 					{
-						MessageBox.Show(this, "Error adding server \"" + dlg.WmsURL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						Program.ShowMessageBox(
+							"Error adding server \"" + dlg.WmsURL + "\":\n" + except.Message,
+							"Add WMS Server",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 					}
 					SaveLastView();
 				}
@@ -2863,7 +2891,12 @@ namespace Dapple
 					}
 					catch (Exception except)
 					{
-						MessageBox.Show(this, "Error adding server \"" + dlg.URL + "\" (" + except.Message + ")", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						Program.ShowMessageBox(
+							"Error adding server \"" + dlg.URL + "\":\n" + except.Message,
+							"Add ArcIMS Server",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Error);
 					}
 					SaveLastView();
 				}
@@ -3110,7 +3143,12 @@ namespace Dapple
 			}
 			catch (System.Runtime.Remoting.RemotingException)
 			{
-				MessageBox.Show(Form.ActiveForm, "Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to display help");
+				Program.ShowMessageBox(
+					"Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to display help.",
+					"Extract Layers",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
 				c_miGetDatahelp.Enabled = false;
 			}
 		}

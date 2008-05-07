@@ -563,11 +563,11 @@ namespace WorldWind.Camera
                _bank.Radians = 0;
             this.SetPosition(double.NaN, double.NaN, 0, 2 * this._worldRadius, 0, 0);
          }
-         else
-         {
-            // Reset direction, tilt & bank
-            this.SetPosition(double.NaN, double.NaN, 0, double.NaN, 0, 0);
-         }
+			//else
+			//{
+			//   // Reset direction, tilt & bank
+			//   this.SetPosition(double.NaN, double.NaN, 0, double.NaN, 0, 0);
+			//}
          lastResetTime = curTime;
       }
 
