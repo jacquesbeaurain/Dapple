@@ -23,12 +23,12 @@ namespace Dapple
       /// </summary>
       [STAThread]
       static void Main(string[] args)
-      {
+		{
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
 #if !DEBUG
-         bool aborting = false;
+			bool aborting = false;
 #endif
 
 #if DEBUG
@@ -41,249 +41,267 @@ namespace Dapple
          MessageBox.Show("Dapple is being invoked with the following command-line parameters:" + Environment.NewLine + oTemp.ToString() + Environment.NewLine + Environment.NewLine + "Attach debugger if desired, then press OK to continue");
 #endif
 
-         MontajRemote.RemoteInterface oRemoteInterface = null;
-         IpcChannel oClientChannel = null;
+			MontajRemote.RemoteInterface oRemoteInterface = null;
+			IpcChannel oClientChannel = null;
 
-         try
-         {
-            bool bAbort = false;
-            string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strDatasetLink = "", strMapFileName = string.Empty;
-            bool bGeotiffTmp = false;
-            
-            GeographicBoundingBox oAoi = null;
-            string strAoiCoordinateSystem = string.Empty;
-            Dapple.Extract.Options.Client.ClientType eClientType = Dapple.Extract.Options.Client.ClientType.None;
+			// Command line parsing
+			CommandLineArguments cmdl = new CommandLineArguments(args);
 
-            // Command line parsing
-            CommandLineArguments cmdl = new CommandLineArguments(args);
+			try
+			{
+				bool bAbort = false;
+				string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strMapFileName = string.Empty;
+				bool bGeotiffTmp = false;
 
-            if (cmdl["h"] != null)
-            {
-               PrintUsage();
-               return;
-            }
+				GeographicBoundingBox oAoi = null;
+				string strAoiCoordinateSystem = string.Empty;
+				Dapple.Extract.Options.Client.ClientType eClientType = Dapple.Extract.Options.Client.ClientType.None;
 
-            if (cmdl[0] != null)
-            {
-               if (String.Compare(cmdl[0], "ABORT") == 0 && cmdl[1] != null)
-                  bAbort = true;
-               else
-               {
-                  strView = Path.GetFullPath(cmdl[0]);
-                  if (String.Compare(Path.GetExtension(strView), MainForm.ViewExt, true) != 0 || !File.Exists(strView))
-                  {
-                     PrintUsage();
-                     return;
-                  }
-               }
-            }
+				if (cmdl["h"] != null)
+				{
+					PrintUsage();
+					return;
+				}
 
-            if (cmdl["geotiff"] != null)
-            {
-               strGeoTiff = Path.GetFullPath(cmdl["geotiff"]);
-               if (!(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
-               {
-                  PrintUsage();
-                  return;
-               }
-            }
+				if (cmdl[0] != null)
+				{
+					if (String.Compare(cmdl[0], "ABORT") == 0 && cmdl[1] != null)
+						bAbort = true;
+					else
+					{
+						strView = Path.GetFullPath(cmdl[0]);
+						if (String.Compare(Path.GetExtension(strView), MainForm.ViewExt, true) != 0 || !File.Exists(strView))
+						{
+							PrintUsage();
+							return;
+						}
+					}
+				}
 
-            if (cmdl["geotifftmp"] != null)
-            {
-               string strGeoTiffTmpVar = cmdl["geotifftmp"];
-               int iIndex = strGeoTiffTmpVar.IndexOf(":");
-               if (iIndex == -1)
-               {
-                  PrintUsage();
-                  return;
-               }
+				if (cmdl["geotiff"] != null)
+				{
+					strGeoTiff = Path.GetFullPath(cmdl["geotiff"]);
+					if (!(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
+					{
+						PrintUsage();
+						return;
+					}
+				}
 
-               strGeoTiff = Path.GetFullPath(strGeoTiffTmpVar.Substring(iIndex + 1));
-               strGeoTiffName = strGeoTiffTmpVar.Substring(0, iIndex);
-               bGeotiffTmp = true;
-               if (strGeoTiffName.Length == 0 || !(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
-               {
-                  PrintUsage();
-                  return;
-               }
-            }
+				if (cmdl["geotifftmp"] != null)
+				{
+					string strGeoTiffTmpVar = cmdl["geotifftmp"];
+					int iIndex = strGeoTiffTmpVar.IndexOf(":");
+					if (iIndex == -1)
+					{
+						PrintUsage();
+						return;
+					}
 
-            if (cmdl["exitview"] != null)
-               strLastView = Path.GetFullPath(cmdl["exitview"]);
+					strGeoTiff = Path.GetFullPath(strGeoTiffTmpVar.Substring(iIndex + 1));
+					strGeoTiffName = strGeoTiffTmpVar.Substring(0, iIndex);
+					bGeotiffTmp = true;
+					if (strGeoTiffName.Length == 0 || !(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
+					{
+						PrintUsage();
+						return;
+					}
+				}
 
-            if (cmdl["datasetlink"] != null)
-               strDatasetLink = Path.GetFullPath(cmdl["datasetlink"]);
+				if (cmdl["exitview"] != null)
+					strLastView = Path.GetFullPath(cmdl["exitview"]);
 
-            if (cmdl["montajport"] != null)
-            {
-               int iMontajPort = int.Parse(cmdl["montajport"], NumberStyles.Any, CultureInfo.InvariantCulture);
+				if (cmdl["montajport"] != null)
+				{
+					int iMontajPort = int.Parse(cmdl["montajport"], NumberStyles.Any, CultureInfo.InvariantCulture);
 
-               if (cmdl["dummyserver"] != null)
-               {
-                  oClientChannel = new IpcChannel(String.Format("localhost:{0}", iMontajPort));
-                  ChannelServices.RegisterChannel(oClientChannel, true);
-                  RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
-               }
-               else
-               {
-                  oClientChannel = new IpcChannel();
-                  ChannelServices.RegisterChannel(oClientChannel, true);
-               }
+					if (cmdl["dummyserver"] != null)
+					{
+						// --- For DummyServer, Dapple connects to itself and attaches a testing RemoteInterface
+						// --- designed to capture its input and return default values
 
-               oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iMontajPort));
-            }
 
-            if (cmdl["aoi"] != null)
-            {
-               String[] strValues = cmdl["aoi"].Split(new char[] { ',' });
-               if (strValues.Length != 4)
-               {
-                  MessageBox.Show("Error in AOI command-line argument: incorrect number of components");
-                  return;
-               }
-               double dMinX = 180, dMinY = 90, dMaxX = -180, dMaxY = -90;
+						// --- Init logging filename ---
 
-               bool bAoiArgument = double.TryParse(strValues[0], out dMinX);
-               
-               if (bAoiArgument)
-                  bAoiArgument = double.TryParse(strValues[1], out dMinY);
+						String szLogFilename = "log.xml";
+						if (cmdl["logfile"] != null)
+						{
+							szLogFilename = cmdl["logfile"];
+						}
 
-               if (bAoiArgument)
-                  bAoiArgument = double.TryParse(strValues[2], out dMaxX);
 
-               if (bAoiArgument)
-                  bAoiArgument = double.TryParse(strValues[3], out dMaxY);
+						// --- Open socket connection ---
 
-               if (bAoiArgument)
-               {
-                  oAoi = new GeographicBoundingBox(dMaxY, dMinY, dMinX, dMaxX);
-               }
-               else
-               {
-                  MessageBox.Show("Error in AOI command-line argument: number format incorrect");
-                  return;
-               }
+						oClientChannel = new IpcChannel(String.Format("localhost:{0}", iMontajPort));
+						ChannelServices.RegisterChannel(oClientChannel, true);
 
-               if (oAoi.North < oAoi.South || oAoi.East < oAoi.West)
-               {
-                  MessageBox.Show("Error in AOI command-line argument: invalid bounding box");
-                  return;
-               }
 
-               if (cmdl["aoi_cs"] != null)
-               {
-                  strAoiCoordinateSystem = cmdl["aoi_cs"];
-               }
+						// --- Load the testing assembly dynamically ---
 
-               if (string.IsNullOrEmpty(strAoiCoordinateSystem))
-               {
-                  MessageBox.Show("Error in AOI command-line argument: missing coordinate system");
-                  return;
-               }
+						System.Reflection.Assembly oDummyAssembly = AppDomain.CurrentDomain.Load(System.Reflection.AssemblyName.GetAssemblyName("DummyMontajRemote.dll"));
+						MontajRemote.RemoteInterface.Attach((MontajRemote.IMontajMethods)oDummyAssembly.GetType("MontajRemote.DummyRemote").GetConstructor(new Type[] { typeof(String) }).Invoke(new object[] { szLogFilename }));
 
-               if (cmdl["filename_map"] != null)
-               {
-                  strMapFileName = cmdl["filename_map"];
-               }               
-            }
+						RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
+					}
+					else
+					{
+						oClientChannel = new IpcChannel();
+						ChannelServices.RegisterChannel(oClientChannel, true);
+					}
 
-            if (cmdl["client"] != null)
-            {
-               try
-               {
-                  eClientType = (Dapple.Extract.Options.Client.ClientType)Enum.Parse(eClientType.GetType(), cmdl["client"], true);
-               }
-               catch
-               {
-                  MessageBox.Show("Error in client command-line argument: invalid client type");
-                  return;
-               }
-            }
-            
+					oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iMontajPort));
+				}
 
-            // From now on in own path please and free the console
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            if (bAbort)
-            {
-               string strErrors = File.ReadAllText(args[1]);
+				if (cmdl["aoi"] != null)
+				{
+					String[] strValues = cmdl["aoi"].Split(new char[] { ',' });
+					if (strValues.Length != 4)
+					{
+						MessageBox.Show("Error in AOI command-line argument: incorrect number of components");
+						return;
+					}
+					double dMinX = 180, dMinY = 90, dMaxX = -180, dMaxY = -90;
+
+					bool bAoiArgument = double.TryParse(strValues[0], out dMinX);
+
+					if (bAoiArgument)
+						bAoiArgument = double.TryParse(strValues[1], out dMinY);
+
+					if (bAoiArgument)
+						bAoiArgument = double.TryParse(strValues[2], out dMaxX);
+
+					if (bAoiArgument)
+						bAoiArgument = double.TryParse(strValues[3], out dMaxY);
+
+					if (bAoiArgument)
+					{
+						oAoi = new GeographicBoundingBox(dMaxY, dMinY, dMinX, dMaxX);
+					}
+					else
+					{
+						MessageBox.Show("Error in AOI command-line argument: number format incorrect");
+						return;
+					}
+
+					if (oAoi.North < oAoi.South || oAoi.East < oAoi.West)
+					{
+						MessageBox.Show("Error in AOI command-line argument: invalid bounding box");
+						return;
+					}
+
+					if (cmdl["aoi_cs"] != null)
+					{
+						strAoiCoordinateSystem = cmdl["aoi_cs"];
+					}
+
+					if (string.IsNullOrEmpty(strAoiCoordinateSystem))
+					{
+						MessageBox.Show("Error in AOI command-line argument: missing coordinate system");
+						return;
+					}
+
+					if (cmdl["filename_map"] != null)
+					{
+						strMapFileName = cmdl["filename_map"];
+					}
+				}
+
+				if (cmdl["client"] != null)
+				{
+					try
+					{
+						eClientType = (Dapple.Extract.Options.Client.ClientType)Enum.Parse(eClientType.GetType(), cmdl["client"], true);
+					}
+					catch
+					{
+						MessageBox.Show("Error in client command-line argument: invalid client type");
+						return;
+					}
+				}
+
+
+				// From now on in own path please and free the console
+				Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
+				Application.EnableVisualStyles();
+				Application.SetCompatibleTextRenderingDefault(false);
+				if (bAbort)
+				{
+					string strErrors = File.ReadAllText(args[1]);
 #if !DEBUG
-               aborting = true;
+					aborting = true;
 #endif
-               ErrorDisplay errorDialog = new ErrorDisplay();
-               errorDialog.errorMessages(strErrors);
-               Application.Run(errorDialog);
-            }
-            else
-            {
+					ErrorDisplay errorDialog = new ErrorDisplay();
+					errorDialog.errorMessages(strErrors);
+					Application.Run(errorDialog);
+				}
+				else
+				{
 					if (GetSystemMetrics(SM_REMOTESESSION) != 0)
 					{
 						MessageBox.Show("Dapple is unable to run through a remote connection.", "Dapple", MessageBoxButtons.OK, MessageBoxIcon.Information);
 						return;
 					}
 
-               Process instance = RunningInstance();
+					Process instance = RunningInstance();
 
-               if (RunningInstance() == null)
-               {
-                  Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, strDatasetLink, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
-               }
-               else
-               {
-                  HandleRunningInstance(instance);
-                  if (strView.Length > 0 || strGeoTiff.Length > 0 || strDatasetLink.Length > 0)
-                  {
-                     try
-                     {
-                        using (Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Create, 10000))
-                        {
-                           string[] strData = new string[6];
-                           strData[0] = strView;
-                           strData[1] = strGeoTiff;
-                           strData[2] = strGeoTiffName;
-                           strData[3] = bGeotiffTmp ? "YES" : "NO";
-                           strData[4] = strLastView;
-                           strData[5] = strDatasetLink;
+					if (RunningInstance() == null)
+					{
+						Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
+					}
+					else
+					{
+						HandleRunningInstance(instance);
+						if (strView.Length > 0 || strGeoTiff.Length > 0)
+						{
+							try
+							{
+								using (Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Create, 10000))
+								{
+									string[] strData = new string[6];
+									strData[0] = strView;
+									strData[1] = strGeoTiff;
+									strData[2] = strGeoTiffName;
+									strData[3] = bGeotiffTmp ? "YES" : "NO";
+									strData[4] = strLastView;
 
-                           s.SetData(strData);
-                           SendMessage(instance.MainWindowHandle, MainForm.OpenViewMessage, IntPtr.Zero, IntPtr.Zero);
-                        }
-                     }
-                     catch
-                     {
-                     }
-                  }
-               }
-            }
-         }
+									s.SetData(strData);
+									SendMessage(instance.MainWindowHandle, MainForm.OpenViewMessage, IntPtr.Zero, IntPtr.Zero);
+								}
+							}
+							catch
+							{
+							}
+						}
+					}
+				}
+			}
 #if !DEBUG
-         catch (Exception caught)
-         {
-            if (!aborting)
-               Utility.AbortUtility.Abort(caught, Thread.CurrentThread);
-         }
+			catch (Exception caught)
+			{
+				if (!aborting)
+					Utility.AbortUtility.Abort(caught, Thread.CurrentThread);
+			}
 #endif
-         finally
-         {
-            if (oRemoteInterface != null)
-            {
-               try
-               {
-                  oRemoteInterface.EndConnection();
-               }
-               catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
-            }
-            if (oClientChannel != null)
-            {
-               try
-               {
-                  ChannelServices.UnregisterChannel(oClientChannel);
-               }
-               catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
-            }
-         }
-      }
+			finally
+			{
+				if (oRemoteInterface != null)
+				{
+					try
+					{
+						oRemoteInterface.EndConnection();
+					}
+					catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
+				}
+				if (oClientChannel != null)
+				{
+					try
+					{
+						ChannelServices.UnregisterChannel(oClientChannel);
+					}
+					catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
+				}
+			}
+		}
 
       public static void PrintUsage()
       {
@@ -385,5 +403,5 @@ namespace Dapple
 		private const int SM_REMOTESESSION = 0x1000;
    }
 
-
+	
 }
