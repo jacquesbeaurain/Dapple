@@ -181,7 +181,19 @@ namespace Dapple.Extract
 					Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxX - dMapInWGS84_MaxX) > 0.01 ||
 					Math.Abs(m_oDAPLayer.m_hDataSet.Boundary.MaxY - dMapInWGS84_MaxY) > 0.01)
             {
-               MessageBox.Show("It appears that the metadata for this layer is invalid - the bounding box in the metadata does not match the bounds from the DAP server.  It cannot be downloaded.  Contact the server administrator.", "Error downloading layer \"" + m_oDAPLayer.Title + "\"", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					Geosoft.Dap.Common.BoundingBox oReprojectedBox = new Geosoft.Dap.Common.BoundingBox(dMapInWGS84_MaxX, dMapInWGS84_MaxY, dMapInWGS84_MinX, dMapInWGS84_MinY);
+
+					Program.ShowMessageBox(
+						"A problem was encountered while preparing to download dataset " + m_oDAPLayer.Title + "\n" +
+						"The WGS 84 bounding box advertised by the server:\n" +
+						m_oDAPLayer.m_hDataSet.Boundary.ToString(2) + "\n" +
+						"does not match up with the reprojected extents of the layer's metadata:\n" +
+						oReprojectedBox.ToString(2) + "\n" +
+						"The dataset will not be downloaded.  Contact the server administrator.",
+						"Extract Datasets",
+						MessageBoxButtons.OK,
+						MessageBoxDefaultButton.Button1,
+						MessageBoxIcon.Error);
 					return ExtractSaveResult.Ignore;
             }
          }

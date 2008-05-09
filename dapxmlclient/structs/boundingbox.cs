@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Geosoft.Dap.Common
 {
@@ -265,6 +266,49 @@ namespace Geosoft.Dap.Common
 			if ((object)c1 == null) return true;
 
 			return !c1.Equals(c2);
+		}
+
+		/// <summary>
+		/// Convert the requested number of dimensions of this BoundingBox to a String.
+		/// </summary>
+		/// <param name="iNumDimensions">The number of dimensions to convert (must be either 2 or 3).</param>
+		/// <returns></returns>
+		public string ToString(int iNumDimensions)
+		{
+			if (iNumDimensions < 2 || iNumDimensions > 3)
+				throw new ArgumentException("Must select two or three dimensions", "iNumDimensions");
+
+			StringBuilder result = new StringBuilder();
+			result.Append("MinX: ");
+			result.Append(m_dMinX);
+			result.Append(" ");
+
+			result.Append("MinY: ");
+			result.Append(m_dMinY);
+			result.Append(" ");
+
+			if (iNumDimensions == 3)
+			{
+				result.Append("MinZ: ");
+				result.Append(m_dMinZ);
+				result.Append(" ");
+			}
+
+			result.Append("MaxX: ");
+			result.Append(m_dMaxX);
+			result.Append(" ");
+
+			result.Append("MaxY: ");
+			result.Append(m_dMaxY);
+			
+			if (iNumDimensions == 3)
+			{
+				result.Append(" ");
+				result.Append("MaxZ: ");
+				result.Append(m_dMinZ);
+			}
+
+			return result.ToString();
 		}
 		#endregion
 	}
