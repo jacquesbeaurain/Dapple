@@ -122,30 +122,8 @@ namespace Dapple
 
 					if (cmdl["dummyserver"] != null)
 					{
-						// --- For DummyServer, Dapple connects to itself and attaches a testing RemoteInterface
-						// --- designed to capture its input and return default values
-
-
-						// --- Init logging filename ---
-
-						String szLogFilename = "log.xml";
-						if (cmdl["logfile"] != null)
-						{
-							szLogFilename = cmdl["logfile"];
-						}
-
-
-						// --- Open socket connection ---
-
 						oClientChannel = new IpcChannel(String.Format("localhost:{0}", iMontajPort));
 						ChannelServices.RegisterChannel(oClientChannel, true);
-
-
-						// --- Load the testing assembly dynamically ---
-
-						System.Reflection.Assembly oDummyAssembly = AppDomain.CurrentDomain.Load(System.Reflection.AssemblyName.GetAssemblyName("DummyMontajRemote.dll"));
-						MontajRemote.RemoteInterface.Attach((MontajRemote.IMontajMethods)oDummyAssembly.GetType("MontajRemote.DummyRemote").GetConstructor(new Type[] { typeof(String) }).Invoke(new object[] { szLogFilename }));
-
 						RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
 					}
 					else
