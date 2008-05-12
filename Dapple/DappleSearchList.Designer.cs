@@ -57,6 +57,7 @@ namespace Dapple.CustomControls
 			this.c_lbResults.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDoubleClick);
 			this.c_lbResults.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cResultListBox_DrawItem);
 			this.c_lbResults.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.cResultListBox_MeasureItem);
+			this.c_lbResults.SelectedIndexChanged += new System.EventHandler(this.c_lbResults_SelectedIndexChanged);
 			this.c_lbResults.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseMove);
 			this.c_lbResults.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cResultListBox_MouseDown);
 			// 
@@ -65,7 +66,7 @@ namespace Dapple.CustomControls
 			this.c_msContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.c_miAddLayer});
 			this.c_msContext.Name = "cContextMenu";
-			this.c_msContext.Size = new System.Drawing.Size(168, 48);
+			this.c_msContext.Size = new System.Drawing.Size(168, 26);
 			this.c_msContext.Opening += new System.ComponentModel.CancelEventHandler(this.cContextMenu_Opening);
 			// 
 			// c_miAddLayer

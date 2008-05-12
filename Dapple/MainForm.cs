@@ -642,6 +642,7 @@ namespace Dapple
 				c_oServerList.ImageList = this.c_oServerTree.ImageList;
 				c_oLayerList.ImageList = this.c_oServerTree.ImageList;
 				c_oLayerList.ServerTree = c_oServerTree;
+				c_oLayerList.LayerSelectionChanged += new EventHandler(c_oLayerList_LayerSelectionChanged);
 
 				m_oMetadataDisplay = new MetadataDisplayThread(this);
 				m_oMetadataDisplay.AddBuilder(null);
@@ -672,6 +673,7 @@ namespace Dapple
 				cServerViewsTab.PageChanged += new JanaTab.PageChangedDelegate(ServerPageChanged);
 
 				c_oDappleSearch = new DappleSearchList();
+				c_oDappleSearch.LayerSelectionChanged += new EventHandler(c_oDappleSearch_LayerSelectionChanged);
 				c_oDappleSearch.ServerTree = c_oServerTree;
 				c_oDappleSearch.LayerList = c_oLayerList;
 
@@ -1672,73 +1674,20 @@ namespace Dapple
 			CmdSaveHomeView();
 		}
 
-		private void c_miTools_DropDownOpening(object sender, EventArgs e)
+		private void c_oDappleSearch_LayerSelectionChanged(object sender, EventArgs e)
 		{
-			c_miAddLayer.Enabled = false;
-			if (c_tcSearchViews.SelectedIndex == 0)
-			{
-				if (cServerViewsTab.SelectedIndex == 0)
-				{
-					c_miAddLayer.Enabled = c_oServerTree.SelectedNode != null && (c_oServerTree.SelectedNode.Tag is LayerBuilder || c_oServerTree.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
-				}
-				else if (cServerViewsTab.SelectedIndex == 1)
-				{
-					c_miAddLayer.Enabled = c_oServerList.SelectedLayers.Count > 0;
-				}
-			}
-			else if (c_tcSearchViews.SelectedIndex == 1)
-			{
-				c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
-			}
-			else
-			{
-				c_miAddLayer.Enabled = false;
-			}
+			c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
+		}
 
+		private void c_oLayerList_LayerSelectionChanged(object sender, EventArgs e)
+		{
+			c_miAddLayer.Enabled = c_oServerList.SelectedLayers.Count > 0;
 			c_miRemoveLayer.Enabled = c_oLayerList.RemoveAllowed;
 		}
 
-		private void c_miServers_DropDownOpening(object sender, EventArgs e)
+		private void c_tcSearchViews_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			bool blServerSelected = c_oServerTree.SelectedNode != null &&
-				(c_oServerTree.SelectedNode.Tag is Server || c_oServerTree.SelectedNode.Tag is ServerBuilder);
-			blServerSelected &= c_tcSearchViews.SelectedIndex == 0;
-			blServerSelected &= cServerViewsTab.SelectedIndex == 0;
-
-			bool blDAPServerSelected = blServerSelected && c_oServerTree.SelectedNode.Tag is Server;
-
-			c_miViewProperties.Enabled = blServerSelected;
-			c_miRefreshServer.Enabled = blServerSelected;
-			c_miRemoveServer.Enabled = blServerSelected;
-			c_miSetFavouriteServer.Enabled = blServerSelected && !c_oServerTree.SelectedIsFavorite;
-			c_miAddBrowserMap.Enabled = blDAPServerSelected;
-
-			if (blServerSelected == false)
-			{
-				c_miToggleServerStatus.Text = "Disable";
-				c_miToggleServerStatus.Image = Resources.disserver;
-				c_miToggleServerStatus.Enabled = false;
-			}
-			else
-			{
-				bool blServerEnabled = true;
-				if (c_oServerTree.SelectedNode.Tag is Server)
-					blServerEnabled = ((Server)c_oServerTree.SelectedNode.Tag).Enabled;
-				else if (c_oServerTree.SelectedNode.Tag is ServerBuilder)
-					blServerEnabled = ((ServerBuilder)c_oServerTree.SelectedNode.Tag).Enabled;
-
-				if (blServerEnabled)
-				{
-					c_miToggleServerStatus.Text = "Disable";
-					c_miToggleServerStatus.Image = Resources.disserver;
-				}
-				else
-				{
-					c_miToggleServerStatus.Text = "Enable";
-					c_miToggleServerStatus.Image = Resources.enserver;
-				}
-				c_miToggleServerStatus.Enabled = true;
-			}
+			CmdSetupServersMenu();
 		}
 
 		private void c_miAddBrowserMap_Click(object sender, EventArgs e)
@@ -2313,6 +2262,8 @@ namespace Dapple
 			{
 				c_oServerList.SelectedServer = c_oServerTree.SelectedServer;
 			}
+
+			CmdSetupServersMenu();
 		}
 
 		private void c_scWorldMetadata_Panel1_Resize(object sender, EventArgs e)
@@ -2380,8 +2331,8 @@ namespace Dapple
 		private void c_oServerTree_AfterSelected(object sender, TreeViewEventArgs e)
 		{
 			populateAoiComboBox();
-			c_miTools_DropDownOpening(this, new EventArgs());
-			c_miServers_DropDownOpening(this, new EventArgs());
+			c_miAddLayer.Enabled = c_oServerTree.SelectedNode != null && (c_oServerTree.SelectedNode.Tag is LayerBuilder || c_oServerTree.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
+			CmdSetupServersMenu();
 		}
 
 		private void c_tbSearchKeywords_Enter(object sender, EventArgs e)
@@ -3292,6 +3243,49 @@ namespace Dapple
 			this.c_oDappleSearch.SetSearchParameters(m_szLastSearchString, m_oLastSearchROI);
 			this.UseWaitCursor = false;
 			Application.DoEvents();
+		}
+
+		private void CmdSetupServersMenu()
+		{
+			bool blServerSelected = c_oServerTree.SelectedNode != null &&
+						(c_oServerTree.SelectedNode.Tag is Server || c_oServerTree.SelectedNode.Tag is ServerBuilder);
+			blServerSelected &= c_tcSearchViews.SelectedIndex == 0;
+			blServerSelected &= cServerViewsTab.SelectedIndex == 0;
+
+			bool blDAPServerSelected = blServerSelected && c_oServerTree.SelectedNode.Tag is Server;
+
+			c_miViewProperties.Enabled = blServerSelected;
+			c_miRefreshServer.Enabled = blServerSelected;
+			c_miRemoveServer.Enabled = blServerSelected;
+			c_miSetFavouriteServer.Enabled = blServerSelected && !c_oServerTree.SelectedIsFavorite;
+			c_miAddBrowserMap.Enabled = blDAPServerSelected;
+
+			if (blServerSelected == false)
+			{
+				c_miToggleServerStatus.Text = "Disable";
+				c_miToggleServerStatus.Image = Resources.disserver;
+				c_miToggleServerStatus.Enabled = false;
+			}
+			else
+			{
+				bool blServerEnabled = true;
+				if (c_oServerTree.SelectedNode.Tag is Server)
+					blServerEnabled = ((Server)c_oServerTree.SelectedNode.Tag).Enabled;
+				else if (c_oServerTree.SelectedNode.Tag is ServerBuilder)
+					blServerEnabled = ((ServerBuilder)c_oServerTree.SelectedNode.Tag).Enabled;
+
+				if (blServerEnabled)
+				{
+					c_miToggleServerStatus.Text = "Disable";
+					c_miToggleServerStatus.Image = Resources.disserver;
+				}
+				else
+				{
+					c_miToggleServerStatus.Text = "Enable";
+					c_miToggleServerStatus.Image = Resources.enserver;
+				}
+				c_miToggleServerStatus.Enabled = true;
+			}
 		}
 
 		#endregion

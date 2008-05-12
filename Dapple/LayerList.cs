@@ -34,9 +34,15 @@ namespace Dapple
 
       #endregion
 
-      #region Statics
+		#region Events
 
-      /// <summary>
+		public event EventHandler LayerSelectionChanged;
+
+		#endregion
+
+		#region Statics
+
+		/// <summary>
       /// Dummy value for when there is no drop location.
       /// </summary>
       static Point NO_DROP_LOCATION = new Point(-1, -1);
@@ -443,6 +449,7 @@ namespace Dapple
          {
             SetButtonState();
             CmdViewMetadata();
+				if (LayerSelectionChanged != null) LayerSelectionChanged(this, new EventArgs());
          }
       }
 

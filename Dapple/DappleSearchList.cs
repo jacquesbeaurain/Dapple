@@ -29,6 +29,12 @@ namespace Dapple.CustomControls
 
 		#endregion
 
+		#region Events
+
+		public event EventHandler LayerSelectionChanged;
+
+		#endregion
+
 		#region Statics
 
 		private const int THUMBNAIL_SIZE = 50;
@@ -229,6 +235,14 @@ namespace Dapple.CustomControls
 		private void cResultListBox_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			CmdAddSelected();
+		}
+
+		private void c_lbResults_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (LayerSelectionChanged != null)
+			{
+				LayerSelectionChanged(this, new EventArgs());
+			}
 		}
 
 		private void cContextMenu_Opening(object sender, CancelEventArgs e)

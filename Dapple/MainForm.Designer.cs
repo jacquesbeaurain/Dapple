@@ -412,7 +412,6 @@ namespace Dapple
 			  this.c_miTools.Name = "c_miTools";
 			  this.c_miTools.Size = new System.Drawing.Size(44, 20);
 			  this.c_miTools.Text = "Tools";
-			  this.c_miTools.DropDownOpening += new System.EventHandler(this.c_miTools_DropDownOpening);
 			  // 
 			  // c_miSearch
 			  // 
@@ -475,7 +474,6 @@ namespace Dapple
 			  this.c_miServers.Name = "c_miServers";
 			  this.c_miServers.Size = new System.Drawing.Size(56, 20);
 			  this.c_miServers.Text = "Servers";
-			  this.c_miServers.DropDownOpening += new System.EventHandler(this.c_miServers_DropDownOpening);
 			  // 
 			  // c_miAddDAPServer
 			  // 
@@ -951,6 +949,7 @@ namespace Dapple
 			  this.c_tcSearchViews.SelectedIndex = 0;
 			  this.c_tcSearchViews.Size = new System.Drawing.Size(231, 196);
 			  this.c_tcSearchViews.TabIndex = 0;
+			  this.c_tcSearchViews.SelectedIndexChanged += new System.EventHandler(this.c_tcSearchViews_SelectedIndexChanged);
 			  // 
 			  // c_tpServerView
 			  // 
