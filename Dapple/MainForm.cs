@@ -665,6 +665,8 @@ namespace Dapple
 				this.cServerViewsTab.SetImage(1, Resources.tab_list);
 				this.cServerViewsTab.SetToolTip(0, "Server tree view");
 				this.cServerViewsTab.SetToolTip(1, "Server list view");
+				this.cServerViewsTab.SetNameAndText(0, "ListView");
+				this.cServerViewsTab.SetNameAndText(1, "TreeView");
 				this.cServerViewsTab.SetPage(0, this.c_oServerTree);
 				this.cServerViewsTab.SetPage(1, this.c_oServerList);
 				cServerViewsTab.PageChanged += new JanaTab.PageChangedDelegate(ServerPageChanged);
@@ -1841,6 +1843,8 @@ namespace Dapple
 					doSearch(String.Empty, m_oOMMapExtentWGS84);
 					GoTo(m_oOMMapExtentWGS84, false);
 				}
+
+				c_oOverview.StartRenderTimer();
 			}
 			finally
 			{

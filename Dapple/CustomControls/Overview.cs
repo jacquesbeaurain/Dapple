@@ -54,6 +54,11 @@ namespace Dapple.CustomControls
 			c_cbAOIs.EndUpdate();
 		}
 
+		public void StartRenderTimer()
+		{
+			c_Overview.StartTimer();
+		}
+
 		#endregion
 
 		#region Event Handlers

@@ -63,6 +63,8 @@ namespace Dapple.CustomControls
 			c_tsTabToolstrip.SetImage(1, Dapple.Properties.Resources.tab_list);
 			c_tsTabToolstrip.SetToolTip(0, "Search results with thumbnails");
 			c_tsTabToolstrip.SetToolTip(1, "Search results without thumbnails");
+			c_tsTabToolstrip.SetNameAndText(0, "ShowThumbnails");
+			c_tsTabToolstrip.SetNameAndText(1, "HideThumbnails");
 			c_tsTabToolstrip.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
 			SetNoSearch();
 			c_oPageNavigator.PageBack += new ThreadStart(BackPage);

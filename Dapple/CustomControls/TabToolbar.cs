@@ -60,6 +60,7 @@ namespace Dapple.CustomControls
             m_aButtons[count].Tag = count;
             m_aButtons[count].Image = oPlaceholderGraphic;
             m_aButtons[count].Click += new EventHandler(ButtonClick);
+				m_aButtons[count].DisplayStyle = ToolStripItemDisplayStyle.Image;
             this.Items.Add(m_aButtons[count]);
          }
          m_aButtons[0].Checked = true;
@@ -103,8 +104,14 @@ namespace Dapple.CustomControls
          m_aButtons[iButtonIndex].ToolTipText = szToolTipText;
       }
 
+		public void SetNameAndText(int iPageIndex, string szName)
+		{
+			m_aButtons[iPageIndex].Name = szName;
+			m_aButtons[iPageIndex].Text = szName;
+		}
+
       #endregion
-   }
+	}
 
    public class TabToolBarRenderer : ToolStripProfessionalRenderer
    {

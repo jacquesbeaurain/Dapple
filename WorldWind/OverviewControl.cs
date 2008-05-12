@@ -45,24 +45,18 @@ namespace WorldWind
 			// The m_Device3d can't be created unless the control is at least 1 x 1 pixels in size
 			this.Size = new Size(600,300);
 			
-			
-			try
-			{
-				// Now perform the rendering m_Device3d initialization
-				// Skip DirectX initialization in design mode
-				if(!IsInDesignMode())
-					InitializeGraphics();
-
-				m_RenderTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_RenderTimer_Elapsed);
-				m_RenderTimer.Start();
-
-			}
-			catch(Exception ex)
-			{
-				Utility.Log.Write(ex);
-			}
+			// Now perform the rendering m_Device3d initialization
+			// Skip DirectX initialization in design mode
+			if(!IsInDesignMode())
+				InitializeGraphics();
 
          this.Parent = parent;
+		}
+
+		public void StartTimer()
+		{
+			m_RenderTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_RenderTimer_Elapsed);
+			m_RenderTimer.Start();
 		}
 
 		protected override void OnMove(EventArgs e)

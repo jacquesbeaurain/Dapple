@@ -107,6 +107,11 @@ namespace Dapple.CustomControls
          cTabToolbar.SetToolTip(iPageIndex, szToolTipText);
       }
 
+		public void SetNameAndText(int iPageIndex, String szName)
+		{
+			cTabToolbar.SetNameAndText(iPageIndex, szName);
+		}
+
       #endregion
    }
 }
