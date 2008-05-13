@@ -652,6 +652,7 @@ namespace Dapple
 				c_oLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
 				c_oServerTree.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
 				c_oServerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
+				c_oServerList.LayerSelectionChanged += new EventHandler(c_oServerList_LayerSelectionChanged);
 
 				this.c_oServerTree.AfterSelect += new TreeViewEventHandler(this.c_oServerTree_AfterSelected);
 				this.c_oServerTree.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1676,18 +1677,18 @@ namespace Dapple
 
 		private void c_oDappleSearch_LayerSelectionChanged(object sender, EventArgs e)
 		{
-			c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
+			CmdSetupToolsMenu();
 		}
 
 		private void c_oLayerList_LayerSelectionChanged(object sender, EventArgs e)
 		{
-			c_miAddLayer.Enabled = c_oServerList.SelectedLayers.Count > 0;
 			c_miRemoveLayer.Enabled = c_oLayerList.RemoveAllowed;
 		}
 
 		private void c_tcSearchViews_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			CmdSetupServersMenu();
+			CmdSetupToolsMenu();
 		}
 
 		private void c_miAddBrowserMap_Click(object sender, EventArgs e)
@@ -2263,6 +2264,7 @@ namespace Dapple
 				c_oServerList.SelectedServer = c_oServerTree.SelectedServer;
 			}
 
+			CmdSetupToolsMenu();
 			CmdSetupServersMenu();
 		}
 
@@ -2331,8 +2333,13 @@ namespace Dapple
 		private void c_oServerTree_AfterSelected(object sender, TreeViewEventArgs e)
 		{
 			populateAoiComboBox();
-			c_miAddLayer.Enabled = c_oServerTree.SelectedNode != null && (c_oServerTree.SelectedNode.Tag is LayerBuilder || c_oServerTree.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
+			CmdSetupToolsMenu();
 			CmdSetupServersMenu();
+		}
+
+		private void c_oServerList_LayerSelectionChanged(object sender, EventArgs e)
+		{
+			CmdSetupToolsMenu();
 		}
 
 		private void c_tbSearchKeywords_Enter(object sender, EventArgs e)
@@ -3285,6 +3292,28 @@ namespace Dapple
 					c_miToggleServerStatus.Image = Resources.enserver;
 				}
 				c_miToggleServerStatus.Enabled = true;
+			}
+		}
+
+		private void CmdSetupToolsMenu()
+		{
+			if (c_tcSearchViews.SelectedIndex == 0)
+			{
+				if (cServerViewsTab.SelectedIndex == 0)
+				{
+					// --- Active is server tree ---
+					c_miAddLayer.Enabled = c_oServerTree.SelectedNode != null && (c_oServerTree.SelectedNode.Tag is LayerBuilder || c_oServerTree.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
+				}
+				else if (cServerViewsTab.SelectedIndex == 1)
+				{
+					// --- Active is server list ---
+					c_miAddLayer.Enabled = c_oServerList.SelectedLayers.Count > 0;
+				} 
+			}
+			else if (c_tcSearchViews.SelectedIndex == 1)
+			{
+				// --- Active is dapple search list ---
+				c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
 			}
 		}
 

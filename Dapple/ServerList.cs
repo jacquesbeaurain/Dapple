@@ -39,6 +39,7 @@ namespace Dapple
       private LayerList m_hLayerList;
 
       public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
+		public event EventHandler LayerSelectionChanged;
 
       #endregion
 
@@ -382,6 +383,8 @@ namespace Dapple
 			{
 				if (ViewMetadata != null) ViewMetadata(null);
 			}
+
+			if (LayerSelectionChanged != null) LayerSelectionChanged(this, new EventArgs());
       }
 
       #endregion
