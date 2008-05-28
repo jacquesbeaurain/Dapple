@@ -1388,7 +1388,7 @@ namespace Dapple
          bool result = base.AddDAPServer(strUrl, out hRetServer, blEnabled);
 			if (result && blUpdateHomeView)
 			{
-				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new Object[] { hRetServer.Url, "DAP" });
+				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new Object[] { strUrl, "DAP" });
 			}
 
          this.m_oServerListControl.Servers = getServerList();
