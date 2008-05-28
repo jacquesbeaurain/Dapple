@@ -39,7 +39,7 @@ namespace Dapple.Extract
       {
          InitializeComponent();
 
-         if (MainForm.OpenMap && !string.IsNullOrEmpty(MainForm.MapFileName))
+			if (MainForm.MontajInterface.HostHasOpenMap() && !string.IsNullOrEmpty(MainForm.MapFileName))
          {
             tbFilename.Text = System.IO.Path.GetFileName(MainForm.MapFileName);
             tbFilename.Enabled = false;

@@ -46,17 +46,16 @@ namespace Dapple.Extract
 
          m_oLayersToDownload = oLayersToDownload;
 
-			if (MainForm.Client != Options.Client.ClientType.OasisMontaj)
+			if (MainForm.Client == Options.Client.ClientType.OasisMontaj)
 			{
-				rbCSNative.Enabled = !MainForm.OpenMap;
-				rbReproject.Enabled = MainForm.OpenMap;
-				rbCSNative.Checked = rbCSNative.Enabled;
-				rbReproject.Checked = rbReproject.Enabled;
+				rbCSNative.Enabled = true;
+				rbReproject.Enabled = MainForm.MontajInterface.HostHasOpenMap();
+				rbCSNative.Checked = true;
 			}
 			else
 			{
-				rbCSNative.Enabled = true;
-				rbReproject.Enabled = MainForm.OpenMap;
+				rbReproject.Enabled = MainForm.MontajInterface.HostHasOpenMap();
+				rbCSNative.Enabled = !rbReproject.Enabled;
 				if (rbReproject.Enabled)
 					rbReproject.Checked = true;
 				else

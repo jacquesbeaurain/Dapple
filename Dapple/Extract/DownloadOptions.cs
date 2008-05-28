@@ -284,7 +284,7 @@ namespace Dapple.Extract
 
          // --- check to see if we require a new ---
 
-         if (!bInvalidReprojection && MainForm.OpenMap)
+         if (!bInvalidReprojection && MainForm.MontajInterface.HostHasOpenMap())
          {
             bNewMap = !IntersectMap(ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strProjCoordinateSystem);
          }

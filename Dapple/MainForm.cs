@@ -179,7 +179,6 @@ namespace Dapple
 		private static GeographicBoundingBox m_oOMMapExtentWGS84;
 		private static GeographicBoundingBox m_oOMMapExtentNative;
 		private static string m_strAoiCoordinateSystem;
-		private static bool m_bOpenMap = false;
 		private static string m_strOpenMapFileName = string.Empty;
 		private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
 
@@ -240,14 +239,6 @@ namespace Dapple
 		public static string MapAoiCoordinateSystem
 		{
 			get { return m_strAoiCoordinateSystem; }
-		}
-
-		/// <summary>
-		/// See if there is an open map from our client
-		/// </summary>
-		public static bool OpenMap
-		{
-			get { return m_bOpenMap; }
 		}
 
 		/// <summary>
@@ -705,13 +696,10 @@ namespace Dapple
 					c_oLayerList.OMFeaturesEnabled = true;
 					this.MinimizeBox = false;
 
-					m_bOpenMap = false;
-
 					if (oAoi != null && !string.IsNullOrEmpty(strAoiCoordinateSystem))
 					{
 						m_oOMMapExtentNative = oAoi;
 						m_strAoiCoordinateSystem = strAoiCoordinateSystem;
-						m_bOpenMap = true;
 						m_strOpenMapFileName = strMapFileName;
 
 						m_oOMMapExtentWGS84 = m_oOMMapExtentNative.Clone() as GeographicBoundingBox;
