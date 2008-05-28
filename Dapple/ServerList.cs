@@ -120,7 +120,7 @@ namespace Dapple
             if (iSelectedIndex != c_cbServers.SelectedIndex)
             {
                c_cbServers.SelectedIndex = iSelectedIndex;
-               cServersComboBox_SelectedIndexChanged(this, new EventArgs());
+               c_cbServers_SelectedIndexChanged(this, new EventArgs());
             }
          }
       }
@@ -229,6 +229,23 @@ namespace Dapple
          c_lvLayers.ResumeLayout();
       }
 
+		/// <summary>
+		/// Clear the current search and execute it again.
+		/// </summary>
+		public void ReSearch()
+		{
+			if (c_cbServers.SelectedIndex == -1)
+			{
+				SetNoServer();
+			}
+			else
+			{
+				SetSearching();
+				InitLayerList();
+				DrawCurrentPage();
+			}
+		}
+
       #endregion
 
       #region Event handlers
@@ -238,7 +255,7 @@ namespace Dapple
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-      private void cServersComboBox_SelectedIndexChanged(object sender, EventArgs e)
+      private void c_cbServers_SelectedIndexChanged(object sender, EventArgs e)
       {
          if (c_cbServers.SelectedIndex == -1)
          {
@@ -258,7 +275,7 @@ namespace Dapple
          }
       }
 
-      private void cServersComboBox_DrawItem(object sender, DrawItemEventArgs e)
+      private void c_cbServers_DrawItem(object sender, DrawItemEventArgs e)
       {
          e.DrawBackground();
 

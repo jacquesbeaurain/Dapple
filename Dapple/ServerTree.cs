@@ -432,6 +432,8 @@ namespace Dapple
          }
 
 			ResumeLayout();
+
+			m_oServerListControl.ReSearch();
 		}
 
 		public void RemoveCurrentServer()

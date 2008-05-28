@@ -64,8 +64,8 @@ namespace Dapple
 			this.c_cbServers.Name = "c_cbServers";
 			this.c_cbServers.Size = new System.Drawing.Size(146, 21);
 			this.c_cbServers.TabIndex = 1;
-			this.c_cbServers.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cServersComboBox_DrawItem);
-			this.c_cbServers.SelectedIndexChanged += new System.EventHandler(this.cServersComboBox_SelectedIndexChanged);
+			this.c_cbServers.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.c_cbServers_DrawItem);
+			this.c_cbServers.SelectedIndexChanged += new System.EventHandler(this.c_cbServers_SelectedIndexChanged);
 			// 
 			// c_lvLayers
 			// 
