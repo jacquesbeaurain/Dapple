@@ -14,6 +14,8 @@ namespace Dapple
 {
    public partial class AddDAP : Form
    {
+		private static string DEFAULT_TEXT = "http://";
+
       public AddDAP()
       {
          InitializeComponent();
@@ -41,6 +43,17 @@ namespace Dapple
       private void butOK_Click(object sender, EventArgs e)
       {
 			Uri oServerUrl = null;
+			if (txtDapURL.Text.Equals(DEFAULT_TEXT, StringComparison.InvariantCultureIgnoreCase))
+			{
+				Program.ShowMessageBox(
+					"Please enter a valid URL.",
+					"Add DAP Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
 			if (!(Uri.TryCreate(txtDapURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtDapURL.Text, UriKind.Absolute, out oServerUrl)))
 			{
 				Program.ShowMessageBox(

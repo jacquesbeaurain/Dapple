@@ -13,6 +13,8 @@ namespace Dapple
 {
    public partial class AddWMS : Form
    {
+		private static string DEFAULT_TEXT = "http://";
+
       WorldWindow m_worldWind;
       WMSCatalogBuilder m_oParent;
 
@@ -35,6 +37,17 @@ namespace Dapple
       private void butOK_Click(object sender, EventArgs e)
       {
          Uri oServerUrl = null;
+			if (txtWmsURL.Text.Equals(DEFAULT_TEXT, StringComparison.InvariantCultureIgnoreCase))
+			{
+				Program.ShowMessageBox(
+					"Please enter a valid URL.",
+					"Add WMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
 			if (!(Uri.TryCreate(txtWmsURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtWmsURL.Text, UriKind.Absolute, out oServerUrl)))
 			{
 				Program.ShowMessageBox(

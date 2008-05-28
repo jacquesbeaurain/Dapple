@@ -12,6 +12,8 @@ namespace Dapple
 {
    public partial class AddArcIMS : Form
    {
+		private static string DEFAULT_TEXT = "http://";
+
       WorldWindow m_worldWind;
       ArcIMSCatalogBuilder m_oParent;
 		public const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
@@ -35,6 +37,17 @@ namespace Dapple
       private void butOK_Click(object sender, EventArgs e)
       {
          Uri oServerUrl = null;
+			if (txtArcIMSURL.Text.Equals(DEFAULT_TEXT, StringComparison.InvariantCultureIgnoreCase))
+			{
+				Program.ShowMessageBox(
+					"Please enter a valid URL.",
+					"Add ArcIMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
 			if (!(Uri.TryCreate(txtArcIMSURL.Text, UriKind.Absolute, out oServerUrl) || Uri.TryCreate("http://" + txtArcIMSURL.Text, UriKind.Absolute, out oServerUrl)))
 			{
 				Program.ShowMessageBox(
