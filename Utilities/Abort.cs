@@ -25,7 +25,8 @@ namespace Utility
       [DllImport("clrdump.dll")]
       static extern Int32 SetFilterOptions(Int32 Options);
 
-      private static object abortsync = new object();
+      private static object ABORT_LOCK = new object();
+		private static bool blAbortCreated = false;
 
       /// <summary>
       /// Display an error message to the user, then shut down.
@@ -33,8 +34,23 @@ namespace Utility
       /// <param name="msg">The message (reason for shutdown) to display to the user.</param>
       public static void Abort(Exception caught, Thread curthread)
       {
-         lock (abortsync)
+			if (caught is ThreadAbortException)
+			{
+				return;
+			}
+
+
+         lock (ABORT_LOCK)
          {
+				if (blAbortCreated)
+				{
+					Thread.CurrentThread.Abort();
+				}
+				else
+				{
+					blAbortCreated = true;
+				}
+
             Exception e;
 
             try
@@ -61,7 +77,21 @@ namespace Utility
                } while (e != null);
             }
 
+				errorMessages += "Current thread: ";
+				if (Thread.CurrentThread.IsThreadPoolThread)
+				{
+					errorMessages += "background worker thread" + Environment.NewLine;
+				}
+				else if (String.IsNullOrEmpty(Thread.CurrentThread.Name))
+				{
+					errorMessages += "<unnmaed thread>" + Environment.NewLine;
+				}
+				else
+				{
+					errorMessages += Thread.CurrentThread.Name + Environment.NewLine;
+				}
 				errorMessages += "Thread count (including this one): " + Process.GetCurrentProcess().Threads.Count;
+
 
             Abort(errorMessages);
          }
@@ -101,12 +131,20 @@ namespace Utility
          return result.ToString();
       }
 
+		public static event MethodInvoker ProgramAborting;
+
       /// <summary>
       /// Display an error message to the user, then shut down.
       /// </summary>
       /// <param name="msg">The message (reason for shutdown) to display to the user.</param>
       private static void Abort(string errorMessages)
       {
+			Thread.CurrentThread.Priority = ThreadPriority.Highest;
+			if (ProgramAborting != null)
+			{
+				ProgramAborting();
+			}
+
          string strAbortLog = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
          //CreateDump(Process.GetCurrentProcess().Id, strMiniDump, 0, 0, IntPtr.Zero);
          //System.Diagnostics.Process.Start(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "clrdump.exe"), Process.GetCurrentProcess().Id.ToString() + " " + @"f:\out.dmp mid");
@@ -116,7 +154,7 @@ namespace Utility
             sw.Write(errorMessages);
          }
          System.Diagnostics.Process.Start(Application.ExecutablePath, "ABORT \"" + strAbortLog + "\"");
-         Application.Exit();
+			Application.Exit();
       }
    }
 #endif
