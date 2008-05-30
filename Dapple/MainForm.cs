@@ -464,6 +464,7 @@ namespace Dapple
 
 
 				c_oWorldWindow = new WorldWindow();
+				Utility.AbortUtility.ProgramAborting += new MethodInvoker(c_oWorldWindow.KillD3DAndWorkerThread);
 				c_oWorldWindow.AllowDrop = true;
 				c_oWorldWindow.DragOver += new DragEventHandler(c_oWorldWindow_DragOver);
 				c_oWorldWindow.DragDrop += new DragEventHandler(c_oWorldWindow_DragDrop);
@@ -2497,8 +2498,15 @@ namespace Dapple
 		private void LoadPlacenames(Object oParams)
 		{
 			this.placeNames = ConfigurationLoader.getRenderableFromLayerFile(Path.Combine(CurrentSettingsDirectory, "^Placenames.xml"), this.WorldWindow.CurrentWorld, this.WorldWindow.Cache, true, null);
-			if (!this.IsDisposed)
-				Invoke(new MethodInvoker(LoadPlacenamesCallback));
+			try
+			{
+				if (!this.IsDisposed)
+					Invoke(new MethodInvoker(LoadPlacenamesCallback));
+			}
+			catch (ObjectDisposedException)
+			{
+				// --- The user closed the form before the placenames were loaded.  Ignore, since we're shutting down anyway. ---
+			}
 		}
 
 		private void LoadPlacenamesCallback()

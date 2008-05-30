@@ -335,6 +335,7 @@ namespace WorldWind
 		private bool renderWireFrame;
 		private System.Timers.Timer m_FpsTimer = new System.Timers.Timer(250);
 		private bool supressUpdates = false;
+		public static event MethodInvoker VideoMemoryExhausted;
 
 		//		protected DownloadIndicator m_downloadIndicator;
 
@@ -2480,6 +2481,35 @@ namespace WorldWind
 			}
 
 			m_FpsUpdate = false;
+		}
+
+		protected override void OnResize(EventArgs e)
+		{
+			try
+			{
+				base.OnResize(e);
+			}
+			catch (OutOfVideoMemoryException)
+			{
+				KillD3DAndWorkerThread();
+				VideoMemoryExhausted();
+			}
+		}
+
+		public void KillD3DAndWorkerThread()
+		{
+			if (m_WorkerThread != null)
+			{
+				m_WorkerThreadRunning = false;
+				m_WorkerThread.Abort();
+				m_WorkerThread = null;
+			}
+
+			if (m_Device3d != null)
+			{
+				m_Device3d.Dispose();
+				m_Device3d = null;
+			}
 		}
 	}
 }

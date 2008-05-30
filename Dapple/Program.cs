@@ -26,6 +26,7 @@ namespace Dapple
 		{
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+			WorldWindow.VideoMemoryExhausted += new MethodInvoker(ReportVideoMemoryExhaustion);
 
 #if !DEBUG
 			bool aborting = false;
@@ -431,6 +432,18 @@ namespace Dapple
 		public static DialogResult ShowMessageBox(String strMessage, String strCaption, MessageBoxButtons eButtons, MessageBoxDefaultButton eDefBuffon, MessageBoxIcon eIcon)
 		{
 			return MessageBox.Show(strMessage, strCaption, eButtons, eIcon, eDefBuffon);
+		}
+
+		public static void ReportVideoMemoryExhaustion()
+		{
+			ShowMessageBox(
+				"Dapple has run out of video memory and must close. To increase the amount of video memory available to Dapple, close any other applications that have 3D displays open, or upgrade your video card.",
+				"Video Memory Exhausted",
+				MessageBoxButtons.OK,
+				MessageBoxDefaultButton.Button1,
+				MessageBoxIcon.Error);
+
+			System.Environment.Exit(-1);
 		}
    }
 }
