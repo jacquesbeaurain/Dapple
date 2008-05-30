@@ -154,7 +154,7 @@ namespace Utility
             sw.Write(errorMessages);
          }
          System.Diagnostics.Process.Start(Application.ExecutablePath, "ABORT \"" + strAbortLog + "\"");
-			Application.Exit();
+			System.Environment.Exit(-1);
       }
    }
 #endif
