@@ -24,6 +24,7 @@ namespace Dapple
       [STAThread]
       static void Main(string[] args)
 		{
+			bool blNoAbortTool = false;
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			WorldWindow.VideoMemoryExhausted += new MethodInvoker(ReportVideoMemoryExhaustion);
@@ -92,6 +93,11 @@ namespace Dapple
 						PrintUsage();
 						return;
 					}
+				}
+
+				if (cmdl["noaborttool"] != null)
+				{
+					blNoAbortTool = true;
 				}
 
 				if (cmdl["geotifftmp"] != null)
@@ -292,8 +298,15 @@ namespace Dapple
 #if !DEBUG
 			catch (Exception caught)
 			{
-				if (!aborting)
-					Utility.AbortUtility.Abort(caught, Thread.CurrentThread);
+				if (blNoAbortTool)
+				{
+					throw;
+				}
+				else
+				{
+					if (!aborting)
+						Utility.AbortUtility.Abort(caught, Thread.CurrentThread);
+				}
 			}
 #endif
 			finally
