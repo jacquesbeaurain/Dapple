@@ -24,7 +24,9 @@ namespace Dapple
       [STAThread]
       static void Main(string[] args)
 		{
+#if !DEBUG
 			bool blNoAbortTool = false;
+#endif
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			WorldWindow.VideoMemoryExhausted += new MethodInvoker(ReportVideoMemoryExhaustion);
@@ -95,11 +97,12 @@ namespace Dapple
 					}
 				}
 
+#if !DEBUG
 				if (cmdl["noaborttool"] != null)
 				{
 					blNoAbortTool = true;
 				}
-
+#endif
 				if (cmdl["geotifftmp"] != null)
 				{
 					string strGeoTiffTmpVar = cmdl["geotifftmp"];

@@ -464,7 +464,9 @@ namespace Dapple
 
 
 				c_oWorldWindow = new WorldWindow();
+#if !DEBUG
 				Utility.AbortUtility.ProgramAborting += new MethodInvoker(c_oWorldWindow.KillD3DAndWorkerThread);
+#endif
 				c_oWorldWindow.AllowDrop = true;
 				c_oWorldWindow.DragOver += new DragEventHandler(c_oWorldWindow_DragOver);
 				c_oWorldWindow.DragDrop += new DragEventHandler(c_oWorldWindow_DragDrop);

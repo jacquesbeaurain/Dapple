@@ -9,7 +9,7 @@
           <Directory Id="INSTALLDIR" Name=".">
             <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
             <Component Id="dapple_registry" Guid="{972C51B4-7706-4114-B47A-3771FA696AA5}">
-              <RegistryValue Id="RegDapple" Name="InstallPath" Root="HKLM" Key="Software\Geosoft\Dapple" Value="[INSTALLDIR]" Type="string" KeyPath="yes"/>
+              <RegistryValue Id="RegDapple" Name="InstallPath" Root="HKLM" Key="Software\Geosoft\Dapple" Value="[INSTALLDIR]" Type="string" KeyPath="yes" />
               <RemoveRegistryKey Root="HKLM" Key="Software\Geosoft\Dapple" Action="removeOnUninstall" />
             </Component>
             <Component Id="dapple_shortcut" Guid="{142546DC-93DE-47e3-8D24-A032FED210EE}">
@@ -38,15 +38,17 @@
     </Feature>
     <CustomAction Id="SetDappleShortcut" Property="DappleShortcut" Value="[INSTALLDIR]\Dapple.exe" />
     <CustomAction Id="LaunchProgram" Directory="INSTALLDIR" ExeCommand="[INSTALLDIR]dapple.exe" Execute="immediate" Return="asyncNoWait" />
-    <CustomAction Id="SetSettingsFile" Return="check" Property="RemoveCacheDirectory" Value="SETTINGS_FILE=[LocalAppDataFolder]\DappleData\Config\WorldWind.xml"/>
+    <CustomAction Id="SetSettingsFile" Return="check" Property="RemoveCacheDirectory" Value="SETTINGS_FILE=[LocalAppDataFolder]\DappleData\Config\WorldWind.xml" />
     <CustomAction Id="RemoveCacheDirectory" BinaryKey="GEOBINARY" DllEntry="DeleteCacheDirectory" Execute="deferred" Return="check" Impersonate="no" />
     <Binary Id="GEOBINARY" SourceFile="custom\geodapple_customactions.dll" />
     <Upgrade Id="DFEA744A-F951-4BED-B156-44478FAB86D6">
       <UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="1.0.20" IncludeMaximum="yes" />
     </Upgrade>
     <InstallExecuteSequence>
-      <Custom Action="SetDappleShortcut" Before="RemoveShortcuts"></Custom>
-      <Custom Action="SetSettingsFile" After="RemoveFiles"></Custom>
+      <Custom Action="SetDappleShortcut" Before="RemoveShortcuts">
+      </Custom>
+      <Custom Action="SetSettingsFile" After="RemoveFiles">
+      </Custom>
       <Custom Action="RemoveCacheDirectory" After="SetSettingsFile">REMOVE="ALL"</Custom>
       <RemoveExistingProducts After="InstallValidate" />
     </InstallExecuteSequence>

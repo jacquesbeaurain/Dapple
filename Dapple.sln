@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapple", "Dapple\Dapple.csproj", "{585D62EE-A32B-48CF-9677-2ECA07B298FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltovaGen", "AltovaGen\AltovaGen.csproj", "{02816A2C-2B27-4782-A163-6AD58B5BF6F5}"
