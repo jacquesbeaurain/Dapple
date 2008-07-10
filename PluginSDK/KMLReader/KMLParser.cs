@@ -823,8 +823,7 @@ namespace WorldWind.KMLReader
 					{
 						Point3d[] points = ParseCoordinates(outerRingNode);
 
-						outerRing = new LinearRing();
-						outerRing.Points = points;
+						outerRing = new LinearRing(points);
 					}
 
 					// Parse Inner Ring
@@ -836,8 +835,7 @@ namespace WorldWind.KMLReader
 						{
 							Point3d[] points = ParseCoordinates(innerRingNodes[i]);
 
-							innerRings[i] = new LinearRing();
-							innerRings[i].Points = points;
+							innerRings[i] = new LinearRing(points);
 						}
 					}
 
@@ -955,8 +953,7 @@ namespace WorldWind.KMLReader
 					Point3d[] points = ParseCoordinates(outerRingNode);
 					Console.WriteLine(points.Length);
 
-					outerRing = new LinearRing();
-					outerRing.Points = points;
+					outerRing = new LinearRing(points);
 				}
 
 				// Parse Inner Ring
@@ -967,8 +964,7 @@ namespace WorldWind.KMLReader
 					for (int i = 0; i < innerRingNodes.Count; i++)
 					{
 						Point3d[] points = ParseCoordinates(innerRingNodes[i]);
-						innerRings[i] = new LinearRing();
-						innerRings[i].Points = points;
+						innerRings[i] = new LinearRing(points);
 					}
 				}
 

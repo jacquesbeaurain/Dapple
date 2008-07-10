@@ -2087,8 +2087,7 @@ namespace WorldWind
 
 					PolygonFeature pf = null;
 
-					LinearRing outerRing = new LinearRing();
-					outerRing.Points = points;
+					LinearRing outerRing = new LinearRing(points);
 
 					pf = new PolygonFeature(name, parentWorld, outerRing, null, c);
 

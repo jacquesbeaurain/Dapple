@@ -8,5 +8,10 @@ namespace WorldWind
 	public class LinearRing
 	{
 		public Point3d[] Points = null;
+
+		public LinearRing(Point3d[] points)
+		{
+			Points = points;
+		}
 	}
 }
