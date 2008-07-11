@@ -24,19 +24,17 @@ namespace Dapple
       [STAThread]
       static void Main(string[] args)
 		{
-#if !DEBUG
-			bool blNoAbortTool = false;
-#endif
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			WorldWindow.VideoMemoryExhausted += new MethodInvoker(ReportVideoMemoryExhaustion);
 
 #if !DEBUG
+			bool blNoAbortTool = false;
 			bool aborting = false;
 #endif
 
 #if DEBUG
-         System.Text.StringBuilder oTemp = new System.Text.StringBuilder();
+			System.Text.StringBuilder oTemp = new System.Text.StringBuilder();
          foreach (String arg in args)
          {
             oTemp.Append(arg);

@@ -59,6 +59,37 @@ namespace WorldWind
             Math.Max(Math.Max(Math.Max(quad.X1, quad.X2), quad.X3), quad.X4));
       }
 
+		public static GeographicBoundingBox NullBox()
+		{
+			GeographicBoundingBox result = new GeographicBoundingBox();
+			result.North = double.MinValue;
+			result.South = double.MaxValue;
+			result.East = double.MinValue;
+			result.West = double.MaxValue;
+			result.MaximumAltitude = double.MinValue;
+			result.MinimumAltitude = double.MaxValue;
+
+			return result;
+		}
+
+		public bool IsValid
+		{
+			get
+			{
+				return North >= South && East >= West && MaximumAltitude >= MinimumAltitude;
+			}
+		}
+
+		public void Union(GeographicBoundingBox other)
+		{
+			this.North = Math.Max(this.North, other.North);
+			this.South = Math.Min(this.South, other.South);
+			this.East = Math.Max(this.East, other.East);
+			this.West = Math.Min(this.West, other.West);
+			this.MaximumAltitude = Math.Max(this.MaximumAltitude, other.MaximumAltitude);
+			this.MinimumAltitude = Math.Min(this.MinimumAltitude, other.MinimumAltitude);
+		}
+
 		public double Longitude
 		{
 			get { return East - West; }

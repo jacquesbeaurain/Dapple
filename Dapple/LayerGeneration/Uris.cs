@@ -171,6 +171,11 @@ namespace Dapple.LayerGeneration
 		public GeoTiffFileUri(String strUri) : base(strUri) { }
 	}
 
+	public class KeyholeFileUri : ServerUri
+	{
+		public KeyholeFileUri(String strUri) : base(strUri) { }
+	}
+
 	/// <summary>
 	/// Class for dealing with internal layer URIs.  Parses necessary informaion and removes it from the Server URI.
 	/// </summary>
@@ -193,7 +198,7 @@ namespace Dapple.LayerGeneration
 			if (!oTemp.Scheme.Equals(LayerScheme))
 				throw new ArgumentException(oTemp.Scheme + " is not a valid LayerUri for " + LayerType + " layers");
 
-			if (strUri.StartsWith("gxtif"))
+			if (strUri.StartsWith("gxtif") || strUri.StartsWith("gxkml"))
 			{
 				oTemp.Scheme = "file";
 			}
@@ -272,10 +277,9 @@ namespace Dapple.LayerGeneration
 			if (strUri.StartsWith("gxtile")) return new TileLayerUri(strUri);
 			if (strUri.StartsWith("gxve")) return new VELayerUri(strUri);
 			if (strUri.StartsWith("gxtif")) return new GeoTifLayerUri(strUri);
+			if (strUri.StartsWith("gxkml")) return new KeyholeLayerURI(strUri);
 			throw new ArgumentException("Unknown layer uri " + strUri);
 		}
-
-		public ServerUri Server { get { return m_oServer; } }
 
 		public String getAttribute(String strKey)
 		{
@@ -769,6 +773,48 @@ namespace Dapple.LayerGeneration
 		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
 		{
 			return new GeorefImageLayerBuilder(m_oServer.LocalPath, false, oWindow, null);
+		}
+	}
+
+	public class KeyholeLayerURI : LayerUri
+	{
+		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
+
+		public KeyholeLayerURI(String strUri) : base(strUri) { }
+
+		public override bool IsValid
+		{
+			get { return true; }
+		}
+
+		protected override string LayerScheme
+		{
+			get { return "gxkml"; }
+		}
+
+		public override string LayerType
+		{
+			get { return "KML"; }
+		}
+
+		protected override List<string> AdditionalUriTokens
+		{
+			get { return m_lAdditionalTokens; }
+		}
+
+		protected override List<string> ObsoleteUriTokens
+		{
+			get { return new List<String>(); }
+		}
+
+		protected override ServerUri getServerUri(UriBuilder oBuilder)
+		{
+			return new KeyholeFileUri(oBuilder.Uri.ToString());
+		}
+
+		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		{
+			return new KML.KMLLayerBuilder(m_oServer.LocalPath, oWindow, null);
 		}
 	}
 }

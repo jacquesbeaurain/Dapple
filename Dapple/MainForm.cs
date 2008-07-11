@@ -156,8 +156,6 @@ namespace Dapple
 		private Stars3D.Plugin.Stars3D starsPlugin;
 		private ThreeDconnexion.Plugin.TDxWWInput threeDConnPlugin;
 
-		private KMLPlugin.KMLImporter kmlPlugin;
-
 		private RenderableObjectList placeNames;
 
 		private string openView = "";
@@ -168,10 +166,6 @@ namespace Dapple
 		private string metaviewerDir = "";
 
 		private MetadataDisplayThread m_oMetadataDisplay;
-
-		Geosoft.GX.DAPGetData.GetDapError dapErrors;
-
-		private DappleToolStripRenderer toolStripRenderer;
 
 		private static ImageList m_oImageList = new ImageList();
 		private static RemoteInterface m_oMontajRemoteInterface;
@@ -480,11 +474,11 @@ namespace Dapple
 #endif*/
 
 				this.Icon = new System.Drawing.Icon(@"app.ico");
-				this.toolStripRenderer = new DappleToolStripRenderer();
-				c_tsSearch.Renderer = this.toolStripRenderer;
-				c_tsLayers.Renderer = this.toolStripRenderer;
-				c_tsOverview.Renderer = this.toolStripRenderer;
-				c_tsMetadata.Renderer = this.toolStripRenderer;
+				DappleToolStripRenderer oTSR = new DappleToolStripRenderer();
+				c_tsSearch.Renderer = oTSR;
+				c_tsLayers.Renderer = oTSR;
+				c_tsOverview.Renderer = oTSR;
+				c_tsMetadata.Renderer = oTSR;
 
 				c_tsNavigation.Renderer = new BorderlessToolStripRenderer();
 
@@ -524,8 +518,6 @@ namespace Dapple
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open", "", "Open &" + ViewFileDescr);
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\Shell\\Open\\Command", "", "\"" + DirectoryPath + "\" \"%1\"");
 				Registry.SetValue(Registry.CurrentUser + "\\Software\\Classes\\Dapple View\\DefaultIcon", "", Path.Combine(DirectoryPath, "app.ico"));
-
-				this.dapErrors = new Geosoft.GX.DAPGetData.GetDapError(Path.Combine(Settings.CachePath, "DapErrors.log"));
 
 				WorldWind.Terrain.TerrainTileService terrainTileService = new WorldWind.Terrain.TerrainTileService("http://worldwind25.arc.nasa.gov/wwelevation/wwelevation.aspx", "srtm30pluszip", 20, 150, "bil", 12, Path.Combine(Settings.CachePath, "Earth\\TerrainAccessor\\SRTM"), TimeSpan.FromMinutes(30), "Int16");
 				WorldWind.Terrain.TerrainAccessor terrainAccessor = new WorldWind.Terrain.NltTerrainAccessor("SRTM", -180, -90, 180, 90, terrainTileService, null);
@@ -569,9 +561,6 @@ namespace Dapple
 
 				this.threeDConnPlugin = new ThreeDconnexion.Plugin.TDxWWInput();
 				this.threeDConnPlugin.PluginLoad(this, Path.Combine(strPluginsDir, "3DConnexion"));
-
-				this.kmlPlugin = new KMLPlugin.KMLImporter();
-				this.kmlPlugin.PluginLoad(this, strPluginsDir);
 
 				ThreadPool.QueueUserWorkItem(LoadPlacenames);
 
@@ -751,14 +740,6 @@ namespace Dapple
 				}
 
 				#endregion
-
-				/*if (OPEN_KML_ENABLED)
-				{
-					toolStripMenuItemfile.Visible = true;
-					toolStripMenuItemfile.Enabled = true;
-					toolStripMenuItemOpenKML.Visible = true;
-					toolStripMenuItemOpenKML.Enabled = true;
-				}*/
 
 				loadCountryList();
 				populateAoiComboBox();
@@ -1700,6 +1681,21 @@ namespace Dapple
 		private void c_miToggleServerStatus_Click(object sender, EventArgs e)
 		{
 			c_oServerTree.CmdToggleServerEnabled();
+		}
+
+		private void c_miOpenKeyhole_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog bob = new OpenFileDialog();
+			bob.Filter = "KML/KMZ Files|*.kml;*.kmz";
+			bob.FilterIndex = 1;
+			bob.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			bob.Title = "Select Keyhole File to Open...";
+			bob.Multiselect = false;
+
+			if (bob.ShowDialog() == DialogResult.OK && File.Exists(bob.FileName))
+			{
+				AddLayerBuilder(new Dapple.KML.KMLLayerBuilder(bob.FileName, WorldWindowSingleton, null));
+			}
 		}
 
 		#endregion

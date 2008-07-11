@@ -382,11 +382,10 @@ namespace Dapple
 			  // 
 			  // c_miOpenKeyhole
 			  // 
-			  this.c_miOpenKeyhole.Enabled = false;
 			  this.c_miOpenKeyhole.Name = "c_miOpenKeyhole";
 			  this.c_miOpenKeyhole.Size = new System.Drawing.Size(177, 22);
 			  this.c_miOpenKeyhole.Text = "Open KML/KMZ File...";
-			  this.c_miOpenKeyhole.Visible = false;
+			  this.c_miOpenKeyhole.Click += new System.EventHandler(this.c_miOpenKeyhole_Click);
 			  // 
 			  // toolStripSeparator12
 			  // 
@@ -1103,7 +1102,6 @@ namespace Dapple
 			  this.c_bZoomIn.Text = "Zoom In Button";
 			  this.c_bZoomIn.ToolTipText = "Zoom In (Click once or click and hold)\r\nAlso available with mouse wheel in view a" +
 					"nd \"+\" key shortcut.";
-			  this.c_bZoomIn.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bZoomIn.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_bZoomIn_MouseDown);
 			  this.c_bZoomIn.MouseLeave += new System.EventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bZoomIn.Click += new System.EventHandler(this.c_bZoomIn_Click);
@@ -1118,7 +1116,6 @@ namespace Dapple
 			  this.c_bZoomOut.Text = "Zoom Out Button";
 			  this.c_bZoomOut.ToolTipText = "Zoom Out (Click once or click and hold)\r\nAlso available with mouse wheel in view " +
 					"and \"-\" key shortcut.";
-			  this.c_bZoomOut.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bZoomOut.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_bZoomOut_MouseDown);
 			  this.c_bZoomOut.MouseLeave += new System.EventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bZoomOut.Click += new System.EventHandler(this.c_bZoomOut_Click);
@@ -1138,7 +1135,6 @@ namespace Dapple
 			  this.c_bTiltUp.Text = "Tilt Up Button";
 			  this.c_bTiltUp.ToolTipText = "Tilt Up (Click once or click and hold)\r\nAlso available with mouse right button dr" +
 					"ag in view and \"W\" key shortcut.";
-			  this.c_bTiltUp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bTiltUp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_bTiltUp_MouseDown);
 			  this.c_bTiltUp.MouseLeave += new System.EventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bTiltUp.Click += new System.EventHandler(this.c_bTiltUp_Click);
@@ -1164,7 +1160,6 @@ namespace Dapple
 			  this.c_bTiltDown.Text = "TiltDownbutton";
 			  this.c_bTiltDown.ToolTipText = "Tilt Down (Click once or click and hold)\r\nAlso available with mouse right button " +
 					"drag in view and \"S\" key shortcut.";
-			  this.c_bTiltDown.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bTiltDown.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_bTiltDown_MouseDown);
 			  this.c_bTiltDown.MouseLeave += new System.EventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bTiltDown.Click += new System.EventHandler(this.c_bTiltDown_Click);
@@ -1184,7 +1179,6 @@ namespace Dapple
 			  this.c_bRotateLeft.Text = "Rotate Counterclockwise Button";
 			  this.c_bRotateLeft.ToolTipText = "Rotate Counterclockwise (Click once or click and hold)\r\nAlso available with mouse" +
 					" right button drag in view and \"A\" key shortcut.";
-			  this.c_bRotateLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bRotateLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_bRotateLeft_MouseDown);
 			  this.c_bRotateLeft.MouseLeave += new System.EventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bRotateLeft.Click += new System.EventHandler(this.c_bRotateLeft_Click);
@@ -1210,7 +1204,6 @@ namespace Dapple
 			  this.c_bRotateRight.Text = "Rotate Clockwise Button";
 			  this.c_bRotateRight.ToolTipText = "Rotate Clockwise (Click once or click and hold)\r\nAlso available with mouse right " +
 					"button drag in view and \"D\" key shortcut.";
-			  this.c_bRotateRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bRotateRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_bRotateRight_MouseDown);
 			  this.c_bRotateRight.MouseLeave += new System.EventHandler(this.toolStripNavButton_MouseRemoveCapture);
 			  this.c_bRotateRight.Click += new System.EventHandler(this.c_bRotateRight_Click);

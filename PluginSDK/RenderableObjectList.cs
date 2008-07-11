@@ -23,6 +23,13 @@ namespace WorldWind.Renderable
 		Cache m_Cache = null;
 		System.Timers.Timer m_RefreshTimer = null;
 		public bool ShowOnlyOneLayer;
+
+		private bool m_blSortChildrenOnAdd = true;
+		public bool SortChildrenOnAdd
+		{
+			get { return m_blSortChildrenOnAdd; }
+			set { m_blSortChildrenOnAdd = value; }
+		}
 		
 		private bool m_disableExpansion = false;
 		public bool DisableExpansion
@@ -415,7 +422,7 @@ namespace WorldWind.Renderable
 
 					m_children.Add(ro);
 				}
-				SortChildren();
+				if (m_blSortChildrenOnAdd)	SortChildren();
 			}
 		}
 
@@ -473,7 +480,7 @@ namespace WorldWind.Renderable
 					{
 						if (b.Name.CompareTo(a.Name) > 0)
 						{
-							// Sort by name (Dapple names the layers according to their render priority)
+							// Sort SurfaceImages and TerrainMappedImages by name (Dapple names the layers according to their render priority)
 							m_children[index] = b;
 							m_children[index + 1] = a;
 							index = 0;
