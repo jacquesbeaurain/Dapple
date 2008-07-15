@@ -29,7 +29,7 @@
       </Directory>
       <Directory Id="DesktopFolder" Name="Desktop" />
     </Directory>
-    <Property Id="DappleShortcut" Value="[INSTALLDIR]" />
+    <Property Id="DappleShortcut" Value="temp" />
     <Property Id="BaseName" Value="Dapple" />
     <Feature Id="Main" Title="Main Application" Level="1">
       <MergeRef Id="DappleMergeModule" />
