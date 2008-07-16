@@ -59,7 +59,7 @@
           <File Id="app.ico" Name="app.ico" Source="..\Dapple\bin\x86\Release\app.ico" Vital="yes" />
           <File Id="version.txt" Name="version.txt" Source="..\Dapple\bin\x86\Release\version.txt" Vital="yes" />
           <File Id="Dapple.exe.config" Name="Dapple.exe.config" Source="..\Dapple\bin\x86\Release\Dapple.exe.config" Vital="yes" />
-          <File Id="WorldWindDings1.04.ttf" Name="World Wind Dings 1.04.ttf" Source="..\Dapple\bin\x86\Release\World Wind Dings 1.04.ttf" Vital="yes" DefaultLanguage="1033" />
+          <File Id="WorldWindDings1.04.ttf" Name="World Wind Dings 1.04.ttf" Source="..\Dapple\bin\x86\Release\World Wind Dings 1.04.ttf" Vital="yes" DefaultLanguage="1033" TrueType="yes" />
         </Component>
         <Directory Id="Config" Name="Config">
           <Component Id="ConfigFiles" Guid="7897c300-fb9c-48d3-8fea-82b7f917effa">

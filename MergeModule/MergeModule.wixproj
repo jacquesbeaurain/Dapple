@@ -39,8 +39,7 @@
     <SuppressLayout>False</SuppressLayout>
     <SuppressMsiAssemblyTableProcessing>False</SuppressMsiAssemblyTableProcessing>
     <LinkerSuppressSchemaValidation>False</LinkerSuppressSchemaValidation>
-    <LinkerSuppressSpecificWarnings>
-    </LinkerSuppressSpecificWarnings>
+    <LinkerSuppressSpecificWarnings>07</LinkerSuppressSpecificWarnings>
     <SuppressValidation>False</SuppressValidation>
     <LinkerTreatWarningsAsErrors>False</LinkerTreatWarningsAsErrors>
     <LinkerVerboseOutput>False</LinkerVerboseOutput>
