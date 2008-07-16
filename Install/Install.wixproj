@@ -9,8 +9,7 @@
     <WixToolPath>$(GEOBUILD)\build\installs\Wix\</WixToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>
-    </OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
     <AllowIdenticalRows>False</AllowIdenticalRows>
@@ -45,15 +44,13 @@
     </WixVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>
-    </OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
     <AllowIdenticalRows>False</AllowIdenticalRows>
     <CabinetCachePath>
     </CabinetCachePath>
     <CabinetCreationThreadCount>-1</CabinetCreationThreadCount>
-    <Cultures>
-    </Cultures>
+    <Cultures>en-US</Cultures>
     <LeaveTemporaryFiles>False</LeaveTemporaryFiles>
     <LinkerPedantic>False</LinkerPedantic>
     <ReuseCabinetCache>False</ReuseCabinetCache>
