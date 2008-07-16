@@ -9,7 +9,8 @@
     <WixToolPath>$(GEOBUILD)\build\installs\Wix\</WixToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>
+    </OutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
     <AllowIdenticalRows>False</AllowIdenticalRows>
@@ -30,8 +31,7 @@
     <SuppressDroppingUnrealTables>False</SuppressDroppingUnrealTables>
     <SuppressFileHashAndInfo>False</SuppressFileHashAndInfo>
     <SuppressFiles>False</SuppressFiles>
-    <SuppressIces>
-    </SuppressIces>
+    <SuppressIces>ICE07</SuppressIces>
     <LinkerSuppressIntermediateFileVersionMatching>False</LinkerSuppressIntermediateFileVersionMatching>
     <SuppressLayout>False</SuppressLayout>
     <SuppressMsiAssemblyTableProcessing>False</SuppressMsiAssemblyTableProcessing>
@@ -45,13 +45,15 @@
     </WixVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>
+    </OutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
     <AllowIdenticalRows>False</AllowIdenticalRows>
     <CabinetCachePath>
     </CabinetCachePath>
     <CabinetCreationThreadCount>-1</CabinetCreationThreadCount>
-    <Cultures>en-US</Cultures>
+    <Cultures>
+    </Cultures>
     <LeaveTemporaryFiles>False</LeaveTemporaryFiles>
     <LinkerPedantic>False</LinkerPedantic>
     <ReuseCabinetCache>False</ReuseCabinetCache>
@@ -64,13 +66,13 @@
     <SuppressDroppingUnrealTables>False</SuppressDroppingUnrealTables>
     <SuppressFileHashAndInfo>False</SuppressFileHashAndInfo>
     <SuppressFiles>False</SuppressFiles>
-    <SuppressIces>
-    </SuppressIces>
+    <SuppressIces>ICE07</SuppressIces>
     <LinkerSuppressIntermediateFileVersionMatching>False</LinkerSuppressIntermediateFileVersionMatching>
     <SuppressLayout>False</SuppressLayout>
     <SuppressMsiAssemblyTableProcessing>False</SuppressMsiAssemblyTableProcessing>
     <LinkerSuppressSchemaValidation>False</LinkerSuppressSchemaValidation>
-    <LinkerSuppressSpecificWarnings>07</LinkerSuppressSpecificWarnings>
+    <LinkerSuppressSpecificWarnings>
+    </LinkerSuppressSpecificWarnings>
     <SuppressValidation>False</SuppressValidation>
     <LinkerTreatWarningsAsErrors>False</LinkerTreatWarningsAsErrors>
     <LinkerVerboseOutput>False</LinkerVerboseOutput>
