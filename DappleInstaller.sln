@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Install", "Install\Install.wixproj", "{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}"
 	ProjectSection(ProjectDependencies) = postProject
 		{31BA40A6-4CBE-4976-A165-90DCA291DC79} = {31BA40A6-4CBE-4976-A165-90DCA291DC79}
