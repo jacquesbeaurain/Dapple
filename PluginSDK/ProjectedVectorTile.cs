@@ -15,6 +15,7 @@ namespace WorldWind
 		bool m_Initialized = false;
 		bool m_Initializing = false;
 		bool m_Disposing = false;
+		byte m_bOpacity = 255;
 
 		public int Level = 0;
 		public int Row = 0;
@@ -40,6 +41,36 @@ namespace WorldWind
 
 			BoundingBox = new BoundingBox( (float)geographicBoundingBox.South, (float)geographicBoundingBox.North, (float)geographicBoundingBox.West, (float)geographicBoundingBox.East, 
 				(float)(parentLayer.World.EquatorialRadius + geographicBoundingBox.MinimumAltitude), (float)(parentLayer.World.EquatorialRadius + geographicBoundingBox.MaximumAltitude + 300000f));
+		}
+
+		public byte Opacity
+		{
+			get
+			{
+				return m_bOpacity;
+			}
+			set
+			{
+				m_bOpacity = value;
+
+				if (m_NwImageLayer != null)
+					m_NwImageLayer.Opacity = value;
+				if (m_NeImageLayer != null)
+					m_NeImageLayer.Opacity = value;
+				if (m_SwImageLayer != null)
+					m_SwImageLayer.Opacity = value;
+				if (m_SeImageLayer != null)
+					m_SeImageLayer.Opacity = value;
+
+				if (m_NorthEastChild != null)
+					m_NorthEastChild.Opacity = value;
+				if (m_NorthWestChild != null)
+					m_NorthWestChild.Opacity = value;
+				if (m_SouthEastChild != null)
+					m_SouthEastChild.Opacity = value;
+				if (m_SouthWestChild != null)
+					m_SouthWestChild.Opacity = value;
+			}
 		}
 
 		public void Dispose()
@@ -437,6 +468,8 @@ namespace WorldWind
 					(float)east,
 					1.0f,
 					m_parentProjectedLayer.World.TerrainAccessor);
+
+				result.Opacity = this.Opacity;
 			}
 
 			if (g != null)

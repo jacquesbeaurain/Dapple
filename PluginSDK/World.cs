@@ -114,7 +114,7 @@ namespace WorldWind
 			this.MetaData.Add("CacheDirectory", cacheDirectory);
 
 			//	this.m_WorldSurfaceRenderer = new WorldSurfaceRenderer(32, 0, this);
-			this.m_projectedVectorRenderer = new ProjectedVectorRenderer(this);
+			this.m_projectedVectorRenderer = new ProjectedVectorRenderer("World Default ProjectedVectorRenderer", this);
 
 			m_outerSphere = new AtmosphericScatteringSphere();
 			AtmosphericScatteringSphere.m_fInnerRadius = (float)equatorialRadius;

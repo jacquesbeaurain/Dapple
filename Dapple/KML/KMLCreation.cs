@@ -14,7 +14,7 @@ namespace Dapple.KML
 			try
 			{
 				oBounds = GeographicBoundingBox.NullBox();
-				RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds);
+				RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds, null);
 				if (!oBounds.IsValid) oBounds = new GeographicBoundingBox(90.0, -90.0, -180.0, 180.0);
 				return result;
 			}
@@ -25,17 +25,24 @@ namespace Dapple.KML
 			}
 		}
 
-		private static RenderableObject Construct(String strRelativeDirectory, KMLObject oSource, World oWorld, GeographicBoundingBox oBounds)
+		private static RenderableObject Construct(String strRelativeDirectory, KMLObject oSource, World oWorld, GeographicBoundingBox oBounds, ProjectedVectorRenderer oPVR)
 		{
 			if (oSource is KMLContainer)
 			{
 				KMLContainer oCastSource = oSource as KMLContainer;
 				KMLRenderableObjectList result = new KMLRenderableObjectList(oCastSource.Name);
+
+				if (oPVR == null)
+				{
+					oPVR = new ProjectedVectorRenderer("Polygons and LineStrings", oWorld);
+					result.Add(oPVR);
+				}
+
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
 					if (oCastSource[count].Visibility == true)
 					{
-						RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds);
+						RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds, oPVR);
 						if (oLayer != null)
 						{
 							result.Add(oLayer);
@@ -47,7 +54,7 @@ namespace Dapple.KML
 			else if (oSource is KMLPlacemark)
 			{
 				KMLPlacemark oCastSource = oSource as KMLPlacemark;
-				return Construct(strRelativeDirectory, oCastSource.Geometry, oWorld, oBounds);
+				return Construct(strRelativeDirectory, oCastSource.Geometry, oWorld, oBounds, oPVR);
 			}
 			else if (oSource is KMLMultiGeometry)
 			{
@@ -55,7 +62,7 @@ namespace Dapple.KML
 				KMLRenderableObjectList result = new KMLRenderableObjectList("MultiGeometry");
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
-					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds);
+					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds, oPVR);
 					if (oLayer != null)
 					{
 						result.Add(oLayer);
@@ -81,27 +88,31 @@ namespace Dapple.KML
 			{
 				KMLPolygon oCastSource = oSource as KMLPolygon;
 
-				PolygonFeature result = new PolygonFeature(oCastSource.Owner.Name, oWorld, new WorldWind.LinearRing(GetPoints(oCastSource.OuterBoundary)), new WorldWind.LinearRing[] { }, oCastSource.Style.NormalStyle.PolyStyle.Color);
-				result.Fill = oCastSource.Style.NormalStyle.PolyStyle.Fill;
-				result.Extrude = oCastSource.Extrude;
-				result.AltitudeMode = KMLAltitudeModeToWorldWind(oCastSource.AltitudeMode);
-				result.Outline = oCastSource.Style.NormalStyle.PolyStyle.Outline;
-				result.OutlineColor = oCastSource.Style.NormalStyle.PolyStyle.Color;
+				Polygon oTool = new Polygon();
+				oTool.outerBoundary = new WorldWind.LinearRing(GetPoints(oCastSource.OuterBoundary));
+				oTool.innerBoundaries = GetInnerBoundaries(oCastSource);
+				oTool.PolgonColor = oCastSource.Style.NormalStyle.PolyStyle.Color;
+				oTool.Fill = oCastSource.Style.NormalStyle.PolyStyle.Fill;
+				oTool.LineWidth = oCastSource.Style.NormalStyle.LineStyle.Width;
+				oTool.Outline = oCastSource.Style.NormalStyle.PolyStyle.Outline;
+				oTool.OutlineColor = oCastSource.Style.NormalStyle.LineStyle.Color;
+				oPVR.Add(oTool);
 
-				oBounds.Union(result.GeographicBoundingBox);
-				return result;
+				oBounds.Union(oTool.GetGeographicBoundingBox());
+				return null;
 			}
 			else if (oSource is KMLLineString)
 			{
 				KMLLineString oCastSource = oSource as KMLLineString;
 
-				LineFeature result = new LineFeature(oCastSource.Owner.Name, oWorld, GetPoints(oCastSource), oCastSource.Style.NormalStyle.LineStyle.Color);
-				result.AltitudeMode = KMLAltitudeModeToWorldWind(oCastSource.AltitudeMode);
-				result.LineWidth = oCastSource.Style.NormalStyle.LineStyle.Width;
-				result.Extrude = oCastSource.Extrude;
+				LineString oTool = new LineString();
+				oTool.Coordinates = GetPoints(oCastSource);
+				oTool.Color = oCastSource.Style.NormalStyle.LineStyle.Color;
+				oTool.LineWidth = oCastSource.Style.NormalStyle.LineStyle.Width;
+				oPVR.Add(oTool);
 
-				// Update oBounds
-				return result;
+				oBounds.Union(oTool.GetGeographicBoundingBox());
+				return null;
 			}
 			else if (oSource is KMLGroundOverlay)
 			{
@@ -116,6 +127,18 @@ namespace Dapple.KML
 				Console.WriteLine("Unknown type " + oSource.GetType().ToString());
 				return null;
 			}
+		}
+
+		private static LinearRing[] GetInnerBoundaries(KMLPolygon oCastSource)
+		{
+			LinearRing[] result = new LinearRing[oCastSource.InnerBoundaries.Count];
+
+			for (int count = 0; count < oCastSource.InnerBoundaries.Count; count++)
+			{
+				result[count] = new LinearRing(GetPoints(oCastSource.InnerBoundaries[count]));
+			}
+
+			return result;
 		}
 
 		private static Point3d[] GetPoints(KMLLinearRing oInput)

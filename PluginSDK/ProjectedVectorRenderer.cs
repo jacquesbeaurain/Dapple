@@ -7,11 +7,10 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for ProjectedVectorRenderer.
 	/// </summary>
-	public class ProjectedVectorRenderer
+	public class ProjectedVectorRenderer : Renderable.RenderableObject
 	{
-		ProjectedVectorTile[] m_rootTiles = null;
+		List<ProjectedVectorTile> m_rootTiles = new List<ProjectedVectorTile>();
 		double m_lzts = 36.0;
-		public World World = null;
 		List<Polygon> m_polygons = new List<Polygon>();
 		List<LineString> m_lineStrings = new List<LineString>();
 		public System.DateTime LastUpdate = System.DateTime.Now;
@@ -32,17 +31,38 @@ namespace WorldWind
 			get { return m_oBounds; }
 		}
 
-		public ProjectedVectorRenderer(World parentWorld)
+		public override byte Opacity
 		{
-			World = parentWorld;
+			set
+			{
+				base.Opacity = value;
+
+				foreach (ProjectedVectorTile oTile in m_rootTiles)
+				{
+					oTile.Opacity = value;
+				}
+			}
+		}
+
+		public ProjectedVectorRenderer(String strName, World parentWorld)
+			:base(strName, parentWorld)
+		{
+			RenderPriority = WorldWind.Renderable.RenderPriority.LinePaths;
+
 			CreateRootTiles();
+		}
+
+		public override void Initialize(DrawArgs drawArgs)
+		{
+			foreach (ProjectedVectorTile oTile in m_rootTiles)
+			{
+				oTile.Initialize(drawArgs);
+			}
 		}
 
 		private void CreateRootTiles()
 		{
 			int numberRows = (int)(180.0f / m_lzts);
-
-			System.Collections.ArrayList tileList = new System.Collections.ArrayList();
 
 			int istart = 0;
 			int iend = numberRows;
@@ -69,18 +89,14 @@ namespace WorldWind
 					newTile.Level = 0;
 					newTile.Row = i;
 					newTile.Col = j;
-					tileList.Add(newTile);
+					m_rootTiles.Add(newTile);
 				}
 			}
-
-			m_rootTiles = (ProjectedVectorTile[])tileList.ToArray(typeof(ProjectedVectorTile));
 		}
 
 
 		public void Add(Polygon polygon)
 		{
-			if (polygon.ParentRenderable == null)
-				Log.Write(Log.Levels.Error, "null null null");
 			polygon.Visible = IsRenderableVisible(polygon.ParentRenderable);
 			m_polygons.Add(polygon);
 			LastUpdate = System.DateTime.Now;
@@ -97,7 +113,7 @@ namespace WorldWind
 			m_oBounds.Union(lineString.GetGeographicBoundingBox());
 		}
 
-		public void Update(DrawArgs drawArgs)
+		public override void Update(DrawArgs drawArgs)
 		{
 			for (int i = 0; i < m_lineStrings.Count; i++)
 			{
@@ -162,7 +178,11 @@ namespace WorldWind
 
 		private static bool IsRenderableVisible(WorldWind.Renderable.RenderableObject renderable)
 		{
-			if (!renderable.IsOn)
+			if (renderable == null)
+			{
+				return true;
+			}
+			else if (!renderable.IsOn)
 			{
 				return false;
 			}
@@ -176,12 +196,25 @@ namespace WorldWind
 			}
 		}
 
-		public void Render(DrawArgs drawArgs)
+		public override void Render(DrawArgs drawArgs)
 		{
 			drawArgs.device.Clear(Microsoft.DirectX.Direct3D.ClearFlags.ZBuffer, 0, 1.0f, 0);
 
 			foreach (ProjectedVectorTile tile in m_rootTiles)
 				tile.Render(drawArgs);
+		}
+
+		public override bool PerformSelectionAction(DrawArgs drawArgs)
+		{
+			return false;
+		}
+
+		public override void Dispose()
+		{
+			foreach (ProjectedVectorTile oTile in m_rootTiles)
+			{
+				oTile.Dispose();
+			}
 		}
 	}
 }
