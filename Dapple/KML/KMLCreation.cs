@@ -27,28 +27,31 @@ namespace Dapple.KML
 
 		private static RenderableObject Construct(String strRelativeDirectory, KMLObject oSource, World oWorld, GeographicBoundingBox oBounds)
 		{
-			if (oSource is Container)
+			if (oSource is KMLContainer)
 			{
-				Container oCastSource = oSource as Container;
+				KMLContainer oCastSource = oSource as KMLContainer;
 				KMLRenderableObjectList result = new KMLRenderableObjectList(oCastSource.Name);
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
-					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds);
-					if (oLayer != null)
+					if (oCastSource[count].Visibility == true)
 					{
-						result.Add(oLayer);
+						RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds);
+						if (oLayer != null)
+						{
+							result.Add(oLayer);
+						}
 					}
 				}
 				return result;
 			}
-			else if (oSource is Placemark)
+			else if (oSource is KMLPlacemark)
 			{
-				Placemark oCastSource = oSource as Placemark;
+				KMLPlacemark oCastSource = oSource as KMLPlacemark;
 				return Construct(strRelativeDirectory, oCastSource.Geometry, oWorld, oBounds);
 			}
-			else if (oSource is MultiGeometry)
+			else if (oSource is KMLMultiGeometry)
 			{
-				MultiGeometry oCastSource = oSource as MultiGeometry;
+				KMLMultiGeometry oCastSource = oSource as KMLMultiGeometry;
 				KMLRenderableObjectList result = new KMLRenderableObjectList("MultiGeometry");
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
@@ -60,9 +63,9 @@ namespace Dapple.KML
 				}
 				return result;
 			}
-			else if (oSource is Point)
+			else if (oSource is KMLPoint)
 			{
-				Point oCastSource = oSource as Point;
+				KMLPoint oCastSource = oSource as KMLPoint;
 
 				KMLIcon result = new KMLIcon(oCastSource.Owner.Name, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Longitude, oCastSource.Style.NormalStyle.IconStyle.Icon != null ? oCastSource.Style.NormalStyle.IconStyle.Icon.HRef : null, oCastSource.Coordinates.Altitude);
 				result.DrawGroundStick = oCastSource.Extrude;
@@ -74,9 +77,9 @@ namespace Dapple.KML
 				oBounds.Union(oCastSource.Coordinates.Longitude, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Altitude);
 				return result;
 			}
-			else if (oSource is Polygon)
+			else if (oSource is KMLPolygon)
 			{
-				Polygon oCastSource = oSource as Polygon;
+				KMLPolygon oCastSource = oSource as KMLPolygon;
 
 				PolygonFeature result = new PolygonFeature(oCastSource.Owner.Name, oWorld, new WorldWind.LinearRing(GetPoints(oCastSource.OuterBoundary)), new WorldWind.LinearRing[] { }, oCastSource.Style.NormalStyle.PolyStyle.Color);
 				result.Fill = oCastSource.Style.NormalStyle.PolyStyle.Fill;
@@ -88,9 +91,9 @@ namespace Dapple.KML
 				oBounds.Union(result.GeographicBoundingBox);
 				return result;
 			}
-			else if (oSource is LineString)
+			else if (oSource is KMLLineString)
 			{
-				LineString oCastSource = oSource as LineString;
+				KMLLineString oCastSource = oSource as KMLLineString;
 
 				LineFeature result = new LineFeature(oCastSource.Owner.Name, oWorld, GetPoints(oCastSource), oCastSource.Style.NormalStyle.LineStyle.Color);
 				result.AltitudeMode = KMLAltitudeModeToWorldWind(oCastSource.AltitudeMode);
@@ -100,11 +103,11 @@ namespace Dapple.KML
 				// Update oBounds
 				return result;
 			}
-			else if (oSource is GroundOverlay)
+			else if (oSource is KMLGroundOverlay)
 			{
-				GroundOverlay oCastSource = oSource as GroundOverlay;
+				KMLGroundOverlay oCastSource = oSource as KMLGroundOverlay;
 
-				KMLGroundOverlay result = new KMLGroundOverlay(oCastSource, strRelativeDirectory);
+				KMLGroundOverlayRenderable result = new KMLGroundOverlayRenderable(oCastSource, strRelativeDirectory);
 				oBounds.Union(new GeographicBoundingBox(oCastSource.LatLonBox.North, oCastSource.LatLonBox.South, oCastSource.LatLonBox.West, oCastSource.LatLonBox.East));
 				return result;
 			}
@@ -115,7 +118,7 @@ namespace Dapple.KML
 			}
 		}
 
-		private static Point3d[] GetPoints(LinearRing oInput)
+		private static Point3d[] GetPoints(KMLLinearRing oInput)
 		{
 			Point3d[] result = new Point3d[oInput.Count];
 
@@ -127,7 +130,7 @@ namespace Dapple.KML
 			return result;
 		}
 
-		private static Point3d[] GetPoints(LineString oInput)
+		private static Point3d[] GetPoints(KMLLineString oInput)
 		{
 			Point3d[] result = new Point3d[oInput.Count];
 
@@ -139,15 +142,15 @@ namespace Dapple.KML
 			return result;
 		}
 
-		private static WorldWind.AltitudeMode KMLAltitudeModeToWorldWind(AltitudeMode oInput)
+		private static WorldWind.AltitudeMode KMLAltitudeModeToWorldWind(KMLAltitudeMode oInput)
 		{
 			switch (oInput)
 			{
-				case AltitudeMode.absolute:
+				case KMLAltitudeMode.absolute:
 					return WorldWind.AltitudeMode.Absolute;
-				case AltitudeMode.clampToGround:
+				case KMLAltitudeMode.clampToGround:
 					return WorldWind.AltitudeMode.ClampedToGround;
-				case AltitudeMode.relativeToGround:
+				case KMLAltitudeMode.relativeToGround:
 					return WorldWind.AltitudeMode.RelativeToGround;
 				default:
 					throw new ArgumentException("Unknow AltitudeMode " + oInput.ToString());

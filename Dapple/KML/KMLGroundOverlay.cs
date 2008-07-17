@@ -7,23 +7,23 @@ using System.IO;
 
 namespace Dapple.KML
 {
-	class KMLGroundOverlay : RenderableObject
+	class KMLGroundOverlayRenderable : RenderableObject
 	{
 		private String m_strKMLDirectory;
 		private String m_strImageFilename = Path.ChangeExtension(Path.Combine(KMLFile.KMLTempDirectory, Guid.NewGuid().ToString()), ".png");
 		private ImageLayer m_oLayer;
-		private GroundOverlay m_oGroundOverlay;
+		private KMLGroundOverlay m_oGroundOverlay;
 		private GeographicBoundingBox m_oLastAoI, m_oLayerAoI;
 		private DateTime m_oLastAoIChangeTime;
 
-		public KMLGroundOverlay(GroundOverlay oSource, String strKMLDirectory)
+		public KMLGroundOverlayRenderable(KMLGroundOverlay oSource, String strKMLDirectory)
 			: base(oSource.Name)
 		{
 			m_oGroundOverlay = oSource;
 			m_strKMLDirectory = strKMLDirectory;
 		}
 
-		~KMLGroundOverlay()
+		~KMLGroundOverlayRenderable()
 		{
 			// --- If this is an internet file, delete the temporary file we saved to ---
 			if (!m_oGroundOverlay.Icon.IsLocalFile)
@@ -46,7 +46,7 @@ namespace Dapple.KML
 				m_oLastAoI = drawArgs.CurrentRoI;
 				m_oLastAoIChangeTime = DateTime.Now;
 
-				if (m_oGroundOverlay.Icon.ViewRefreshMode == ViewRefreshMode.onStop)
+				if (m_oGroundOverlay.Icon.ViewRefreshMode == KMLViewRefreshMode.onStop)
 				{
 					GeographicBoundingBox oRenderBox = GetNewBox(drawArgs.CurrentRoI, m_oGroundOverlay.Icon.ViewBoundScale);
 
@@ -106,7 +106,7 @@ namespace Dapple.KML
 			{
 				if (m_oLayer != null)
 				{
-					if (m_oGroundOverlay.Icon.ViewRefreshMode == ViewRefreshMode.onStop)
+					if (m_oGroundOverlay.Icon.ViewRefreshMode == KMLViewRefreshMode.onStop)
 					{
 						double dTimeStopped;
 						if (drawArgs.CurrentRoI.Equals(m_oLastAoI))
