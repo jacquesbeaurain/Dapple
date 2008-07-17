@@ -15,7 +15,7 @@ namespace Dapple.KML
 			{
 				oBounds = GeographicBoundingBox.NullBox();
 				RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds);
-				if (!oBounds.IsValid)oBounds = new GeographicBoundingBox(90.0, -90.0, -180.0, 180.0);
+				if (!oBounds.IsValid) oBounds = new GeographicBoundingBox(90.0, -90.0, -180.0, 180.0);
 				return result;
 			}
 			catch (Exception ex)
@@ -30,8 +30,7 @@ namespace Dapple.KML
 			if (oSource is Container)
 			{
 				Container oCastSource = oSource as Container;
-				RenderableObjectList result = new RenderableObjectList(oCastSource.Name);
-				result.SortChildrenOnAdd = false;
+				KMLRenderableObjectList result = new KMLRenderableObjectList(oCastSource.Name);
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
 					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds);
@@ -50,8 +49,7 @@ namespace Dapple.KML
 			else if (oSource is MultiGeometry)
 			{
 				MultiGeometry oCastSource = oSource as MultiGeometry;
-				RenderableObjectList result = new RenderableObjectList("MultiGeometry");
-				result.SortChildrenOnAdd = false;
+				KMLRenderableObjectList result = new KMLRenderableObjectList("MultiGeometry");
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
 					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds);
@@ -66,12 +64,14 @@ namespace Dapple.KML
 			{
 				Point oCastSource = oSource as Point;
 
-				KMLIcon result = new KMLIcon(oCastSource.Owner.Name, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Longitude, oCastSource.Style.NormalStyle.IconStyle.Icon.HRef, oCastSource.Coordinates.Altitude);
+				KMLIcon result = new KMLIcon(oCastSource.Owner.Name, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Longitude, oCastSource.Style.NormalStyle.IconStyle.Icon != null ? oCastSource.Style.NormalStyle.IconStyle.Icon.HRef : null, oCastSource.Coordinates.Altitude);
 				result.DrawGroundStick = oCastSource.Extrude;
 				result.Rotation = WorldWind.Angle.FromDegrees(oCastSource.Style.NormalStyle.IconStyle.Heading);
 				result.IsRotated = oCastSource.Style.NormalStyle.IconStyle.Heading != 0.0f;
+				result.NormalColor = oCastSource.Style.NormalStyle.LabelStyle.Color;
+				result.HotColor = oCastSource.Style.HighlightStyle.LabelStyle.Color;
 
-				// update oBounds
+				oBounds.Union(oCastSource.Coordinates.Longitude, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Altitude);
 				return result;
 			}
 			else if (oSource is Polygon)
@@ -104,42 +104,7 @@ namespace Dapple.KML
 			{
 				GroundOverlay oCastSource = oSource as GroundOverlay;
 
-				ImageLayer result = new ImageLayer(
-					oCastSource.Name,
-					oWorld,
-					oCastSource.Altitude,
-					null,
-					oCastSource.LatLonBox.South,
-					oCastSource.LatLonBox.North,
-					oCastSource.LatLonBox.West,
-					oCastSource.LatLonBox.East,
-					255,
-					oWorld.TerrainAccessor);
-
-				String strFilePath = oCastSource.Icon.HRef;
-
-				if (strFilePath.StartsWith("http://"))
-				{
-					result.ImageUrl = strFilePath;
-					result.ImagePath = Path.Combine(Path.Combine(MainForm.Settings.CachePath, "kml"), strFilePath.GetHashCode() + ".png");
-				}
-				else
-				{
-					strFilePath = strFilePath.Replace('\\', Path.DirectorySeparatorChar);
-					strFilePath = strFilePath.Replace('/', Path.DirectorySeparatorChar);
-					
-					if (Path.IsPathRooted(strFilePath))
-					{
-						result.ImagePath = strFilePath;
-					}
-					else
-					{
-						result.ImagePath = Path.Combine(strRelativeDirectory, strFilePath);
-					}
-				}
-
-				result.Opacity = oCastSource.Color.A;
-
+				KMLGroundOverlay result = new KMLGroundOverlay(oCastSource, strRelativeDirectory);
 				oBounds.Union(new GeographicBoundingBox(oCastSource.LatLonBox.North, oCastSource.LatLonBox.South, oCastSource.LatLonBox.West, oCastSource.LatLonBox.East));
 				return result;
 			}
@@ -186,6 +151,32 @@ namespace Dapple.KML
 					return WorldWind.AltitudeMode.RelativeToGround;
 				default:
 					throw new ArgumentException("Unknow AltitudeMode " + oInput.ToString());
+			}
+		}
+	}
+
+	class KMLRenderableObjectList : RenderableObjectList
+	{
+		public KMLRenderableObjectList(String strName)
+			: base(strName)
+		{
+			m_blAllowDuplicateNames = true;
+			m_blSortChildrenOnAdd = false;
+		}
+
+		public override byte Opacity
+		{
+			get
+			{
+				return base.Opacity;
+			}
+			set
+			{
+				base.Opacity = value;
+				foreach (RenderableObject ro in m_children)
+				{
+					ro.Opacity = value;
+				}
 			}
 		}
 	}

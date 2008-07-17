@@ -69,6 +69,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtAssemblies\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Interop.GeoSecureClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=25af711bae526fce, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Interop.GeoSecureClient.dll</HintPath>
@@ -257,6 +261,7 @@
     </Compile>
     <Compile Include="IPageNavigator.cs" />
     <Compile Include="KML\KMLCreation.cs" />
+    <Compile Include="KML\KMLGroundOverlay.cs" />
     <Compile Include="KML\KMLLayerBuilder.cs" />
     <Compile Include="KML\KMLObjectModel.cs" />
     <Compile Include="LayerGeneration\ArcIMSDownloading.cs" />
@@ -444,6 +449,7 @@
     <EmbeddedResource Include="TriStateTreeView\StateUnchecked16.ico" />
     <EmbeddedResource Include="TriStateTreeView\TriStateTreeView.resx">
       <DependentUpon>TriStateTreeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="ConfigurationWizard\Framework\Wizard.cs">
       <SubType>Form</SubType>
@@ -465,21 +471,27 @@
     </Compile>
     <EmbeddedResource Include="ConfigurationWizard\Framework\Wizard.resx">
       <DependentUpon>Wizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigurationWizard\Framework\WizardPage.resx">
       <DependentUpon>WizardPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigurationWizard\Pages\CachePage.resx">
       <DependentUpon>CachePage.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigurationWizard\Pages\FinalPage.resx">
       <DependentUpon>FinalPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigurationWizard\Pages\ProxyPage.resx">
       <DependentUpon>ProxyPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigurationWizard\Pages\WelcomePage.resx">
       <DependentUpon>WelcomePage.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="AboutDialog.cs">
       <SubType>Form</SubType>
@@ -610,7 +622,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Data\dappleview.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\default.dapple">
@@ -837,16 +850,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Data\LayerSet.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </None>
     <Content Include="Data\sun.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Data\wms_server_list.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </None>
     <None Include="Data\xlinks.xsd">
-      <SubType>Designer</SubType>
+      <SubType>
+      </SubType>
     </None>
     <None Include="Plugins\GlobalClouds\GlobalClouds.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1694,7 +1694,15 @@ namespace Dapple
 
 			if (bob.ShowDialog() == DialogResult.OK && File.Exists(bob.FileName))
 			{
-				AddLayerBuilder(new Dapple.KML.KMLLayerBuilder(bob.FileName, WorldWindowSingleton, null));
+				try
+				{
+					Dapple.KML.KMLLayerBuilder oBuider = new Dapple.KML.KMLLayerBuilder(bob.FileName, WorldWindowSingleton, null);
+					AddLayerBuilder(oBuider);
+				}
+				catch (ArgumentException ex)
+				{
+					Program.ShowMessageBox("An error occurred while loading file '" + Path.GetFileName(bob.FileName) + "':" + Environment.NewLine + Environment.NewLine + ex.Message, "Open KML File", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
+				}
 			}
 		}
 

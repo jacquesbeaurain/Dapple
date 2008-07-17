@@ -1308,13 +1308,13 @@ namespace WorldWind.Renderable
 			return false;
 		}
 
-		protected CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
-
 		/// <summary>
 		/// Render a rectangle around an image tile in the specified color
 		/// </summary>
 		public void RenderDownloadRectangle(DrawArgs drawArgs, int color, Point3d referenceCenter)
 		{
+			CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
+
 			// Render terrain download rectangle
 			Point3d northWestV = MathEngine.SphericalToCartesian(north, west, quadTileSet.LayerRadius) -
 										referenceCenter;

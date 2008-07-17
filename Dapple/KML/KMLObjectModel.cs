@@ -5,6 +5,8 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.IO.Compression;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace Dapple.KML
 {
@@ -18,17 +20,26 @@ namespace Dapple.KML
 		private String m_strID = String.Empty;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private String m_strTargetID = String.Empty;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		protected KMLFile m_oSourceFile;
 
 		#endregion
 
 
 		#region Constructors
 
-		public KMLObject(XmlElement element, XmlNamespaceManager manager)
+		public KMLObject(XmlElement element, XmlNamespaceManager manager, KMLFile source)
 		{
+			m_oSourceFile = source;
+
 			if (element.HasAttribute("id"))
 			{
 				m_strID = element.GetAttribute("id");
+
+				if (!source.NamedElements.ContainsKey(m_strID))
+				{
+					source.NamedElements.Add(m_strID, this);
+				}
 			}
 			if (element.HasAttribute("targetId"))
 			{
@@ -62,8 +73,8 @@ namespace Dapple.KML
 	{
 		#region Constructors
 
-		public StyleSelector(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public StyleSelector(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
 		}
 
@@ -85,7 +96,7 @@ namespace Dapple.KML
 
 		#region Static Parsers
 
-		public static List<StyleSelector> GetStyleSelectors(XmlElement oElement, XmlNamespaceManager oManager, Document oOwner)
+		public static List<StyleSelector> GetStyleSelectors(XmlElement oElement, XmlNamespaceManager oManager, KMLFile oSource)
 		{
 			List<StyleSelector> result = new List<StyleSelector>();
 
@@ -93,11 +104,11 @@ namespace Dapple.KML
 			{
 				if (oChild.Name.Equals("Style"))
 				{
-					result.Add(new Style(oChild as XmlElement, oManager));
+					result.Add(new Style(oChild as XmlElement, oManager, oSource));
 				}
 				else if (oChild.Name.Equals("StyleMap"))
 				{
-					result.Add(new StyleMap(oChild as XmlElement, oManager, oOwner));
+					result.Add(new StyleMap(oChild as XmlElement, oManager, oSource));
 				}
 			}
 
@@ -136,18 +147,16 @@ namespace Dapple.KML
 		// phonenumber
 		// extendeddata
 
-		private Document m_oOwnerDocument;
-		private List<StyleSelector> m_oInlineStyles;
+		protected List<StyleSelector> m_oInlineStyles;
 
 		#endregion
 
 
 		#region Constructors
 
-		public Feature(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager)
+		public Feature(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			m_oOwnerDocument = owner;
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:name", manager) as XmlElement;
@@ -189,32 +198,32 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:Region", manager) as XmlElement;
 			if (oPointer != null && oPointer.HasChildNodes)
 			{
-				m_oRegion = new Region(oPointer, manager);
+				m_oRegion = new Region(oPointer, manager, source);
 			}
 
 			oPointer = element.SelectSingleNode("kml:TimeStamp", manager) as XmlElement;
 			if (oPointer != null && oPointer.HasChildNodes)
 			{
-				m_oTime = new TimeStamp(oPointer, manager);
+				m_oTime = new TimeStamp(oPointer, manager, source);
 			}
 			oPointer = element.SelectSingleNode("kml:TimeSpan", manager) as XmlElement;
 			if (oPointer != null && oPointer.HasChildNodes)
 			{
-				m_oTime = new TimeSpan(oPointer, manager);
+				m_oTime = new TimeSpan(oPointer, manager, source);
 			}
 
 			oPointer = element.SelectSingleNode("kml:Camera", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oView = new Camera(oPointer, manager);
+				m_oView = new Camera(oPointer, manager, source);
 			}
 			oPointer = element.SelectSingleNode("kml:LookAt", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oView = new LookAt(oPointer, manager);
+				m_oView = new LookAt(oPointer, manager, source);
 			}
 
-			m_oInlineStyles = StyleSelector.GetStyleSelectors(element, manager, owner);
+			m_oInlineStyles = StyleSelector.GetStyleSelectors(element, manager, source);
 		}
 
 		#endregion
@@ -270,7 +279,7 @@ namespace Dapple.KML
 				}
 				else
 				{
-					return m_oOwnerDocument.GetStyle(m_strStyleURL);
+					return m_oSourceFile.GetStyle(m_strStyleURL);
 				}
 			}
 		}
@@ -295,7 +304,7 @@ namespace Dapple.KML
 
 		#region Static Parsers
 
-		public static List<Feature> GetFeatures(XmlElement oElement, XmlNamespaceManager oManager, Document oOwner)
+		public static List<Feature> GetFeatures(XmlElement oElement, XmlNamespaceManager oManager, KMLFile oSource)
 		{
 			List<Feature> result = new List<Feature>();
 
@@ -307,7 +316,7 @@ namespace Dapple.KML
 				}
 				else if (oChild.Name.Equals("Placemark"))
 				{
-					result.Add(new Placemark(oChild as XmlElement, oManager, oOwner));
+					result.Add(new Placemark(oChild as XmlElement, oManager, oSource));
 				}
 				else if (oChild.Name.Equals("PhotoOverlay"))
 				{
@@ -315,15 +324,15 @@ namespace Dapple.KML
 				}
 				else if (oChild.Name.Equals("ScreenOverlay"))
 				{
-					result.Add(new ScreenOverlay(oChild as XmlElement, oManager, oOwner));
+					result.Add(new ScreenOverlay(oChild as XmlElement, oManager, oSource));
 				}
 				else if (oChild.Name.Equals("GroundOverlay"))
 				{
-					result.Add(new GroundOverlay(oChild as XmlElement, oManager, oOwner));
+					result.Add(new GroundOverlay(oChild as XmlElement, oManager, oSource));
 				}
 				else if (oChild.Name.Equals("Folder"))
 				{
-					result.Add(new Folder(oChild as XmlElement, oManager, oOwner));
+					result.Add(new Folder(oChild as XmlElement, oManager, oSource));
 				}
 			}
 
@@ -337,8 +346,8 @@ namespace Dapple.KML
 	{
 		#region Constructors
 
-		public Container(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public Container(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
 		}
 
@@ -358,7 +367,7 @@ namespace Dapple.KML
 		#region Member Variables
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private Color m_oColor;
+		private Color? m_oColor;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int m_iDrawOrder;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -369,8 +378,8 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Overlay(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public Overlay(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
 			XmlElement oPointer;
 
@@ -390,7 +399,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:Icon", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oIcon = new IconOrLink(oPointer, manager);
+				m_oIcon = new IconOrLink(oPointer, manager, source);
 			}
 		}
 
@@ -401,7 +410,17 @@ namespace Dapple.KML
 
 		public Color Color
 		{
-			get { return m_oColor; }
+			get
+			{
+				if (m_oColor != null)
+				{
+					return m_oColor.Value;
+				}
+				else
+				{
+					return Color.FromArgb(255, 255, 255, 255);
+				}
+			}
 		}
 
 		public int DrawOrder
@@ -428,8 +447,8 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Geometry(XmlElement element, XmlNamespaceManager manager, Feature owner)
-			: base(element, manager)
+		public Geometry(XmlElement element, XmlNamespaceManager manager, Feature owner, KMLFile source)
+			: base(element, manager, source)
 		{
 			m_oOwner = owner;
 		}
@@ -457,7 +476,7 @@ namespace Dapple.KML
 
 		#region Static Parsers
 
-		public static List<Geometry> GetGeometries(XmlElement oElement, XmlNamespaceManager oManager, Placemark oOwner)
+		public static List<Geometry> GetGeometries(XmlElement oElement, XmlNamespaceManager oManager, Placemark oOwner, KMLFile oSource)
 		{
 			List<Geometry> result = new List<Geometry>();
 
@@ -465,27 +484,27 @@ namespace Dapple.KML
 			{
 				if (oChild.Name.Equals("Point"))
 				{
-					result.Add(new Point(oChild as XmlElement, oManager, oOwner));
+					result.Add(new Point(oChild as XmlElement, oManager, oOwner, oSource));
 				}
 				else if (oChild.Name.Equals("LineString"))
 				{
-					result.Add(new LineString(oChild as XmlElement, oManager, oOwner));
+					result.Add(new LineString(oChild as XmlElement, oManager, oOwner, oSource));
 				}
 				else if (oChild.Name.Equals("LinearRing"))
 				{
-					result.Add(new LinearRing(oChild as XmlElement, oManager, oOwner));
+					result.Add(new LinearRing(oChild as XmlElement, oManager, oOwner, oSource));
 				}
 				else if (oChild.Name.Equals("Polygon"))
 				{
-					result.Add(new Polygon(oChild as XmlElement, oManager, oOwner));
+					result.Add(new Polygon(oChild as XmlElement, oManager, oOwner, oSource));
 				}
 				else if (oChild.Name.Equals("MultiGeometry"))
 				{
-					result.Add(new MultiGeometry(oChild as XmlElement, oManager, oOwner));
+					result.Add(new MultiGeometry(oChild as XmlElement, oManager, oOwner, oSource));
 				}
 				else if (oChild.Name.Equals("Model"))
 				{
-					throw new ApplicationException("Model unimplemented");
+					result.Add(new Model(oChild as XmlElement, oManager, oOwner, oSource));
 				}
 			}
 
@@ -509,8 +528,8 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public ColorStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public ColorStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
 			XmlElement oPointer;
 
@@ -576,6 +595,9 @@ namespace Dapple.KML
 
 		public static Color ParseColor(String strColor)
 		{
+			// --- This is a hack: some color tags encountered starting with '#' ---
+			strColor = strColor.Replace("#", String.Empty);
+
 			return Color.FromArgb(
 						  Int32.Parse(strColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
 						  Int32.Parse(strColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber),
@@ -591,8 +613,8 @@ namespace Dapple.KML
 	{
 		#region Constructors
 
-		public TimePrimitive(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public TimePrimitive(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
 		}
 
@@ -603,8 +625,8 @@ namespace Dapple.KML
 	{
 		#region Constructor
 
-		public AbstractView(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public AbstractView(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
 		}
 		#endregion
@@ -708,7 +730,7 @@ namespace Dapple.KML
 			String[] oValues = strTuple.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			if (oValues.Length < 2 || oValues.Length > 3)
 			{
-				throw new ArgumentException("Bad tuple length");
+				throw new ArgumentException("The KML file contains a malformed 'Coordinates' element.");
 			}
 
 			Longitude = Convert.ToDouble(oValues[0]);
@@ -769,7 +791,7 @@ namespace Dapple.KML
 			}
 			else
 			{
-				throw new ArgumentException("Couldn't parse KML DateTime from string " + strValue);
+				throw new ArgumentException("The KML file contains a malformed 'DateTime' element.");
 			}
 		}
 	}
@@ -851,19 +873,17 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Location(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Location(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Location"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:longitude", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Location' element without a 'Longitude' element.");
 			m_dLongitude = Double.Parse(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:latitude", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Location' element without a 'Latitude' element.");
 			m_dLatitude = Double.Parse(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:altitude", manager) as XmlElement;
@@ -921,11 +941,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Orientation(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Orientation(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Location"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:heading", manager) as XmlElement;
@@ -1021,11 +1039,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Scale(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Scale(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Location"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:x", manager) as XmlElement;
@@ -1127,11 +1143,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Model(XmlElement element, XmlNamespaceManager manager, Placemark owner)
-			: base(element, manager, owner)
+		public Model(XmlElement element, XmlNamespaceManager manager, Placemark owner, KMLFile source)
+			: base(element, manager, owner, source)
 		{
-			Debug.Assert(element.Name.Equals("Model"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:altitudeMode", manager) as XmlElement;
@@ -1141,13 +1155,13 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:Location", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			m_oLocation = new Location(oPointer, manager);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Model' element without a 'Location' element.");
+			m_oLocation = new Location(oPointer, manager, source);
 
 			oPointer = element.SelectSingleNode("kml:Orientation", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oOrientation = new Orientation(oPointer, manager);
+				m_oOrientation = new Orientation(oPointer, manager, source);
 			}
 			else
 			{
@@ -1157,7 +1171,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:Scale", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oScale = new Scale(oPointer, manager);
+				m_oScale = new Scale(oPointer, manager, source);
 			}
 			else
 			{
@@ -1165,8 +1179,8 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:Link", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			m_oLink = new IconOrLink(oPointer, manager);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Model' element without a 'Link' element.");
+			m_oLink = new IconOrLink(oPointer, manager, source);
 
 			foreach (XmlElement oAlias in element.SelectNodes("kml:ResourceMap/kml:Alias", manager))
 			{
@@ -1251,21 +1265,19 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Region(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Region(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Region"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:LatLonAltBox", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			m_oBox = new LatLonAltBox(oPointer, manager);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Region' element without a 'LatLonAltBox' element.");
+			m_oBox = new LatLonAltBox(oPointer, manager, source);
 
 			oPointer = element.SelectSingleNode("kml:Lod", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oLod = new Lod(oPointer, manager);
+				m_oLod = new Lod(oPointer, manager, source);
 			}
 		}
 
@@ -1305,11 +1317,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Lod(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Lod(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Lod"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:minLodPixels", manager) as XmlElement;
@@ -1425,27 +1435,25 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LatLonBox(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public LatLonBox(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("LatLonBox"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:north", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonBox' element without a 'north' element.");
 			m_dNorth = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:east", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonBox' element without an 'east' element.");
 			m_dEast = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:south", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonBox' element without a 'south' element.");
 			m_dSouth = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:west", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonBox' element without a 'west' element.");
 			m_dWest = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:rotation", manager) as XmlElement;
@@ -1522,27 +1530,25 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LatLonAltBox(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public LatLonAltBox(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("LatLonBox"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:north", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonAltBox' element without a 'north' element.");
 			m_dNorth = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:east", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonAltBox' element without an 'east' element.");
 			m_dEast = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:south", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonAltBox' element without a 'south' element.");
 			m_dSouth = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:west", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LatLonAltBox' element without a 'west' element.");
 			m_dWest = Convert.ToDouble(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:minAltitude", manager) as XmlElement;
@@ -1654,15 +1660,13 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public TimeStamp(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public TimeStamp(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("TimeStamp"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:when", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'TimeStamp' element without a 'when' element.");
 			m_oWhen = new KMLDateTime(element.ChildNodes[0].Value);
 		}
 
@@ -1696,11 +1700,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public TimeSpan(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public TimeSpan(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("TimeSpan"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:begin", manager) as XmlElement;
@@ -1757,11 +1759,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public BalloonStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public BalloonStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("BalloonStyle"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:bgColor", manager) as XmlElement;
@@ -1867,11 +1867,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LineStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public LineStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("LineStyle"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:width", manager) as XmlElement;
@@ -1925,11 +1923,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public ListStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public ListStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("ListStyle"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:bgColor", manager) as XmlElement;
@@ -2034,11 +2030,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public IconStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public IconStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("IconStyle"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:scale", manager) as XmlElement;
@@ -2056,7 +2050,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:Icon", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oIcon = new IconOrLink(oPointer, manager);
+				m_oIcon = new IconOrLink(oPointer, manager, source);
 			}
 
 			oPointer = element.SelectSingleNode("kml:hotSpot", manager) as XmlElement;
@@ -2135,11 +2129,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LabelStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public LabelStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("LabelStyle"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:scale", manager) as XmlElement;
@@ -2191,11 +2183,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public PolyStyle(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public PolyStyle(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("PolyStyle"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:fill", manager) as XmlElement;
@@ -2277,16 +2267,14 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Style(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Style(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Style"));
-
 			XmlElement oPointer;
 			oPointer = element.SelectSingleNode("kml:IconStyle", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oIconStyle = new IconStyle(oPointer as XmlElement, manager);
+				m_oIconStyle = new IconStyle(oPointer as XmlElement, manager, source);
 			}
 			else
 			{
@@ -2296,7 +2284,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:LabelStyle", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oLabelStyle = new LabelStyle(oPointer as XmlElement, manager);
+				m_oLabelStyle = new LabelStyle(oPointer as XmlElement, manager, source);
 			}
 			else
 			{
@@ -2306,7 +2294,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:LineStyle", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oLineStyle = new LineStyle(oPointer as XmlElement, manager);
+				m_oLineStyle = new LineStyle(oPointer as XmlElement, manager, source);
 			}
 			else
 			{
@@ -2316,7 +2304,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:PolyStyle", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oPolyStyle = new PolyStyle(oPointer as XmlElement, manager);
+				m_oPolyStyle = new PolyStyle(oPointer as XmlElement, manager, source);
 			}
 			else
 			{
@@ -2326,7 +2314,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:BalloonStyle", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oBalloonStyle = new BalloonStyle(oPointer as XmlElement, manager);
+				m_oBalloonStyle = new BalloonStyle(oPointer as XmlElement, manager, source);
 			}
 			else
 			{
@@ -2336,7 +2324,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:ListStyle", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oListStyle = new ListStyle(oPointer as XmlElement, manager);
+				m_oListStyle = new ListStyle(oPointer as XmlElement, manager, source);
 			}
 			else
 			{
@@ -2406,21 +2394,15 @@ namespace Dapple.KML
 		private String m_strNormalStyle;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private String m_strHighlightStyle;
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private Document m_oOwner;
 
 		#endregion
 
 
 		#region Constructors
 
-		public StyleMap(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager)
+		public StyleMap(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("StyleMap"));
-
-			m_oOwner = owner;
-
 			foreach (XmlElement oPair in element.SelectNodes("kml:Pair", manager))
 			{
 				if (oPair.ChildNodes[0].ChildNodes[0].Value.Equals("normal"))
@@ -2441,12 +2423,12 @@ namespace Dapple.KML
 
 		public override Style NormalStyle
 		{
-			get { return m_oOwner.GetStyle(m_strNormalStyle).NormalStyle; }
+			get { return m_oSourceFile.GetStyle(m_strNormalStyle).NormalStyle; }
 		}
 
 		public override Style HighlightStyle
 		{
-			get { return m_oOwner.GetStyle(m_strHighlightStyle).HighlightStyle; }
+			get { return m_oSourceFile.GetStyle(m_strHighlightStyle).HighlightStyle; }
 		}
 
 		#endregion
@@ -2475,11 +2457,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LinearRing(XmlElement element, XmlNamespaceManager manager, Placemark owner)
-			: base(element, manager, owner)
+		public LinearRing(XmlElement element, XmlNamespaceManager manager, Placemark owner, KMLFile source)
+			: base(element, manager, owner, source)
 		{
-			Debug.Assert(element.Name.Equals("LinearRing"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:extrude", manager) as XmlElement;
@@ -2501,8 +2481,8 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:coordinates", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			String[] oTuples = oPointer.ChildNodes[0].Value.Split(new char[] { }, StringSplitOptions.RemoveEmptyEntries);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LinearRing' element without a 'Coordinates' element.");
+			String[] oTuples = oPointer.ChildNodes[0].Value.Replace(", ", ",").Split(new char[] { }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (String strTuple in oTuples)
 			{
 				m_oCoords.Add(new Coordinates(strTuple));
@@ -2592,11 +2572,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Polygon(XmlElement element, XmlNamespaceManager manager, Placemark owner)
-			: base(element, manager, owner)
+		public Polygon(XmlElement element, XmlNamespaceManager manager, Placemark owner, KMLFile source)
+			: base(element, manager, owner, source)
 		{
-			Debug.Assert(element.Name.Equals("Polygon"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:extrude", manager) as XmlElement;
@@ -2618,12 +2596,12 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:outerBoundaryIs/kml:LinearRing", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			m_oOuterBoundary = new LinearRing(oPointer, manager, owner);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Polygon' element without an 'outerBoundaryIs' element.");
+			m_oOuterBoundary = new LinearRing(oPointer, manager, owner, source);
 
-			foreach(XmlElement oInnerBound in element.SelectNodes("kml:innerBoundaryIs/kml:LinearRing", manager))
+			foreach (XmlElement oInnerBound in element.SelectNodes("kml:innerBoundaryIs/kml:LinearRing", manager))
 			{
-				m_oInnerBoundaries.Add(new LinearRing(oPointer, manager, owner));
+				m_oInnerBoundaries.Add(new LinearRing(oPointer, manager, owner, source));
 			}
 		}
 
@@ -2676,11 +2654,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Point(XmlElement element, XmlNamespaceManager manager, Feature owner)
-			: base(element, manager, owner)
+		public Point(XmlElement element, XmlNamespaceManager manager, Feature owner, KMLFile source)
+			: base(element, manager, owner, source)
 		{
-			Debug.Assert(element.Name.Equals("Point"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:extrude", manager) as XmlElement;
@@ -2696,7 +2672,7 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:coordinates", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'Point' element without a 'Coordinates' element.");
 			m_oCoords = new Coordinates(oPointer.ChildNodes[0].Value);
 		}
 
@@ -2741,11 +2717,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LineString(XmlElement element, XmlNamespaceManager manager, Placemark owner)
-			: base(element, manager, owner)
+		public LineString(XmlElement element, XmlNamespaceManager manager, Placemark owner, KMLFile source)
+			: base(element, manager, owner, source)
 		{
-			Debug.Assert(element.Name.Equals("LineString"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:extrude", manager) as XmlElement;
@@ -2767,8 +2741,8 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:coordinates", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			String[] oTuples = oPointer.ChildNodes[0].Value.Split(new char[] { }, StringSplitOptions.RemoveEmptyEntries);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LineString' element without a 'Coordinates' element.");
+			String[] oTuples = oPointer.ChildNodes[0].Value.Replace(", ", ",").Split(new char[] { }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (String strTuple in oTuples)
 			{
 				m_oCoords.Add(new Coordinates(strTuple));
@@ -2849,12 +2823,10 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public MultiGeometry(XmlElement element, XmlNamespaceManager manager, Placemark owner)
-			: base(element, manager, owner)
+		public MultiGeometry(XmlElement element, XmlNamespaceManager manager, Placemark owner, KMLFile source)
+			: base(element, manager, owner, source)
 		{
-			Debug.Assert(element.Name.Equals("MultiGeometry"));
-
-			m_oChildren = Geometry.GetGeometries(element, manager, owner);
+			m_oChildren = Geometry.GetGeometries(element, manager, owner, source);
 		}
 
 		#endregion
@@ -2896,11 +2868,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public GroundOverlay(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public GroundOverlay(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("GroundOverlay"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:altitude", manager) as XmlElement;
@@ -2916,8 +2886,8 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:LatLonBox", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
-			m_oBox = new LatLonBox(oPointer, manager);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'GroundOverlay' element without a 'LatLonBox' element.");
+			m_oBox = new LatLonBox(oPointer, manager, source);
 		}
 
 		#endregion
@@ -2964,6 +2934,25 @@ namespace Dapple.KML
 		}
 
 		#endregion
+
+		#region Public Methods
+
+		public String GetUri()
+		{
+			String result = Icon.HRef;
+			if (!String.IsNullOrEmpty(Icon.HTTPQuery))
+			{
+				result += "&" + Icon.HTTPQuery;
+			}
+			if (!String.IsNullOrEmpty(Icon.ViewFormat))
+			{
+				result += "&" + Icon.ViewFormat.Replace("[bboxNorth]", m_oBox.North.ToString()).Replace("[bboxSouth]", m_oBox.South.ToString()).Replace("[bboxEast]", m_oBox.East.ToString()).Replace("[bboxWest]", m_oBox.West.ToString());
+			}
+
+			return result;
+		}
+
+		#endregion
 	}
 
 	public class ScreenOverlay : Overlay
@@ -2986,11 +2975,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public ScreenOverlay(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public ScreenOverlay(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("ScreenOverlay"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:overlayXY", manager) as XmlElement;
@@ -3089,11 +3076,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public PhotoOverlay(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public PhotoOverlay(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("PhotoOverlay"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:shape", manager) as XmlElement;
@@ -3158,7 +3143,7 @@ namespace Dapple.KML
 			oPointer = element.SelectSingleNode("kml:Point", manager) as XmlElement;
 			if (oPointer != null)
 			{
-				m_oPoint = new Point(oPointer, manager, this);
+				m_oPoint = new Point(oPointer, manager, this, source);
 			}
 		}
 
@@ -3341,11 +3326,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public NetworkLink(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public NetworkLink(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("NetworkLink"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:refreshVisibility", manager) as XmlElement;
@@ -3361,9 +3344,9 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:Link", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'NetworkLink' element without a 'Link' element.");
 
-			m_oLink = new IconOrLink(oPointer, manager);
+			m_oLink = new IconOrLink(oPointer, manager, source);
 		}
 
 		#endregion
@@ -3424,13 +3407,11 @@ namespace Dapple.KML
 
 		#region Constructor
 
-		public Placemark(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public Placemark(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Placemark"));
-
-			List<Geometry> oGeometries = Geometry.GetGeometries(element, manager, this);
-			Debug.Assert(oGeometries.Count == 1);
+			List<Geometry> oGeometries = Geometry.GetGeometries(element, manager, this, source);
+			if (oGeometries.Count == 0) throw new ArgumentException("The KML file contains a 'Placemark' element without a geometry element.");
 			m_oGeometry = oGeometries[0];
 		}
 
@@ -3465,12 +3446,10 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Folder(XmlElement element, XmlNamespaceManager manager, Document owner)
-			: base(element, manager, owner)
+		public Folder(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Folder"));
-
-			m_oFeatures = Feature.GetFeatures(element, manager, owner);
+			m_oFeatures = Feature.GetFeatures(element, manager, source);
 		}
 
 		#endregion
@@ -3497,7 +3476,6 @@ namespace Dapple.KML
 		#region Member Variables
 
 		private List<Feature> m_oFeatures;
-		private List<StyleSelector> m_oSharedStyles;
 		//TODO Parse out schema elements
 
 		#endregion
@@ -3505,13 +3483,10 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Document(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager, null)
+		public Document(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Document"));
-
-			m_oFeatures = Feature.GetFeatures(element, manager, this);
-			m_oSharedStyles = StyleSelector.GetStyleSelectors(element, manager, this);
+			m_oFeatures = Feature.GetFeatures(element, manager, source);
 		}
 
 		#endregion
@@ -3540,7 +3515,7 @@ namespace Dapple.KML
 			{
 				String strStyleID = strStyleURL.Substring(1);
 
-				foreach (StyleSelector oStyles in m_oSharedStyles)
+				foreach (StyleSelector oStyles in m_oInlineStyles)
 				{
 					if (oStyles.ID.Equals(strStyleID))
 					{
@@ -3588,11 +3563,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public Camera(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public Camera(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Camera"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:longitude", manager) as XmlElement;
@@ -3775,11 +3748,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public LookAt(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public LookAt(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("LookAt"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:longitude", manager) as XmlElement;
@@ -3813,7 +3784,7 @@ namespace Dapple.KML
 			}
 
 			oPointer = element.SelectSingleNode("kml:range", manager) as XmlElement;
-			Debug.Assert(oPointer != null);
+			if (oPointer == null) throw new ArgumentException("The KML file contains a 'LookAt' element without a 'range' element.");
 			m_dRange = Double.Parse(oPointer.ChildNodes[0].Value);
 
 			oPointer = element.SelectSingleNode("kml:altitudeMode", manager) as XmlElement;
@@ -3954,11 +3925,9 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public IconOrLink(XmlElement element, XmlNamespaceManager manager)
-			: base(element, manager)
+		public IconOrLink(XmlElement element, XmlNamespaceManager manager, KMLFile source)
+			: base(element, manager, source)
 		{
-			Debug.Assert(element.Name.Equals("Icon") || element.Name.Equals("Link"));
-
 			XmlElement oPointer;
 
 			oPointer = element.SelectSingleNode("kml:href", manager) as XmlElement;
@@ -4014,6 +3983,11 @@ namespace Dapple.KML
 
 
 		#region Properties
+
+		public bool IsLocalFile
+		{
+			get { return !m_strHRef.StartsWith("http://"); }
+		}
 
 		public String HRef
 		{
@@ -4115,16 +4089,48 @@ namespace Dapple.KML
 		}
 
 		#endregion
+
+		#region Public Methods
+
+		public String GetUri(double west, double south, double east, double north)
+		{
+			String result = HRef;
+			if (!String.IsNullOrEmpty(HTTPQuery))
+			{
+				result += "&" + HTTPQuery;
+			}
+			if (!String.IsNullOrEmpty(ViewFormat))
+			{
+				result += "&" + ViewFormat.Replace("[bboxNorth]", north.ToString()).Replace("[bboxSouth]", south.ToString()).Replace("[bboxEast]", east.ToString()).Replace("[bboxWest]", west.ToString());
+			}
+
+			return result;
+		}
+
+		#endregion
 	}
 
 	public class KMLFile
 	{
+		#region Statics
+
+		public static string KMLTempDirectory = Path.Combine(Path.GetTempPath(), "DappleKML");
+
+		#endregion
+
+
 		#region Member Variables
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private Document m_oDocument;
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private String m_strFilename;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private bool m_blLoadedFromKMZ = false;
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private String m_strVersion;
+
+		private Dictionary<String, KMLObject> m_oNamedElements = new Dictionary<String, KMLObject>();
 
 		#endregion
 
@@ -4138,35 +4144,105 @@ namespace Dapple.KML
 
 		public KMLFile(String strFilename, bool blValidate)
 		{
+			if (Path.GetExtension(strFilename).Equals(".kmz", StringComparison.InvariantCultureIgnoreCase))
+			{
+				strFilename = UnzipKMZFile(strFilename);
+				if (strFilename == null)
+				{
+					throw new ArgumentException("Could not find a KML file to load inside the KMZ file.");
+				}
+				m_blLoadedFromKMZ = true;
+			}
+
+			m_strFilename = strFilename;
+
+			System.Xml.XmlDocument oDoc = new System.Xml.XmlDocument();
+			XmlReaderSettings oSettings = new XmlReaderSettings();
+			if (blValidate)
+			{
+				oSettings.Schemas.Add("http://www.opengis.net/kml/2.2", Path.Combine(Path.GetDirectoryName(strFilename), "ogckml22.xsd"));
+				oSettings.ValidationType = ValidationType.Schema;
+			}
+			XmlReader oDocReader = XmlReader.Create(strFilename, oSettings);
+
 			try
 			{
-				m_strFilename = strFilename;
-
-				System.Xml.XmlDocument oDoc = new System.Xml.XmlDocument();
-				XmlReaderSettings oSettings = new XmlReaderSettings();
-				if (blValidate)
-				{
-					oSettings.Schemas.Add("http://www.opengis.net/kml/2.2", Path.Combine(Path.GetDirectoryName(strFilename), "ogckml22.xsd"));
-					oSettings.ValidationType = ValidationType.Schema;
-				}
-				XmlReader oDocReader = XmlReader.Create(strFilename, oSettings);
-
 				oDoc.Load(oDocReader);
-
-				Debug.Assert(oDoc.DocumentElement.Name.Equals("kml"));
-
-				System.Xml.XmlNamespaceManager oManager = new System.Xml.XmlNamespaceManager(oDoc.NameTable);
-				oManager.AddNamespace("kml", oDoc.DocumentElement.NamespaceURI);
-
-				XmlElement oPointer;
-
-				oPointer = oDoc.DocumentElement.SelectSingleNode("kml:Document", oManager) as XmlElement;
-				Debug.Assert(oPointer != null);
-				m_oDocument = new Dapple.KML.Document(oPointer, oManager);
 			}
-			catch (Exception ex)
+			catch (XmlException ex)
 			{
-				Console.WriteLine(ex.Message.ToString());
+				throw new ArgumentException("KML file failed validation: " + ex.Message);
+			}
+
+			m_strVersion = oDoc.DocumentElement.NamespaceURI;
+
+			System.Xml.XmlNamespaceManager oManager = new System.Xml.XmlNamespaceManager(oDoc.NameTable);
+			oManager.AddNamespace("kml", oDoc.DocumentElement.NamespaceURI);
+
+			XmlElement oPointer;
+
+			oPointer = oDoc.DocumentElement.SelectSingleNode("kml:Document", oManager) as XmlElement;
+			if (oPointer == null) throw new ArgumentException("The KML file contains no 'Document' element.");
+			m_oDocument = new Dapple.KML.Document(oPointer, oManager, this);
+		}
+
+		~KMLFile()
+		{
+			// --- If we've loaded from a KMZ, delete the KMZ directory ---
+
+			if (m_blLoadedFromKMZ)
+			{
+				foreach (String strFile in Directory.GetFiles(Path.GetDirectoryName(m_strFilename)))
+				{
+					try
+					{
+						File.Delete(strFile);
+					}
+					catch (Exception)
+					{
+						// --- Not a huge deal if we can't delete a temp file ---
+					}
+				}
+
+				try
+				{
+					Directory.Delete(Path.GetDirectoryName(m_strFilename), true);
+				}
+				catch (Exception)
+				{
+					// --- Not a huge deal if we can't delete a temp directory ---
+				}
+			}
+		}
+
+		private string UnzipKMZFile(string strFilename)
+		{
+			// --- Create temporary subdirectory for KMZ files in the KML temp directory ---
+
+			String strTempDirectory = Path.Combine(KMLTempDirectory, Path.GetFileNameWithoutExtension(strFilename));
+			if (!Directory.Exists(strTempDirectory))
+			{
+				Directory.CreateDirectory(strTempDirectory);
+			}
+
+
+			// --- Extract KMZ into subdirectory ---
+
+			FastZip oFastZip = new FastZip();
+			oFastZip.ExtractZip(strFilename, strTempDirectory, String.Empty);
+
+
+			// --- Find the KMZ file to load ---
+
+			String[] oKMLs = Directory.GetFiles(strTempDirectory, "*.kml");
+
+			if (oKMLs.Length > 0)
+			{
+				return oKMLs[0];
+			}
+			else
+			{
+				return null;
 			}
 		}
 
@@ -4185,6 +4261,33 @@ namespace Dapple.KML
 			get
 			{
 				return m_strFilename;
+			}
+		}
+
+		public Dictionary<String, KMLObject> NamedElements
+		{
+			get { return m_oNamedElements; }
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		public StyleSelector GetStyle(String strStyleUrl)
+		{
+			StyleSelector result = Document.GetStyle(strStyleUrl);
+			if (result != null)
+			{
+				return result;
+			}
+			else if (m_oNamedElements.ContainsKey(strStyleUrl) && m_oNamedElements[strStyleUrl] is StyleSelector)
+			{
+				return m_oNamedElements[strStyleUrl] as StyleSelector;
+			}
+			else
+			{
+				return new Style();
 			}
 		}
 

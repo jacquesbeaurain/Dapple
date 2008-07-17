@@ -25,7 +25,7 @@ namespace WorldWind.Camera
       //protected Quaternion _orientation;
       protected Quaternion4d m_Orientation;
 
-      public const double dEpsilonTestValue = 1e-6;
+      public const double dEpsilonTestValue = 1e-5;
 
       protected Frustum _viewFrustum = new Frustum();
       protected Angle _fov = World.Settings.cameraFov;

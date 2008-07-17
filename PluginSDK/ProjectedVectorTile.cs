@@ -10,6 +10,7 @@ namespace WorldWind
 {
 	public class ProjectedVectorTile
 	{
+		private static int TileSize = 256;
 		public static string CachePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Cache");
 		bool m_Initialized = false;
 		bool m_Initializing = false;
@@ -87,11 +88,6 @@ namespace WorldWind
 			{
 				m_SeImageLayer.Dispose();
 				m_SeImageLayer = null;
-			}
-
-			if(m_ImageStream != null)
-			{
-				m_ImageStream.Close();
 			}
 
 			if(!m_Initializing)
@@ -321,260 +317,137 @@ namespace WorldWind
 			
 		}
 
-		/*public byte Opacity
-		{
-			get
-			{
-				return m_parentProjectedLayer.Opacity;
-			}
-			set
-			{
-				if(m_NwImageLayer != null)
-				{
-					m_NwImageLayer.Opacity = value;
-				}
-				if(m_NeImageLayer != null)
-				{
-					m_NeImageLayer.Opacity = value;
-				}
-				if(m_SwImageLayer != null)
-				{
-					m_SwImageLayer.Opacity = value;
-				}
-				if(m_SeImageLayer != null)
-				{
-					m_SeImageLayer.Opacity = value;
-				}
-
-				if(m_NorthWestChild != null)
-				{
-					m_NorthWestChild.Opacity = value;
-				}
-				if(m_NorthEastChild != null)
-				{
-					m_NorthEastChild.Opacity = value;
-				}
-				if(m_SouthWestChild != null)
-				{
-					m_SouthWestChild.Opacity = value;
-				}
-				if(m_SouthEastChild != null)
-				{
-					m_SouthEastChild.Opacity = value;
-				}
-			}
-		}*/
-
 		private Renderable.ImageLayer CreateImageLayer(double north, double south, double west, double east, DrawArgs drawArgs, string imagePath)
 		{
+			if (m_parentProjectedLayer.Bounds.Equals(GeographicBoundingBox.NullBox()) || !m_parentProjectedLayer.Bounds.Intersects(new GeographicBoundingBox(north, south, west, east)))
+			{
+				return null;
+			}
+
 			Bitmap b = null;
 			Graphics g = null;
-			Renderable.ImageLayer imageLayer = null;
+			Renderable.ImageLayer result = null;
 			GeographicBoundingBox geoBB = new GeographicBoundingBox(north, south, west, east);
 			int numberPolygonsInTile = 0;
 
-			FileInfo imageFile = new FileInfo(imagePath);
 
-			if(!m_parentProjectedLayer.EnableCaching ||
-				!imageFile.Exists
-				)
+			if (m_parentProjectedLayer.LineStrings != null)
 			{
-				if(m_parentProjectedLayer.LineStrings != null)
+				for (int i = 0; i < m_parentProjectedLayer.LineStrings.Length; i++)
 				{
-					for(int i = 0; i < m_parentProjectedLayer.LineStrings.Length; i++)
+					if (!m_parentProjectedLayer.LineStrings[i].Visible)
+						continue;
+
+					GeographicBoundingBox currentBoundingBox = m_parentProjectedLayer.LineStrings[i].GetGeographicBoundingBox();
+
+					if (currentBoundingBox != null && !currentBoundingBox.Intersects(geoBB))
 					{
-						if(!m_parentProjectedLayer.LineStrings[i].Visible)
-							continue;
-						
-						GeographicBoundingBox currentBoundingBox = m_parentProjectedLayer.LineStrings[i].GetGeographicBoundingBox();
-
-						if(currentBoundingBox != null && !currentBoundingBox.Intersects(geoBB))
-						{
-							continue;
-						}
-						else
-						{
-							if(b == null)
-							{
-								b = new Bitmap(
-									m_parentProjectedLayer.TileSize.Width,
-									m_parentProjectedLayer.TileSize.Height,
-									System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-							}
-
-							if(g == null)
-							{
-								g = Graphics.FromImage(b);
-							}
-
-							drawLineString(
-								m_parentProjectedLayer.LineStrings[i],
-								g,
-								geoBB,
-								b.Size
-								);
-							
-							numberPolygonsInTile++;
-						}
+						continue;
 					}
-				}
-
-				if(m_parentProjectedLayer.Polygons != null)
-				{
-					for(int i = 0; i < m_parentProjectedLayer.Polygons.Length; i++)
+					else
 					{
-						if(!m_parentProjectedLayer.Polygons[i].Visible)
-							continue;
-
-						GeographicBoundingBox currentBoundingBox = m_parentProjectedLayer.Polygons[i].GetGeographicBoundingBox();
-
-						if(currentBoundingBox != null && !currentBoundingBox.Intersects(geoBB))
+						if (g == null)
 						{
-							continue;
+							b = new Bitmap(TileSize, TileSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+							g = Graphics.FromImage(b);
 						}
-						else
-						{
-							if(b == null)
-							{
-								b = new Bitmap(
-									m_parentProjectedLayer.TileSize.Width,
-									m_parentProjectedLayer.TileSize.Height,
-									System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-							}
 
-							if(g == null)
-							{
-								g = Graphics.FromImage(b);
-							}
-							drawPolygon(
-								m_parentProjectedLayer.Polygons[i],
-								g,
-								geoBB,
-								b.Size);
-	
-							numberPolygonsInTile++;
-						}
+						drawLineString(m_parentProjectedLayer.LineStrings[i], g, geoBB, b.Size);
+						numberPolygonsInTile++;
 					}
 				}
 			}
 
-			if(b != null)
+			if (m_parentProjectedLayer.Polygons != null)
 			{
-				System.Drawing.Imaging.BitmapData srcInfo = b.LockBits(new Rectangle(0, 0, 
-					b.Width, b.Height), 
-					System.Drawing.Imaging.ImageLockMode.ReadOnly, 
+				for (int i = 0; i < m_parentProjectedLayer.Polygons.Length; i++)
+				{
+					if (!m_parentProjectedLayer.Polygons[i].Visible)
+						continue;
+
+					GeographicBoundingBox currentBoundingBox = m_parentProjectedLayer.Polygons[i].GetGeographicBoundingBox();
+
+					if (currentBoundingBox != null && !currentBoundingBox.Intersects(geoBB))
+					{
+						continue;
+					}
+					else
+					{
+						if (g == null)
+						{
+							b = new Bitmap(TileSize, TileSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+							g = Graphics.FromImage(b);
+						}
+
+						drawPolygon(m_parentProjectedLayer.Polygons[i], g, geoBB, b.Size);
+						numberPolygonsInTile++;
+					}
+				}
+			}
+
+
+			if (b != null)
+			{
+				System.Drawing.Imaging.BitmapData srcInfo = b.LockBits(new Rectangle(0, 0,
+					b.Width, b.Height),
+					System.Drawing.Imaging.ImageLockMode.ReadOnly,
 					System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
 				bool isBlank = true;
 				unsafe
 				{
 					int* srcPointer = (int*)srcInfo.Scan0;
-					for(int i = 0; i < b.Height; i++) 
+					for (int i = 0; i < b.Height; i++)
 					{
-						for(int j = 0; j < b.Width; j++) 
+						for (int j = 0; j < b.Width; j++)
 						{
 							int color = *srcPointer++;
-						
-							if(((color >> 24) & 0xff) > 0)
+
+							if (((color >> 24) & 0xff) > 0)
 							{
 								isBlank = false;
 								break;
 							}
 						}
 
-						srcPointer += (srcInfo.Stride>>2) - b.Width;
+						srcPointer += (srcInfo.Stride >> 2) - b.Width;
 					}
 				}
 
 				b.UnlockBits(srcInfo);
-				if(isBlank)
+				if (isBlank)
 					numberPolygonsInTile = 0;
 			}
-          
-		//	if(!m_parentProjectedLayer.EnableCaching)
-		//	{
-				string id = System.DateTime.Now.Ticks.ToString();
 
-				if(b != null && numberPolygonsInTile > 0)
-				{
-					MemoryStream ms = new MemoryStream();
-					b.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-
-					//must copy original stream into new stream, if not, error occurs, not sure why
-					m_ImageStream = new MemoryStream(ms.GetBuffer());
-					
-					imageLayer = new WorldWind.Renderable.ImageLayer(
-						id,
-						m_parentProjectedLayer.World,
-						0,
-						m_ImageStream,
-						System.Drawing.Color.Black.ToArgb(),
-						(float)south,
-						(float)north,
-						(float)west,
-						(float)east,
-						1.0f//(float)m_parentProjectedLayer.Opacity / 255.0f
-						,
-						m_parentProjectedLayer.World.TerrainAccessor);
-					
-					ms.Close();
-				}
-
-		/*	}
-			else if(imageFile.Exists || numberPolygonsInTile > 0)
+			if (b != null && numberPolygonsInTile > 0)
 			{
-				string id = System.DateTime.Now.Ticks.ToString();
+				MemoryStream ms = new MemoryStream();
+				b.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+				ms.Seek(0, SeekOrigin.Begin);
 
-				if(b != null)
-				{
-					MemoryStream ms = new MemoryStream();
-					b.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-					if(!imageFile.Directory.Exists)
-						imageFile.Directory.Create();
-
-					//must copy original stream into new stream, if not, error occurs, not sure why
-					m_ImageStream = new MemoryStream(ms.GetBuffer());
-					ImageHelper.ConvertToDxt3(m_ImageStream, imageFile.FullName);
-					
-					ms.Close();
-				}
-
-				imageLayer = new WorldWind.Renderable.ImageLayer(
-					id,
+				result = new WorldWind.Renderable.ImageLayer(
+					String.Format("PVT ImageLayer L{0} R{1} C{2}", Level, Row, Col),
 					m_parentProjectedLayer.World,
 					0,
-					imageFile.FullName,
-					//System.Drawing.Color.Black.ToArgb(),
+					ms,
+					System.Drawing.Color.Black.ToArgb(),
 					(float)south,
 					(float)north,
 					(float)west,
 					(float)east,
-					1.0f,//(float)m_parentProjectedLayer.Opacity / 255.0f,
+					1.0f,
 					m_parentProjectedLayer.World.TerrainAccessor);
-				
-				imageLayer.TransparentColor = System.Drawing.Color.Black.ToArgb();
 			}
-		*/			
-			if(b != null)
-			{
-				b.Dispose();
-			}
-			if(g != null)
+
+			if (g != null)
 			{
 				g.Dispose();
+				b.Dispose();
 			}
 
-			b = null;
-			g = null;
-
-			//might not be necessary
-			//GC.Collect();
-
-			return imageLayer;
+			return result;
 		}
 		
-		Stream m_ImageStream;
-
 		public void Initialize(DrawArgs drawArgs)
 		{
 			try
@@ -686,8 +559,7 @@ namespace WorldWind
 		{
 			using(Pen p = new Pen(lineString.Color, lineString.LineWidth))
 			{
-				g.DrawLines(p,
-							getScreenPoints(lineString.Coordinates, 0, lineString.Coordinates.Length, dstBB, imageSize));
+				g.DrawLines(p, getScreenPoints(lineString.Coordinates, 0, lineString.Coordinates.Length, dstBB, imageSize));
 
 			}
 		}

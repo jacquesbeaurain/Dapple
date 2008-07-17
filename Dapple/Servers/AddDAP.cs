@@ -19,7 +19,6 @@ namespace Dapple
       public AddDAP()
       {
          InitializeComponent();
-         this.Icon = new System.Drawing.Icon(@"app.ico");
       }
 
       public string Url

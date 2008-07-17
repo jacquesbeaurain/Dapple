@@ -2369,6 +2369,7 @@ namespace WorldWind
 
 				if (!supressUpdates)
 				{
+					drawArgs.CurrentRoI = GeographicBoundingBox.FromQuad(GetSearchBox());
 					m_World.Update(this.drawArgs);
 				}
 				if (Updated != null)

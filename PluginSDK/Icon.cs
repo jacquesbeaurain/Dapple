@@ -32,8 +32,6 @@ namespace WorldWind.Renderable
 		protected Line m_groundStick;
 		protected Vector2[] m_groundStickVector;
 
-		protected static int hotColor = Color.White.ToArgb();
-		protected static int normalColor = Color.FromArgb(150, 255, 255, 255).ToArgb();
 		protected static int nameColor = Color.White.ToArgb();
 		protected static int descriptionColor = Color.White.ToArgb();
 
@@ -71,14 +69,8 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public bool IsRotated
 		{
-			get
-			{
-				return m_isRotated;
-			}
-			set
-			{
-				m_isRotated = value;
-			}
+			get { return m_isRotated; }
+			set { m_isRotated = value; }
 		}
 		protected bool m_isRotated = false;
 
@@ -87,14 +79,8 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public Angle Rotation
 		{
-			get
-			{
-				return m_rotation;
-			}
-			set
-			{
-				m_rotation = value;
-			}
+			get { return m_rotation; }
+			set { m_rotation = value; }
 		}
 		protected Angle m_rotation = Angle.Zero;
 
@@ -215,6 +201,26 @@ namespace WorldWind.Renderable
 			set { m_declutter = value; }
 		}
 		private bool m_declutter = false;
+
+		/// <summary>
+		/// The color of the icon in its highlighted state.
+		/// </summary>
+		public Color HotColor
+		{
+			get { return Color.FromArgb(hotColor); }
+			set { hotColor = value.ToArgb(); }
+		}
+		protected int hotColor = Color.White.ToArgb();
+
+		/// <summary>
+		/// The color of the icon in its normal state.
+		/// </summary>
+		public Color NormalColor
+		{
+			get { return Color.FromArgb(normalColor); }
+			set { normalColor = value.ToArgb(); }
+		}
+		protected int normalColor = Color.FromArgb(150, 255, 255, 255).ToArgb();
 
 		/// <summary>
 		/// An ID for this icon.  Depends on the plugin to assign but can be used to uniquely identify this icon
@@ -1057,10 +1063,13 @@ namespace WorldWind.Renderable
 				this.Update(drawArgs);
 			}
 
-            int color = normalColor;
+			int color = normalColor;
 
-            if ((!m_disableMouseoverHighlight && isMouseOver) || m_alwaysHighlight)
-                color = hotColor;
+			if ((!m_disableMouseoverHighlight && isMouseOver) || m_alwaysHighlight)
+				color = hotColor;
+
+			byte bTotalOpacity = (byte)(Color.FromArgb(color).A * (double)this.Opacity / (double)Byte.MaxValue);
+			color = Color.FromArgb(this.Opacity, Color.FromArgb(color)).ToArgb();
 
 			// Render the label if necessary
 			if (m_iconTexture == null || isMouseOver || NameAlwaysVisible)

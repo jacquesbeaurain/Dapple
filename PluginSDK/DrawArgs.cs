@@ -445,6 +445,13 @@ namespace WorldWind
 		}
 
 		#endregion
+
+		private GeographicBoundingBox m_oCurrentRoI;
+		public GeographicBoundingBox CurrentRoI
+		{
+			get { return m_oCurrentRoI; }
+			set { m_oCurrentRoI = value; }
+		}
 	}
 
 	/// <summary>

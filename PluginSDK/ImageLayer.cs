@@ -58,12 +58,12 @@ namespace WorldWind.Renderable
 		int m_TransparentColor = 0;
 		#endregion
 
-        bool m_renderGrayscale = false;
+		bool m_renderGrayscale = false;
 
 		TimeSpan cacheExpiration = TimeSpan.MaxValue;
 		System.Timers.Timer refreshTimer = null;
 		#region Properties
-		
+
 		/// <summary>
 		/// Gets or sets the color used for transparent areas.
 		/// </summary>
@@ -105,9 +105,9 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
-				if(value!=null)
+				if (value != null)
 					value = value.Trim();
-				if(value==null || value.Trim().Length<=0)
+				if (value == null || value.Trim().Length <= 0)
 					_imagePath = null;
 				else
 					_imagePath = value.Trim();
@@ -148,7 +148,7 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
-				this.minLon= value;
+				this.minLon = value;
 			}
 		}
 
@@ -163,7 +163,7 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
-				this.minLat= value;
+				this.minLat = value;
 			}
 		}
 
@@ -178,7 +178,7 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
-				this.maxLon= value;
+				this.maxLon = value;
 			}
 		}
 
@@ -193,7 +193,15 @@ namespace WorldWind.Renderable
 			}
 			set
 			{
-				this.maxLat= value;
+				this.maxLat = value;
+			}
+		}
+
+		public GeographicBoundingBox Bounds
+		{
+			get
+			{
+				return new GeographicBoundingBox(MaxLat, MinLat, MinLon, MaxLon);
 			}
 		}
 
@@ -214,30 +222,31 @@ namespace WorldWind.Renderable
 
 		#endregion
 
-        float m_grayscaleBrightness = 0.0f;
+		float m_grayscaleBrightness = 0.0f;
 
-        public float GrayscaleBrightness
-        {
-            get { return m_grayscaleBrightness; }
-            set { m_grayscaleBrightness = value; }
-        }
+		public float GrayscaleBrightness
+		{
+			get { return m_grayscaleBrightness; }
+			set { m_grayscaleBrightness = value; }
+		}
 
-        public bool RenderGrayscale
-        {
-            get { return m_renderGrayscale; }
-            set { m_renderGrayscale = value; }
-        }
+		public bool RenderGrayscale
+		{
+			get { return m_renderGrayscale; }
+			set { m_renderGrayscale = value; }
+		}
 
 		public TimeSpan CacheExpiration
 		{
-			get{ return cacheExpiration; }
-			set{ cacheExpiration = value; }
+			get { return cacheExpiration; }
+			set { cacheExpiration = value; }
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.ImageLayer"/> class.
 		/// </summary>
-		public ImageLayer( string name, float layerRadius ) : base (name)
+		public ImageLayer(string name, float layerRadius)
+			: base(name)
 		{
 			this.layerRadius = layerRadius;
 		}
@@ -256,7 +265,7 @@ namespace WorldWind.Renderable
 			double maxLongitude,
 			byte opacity,
 			TerrainAccessor terrainAccessor)
-			: base(name, parentWorld.Position, parentWorld.Orientation) 
+			: base(name, parentWorld.Position, parentWorld.Orientation)
 		{
 			this.m_ParentWorld = parentWorld;
 			this.layerRadius = (float)parentWorld.EquatorialRadius + distanceAboveSurface;
@@ -285,9 +294,9 @@ namespace WorldWind.Renderable
 			double maxLongitude,
 			double opacityPercent,
 			TerrainAccessor terrainAccessor)
-			: this(name,parentWorld,distanceAboveSurface,null, 
-			minLatitude, maxLatitude, minLongitude, maxLongitude, 
-			(byte)(255*opacityPercent), terrainAccessor)
+			: this(name, parentWorld, distanceAboveSurface, null,
+			minLatitude, maxLatitude, minLongitude, maxLongitude,
+			(byte)(255 * opacityPercent), terrainAccessor)
 		{
 			m_TextureStream = textureStream;
 			m_TransparentColor = transparentColor;
@@ -307,9 +316,9 @@ namespace WorldWind.Renderable
 			double maxLongitude,
 			double opacityPercent,
 			TerrainAccessor terrainAccessor)
-			: this(name,parentWorld,distanceAboveSurface,imagePath, 
-			minLatitude, maxLatitude, minLongitude, maxLongitude, 
-			(byte)(255*opacityPercent), terrainAccessor)
+			: this(name, parentWorld, distanceAboveSurface, imagePath,
+			minLatitude, maxLatitude, minLongitude, maxLongitude,
+			(byte)(255 * opacityPercent), terrainAccessor)
 		{
 		}
 
@@ -322,38 +331,38 @@ namespace WorldWind.Renderable
 			{
 				this.device = drawArgs.device;
 
-				if(_imagePath == null && _imageUrl != null && _imageUrl.ToLower().StartsWith("http://"))
+				if (_imagePath == null && _imageUrl != null && _imageUrl.ToLower().StartsWith("http://"))
 				{
 					_imagePath = getFilePathFromUrl(_imageUrl);
-					
+
 				}
-				
+
 				FileInfo imageFileInfo = null;
-				if(_imagePath != null)
+				if (_imagePath != null)
 					imageFileInfo = new FileInfo(_imagePath);
 
-				if(downloadThread != null && downloadThread.IsAlive)
+				if (downloadThread != null && downloadThread.IsAlive)
 					return;
 
-				if(_imagePath != null && 
+				if (_imagePath != null &&
 					cacheExpiration != TimeSpan.MaxValue &&
 					cacheExpiration.TotalMilliseconds > 0 &&
 					_imageUrl.ToLower().StartsWith("http://") &&
-					imageFileInfo != null && 
+					imageFileInfo != null &&
 					imageFileInfo.Exists &&
 					imageFileInfo.LastWriteTime < System.DateTime.Now - cacheExpiration)
 				{
 					//attempt to redownload it
 					downloadThread = new Thread(new ThreadStart(DownloadImage));
 					downloadThread.Name = ThreadNames.ImageLayerDownload;
-					
+
 					downloadThread.IsBackground = true;
 					downloadThread.Start();
 
 					return;
 				}
 
-				if(m_TextureStream != null)
+				if (m_TextureStream != null)
 				{
 					UpdateTexture(m_TextureStream, m_TransparentColor);
 					verticalExaggeration = World.Settings.VerticalExaggeration;
@@ -361,21 +370,21 @@ namespace WorldWind.Renderable
 					isInitialized = true;
 					return;
 				}
-				else if(imageFileInfo != null && imageFileInfo.Exists)
+				else if (imageFileInfo != null && imageFileInfo.Exists)
 				{
-                    UpdateTexture(_imagePath);
-                    verticalExaggeration = World.Settings.VerticalExaggeration;
-                    CreateMesh();
-                    isInitialized = true;
-                    return;
+					UpdateTexture(_imagePath);
+					verticalExaggeration = World.Settings.VerticalExaggeration;
+					CreateMesh();
+					isInitialized = true;
+					return;
 				}
 
-				if(_imageUrl != null && _imageUrl.ToLower().StartsWith("http://"))
+				if (_imageUrl != null && _imageUrl.ToLower().StartsWith("http://"))
 				{
 					//download it...
 					downloadThread = new Thread(new ThreadStart(DownloadImage));
 					downloadThread.Name = ThreadNames.ImageLayerDownload;
-					
+
 					downloadThread.IsBackground = true;
 					downloadThread.Start();
 
@@ -399,15 +408,15 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(_imagePath!=null)
+				if (_imagePath != null)
 					Directory.CreateDirectory(Path.GetDirectoryName(this._imagePath));
 
-				using(WebDownload downloadReq = new WebDownload(this._imageUrl))
+				using (WebDownload downloadReq = new WebDownload(this._imageUrl))
 				{
 					downloadReq.ProgressCallback += new DownloadProgressHandler(UpdateDownloadProgress);
 					string filePath = getFilePathFromUrl(_imageUrl);
-					
-					if(_imagePath==null)
+
+					if (_imagePath == null)
 					{
 						// Download to RAM
 						downloadReq.DownloadMemory();
@@ -422,24 +431,24 @@ namespace WorldWind.Renderable
 					isInitialized = true;
 				}
 			}
-			catch(ThreadAbortException)
-			{}
-			catch(Exception caught)
+			catch (ThreadAbortException)
+			{ }
+			catch (Exception caught)
 			{
-				if(!showedError)
+				if (!showedError)
 				{
 					string msg = string.Format("Image download of file\n\n{1}\n\nfor layer '{0}' failed:\n\n{2}",
-						name, _imageUrl, caught.Message );
-					System.Windows.Forms.MessageBox.Show(msg, "Image download failed.", 
-						System.Windows.Forms.MessageBoxButtons.OK, 
-						System.Windows.Forms.MessageBoxIcon.Error );
+						name, _imageUrl, caught.Message);
+					System.Windows.Forms.MessageBox.Show(msg, "Image download failed.",
+						System.Windows.Forms.MessageBoxButtons.OK,
+						System.Windows.Forms.MessageBoxIcon.Error);
 					showedError = true;
 				}
 
-				if(_imagePath != null)
+				if (_imagePath != null)
 				{
 					FileInfo imageFile = new FileInfo(_imagePath);
-					if(imageFile.Exists)
+					if (imageFile.Exists)
 					{
 						UpdateTexture(_imagePath);
 						CreateMesh();
@@ -448,7 +457,7 @@ namespace WorldWind.Renderable
 				}
 				else
 				{
-				isOn = false;
+					isOn = false;
 				}
 			}
 		}
@@ -460,7 +469,7 @@ namespace WorldWind.Renderable
 		/// </summary>
 		protected void UpdateDownloadProgress(int bytesRead, int bytesTotal)
 		{
-			if(bytesRead < bytesTotal)
+			if (bytesRead < bytesTotal)
 				downloadPercent = (float)bytesRead / bytesTotal;
 		}
 
@@ -471,14 +480,14 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(!this.isInitialized)
+				if (!this.isInitialized)
 				{
 					this.Initialize(drawArgs);
-					if(!this.isInitialized)
+					if (!this.isInitialized)
 						return;
 				}
 
-				if(m_SurfaceImage == null && isInitialized && Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration)>0.01f)
+				if (m_SurfaceImage == null && isInitialized && Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration) > 0.01f)
 				{
 					// Vertical exaggeration changed - rebuild mesh
 					this.verticalExaggeration = World.Settings.VerticalExaggeration;
@@ -487,21 +496,21 @@ namespace WorldWind.Renderable
 					this.isInitialized = true;
 				}
 
-				if(cacheExpiration != TimeSpan.MaxValue && cacheExpiration.TotalMilliseconds > 0)
+				if (cacheExpiration != TimeSpan.MaxValue && cacheExpiration.TotalMilliseconds > 0)
 				{
-					if(refreshTimer == null)
+					if (refreshTimer == null)
 					{
 						refreshTimer = new System.Timers.Timer(cacheExpiration.TotalMilliseconds);
 						refreshTimer.Elapsed += new System.Timers.ElapsedEventHandler(refreshTimer_Elapsed);
 						refreshTimer.Start();
 					}
 
-					if(refreshTimer.Interval != cacheExpiration.TotalMilliseconds)
+					if (refreshTimer.Interval != cacheExpiration.TotalMilliseconds)
 					{
 						refreshTimer.Interval = cacheExpiration.TotalMilliseconds;
 					}
 				}
-				else if(refreshTimer != null && refreshTimer.Enabled)
+				else if (refreshTimer != null && refreshTimer.Enabled)
 					refreshTimer.Stop();
 			}
 			catch
@@ -528,72 +537,72 @@ namespace WorldWind.Renderable
 			{
 				m_opacity = value;
 
-			//	if(vertices==null)
-			//		return;
+				//	if(vertices==null)
+				//		return;
 
 				// Update mesh opacity
-			//	int opacityColor = m_opacity << 24;
-			//	for(int index = 0; index < vertices.Length; index++)
-			//		vertices[index].Color = opacityColor;
+				//	int opacityColor = m_opacity << 24;
+				//	for(int index = 0; index < vertices.Length; index++)
+				//		vertices[index].Color = opacityColor;
 			}
 		}
 
 		SurfaceImage m_SurfaceImage = null;
 
-      /// <summary>
+		/// <summary>
 		/// Builds the image's mesh 
 		/// </summary>
 		protected virtual void CreateMesh()
 		{
 			int upperBound = meshPointCount - 1;
-			float scaleFactor = (float)1/upperBound;
+			float scaleFactor = (float)1 / upperBound;
 			double latrange = Math.Abs(maxLat - minLat);
 			double lonrange;
-			if(minLon < maxLon)
+			if (minLon < maxLon)
 				lonrange = maxLon - minLon;
 			else
 				lonrange = 360.0f + maxLon - minLon;
 
-			int opacityColor = System.Drawing.Color.FromArgb(this.m_opacity,0,0,0).ToArgb();
+			int opacityColor = System.Drawing.Color.FromArgb(this.m_opacity, 0, 0, 0).ToArgb();
 			vertices = new CustomVertex.PositionNormalTextured[meshPointCount * meshPointCount];
-			for(int i = 0; i < meshPointCount; i++)
+			for (int i = 0; i < meshPointCount; i++)
 			{
-				for(int j = 0; j < meshPointCount; j++)
-				{	
+				for (int j = 0; j < meshPointCount; j++)
+				{
 					double height = 0;
-					if(this._terrainAccessor != null)
+					if (this._terrainAccessor != null)
 						height = this.verticalExaggeration * this._terrainAccessor.GetElevationAt(
 							(double)maxLat - scaleFactor * latrange * i,
 							(double)minLon + scaleFactor * lonrange * j,
 							(double)upperBound / latrange);
 
-					Point3d pos = MathEngine.SphericalToCartesian( 
-						maxLat - scaleFactor*latrange*i,
-						minLon + scaleFactor*lonrange*j, 
+					Point3d pos = MathEngine.SphericalToCartesian(
+						maxLat - scaleFactor * latrange * i,
+						minLon + scaleFactor * lonrange * j,
 						layerRadius + height);
 
-               vertices[i * meshPointCount + j].X = (float)pos.X;
-               vertices[i * meshPointCount + j].Y = (float)pos.Y;
-               vertices[i * meshPointCount + j].Z = (float)pos.Z;
-					
-					vertices[i*meshPointCount + j].Tu = j*scaleFactor;
-					vertices[i*meshPointCount + j].Tv = i*scaleFactor;
-				//	vertices[i*meshPointCount + j].Color = opacityColor;
+					vertices[i * meshPointCount + j].X = (float)pos.X;
+					vertices[i * meshPointCount + j].Y = (float)pos.Y;
+					vertices[i * meshPointCount + j].Z = (float)pos.Z;
+
+					vertices[i * meshPointCount + j].Tu = j * scaleFactor;
+					vertices[i * meshPointCount + j].Tv = i * scaleFactor;
+					//	vertices[i*meshPointCount + j].Color = opacityColor;
 				}
 			}
 
 			indices = new short[2 * upperBound * upperBound * 3];
-			for(int i = 0; i < upperBound; i++)
+			for (int i = 0; i < upperBound; i++)
 			{
-				for(int j = 0; j < upperBound; j++)
+				for (int j = 0; j < upperBound; j++)
 				{
-					indices[(2*3*i*upperBound) + 6*j] = (short)(i*meshPointCount + j);
-					indices[(2*3*i*upperBound) + 6*j + 1] = (short)((i+1)*meshPointCount + j);
-					indices[(2*3*i*upperBound) + 6*j + 2] = (short)(i*meshPointCount + j+1);
-	
-					indices[(2*3*i*upperBound) + 6*j + 3] = (short)(i*meshPointCount + j+1);
-					indices[(2*3*i*upperBound) + 6*j + 4] = (short)((i+1)*meshPointCount + j);
-					indices[(2*3*i*upperBound) + 6*j + 5] = (short)((i+1)*meshPointCount + j+1);
+					indices[(2 * 3 * i * upperBound) + 6 * j] = (short)(i * meshPointCount + j);
+					indices[(2 * 3 * i * upperBound) + 6 * j + 1] = (short)((i + 1) * meshPointCount + j);
+					indices[(2 * 3 * i * upperBound) + 6 * j + 2] = (short)(i * meshPointCount + j + 1);
+
+					indices[(2 * 3 * i * upperBound) + 6 * j + 3] = (short)(i * meshPointCount + j + 1);
+					indices[(2 * 3 * i * upperBound) + 6 * j + 4] = (short)((i + 1) * meshPointCount + j);
+					indices[(2 * 3 * i * upperBound) + 6 * j + 5] = (short)((i + 1) * meshPointCount + j + 1);
 				}
 			}
 
@@ -603,15 +612,15 @@ namespace WorldWind.Renderable
 		private void calculate_normals(ref CustomVertex.PositionNormalTextured[] vertices, short[] indices)
 		{
 			System.Collections.ArrayList[] normal_buffer = new System.Collections.ArrayList[vertices.Length];
-			for(int i = 0; i < vertices.Length; i++)
+			for (int i = 0; i < vertices.Length; i++)
 			{
 				normal_buffer[i] = new System.Collections.ArrayList();
 			}
-			for(int i = 0; i < indices.Length; i += 3)
+			for (int i = 0; i < indices.Length; i += 3)
 			{
-				Vector3 p1 = vertices[indices[i+0]].Position;
-				Vector3 p2 = vertices[indices[i+1]].Position;
-				Vector3 p3 = vertices[indices[i+2]].Position;
+				Vector3 p1 = vertices[indices[i + 0]].Position;
+				Vector3 p2 = vertices[indices[i + 1]].Position;
+				Vector3 p3 = vertices[indices[i + 2]].Position;
 
 				Vector3 v1 = p2 - p1;
 				Vector3 v2 = p3 - p1;
@@ -620,168 +629,170 @@ namespace WorldWind.Renderable
 				normal.Normalize();
 
 				// Store the face's normal for each of the vertices that make up the face.
-				normal_buffer[indices[i+0]].Add( normal );
-				normal_buffer[indices[i+1]].Add( normal );
-				normal_buffer[indices[i+2]].Add( normal );
+				normal_buffer[indices[i + 0]].Add(normal);
+				normal_buffer[indices[i + 1]].Add(normal);
+				normal_buffer[indices[i + 2]].Add(normal);
 			}
 
 			// Now loop through each vertex vector, and avarage out all the normals stored.
-			for( int i = 0; i < vertices.Length; ++i )
+			for (int i = 0; i < vertices.Length; ++i)
 			{
-				for( int j = 0; j < normal_buffer[i].Count; ++j )
+				for (int j = 0; j < normal_buffer[i].Count; ++j)
 				{
 					Vector3 curNormal = (Vector3)normal_buffer[i][j];
-					
-					if(vertices[i].Normal == Vector3.Empty)
+
+					if (vertices[i].Normal == Vector3.Empty)
 						vertices[i].Normal = curNormal;
 					else
 						vertices[i].Normal += curNormal;
 				}
-    
+
 				vertices[i].Normal.Multiply(1.0f / normal_buffer[i].Count);
 			}
 		}
 
 		//Blend m_sourceBlend = Blend.BlendFactor;
 		//Blend m_destinationBlend = Blend.InvBlendFactor;
-        static Effect grayscaleEffect = null;
+		static Effect grayscaleEffect = null;
 		/// <summary>
 		/// Draws the layer
 		/// </summary>
 		public override void Render(DrawArgs drawArgs)
 		{
-			if(downloadThread != null && downloadThread.IsAlive)
+			if (downloadThread != null && downloadThread.IsAlive)
+			{
 				RenderProgress(drawArgs);
+			}
 
-			if(!this.isInitialized)
+			if (!this.isInitialized)
 				return;
 
 			try
 			{
-				
-				if(texture == null || m_SurfaceImage != null)
+
+				if (texture == null || m_SurfaceImage != null)
 					return;
 
 				drawArgs.device.SetTexture(0, this.texture);
 
-				if(this._disableZbuffer)
+				if (this._disableZbuffer)
 				{
-					if(drawArgs.device.RenderState.ZBufferEnable)
+					if (drawArgs.device.RenderState.ZBufferEnable)
 						drawArgs.device.RenderState.ZBufferEnable = false;
 				}
 				else
 				{
-					if(!drawArgs.device.RenderState.ZBufferEnable)
+					if (!drawArgs.device.RenderState.ZBufferEnable)
 						drawArgs.device.RenderState.ZBufferEnable = true;
 				}
 
 				drawArgs.device.RenderState.ZBufferEnable = true;
 				drawArgs.device.Clear(ClearFlags.ZBuffer, 0, 1.0f, 0);
 
-			/*	if (m_opacity < 255 && device.DeviceCaps.DestinationBlendCaps.SupportsBlendFactor)
+				/*	if (m_opacity < 255 && device.DeviceCaps.DestinationBlendCaps.SupportsBlendFactor)
+					{
+						// Blend
+						device.RenderState.AlphaBlendEnable = true;
+						device.RenderState.SourceBlend = m_sourceBlend;
+						device.RenderState.DestinationBlend = m_destinationBlend;
+						// Set Red, Green and Blue = opacity
+						device.RenderState.BlendFactorColor = (m_opacity << 16) | (m_opacity << 8) | m_opacity;
+					}*/
+				//	else if (EnableColorKeying && device.DeviceCaps.TextureCaps.SupportsAlpha)
+				//	{
+				//		device.RenderState.AlphaBlendEnable = true;
+				//		device.RenderState.SourceBlend = Blend.SourceAlpha;
+				//		device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
+				//	}
+
+				drawArgs.device.Transform.World = Matrix.Translation(
+						  (float)-drawArgs.WorldCamera.ReferenceCenter.X,
+						  (float)-drawArgs.WorldCamera.ReferenceCenter.Y,
+						  (float)-drawArgs.WorldCamera.ReferenceCenter.Z
+						  );
+				device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
+
+				if (!RenderGrayscale || (device.DeviceCaps.PixelShaderVersion.Major < 1))
 				{
-					// Blend
-					device.RenderState.AlphaBlendEnable = true;
-					device.RenderState.SourceBlend = m_sourceBlend;
-					device.RenderState.DestinationBlend = m_destinationBlend;
-					// Set Red, Green and Blue = opacity
-					device.RenderState.BlendFactorColor = (m_opacity << 16) | (m_opacity << 8) | m_opacity;
-				}*/
-			//	else if (EnableColorKeying && device.DeviceCaps.TextureCaps.SupportsAlpha)
-			//	{
-			//		device.RenderState.AlphaBlendEnable = true;
-			//		device.RenderState.SourceBlend = Blend.SourceAlpha;
-			//		device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-			//	}
+					if (World.Settings.EnableSunShading)
+					{
+						Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
+						Vector3 sunVector = new Vector3(
+							 (float)sunPosition.X,
+							 (float)sunPosition.Y,
+							 (float)sunPosition.Z);
 
-                drawArgs.device.Transform.World = Matrix.Translation(
-                        (float)-drawArgs.WorldCamera.ReferenceCenter.X,
-                        (float)-drawArgs.WorldCamera.ReferenceCenter.Y,
-                        (float)-drawArgs.WorldCamera.ReferenceCenter.Z
-                        );
-                device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
+						device.RenderState.Lighting = true;
+						Material material = new Material();
+						material.Diffuse = System.Drawing.Color.White;
+						material.Ambient = System.Drawing.Color.White;
 
-                if (!RenderGrayscale || (device.DeviceCaps.PixelShaderVersion.Major < 1))
-                {
-                    if (World.Settings.EnableSunShading)
-                    {
-                        Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
-                        Vector3 sunVector = new Vector3(
-                            (float)sunPosition.X,
-                            (float)sunPosition.Y,
-                            (float)sunPosition.Z);
+						device.Material = material;
+						device.RenderState.AmbientColor = World.Settings.ShadingAmbientColor.ToArgb();
+						device.RenderState.NormalizeNormals = true;
+						device.RenderState.AlphaBlendEnable = true;
 
-                        device.RenderState.Lighting = true;
-                        Material material = new Material();
-                        material.Diffuse = System.Drawing.Color.White;
-                        material.Ambient = System.Drawing.Color.White;
+						device.Lights[0].Enabled = true;
+						device.Lights[0].Type = LightType.Directional;
+						device.Lights[0].Diffuse = System.Drawing.Color.White;
+						device.Lights[0].Direction = sunVector;
 
-                        device.Material = material;
-                        device.RenderState.AmbientColor = World.Settings.ShadingAmbientColor.ToArgb();
-                        device.RenderState.NormalizeNormals = true;
-                        device.RenderState.AlphaBlendEnable = true;
+						device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+						device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
+						device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
+					}
+					else
+					{
+						device.RenderState.Lighting = false;
+						device.RenderState.Ambient = World.Settings.StandardAmbientColor;
 
-                        device.Lights[0].Enabled = true;
-                        device.Lights[0].Type = LightType.Directional;
-                        device.Lights[0].Diffuse = System.Drawing.Color.White;
-                        device.Lights[0].Direction = sunVector;
+						drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
+						drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+					}
 
-                        device.TextureState[0].ColorOperation = TextureOperation.Modulate;
-                        device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
-                        device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
-                    }
-                    else
-                    {
-                        device.RenderState.Lighting = false;
-                        device.RenderState.Ambient = World.Settings.StandardAmbientColor;
+					device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(m_opacity, 255, 255, 255).ToArgb();
+					device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
+					device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+					device.TextureState[0].AlphaArgument2 = TextureArgument.TFactor;
 
-                        drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
-                        drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
-                    }
+					drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
 
-                    device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(m_opacity, 255, 255, 255).ToArgb();
-                    device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
-                    device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
-                    device.TextureState[0].AlphaArgument2 = TextureArgument.TFactor;
+					drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
+						 vertices.Length, indices.Length / 3, indices, true, vertices);
 
-                    drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
 
-                    drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
-                        vertices.Length, indices.Length / 3, indices, true, vertices);
+				}
+				else
+				{
+					if (grayscaleEffect == null)
+					{
+						device.DeviceReset += new EventHandler(device_DeviceReset);
+						device_DeviceReset(device, null);
+					}
 
-                    
-                }
-                else
-                {
-                    if (grayscaleEffect == null)
-                    {
-                        device.DeviceReset += new EventHandler(device_DeviceReset);
-                        device_DeviceReset(device, null);
-                    }
+					grayscaleEffect.Technique = "RenderGrayscaleBrightness";
+					grayscaleEffect.SetValue("WorldViewProj", Matrix.Multiply(device.Transform.World, Matrix.Multiply(device.Transform.View, device.Transform.Projection)));
+					grayscaleEffect.SetValue("Tex0", texture);
+					grayscaleEffect.SetValue("Brightness", GrayscaleBrightness);
+					float opacity = (float)m_opacity / 255.0f;
+					grayscaleEffect.SetValue("Opacity", opacity);
 
-                    grayscaleEffect.Technique = "RenderGrayscaleBrightness";
-                    grayscaleEffect.SetValue("WorldViewProj", Matrix.Multiply(device.Transform.World, Matrix.Multiply(device.Transform.View, device.Transform.Projection)));
-                    grayscaleEffect.SetValue("Tex0", texture);
-                    grayscaleEffect.SetValue("Brightness", GrayscaleBrightness);
-                    float opacity = (float)m_opacity / 255.0f;
-                    grayscaleEffect.SetValue("Opacity", opacity);
+					int numPasses = grayscaleEffect.Begin(0);
+					for (int i = 0; i < numPasses; i++)
+					{
+						grayscaleEffect.BeginPass(i);
 
-                    int numPasses = grayscaleEffect.Begin(0);
-                    for (int i = 0; i < numPasses; i++)
-                    {
-                        grayscaleEffect.BeginPass(i);
+						drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
+						vertices.Length, indices.Length / 3, indices, true, vertices);
 
-                        drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
-                        vertices.Length, indices.Length / 3, indices, true, vertices);
+						grayscaleEffect.EndPass();
+					}
 
-                        grayscaleEffect.EndPass();
-                    }
+					grayscaleEffect.End();
+				}
 
-                    grayscaleEffect.End();
-                }
+				drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 
-                drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
-				
 			}
 			finally
 			{
@@ -792,28 +803,28 @@ namespace WorldWind.Renderable
 					device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
 				}
 
-				if(this._disableZbuffer)
+				if (this._disableZbuffer)
 					drawArgs.device.RenderState.ZBufferEnable = true;
 			}
 		}
 
-        void device_DeviceReset(object sender, EventArgs e)
-        {
-            Device device = (Device)sender;
+		void device_DeviceReset(object sender, EventArgs e)
+		{
+			Device device = (Device)sender;
 
-            string outerrors = "";
-            grayscaleEffect = Effect.FromFile(
-                device,
-                "shaders\\grayscale.fx",
-                null,
-                null,
-                ShaderFlags.None,
-                null,
-                out outerrors);
+			string outerrors = "";
+			grayscaleEffect = Effect.FromFile(
+				 device,
+				 "shaders\\grayscale.fx",
+				 null,
+				 null,
+				 ShaderFlags.None,
+				 null,
+				 out outerrors);
 
-            if (outerrors != null && outerrors.Length > 0)
-                Log.Write(Log.Levels.Error, outerrors);
-        }
+			if (outerrors != null && outerrors.Length > 0)
+				Log.Write(Log.Levels.Error, outerrors);
+		}
 
 		protected virtual void RenderProgress(DrawArgs drawArgs)
 		{
@@ -830,7 +841,7 @@ namespace WorldWind.Renderable
 
 			Point3d v = MathEngine.SphericalToCartesian(centerLat, centerLon, this.layerRadius);
 
-			if(drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v) && 
+			if (drawArgs.WorldCamera.ViewFrustum.ContainsPoint(v) &&
 				MathEngine.SphericalDistanceDegrees(centerLat, centerLon, drawArgs.WorldCamera.Latitude.Degrees, drawArgs.WorldCamera.Longitude.Degrees) < 2 * drawArgs.WorldCamera.ViewRange.Degrees
 				)
 			{
@@ -843,7 +854,7 @@ namespace WorldWind.Renderable
 
 				boxOutline[1].X = (int)v.X + 200;
 				boxOutline[1].Y = (int)v.Y;
-					
+
 				boxOutline[2].X = (int)v.X + 200;
 				boxOutline[2].Y = (int)v.Y + 40;
 
@@ -860,7 +871,7 @@ namespace WorldWind.Renderable
 					new System.Drawing.Rectangle((int)v.X + 5, (int)v.Y + 5, 200, 50),
 					DrawTextFormat.NoClip, textColor);
 
-            DrawProgressBar(drawArgs, (float)v.X + 100, (float)v.Y + 30, 180, 10, World.Settings.downloadProgressColor);
+				DrawProgressBar(drawArgs, (float)v.X + 100, (float)v.Y + 30, 180, 10, World.Settings.downloadProgressColor);
 			}
 			device.RenderState.ZBufferEnable = true;
 			drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
@@ -871,8 +882,8 @@ namespace WorldWind.Renderable
 		/// </summary>
 		void DrawProgressBar(DrawArgs drawArgs, float x, float y, float width, float height, int color)
 		{
-			float halfWidth = width/2;
-			float halfHeight = height/2;
+			float halfWidth = width / 2;
+			float halfHeight = height / 2;
 			progressBarOutline[0].X = x - halfWidth;
 			progressBarOutline[0].Y = y - halfHeight;
 			progressBarOutline[0].Z = 0.5f;
@@ -882,12 +893,12 @@ namespace WorldWind.Renderable
 			progressBarOutline[1].Y = y - halfHeight;
 			progressBarOutline[1].Z = 0.5f;
 			progressBarOutline[1].Color = color;
-					
+
 			progressBarOutline[2].X = x + halfWidth;
 			progressBarOutline[2].Y = y + halfHeight;
 			progressBarOutline[2].Z = 0.5f;
 			progressBarOutline[2].Color = color;
-					
+
 			progressBarOutline[3].X = x - halfWidth;
 			progressBarOutline[3].Y = y + halfHeight;
 			progressBarOutline[3].Z = 0.5f;
@@ -901,7 +912,7 @@ namespace WorldWind.Renderable
 			drawArgs.device.VertexFormat = CustomVertex.TransformedColored.Format;
 			drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
 			drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, 4, progressBarOutline);
-				
+
 			int barlength = (int)(this.downloadPercent * 2 * halfWidth);
 
 			progressBar[0].X = x - halfWidth;
@@ -913,12 +924,12 @@ namespace WorldWind.Renderable
 			progressBar[1].Y = y + halfHeight;
 			progressBar[1].Z = 0.5f;
 			progressBar[1].Color = color;
-					
+
 			progressBar[2].X = x - halfWidth + barlength;
 			progressBar[2].Y = y - halfHeight;
 			progressBar[2].Z = 0.5f;
 			progressBar[2].Color = color;
-					
+
 			progressBar[3].X = x - halfWidth + barlength;
 			progressBar[3].Y = y + halfHeight;
 			progressBar[3].Z = 0.5f;
@@ -929,7 +940,7 @@ namespace WorldWind.Renderable
 
 		private static string getFilePathFromUrl(string url)
 		{
-			if(url.ToLower().StartsWith("http://"))
+			if (url.ToLower().StartsWith("http://"))
 			{
 				url = url.Substring(7);
 			}
@@ -955,7 +966,7 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(this.device != null)
+				if (this.device != null)
 				{
 					Texture oldTexture = this.texture;
 
@@ -963,7 +974,7 @@ namespace WorldWind.Renderable
 					Texture newTexture = ImageHelper.LoadTexture(fileName);
 					this.texture = newTexture;
 
-					if(oldTexture != null)
+					if (oldTexture != null)
 						oldTexture.Dispose();
 				}
 			}
@@ -987,14 +998,14 @@ namespace WorldWind.Renderable
 		{
 			try
 			{
-				if(this.device != null)
+				if (this.device != null)
 				{
 					Texture oldTexture = this.texture;
 
 					Texture newTexture = ImageHelper.LoadTexture(textureStream);
 					this.texture = newTexture;
 
-					if(oldTexture != null)
+					if (oldTexture != null)
 						oldTexture.Dispose();
 				}
 			}
@@ -1007,37 +1018,37 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Cleanup when layer is disabled
 		/// </summary>
-      public override void Dispose()
+		public override void Dispose()
 		{
 			this.isInitialized = false;
 
-			if(downloadThread != null)
+			if (downloadThread != null)
 			{
-				if(downloadThread.IsAlive)
+				if (downloadThread.IsAlive)
 				{
 					downloadThread.Abort();
 				}
 				downloadThread = null;
 			}
 
-			if(m_SurfaceImage != null)
+			if (m_SurfaceImage != null)
 			{
 				m_ParentWorld.WorldSurfaceRenderer.RemoveSurfaceImage(m_SurfaceImage.ImageFilePath);
 				m_SurfaceImage = null;
 			}
-			if (this.texture!=null)
+			if (this.texture != null)
 			{
 				this.texture.Dispose();
 				this.texture = null;
 			}
 
-			if(legendControl != null)
+			if (legendControl != null)
 			{
 				legendControl.Dispose();
 				legendControl = null;
 			}
 
-			if(refreshTimer != null && refreshTimer.Enabled)
+			if (refreshTimer != null && refreshTimer.Enabled)
 			{
 				refreshTimer.Stop();
 				refreshTimer = null;
@@ -1054,7 +1065,7 @@ namespace WorldWind.Renderable
 			Debug.Assert(percent >= 0);
 
 			this.m_opacity = (byte)(255 * percent);
-			
+
 			this.isInitialized = false;
 			CreateMesh();
 			this.isInitialized = true;
@@ -1076,40 +1087,40 @@ namespace WorldWind.Renderable
 		{
 			base.BuildContextMenu(menu);
 
-			if(m_legendImagePath == null || m_legendImagePath.Length <= 0)
+			if (m_legendImagePath == null || m_legendImagePath.Length <= 0)
 				return;
 
 			// Add legend menu item
-			System.Windows.Forms.MenuItem mi = new System.Windows.Forms.MenuItem("&Show Legend", 
-				new EventHandler(OnLegendClick) );
+			System.Windows.Forms.MenuItem mi = new System.Windows.Forms.MenuItem("&Show Legend",
+				new EventHandler(OnLegendClick));
 			menu.MenuItems.Add(0, mi);
 		}
 
 		/// <summary>
 		/// Called when user chooses to display legendControl
 		/// </summary>
-		protected virtual void OnLegendClick( object sender, EventArgs e )
+		protected virtual void OnLegendClick(object sender, EventArgs e)
 		{
-			if(legendControl == null)
+			if (legendControl == null)
 				legendControl = new Colorbar(null);
-			legendControl.LoadImage( m_legendImagePath );
+			legendControl.LoadImage(m_legendImagePath);
 		}
 
 		bool abortedFirstRefresh = false;
 
 		private void refreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			if(!abortedFirstRefresh)
+			if (!abortedFirstRefresh)
 			{
 				abortedFirstRefresh = true;
 				return;
 			}
 
-			if(_imageUrl == null && _imagePath != null)
+			if (_imageUrl == null && _imagePath != null)
 			{
 				UpdateTexture(_imagePath);
 			}
-			else if(_imageUrl != null && _imageUrl.ToLower().StartsWith("http://"))
+			else if (_imageUrl != null && _imageUrl.ToLower().StartsWith("http://"))
 			{
 				_imagePath = getFilePathFromUrl(_imageUrl);
 				DownloadImage();
@@ -1117,33 +1128,33 @@ namespace WorldWind.Renderable
 
 		}
 
-      public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
-      {
-         if (File.Exists(_imagePath))
-         {
-            info.dMaxLat = this.maxLat;
-            info.dMaxLon = this.maxLon;
-            info.dMinLat = this.minLat;
-            info.dMinLon = this.minLon;
+		public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+		{
+			if (File.Exists(_imagePath))
+			{
+				info.dMaxLat = this.maxLat;
+				info.dMaxLon = this.maxLon;
+				info.dMinLat = this.minLat;
+				info.dMinLon = this.minLon;
 
-            using (System.Drawing.Image oBitmap = System.Drawing.Image.FromFile(_imagePath))
-            {
-               info.iPixelsX = oBitmap.Width;
-               info.iPixelsY = oBitmap.Height;
-            }
-         }
-      }
+				using (System.Drawing.Image oBitmap = System.Drawing.Image.FromFile(_imagePath))
+				{
+					info.iPixelsX = oBitmap.Width;
+					info.iPixelsY = oBitmap.Height;
+				}
+			}
+		}
 
-      public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
-      {
-         using (System.Drawing.Image oBitmap = System.Drawing.Image.FromFile(_imagePath))
-         {
-            int iWidth = (int)Math.Round((this.maxLon - this.minLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
-            int iHeight = (int)Math.Round((this.maxLat - this.minLat) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
-            int iX = (int)Math.Round((this.minLon - expInfo.dMinLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
-            int iY = (int)Math.Round((expInfo.dMaxLat - this.maxLat) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
-            expInfo.gr.DrawImage(oBitmap, new System.Drawing.Rectangle(iX, iY, iWidth, iHeight));
-         }
-      }
+		public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
+		{
+			using (System.Drawing.Image oBitmap = System.Drawing.Image.FromFile(_imagePath))
+			{
+				int iWidth = (int)Math.Round((this.maxLon - this.minLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
+				int iHeight = (int)Math.Round((this.maxLat - this.minLat) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
+				int iX = (int)Math.Round((this.minLon - expInfo.dMinLon) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));
+				int iY = (int)Math.Round((expInfo.dMaxLat - this.maxLat) * (double)expInfo.iPixelsY / (expInfo.dMaxLat - expInfo.dMinLat));
+				expInfo.gr.DrawImage(oBitmap, new System.Drawing.Rectangle(iX, iY, iWidth, iHeight));
+			}
+		}
 	}
 }

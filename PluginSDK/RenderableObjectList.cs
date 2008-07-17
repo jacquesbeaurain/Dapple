@@ -24,11 +24,18 @@ namespace WorldWind.Renderable
 		System.Timers.Timer m_RefreshTimer = null;
 		public bool ShowOnlyOneLayer;
 
-		private bool m_blSortChildrenOnAdd = true;
+		protected bool m_blSortChildrenOnAdd = true;
 		public bool SortChildrenOnAdd
 		{
 			get { return m_blSortChildrenOnAdd; }
 			set { m_blSortChildrenOnAdd = value; }
+		}
+
+		protected bool m_blAllowDuplicateNames = false;
+		public bool AllowDuplicateNames
+		{
+			get { return m_blAllowDuplicateNames; }
+			set { m_blAllowDuplicateNames = value; }
 		}
 		
 		private bool m_disableExpansion = false;
@@ -370,56 +377,63 @@ namespace WorldWind.Renderable
 		{
 			lock (this.m_children.SyncRoot)
 			{
-				RenderableObjectList dupList = null;
-				RenderableObject duplicate = null;
-				ro.ParentList = this;
-				foreach (RenderableObject childRo in m_children)
+				if (m_blAllowDuplicateNames == false)
 				{
-					if (childRo is RenderableObjectList && childRo.Name == ro.Name)
+					RenderableObjectList dupList = null;
+					RenderableObject duplicate = null;
+					ro.ParentList = this;
+					foreach (RenderableObject childRo in m_children)
 					{
-						dupList = (RenderableObjectList)childRo;
-						break;
+						if (childRo is RenderableObjectList && childRo.Name == ro.Name)
+						{
+							dupList = (RenderableObjectList)childRo;
+							break;
+						}
+						else if (childRo.Name == ro.Name)
+						{
+							duplicate = childRo;
+							break;
+						}
 					}
-					else if (childRo.Name == ro.Name)
+
+					if (dupList != null)
 					{
-						duplicate = childRo;
-						break;
+						RenderableObjectList rol = (RenderableObjectList)ro;
+
+						foreach (RenderableObject childRo in rol.ChildObjects)
+						{
+							dupList.Add(childRo);
+						}
 					}
-				}
-
-				if (dupList != null)
-				{
-					RenderableObjectList rol = (RenderableObjectList)ro;
-
-					foreach (RenderableObject childRo in rol.ChildObjects)
+					else
 					{
-						dupList.Add(childRo);
+						if (duplicate != null)
+						{
+							for (int i = 1; i < 100; i++)
+							{
+								ro.Name = string.Format("{0} [{1}]", duplicate.Name, i);
+								bool found = false;
+								foreach (RenderableObject childRo in m_children)
+								{
+									if (childRo.Name == ro.Name)
+									{
+										found = true;
+										break;
+									}
+								}
+
+								if (!found)
+								{
+									break;
+								}
+							}
+						}
+
+						m_children.Add(ro);
 					}
 				}
 				else
 				{
-					if (duplicate != null)
-					{
-						for (int i = 1; i < 100; i++)
-						{
-							ro.Name = string.Format("{0} [{1}]", duplicate.Name, i);
-							bool found = false;
-							foreach (RenderableObject childRo in m_children)
-							{
-								if (childRo.Name == ro.Name)
-								{
-									found = true;
-									break;
-								}
-							}
-
-							if (!found)
-							{
-								break;
-							}
-						}
-					}
-
 					m_children.Add(ro);
 				}
 				if (m_blSortChildrenOnAdd)	SortChildren();

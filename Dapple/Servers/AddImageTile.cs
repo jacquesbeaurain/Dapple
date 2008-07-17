@@ -33,7 +33,6 @@ namespace Dapple
          m_worldWind = worldWindow;
          m_oParent = oParent;
          InitializeComponent();
-         this.Icon = new System.Drawing.Icon(@"app.ico");
 
          // collect the pages and leave only the start page
          for (int i = 0; i < tabCtl.TabPages.Count; i++)

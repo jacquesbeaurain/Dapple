@@ -127,9 +127,9 @@ namespace WorldWind.Camera
          return (m_Orientation.EpsilonTest(this._targetOrientation) &&
             Math.Abs(this._tilt.Radians - this._targetTilt.Radians) < Camera.CameraBase.dEpsilonTestValue &&
             Math.Abs(this._bank.Radians - this._targetBank.Radians) < Camera.CameraBase.dEpsilonTestValue &&
-            Math.Abs(this._distance - this._targetDistance) < 0.5 &&
+            Math.Abs(1 - (this._distance / this._targetDistance)) < 1e-3 &&
             Math.Abs(this._fov.Radians - this._targetFov.Radians) < Camera.CameraBase.dEpsilonTestValue);
-      }
+		}
 
       protected bool ZeroTest()
       {
@@ -213,7 +213,7 @@ namespace WorldWind.Camera
 		public override void Update(Device device)
 		{
             // Move camera
-         if (EpsilonTest())
+			if (EpsilonTest())
             NoSlerpToTargetOrientation();
          else
             SlerpToTargetOrientation(World.Settings.cameraSlerpPercentage);

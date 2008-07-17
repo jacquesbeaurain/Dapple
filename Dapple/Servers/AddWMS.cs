@@ -23,7 +23,6 @@ namespace Dapple
          m_worldWind = worldWindow;
          m_oParent = oParent;
          InitializeComponent();
-         this.Icon = new System.Drawing.Icon(@"app.ico");
       }
 
       public string WmsURL

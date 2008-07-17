@@ -626,15 +626,12 @@ namespace WorldWind
 		{
 			try
 			{
-				if ((m_extrude || m_outline) && m_lineFeature == null)
-					UpdateVertices();
-
 				if (drawArgs.WorldCamera.Altitude >= m_minimumDisplayAltitude && drawArgs.WorldCamera.Altitude <= m_maximumDisplayAltitude)
 				{
 					if (!isInitialized)
 						Initialize(drawArgs);
 
-					if (m_verticalExaggeration != World.Settings.VerticalExaggeration || (m_lineFeature == null && m_extrude))
+					if (m_verticalExaggeration != World.Settings.VerticalExaggeration || (m_lineFeature == null && (m_extrude || m_outline) && m_altitudeMode != AltitudeMode.ClampedToGround))
 					{
 						UpdateVertices();
 					}
@@ -657,102 +654,100 @@ namespace WorldWind
 
 		public override void Render(DrawArgs drawArgs)
 		{
+
+			if (!isInitialized ||
+				drawArgs.WorldCamera.Altitude < m_minimumDisplayAltitude ||
+				drawArgs.WorldCamera.Altitude > m_maximumDisplayAltitude ||
+				!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
+			{
+				// --- Not in view or not initialized ---
+				return;
+			}
+
+			if (m_lineFeature == null && (!this.Fill || primList.Count == 0))
+			{
+				// --- Nothing to draw ---
+				return;
+			}
+
 			using (new DirectXProfilerEvent("PolygonFeature::Render"))
 			{
-				if (!isInitialized /*|| m_vertices == null*/ || drawArgs.WorldCamera.Altitude < m_minimumDisplayAltitude || drawArgs.WorldCamera.Altitude > m_maximumDisplayAltitude)
+				Cull currentCull = drawArgs.device.RenderState.CullMode;
+				drawArgs.device.RenderState.CullMode = Cull.None;
+
+				drawArgs.device.Transform.World = Matrix.Translation(
+					(float)-drawArgs.WorldCamera.ReferenceCenter.X + m_localOrigin.X,
+						  (float)-drawArgs.WorldCamera.ReferenceCenter.Y + m_localOrigin.Y,
+						  (float)-drawArgs.WorldCamera.ReferenceCenter.Z + m_localOrigin.Z
+					);
+
+				if (World.Settings.EnableSunShading)
 				{
-					return;
+					Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
+					Vector3 sunVector = new Vector3(
+						 (float)sunPosition.X,
+						 (float)sunPosition.Y,
+						 (float)sunPosition.Z);
+
+					drawArgs.device.RenderState.Lighting = true;
+					Material material = new Material();
+					material.Diffuse = Color.White;
+					material.Ambient = Color.White;
+
+					drawArgs.device.Material = material;
+					drawArgs.device.RenderState.AmbientColor = World.Settings.ShadingAmbientColor.ToArgb();
+					drawArgs.device.RenderState.NormalizeNormals = true;
+					drawArgs.device.RenderState.AlphaBlendEnable = true;
+
+					drawArgs.device.Lights[0].Enabled = true;
+					drawArgs.device.Lights[0].Type = LightType.Directional;
+					drawArgs.device.Lights[0].Diffuse = Color.White;
+					drawArgs.device.Lights[0].Direction = sunVector;
+
+					drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+					drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
+					drawArgs.device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
+				}
+				else
+				{
+					drawArgs.device.RenderState.Lighting = false;
+					drawArgs.device.RenderState.Ambient = World.Settings.StandardAmbientColor;
 				}
 
-				if (!drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox))
-					return;
-
-				try
+				//if(m_vertices != null)
+				if (this.Fill && primList.Count > 0)
 				{
-					Cull currentCull = drawArgs.device.RenderState.CullMode;
-					drawArgs.device.RenderState.CullMode = Cull.None;
-
-					drawArgs.device.Transform.World = Matrix.Translation(
-						(float)-drawArgs.WorldCamera.ReferenceCenter.X + m_localOrigin.X,
-							  (float)-drawArgs.WorldCamera.ReferenceCenter.Y + m_localOrigin.Y,
-							  (float)-drawArgs.WorldCamera.ReferenceCenter.Z + m_localOrigin.Z
-						);
-
-					if (World.Settings.EnableSunShading)
+					drawArgs.device.VertexFormat = CustomVertex.PositionNormalColored.Format;
+					drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
+					for (int i = 0; i < primList.Count; i++)
 					{
-						Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
-						Vector3 sunVector = new Vector3(
-							 (float)sunPosition.X,
-							 (float)sunPosition.Y,
-							 (float)sunPosition.Z);
+						int vertexCount = 0;
+						PrimitiveType primType = (PrimitiveType)primTypes[i];
+						CustomVertex.PositionNormalColored[] vertices = (CustomVertex.PositionNormalColored[])primList[i];
 
-						drawArgs.device.RenderState.Lighting = true;
-						Material material = new Material();
-						material.Diffuse = Color.White;
-						material.Ambient = Color.White;
+						if (primType == PrimitiveType.TriangleList)
+							vertexCount = vertices.Length / 3;
+						else
+							vertexCount = vertices.Length - 2;
 
-						drawArgs.device.Material = material;
-						drawArgs.device.RenderState.AmbientColor = World.Settings.ShadingAmbientColor.ToArgb();
-						drawArgs.device.RenderState.NormalizeNormals = true;
-						drawArgs.device.RenderState.AlphaBlendEnable = true;
-
-						drawArgs.device.Lights[0].Enabled = true;
-						drawArgs.device.Lights[0].Type = LightType.Directional;
-						drawArgs.device.Lights[0].Diffuse = Color.White;
-						drawArgs.device.Lights[0].Direction = sunVector;
-
-						drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Modulate;
-						drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
-						drawArgs.device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
+						drawArgs.device.DrawUserPrimitives(
+							primType,//PrimitiveType.TriangleList, 
+							vertexCount,
+							vertices);
 					}
-					else
-					{
-						drawArgs.device.RenderState.Lighting = false;
-						drawArgs.device.RenderState.Ambient = World.Settings.StandardAmbientColor;
-					}
-
-					//if(m_vertices != null)
-                if (this.Fill)
-                {
-					if (primList.Count > 0)
-					{
-						drawArgs.device.VertexFormat = CustomVertex.PositionNormalColored.Format;
-						drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
-						for (int i = 0; i < primList.Count; i++)
-						{
-							int vertexCount = 0;
-							PrimitiveType primType = (PrimitiveType)primTypes[i];
-							CustomVertex.PositionNormalColored[] vertices = (CustomVertex.PositionNormalColored[])primList[i];
-
-							if (primType == PrimitiveType.TriangleList)
-								vertexCount = vertices.Length / 3;
-							else
-								vertexCount = vertices.Length - 2;
-
-							drawArgs.device.DrawUserPrimitives(
-								primType,//PrimitiveType.TriangleList, 
-								vertexCount,
-								vertices);
-						}
-					}
-                }
-
-					if (m_lineFeature != null)
-					{
-						for (int i = 0; i < m_lineFeature.Length; i++)
-						{
-							if (m_lineFeature[i] != null)
-								m_lineFeature[i].Render(drawArgs);
-						}
-					}
-
-					drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
-					drawArgs.device.RenderState.CullMode = currentCull;
 				}
-				catch (Exception ex)
+
+				if (m_lineFeature != null)
 				{
-					Log.Write(ex);
+					for (int i = 0; i < m_lineFeature.Length; i++)
+					{
+						if (m_lineFeature[i] != null)
+							m_lineFeature[i].Render(drawArgs);
+					}
 				}
+
+				drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
+				drawArgs.device.RenderState.CullMode = currentCull;
 			}
 		}
 

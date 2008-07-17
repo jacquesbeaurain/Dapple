@@ -90,6 +90,16 @@ namespace WorldWind
 			this.MinimumAltitude = Math.Min(this.MinimumAltitude, other.MinimumAltitude);
 		}
 
+		public void Union(double dLongitude, double dLatitude, double dAltitude)
+		{
+			this.North = Math.Max(this.North, dLatitude);
+			this.South = Math.Min(this.South, dLatitude);
+			this.East = Math.Max(this.East, dLongitude);
+			this.West = Math.Min(this.West, dLongitude);
+			this.MaximumAltitude = Math.Max(this.MaximumAltitude, dAltitude);
+			this.MinimumAltitude = Math.Min(this.MinimumAltitude, dAltitude);
+		}
+
 		public double Longitude
 		{
 			get { return East - West; }
@@ -103,6 +113,16 @@ namespace WorldWind
 		public double Height
 		{
 			get { return MaximumAltitude - MinimumAltitude; }
+		}
+
+		public double CenterLatitude
+		{
+			get { return (North + South) / 2.0; }
+		}
+
+		public double CenterLongitude
+		{
+			get { return (East + West) / 2.0; }
 		}
 
 		public bool Intersects(GeographicBoundingBox boundingBox)
@@ -132,6 +152,11 @@ namespace WorldWind
 
          return North == castObj.North && East == castObj.East && South == castObj.South && West == castObj.West;
       }
+
+		public bool Equivalent(GeographicBoundingBox other, double tolerance)
+		{
+			return this.North - other.North < tolerance && this.East - other.East < tolerance && this.South - other.South < tolerance && this.West - other.West < tolerance;
+		}
 
 		public override int GetHashCode()
 		{
