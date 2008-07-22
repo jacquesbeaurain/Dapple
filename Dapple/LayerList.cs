@@ -968,7 +968,9 @@ namespace Dapple
       /// </summary>
       public void CmdExtractVisibleLayers()
       {
-         if (DownloadsInProgress)
+			// --- Dataset extraction will operate in testing mode, but ensure that you don't try to extract
+			// --- a dataset that needs to be fully downloaded
+         if (DownloadsInProgress && !Program.g_blTestingMode)
          {
 				Program.ShowMessageBox(
 					"It is not possible to extract data while Dapple is downloading tiles for visible data layers.\nPlease wait for tile downloading to complete and try again.",

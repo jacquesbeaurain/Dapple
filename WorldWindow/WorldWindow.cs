@@ -349,42 +349,26 @@ namespace WorldWind
 			// The m_Device3d can't be created unless the control is at least 1 x 1 pixels in size
 			this.Size = new Size(1, 1);
 
-			try
+			// Now perform the rendering m_Device3d initialization
+			// Skip DirectX initialization in design mode
+			if (!IsInDesignMode())
 			{
-				// Now perform the rendering m_Device3d initialization
-				// Skip DirectX initialization in design mode
-				if (!IsInDesignMode())
-				{
-					this.InitializeGraphics();
-					Application.Idle += new EventHandler(this.OnApplicationIdle);
-				}
-
-				//Post m_Device3d creation initialization
-				this.drawArgs = new DrawArgs(m_Device3d, this);
-				this.m_RootWidget = new WorldWind.Widgets.RootWidget(this);
-				this.m_NewRootWidget = new WorldWind.NewWidgets.RootWidget(this);
-
-				//this.m_RootWidget.ChildWidgets.Add(layerManager);
-				DrawArgs.RootWidget = this.m_RootWidget;
-				DrawArgs.NewRootWidget = this.m_NewRootWidget;
-
-				m_FpsTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_FpsTimer_Elapsed);
-				m_FpsTimer.Start();
-
-				TimeKeeper.Start();
-				//	WorldWind.Widgets.LayerManager layerManager = new WorldWind.Widgets.LayerManager();
-				//	m_RootWidget.ChildWidgets.Add(layerManager);
+				this.InitializeGraphics();
+				Application.Idle += new EventHandler(this.OnApplicationIdle);
 			}
-			catch (InvalidCallException caught)
-			{
-				throw new InvalidCallException(
-					 "Unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.", caught);
-			}
-			catch (NotAvailableException caught)
-			{
-				throw new NotAvailableException(
-					 "Unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.", caught);
-			}
+
+			//Post m_Device3d creation initialization
+			this.drawArgs = new DrawArgs(m_Device3d, this);
+			this.m_RootWidget = new WorldWind.Widgets.RootWidget(this);
+			this.m_NewRootWidget = new WorldWind.NewWidgets.RootWidget(this);
+
+			DrawArgs.RootWidget = this.m_RootWidget;
+			DrawArgs.NewRootWidget = this.m_NewRootWidget;
+
+			m_FpsTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_FpsTimer_Elapsed);
+			m_FpsTimer.Start();
+
+			TimeKeeper.Start();
 		}
 
 		#region Public properties

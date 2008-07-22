@@ -1,22 +1,23 @@
 using System;
-using System.IO;
-using System.Threading;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Ipc;
+using System.Threading;
+using System.Windows.Forms;
 using DM.SharedMemory;
 using Utility;
 using WorldWind;
-using System.Runtime.Remoting.Channels.Ipc;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting;
-using System.Globalization;
 
 namespace Dapple
 {
    static class Program
 	{
+		public static bool g_blTestingMode = false;
+
 		/// <summary>
       /// The main entry point for the application.
       /// Mutex code fragments taken from http://www.c-sharpcorner.com/FAQ/Create1InstanceAppSC.asp
@@ -29,7 +30,6 @@ namespace Dapple
 			WorldWindow.VideoMemoryExhausted += new MethodInvoker(ReportVideoMemoryExhaustion);
 
 #if !DEBUG
-			bool blNoAbortTool = false;
 			bool aborting = false;
 #endif
 
@@ -98,7 +98,7 @@ namespace Dapple
 #if !DEBUG
 				if (cmdl["noaborttool"] != null)
 				{
-					blNoAbortTool = true;
+					g_blTestingMode = true;
 				}
 #endif
 				if (cmdl["geotifftmp"] != null)
@@ -267,7 +267,20 @@ namespace Dapple
 
 					if (RunningInstance() == null)
 					{
-						Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
+						try
+						{
+							Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
+						}
+						catch (Microsoft.DirectX.DirectXException)
+						{
+							ShowMessageBox(
+								"Dapple was unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.",
+								"Dapple Startup",
+								MessageBoxButtons.OK,
+								MessageBoxDefaultButton.Button1,
+								MessageBoxIcon.Error);
+							return;
+						}
 					}
 					else
 					{
@@ -299,7 +312,7 @@ namespace Dapple
 #if !DEBUG
 			catch (Exception caught)
 			{
-				if (blNoAbortTool)
+				if (g_blTestingMode)
 				{
 					throw;
 				}
