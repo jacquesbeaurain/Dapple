@@ -215,12 +215,12 @@ namespace Dapple.KML
 				input.CenterLongitude + (input.East - input.CenterLongitude) * dScale
 				);
 
-			result.North = Math.Min(m_oGroundOverlay.LatLonBox.North, Math.Min(90.0, result.North));
-			result.South = Math.Max(m_oGroundOverlay.LatLonBox.South, Math.Max(-90.0, result.South));
+			//result.North = Math.Min(m_oGroundOverlay.LatLonBox.North, Math.Min(90.0, result.North));
+			//result.South = Math.Max(m_oGroundOverlay.LatLonBox.South, Math.Max(-90.0, result.South));
 			if (!WraparoundLayer)
 			{
-				result.East = Math.Min(m_oGroundOverlay.LatLonBox.East, Math.Min(180.0, result.East));
-				result.West = Math.Max(m_oGroundOverlay.LatLonBox.West, Math.Max(-180.0, result.West));
+				//result.East = Math.Min(m_oGroundOverlay.LatLonBox.East, Math.Min(180.0, result.East));
+				//result.West = Math.Max(m_oGroundOverlay.LatLonBox.West, Math.Max(-180.0, result.West));
 			}
 			else
 			{

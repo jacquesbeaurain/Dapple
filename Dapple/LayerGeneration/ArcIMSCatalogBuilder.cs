@@ -172,7 +172,14 @@ namespace Dapple.LayerGeneration
 
             foreach (XmlNode nServiceNode in oNodeList)
             {
-               serverDir.SubList.Add(new ArcIMSServiceBuilder(serverDir, ((XmlElement)nServiceNode).GetAttribute("name"), LoadFinished));
+					XmlElement oLocaleNode = nServiceNode.SelectSingleNode("ENVIRONMENT/LOCALE") as XmlElement;
+					CultureInfo oInfo = CultureInfo.CurrentCulture;
+					if (oLocaleNode != null && oLocaleNode.HasAttribute("language") && oLocaleNode.HasAttribute("country"))
+					{
+						oInfo = new CultureInfo(String.Format("{0}-{1}", oLocaleNode.GetAttribute("language"), oLocaleNode.GetAttribute("country")));
+					}
+
+               serverDir.SubList.Add(new ArcIMSServiceBuilder(serverDir, ((XmlElement)nServiceNode).GetAttribute("name"), LoadFinished, oInfo));
             }
 
             serverDir.SetLoadSuccessful();
@@ -282,12 +289,15 @@ namespace Dapple.LayerGeneration
       private Object m_oLock = new Object();
       private ArcIMSServiceDownload m_hDownload;
       private ServerTree.LoadFinishedCallbackHandler LoadFinished;
+		private CultureInfo m_oCultureInfo;
 
-      public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished) : base(szName, hServer, hServer.Uri, true)
-      {
-         m_szName = szName;
-         LoadFinished = hLoadFinished;
-      }
+		public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, ServerTree.LoadFinishedCallbackHandler hLoadFinished, CultureInfo oInfo)
+			: base(szName, hServer, hServer.Uri, true)
+		{
+			m_szName = szName;
+			LoadFinished = hLoadFinished;
+			m_oCultureInfo = oInfo;
+		}
 
       public override System.Windows.Forms.TreeNode[] getChildTreeNodes()
       {
@@ -366,10 +376,10 @@ namespace Dapple.LayerGeneration
                {
 						GeographicBoundingBox oRealServiceBounds = new GeographicBoundingBox();
 						bool blValid = true;
-						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.West);
-						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.South);
-						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.East);
-						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealServiceBounds.North);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.West);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.South);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.East);
+						blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.North);
 
 						if (blValid)
 							oServiceBounds = oRealServiceBounds;
@@ -411,16 +421,16 @@ namespace Dapple.LayerGeneration
                      {
 								GeographicBoundingBox oRealLayerBounds = new GeographicBoundingBox();
 								bool blValid = true;
-								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.West);
-								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.South);
-								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.East);
-								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture, out oRealLayerBounds.North);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.West);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.South);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.East);
+								blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.North);
 								if (blValid)
 									oLayerBounds = oRealLayerBounds;
                      }
                   }
 
-                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(((ArcIMSServerBuilder)Parent).Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, dMinScale, dMaxScale));
+                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(((ArcIMSServerBuilder)Parent).Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, dMinScale, dMaxScale, m_oCultureInfo));
                }
             }
 

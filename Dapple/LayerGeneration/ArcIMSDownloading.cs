@@ -9,14 +9,18 @@ using System.Xml;
 using System.IO;
 using Utility;
 using System.Drawing;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
    public class ArcIMSDownloadRequest : GeoSpatialDownloadRequest
-   {      
-      public ArcIMSDownloadRequest(IGeoSpatialDownloadTile oTile, ArcIMSImageStore oImageStore, string strLocalFilePath)
+   {
+		protected CultureInfo m_oCultureInfo;
+
+      public ArcIMSDownloadRequest(IGeoSpatialDownloadTile oTile, ArcIMSImageStore oImageStore, string strLocalFilePath, CultureInfo oInfo)
          : base(oTile, oImageStore, strLocalFilePath, oImageStore.ServerUri.ToBaseUri())
       {
+			m_oCultureInfo = oInfo;
       }
 
       public override void StartDownload()
@@ -29,7 +33,7 @@ namespace Dapple.LayerGeneration
          Tile.IsDownloadingImage = true;
 
          Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
-         download = new ArcIMSImageDownload(m_imageStore as ArcIMSImageStore, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), 0);
+         download = new ArcIMSImageDownload(m_imageStore as ArcIMSImageStore, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), 0, m_oCultureInfo);
          download.DownloadType = DownloadType.Unspecified;
          download.SavedFilePath = m_localFilePath + ".tmp";
          download.ProgressCallback += new DownloadProgressHandler(UpdateProgress);
@@ -190,7 +194,8 @@ namespace Dapple.LayerGeneration
       protected abstract XmlDocument RequestDocument { get; }
       protected abstract String TargetUrl { get; }
 
-      protected ArcIMSDownload(ArcIMSServerUri oUri, int iIndexNumber) : base(oUri.ToBaseUri(), iIndexNumber)
+      protected ArcIMSDownload(ArcIMSServerUri oUri, int iIndexNumber)
+			: base(oUri.ToBaseUri(), iIndexNumber)
       {
          m_oUri = oUri;
       }
@@ -248,13 +253,15 @@ namespace Dapple.LayerGeneration
 
    public class ArcIMSImageDownload : ArcIMSDownload
    {
+		protected CultureInfo m_oCultureInfo;
       private ArcIMSImageStore m_oImageStore;
       private Geosoft.Dap.Common.BoundingBox m_oEnvelope;
 
-      public ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber)
+      public ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber, CultureInfo oInfo)
          :base(oImageStore.ServerUri, iIndexNumber)
       {
-         m_oImageStore = oImageStore;
+			m_oCultureInfo = oInfo;
+			m_oImageStore = oImageStore;
          m_oEnvelope = oEnvelope;
       }
 
@@ -283,6 +290,7 @@ namespace Dapple.LayerGeneration
       {
          get
          {
+				Console.WriteLine("==== Creating ArcIMS image download request for " + m_oEnvelope.ToString(2));
             XmlDocument oRequestDoc = new XmlDocument();
 
             XmlNode nXmlNode = oRequestDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
@@ -296,15 +304,15 @@ namespace Dapple.LayerGeneration
             XmlElement nPropertiesElement = oRequestDoc.CreateElement("PROPERTIES", oRequestDoc.NamespaceURI);
 
             XmlElement nEnvelopeElement = oRequestDoc.CreateElement("ENVELOPE", oRequestDoc.NamespaceURI);
-            nEnvelopeElement.SetAttribute("minx", m_oEnvelope.MinX.ToString());
-            nEnvelopeElement.SetAttribute("miny", m_oEnvelope.MinY.ToString());
-            nEnvelopeElement.SetAttribute("maxx", m_oEnvelope.MaxX.ToString());
-            nEnvelopeElement.SetAttribute("maxy", m_oEnvelope.MaxY.ToString());
+            nEnvelopeElement.SetAttribute("minx", m_oEnvelope.MinX.ToString(m_oCultureInfo.NumberFormat));
+				nEnvelopeElement.SetAttribute("miny", m_oEnvelope.MinY.ToString(m_oCultureInfo.NumberFormat));
+				nEnvelopeElement.SetAttribute("maxx", m_oEnvelope.MaxX.ToString(m_oCultureInfo.NumberFormat));
+				nEnvelopeElement.SetAttribute("maxy", m_oEnvelope.MaxY.ToString(m_oCultureInfo.NumberFormat));
             nPropertiesElement.AppendChild(nEnvelopeElement);
 
             XmlElement nImageSizeElement = oRequestDoc.CreateElement("IMAGESIZE", oRequestDoc.NamespaceURI);
-            nImageSizeElement.SetAttribute("width", m_oImageStore.TextureSizePixels.ToString());
-            nImageSizeElement.SetAttribute("height", m_oImageStore.TextureSizePixels.ToString());
+				nImageSizeElement.SetAttribute("width", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
+				nImageSizeElement.SetAttribute("height", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
             nPropertiesElement.AppendChild(nImageSizeElement);
 
             XmlElement nLayerListElement = oRequestDoc.CreateElement("LAYERLIST", oRequestDoc.NamespaceURI);
@@ -425,13 +433,15 @@ namespace Dapple.LayerGeneration
       private String m_szLayerID;
       private ArcIMSServerUri m_oUri;
       private int m_iTextureSize;
+		private CultureInfo m_oCultureInfo;
 
-      public ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize)
+      public ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo)
       {
          m_oUri = oUri;
          m_strServiceName = strServiceName;
          m_szLayerID = szLayerID;
          m_iTextureSize = iTextureSize;
+			m_oCultureInfo = oInfo;
       }
 
       #region Properties
@@ -457,7 +467,7 @@ namespace Dapple.LayerGeneration
       protected override void QueueDownload(IGeoSpatialDownloadTile oTile, string strLocalFilePath)
       {
          oTile.TileSet.AddToDownloadQueue(oTile.TileSet.Camera,
-            new ArcIMSDownloadRequest(oTile, this, strLocalFilePath));
+            new ArcIMSDownloadRequest(oTile, this, strLocalFilePath, m_oCultureInfo));
       }
    }
 }

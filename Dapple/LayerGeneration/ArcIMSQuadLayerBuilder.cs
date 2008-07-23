@@ -5,6 +5,7 @@ using WorldWind.Renderable;
 using WorldWind;
 using System.IO;
 using WorldWind.PluginEngine;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -22,6 +23,7 @@ namespace Dapple.LayerGeneration
       private int m_iPixels = 256;
       private String m_szLayerID;
       private double m_dMinScale, m_dMaxScale;
+		private CultureInfo m_oCultureInfo;
 
       #endregion
 
@@ -36,9 +38,10 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale)
+      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
          :base(szLayerTitle, oWorldWindow, oParent)
       {
+			m_oCultureInfo = oInfo;
          m_oEnvelope = oEnvelope;
          m_szLayerID = szLayerID;
          m_szServiceName = strServiceName;
@@ -222,12 +225,10 @@ namespace Dapple.LayerGeneration
 
       public override RenderableObject GetLayer()
       {
-         Console.WriteLine(m_dLevelZeroTileSizeDegrees + "," + m_iPixels + "," + m_iLevels);
-
          if (m_blnIsChanged)
          {
             ImageStore[] aImageStore = new ImageStore[1];
-            aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri, m_iPixels);
+            aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri, m_iPixels, m_oCultureInfo);
             aImageStore[0].DataDirectory = null;
             aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
             aImageStore[0].LevelCount = m_iLevels;
@@ -249,7 +250,7 @@ namespace Dapple.LayerGeneration
       public override string GetURI()
       {
          return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
-				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
+				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}&culture={9}",
 				m_oEnvelope.West,
 				m_oEnvelope.South,
 				m_oEnvelope.East,
@@ -258,7 +259,8 @@ namespace Dapple.LayerGeneration
 				m_dMaxScale,
 				System.Web.HttpUtility.UrlEncode(m_szLayerID),
 				System.Web.HttpUtility.UrlEncode(this.Title),
-				System.Web.HttpUtility.UrlEncode(m_szServiceName));
+				System.Web.HttpUtility.UrlEncode(m_szServiceName),
+				System.Web.HttpUtility.UrlEncode(m_oCultureInfo.Name));
       }
 
 		private String LayerCacheFolder
@@ -287,7 +289,7 @@ namespace Dapple.LayerGeneration
 
       public override object CloneSpecific()
       {
-         return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale);
+         return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo);
       }
 
       public override bool Equals(object obj)

@@ -4144,46 +4144,55 @@ namespace Dapple.KML
 
 		public KMLFile(String strFilename, bool blValidate)
 		{
-			if (Path.GetExtension(strFilename).Equals(".kmz", StringComparison.InvariantCultureIgnoreCase))
-			{
-				strFilename = UnzipKMZFile(strFilename);
-				if (strFilename == null)
-				{
-					throw new ArgumentException("Could not find a KML file to load inside the KMZ file.");
-				}
-				m_blLoadedFromKMZ = true;
-			}
-
-			m_strFilename = strFilename;
-
-			System.Xml.XmlDocument oDoc = new System.Xml.XmlDocument();
-			XmlReaderSettings oSettings = new XmlReaderSettings();
-			if (blValidate)
-			{
-				oSettings.Schemas.Add("http://www.opengis.net/kml/2.2", Path.Combine(Path.GetDirectoryName(strFilename), "ogckml22.xsd"));
-				oSettings.ValidationType = ValidationType.Schema;
-			}
-			XmlReader oDocReader = XmlReader.Create(strFilename, oSettings);
+			XmlReader oDocReader = null;
 
 			try
 			{
-				oDoc.Load(oDocReader);
+				if (Path.GetExtension(strFilename).Equals(".kmz", StringComparison.InvariantCultureIgnoreCase))
+				{
+					strFilename = UnzipKMZFile(strFilename);
+					if (strFilename == null)
+					{
+						throw new ArgumentException("Could not find a KML file to load inside the KMZ file.");
+					}
+					m_blLoadedFromKMZ = true;
+				}
+
+				m_strFilename = strFilename;
+
+				System.Xml.XmlDocument oDoc = new System.Xml.XmlDocument();
+				XmlReaderSettings oSettings = new XmlReaderSettings();
+				if (blValidate)
+				{
+					oSettings.Schemas.Add("http://www.opengis.net/kml/2.2", Path.Combine(Path.GetDirectoryName(strFilename), "ogckml22.xsd"));
+					oSettings.ValidationType = ValidationType.Schema;
+				}
+				oDocReader = XmlReader.Create(strFilename, oSettings);
+
+				try
+				{
+					oDoc.Load(oDocReader);
+				}
+				catch (XmlException ex)
+				{
+					throw new ArgumentException("KML file failed validation: " + ex.Message);
+				}
+
+				m_strVersion = oDoc.DocumentElement.NamespaceURI;
+
+				System.Xml.XmlNamespaceManager oManager = new System.Xml.XmlNamespaceManager(oDoc.NameTable);
+				oManager.AddNamespace("kml", oDoc.DocumentElement.NamespaceURI);
+
+				XmlElement oPointer;
+
+				oPointer = oDoc.DocumentElement.SelectSingleNode("kml:Document", oManager) as XmlElement;
+				if (oPointer == null) throw new ArgumentException("The KML file contains no 'Document' element.");
+				m_oDocument = new Dapple.KML.KMLDocument(oPointer, oManager, this);
 			}
-			catch (XmlException ex)
+			finally
 			{
-				throw new ArgumentException("KML file failed validation: " + ex.Message);
+				if (oDocReader != null) oDocReader.Close();
 			}
-
-			m_strVersion = oDoc.DocumentElement.NamespaceURI;
-
-			System.Xml.XmlNamespaceManager oManager = new System.Xml.XmlNamespaceManager(oDoc.NameTable);
-			oManager.AddNamespace("kml", oDoc.DocumentElement.NamespaceURI);
-
-			XmlElement oPointer;
-
-			oPointer = oDoc.DocumentElement.SelectSingleNode("kml:Document", oManager) as XmlElement;
-			if (oPointer == null) throw new ArgumentException("The KML file contains no 'Document' element.");
-			m_oDocument = new Dapple.KML.KMLDocument(oPointer, oManager, this);
 		}
 
 		~KMLFile()

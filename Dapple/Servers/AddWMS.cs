@@ -1,13 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using WorldWind;
 using Dapple.LayerGeneration;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Dapple
 {

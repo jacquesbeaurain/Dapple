@@ -40,12 +40,15 @@ namespace Dapple
             oTemp.Append(arg);
             oTemp.Append(Environment.NewLine);
          }
-			ShowMessageBox(
-				"Dapple is being invoked with the following command-line parameters:" + Environment.NewLine + oTemp.ToString() + Environment.NewLine + Environment.NewLine + "Attach debugger if desired, then press OK to continue.",
-				"Dapple Startup",
-				MessageBoxButtons.OK,
-				MessageBoxDefaultButton.Button1,
-				MessageBoxIcon.Information);
+			if (!System.Diagnostics.Debugger.IsAttached)
+			{
+				ShowMessageBox(
+					"Dapple is being invoked with the following command-line parameters:" + Environment.NewLine + oTemp.ToString() + Environment.NewLine + Environment.NewLine + "Attach debugger if desired, then press OK to continue.",
+					"Dapple Startup",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Information);
+			}
 #endif
 
 			MontajRemote.RemoteInterface oRemoteInterface = null;
