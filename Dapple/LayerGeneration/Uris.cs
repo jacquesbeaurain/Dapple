@@ -81,10 +81,12 @@ namespace Dapple.LayerGeneration
 			String szFilteredQuery = String.Empty;
 			foreach (String szKey in oTokens.AllKeys)
 			{
-				szFilteredQuery += HttpUtility.UrlEncode(szKey) + "=" + HttpUtility.UrlEncode(oTokens[szKey]) + "&";
+				if (!szFilteredQuery.Equals(String.Empty))
+				{
+					szFilteredQuery += "&";
+				}
+				szFilteredQuery += HttpUtility.UrlEncode(szKey) + "=" + HttpUtility.UrlEncode(oTokens[szKey]);
 			}
-			if (!String.IsNullOrEmpty(szFilteredQuery))
-				szFilteredQuery = szFilteredQuery.Substring(0, szFilteredQuery.Length - 2);
 
 			oBuilder.Query = szFilteredQuery;
 
