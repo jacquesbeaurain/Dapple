@@ -42,6 +42,8 @@ namespace Dapple
       private void butOK_Click(object sender, EventArgs e)
       {
 			Uri oServerUrl = null;
+			while (txtDapURL.Text.EndsWith("&")) txtDapURL.Text = txtDapURL.Text.Substring(0, txtDapURL.Text.Length - 1);
+
 			if (txtDapURL.Text.Equals(DEFAULT_TEXT, StringComparison.InvariantCultureIgnoreCase))
 			{
 				Program.ShowMessageBox(

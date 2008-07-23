@@ -36,6 +36,8 @@ namespace Dapple
       private void butOK_Click(object sender, EventArgs e)
       {
          Uri oServerUrl = null;
+			while (txtArcIMSURL.Text.EndsWith("&")) txtArcIMSURL.Text = txtArcIMSURL.Text.Substring(0, txtArcIMSURL.Text.Length - 1);
+
 			if (txtArcIMSURL.Text.Equals(DEFAULT_TEXT, StringComparison.InvariantCultureIgnoreCase))
 			{
 				Program.ShowMessageBox(
