@@ -66,22 +66,15 @@ namespace Geosoft.GX.DAPGetData
          System.Xml.XmlDocument oDoc = null;
          string strKey = string.Format("{0}:{1}", oServer.Url, strHierarchy);
 
-         try
-         {
-            if (!bAOIFilter && !bTextFilter)
-               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, null, null);
-            else if (!bAOIFilter && bTextFilter)
-               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, null, null);
-            else if (bAOIFilter && !bTextFilter)
-               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, oBounds, null);
-            else if (bAOIFilter && bTextFilter)
-               oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, oBounds, null);
-         }
-         catch (Exception e)
-         {
-            // FUTURE: May want to give some visual indication of this or handle in server tree
-            throw e;
-         }
+         if (!bAOIFilter && !bTextFilter)
+            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, null, null);
+         else if (!bAOIFilter && bTextFilter)
+            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, null, null);
+         else if (bAOIFilter && !bTextFilter)
+            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, oBounds, null);
+         else if (bAOIFilter && bTextFilter)
+            oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, strSearchString, oBounds, null);
+
          if (bTextFilter)
             strKey += "_" + strSearchString;
          if (bAOIFilter)

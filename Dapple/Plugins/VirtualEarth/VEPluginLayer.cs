@@ -642,49 +642,7 @@ namespace bNb.Plugins_GD
 			get { return pushPins; }
 			set { pushPins = value; }
 		}
-		//private Icons pushPins = null;
-		//public Icons PushPins
-		//{
-		//	get{return pushPins;}
-		//	set{pushPins = value;}
-		//}
-		/*
-				  public void RenderPushPins(DrawArgs drawArgs)
-				  {
-						if (pushPins == null || pushPins.Count <= 0)
-							 return;
-
-						//pushPins.Initialize(drawArgs);
-						//pushPins.Render(drawArgs);
-
-						double lat1, lon1, lat2, lon2;
-						GetViewPort(drawArgs, out lat1, out lon1, out lat2, out lon2);
-
-						Vector3 projectedPoint;
-
-						lock (pushPins.SyncRoot)
-						{
-							 foreach (PushPin p in pushPins)
-							 {
-								  if (p.Latitude <= lat1 && p.Latitude >= lat2)
-								  {
-										if (p.Longitude <= lon1 && p.Longitude >= lon2)
-										{
-											 projectedPoint = MathEngine.SphericalToCartesian(p.Latitude, p.Longitude, earthRadius + 100);
-											 projectedPoint.Project(drawArgs.device.Viewport, drawArgs.WorldCamera.ProjectionMatrix, drawArgs.WorldCamera.ViewMatrix, drawArgs.WorldCamera.WorldMatrix);
-
-											 pushpinsprite.Begin(SpriteFlags.AlphaBlend);
-											 pushpinsprite.Transform = Matrix.Transformation2D(new Vector2(0.0f, 0.0f),
-												  0.0f, new Vector2(scaleWidth, scaleHeight),
-												  new Vector2(0, 0), 0.0f, new Vector2(projectedPoint.X, projectedPoint.Y));
-											 pushpinsprite.Draw(ppspriteTexture, spriteSize, new Vector3(.5f * iconWidth, .5f * iconHeight, 0), new Vector3(0, 0, 0), System.Drawing.Color.White);
-											 pushpinsprite.End();
-										}
-								  }
-							 }
-						}
-				  }
-				*/
+		
 		/// <summary>
 		/// Cleanup when layer is disabled
 		/// </summary>

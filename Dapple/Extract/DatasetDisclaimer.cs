@@ -53,7 +53,7 @@ namespace Dapple.Extract
 					catch (System.Net.WebException ex)
 					{
 						ex.Data["dataset"] = oBuilder.Title;
-						throw ex;
+						throw;
 					}
 					oDoc.Save(strTempFile);
 					oReader = System.Xml.XmlReader.Create(strTempFile);

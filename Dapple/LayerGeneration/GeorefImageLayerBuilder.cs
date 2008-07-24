@@ -37,7 +37,7 @@ namespace Dapple.LayerGeneration
       public GeorefImageLayerBuilder(string strDisplayName, string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
          : base(strDisplayName.Length > 0 ? strDisplayName : Path.GetFileName(strFileName), oWorldWindow, parent)
       {
-         if (strFileName == null) throw new ArgumentNullException("strFilename");
+         if (strFileName == null) throw new ArgumentNullException("strFileName");
          m_strFileName = strFileName;
          m_bIsTmp = bTmp;
          m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
@@ -47,7 +47,7 @@ namespace Dapple.LayerGeneration
       public GeorefImageLayerBuilder(string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
          : base(Path.GetFileName(strFileName), oWorldWindow, parent)
       {
-         if (strFileName == null) throw new ArgumentNullException("strFilename");
+         if (strFileName == null) throw new ArgumentNullException("strFileName");
          m_strFileName = strFileName;
          m_bIsTmp = bTmp;
          m_strCacheFileName = Path.Combine(GetCachePath(), Path.GetFileNameWithoutExtension(strFileName) + ".png");
