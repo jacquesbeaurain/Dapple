@@ -276,13 +276,20 @@ namespace Dapple
 						}
 						catch (Microsoft.DirectX.DirectXException)
 						{
-							ShowMessageBox(
-								"Dapple was unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.",
-								"Dapple Startup",
-								MessageBoxButtons.OK,
-								MessageBoxDefaultButton.Button1,
-								MessageBoxIcon.Error);
-							return;
+							if (g_blTestingMode == true)
+							{
+								throw;
+							}
+							else
+							{
+								ShowMessageBox(
+									"Dapple was unable to locate a compatible graphics adapter. Make sure you are running the latest version of DirectX.",
+									"Dapple Startup",
+									MessageBoxButtons.OK,
+									MessageBoxDefaultButton.Button1,
+									MessageBoxIcon.Error);
+								return;
+							}
 						}
 					}
 					else
