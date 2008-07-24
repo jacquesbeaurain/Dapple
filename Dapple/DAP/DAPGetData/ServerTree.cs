@@ -1460,33 +1460,6 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
-      /// <summary>
-      /// Handle when a new dataset has been selected
-      /// </summary>
-      /// <param name="sender"></param>
-      /// <param name="e"></param>
-      protected virtual void OnTreeNodeChecked(object sender, Geosoft.DotNetTools.TreeNodeCheckedEventArgs e)
-      {
-         DataSetSelectedArgs ex = new DataSetSelectedArgs();
-         if (e.Node != null && e.Node.Tag != null)
-         {
-            ex.DataSet = (DataSet)e.Node.Tag;
-
-            if (e.State == Geosoft.DotNetTools.TriStateTreeView.CheckBoxState.Checked)
-            {
-               if (!m_hSelectedDataSets.ContainsKey(ex.DataSet.UniqueName)) m_hSelectedDataSets.Add(ex.DataSet.UniqueName, ex.DataSet);
-               ex.Selected = true;
-            }
-            else
-            {
-               m_hSelectedDataSets.Remove(ex.DataSet.UniqueName);
-               ex.Selected = false;
-            }
-
-            OnDataSetSelected(ex);
-         }
-      }
-
 		protected override void OnBeforeCollapse(TreeViewCancelEventArgs e)
 		{
 			base.OnBeforeCollapse(e);
