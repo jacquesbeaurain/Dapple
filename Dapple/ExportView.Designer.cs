@@ -29,7 +29,6 @@ namespace Dapple
       private void InitializeComponent()
       {
 			this.components = new System.ComponentModel.Container();
-			this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.labelControl1 = new Geosoft.OpenGX.UtilityForms.LabelControl();
@@ -123,8 +122,7 @@ namespace Dapple
 
       #endregion
 
-		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
-      private System.Windows.Forms.Button btnCancel;
+		private System.Windows.Forms.Button btnCancel;
       private System.Windows.Forms.Button btnOK;
       private Geosoft.OpenGX.UtilityForms.FEditControl cFilenameControl;
 		private System.Windows.Forms.ErrorProvider cFilenameErrorProvider;

@@ -13,10 +13,6 @@ namespace Dapple.Extract
    /// </summary>
    public partial class DatasetDisclaimer : Form
    {      
-      #region Member Variables
-      System.Xml.XmlDocument m_oDownloadXml;
-      #endregion
-
       #region Properties
       /// <summary>
       /// Return a value indicating if we have any disclaimers
@@ -34,7 +30,6 @@ namespace Dapple.Extract
       public DatasetDisclaimer(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload, System.Xml.XmlDocument oDownload)
       {
          InitializeComponent();
-         m_oDownloadXml = oDownload;
 
          string strTempFile = System.IO.Path.GetTempFileName();
          System.Xml.XmlReader oReader = null;

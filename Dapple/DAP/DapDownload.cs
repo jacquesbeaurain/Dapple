@@ -184,7 +184,6 @@ namespace Dapple.DAP
 
    public class DapDownload : WorldWind.Net.WebDownload
    {
-      private string m_strImagePath;
       private Geosoft.Dap.Common.BoundingBox m_hBB;
 		private DAPImageStore m_oImageStore;
 
@@ -193,7 +192,6 @@ namespace Dapple.DAP
       {
          m_hBB = hBB;
 			m_oImageStore = imageStore;
-         m_strImagePath = imagePath;
 			Url = imageStore.Server.Url;
       }
 
@@ -280,7 +278,6 @@ namespace Dapple.DAP
 
    public class DapTileDownload : WorldWind.Net.WebDownload
    {
-      private string m_strImagePath;
       private IGeoSpatialDownloadTile m_oTile;
       private DAPImageStore m_oImageStore;
 
@@ -289,7 +286,6 @@ namespace Dapple.DAP
       {
          m_oTile = oTile;
          m_oImageStore = imageStore;
-         m_strImagePath = imagePath;
          Url = imageStore.Server.Url;
       }
 

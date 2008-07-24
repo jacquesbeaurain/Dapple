@@ -9,12 +9,10 @@ namespace Dapple
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      WorldWindow m_worldWind;
       WMSCatalogBuilder m_oParent;
 
       public AddWMS(WorldWind.WorldWindow worldWindow, WMSCatalogBuilder oParent)
       {
-         m_worldWind = worldWindow;
          m_oParent = oParent;
          InitializeComponent();
       }

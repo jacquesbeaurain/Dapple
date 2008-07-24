@@ -33,7 +33,6 @@ namespace Dapple
 			this.c_bCancel = new System.Windows.Forms.Button();
 			this.c_tbNotes = new System.Windows.Forms.TextBox();
 			this.c_lNotes = new System.Windows.Forms.Label();
-			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.c_lName = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.c_pbPreview)).BeginInit();
 			this.SuspendLayout();
@@ -137,8 +136,7 @@ namespace Dapple
       private System.Windows.Forms.PictureBox c_pbPreview;
       private System.Windows.Forms.Button c_bCancel;
       private System.Windows.Forms.TextBox c_tbNotes;
-      private System.Windows.Forms.Label c_lNotes;
-      private System.Windows.Forms.SaveFileDialog saveFileDialog;
+		private System.Windows.Forms.Label c_lNotes;
       private System.Windows.Forms.Label c_lName;
    }
 }

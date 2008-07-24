@@ -19,8 +19,7 @@ namespace Dapple.LayerGeneration
       public const string CATALOG_CACHE = "ArcIMS Catalog Cache";
       #endregion
 
-      private WorldWindow m_oWorldWindow;
-		private Dictionary<ArcIMSCatalogDownload, ServerBuilder> m_oCatalogDownloadsInProgress = new Dictionary<ArcIMSCatalogDownload, ServerBuilder>();
+      private Dictionary<ArcIMSCatalogDownload, ServerBuilder> m_oCatalogDownloadsInProgress = new Dictionary<ArcIMSCatalogDownload, ServerBuilder>();
       private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
       private int m_iIndexGenerator = 0;
 
@@ -29,7 +28,6 @@ namespace Dapple.LayerGeneration
       public ArcIMSCatalogBuilder(String strName, WorldWindow oWorldWindow, IBuilder parent)
          : base(strName, parent, false)
       {
-         m_oWorldWindow = oWorldWindow;
       }
 
       public BuilderDirectory AddServer(ArcIMSServerUri oUri, bool blEnabled)

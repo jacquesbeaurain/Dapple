@@ -71,7 +71,6 @@ namespace Dapple
       private bool m_blAllowExtract = true;
 		private bool m_blLoadingFromView = false;
 
-      private ServerTree m_hServerTree = null;
       private LayerBuilder m_hBaseLayer = null;
 
       private TransparencyDriver m_oTransparencyDriver = new TransparencyDriver();
@@ -173,14 +172,6 @@ namespace Dapple
                   return true;
             }
             return false;
-         }
-      }
-
-      public ServerTree ServerTree
-      {
-         set
-         {
-            m_hServerTree = value;
          }
       }
 

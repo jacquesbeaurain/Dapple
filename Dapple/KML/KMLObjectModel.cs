@@ -2340,6 +2340,7 @@ namespace Dapple.KML
 			m_oIconStyle = new KMLIconStyle();
 			m_oLabelStyle = new KMLLabelStyle();
 			m_oPolyStyle = new KMLPolyStyle();
+			m_oBalloonStyle = new KMLBalloonStyle();
 		}
 
 		#endregion
@@ -2380,6 +2381,11 @@ namespace Dapple.KML
 		public KMLListStyle ListStyle
 		{
 			get { return m_oListStyle; }
+		}
+
+		public KMLBalloonStyle BalloonStyle
+		{
+			get { return m_oBalloonStyle; }
 		}
 
 		#endregion
@@ -4276,6 +4282,11 @@ namespace Dapple.KML
 		public Dictionary<String, KMLObject> NamedElements
 		{
 			get { return m_oNamedElements; }
+		}
+
+		public String Version
+		{
+			get { return m_strVersion; }
 		}
 
 		#endregion

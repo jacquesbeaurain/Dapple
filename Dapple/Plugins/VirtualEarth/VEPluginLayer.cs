@@ -61,7 +61,6 @@ namespace bNb.Plugins_GD
 
 		private string datasetName;
 		private string imageExtension;
-		private int startZoomLevel;
 		private string cacheDirectory;
 
 		public VeReprojectTilesLayer(string name, WorldWindow parentApplication, string datasetName, string imageExtension, int startZoomLevel, string cache)
@@ -71,46 +70,11 @@ namespace bNb.Plugins_GD
 			this.parentApplication = parentApplication;
 			this.datasetName = datasetName;
 			this.imageExtension = imageExtension;
-			this.startZoomLevel = startZoomLevel;
 			this.cacheDirectory = cache;
 		}
 
 		private Sprite pushpinsprite, logosprite;
-		private Texture ppspriteTexture;
-		//float scaleWidth = .25f;
-		//float scaleHeight = .25f;
-		int iconWidth = 128;
-		int iconHeight = 128;
-		Rectangle spriteSize;
 
-		/*
-		private static int badTileSize = -1;
-		public static int BadTileSize
-		{
-			get{return badTileSize;}
-		}
-
-		private static byte [] badTileBytes;
-		public static bool IsBadTile(MemoryStream newTile)
-		{
-			byte [] newTileBuffer = new byte[badTileBytes.Length];
-			newTile.Position = badTileSize / 2;
-			newTile.Read(newTileBuffer, 0, newTileBuffer.Length);
-			bool isBad = true;
-			for(int i=0; i<badTileBytes.Length; i++)
-			{
-				byte badByte = badTileBytes[i];
-				byte newByte = newTileBuffer[i];
-				if(badByte != newByte)
-				{
-					isBad = false;
-					break;
-				}
-			}
-			newTile.Position = 0;
-			return isBad;
-		}
-		*/
 
 		/// <summary>
 		/// Layer initialization code
@@ -124,54 +88,19 @@ namespace bNb.Plugins_GD
 					return;
 				}
 
-				//init the sprite for PushPins
 				pushpinsprite = new Sprite(drawArgs.device);
-				//#if DEBUG
+
 				string spritePath = Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\Plugins\\VirtualEarth\\VirtualEarthPushPin.png";
-				//#else
-				//				string spritePath = VirtualEarthPlugin.PluginDir + @"\VirtualEarthPushPin.png";
-				//
-				//#endif
+
 				if (File.Exists(spritePath) == false)
 				{
 					Utility.Log.Write(new Exception("spritePath not found " + spritePath));
 				}
-				spriteSize = new Rectangle(0, 0, iconWidth, iconHeight);
-				ppspriteTexture = TextureLoader.FromFile(drawArgs.device, spritePath);
-
-				/*
-				try
-				{
-					 //purposefully download the bad tile
-					 //so it is not displayed or cached later on
-					 Downloader d = new Downloader();
-					 string badTileUrl = "http://r2.ortho.tiles.virtualearth.net/tiles/r0.png?g=1";
-					 MemoryStream ms = d.DownloadImageStream(badTileUrl);
-					 if(ms != null && ms.Length > 0)
-					 {
-						  //save off bad tile size for comparison
-						  badTileSize = (int) ms.Length;
-						  //save off some bytes to compare for false positives
-						  ms.Position = badTileSize / 2;
-						  badTileBytes = new byte[8];
-						  ms.Read(badTileBytes, 0, badTileBytes.Length);
-						  ms.Close();
-						  ms = null;
-					 }
-				}
-				catch(Exception ex)
-				{
-					 Utility.Log.Write(ex);
-				}
-				*/
 
 				earthRadius = parentApplication.CurrentWorld.EquatorialRadius;
 				earthCircum = earthRadius * 2.0 * Math.PI; //40075016.685578488
 				earthHalfCirc = earthCircum / 2; //20037508.
 
-				//NOTE tiles did not line up properly with ellps=WGS84
-				//string [] projectionParameters = new string[]{"proj=merc", "ellps=WGS84", "no.defs"};
-				//+proj=longlat +ellps=sphere +a=6370997.0 +es=0.0
 				string[] projectionParameters = new string[] { "proj=merc", "ellps=sphere", "a=" + earthRadius.ToString(), "es=0.0", "no.defs" };
 				proj = new Projection(projectionParameters);
 
@@ -188,14 +117,6 @@ namespace bNb.Plugins_GD
 				throw;
 			}
 		}
-
-		/* JBTODO:
-		protected override void FreeResources()
-		{
-			RemoveAllTiles();
-			ForceRefresh();
-		}
-		 */
 
 
 		public string GetLocalLiveLink()
@@ -1090,18 +1011,12 @@ namespace bNb.Plugins_GD
 		private static Projection _proj;
 		private static double _layerRadius;
 		private static TerrainAccessor _terrainAccessor;
-		private static System.Drawing.Font _font;
-		private static Brush _brush;
-		//private static VirtualEarthForm _veForm;
 
-		public static void Init(Projection proj, TerrainAccessor terrainAccessor, double layerRadius)//, VirtualEarthForm veForm)
+		public static void Init(Projection proj, TerrainAccessor terrainAccessor, double layerRadius)
 		{
 			_proj = proj;
 			_terrainAccessor = terrainAccessor;
 			_layerRadius = layerRadius;
-			//_veForm = veForm;
-			_font = new System.Drawing.Font("Verdana", 15, FontStyle.Bold);
-			_brush = new SolidBrush(Color.Green);
 		}
 
 		//flag for if the tile should be disposed
@@ -1150,15 +1065,11 @@ namespace bNb.Plugins_GD
 		public int iDownloadPos = 0;
 		public int iDownloadTotal = 2048;
 		private string textureName;
-		private string datasetName;
-		private string cacheDirectory;
 		private DrawArgs drawArgs;
 
 		public void GetTexture(DrawArgs drawArgs, int pixelsPerTile, string _datasetName, string imageExtension, string _cacheDirectory)
 		{
 			this.drawArgs = drawArgs;
-			this.datasetName = _datasetName;
-			this.cacheDirectory = _cacheDirectory;
 			string _imageExtension = imageExtension;
 			string _serverUri = ".ortho.tiles.virtualearth.net/tiles/";
 
@@ -1167,45 +1078,6 @@ namespace bNb.Plugins_GD
 			//TODO no clue what ?g= is
 			string textureUrl = String.Concat(new object[] { "http://", _datasetName, quadKey[quadKey.Length - 1], _serverUri, _datasetName, quadKey, ".", _imageExtension, "?g=", 15 });
 
-			/*
-							if (_veForm.IsDebug == true)
-							{
-								 //generate a DEBUG tile with metadata
-								 MemoryStream ms;
-								 //debug
-								 Bitmap b = new Bitmap(pixelsPerTile, pixelsPerTile);
-								 System.Drawing.Imaging.ImageFormat imageFormat;
-								 //could download on my own from here and add metadata to the images before storing to cache
-								 //Bitmap b = DownloadImage(url);
-								 //string levelDir = CreateLevelDir(level);
-								 //string rowDir = CreateRowDir(levelDir, row);
-								 //alMetaData.Add("wwLevel : " + level.ToString());
-								 alMetaData.Add("ww rowXcol : " + row.ToString() + "x" + col.ToString());
-								 //alMetaData.Add("wwArcDist : " + arcDistance.ToString());
-								 //alMetaData.Add("tileRange : " + tileRange.ToString());
-								 //alMetaData.Add("latXlon : " + lat.ToString("###.###") + "x" + lon.ToString("###.###"));
-								 //alMetaData.Add("lat : " + lat.ToString());
-								 //alMetaData.Add("lon : " + lon.ToString());
-								 alMetaData.Add("veLevel : " + level.ToString());
-								 //alMetaData.Add("ve rowXcol : " + t_x.ToString() + "x" + t_y.ToString());
-								 //alMetaData.Add("veArcDist : " + tileDistance.ToString());
-								 //alMetaData.Add("sinLat : " + sinLat.ToString());
-								 alMetaData.Add("quadKey " + quadKey.ToString());
-								 imageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
-								 b = DecorateBitmap(b, _font, _brush, alMetaData);
-								 //SaveBitmap(b, rowDir, row, col, _imageExtension, b.RawFormat); //, System.Drawing.Imaging.ImageFormat.Jpeg
-								 //url = String.Empty;
-								 ms = new MemoryStream();
-								 b.Save(ms, imageFormat);
-								 ms.Position = 0;
-								 this.texture = TextureLoader.FromStream(drawArgs.device, ms);
-								 ms.Close();
-								 ms = null;
-								 b.Dispose();
-								 b = null;
-							}
-							else
-							{ */
 			//load a tile from file OR download it if not cached
 			string levelDir = CreateLevelDir(level, _cacheDirectory);
 			string mapTypeDir = CreateMapTypeDir(levelDir, _datasetName);
@@ -1238,21 +1110,6 @@ namespace bNb.Plugins_GD
 			
 			if (this.texture == null)
 			{
-				/*
-				//use WebDownload instead
-				downloader = new Downloader();
-				downloader.drawArgs = drawArgs;
-				downloader.textureName = textureName;
-				downloader.textureUrl = textureUrl;
-				downloader.veTile = this;
-				downloader.mapType = _datasetName;
-
-				ThreadStart ts = new ThreadStart(downloader.DownloadThread);
-				Thread t = new Thread(ts);
-				t.IsBackground = true;
-				t.Start();
-				*/
-
 				m_blDownloading = true;
 				download = new WebDownload(textureUrl);
 				download.DownloadType = DownloadType.Unspecified;
@@ -1317,8 +1174,6 @@ namespace bNb.Plugins_GD
 			{
 				downloadInfo.Verify();
 
-				//m_quadTile.QuadTileArgs.NumberRetries = 0;
-
 				// Rename temp file to real name
 				File.Delete(textureName);
 				File.Move(downloadInfo.SavedFilePath, textureName);
@@ -1353,9 +1208,6 @@ namespace bNb.Plugins_GD
 			{
 				if (download != null)
 					download.IsComplete = true;
-				//m_quadTile.QuadTileArgs.RemoveFromDownloadQueue(this);
-				//Immediately queue next download
-				//m_quadTile.QuadTileArgs.ServiceDownloadQueue();
 				m_blDownloading = false;
 			}
 
@@ -1372,7 +1224,6 @@ namespace bNb.Plugins_GD
 		{
 			if (alMetadata.Count > 0)
 			{
-				//if(b.RawFormat == System.Drawing.Imaging.ImageFormat.Png)
 				if (b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format8bppIndexed)
 				{
 					MemoryStream ms = new MemoryStream();
@@ -1533,50 +1384,7 @@ namespace bNb.Plugins_GD
 			East = geoLR.U * 180 / Math.PI;
 
 			float meshBaseRadius = (float)_layerRadius;
-			/*          float[,] heightData = null;
-							if (_terrainAccessor != null && _veForm.IsTerrainOn == true)
-							{
-								 //does the +1 to help against tears between elevated tiles? - made it worse
-								 //TODO not sure how to fix the tear between tiles caused by elevation?
-
-					  // Get elevation data with one extra row and col all around the terrain
-					  double degreePerSample = Math.Abs(latRange / (meshPointCount - 1));
-								 TerrainTile tile = _terrainAccessor.GetElevationArray(North + degreePerSample, South - degreePerSample, West - degreePerSample, East + degreePerSample, meshPointCount + 2);
-								 heightData = tile.ElevationData;
-								 tile.Dispose();
-								 tile = null;
-
-                
-			// Calculate mesh base radius (bottom vertices)
-			float minimumElevation = float.MaxValue;
-			float maximumElevation = float.MinValue;
 			
-			// Find minimum elevation to account for possible bathymetry
-			foreach(float _height in heightData)
-			{
-				if(_height < minimumElevation)
-					minimumElevation = _height;
-				if(_height > maximumElevation)
-					maximumElevation = _height;
-			}
-			minimumElevation *= verticalExaggeration;
-			maximumElevation *= verticalExaggeration;
-
-			if(minimumElevation > maximumElevation)
-			{
-				// Compensate for negative vertical exaggeration
-				float tmp = minimumElevation;
-				minimumElevation = maximumElevation;
-				maximumElevation = minimumElevation;
-			}
-
-			float overlap = 500 * verticalExaggeration; // 500m high tiles
-			
-			// Radius of mesh bottom grid
-			meshBaseRadius = (float) _layerRadius + minimumElevation - overlap;
-                
-							}
-			*/
 			UV geo;
 			Point3d pos;
 			double height = 0;
@@ -1592,16 +1400,7 @@ namespace bNb.Plugins_GD
 
 					if (_terrainAccessor != null)
 					{
-						//if (_veForm.IsTerrainOn == true)
-						{
-							//height = heightData[i, j] * verticalExaggeration;
-							//original : need to fetch altitude on a per vertex basis (in VE space) to have matching tile borders (note PM)
 							height = verticalExaggeration * _terrainAccessor.GetElevationAt(geo.V, geo.U, Math.Abs(upperBound / latRange));
-						}
-						//else
-						//{
-						//	height = 0;
-						//}
 					}
 
 					pos = MathEngine.SphericalToCartesian(
@@ -1612,18 +1411,14 @@ namespace bNb.Plugins_GD
 					vertices[idx].X = (float)pos.X;
 					vertices[idx].Y = (float)pos.Y;
 					vertices[idx].Z = (float)pos.Z;
-					//double sinLat = Math.Sin(geo.V);
-					//vertices[idx].Z = (float) (pos.Z * sinLat);
 
 					vertices[idx].Tu = (j - 1) * scaleFactor;
 					vertices[idx].Tv = (i - 1) * scaleFactor;
-					//vertices[idx].Color = opacityColor;
 					curUnprojected.U += uStep;
 				}
 				curUnprojected.U = UL.U - uStep;
 				curUnprojected.V -= vStep;
 			}
-			//}
 
 			int slices = meshPointCount + 1;
 			indices = new short[2 * slices * slices * 3];
@@ -1822,9 +1617,6 @@ namespace bNb.Plugins_GD
 							}
 							else
 							{
-								//NOTE to stop ripping?
-								//drawArgs.device.Clear(ClearFlags.ZBuffer, 0, 1.0f, 0);
-
 								drawArgs.device.SetTexture(0, veTile.Texture);
 
 								drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,

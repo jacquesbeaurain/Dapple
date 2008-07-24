@@ -616,7 +616,6 @@ namespace Dapple
 				this.c_oServerTree = new ServerTree(m_oImageList, Settings.CachePath, this, c_oLayerList, c_oServerList);
 				c_oServerList.ImageList = this.c_oServerTree.ImageList;
 				c_oLayerList.ImageList = this.c_oServerTree.ImageList;
-				c_oLayerList.ServerTree = c_oServerTree;
 				c_oLayerList.LayerSelectionChanged += new EventHandler(c_oLayerList_LayerSelectionChanged);
 
 				m_oMetadataDisplay = new MetadataDisplayThread(this);

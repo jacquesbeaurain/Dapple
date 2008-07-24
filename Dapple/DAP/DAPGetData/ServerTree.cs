@@ -85,6 +85,7 @@ namespace Geosoft.GX.DAPGetData
       protected string m_strSecureToken;
 
 		protected bool m_blAllowCollapse = false;
+		private Object m_oLoginLock = new object();
 
       #endregion
 
@@ -807,7 +808,7 @@ namespace Geosoft.GX.DAPGetData
 
          // --- ensure we only attempt to login 1 at a time ---
 
-         lock (this)
+         lock (m_oLoginLock)
          {
             // --- Set the Server Token ---
 

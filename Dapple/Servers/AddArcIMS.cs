@@ -14,13 +14,11 @@ namespace Dapple
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      WorldWindow m_worldWind;
       ArcIMSCatalogBuilder m_oParent;
 		public const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
 
       public AddArcIMS(WorldWind.WorldWindow worldWindow, ArcIMSCatalogBuilder oParent)
       {
-         m_worldWind = worldWindow;
          m_oParent = oParent;
          InitializeComponent();
       }

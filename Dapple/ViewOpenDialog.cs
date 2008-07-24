@@ -16,7 +16,6 @@ namespace Dapple
       #region Private Members
       private string m_strConfigDir;
       private string m_strViewFile = null;
-      private XmlDocument m_xmlDoc = new XmlDocument();
       private Image m_viewImage = null;
       private FEditControl m_fEditControl;
       #endregion

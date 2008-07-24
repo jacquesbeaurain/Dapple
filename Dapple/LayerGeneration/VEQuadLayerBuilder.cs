@@ -35,7 +35,6 @@ namespace Dapple.LayerGeneration
 #endif
 
 		VirtualEarthMapType m_mapType;
-		bool IsOn = true;
 		bool m_blnIsChanged = true;
 
       #endregion
@@ -45,7 +44,6 @@ namespace Dapple.LayerGeneration
       public VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, WorldWindow oWorldWindow, bool isOn, IBuilder parent)
          :base(name, oWorldWindow, parent)
 		{
-			IsOn = isOn;
 			m_mapType = mapType;
       }
 
