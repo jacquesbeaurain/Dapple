@@ -1687,8 +1687,9 @@ namespace Dapple
 			{
 				try
 				{
-					Dapple.KML.KMLLayerBuilder oBuider = new Dapple.KML.KMLLayerBuilder(bob.FileName, WorldWindowSingleton, null);
-					AddLayerBuilder(oBuider);
+					Dapple.KML.KMLLayerBuilder oBuilder = new Dapple.KML.KMLLayerBuilder(bob.FileName, WorldWindowSingleton, null);
+					AddLayerBuilder(oBuilder);
+					oBuilder.GoToLookAt(c_oWorldWindow);
 				}
 				catch (ArgumentException ex)
 				{
@@ -2765,7 +2766,7 @@ namespace Dapple
 
 		void GoTo(GeographicBoundingBox extents, bool blImmediate)
 		{
-			c_oWorldWindow.GotoBoundingbox(extents.West, extents.South, extents.East, extents.North, blImmediate);
+			c_oWorldWindow.GotoBoundingbox(extents, blImmediate);
 		}
 
 		#endregion

@@ -871,8 +871,13 @@ namespace WorldWind
 		/// <param name="dMinLat"></param>
 		/// <param name="dMaxLon"></param>
 		/// <param name="dMaxLat"></param>
-		public void GotoBoundingbox(double dMinLon, double dMinLat, double dMaxLon, double dMaxLat, bool blImmediate)
+		public void GotoBoundingbox(GeographicBoundingBox oBoundingBox, bool blImmediate)
 		{
+			double dMinLon = oBoundingBox.West;
+			double dMinLat = oBoundingBox.South;
+			double dMaxLon = oBoundingBox.East;
+			double dMaxLat = oBoundingBox.North;
+
 			double dLatitudeAngle = dMaxLat - dMinLat;
 			double dLongitudeAngle = dMaxLon - dMinLon;
 			double dLatitude = (dMinLat + dMaxLat) / 2.0;

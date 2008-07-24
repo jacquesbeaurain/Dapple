@@ -287,10 +287,13 @@ namespace WorldWind
 					dLatitudeAngle *= degreesPerPixelY;
 
                m_WorldWindow.GotoBoundingbox(
-                  gotoPoint.X - dLongitudeAngle / 2.0,
-                  gotoPoint.Y - dLatitudeAngle / 2.0,
-                  gotoPoint.X + dLongitudeAngle / 2.0,
-                  gotoPoint.Y + dLatitudeAngle / 2.0, false);
+						new GeographicBoundingBox(
+                  gotoPoint.Y + dLatitudeAngle / 2.0,
+						gotoPoint.Y - dLatitudeAngle / 2.0,
+						gotoPoint.X - dLongitudeAngle / 2.0,
+                  gotoPoint.X + dLongitudeAngle / 2.0
+                  ),
+						false);
             }
 			}
 			else if(e.Button == MouseButtons.Left)

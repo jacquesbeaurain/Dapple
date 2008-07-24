@@ -134,5 +134,18 @@ namespace Dapple.KML
 		{
 			return new KMLLayerBuilder(this);
 		}
+
+		public void GoToLookAt(WorldWindow oTarget)
+		{
+			KMLLookAt oView = m_oSourceFile.Document.View as KMLLookAt;
+			if (oView != null)
+			{
+				oTarget.GotoLatLonHeadingViewRange(oView.Latitude, oView.Longitude, oView.Heading, oView.Range);
+			}
+			else
+			{
+				oTarget.GotoBoundingbox(m_oBounds, false);
+			}
+		}
 	}
 }
