@@ -222,6 +222,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
+
    public class ArcIMSServerBuilder : ServerBuilder
    {
       string m_strCatalogPathname;
@@ -280,7 +281,19 @@ namespace Dapple.LayerGeneration
       {
          ((ArcIMSCatalogBuilder)Parent).Enable(this);
       }
-   }
+
+		internal ArcIMSServiceBuilder GetService(string strServiceName)
+		{
+			foreach (BuilderDirectory oDir in m_colSublist)
+			{
+				if (oDir.Title.Equals(strServiceName))
+				{
+					return oDir as ArcIMSServiceBuilder;
+				}
+			}
+			return null;
+		}
+	}
 
 
    public class ArcIMSServiceBuilder : AsyncBuilder
@@ -297,6 +310,11 @@ namespace Dapple.LayerGeneration
 			m_szName = szName;
 			LoadFinished = hLoadFinished;
 			m_oCultureInfo = oInfo;
+		}
+
+		public CultureInfo CultureInfo
+		{
+			get { return m_oCultureInfo; }
 		}
 
       public override System.Windows.Forms.TreeNode[] getChildTreeNodes()

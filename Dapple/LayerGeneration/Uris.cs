@@ -314,8 +314,7 @@ namespace Dapple.LayerGeneration
          "maxx",
          "maxy",
          "minscale",
-         "maxscale",
-			"culture"
+         "maxscale"
          });
 
 		public ArcIMSLayerUri(String strUri) : base(strUri) { }
@@ -355,6 +354,20 @@ namespace Dapple.LayerGeneration
 
 		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
 		{
+			ArcIMSServerBuilder oServerBuilder = oTree.ArcIMSCatalog.GetServer(m_oServer as ArcIMSServerUri);
+			if (oServerBuilder == null)
+			{
+				oTree.AddArcIMSServer(m_oServer as ArcIMSServerUri, true, true, false);
+				oServerBuilder = oTree.ArcIMSCatalog.GetServer(m_oServer as ArcIMSServerUri);
+			}
+
+			oServerBuilder.WaitUntilLoaded();
+
+			if (oServerBuilder.LoadingErrorOccurred)
+				return null;
+
+			CultureInfo oServiceCultureInfo = oServerBuilder.GetService(getAttribute("servicename")).CultureInfo;
+
 			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
 			double dMinScale, dMaxScale;
 			if (!Double.TryParse(getAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.West)) return null;
@@ -363,7 +376,6 @@ namespace Dapple.LayerGeneration
 			if (!Double.TryParse(getAttribute("maxy"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.North)) return null;
 			if (!Double.TryParse(getAttribute("minscale"), NumberStyles.Any, CultureInfo.InvariantCulture, out dMinScale)) return null;
 			if (!Double.TryParse(getAttribute("maxscale"), NumberStyles.Any, CultureInfo.InvariantCulture, out dMaxScale)) return null;
-			CultureInfo oServiceCultureInfo = CultureInfo.GetCultureInfoByIetfLanguageTag(getAttribute("culture"));
 
 			return new ArcIMSQuadLayerBuilder(
 				m_oServer as ArcIMSServerUri,

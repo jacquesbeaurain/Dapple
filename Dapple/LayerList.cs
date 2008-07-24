@@ -555,15 +555,6 @@ namespace Dapple
       private void ResizeColumn()
       {
 			c_lvLayers.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-			/*int iWidth = 0;
-
-			// Set the width to some hooge number, so that the Bounds values returned are valid.
-			cLayerList.Columns[0].Width = 9999;
-			foreach (ListViewItem oItem in cLayerList.Items)
-			{
-				iWidth = Math.Max(iWidth, oItem.Bounds.Width);
-			}
-         cLayerList.Columns[0].Width = iWidth;*/
       }
 
       /// <summary>

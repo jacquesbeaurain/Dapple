@@ -259,8 +259,7 @@ namespace Dapple.LayerGeneration
 				m_dMaxScale,
 				System.Web.HttpUtility.UrlEncode(m_szLayerID),
 				System.Web.HttpUtility.UrlEncode(this.Title),
-				System.Web.HttpUtility.UrlEncode(m_szServiceName),
-				System.Web.HttpUtility.UrlEncode(m_oCultureInfo.Name));
+				System.Web.HttpUtility.UrlEncode(m_szServiceName));
       }
 
 		private String LayerCacheFolder
