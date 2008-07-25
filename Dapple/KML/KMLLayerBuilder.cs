@@ -76,12 +76,12 @@ namespace Dapple.KML
 
 		public override string ServerTypeIconKey
 		{
-			get { return "georef_image"; }
+			get { return "kml"; }
 		}
 
 		public override string DisplayIconKey
 		{
-			get { return "georef_image"; }
+			get { return "kml"; }
 		}
 
 		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
