@@ -482,6 +482,7 @@ namespace Dapple
          c_miGoToLayer.Enabled = c_lvLayers.SelectedIndices.Count == 1;
          c_miProperties.Enabled = c_lvLayers.SelectedIndices.Count == 1;
          c_miViewLegend.Enabled = c_lvLayers.SelectedIndices.Count == 1 && m_oLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend;
+			c_miAddServerToHomeView.Enabled = c_lvLayers.SelectedIndices.Count == 1 && m_oLayers[c_lvLayers.SelectedIndices[0]].CanAddServerToHomeView;
       }
 
       private void cGoToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -531,6 +532,16 @@ namespace Dapple
             if (!String.IsNullOrEmpty(szLegend)) MainForm.BrowseTo(szLegend);
          }
       }
+
+		private void c_miAddServerToHomeView_Click(object sender, EventArgs e)
+		{
+			LayerBuilder oBuilder = m_oLayers[c_lvLayers.SelectedIndices[0]];
+
+			if (oBuilder.CanAddServerToHomeView)
+			{
+				oBuilder.AddServerToHomeView(this.FindForm() as MainForm);
+			}
+		}
 
       #endregion
 

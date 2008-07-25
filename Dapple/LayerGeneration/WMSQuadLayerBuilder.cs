@@ -14,18 +14,14 @@ namespace Dapple.LayerGeneration
 	{
 		#region Private Members
 
-		public WMSLayer m_wmsLayer;
-		QuadTileSet m_oQuadTileSet;
-
+		private WMSLayer m_wmsLayer;
+		private QuadTileSet m_oQuadTileSet;
 		private int m_iLevels = 15;
 		private const int TextureSizePixels = 256;
-		
-		int distAboveSurface = 0;
-		GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(90, -90, -180, 180);
-
-		WMSServerBuilder m_Server;
-
-		bool m_blnIsChanged = true;
+		private int distAboveSurface = 0;
+		private GeographicBoundingBox m_hBoundary = new GeographicBoundingBox(90, -90, -180, 180);
+		private WMSServerBuilder m_Server;
+		private bool m_blnIsChanged = true;
 
 		#endregion
 
@@ -231,6 +227,15 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+		[System.ComponentModel.Browsable(false)]
+		public override bool CanAddServerToHomeView
+		{
+			get
+			{
+				return !MainForm.HomeViewContains(m_Server.Uri.ToString(), MainForm.ServerType.WMS);
+			}
+		}
+
 		#endregion
 
 		#region ImageBuilder Implementations
@@ -339,6 +344,11 @@ namespace Dapple.LayerGeneration
 		public override int GetHashCode()
 		{
 			return m_Server.Uri.ToString().GetHashCode() ^ m_wmsLayer.Name.GetHashCode();
+		}
+
+		public override void AddServerToHomeView(MainForm bob)
+		{
+			bob.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] { m_Server.Uri.ToString(), "WMS" });
 		}
 
       #endregion

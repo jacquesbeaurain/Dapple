@@ -3012,6 +3012,60 @@ namespace Dapple
 			}
 		}
 
+		public enum ServerType
+		{
+			DAP,
+			WMS,
+			ArcIMS
+		}
+
+		public static bool HomeViewContains(String strURI, ServerType eType)
+		{
+			XmlDocument oHomeViewDoc = new XmlDocument();
+			oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
+
+			switch(eType)
+			{
+				case ServerType.ArcIMS:
+					{
+						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//arcimscatalog/@capabilitiesurl"))
+						{
+							if (oAttr.Value.Equals(strURI, StringComparison.InvariantCultureIgnoreCase))
+							{
+								return true;
+							}
+						}
+					}
+					break;
+				case ServerType.DAP:
+					{
+						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//dapcatalog/@url"))
+						{
+							if (oAttr.Value.Equals(strURI, StringComparison.InvariantCultureIgnoreCase))
+							{
+								return true;
+							}
+						}
+					}
+					break;
+				case ServerType.WMS:
+					{
+						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//wmscatalog/@capabilitiesurl"))
+						{
+							if (oAttr.Value.Equals(strURI, StringComparison.InvariantCultureIgnoreCase))
+							{
+								return true;
+							}
+						}
+					}
+					break;
+				default:
+					throw new ArgumentException("eType");
+			}
+
+			return false;
+		}
+
 		#endregion
 
 		/// <summary>

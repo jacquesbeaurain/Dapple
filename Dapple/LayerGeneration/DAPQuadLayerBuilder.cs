@@ -291,6 +291,15 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+		[System.ComponentModel.Browsable(false)]
+		public override bool CanAddServerToHomeView
+		{
+			get
+			{
+				return !MainForm.HomeViewContains(m_oServer.Url, MainForm.ServerType.DAP);
+			}
+		}
+
 		#endregion
 
 		#region ImageBuilder Implementations
@@ -380,6 +389,11 @@ namespace Dapple.LayerGeneration
 		public override int GetHashCode()
 		{
 			return m_hDataSet.UniqueName.GetHashCode();
+		}
+
+		public override void AddServerToHomeView(MainForm oMainForm)
+		{
+			oMainForm.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] { m_oServer.Url, "DAP" });
 		}
 
       #endregion

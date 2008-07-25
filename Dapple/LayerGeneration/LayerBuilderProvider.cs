@@ -245,6 +245,18 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+		/// <summary>
+		/// Whether the layer's server was loaded on-demand, 
+		/// </summary>
+		[System.ComponentModel.Browsable(false)]
+		public virtual bool CanAddServerToHomeView
+		{
+			get
+			{
+				return false;
+			}
+		}
+
 		#endregion
 
 		#region Public Methods
@@ -490,6 +502,13 @@ namespace Dapple.LayerGeneration
 		public abstract override int GetHashCode();
 
       public abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
+
+		/// <summary>
+		/// Add this server's URL to the home view.
+		/// </summary>
+		public virtual void AddServerToHomeView(MainForm oMainForm)
+		{
+		}
 
 		#endregion
 

@@ -207,6 +207,15 @@ namespace Dapple.LayerGeneration
 			get { return "layer"; }
 		}
 
+		[System.ComponentModel.Browsable(false)]
+		public override bool CanAddServerToHomeView
+		{
+			get
+			{
+				return !MainForm.HomeViewContains(m_oServerUri.ToString(), MainForm.ServerType.ArcIMS);
+			}
+		}
+
 		#endregion
 
 		#region ImageBuilder Implementations
@@ -250,7 +259,7 @@ namespace Dapple.LayerGeneration
       public override string GetURI()
       {
          return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
-				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}&culture={9}",
+				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
 				m_oEnvelope.West,
 				m_oEnvelope.South,
 				m_oEnvelope.East,
@@ -303,6 +312,11 @@ namespace Dapple.LayerGeneration
 		public override int GetHashCode()
 		{
 			return m_oServerUri.ToString().GetHashCode() ^ m_szServiceName.GetHashCode() ^ m_szLayerID.GetHashCode();
+		}
+
+		public override void AddServerToHomeView(MainForm oMainForm)
+		{
+			oMainForm.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] {m_oServerUri.ToString(), "ArcIMS"});
 		}
 
       #endregion
