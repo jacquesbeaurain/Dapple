@@ -249,7 +249,19 @@ namespace Dapple.LayerGeneration
 		/// Whether the layer's server was loaded on-demand, 
 		/// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public virtual bool CanAddServerToHomeView
+		public virtual bool ServerIsInHomeView
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// Whether the layer is from a server type that can apper in the server tree.
+		/// </summary>
+		[System.ComponentModel.Browsable(false)]
+		public virtual bool LayerFromSupportedServer
 		{
 			get
 			{
@@ -507,6 +519,14 @@ namespace Dapple.LayerGeneration
 		/// Add this server's URL to the home view.
 		/// </summary>
 		public virtual void AddServerToHomeView(MainForm oMainForm)
+		{
+		}
+
+		/// <summary>
+		/// Make this LayerBuilder's host server selected.
+		/// </summary>
+		/// <param name="oTree"></param>
+		public virtual void SelectServer(ServerTree oTree)
 		{
 		}
 

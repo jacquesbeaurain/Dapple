@@ -212,28 +212,25 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		public WMSLayer Layer
 		{
-			get
-			{
-				return m_wmsLayer;
-			}
+			get { return m_wmsLayer; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override string StyleSheetName
 		{
-			get
-			{
-				return "wms_layer_meta.xslt";
-			}
+			get { return "wms_layer_meta.xslt"; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool CanAddServerToHomeView
+		public override bool ServerIsInHomeView
 		{
-			get
-			{
-				return !MainForm.HomeViewContains(m_Server.Uri.ToString(), MainForm.ServerType.WMS);
-			}
+			get { return MainForm.HomeViewContains(m_Server.Uri.ToString(), MainForm.ServerType.WMS); }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override bool LayerFromSupportedServer
+		{
+			get { return true; }
 		}
 
 		#endregion
@@ -402,6 +399,11 @@ namespace Dapple.LayerGeneration
          }
          return null;
       }
+
+		public override void SelectServer(ServerTree oTree)
+		{
+			oTree.SelectedServer = m_Server;
+		}
 
       #endregion
 

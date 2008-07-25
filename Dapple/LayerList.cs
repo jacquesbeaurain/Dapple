@@ -78,6 +78,7 @@ namespace Dapple
       public event GoToHandler GoTo;
       public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
       public event ActiveLayersChangedHandler ActiveLayersChanged;
+		private ServerTree m_hServerTree;
 
       #endregion
 
@@ -282,6 +283,11 @@ namespace Dapple
          return true;
       }
 
+		public ServerTree ServerTree
+		{
+			set { m_hServerTree = value; }
+		}
+
       #endregion
 
       #region Event Handlers
@@ -478,11 +484,32 @@ namespace Dapple
             return;
          }
 
+			bool blOneSelected = c_lvLayers.SelectedIndices.Count == 1;
+
          c_miRemoveLayer.Enabled = this.RemoveAllowed;
-         c_miGoToLayer.Enabled = c_lvLayers.SelectedIndices.Count == 1;
-         c_miProperties.Enabled = c_lvLayers.SelectedIndices.Count == 1;
-         c_miViewLegend.Enabled = c_lvLayers.SelectedIndices.Count == 1 && m_oLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend;
-			c_miAddServerToHomeView.Enabled = c_lvLayers.SelectedIndices.Count == 1 && m_oLayers[c_lvLayers.SelectedIndices[0]].CanAddServerToHomeView;
+			c_miGoToLayer.Enabled = blOneSelected;
+			c_miProperties.Enabled = blOneSelected;
+			c_miViewLegend.Enabled = blOneSelected && m_oLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend;
+
+			if (blOneSelected && m_oLayers[c_lvLayers.SelectedIndices[0]].LayerFromSupportedServer)
+			{
+				c_miAddOrGoToServer.Visible = true;
+				c_miAddOrGoToServer.Enabled = true;
+
+				if (m_oLayers[c_lvLayers.SelectedIndices[0]].ServerIsInHomeView)
+				{
+					c_miAddOrGoToServer.Text = "Open Server in Server Tree";
+				}
+				else
+				{
+					c_miAddOrGoToServer.Text = "Add Server to Home View";
+				}
+			}
+			else
+			{
+				c_miAddOrGoToServer.Enabled = false;
+				c_miAddOrGoToServer.Visible = false;
+			}
       }
 
       private void cGoToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -533,14 +560,17 @@ namespace Dapple
          }
       }
 
-		private void c_miAddServerToHomeView_Click(object sender, EventArgs e)
+		private void c_miAddOrGoToServer_Click(object sender, EventArgs e)
 		{
 			LayerBuilder oBuilder = m_oLayers[c_lvLayers.SelectedIndices[0]];
 
-			if (oBuilder.CanAddServerToHomeView)
+			if (!oBuilder.ServerIsInHomeView)
 			{
 				oBuilder.AddServerToHomeView(this.FindForm() as MainForm);
 			}
+
+			oBuilder.SelectServer(m_hServerTree);
+			(this.FindForm() as MainForm).CmdShowServerTree();
 		}
 
       #endregion

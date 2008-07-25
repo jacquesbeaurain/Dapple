@@ -2938,9 +2938,10 @@ namespace Dapple
 
 							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
 							{
+								Uri oUri = new Uri(szUrl);
 								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
 								{
-									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
+									if (new Uri(oDapCatalog.GetAttribute("url")).Equals(oUri))
 									{
 										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
 									}
@@ -3023,6 +3024,7 @@ namespace Dapple
 		{
 			XmlDocument oHomeViewDoc = new XmlDocument();
 			oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
+			Uri oURI = new Uri(strURI);
 
 			switch(eType)
 			{
@@ -3030,7 +3032,7 @@ namespace Dapple
 					{
 						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//arcimscatalog/@capabilitiesurl"))
 						{
-							if (oAttr.Value.Equals(strURI, StringComparison.InvariantCultureIgnoreCase))
+							if (new Uri(oAttr.Value).Equals(oURI))
 							{
 								return true;
 							}
@@ -3041,7 +3043,7 @@ namespace Dapple
 					{
 						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//dapcatalog/@url"))
 						{
-							if (oAttr.Value.Equals(strURI, StringComparison.InvariantCultureIgnoreCase))
+							if (new Uri(oAttr.Value).Equals(oURI))
 							{
 								return true;
 							}
@@ -3052,7 +3054,7 @@ namespace Dapple
 					{
 						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//wmscatalog/@capabilitiesurl"))
 						{
-							if (oAttr.Value.Equals(strURI, StringComparison.InvariantCultureIgnoreCase))
+							if (new Uri(oAttr.Value).Equals(oURI))
 							{
 								return true;
 							}
@@ -3363,6 +3365,11 @@ namespace Dapple
 				// --- Active is dapple search list ---
 				c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
 			}
+		}
+
+		public void CmdShowServerTree()
+		{
+			c_tcSearchViews.SelectedIndex = 0;
 		}
 
 		#endregion

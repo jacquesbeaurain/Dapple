@@ -45,7 +45,7 @@ namespace Dapple
 			this.c_miRefreshLayer = new System.Windows.Forms.ToolStripMenuItem();
 			this.c_miClearLayerChache = new System.Windows.Forms.ToolStripMenuItem();
 			this.c_miRemoveLayer = new System.Windows.Forms.ToolStripMenuItem();
-			this.c_miAddServerToHomeView = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miAddOrGoToServer = new System.Windows.Forms.ToolStripMenuItem();
 			this.c_tbTransparency = new Dapple.TrackBarWithPaint();
 			cSliderMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
 			c_tsControls = new System.Windows.Forms.ToolStrip();
@@ -162,16 +162,16 @@ namespace Dapple
             this.c_miRefreshLayer,
             this.c_miClearLayerChache,
             this.c_miRemoveLayer,
-            this.c_miAddServerToHomeView});
+            this.c_miAddOrGoToServer});
 			this.c_msContext.Name = "cLayerListContextMenu";
-			this.c_msContext.Size = new System.Drawing.Size(222, 186);
+			this.c_msContext.Size = new System.Drawing.Size(158, 186);
 			this.c_msContext.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerListContextMenu_Opening);
 			// 
 			// c_miGoToLayer
 			// 
 			this.c_miGoToLayer.Image = global::Dapple.Properties.Resources.layers_goto;
 			this.c_miGoToLayer.Name = "c_miGoToLayer";
-			this.c_miGoToLayer.Size = new System.Drawing.Size(221, 22);
+			this.c_miGoToLayer.Size = new System.Drawing.Size(196, 22);
 			this.c_miGoToLayer.Text = "Go To";
 			this.c_miGoToLayer.Click += new System.EventHandler(this.cGoToToolStripMenuItem_Click);
 			// 
@@ -179,7 +179,7 @@ namespace Dapple
 			// 
 			this.c_miProperties.Image = global::Dapple.Properties.Resources.properties;
 			this.c_miProperties.Name = "c_miProperties";
-			this.c_miProperties.Size = new System.Drawing.Size(221, 22);
+			this.c_miProperties.Size = new System.Drawing.Size(196, 22);
 			this.c_miProperties.Text = "Properties...";
 			this.c_miProperties.Click += new System.EventHandler(this.cViewPropertiesToolStripMenuItem_Click);
 			// 
@@ -187,20 +187,20 @@ namespace Dapple
 			// 
 			this.c_miViewLegend.Image = global::Dapple.Properties.Resources.legend;
 			this.c_miViewLegend.Name = "c_miViewLegend";
-			this.c_miViewLegend.Size = new System.Drawing.Size(221, 22);
+			this.c_miViewLegend.Size = new System.Drawing.Size(196, 22);
 			this.c_miViewLegend.Text = "View Legend...";
 			this.c_miViewLegend.Click += new System.EventHandler(this.cViewLegendToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(218, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(193, 6);
 			// 
 			// c_miRefreshLayer
 			// 
 			this.c_miRefreshLayer.Image = global::Dapple.Properties.Resources.refresh;
 			this.c_miRefreshLayer.Name = "c_miRefreshLayer";
-			this.c_miRefreshLayer.Size = new System.Drawing.Size(221, 22);
+			this.c_miRefreshLayer.Size = new System.Drawing.Size(196, 22);
 			this.c_miRefreshLayer.Text = "Refresh";
 			this.c_miRefreshLayer.Click += new System.EventHandler(this.cRefreshToolStripMenuItem_Click);
 			// 
@@ -208,7 +208,7 @@ namespace Dapple
 			// 
 			this.c_miClearLayerChache.Image = global::Dapple.Properties.Resources.refresh_cache;
 			this.c_miClearLayerChache.Name = "c_miClearLayerChache";
-			this.c_miClearLayerChache.Size = new System.Drawing.Size(221, 22);
+			this.c_miClearLayerChache.Size = new System.Drawing.Size(196, 22);
 			this.c_miClearLayerChache.Text = "Clear Cache";
 			this.c_miClearLayerChache.Click += new System.EventHandler(this.cClearCacheToolStripMenuItem_Click);
 			// 
@@ -216,16 +216,16 @@ namespace Dapple
 			// 
 			this.c_miRemoveLayer.Image = global::Dapple.Properties.Resources.layers_remove;
 			this.c_miRemoveLayer.Name = "c_miRemoveLayer";
-			this.c_miRemoveLayer.Size = new System.Drawing.Size(221, 22);
+			this.c_miRemoveLayer.Size = new System.Drawing.Size(196, 22);
 			this.c_miRemoveLayer.Text = "Remove";
 			this.c_miRemoveLayer.Click += new System.EventHandler(this.cRemoveToolStripMenuItem_Click);
 			// 
-			// c_miAddServerToHomeView
+			// c_miAddOrGoToServer
 			// 
-			this.c_miAddServerToHomeView.Name = "c_miAddServerToHomeView";
-			this.c_miAddServerToHomeView.Size = new System.Drawing.Size(221, 22);
-			this.c_miAddServerToHomeView.Text = "Add Host Server to Home View";
-			this.c_miAddServerToHomeView.Click += new System.EventHandler(this.c_miAddServerToHomeView_Click);
+			this.c_miAddOrGoToServer.Name = "c_miAddOrGoToServer";
+			this.c_miAddOrGoToServer.Size = new System.Drawing.Size(157, 22);
+			this.c_miAddOrGoToServer.Text = "Add/GoTo Server";
+			this.c_miAddOrGoToServer.Click += new System.EventHandler(this.c_miAddOrGoToServer_Click);
 			// 
 			// c_tbTransparency
 			// 
@@ -277,6 +277,6 @@ namespace Dapple
       private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
       private System.Windows.Forms.ToolStripButton c_Snapshot;
 		private System.Windows.Forms.ToolStripMenuItem c_miViewLegend;
-		private System.Windows.Forms.ToolStripMenuItem c_miAddServerToHomeView;
+		private System.Windows.Forms.ToolStripMenuItem c_miAddOrGoToServer;
    }
 }

@@ -17,7 +17,7 @@ namespace Dapple.LayerGeneration
       private QuadTileSet m_oQuadTileSet = null;
       private bool m_blnIsChanged = true;
       private GeographicBoundingBox m_oEnvelope;
-      private ArcIMSServerUri m_oServerUri;
+		private ArcIMSServerBuilder m_oServer;
       private double m_dLevelZeroTileSizeDegrees = 0;
       private int m_iLevels = 15;
       private int m_iPixels = 256;
@@ -38,14 +38,14 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
+      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, ArcIMSServiceBuilder oParent, ArcIMSServerBuilder oServer, double dMinScale, double dMaxScale, CultureInfo oInfo)
          :base(szLayerTitle, oWorldWindow, oParent)
       {
+			m_oServer = oServer;
 			m_oCultureInfo = oInfo;
          m_oEnvelope = oEnvelope;
          m_szLayerID = szLayerID;
          m_szServiceName = strServiceName;
-         m_oServerUri = oServerUri;
          m_dMinScale = dMinScale;
 			if (m_dMinScale < DefaultMinScale)
 				m_dMinScale = DefaultMinScale;
@@ -160,7 +160,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Description("The server providing this data layer")]
 		public string ServerURL
 		{
-			get { return m_oServerUri.ToBaseUri(); }
+			get { return m_oServer.Uri.ToBaseUri(); }
 		}
 
 		[System.ComponentModel.Category("ArcIMS")]
@@ -208,12 +208,15 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool CanAddServerToHomeView
+		public override bool ServerIsInHomeView
 		{
-			get
-			{
-				return !MainForm.HomeViewContains(m_oServerUri.ToString(), MainForm.ServerType.ArcIMS);
-			}
+			get { return MainForm.HomeViewContains(m_oServer.Uri.ToString(), MainForm.ServerType.ArcIMS); }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override bool LayerFromSupportedServer
+		{
+			get { return true; }
 		}
 
 		#endregion
@@ -237,7 +240,7 @@ namespace Dapple.LayerGeneration
          if (m_blnIsChanged)
          {
             ImageStore[] aImageStore = new ImageStore[1];
-            aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri, m_iPixels, m_oCultureInfo);
+				aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServer.Uri as ArcIMSServerUri, m_iPixels, m_oCultureInfo);
             aImageStore[0].DataDirectory = null;
             aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
             aImageStore[0].LevelCount = m_iLevels;
@@ -258,7 +261,7 @@ namespace Dapple.LayerGeneration
 
       public override string GetURI()
       {
-         return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
+			return m_oServer.Uri.ToBaseUri().Replace("http://", URLProtocolName)
 				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
 				m_oEnvelope.West,
 				m_oEnvelope.South,
@@ -284,7 +287,7 @@ namespace Dapple.LayerGeneration
 
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), this.LayerCacheFolder);
+			return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServer.Uri.ToCacheDirectory()), this.LayerCacheFolder);
       }
 
       protected override void CleanUpLayer(bool bFinal)
@@ -297,7 +300,7 @@ namespace Dapple.LayerGeneration
 
       public override object CloneSpecific()
       {
-         return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo);
+			return new ArcIMSQuadLayerBuilder(m_oServer.Uri as ArcIMSServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent as ArcIMSServiceBuilder, m_oServer, m_dMinScale, m_dMaxScale, m_oCultureInfo);
       }
 
       public override bool Equals(object obj)
@@ -306,17 +309,22 @@ namespace Dapple.LayerGeneration
          ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
 
          // -- Equal if they're the same service from the same server --
-         return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
+			return m_oServer.Uri.Equals(castObj.m_oServer.Uri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
       }
 
 		public override int GetHashCode()
 		{
-			return m_oServerUri.ToString().GetHashCode() ^ m_szServiceName.GetHashCode() ^ m_szLayerID.GetHashCode();
+			return m_oServer.Uri.ToString().GetHashCode() ^ m_szServiceName.GetHashCode() ^ m_szLayerID.GetHashCode();
 		}
 
 		public override void AddServerToHomeView(MainForm oMainForm)
 		{
-			oMainForm.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] {m_oServerUri.ToString(), "ArcIMS"});
+			oMainForm.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] { m_oServer.Uri.ToString(), "ArcIMS" });
+		}
+
+		public override void SelectServer(ServerTree oTree)
+		{
+			oTree.SelectedServer = m_oServer;
 		}
 
       #endregion
@@ -326,7 +334,7 @@ namespace Dapple.LayerGeneration
       public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "arcims";
-         szServerURL = m_oServerUri.ToBaseUri();
+			szServerURL = m_oServer.Uri.ToBaseUri();
          szLayerId = m_szLayerID;
       }
 

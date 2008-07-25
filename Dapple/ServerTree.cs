@@ -65,6 +65,7 @@ namespace Dapple
 
          m_oParent = oParent;
 			m_activeLayers = activeLayers;
+			m_activeLayers.ServerTree = this;
          m_oServerListControl = oServerList;
          m_activeLayers.ActiveLayersChanged += new LayerList.ActiveLayersChangedHandler(UpdateTreeNodeColors);
 			this.SupportDatasetSelection = false;

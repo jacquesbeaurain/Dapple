@@ -285,19 +285,19 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		public int ServerMajorVersion
 		{
-			get
-			{
-				return m_oServer.MajorVersion;
-			}
+			get { return m_oServer.MajorVersion; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool CanAddServerToHomeView
+		public override bool ServerIsInHomeView
 		{
-			get
-			{
-				return !MainForm.HomeViewContains(m_oServer.Url, MainForm.ServerType.DAP);
-			}
+			get { return MainForm.HomeViewContains(m_oServer.Url, MainForm.ServerType.DAP); }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public override bool LayerFromSupportedServer
+		{
+			get { return true; }
 		}
 
 		#endregion
@@ -394,6 +394,11 @@ namespace Dapple.LayerGeneration
 		public override void AddServerToHomeView(MainForm oMainForm)
 		{
 			oMainForm.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] { m_oServer.Url, "DAP" });
+		}
+
+		public override void SelectServer(ServerTree oTree)
+		{
+			oTree.SelectedServer = m_oServer;
 		}
 
       #endregion

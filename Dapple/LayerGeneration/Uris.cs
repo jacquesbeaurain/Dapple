@@ -384,7 +384,8 @@ namespace Dapple.LayerGeneration
 				getAttribute("layerid"),
 				oLayerBounds,
 				oWindow,
-				null,
+				oServerBuilder.GetService(getAttribute("servicename")),
+				oServerBuilder,
 				dMinScale,
 				dMaxScale,
 				oServiceCultureInfo);

@@ -446,7 +446,7 @@ namespace Dapple.LayerGeneration
                      }
                   }
 
-                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(((ArcIMSServerBuilder)Parent).Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, dMinScale, dMaxScale, m_oCultureInfo));
+                  LayerBuilders.Add(new ArcIMSQuadLayerBuilder(((ArcIMSServerBuilder)Parent).Uri as ArcIMSServerUri, m_szName, szTitle, szID, oLayerBounds, MainForm.WorldWindowSingleton, this, this.Parent as ArcIMSServerBuilder, dMinScale, dMaxScale, m_oCultureInfo));
                }
             }
 
