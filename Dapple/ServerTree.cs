@@ -107,9 +107,9 @@ namespace Dapple
          m_hArcIMSRootNode.Tag = arcIMSBuilder;
          m_hRootNode.Nodes.Add(m_hArcIMSRootNode);
 
-			//m_TreeSorter = new TreeNodeSorter(this);
-         this.TreeViewNodeSorter = new TreeNodeSorter(this);
+			AddPersonalDAPServer();
 
+			this.TreeViewNodeSorter = new TreeNodeSorter(this);
          this.MouseMove += new MouseEventHandler(this.HandleMouseMove);
          this.MouseDown += new MouseEventHandler(this.HandleMouseDown);
          this.AllowDrop = false;
@@ -529,53 +529,8 @@ namespace Dapple
 
 			try
 			{
-				// Clear Tree and WMS servers too
-				/*WMSCatalogBuilder wmsBuilder = m_hWMSRootNode.Tag as WMSCatalogBuilder;
-            wmsBuilder.cancelDownloads();
-				wmsBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
-            wmsBuilder = new WMSCatalogBuilder("WMS Servers", m_oParent.WorldWindow, null);
-				m_hWMSRootNode.Tag = wmsBuilder;
-				wmsBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);
-
-            ArcIMSCatalogBuilder arcIMSBuilder = m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder;
-            arcIMSBuilder.cancelDownloads();
-            arcIMSBuilder.LoadFinished -= new LoadFinishedCallbackHandler(OnLoadFinished);
-            arcIMSBuilder = new ArcIMSCatalogBuilder("ArcIMS Servers", m_oParent.WorldWindow, null);
-            m_hArcIMSRootNode.Tag = arcIMSBuilder;
-            arcIMSBuilder.LoadFinished += new LoadFinishedCallbackHandler(OnLoadFinished);*/
-
-				/*foreach (TreeNode node in m_hRootNode.Nodes)
-					node.Nodes.Clear();*/
 				m_hTileRootNode.Nodes.Clear();
-
-				// Reset First
-				/*m_bEntireCatalogMode = false;
-				m_bAOIFilter = false;
-				m_bPrevAOIFilter = false;
-				m_bTextFilter = false;
-				m_bPrevTextFilter = false;
-				m_bSelect = true;
-				m_strSearchString = string.Empty;
-				m_strCurSearchString = string.Empty;
-				m_eMode = SearchModeEnum.All;
-				m_ePrevMode = SearchModeEnum.All;
-				m_oCurServer = null;
-				m_hCurServerTreeNode = null;
-				m_wmsServers.Clear();
-            m_oArcIMSServers.Clear();
-				m_oServerList.Clear();
-				m_oFullServerList.Clear();
-				m_oValidServerList.Clear();
-				m_bSelect = false;
-				this.SelectedNode = m_hRootNode;
-				m_bSelect = true;*/
-				// m_hRootNode.Text = strName;
-				this.SelectedNode = m_hRootNode;
-
-				//if (view.View.Hasnotes())
-				//  m_hRootNode.ToolTipText = view.View.notes.Value;
-				// else
-				//   this.lblNotes.Text = strName;            
+				this.SelectedNode = m_hRootNode;         
 
             if (oView.View.Hasfavouriteserverurl())
             {
@@ -677,22 +632,6 @@ namespace Dapple
             }
          }
 
-         /*XmlElement oTileElement = oDocument.CreateElement("tile_servers", oDocument.NamespaceURI);
-         oRootElement.AppendChild(oTileElement);
-         foreach (BuilderDirectory oDir in ((BuilderDirectory)m_hTileRootNode.Tag).SubList)
-         {
-            XmlElement oTileSetSetElement = oDocument.CreateElement("server_set");
-            oTileSetSetElement.SetAttribute("name", oDir.Name);
-            oTileElement.AppendChild(oTileSetSetElement);
-
-            foreach (NltQuadLayerBuilder oBuilder in oDir.LayerBuilders)
-            {
-               XmlElement oServerElement = oDocument.CreateElement("tile_server");
-               oBuilder.SaveToXml(oServerElement);
-               oTileSetSetElement.AppendChild(oServerElement);
-            }
-         }*/
-
          if (blValidDefaultServer)
          {
             XmlElement oDefaultElement = oDocument.CreateElement("default_server", oDocument.NamespaceURI);
@@ -702,64 +641,7 @@ namespace Dapple
 
          oDocument.Save(szFilename);
       }
-      /*
-      public void LoadFavoritesList(String szFilename)
-      {
-            XmlDocument oDocument = new XmlDocument();
-            oDocument.Load(szFilename);
 
-            String szDefaultServer = String.Empty;
-
-            XmlElement oDefaultElement = oDocument.SelectSingleNode("favorites_list/default_server") as XmlElement;
-            if (oDefaultElement != null)
-            {
-               szDefaultServer = oDefaultElement.GetAttribute("url");
-            }
-
-            foreach (XmlElement oServerNode in oDocument.SelectNodes("/favorites_list/dap_servers/dap_server"))
-            {
-               Server oIgnored;
-               this.AddDAPServer(oServerNode.GetAttribute("url"), out oIgnored);
-
-               if (!String.IsNullOrEmpty(szDefaultServer) && oServerNode.GetAttribute("url").Equals(szDefaultServer))
-               {
-                  this.SelectedServer = oIgnored;
-                  m_szDefaultServer = szDefaultServer;
-               }
-            }
-
-            foreach (XmlElement oServerNode in oDocument.SelectNodes("/favorites_list/wms_servers/wms_server"))
-            {
-               this.AddWMSServer(oServerNode.GetAttribute("url"), false);
-
-               if (!String.IsNullOrEmpty(szDefaultServer) && oServerNode.GetAttribute("url").Equals(szDefaultServer))
-               {
-                  WMSServerBuilder oBuilder = ((WMSCatalogBuilder)m_hWMSRootNode.Tag).GetServer(new WMSServerUri(oServerNode.GetAttribute("url")));
-                  this.SelectedServer = oBuilder;
-
-                  m_szDefaultServer = szDefaultServer;
-               }
-            }
-
-            foreach (XmlElement oServerNode in oDocument.SelectNodes("/favorites_list/arcims_servers/arcims_server"))
-            {
-               this.AddArcIMSServer(new ArcIMSServerUri(oServerNode.GetAttribute("url")), false);
-
-               if (!String.IsNullOrEmpty(szDefaultServer) && oServerNode.GetAttribute("url").Equals(szDefaultServer))
-               {
-                  ArcIMSServerBuilder oBuilder = ((ArcIMSCatalogBuilder)m_hArcIMSRootNode.Tag).GetServer(new ArcIMSServerUri(oServerNode.GetAttribute("url")));
-                  this.SelectedServer = oBuilder;
-
-                  m_szDefaultServer = szDefaultServer;
-               }
-            }
-
-            if (String.IsNullOrEmpty(m_szDefaultServer))
-            {
-               this.SelectedNode = RootNode;
-            }
-      }
-      */
 		public void SaveToView(DappleView oView)
 		{
 			builderentryType entry;
@@ -772,6 +654,7 @@ namespace Dapple
 			dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
 			foreach (string strDapUrl in m_oFullServerList.Keys)
 			{
+				if (strDapUrl.Equals(PERSONAL_DAP_URI)) continue;
 				builderentryType subentry = servers.Newbuilderentry();
 				dapcatalogType dap = subentry.Newdapcatalog();
 				dap.Addurl(new SchemaString(strDapUrl));
@@ -881,7 +764,10 @@ namespace Dapple
          else if (entry.Hasdapcatalog())
          {
             Geosoft.GX.DAPGetData.Server dapServer;
-            AddDAPServer(entry.dapcatalog.url.Value, out dapServer, entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, false);
+				if (!entry.dapcatalog.url.Value.Equals(PERSONAL_DAP_URI))
+				{
+					AddDAPServer(entry.dapcatalog.url.Value, out dapServer, entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, false);
+				}
          }
          else if (entry.Haswmscatalog())
             AddWMSServer(entry.wmscatalog.capabilitiesurl.Value, false, entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true, false);
@@ -1349,10 +1235,12 @@ namespace Dapple
          if (SelectedNode.Tag is Server)
          {
             cMenuItem_SetDefault.Enabled = blServerEnabled && !(m_szDefaultServer.Equals(((Server)SelectedNode.Tag).Url));
+				cMenuItem_RemoveServer.Enabled = !(SelectedNode.Tag as Server).Url.Equals(PERSONAL_DAP_URI);
          }
          else if (SelectedNode.Tag is ServerBuilder)
          {
 				cMenuItem_SetDefault.Enabled = blServerEnabled && !(m_szDefaultServer.Equals(((ServerBuilder)SelectedNode.Tag).Uri.ToString()));
+				cMenuItem_RemoveServer.Enabled = true;
          }
 
 			cMenuItem_AddBrowserMap.Enabled = blServerEnabled && SelectedNode.Tag is Server;

@@ -69,9 +69,9 @@ namespace Utility
       public static string CreateURI(string strScheme, string strHost, string strPath, NameValueCollection queryColl)
       {
          bool bFirst = true;
-         string strURI = strScheme + "://" + strHost;
+         string strURI = strScheme + "://" + strHost + "/";
          if (!String.IsNullOrEmpty(strPath))
-            strURI += "/" + strPath;
+            strURI += strPath;
 
          string strQuery = String.Empty;
          if (queryColl != null)

@@ -65,6 +65,7 @@ namespace Geosoft.GX.DAPGetData
       public string Name
       {
          get { return m_strName; }
+			set { m_strName = value; }
       }
 
       /// <summary>

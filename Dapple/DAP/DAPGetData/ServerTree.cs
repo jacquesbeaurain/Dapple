@@ -14,9 +14,15 @@ using Resources = global::Dapple.Properties.Resources;
 namespace Geosoft.GX.DAPGetData
 {
    public class ServerTree : TreeView
-   {
-      #region Enums
-      public enum SearchModeEnum
+	{
+		#region Constants
+
+		protected const String PERSONAL_DAP_URI = "http://localhost:10205/";
+
+		#endregion
+
+		#region Enums
+		public enum SearchModeEnum
       {
          All,
          Name,
@@ -128,6 +134,16 @@ namespace Geosoft.GX.DAPGetData
          //this.NodeMouseClick += new TreeNodeMouseClickEventHandler(this.OnNodeMouseClick);
          this.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
       }
+
+		protected void AddPersonalDAPServer()
+		{
+			Server oPersonalServer = new Server(PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
+			if (oPersonalServer.Status != Server.ServerStatus.OffLine)
+			{
+				oPersonalServer.Name = "Personal DAP";
+				AddDAPServer(oPersonalServer);
+			}
+		}
 
       protected override void Dispose(bool disposing)
       {
@@ -379,6 +395,23 @@ namespace Geosoft.GX.DAPGetData
          Cursor = System.Windows.Forms.Cursors.Default;
          return bRet;
       }
+
+		protected virtual void AddDAPServer(Server oServer)
+		{
+			if (oServer.Status == Server.ServerStatus.OnLine || oServer.Status == Server.ServerStatus.Maintenance)
+			{
+				m_oValidServerList.Remove(oServer.Url);
+				m_oValidServerList.Add(oServer.Url, oServer);
+			}
+			m_oFullServerList.Remove(oServer.Url);
+			m_oFullServerList.Add(oServer.Url, oServer);
+
+			m_oServerList.RemoveServer(oServer);
+			m_oServerList.AddServer(oServer);
+
+			if (oServer.Enabled) GetDatasetCount(oServer);
+			PopulateServerList();
+		}
 
       /// <summary>
       /// Remove the server from the list
