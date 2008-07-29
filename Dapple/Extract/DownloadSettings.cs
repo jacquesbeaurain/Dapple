@@ -133,7 +133,7 @@ namespace Dapple.Extract
       {
 			if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
 			{
-				return new Disabled("This data layer will not be downloaded because it does not intersect with the viewed area.");
+				return new Disabled("This data layer will not be extracted because it does not intersect with the viewed area.");
 			}
 
          DownloadOptions oControl = null;
@@ -144,7 +144,7 @@ namespace Dapple.Extract
 				double dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0;
 				if (MainForm.MontajInterface.GetExtents(oDAPbuilder.ServerURL, oDAPbuilder.DatasetName, out dummy1, out dummy2, out dummy3, out dummy4) == false)
 				{
-					return new Disabled("This data layer will not be downloaded because its metadata could not be accessed.  This usually indicates that you do not have the required permissions to access it.");
+					return new Disabled("This data layer will not be extracted because its metadata could not be accessed.  This usually indicates that you do not have the required permissions to access it.");
 				}
             
             if (oDAPbuilder.DAPType.ToLower() == "map") {
@@ -190,7 +190,7 @@ namespace Dapple.Extract
 					}
 					else
 					{
-						oControl = new Disabled("This data layer will not be downloaded as LYR is not a supported format in MapInfo.");
+						oControl = new Disabled("This data layer will not be extracted as LYR is not a supported format in MapInfo.");
 					}
             }
             else if (oDAPbuilder.DAPType.ToLower() == "imageserver")
@@ -206,10 +206,14 @@ namespace Dapple.Extract
                oControl = new SectionGrid(oDAPbuilder);
             }
          }
-         else 
-         {
-            oControl = new PictureWithoutResolution(oBuilder);
-         }         
+			else if (oBuilder is KML.KMLLayerBuilder)
+			{
+				oControl = new Disabled("This data layer will not be extracted as KML extraction is not currently supported.");
+			}
+			else
+			{
+				oControl = new PictureWithoutResolution(oBuilder);
+			}         
          return oControl;
       }
       #endregion

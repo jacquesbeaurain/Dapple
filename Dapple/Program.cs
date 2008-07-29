@@ -25,8 +25,10 @@ namespace Dapple
       [STAThread]
       static void Main(string[] args)
 		{
+#if !DEBUG
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+#endif
 			WorldWindow.VideoMemoryExhausted += new MethodInvoker(ReportVideoMemoryExhaustion);
 
 #if !DEBUG
@@ -62,6 +64,8 @@ namespace Dapple
 				bool bAbort = false;
 				string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strMapFileName = string.Empty;
 				bool bGeotiffTmp = false;
+				String strKMLFile = String.Empty, strKMLName = String.Empty;
+				bool blKMLTmp = false;
 
 				GeographicBoundingBox oAoi = null;
 				string strAoiCoordinateSystem = string.Empty;
@@ -118,6 +122,26 @@ namespace Dapple
 					strGeoTiffName = strGeoTiffTmpVar.Substring(0, iIndex);
 					bGeotiffTmp = true;
 					if (strGeoTiffName.Length == 0 || !(String.Compare(Path.GetExtension(strGeoTiff), ".tiff", true) == 0 || String.Compare(Path.GetExtension(strGeoTiff), ".tif", true) == 0) || !File.Exists(strGeoTiff))
+					{
+						PrintUsage();
+						return;
+					}
+				}
+
+				if (cmdl["kmltmp"] != null)
+				{
+					string strKMLTmpVar = cmdl["kmltmp"];
+					int iIndex = strKMLTmpVar.IndexOf(":");
+					if (iIndex == -1)
+					{
+						PrintUsage();
+						return;
+					}
+
+					strKMLFile = Path.GetFullPath(strKMLTmpVar.Substring(iIndex + 1));
+					strKMLName = strKMLTmpVar.Substring(0, iIndex);
+					blKMLTmp = true;
+					if (strKMLName.Length == 0 || !(String.Compare(Path.GetExtension(strKMLFile), ".kmz", true) == 0 || String.Compare(Path.GetExtension(strKMLFile), ".kml", true) == 0) || !File.Exists(strKMLFile))
 					{
 						PrintUsage();
 						return;
@@ -272,7 +296,7 @@ namespace Dapple
 					{
 						try
 						{
-							Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
+							Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strKMLFile, strKMLName, blKMLTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
 						}
 						catch (Microsoft.DirectX.DirectXException)
 						{

@@ -11,18 +11,10 @@ namespace Dapple.KML
 	{
 		public static RenderableObject CreateKMLLayer(KMLFile oSource, World oWorld, out GeographicBoundingBox oBounds)
 		{
-			try
-			{
-				oBounds = GeographicBoundingBox.NullBox();
-				RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds, null);
-				if (!oBounds.IsValid) oBounds = new GeographicBoundingBox(90.0, -90.0, -180.0, 180.0);
-				return result;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message.ToString());
-				throw;
-			}
+			oBounds = GeographicBoundingBox.NullBox();
+			RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds, null);
+			if (!oBounds.IsValid) oBounds = new GeographicBoundingBox(90.0, -90.0, -180.0, 180.0);
+			return result;
 		}
 
 		private static RenderableObject Construct(String strRelativeDirectory, KMLObject oSource, World oWorld, GeographicBoundingBox oBounds, ProjectedVectorRenderer oPVR)
@@ -124,7 +116,6 @@ namespace Dapple.KML
 			}
 			else
 			{
-				Console.WriteLine("Unknown type " + oSource.GetType().ToString());
 				return null;
 			}
 		}

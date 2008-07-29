@@ -17,13 +17,20 @@ namespace Dapple.KML
 
 		#endregion
 
+		private String m_strInitFilename;
 		private KMLFile m_oSourceFile;
 		private RenderableObject m_oRenderable;
 		private GeographicBoundingBox m_oBounds;
 
 		public KMLLayerBuilder(String strFilename, WorldWindow oWorldWindow, IBuilder oParent)
-			: base(Path.GetFileNameWithoutExtension(strFilename), oWorldWindow, oParent)
+			:this(strFilename, Path.GetFileNameWithoutExtension(strFilename), oWorldWindow, oParent)
 		{
+		}
+
+		public KMLLayerBuilder(String strFilename, String strLayerName, WorldWindow oWorldWindow, IBuilder oParent)
+			: base(strLayerName, oWorldWindow, oParent)
+		{
+			m_strInitFilename = strFilename;
 			m_oSourceFile = new KMLFile(strFilename);
 			m_oRenderable = KMLCreation.CreateKMLLayer(m_oSourceFile, oWorldWindow.CurrentWorld, out m_oBounds);
 			m_oRenderable.RenderPriority = RenderPriority.TerrainMappedImages;
@@ -108,7 +115,17 @@ namespace Dapple.KML
 
 		protected override void CleanUpLayer(bool bFinal)
 		{
-			//TODO Clean up the layer somehow?
+			if (File.Exists(m_strInitFilename) && Temporary)
+			{
+				try
+				{
+					File.Delete(m_strInitFilename);
+				}
+				catch
+				{
+					// --- Ignore temp file delete errors ---
+				}
+			}
 		}
 
 		public override bool Equals(object obj)

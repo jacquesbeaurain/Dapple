@@ -151,9 +151,13 @@ namespace Dapple
 		private RenderableObjectList placeNames;
 
 		private string openView = "";
-		private string openGeoTiff = "";
-		private string openGeoTiffName = "";
-		private bool openGeoTiffTmp = false;
+		private string m_strOpenGeoTiffFile = "";
+		private string m_strOpenGeoTiffName = "";
+		private bool m_blOpenGeoTiffTmp = false;
+		private string m_strOpenKMLFile = "";
+		private string m_strOpenKMLName = "";
+		private bool m_blOpenKMLTmp = false;
+
 		private string lastView = "";
 		private string metaviewerDir = "";
 
@@ -290,13 +294,22 @@ namespace Dapple
 
 		#region Constructor
 
-		public MainForm(string strView, string strGeoTiff, string strGeotiffName, bool bGeotiffTmp, string strLastView, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
+		public MainForm(string strView,
+			string strGeoTiff, string strGeotiffName, bool bGeotiffTmp,
+			string strKMLFile, string strKMLName, bool blKMLTmp, 
+			string strLastView, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
 		{
 			if (String.Compare(Path.GetExtension(strView), ViewExt, true) == 0 && File.Exists(strView))
 				this.openView = strView;
-			this.openGeoTiff = strGeoTiff;
-			this.openGeoTiffName = strGeotiffName;
-			this.openGeoTiffTmp = bGeotiffTmp;
+
+			m_strOpenGeoTiffFile = strGeoTiff;
+			m_strOpenGeoTiffName = strGeotiffName;
+			m_blOpenGeoTiffTmp = bGeotiffTmp;
+
+			m_strOpenKMLFile = strKMLFile;
+			m_strOpenKMLName = strKMLName;
+			m_blOpenKMLTmp = blKMLTmp;
+
 			this.lastView = strLastView;
 			m_oMontajRemoteInterface = oMRI;
 
@@ -1729,7 +1742,7 @@ namespace Dapple
 				Application.DoEvents();
 
 				if (this.openView.Length > 0)
-					OpenView(this.openView, this.openGeoTiff.Length == 0, true);
+					OpenView(this.openView, m_strOpenGeoTiffFile.Length == 0 && m_strOpenKMLFile.Length == 0, true);
 				else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
 				{
 					if (Settings.AskLastViewAtStartup)
@@ -1757,8 +1770,10 @@ namespace Dapple
 					CmdLoadHomeView();
 				}
 
-				if (this.openGeoTiff.Length > 0)
-					AddGeoTiff(this.openGeoTiff, this.openGeoTiffName, this.openGeoTiffTmp, true);
+				if (this.m_strOpenGeoTiffFile.Length > 0)
+					AddGeoTiff(this.m_strOpenGeoTiffFile, this.m_strOpenGeoTiffName, this.m_blOpenGeoTiffTmp, true);
+				if (this.m_strOpenKMLFile.Length > 0)
+					AddKML(m_strOpenKMLFile, m_strOpenKMLName, m_blOpenKMLTmp, true);
 
 
 				// Check for updates daily
@@ -2740,6 +2755,33 @@ namespace Dapple
 					MessageBoxButtons.OK,
 					MessageBoxDefaultButton.Button1,
 					MessageBoxIcon.Error);
+			}
+		}
+
+		private void AddKML(String strKMLFile, String strKMLName, bool blTemporary, bool blGoTo)
+		{
+			try
+			{
+				this.UseWaitCursor = true;
+
+				Dapple.KML.KMLLayerBuilder oBuilder = new Dapple.KML.KMLLayerBuilder(strKMLFile, strKMLName, WorldWindowSingleton, null);
+				oBuilder.Temporary = blTemporary;
+				c_oLayerList.AddLayer(oBuilder);
+				oBuilder.GoToLookAt(WorldWindowSingleton);
+			}
+			catch (Exception ex)
+			{
+				Program.ShowMessageBox(
+					"An error occurred while trying to add Keyhole file " + strKMLFile + ":" + Environment.NewLine + Environment.NewLine + ex.Message.ToString(),
+					"Open KML File",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error
+					);
+			}
+			finally
+			{
+				this.UseWaitCursor = false;
 			}
 		}
 
