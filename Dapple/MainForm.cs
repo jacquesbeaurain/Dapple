@@ -157,6 +157,7 @@ namespace Dapple
 		private string m_strOpenKMLFile = "";
 		private string m_strOpenKMLName = "";
 		private bool m_blOpenKMLTmp = false;
+		private bool m_blSelectPersonalDAP = false;
 
 		private string lastView = "";
 		private string metaviewerDir = "";
@@ -177,6 +178,11 @@ namespace Dapple
 		#endregion
 
 		#region Properties
+
+		public void SetSelectPersonalDAPOnStartup(bool blValue)
+		{
+			m_blSelectPersonalDAP = blValue;
+		}
 
 		private String SearchKeyword
 		{
@@ -1733,8 +1739,6 @@ namespace Dapple
 			c_oWorldWindow.SafeRender();
 
 
-			//tvServers.LoadFavoritesList(Path.Combine(Path.Combine(UserPath, "Config"), "user.dapple_serverlist"));
-
 			try
 			{
 				// --- Draw the screen, so it doesn't look damaged ---
@@ -1768,6 +1772,11 @@ namespace Dapple
 				else
 				{
 					CmdLoadHomeView();
+				}
+
+				if (m_blSelectPersonalDAP)
+				{
+					c_oServerTree.SelectPersonalDAP();
 				}
 
 				if (this.m_strOpenGeoTiffFile.Length > 0)
@@ -3417,142 +3426,3 @@ namespace Dapple
 		#endregion
 	}
 }
-
-#region Temporary KML Code
-/*
-		private void cKMLTree_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Right)
-			{
-				GeographicBoundingBox extents = null;
-				TreeNode node = cKMLTree.HitTest(e.Location).Node;
-
-				Type tp = node.Tag.GetType();
-
-				if (node.Tag is WorldWind.Renderable.Icon)
-				{
-					WorldWind.Renderable.Icon icon = node.Tag as WorldWind.Renderable.Icon;
-
-					worldWindow.GotoLatLon(icon.Latitude, icon.Longitude);
-				}
-				else if (node.Tag is ImageLayer)
-				{
-					ImageLayer imageLayer = node.Tag as ImageLayer;
-
-					extents = new GeographicBoundingBox(imageLayer.MaxLat, imageLayer.MinLat, imageLayer.MinLon, imageLayer.MaxLon);
-				}
-				else if (node.Tag is LineFeature)
-				{
-					LineFeature line = node.Tag as LineFeature;
-					double dNorth = double.MinValue;
-					double dSouth = double.MaxValue;
-					double dEast = double.MinValue;
-					double dWest = double.MaxValue;
-					foreach (Point3d p in line.Points)
-					{
-						dNorth = Math.Max(p.Y, dNorth);
-						dSouth = Math.Min(p.Y, dSouth);
-						dEast = Math.Max(p.X, dEast);
-						dWest = Math.Min(p.X, dWest);
-					}
-					extents = new GeographicBoundingBox(dNorth, dSouth, dWest, dEast);
-				}
-				else if (node.Tag is PolygonFeature)
-				{
-					Point3d pSph;
-					PolygonFeature pFeat = node.Tag as PolygonFeature;
-					double dNorth = double.MinValue;
-					double dSouth = double.MaxValue;
-					double dEast = double.MinValue;
-					double dWest = double.MaxValue;
-					foreach (Point3d p in pFeat.BoundingBox.corners)
-					{
-						pSph = MathEngine.CartesianToSpherical(p.X, p.Y, p.Z);
-						pSph.Y = MathEngine.RadiansToDegrees(pSph.Y);
-						pSph.Z = MathEngine.RadiansToDegrees(pSph.Z);
-						dNorth = Math.Max(pSph.Y, dNorth);
-						dSouth = Math.Min(pSph.Y, dSouth);
-						dEast = Math.Max(pSph.Z, dEast);
-						dWest = Math.Min(pSph.Z, dWest);
-					}
-					extents = new GeographicBoundingBox(dNorth, dSouth, dWest, dEast);
-				}
-
-				if (extents != null)
-					GoTo(extents, false);
-			}
-		}
-
-		void UpdateKMLNodes(TreeNode parentNode, RenderableObjectList objectList)
-		{
-			TreeNode node;
-			int iImage = ImageListIndex("kml");
-			foreach (RenderableObject ro in objectList.ChildObjects)
-			{
-				node = parentNode.Nodes.Add(null, ro.Name, iImage, iImage);
-				node.Checked = ro.IsOn;
-				//node = this.tvLayers.Add(parentNode, ro.Name, iImage, iImage, this.kmlPlugin.KMLIcons.IsOn ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
-				node.Tag = ro;
-				if (ro is RenderableObjectList)
-					UpdateKMLNodes(node, ro as RenderableObjectList);
-			}
-		}
-
-		void UpdateKMLIcons()
-		{
-			cKMLTree.BeginUpdate();
-			//this.tvLayers.BeginUpdate();
-
-			if (cKMLTree.Nodes.Count > 0)
-				cKMLTree.Nodes.Clear();
-			//if (this.kmlNode != null)
-			//	this.tvLayers.Nodes.Remove(this.kmlNode);
-
-			if (this.kmlPlugin.KMLIcons.ChildObjects.Count > 0)
-			{
-				int iImage = ImageListIndex("kml");
-				TreeNode oRootNode = cKMLTree.Nodes.Add(null, kmlPlugin.KMLIcons.Name, iImage, iImage);
-				//this.kmlNode = this.tvLayers.AddTop(null, this.kmlPlugin.KMLIcons.Name, iImage, iImage, this.kmlPlugin.KMLIcons.IsOn ? TriStateTreeView.CheckBoxState.Checked : TriStateTreeView.CheckBoxState.Unchecked);
-				oRootNode.Checked = kmlPlugin.KMLIcons.IsOn; // new
-				oRootNode.Tag = this.kmlPlugin.KMLIcons;
-				//this.kmlNode.Tag = this.kmlPlugin.KMLIcons;
-				UpdateKMLNodes(oRootNode, this.kmlPlugin.KMLIcons);
-			}
-
-			cKMLTree.EndUpdate();
-			//this.tvLayers.EndUpdate();
-		}
-
-		private void toolStripMenuItemOpenKML_Click(object sender, EventArgs e)
-		{
-			System.Windows.Forms.OpenFileDialog fileDialog = new OpenFileDialog();
-			fileDialog.CheckFileExists = true;
-			fileDialog.Filter = "KML/KMZ files (*.kml *.kmz)|*.kml;*.kmz";
-			fileDialog.Multiselect = false;
-			fileDialog.RestoreDirectory = true;
-			DialogResult result = fileDialog.ShowDialog();
-
-			if (result == DialogResult.OK)
-			{
-				this.kmlPlugin.KMLIcons.ChildObjects.Clear();
-				if (cKMLTree.Nodes.Count > 0)
-					cKMLTree.Nodes.Clear();
-				//if (this.kmlNode != null)
-				//	this.tvLayers.Nodes.Remove(this.kmlNode);
-				int iImage = ImageListIndex("kml");
-				cKMLTree.Nodes.Add(null, "Please wait, loading KML file...", iImage, iImage);
-				//this.kmlNode = this.tvLayers.AddTop(null, "Please wait, loading KML file...", iImage, iImage, TriStateTreeView.CheckBoxState.None);
-				this.kmlPlugin.LoadDiskKM(fileDialog.FileName, new MethodInvoker(UpdateKMLIcons));
-			}
-		}
-
-		private void cKMLTree_AfterCheck(object sender, TreeViewEventArgs e)
-		{
-			if (e.Node.Tag != null) ((RenderableObject)e.Node.Tag).IsOn = e.Node.Checked;
-			foreach (TreeNode oChildNode in e.Node.Nodes)
-			{
-				oChildNode.Checked = e.Node.Checked;
-			}
-		}
-		*/
-#endregion

@@ -346,6 +346,14 @@ namespace Dapple
 
 		#region Methods
 
+		public void SelectPersonalDAP()
+		{
+			if (m_oPersonalDAPServer != null)
+			{
+				SelectedServer = m_oPersonalDAPServer;
+			}
+		}
+
 		public XmlNode GetCurrentDAPMetaData(XmlDocument oDoc)
 		{
 			if (this.SelectedDAPDataset != null)

@@ -93,6 +93,8 @@ namespace Geosoft.GX.DAPGetData
 		protected bool m_blAllowCollapse = false;
 		private Object m_oLoginLock = new object();
 
+		protected Server m_oPersonalDAPServer = null;
+
       #endregion
 
       #region Construction/Destruction
@@ -137,11 +139,15 @@ namespace Geosoft.GX.DAPGetData
 
 		protected void AddPersonalDAPServer()
 		{
-			Server oPersonalServer = new Server(PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
-			if (oPersonalServer.Status != Server.ServerStatus.OffLine)
+			m_oPersonalDAPServer = new Server(PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
+			if (m_oPersonalDAPServer.Status != Server.ServerStatus.OffLine)
 			{
-				oPersonalServer.Name = "Personal DAP";
-				AddDAPServer(oPersonalServer);
+				m_oPersonalDAPServer.Name = "Personal DAP";
+				AddDAPServer(m_oPersonalDAPServer);
+			}
+			else
+			{
+				m_oPersonalDAPServer = null;
 			}
 		}
 
@@ -326,6 +332,7 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Public Methods
+
       /// <summary>
       /// Handle the control creation event
       /// </summary>

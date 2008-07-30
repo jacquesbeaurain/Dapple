@@ -61,6 +61,7 @@ namespace Dapple
 
 			try
 			{
+				bool blSelectPersonalDAP = false;
 				bool bAbort = false;
 				string strView = "", strGeoTiff = "", strGeoTiffName = "", strLastView = "", strMapFileName = string.Empty;
 				bool bGeotiffTmp = false;
@@ -108,6 +109,11 @@ namespace Dapple
 					g_blTestingMode = true;
 				}
 #endif
+				if (cmdl["personaldap"] != null)
+				{
+					blSelectPersonalDAP = true;
+				}
+
 				if (cmdl["geotifftmp"] != null)
 				{
 					string strGeoTiffTmpVar = cmdl["geotifftmp"];
@@ -296,7 +302,9 @@ namespace Dapple
 					{
 						try
 						{
-							Application.Run(new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strKMLFile, strKMLName, blKMLTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName));
+							MainForm oForm = new MainForm(strView, strGeoTiff, strGeoTiffName, bGeotiffTmp, strKMLFile, strKMLName, blKMLTmp, strLastView, eClientType, oRemoteInterface, oAoi, strAoiCoordinateSystem, strMapFileName);
+							oForm.SetSelectPersonalDAPOnStartup(blSelectPersonalDAP);
+							Application.Run(oForm);
 						}
 						catch (Microsoft.DirectX.DirectXException)
 						{
