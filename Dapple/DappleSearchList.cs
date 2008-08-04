@@ -138,7 +138,7 @@ namespace Dapple.CustomControls
 			{
 				// --- Rating bar ---
 
-				e.Graphics.DrawRectangle(new Pen(Color.Black), new Rectangle(0, 0, BAR_WIDTH + 1, THUMBNAIL_SIZE + 1));
+				e.Graphics.DrawRectangle(Pens.Black, new Rectangle(0, 0, BAR_WIDTH + 1, THUMBNAIL_SIZE + 1));
 
 				double dPercentageRank = (double)oResult.Rank / (double)UInt16.MaxValue;
 				int iBarHeight = (int)(THUMBNAIL_SIZE * dPercentageRank);
@@ -151,7 +151,7 @@ namespace Dapple.CustomControls
 
 				e.Graphics.TranslateTransform(BAR_WIDTH + 1, 0, MatrixOrder.Append);
 
-				e.Graphics.DrawRectangle(new Pen(Brushes.Black), new Rectangle(0, 0, THUMBNAIL_SIZE + 1, THUMBNAIL_SIZE + 1));
+				e.Graphics.DrawRectangle(Pens.Black, new Rectangle(0, 0, THUMBNAIL_SIZE + 1, THUMBNAIL_SIZE + 1));
 
 				if (oResult.Thumbnail == null)
 				{

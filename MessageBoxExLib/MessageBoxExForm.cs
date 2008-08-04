@@ -357,11 +357,13 @@ namespace Utils.MessageBoxExLib
 		/// <returns></returns>
 		private Size MeasureString(string str, int maxWidth, Font font)
 		{
-			Graphics g = this.CreateGraphics();
-			SizeF strRectSizeF = g.MeasureString(str, font, maxWidth);
-			g.Dispose();
+			using (Graphics g = this.CreateGraphics())
+			{
+				SizeF strRectSizeF = g.MeasureString(str, font, maxWidth);
+				g.Dispose();
 
-			return new Size((int)Math.Ceiling(strRectSizeF.Width), (int)Math.Ceiling(strRectSizeF.Height));
+				return new Size((int)Math.Ceiling(strRectSizeF.Width), (int)Math.Ceiling(strRectSizeF.Height));
+			}
 		}
 
 		/// <summary>

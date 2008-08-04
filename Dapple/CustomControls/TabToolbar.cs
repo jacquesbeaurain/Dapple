@@ -47,29 +47,33 @@ namespace Dapple.CustomControls
 
          this.SuspendLayout();
 
-         Bitmap oPlaceholderGraphic = new Bitmap(16, 16);
-         Graphics g = Graphics.FromImage(oPlaceholderGraphic);
-         g.FillRectangle(Brushes.Gainsboro, new Rectangle(0, 0, 16, 16));
-         g.DrawLine(new Pen(Brushes.Red), new Point(0, 0), new Point(15, 15));
+			using (Bitmap oPlaceholderGraphic = new Bitmap(16, 16))
+			{
+				using (Graphics g = Graphics.FromImage(oPlaceholderGraphic))
+				{
+					g.FillRectangle(Brushes.Gainsboro, new Rectangle(0, 0, 16, 16));
+					g.DrawLine(Pens.Red, new Point(0, 0), new Point(15, 15));
 
-         m_aButtons = new ToolStripButton[iNumButtons];
+					m_aButtons = new ToolStripButton[iNumButtons];
 
-         for (int count = 0; count < iNumButtons; count++)
-         {
-            m_aButtons[count] = new ToolStripButton();
-            m_aButtons[count].Tag = count;
-            m_aButtons[count].Image = oPlaceholderGraphic;
-            m_aButtons[count].Click += new EventHandler(ButtonClick);
-				m_aButtons[count].DisplayStyle = ToolStripItemDisplayStyle.Image;
-            this.Items.Add(m_aButtons[count]);
-         }
-         m_aButtons[0].Checked = true;
+					for (int count = 0; count < iNumButtons; count++)
+					{
+						m_aButtons[count] = new ToolStripButton();
+						m_aButtons[count].Tag = count;
+						m_aButtons[count].Image = oPlaceholderGraphic;
+						m_aButtons[count].Click += new EventHandler(ButtonClick);
+						m_aButtons[count].DisplayStyle = ToolStripItemDisplayStyle.Image;
+						this.Items.Add(m_aButtons[count]);
+					}
+					m_aButtons[0].Checked = true;
 
-         this.Renderer = new TabToolBarRenderer();
-         this.GripStyle = ToolStripGripStyle.Hidden;
-         this.Dock = DockStyle.Bottom;
+					this.Renderer = new TabToolBarRenderer();
+					this.GripStyle = ToolStripGripStyle.Hidden;
+					this.Dock = DockStyle.Bottom;
 
-         this.ResumeLayout();
+					this.ResumeLayout();
+				}
+			}
       }
 
       #endregion
@@ -123,7 +127,7 @@ namespace Dapple.CustomControls
 
       protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
       {
-         e.Graphics.DrawLine(new Pen(System.Drawing.SystemBrushes.WindowFrame), new Point(0, 0), new Point(e.AffectedBounds.Width, 0));
+         e.Graphics.DrawLine(SystemPens.WindowFrame, new Point(0, 0), new Point(e.AffectedBounds.Width, 0));
       }
 
       protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)

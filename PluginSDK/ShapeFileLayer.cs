@@ -2149,7 +2149,8 @@ namespace WorldWind
 					System.Drawing.Color color = m_ShapeTileArgs.PolygonColor;
 
 					//Fix Black Tiles
-					g.DrawLine(new Pen(color), 0, 0, 1, 1);
+					using (Pen p = new Pen(color))
+						g.DrawLine(p, 0, 0, 1, 1);
 
 
 					if (m_ShapeTileArgs.UseScalar && m_ShapeTileArgs.ScaleColors)

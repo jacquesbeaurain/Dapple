@@ -143,10 +143,10 @@ namespace WorldWind
 		bool m_FireMouseUpEvent = false;
 
       SolidBrush m_ViewBoxBrush = new SolidBrush(Color.FromArgb(150, Color.Red.R, Color.Red.G, Color.Red.B));
-		Pen m_ViewBoxPen = new Pen(Color.Red);
+		Pen m_ViewBoxPen = Pens.Red;
 
 		SolidBrush m_TargetViewBoxBrush = new SolidBrush(Color.FromArgb(150, Color.Purple.R, Color.Purple.G, Color.Purple.B));
-      Pen m_TargetViewBoxPen = new Pen(Color.Purple);
+      Pen m_TargetViewBoxPen = Pens.Purple;
 
 		bool m_MouseIsDragging = false;
 		bool m_IsPanning = false;

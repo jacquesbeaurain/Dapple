@@ -80,6 +80,11 @@ namespace Dapple
       public event ActiveLayersChangedHandler ActiveLayersChanged;
 		private ServerTree m_hServerTree;
 
+		bool m_bClearDropHint = false;
+		Point m_ptDropHint1, m_ptDropHint2;
+		static System.Drawing.Pen m_oDragPen = new System.Drawing.Pen(System.Drawing.Brushes.Black, 2.0f);
+		static System.Drawing.Pen m_oDragNoPen = new System.Drawing.Pen(System.Drawing.Brushes.White, 2.0f);
+
       #endregion
 
       #region Constructors
@@ -686,7 +691,7 @@ namespace Dapple
       private void SetDropLocation(int iX, int iY)
       {
          m_oDropLocation = new Point(iX, iY);
-         c_lvLayers.Refresh();
+			clearDropHint();
          DrawDropHint();
       }
 
@@ -696,8 +701,23 @@ namespace Dapple
       private void ClearDropLocation()
       {
          m_oDropLocation = NO_DROP_LOCATION;
-         c_lvLayers.Refresh();
+			clearDropHint();
       }
+
+		/// <summary>
+		/// Clear previously drawn drop hint line
+		/// </summary>
+		private void clearDropHint()
+		{
+			if (m_bClearDropHint)
+			{
+				using (Graphics oGraphics = this.CreateGraphics())
+				{
+					oGraphics.DrawLine(m_oDragNoPen, m_ptDropHint1, m_ptDropHint2);
+				}
+				m_bClearDropHint = false;
+			}
+		}
 
       /// <summary>
       /// Gets the index of the in-between-layers point that a drop operation will drop to.
@@ -721,26 +741,33 @@ namespace Dapple
       {
          if (m_oDropLocation == NO_DROP_LOCATION) return;
          Point oClientDropLocation = c_lvLayers.PointToClient(m_oDropLocation);
-         Graphics oGraphics = c_lvLayers.CreateGraphics();
-         if (!oGraphics.VisibleClipBounds.Contains(oClientDropLocation)) return;
-         
-         int iLineWidth = (int)oGraphics.VisibleClipBounds.Width;
-         int iLineY = 0;
+			using (Graphics oGraphics = c_lvLayers.CreateGraphics())
+			{
+				if (!oGraphics.VisibleClipBounds.Contains(oClientDropLocation)) return;
 
-         if (c_lvLayers.Items.Count != 0)
-         {
-            int iInsertPoint = GetDropIndex(oClientDropLocation.Y);
+				int iLineWidth = (int)oGraphics.VisibleClipBounds.Width;
+				int iLineY = 0;
 
-            if (iInsertPoint == c_lvLayers.Items.Count)
-            {
-               iLineY = c_lvLayers.GetItemRect(iInsertPoint - 1).Bottom;
-            }
-            else
-            {
-               iLineY = c_lvLayers.GetItemRect(iInsertPoint).Top;
-            }
-         }
-         oGraphics.DrawLine(new System.Drawing.Pen(System.Drawing.Brushes.Black, 3.0f), new System.Drawing.Point(0, iLineY), new System.Drawing.Point(iLineWidth, iLineY));
+				if (c_lvLayers.Items.Count != 0)
+				{
+					int iInsertPoint = GetDropIndex(oClientDropLocation.Y);
+
+					if (iInsertPoint == c_lvLayers.Items.Count)
+					{
+						iLineY = c_lvLayers.GetItemRect(iInsertPoint - 1).Bottom;
+					}
+					else
+					{
+						iLineY = c_lvLayers.GetItemRect(iInsertPoint).Top;
+					}
+				}
+				m_ptDropHint1.X = 0;
+				m_ptDropHint1.Y = iLineY;
+				m_ptDropHint2.X = iLineWidth;
+				m_ptDropHint2.Y = iLineY;
+				oGraphics.DrawLine(m_oDragPen, m_ptDropHint1, m_ptDropHint2);
+				m_bClearDropHint = true;
+			}
       }
 
       /// <summary>

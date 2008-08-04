@@ -2636,14 +2636,16 @@ namespace Dapple
 
 		private static Image TakeSnapshot(IntPtr handle)
 		{
+			Bitmap bmp;
 			RECT tempRect;
 			GetWindowRect(handle, out tempRect);
 			Rectangle windowRect = tempRect;
 			IntPtr formDC = GetDCEx(handle, IntPtr.Zero, DCX_CACHE | DCX_WINDOW);
-			Graphics grfx = Graphics.FromHdc(formDC);
 
-			Bitmap bmp = new Bitmap(windowRect.Width, windowRect.Height, grfx);
-			using (grfx = Graphics.FromImage(bmp))
+			using (Graphics grfx = Graphics.FromHdc(formDC))
+				bmp = new Bitmap(windowRect.Width, windowRect.Height, grfx);
+
+			using (Graphics grfx = Graphics.FromImage(bmp))
 			{
 				IntPtr bmpDC = grfx.GetHdc();
 
@@ -2654,7 +2656,6 @@ namespace Dapple
 			}
 			return bmp;
 		}
-
 		private bool OpenView(string filename, bool bGoto, bool bLoadLayers)
 		{
 			bool bOldView = false;
