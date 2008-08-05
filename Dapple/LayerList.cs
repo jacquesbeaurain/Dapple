@@ -711,7 +711,7 @@ namespace Dapple
 		{
 			if (m_bClearDropHint)
 			{
-				using (Graphics oGraphics = this.CreateGraphics())
+				using (Graphics oGraphics = c_lvLayers.CreateGraphics())
 				{
 					oGraphics.DrawLine(m_oDragNoPen, m_ptDropHint1, m_ptDropHint2);
 				}
