@@ -554,11 +554,18 @@ namespace Geosoft.GX.DAPGetData
 		/// </summary>
 		public void UpdateConfigurationIfNecessary()
 		{
-			String strConfigEdition, strEdition;
-			m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
+			try
+			{
+				String strConfigEdition, strEdition;
+				m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
 
-			if (m_strCacheVersion != strConfigEdition)
-				UpdateConfiguration();
+				if (m_strCacheVersion != strConfigEdition)
+					UpdateConfiguration();
+			}
+			catch (System.Net.WebException)
+			{
+				// --- Failed to get the configuration ---
+			}
 		}
 
 

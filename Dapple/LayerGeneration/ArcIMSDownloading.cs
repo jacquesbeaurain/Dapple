@@ -25,11 +25,6 @@ namespace Dapple.LayerGeneration
 
       public override void StartDownload()
       {
-         Log.Write(Log.Levels.Debug, "AGDR", "Starting download for ArcIMS server " + ((ArcIMSImageStore)m_imageStore).ServerUri.ToBaseUri());
-         Log.Write(Log.Levels.Debug, "AGDR", "Dataset Name: " + ((ArcIMSImageStore)m_imageStore).ServiceName);
-         Log.Write(Log.Levels.Debug, "AGDR", "West: " + Tile.West + " South: " + Tile.South + " East: " + Tile.East + " North: " + Tile.North);
-         Log.Write(Log.Levels.Debug, "AGDR", "to be stored in " + m_imageStore.GetLocalPath(Tile));
-
          Tile.IsDownloadingImage = true;
 
          Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
@@ -43,7 +38,6 @@ namespace Dapple.LayerGeneration
 
       protected override void DownloadComplete(WebDownload downloadInfo)
       {
-         Log.Write(Log.Levels.Debug, "AGDR", "GET_IMAGE response received.");
          ArcIMSImageDownload oCastDL = downloadInfo as ArcIMSImageDownload;
 
          XmlDocument oArcXMLResponse = new XmlDocument();
@@ -115,7 +109,6 @@ namespace Dapple.LayerGeneration
                   }
                   catch (Exception e)
                   {
-                     Log.Write(Log.Levels.Error, "AGDR", "could not delete file " + downloadInfo.SavedFilePath + ":");
                      Log.Write(e);
                   }
                }
@@ -144,7 +137,6 @@ namespace Dapple.LayerGeneration
                }
                catch (Exception e)
                {
-                  Log.Write(Log.Levels.Error, "AGDR", "could not delete file " + downloadInfo.SavedFilePath + ":");
                   Log.Write(e);
                }
             }

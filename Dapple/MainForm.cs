@@ -164,6 +164,8 @@ namespace Dapple
 
 		private MetadataDisplayThread m_oMetadataDisplay;
 
+		Geosoft.GX.DAPGetData.GetDapError dapErrors;
+
 		private static ImageList m_oImageList = new ImageList();
 		private static RemoteInterface m_oMontajRemoteInterface;
 		private static Dapple.Extract.Options.Client.ClientType m_eClientType;
@@ -532,6 +534,8 @@ namespace Dapple
 
 				WorldWind.Terrain.TerrainTileService terrainTileService = new WorldWind.Terrain.TerrainTileService("http://worldwind25.arc.nasa.gov/wwelevation/wwelevation.aspx", "srtm30pluszip", 20, 150, "bil", 12, Path.Combine(Settings.CachePath, "Earth\\TerrainAccessor\\SRTM"), TimeSpan.FromMinutes(30), "Int16");
 				WorldWind.Terrain.TerrainAccessor terrainAccessor = new WorldWind.Terrain.NltTerrainAccessor("SRTM", -180, -90, 180, 90, terrainTileService, null);
+
+				this.dapErrors = new Geosoft.GX.DAPGetData.GetDapError(Path.Combine(Settings.CachePath, "DapErrors.log"));
 
 				WorldWind.World world = new WorldWind.World("Earth",
 					new Point3d(0, 0, 0), Quaternion4d.RotationYawPitchRoll(0, 0, 0),
@@ -2683,13 +2687,15 @@ namespace Dapple
 					}
 				}
 			}
-			catch (Exception e)
+			finally { }
+			//TODO: uncomment this.
+			/*catch (Exception e)
 			{
 				if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 				{
 					return OpenView(Path.Combine(Settings.DataPath, DefaultView), true, true);
 				}
-			}
+			}*/
 
 			if (bOldView)
 				MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);

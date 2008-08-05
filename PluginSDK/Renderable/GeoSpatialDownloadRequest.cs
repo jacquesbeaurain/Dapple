@@ -206,7 +206,6 @@ namespace WorldWind.Renderable
 
 		protected virtual void DownloadComplete(WebDownload downloadInfo)
 		{
-			Log.Write(Log.Levels.Debug + 1, "GSDR", "Download completed for " + downloadInfo.Url);
 			try
 			{
 				downloadInfo.Verify();
@@ -281,8 +280,6 @@ namespace WorldWind.Renderable
 
 		public virtual void StartDownload()
 		{
-			Log.Write(Log.Levels.Debug, "GSDR", "Starting download for " + m_url);
-			Log.Write(Log.Levels.Debug, "GSDR", "to be stored in " + this.m_imageStore.GetLocalPath(Tile));
 			Tile.IsDownloadingImage = true;
 			download = new WebDownload(m_url);
 			download.DownloadType = DownloadType.Wms;

@@ -268,14 +268,14 @@ namespace Dapple
 
       private bool AddLayerToGlobe(LayerBuilder oBuilder)
       {
-         return AddLayerToGlobe(oBuilder, oBuilder is GeorefImageLayerBuilder);
+         return AddLayerToGlobe(oBuilder, oBuilder is GeorefImageLayerBuilder || oBuilder is KML.KMLLayerBuilder);
       }
 
       private bool AddLayerToGlobe(LayerBuilder oBuilder, bool blSync)
       {
          oBuilder.SubscribeToBuilderChangedEvent(new BuilderChangedHandler(this.BuilderChanged));
 
-         if (oBuilder is GeorefImageLayerBuilder && oBuilder.GetLayer() == null) return false;
+         if ((oBuilder is GeorefImageLayerBuilder || oBuilder is KML.KMLLayerBuilder)&& oBuilder.GetLayer() == null) return false;
          if (blSync)
          {
             oBuilder.SyncAddLayer(true);

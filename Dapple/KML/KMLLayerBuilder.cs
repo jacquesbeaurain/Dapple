@@ -31,9 +31,12 @@ namespace Dapple.KML
 			: base(strLayerName, oWorldWindow, oParent)
 		{
 			m_strInitFilename = strFilename;
-			m_oSourceFile = new KMLFile(strFilename);
-			m_oRenderable = KMLCreation.CreateKMLLayer(m_oSourceFile, oWorldWindow.CurrentWorld, out m_oBounds);
-			m_oRenderable.RenderPriority = RenderPriority.TerrainMappedImages;
+			if (File.Exists(m_strInitFilename))
+			{
+				m_oSourceFile = new KMLFile(strFilename);
+				m_oRenderable = KMLCreation.CreateKMLLayer(m_oSourceFile, oWorldWindow.CurrentWorld, out m_oBounds);
+				m_oRenderable.RenderPriority = RenderPriority.TerrainMappedImages;
+			}
 		}
 
 		private KMLLayerBuilder(KMLLayerBuilder oCopySource)
@@ -44,30 +47,49 @@ namespace Dapple.KML
 			m_oRenderable.RenderPriority = RenderPriority.TerrainMappedImages;
 		}
 
+		[System.ComponentModel.Category("KML")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The filename of the KML file for this data layer")]
+		public string Filename
+		{
+			get { return m_strInitFilename; }
+		}
+
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
 		public override byte Opacity
 		{
 			get
 			{
-				return m_oRenderable.Opacity;
+				if (m_oRenderable != null) return m_oRenderable.Opacity;
+				else return 255;
 			}
 			set
 			{
-				m_oRenderable.Opacity = value;
+				if (m_oRenderable != null) m_oRenderable.Opacity = value;
 			}
 		}
 
+		[System.ComponentModel.Category("Dapple")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
 		public override bool Visible
 		{
 			get
 			{
-				return m_oRenderable.IsOn;
+				if (m_oRenderable != null) return m_oRenderable.IsOn;
+				else return false;
 			}
 			set
 			{
-				m_oRenderable.IsOn = value;
+				if (m_oRenderable != null) m_oRenderable.IsOn = value;
 			}
 		}
 
+		[System.ComponentModel.Category("Common")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
 		public override WorldWind.GeographicBoundingBox Extents
 		{
 			get
@@ -76,16 +98,19 @@ namespace Dapple.KML
 			}
 		}
 
+		[System.ComponentModel.Browsable(false)]
 		public override bool IsChanged
 		{
 			get { return false; }
 		}
 
+		[System.ComponentModel.Browsable(false)]
 		public override string ServerTypeIconKey
 		{
 			get { return "kml"; }
 		}
 
+		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
 			get { return "kml"; }
@@ -105,7 +130,7 @@ namespace Dapple.KML
 
 		public override string GetURI()
 		{
-			return URLProtocolName + m_oSourceFile.Filename.Replace(Path.DirectorySeparatorChar, '/');
+			return URLProtocolName + m_strInitFilename.Replace(Path.DirectorySeparatorChar, '/');
 		}
 
 		public override string GetCachePath()
@@ -133,7 +158,7 @@ namespace Dapple.KML
 			if (!(obj is KMLLayerBuilder)) return false;
 			KMLLayerBuilder oCastObj = obj as KMLLayerBuilder;
 
-			return this.m_oSourceFile.Filename.Equals(oCastObj.m_oSourceFile.Filename);
+			return this.m_strInitFilename.Equals(oCastObj.m_strInitFilename);
 		}
 
 		public override int GetHashCode()
