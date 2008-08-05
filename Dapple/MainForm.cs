@@ -1726,6 +1726,7 @@ namespace Dapple
 			bob.InitialDirectory = strInitialDirectory;
 			bob.Title = "Select Keyhole File to Open...";
 			bob.Multiselect = false;
+			bob.RestoreDirectory = true;
 
 			if (bob.ShowDialog() == DialogResult.OK && File.Exists(bob.FileName))
 			{
