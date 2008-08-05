@@ -4205,7 +4205,7 @@ namespace Dapple.KML
 		{
 			// --- If we've loaded from a KMZ, delete the KMZ directory ---
 
-			if (m_blLoadedFromKMZ)
+			if (m_blLoadedFromKMZ && Directory.Exists(Path.GetDirectoryName(m_strFilename)))
 			{
 				foreach (String strFile in Directory.GetFiles(Path.GetDirectoryName(m_strFilename)))
 				{

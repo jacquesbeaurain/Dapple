@@ -1699,15 +1699,45 @@ namespace Dapple
 
 		private void c_miOpenKeyhole_Click(object sender, EventArgs e)
 		{
+			String strHistoryFilename = Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), "keyholehistory.cfg");
+
+			String strInitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+			try
+			{
+				if (File.Exists(strHistoryFilename))
+				{
+					String[] oContents = File.ReadAllLines(strHistoryFilename);
+					if (Directory.Exists(oContents[0]))
+					{
+						strInitialDirectory = oContents[0];
+					}
+				}
+			}
+			catch (Exception)
+			{
+				// --- Problem reading last directory, just use My Documents ---
+				strInitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			}
+
 			OpenFileDialog bob = new OpenFileDialog();
 			bob.Filter = "KML/KMZ Files|*.kml;*.kmz";
 			bob.FilterIndex = 1;
-			bob.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			bob.InitialDirectory = strInitialDirectory;
 			bob.Title = "Select Keyhole File to Open...";
 			bob.Multiselect = false;
 
 			if (bob.ShowDialog() == DialogResult.OK && File.Exists(bob.FileName))
 			{
+				try
+				{
+					File.WriteAllText(strHistoryFilename, Path.GetDirectoryName(bob.FileName));
+				}
+				catch (Exception)
+				{
+					// --- Problem saving last directory, just ignore it ---
+				}
+
 				try
 				{
 					Dapple.KML.KMLLayerBuilder oBuilder = new Dapple.KML.KMLLayerBuilder(bob.FileName, WorldWindowSingleton, null);
