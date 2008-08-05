@@ -758,7 +758,7 @@ namespace Dapple
 					}
 					else
 					{
-						iLineY = c_lvLayers.GetItemRect(iInsertPoint).Top;
+						iLineY = c_lvLayers.GetItemRect(iInsertPoint).Top - 1;
 					}
 				}
 				m_ptDropHint1.X = 0;
