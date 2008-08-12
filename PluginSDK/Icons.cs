@@ -235,6 +235,23 @@ namespace WorldWind.Renderable
             }
 		}
 
+		public override byte Opacity
+		{
+			get
+			{
+				return base.Opacity;
+			}
+			set
+			{
+				base.Opacity = value;
+
+				foreach (RenderableObject oChild in m_children)
+				{
+					oChild.Opacity = value;
+				}
+			}
+		}
+
 		public override bool PerformSelectionAction(DrawArgs drawArgs)
         {
             int closestIconDistanceSquared = int.MaxValue;
@@ -290,49 +307,6 @@ namespace WorldWind.Renderable
             // if no other object has handled the selection let the closest icon try
             if (closestIcon != null)
             {
-                // Commented out becuase I might have implemented this correctly at the icon level but the behavior I have
-                // is on a per icon basis.  This code seems to turn on and off all description bubbles when you click on any KML icon
-
-                //if (closestIcon.IsKMLIcon)
-                //{
-                //    try
-                //    {
-                //        // Ashish Datta - Show the description in a bubble instead of just trying to open a URL.
-                //        foreach (Icon r in m_children)
-                //        {
-                //            if (r.DescriptionBubble != null)
-                //            {
-                //                r.IsDescriptionVisible = false;
-                //                r.DescriptionBubble.isVisible = false;
-                //                r.DescriptionBubble.Dispose();
-                //            }
-
-
-                //            if (r.DescriptionBubble != null)
-                //                r.DescriptionBubble.Dispose();
-
-                //            r.DescriptionBubble = new KMLDialog();
-                //            r.DescriptionBubble.Owner = (Form)drawArgs.parentControl.Parent.Parent.Parent;
-
-                //            if (r.IsDescriptionVisible == false)
-                //            {
-                //                r.IsDescriptionVisible = true;
-                //            }
-                //            else
-                //            {
-                //                r.DescriptionBubble.Dispose();
-                //                r.IsDescriptionVisible = false;
-                //            }
-                //        }
-
-                //        return true;
-
-                //    }
-                //    catch (Exception)
-                //    {
-                //    }
-                //}
-
                 return closestIcon.PerformSelectionAction(drawArgs);
             }
 

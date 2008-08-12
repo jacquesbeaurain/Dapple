@@ -12,12 +12,12 @@ namespace Dapple.KML
 		public static RenderableObject CreateKMLLayer(KMLFile oSource, World oWorld, out GeographicBoundingBox oBounds)
 		{
 			oBounds = GeographicBoundingBox.NullBox();
-			RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds, null);
+			RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds, null, null);
 			if (!oBounds.IsValid) oBounds = new GeographicBoundingBox(90.0, -90.0, -180.0, 180.0);
 			return result;
 		}
 
-		private static RenderableObject Construct(String strRelativeDirectory, KMLObject oSource, World oWorld, GeographicBoundingBox oBounds, ProjectedVectorRenderer oPVR)
+		private static RenderableObject Construct(String strRelativeDirectory, KMLObject oSource, World oWorld, GeographicBoundingBox oBounds, ProjectedVectorRenderer oPVR, Icons oIcons)
 		{
 			if (oSource is KMLContainer)
 			{
@@ -29,12 +29,17 @@ namespace Dapple.KML
 					oPVR = new ProjectedVectorRenderer("Polygons and LineStrings", oWorld);
 					result.Add(oPVR);
 				}
+				if (oIcons == null)
+				{
+					oIcons = new Icons("Icons");
+					result.Add(oIcons);
+				}
 
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
 					if (oCastSource[count].Visibility == true)
 					{
-						RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds, oPVR);
+						RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds, oPVR, oIcons);
 						if (oLayer != null)
 						{
 							result.Add(oLayer);
@@ -46,7 +51,7 @@ namespace Dapple.KML
 			else if (oSource is KMLPlacemark)
 			{
 				KMLPlacemark oCastSource = oSource as KMLPlacemark;
-				return Construct(strRelativeDirectory, oCastSource.Geometry, oWorld, oBounds, oPVR);
+				return Construct(strRelativeDirectory, oCastSource.Geometry, oWorld, oBounds, oPVR, oIcons);
 			}
 			else if (oSource is KMLMultiGeometry)
 			{
@@ -54,7 +59,7 @@ namespace Dapple.KML
 				KMLRenderableObjectList result = new KMLRenderableObjectList("MultiGeometry");
 				for (int count = 0; count < oCastSource.Count; count++)
 				{
-					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds, oPVR);
+					RenderableObject oLayer = Construct(strRelativeDirectory, oCastSource[count], oWorld, oBounds, oPVR, oIcons);
 					if (oLayer != null)
 					{
 						result.Add(oLayer);
@@ -72,9 +77,10 @@ namespace Dapple.KML
 				result.IsRotated = oCastSource.Style.NormalStyle.IconStyle.Heading != 0.0f;
 				result.NormalColor = oCastSource.Style.NormalStyle.LabelStyle.Color;
 				result.HotColor = oCastSource.Style.HighlightStyle.LabelStyle.Color;
+				oIcons.Add(result);
 
 				oBounds.Union(oCastSource.Coordinates.Longitude, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Altitude);
-				return result;
+				return null;
 			}
 			else if (oSource is KMLPolygon)
 			{
