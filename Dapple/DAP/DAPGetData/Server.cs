@@ -640,7 +640,7 @@ namespace Geosoft.GX.DAPGetData
          // --- remove the http:// from the directory name ---
 
          strDir = m_strUrl.Substring(7);
-         foreach (char c in System.IO.Path.GetInvalidPathChars())
+         foreach (char c in System.IO.Path.GetInvalidFileNameChars())
          {
 			 strDir = strDir.Replace(c, '_');
          }

@@ -348,12 +348,12 @@ namespace Dapple.LayerGeneration
 
       public override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServer.Url.Replace("http://", "")), m_hDataSet.GetHashCode().ToString());
+         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), m_hDataSet.GetHashCode().ToString());
       }
 
 		private String GetStyleSheetCachePath()
 		{
-			return Path.Combine(Path.Combine(m_strCacheRoot, StylesheetCacheSubDir), m_oServer.Url.Replace("http://", ""));
+			return Path.Combine(Path.Combine(m_strCacheRoot, StylesheetCacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", "")));
 		}
 
       protected override void CleanUpLayer(bool bFinal)

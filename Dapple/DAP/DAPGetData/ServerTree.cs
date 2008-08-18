@@ -139,16 +139,19 @@ namespace Geosoft.GX.DAPGetData
 
 		protected void AddPersonalDAPServer()
 		{
-			m_oPersonalDAPServer = new Server(PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
-			if (m_oPersonalDAPServer.Status != Server.ServerStatus.OffLine)
+			foreach (System.Diagnostics.Process oProcess in System.Diagnostics.Process.GetProcesses())
 			{
-				m_oPersonalDAPServer.Name = "Personal DAP";
-				AddDAPServer(m_oPersonalDAPServer);
+				if (string.Compare(oProcess.ProcessName, "geosoft.dap.server", true) == 0)
+				{
+					// --- personal dap server is running, add it to the list ---
+
+					m_oPersonalDAPServer = new Server(PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
+					AddDAPServer(m_oPersonalDAPServer);
+					break;
+				}
 			}
-			else
-			{
-				m_oPersonalDAPServer = null;
-			}
+
+			m_oPersonalDAPServer = null;
 		}
 
       protected override void Dispose(bool disposing)

@@ -2718,15 +2718,13 @@ namespace Dapple
 					}
 				}
 			}
-			finally { }
-			//TODO: uncomment this.
-			/*catch (Exception e)
+			catch (Exception e)
 			{
 				if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 				{
 					return OpenView(Path.Combine(Settings.DataPath, DefaultView), true, true);
 				}
-			}*/
+			}
 
 			if (bOldView)
 				MessageBox.Show(this, "The view " + filename + " contained some layers from an earlier version\nwhich could not be retrieved. We apologize for the inconvenience.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);

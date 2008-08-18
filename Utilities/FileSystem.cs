@@ -148,10 +148,6 @@ namespace Utility
 			{
 				result = result.Replace(c, '_');
 			}
-			foreach (Char c in Path.GetInvalidPathChars())
-			{
-				result = result.Replace(c, '_');
-			}
 			return result;
 		}
    }
