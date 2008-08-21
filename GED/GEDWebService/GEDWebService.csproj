@@ -55,11 +55,9 @@
     </Compile>
     <Compile Include="Contract.cs" />
     <Compile Include="Implementation.cs" />
+    <Compile Include="LayerInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TileCache.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TileKmlGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
