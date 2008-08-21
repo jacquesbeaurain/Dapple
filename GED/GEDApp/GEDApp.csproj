@@ -33,9 +33,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GEdapxmlclient, Version=12.1.0.3524, Culture=neutral, PublicKeyToken=25af711bae526fce, processorArchitecture=MSIL">
+    <Reference Include="dapxmlclient, Version=12.1.0.3524, Culture=neutral, PublicKeyToken=25af711bae526fce, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExternalAssemblies\GEdapxmlclient.dll</HintPath>
+      <HintPath>..\ExternalAssemblies\dapxmlclient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
