@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GED.App.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SearchServer" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://dapplesearch.geosoft.com/</Value>
+    </Setting>
+    <Setting Name="UpgradeSettingsRequired" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CustomCachePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="KmlFormat" Type="GED.App.Core.RootKmlFormat" Scope="User">
+      <Value Profile="(Default)">SingleImage</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

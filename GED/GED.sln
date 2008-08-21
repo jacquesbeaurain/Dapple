@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEDCore", "GEDCore\GEDCore.csproj", "{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEDWebService", "GEDWebService\GEDWebService.csproj", "{764C9F34-BCB6-4A1E-9766-2D48382CA562}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GEDApp", "GEDApp\GEDApp.csproj", "{B52536E0-D3D3-47A3-9DC5-8D628864CA33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{764C9F34-BCB6-4A1E-9766-2D48382CA562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{764C9F34-BCB6-4A1E-9766-2D48382CA562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{764C9F34-BCB6-4A1E-9766-2D48382CA562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{764C9F34-BCB6-4A1E-9766-2D48382CA562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B52536E0-D3D3-47A3-9DC5-8D628864CA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B52536E0-D3D3-47A3-9DC5-8D628864CA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B52536E0-D3D3-47A3-9DC5-8D628864CA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B52536E0-D3D3-47A3-9DC5-8D628864CA33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
