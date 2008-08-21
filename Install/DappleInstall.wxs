@@ -18,7 +18,7 @@
               </RegistryKey>
               <Shortcut Id="NewShortcut1" Directory="newfolder1" Name="Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[DappleShortcut]" />
               <Shortcut Id="NewShortcut2" Directory="DesktopFolder" Name="Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[DappleShortcut]" />
-				  <Shortcut Id="NewShortcut3" Directory="newfolder1" Name="Google Earth Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[GEDappleShortcut]" />
+				  <Shortcut Id="NewShortcut3" Directory="newfolder1" Name="Google Earth Dapple" WorkingDirectory="[INSTALLDIR]\GED" Icon="dapple_icon.ico" Target="[GEDappleShortcut]" />
               <RemoveFolder Directory="newfolder1" On="uninstall" Id="Remove_newfolder1" />
             </Component>
           </Directory>
