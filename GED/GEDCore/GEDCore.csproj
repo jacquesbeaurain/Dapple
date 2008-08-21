@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dapxmlclient, Version=12.1.0.3524, Culture=neutral, PublicKeyToken=25af711bae526fce, processorArchitecture=MSIL">
+    <Reference Include="GEdapxmlclient, Version=12.1.0.3524, Culture=neutral, PublicKeyToken=25af711bae526fce, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExternalAssemblies\dapxmlclient.dll</HintPath>
+      <HintPath>..\ExternalAssemblies\GEdapxmlclient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

@@ -59,6 +59,9 @@
 				<File Id="GEDapple.exe" Name="GEDapple.exe" Source="..\GED\GEDApp\bin\Release\GEDapple.exe" Vital="yes" KeyPath="yes" />
 				<File Id="GEDapple.exe.config" Name="GEDapple.exe.config" Source="..\GED\GEDApp\bin\Release\GEDapple.exe.config" Vital="yes" />
 			</Component>
+			<Component Id="GEdapxmlclient.dll" Guid="7da3a886-6a6d-4778-a313-654ba920d75a">
+				<File Id="GEdapxmlclient.dll" Name="GEdapxmlclient.dll" Source="..\GED\ExternalAssemblies\GEdapxmlclient.dll" Vital="yes" KeyPath="yes" />
+			</Component>
 			<Component Id="GEDCore.dll" Guid="ecfa989f-a236-4892-8764-1f3155b4f6ca">
 				<File Id="GEDCore.dll" Name="GEDCore.dll" Source="..\GED\GEDApp\bin\Release\GEDCore.dll" Vital="yes" KeyPath="yes" />
 			</Component>
