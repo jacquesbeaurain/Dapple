@@ -881,32 +881,25 @@ namespace Geosoft.Dap.Xml
 		/// <summary>
 		/// Parse the image response.
 		/// </summary>
-		/// <param name="oReader">The GeosoftXML response</param>
+		/// <param name="hDocument">The GeosoftXML response</param>
 		/// <param name="oBitmap">The image</param>
-		public void Tile(System.Xml.XmlReader oReader, out System.Drawing.Bitmap oBitmap)
+		public void Tile(System.Xml.XmlDocument hDocument, out System.Drawing.Bitmap oBitmap)
 		{
 			System.IO.MemoryStream oMemStream = new System.IO.MemoryStream();
 			oBitmap = null;
 
 			try
 			{
+				System.Xml.XmlElement hNode = hDocument.SelectSingleNode("/" + Constant.Tag.GEO_XML_TAG + "/" + Constant.Tag.RESPONSE_TAG + "/" + Constant.Tag.GET_TILE_TAG) as System.Xml.XmlElement;
 
-				// --- find the dataset edition element ---
-				if (oReader.ReadToFollowing(Constant.Tag.GET_TILE_TAG))
-				{
-					byte[] bImage = new byte[4096];
-					int iCount = 0;
+				if (hNode == null) throw new DapException("No tile found");
 
-					do
-					{
-						iCount = oReader.ReadContentAsBase64(bImage, 0, 4096);
-						if (iCount > 0)
-							oMemStream.Write(bImage, 0, iCount);
-					} while (iCount > 0);
+				String s = hNode.InnerText;
+				byte[] bImage = Convert.FromBase64String(s);
 
-					oMemStream.Seek(0, System.IO.SeekOrigin.Begin);
-					oBitmap = new System.Drawing.Bitmap(oMemStream);
-				}
+				System.IO.MemoryStream bob = new System.IO.MemoryStream();
+				bob.Write(bImage, 0, bImage.Length);
+				oBitmap = new System.Drawing.Bitmap(bob);
 			}
 			catch (Exception e)
 			{

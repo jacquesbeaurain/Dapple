@@ -116,9 +116,21 @@ namespace Geosoft.Dap
 				return str;
 			}
 		}
+
 		#endregion
 
 		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public Command()
+		{
+			m_hParse = new Parse();
+			m_hEncodeRequest = new EncodeRequest(Version.GEOSOFT_XML_1_0);
+			m_oCommunication = new Communication(false, false);
+		}
+
 		/// <summary>
 		/// Default constructor
 		/// </summary>
@@ -135,6 +147,19 @@ namespace Geosoft.Dap
 		/// </summary>
 		/// <param name="szUrl"></param>
 		/// <param name="bTask"></param>
+		public Command(String szUrl, bool bTask)
+		{
+			m_strUrl = szUrl;
+			m_hParse = new Parse(szUrl);
+			m_hEncodeRequest = new EncodeRequest(Version.GEOSOFT_XML_1_0);
+			m_oCommunication = new Communication(bTask, false);
+		}
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		/// <param name="szUrl"></param>
+		/// <param name="bTask"></param>
 		/// <param name="iTimeout"></param>
 		public Command(String szUrl, bool bTask, int iTimeout)
 		{
@@ -142,6 +167,20 @@ namespace Geosoft.Dap
 			m_hParse = new Parse(szUrl);
 			m_hEncodeRequest = new EncodeRequest(Version.GEOSOFT_XML_1_0);
 			m_oCommunication = new Communication(bTask, false, iTimeout);
+		}
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		/// <param name="szUrl"></param>
+		/// <param name="bTask"></param>
+		/// <param name="eVersion"></param>
+		public Command(String szUrl, bool bTask, Version eVersion)
+		{
+			m_strUrl = szUrl;
+			m_hParse = new Parse(szUrl);
+			m_hEncodeRequest = new EncodeRequest(eVersion);
+			m_oCommunication = new Communication(bTask, false);
 		}
 
 		/// <summary>
@@ -167,6 +206,22 @@ namespace Geosoft.Dap
 		/// <param name="eVersion"></param>
 		/// <param name="bSecure"></param>
 		/// <param name="strToken"></param>
+		public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strToken)
+		{
+			m_strUrl = szUrl;
+			m_hParse = new Parse(szUrl);
+			m_hEncodeRequest = new EncodeRequest(eVersion, strToken);
+			m_oCommunication = new Communication(bTask, bSecure);
+		}
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		/// <param name="szUrl"></param>
+		/// <param name="bTask"></param>
+		/// <param name="eVersion"></param>
+		/// <param name="bSecure"></param>
+		/// <param name="strToken"></param>
 		/// <param name="iTimeout"></param>
 		public Command(String szUrl, bool bTask, Version eVersion, bool bSecure, string strToken, int iTimeout)
 		{
@@ -175,6 +230,7 @@ namespace Geosoft.Dap
 			m_hEncodeRequest = new EncodeRequest(eVersion, strToken);
 			m_oCommunication = new Communication(bTask, bSecure, iTimeout);
 		}
+
 		#endregion
 
 		#region Member Functions
@@ -208,6 +264,26 @@ namespace Geosoft.Dap
 		{
 			m_oLock.AcquireWriterLock(-1);
 			m_oCommunication.Secure = bSecure;
+			m_oLock.ReleaseWriterLock();
+		}
+
+		/// <summary>
+		/// Configure a DAP connection to record/playback a session using canned data.  Useful for debugging.
+		/// </summary>
+		/// <param name="oCan">The data can to connect to.</param>
+		/// <param name="blReadFromCan">True if data should be read from the can, false if it should be written to the can after reading.</param>
+		public void AttachResponseCan(System.Collections.Generic.Dictionary<int, System.IO.MemoryStream> oCan, bool blReadFromCan)
+		{
+			m_oLock.AcquireWriterLock(-1);
+			m_oCommunication.ResponseCan = oCan;
+			if (blReadFromCan)
+			{
+				m_oCommunication.ReadFromCan = true;
+			}
+			else
+			{
+				m_oCommunication.WritetoCan = true;
+			}
 			m_oLock.ReleaseWriterLock();
 		}
 
@@ -1441,7 +1517,7 @@ namespace Geosoft.Dap
 		{
 			string szUrl;
 			System.Xml.XmlDocument oRequestDocument;
-			System.Xml.XmlReader oResponse = null;
+			System.Xml.XmlDocument oResponse = null;
 			System.Drawing.Bitmap oBitmap = null;
 
 			try
@@ -1450,14 +1526,13 @@ namespace Geosoft.Dap
 				szUrl = CreateUrl(Constant.Request.IMAGE);
 
 				oRequestDocument = m_hEncodeRequest.GetTile(null, oDataSet, iLevel, iRow, iColumn);
-				oResponse = m_oCommunication.SendHttpEx(szUrl, oRequestDocument, progressCallBack);
+				oResponse = m_oCommunication.Send(szUrl, oRequestDocument, progressCallBack);
 
 				if (oResponse != null)
 					m_hParse.Tile(oResponse, out oBitmap);
 			}
 			finally
 			{
-				if (oResponse != null) oResponse.Close();
 				m_oLock.ReleaseReaderLock();
 			}
 			return oBitmap;
@@ -2320,7 +2395,6 @@ namespace Geosoft.Dap
 			return hResponseDocument;
 		}
 
-
 		/// <summary>
 		/// Get the extracted data
 		/// </summary>
@@ -2748,7 +2822,6 @@ namespace Geosoft.Dap
 			}
 			return hResponseDocument;
 		}
-
 
 		/// <summary>
 		/// Get the disclaimer GeosoftXML for this dataset

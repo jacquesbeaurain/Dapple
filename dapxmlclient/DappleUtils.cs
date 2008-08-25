@@ -13,11 +13,10 @@ namespace Geosoft.Dap.Common
 		/// Resolves resolution in degrees
 		/// </summary>
 		/// <returns>resolution in degrees</returns>
-		public static double GetResolution(Command oDapCommand, DataSet oDataset)
+		public static double GetResolution(System.Xml.XmlDocument oMeta, DataSet oDataset)
 		{
 			try
 			{
-				System.Xml.XmlDocument oMeta = oDapCommand.GetMetaData(oDataset);
 				System.Xml.XmlNode oNodeRes = oMeta.SelectSingleNode("//meta/CLASS/CLASS/ATTRIBUTE[@name='SpatialResolution']");
 				if (oNodeRes != null)
 				{
@@ -40,6 +39,22 @@ namespace Geosoft.Dap.Common
 				return 0.0;
 			}
 			return 0.0;
+		}
+		/// <summary>
+		/// Resolves resolution in degrees
+		/// </summary>
+		/// <returns>resolution in degrees</returns>
+		public static double GetResolution(Command oDapCommand, DataSet oDataset)
+		{
+			try
+			{
+				System.Xml.XmlDocument oMeta = oDapCommand.GetMetaData(oDataset);
+				return (GetResolution(oMeta, oDataset));
+			}
+			catch
+			{
+				return 0.0;
+			}
 		}
 
 		/// <summary>
@@ -72,12 +87,12 @@ namespace Geosoft.Dap.Common
 		/// Calculate the default number of levels for this dataset
 		/// </summary>
 		/// <returns></returns>
-		public static int Levels(Command oDapCommand, DataSet oDataset)
+		public static int Levels(System.Xml.XmlDocument oMeta, DataSet oDataset)
 		{
 			int iLevels = 15;
 
 			// Determine the needed levels (function of tile size and resolution if available)
-			double dRes = GetResolution(oDapCommand, oDataset);
+			double dRes = GetResolution(oMeta, oDataset);
 			if (dRes > 0)
 			{
 				double dTileSize = LevelZeroTileSize(oDataset);
@@ -89,6 +104,23 @@ namespace Geosoft.Dap.Common
 				}
 			}
 			return iLevels;
+		}
+
+		/// <summary>
+		/// Calculate the default number of levels for this dataset
+		/// </summary>
+		/// <returns></returns>
+		public static int Levels(Command oDapCommand, DataSet oDataset)
+		{
+			try
+			{
+				System.Xml.XmlDocument oMeta = oDapCommand.GetMetaData(oDataset);
+				return (Levels(oMeta, oDataset));
+			}
+			catch
+			{
+				return 1;
+			}
 		}
 
 		/// <summary>

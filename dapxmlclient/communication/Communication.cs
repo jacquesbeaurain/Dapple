@@ -230,12 +230,16 @@ namespace Geosoft.Dap.Xml
 	{
 		#region Constants
 		const int BUFFER_SIZE = 2048;
+		const int DEFAULT_TIMEOUT = 15000;
 		#endregion
 
 		#region Member Variables
 		private bool m_bTask;
 		private bool m_bSecure;
 		private int m_iTimeout;
+		private bool m_bReadFromCan = false;
+		private bool m_bWriteToCan = false;
+		private System.Collections.Generic.Dictionary<int, System.IO.MemoryStream> m_oResponseCan = null;
 		#endregion
 
 		#region Properties
@@ -258,6 +262,47 @@ namespace Geosoft.Dap.Xml
 		}
 
 		/// <summary>
+		/// Get/Set the can used for canned responses.
+		/// </summary>
+		public System.Collections.Generic.Dictionary<int, System.IO.MemoryStream> ResponseCan
+		{
+			get { return m_oResponseCan; }
+			set { m_oResponseCan = value; }
+		}
+
+		/// <summary>
+		/// Get/Set whether to read http responses from the can instead of from the internet.
+		/// </summary>
+		public bool ReadFromCan
+		{
+			get { return m_bReadFromCan; }
+			set
+			{
+				if (m_bWriteToCan && value)
+					throw new InvalidOperationException("Cannot enable reading from the can while writing to the can is enabled.");
+				if (m_oResponseCan == null)
+					throw new InvalidOperationException("Cannot enable reading from the can before the can is initialized.  Assign a non-null value to ResponseCan first.");
+				m_bReadFromCan = value;
+			}
+		}
+
+		/// <summary>
+		/// Get/Set whether to save http responses from the internet to the response can.
+		/// </summary>
+		public bool WritetoCan
+		{
+			get { return m_bWriteToCan; }
+			set
+			{
+				if (m_bReadFromCan && value)
+					throw new InvalidOperationException("Cannot enable writing to the can while reading from the can is enabled.");
+				if (m_oResponseCan == null)
+					throw new InvalidOperationException("Cannot enable writing to the can before the can is initialized.  Assign a non-null value to ResponseCan first.");
+				m_bWriteToCan = value;
+			}
+		}
+
+		/// <summary>
 		/// The number of milliseconds before a connection times out.
 		/// </summary>
 		public int Timeout
@@ -267,6 +312,16 @@ namespace Geosoft.Dap.Xml
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		/// <param name="bTask"></param>
+		/// <param name="bSecure"></param>
+		public Communication(bool bTask, bool bSecure)
+			: this(bTask, bSecure, DEFAULT_TIMEOUT)
+		{
+		}
 
 		/// <summary>
 		/// Default constructor
@@ -290,15 +345,39 @@ namespace Geosoft.Dap.Xml
 		/// <returns></returns>
 		public System.Xml.XmlDocument Send(string szUrl, System.Xml.XmlDocument hRequestDocument, UpdateProgessCallback progressCallBack)
 		{
+			System.Xml.XmlDocument result = null;
 #if !DAPPLE
-         if (m_bTask)
-         {
-            return SendTask(szUrl, hRequestDocument);
-         } 
+			if (m_bTask)
+			{
+				result = SendTask(szUrl, hRequestDocument);
+			}
+			else
 #endif
-			return SendHttp(szUrl, hRequestDocument, progressCallBack);
+			{
+				result = SendHttp(szUrl, hRequestDocument, progressCallBack);
+			}
+
+			CheckForError(result);
+
+			return result;
 		}
 
+		/// <summary>
+		/// Check a response XML document to see if it contains any error messages.
+		/// </summary>
+		/// <param name="oDoc"></param>
+		private void CheckForError(System.Xml.XmlDocument oDoc)
+		{
+			// --- search for an error ---
+
+			System.Xml.XmlNodeList hNodeList = oDoc.SelectNodes("//" + Geosoft.Dap.Xml.Common.Constant.Tag.ERROR_TAG);
+			if (hNodeList.Count >= 1)
+			{
+				System.Xml.XmlElement hElement = hNodeList[0] as System.Xml.XmlElement;
+
+				throw new DapException(hElement.InnerText);
+			}
+		}
 
 		/// <summary>
 		/// Send an xml request on the wire, get the response and parse it into an XML reader
@@ -311,87 +390,99 @@ namespace Geosoft.Dap.Xml
 		public System.Xml.XmlReader SendEx(string szUrl, System.Xml.XmlDocument hRequestDocument, string strResponseFile, UpdateProgessCallback progressCallBack)
 		{
 #if !DAPPLE
-         if (m_bTask)
-         {
-            return SendTaskEx(szUrl, hRequestDocument, strResponseFile);
-         }
+			if (m_bTask)
+			{
+				return SendTaskEx(szUrl, hRequestDocument, strResponseFile);
+			}
 #endif
 			return SendHttpEx(szUrl, hRequestDocument, progressCallBack);
 		}
 
 #if !DAPPLE
-      /// <summary>
-      /// Send an xml request through task
-      /// </summary>
-      /// <param name="strUrl"></param>
-      /// <param name="oRequestDocument"></param>
-      /// <param name="strResponseFile"></param>
-      /// <returns></returns>
-      protected void SendTaskInternal(string strUrl, System.Xml.XmlDocument oRequestDocument, string strResponseFile)
-      {
-         Geosoft.GXNet.CDAP hDAP = null;
+		/// <summary>
+		/// Send an xml request through task
+		/// </summary>
+		/// <param name="strUrl"></param>
+		/// <param name="oRequestDocument"></param>
+		/// <param name="strResponseFile"></param>
+		/// <returns></returns>
+		protected void SendTaskInternal(string strUrl, System.Xml.XmlDocument oRequestDocument, string strResponseFile)
+		{
+			Geosoft.GXNet.CDAP hDAP = null;
 
-         try
-         {
-            string strXML;
+			try
+			{
+				string strXML;
 
-            // --- remove the /ois.dll?geosoft_xml from the url ---
+				// --- remove the /ois.dll?geosoft_xml from the url ---
 
-            int iIndex = strUrl.LastIndexOf("/");
-            strUrl = strUrl.Substring(0, iIndex);
+				int iIndex = strUrl.LastIndexOf("/");
+				strUrl = strUrl.Substring(0, iIndex);
 
-            hDAP = Geosoft.GXNet.CDAP.Create(strUrl, "Send XML Request");
-            strXML = oRequestDocument.InnerXml;
+				hDAP = Geosoft.GXNet.CDAP.Create(strUrl, "Send XML Request");
+				strXML = oRequestDocument.InnerXml;
 
-            hDAP.sExecuteGeosoftXML(strXML, strXML.Length, strResponseFile);
-         }
-         finally
-         {
-            if (hDAP != null) hDAP.Dispose();
-         }         
-      }
+				if (hDAP.sExecuteGeosoftXML(strXML, strXML.Length, strResponseFile) != 0)
+				{
+					int iNumErrors = Geosoft.GXNet.CSYS.iNumErrorsAP();
 
-      /// <summary>
-      /// Send an xml request through task
-      /// </summary>
-      /// <param name="szUrl"></param>
-      /// <param name="hRequestDocument"></param>
-      /// <returns></returns>
-      protected System.Xml.XmlDocument SendTask(string szUrl, System.Xml.XmlDocument hRequestDocument)
-      {
-         string   strXMLResponseFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-         System.Xml.XmlDocument hResponseDocument = null;
+					String[] errStrings = new String[iNumErrors];
+					for (int count = 0; count < iNumErrors; count++)
+					{
+						Geosoft.GXNet.CSYS.IGetErrorMessageAP(count, ref errStrings[count]);
+					}
+					Geosoft.GXNet.CSYS.iClearErrAP();
 
-         try
-         {            
-            SendTaskInternal(szUrl, hRequestDocument, strXMLResponseFile);
-            
-            hResponseDocument = new System.Xml.XmlDocument();
-            hResponseDocument.Load(strXMLResponseFile);               
-         }
-         finally
-         {
-            System.IO.File.Delete(strXMLResponseFile);
-         }  
-         return hResponseDocument;    
-      }
+					throw new DapException(errStrings[0]);
+				}
+			}
+			finally
+			{
+				if (hDAP != null) hDAP.Dispose();
+			}
+		}
 
-      /// <summary>
-      /// Send an xml request through task
-      /// </summary>
-      /// <param name="szUrl"></param>
-      /// <param name="hRequestDocument"></param>
-      /// <param name="strResponseFile"></param>
-      /// <returns></returns>
-      protected System.Xml.XmlReader SendTaskEx(string szUrl, System.Xml.XmlDocument hRequestDocument, string strResponseFile)
-      {
-         System.Xml.XmlReader oResponse = null;
+		/// <summary>
+		/// Send an xml request through task
+		/// </summary>
+		/// <param name="szUrl"></param>
+		/// <param name="hRequestDocument"></param>
+		/// <returns></returns>
+		protected System.Xml.XmlDocument SendTask(string szUrl, System.Xml.XmlDocument hRequestDocument)
+		{
+			string strXMLResponseFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			System.Xml.XmlDocument hResponseDocument = null;
 
-         SendTaskInternal(szUrl, hRequestDocument, strResponseFile);
-         oResponse = System.Xml.XmlReader.Create(strResponseFile);
+			try
+			{
+				SendTaskInternal(szUrl, hRequestDocument, strXMLResponseFile);
 
-         return oResponse;
-      }
+				hResponseDocument = new System.Xml.XmlDocument();
+				hResponseDocument.Load(strXMLResponseFile);
+			}
+			finally
+			{
+				System.IO.File.Delete(strXMLResponseFile);
+			}
+			return hResponseDocument;
+		}
+
+		/// <summary>
+		/// Send an xml request through task
+		/// </summary>
+		/// <param name="szUrl"></param>
+		/// <param name="hRequestDocument"></param>
+		/// <param name="strResponseFile"></param>
+		/// <returns></returns>
+		protected System.Xml.XmlReader SendTaskEx(string szUrl, System.Xml.XmlDocument hRequestDocument, string strResponseFile)
+		{
+			System.Xml.XmlReader oResponse = null;
+
+			SendTaskInternal(szUrl, hRequestDocument, strResponseFile);
+			oResponse = System.Xml.XmlReader.Create(strResponseFile);
+
+			return oResponse;
+		}
 
 #endif
 		/// <summary>
@@ -403,6 +494,37 @@ namespace Geosoft.Dap.Xml
 		/// <returns></returns>
 		protected System.Xml.XmlReader SendHttpInternal(string szUrl, System.Xml.XmlDocument oRequestDocument, UpdateProgessCallback progressCallBack)
 		{
+			System.Xml.XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
+			oSettings.IgnoreWhitespace = true;
+			int iCanKey = 0;
+			if (m_bReadFromCan || m_bWriteToCan)
+				iCanKey = szUrl.GetHashCode() ^ oRequestDocument.OuterXml.GetHashCode();
+
+			// Get responses from the can if available
+			if (m_bReadFromCan)
+			{
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine("Loading can entry " + iCanKey.ToString("x"));
+#endif
+				if (m_oResponseCan.ContainsKey(iCanKey))
+				{
+					MemoryStream oBackingStore = new MemoryStream();
+					lock (((System.Collections.ICollection)m_oResponseCan).SyncRoot)
+					{
+						MemoryStream oCannedStore = m_oResponseCan[iCanKey];
+						oCannedStore.WriteTo(oBackingStore);
+						oCannedStore.Position = 0;
+						oBackingStore.Position = 0;
+					}
+
+					return System.Xml.XmlReader.Create(oBackingStore, oSettings);
+				}
+				else
+				{
+					throw new WebException("Response can does not contain this datum", WebExceptionStatus.ConnectFailure);
+				}
+			}
+
 			byte[] byte1;
 
 			System.IO.StringWriter hRequest = null;
@@ -453,7 +575,7 @@ namespace Geosoft.Dap.Xml
 				else
 					cHttpWReq.ProtocolVersion = HttpVersion.Version10;
 #else
-            cHttpWReq.ProtocolVersion = HttpVersion.Version11;
+				cHttpWReq.ProtocolVersion = HttpVersion.Version11;
 #endif
 				cHttpWReq.KeepAlive = false;
 				cHttpWReq.ContentType = "application/x-www-form-urlencoded";
@@ -476,9 +598,24 @@ namespace Geosoft.Dap.Xml
 
 					cHttpWResp = (System.Net.HttpWebResponse)cHttpWReq.GetResponse();
 
-					System.Xml.XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
-					oSettings.IgnoreWhitespace = true;
-					oResponseXmlStream = System.Xml.XmlReader.Create(cHttpWResp.GetResponseStream(), oSettings);
+					if (m_bWriteToCan)
+					{
+#if DEBUG
+						System.Diagnostics.Debug.WriteLine("Saving can entry " + iCanKey.ToString("x"));
+#endif
+						MemoryStream oCannedData = bufferResponseStream(cHttpWResp.GetResponseStream());
+						MemoryStream oResponseBackingStore = new MemoryStream();
+						oCannedData.WriteTo(oResponseBackingStore);
+						oCannedData.Position = 0;
+						oResponseBackingStore.Position = 0;
+						oResponseXmlStream = System.Xml.XmlReader.Create(oResponseBackingStore, oSettings);
+
+						m_oResponseCan[iCanKey] = oCannedData;
+					}
+					else
+					{
+						oResponseXmlStream = System.Xml.XmlReader.Create(cHttpWResp.GetResponseStream(), oSettings);
+					}
 				}
 				else
 				{
@@ -495,7 +632,31 @@ namespace Geosoft.Dap.Xml
 						throw dl.excepted;
 
 					MemoryStream memStrm = new MemoryStream(dl.downloadedData);
-					oResponseXmlStream = System.Xml.XmlReader.Create(memStrm);
+
+					if (m_bWriteToCan)
+					{
+#if DEBUG
+						System.Diagnostics.Debug.WriteLine("Saving can entry " + iCanKey.ToString("x"));
+#endif
+						MemoryStream oCannedData = new MemoryStream();
+						memStrm.WriteTo(oCannedData);
+						oCannedData.Position = 0;
+						memStrm.Position = 0;
+						oResponseXmlStream = System.Xml.XmlReader.Create(memStrm, oSettings);
+
+						lock (((System.Collections.ICollection)m_oResponseCan).SyncRoot)
+						{
+#if DEBUG
+							if (m_oResponseCan.ContainsKey(iCanKey))
+								System.Diagnostics.Debug.WriteLine("Duplicate can key detected");
+#endif
+							m_oResponseCan[iCanKey] = oCannedData;
+						}
+					}
+					else
+					{
+						oResponseXmlStream = System.Xml.XmlReader.Create(memStrm, oSettings);
+					}
 				}
 			}
 			catch (Exception e)
@@ -504,6 +665,25 @@ namespace Geosoft.Dap.Xml
 				throw e;
 			}
 			return oResponseXmlStream;
+		}
+
+		/// <summary>
+		/// Buffer a stream to a MemoryStream.
+		/// </summary>
+		/// <param name="oToBuffer"></param>
+		/// <returns></returns>
+		public static MemoryStream bufferResponseStream(Stream oToBuffer)
+		{
+			MemoryStream result = new MemoryStream();
+			int bufferSize = 4096;
+			byte[] buffer = new byte[bufferSize];
+			int bytesRead;
+			while ((bytesRead = oToBuffer.Read(buffer, 0, bufferSize)) != 0)
+			{
+				result.Write(buffer, 0, bytesRead);
+			}
+			result.Position = 0;
+			return result;
 		}
 
 		/// <summary>
@@ -530,17 +710,6 @@ namespace Geosoft.Dap.Xml
 
 				hResponseDocument = new System.Xml.XmlDocument();
 				hResponseDocument.Load(oResponse);
-
-
-				// --- search for an error ---
-
-				System.Xml.XmlNodeList hNodeList = hResponseDocument.SelectNodes("//" + Geosoft.Dap.Xml.Common.Constant.Tag.ERROR_TAG);
-				if (hNodeList.Count >= 1)
-				{
-					System.Xml.XmlNode hNode = hNodeList[0];
-
-					throw new DapException(hNode.InnerText);
-				}
 			}
 			catch (Exception e)
 			{
