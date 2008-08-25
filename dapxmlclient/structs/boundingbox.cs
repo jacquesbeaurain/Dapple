@@ -209,6 +209,27 @@ namespace Geosoft.Dap.Common
 				return true;
 			return false;
 		}
+
+		/// <summary>
+		/// Check to see if two BoundingBoxes intersect.
+		/// </summary>
+		/// <param name="other">The BoundingBox to test against this one.</param>
+		/// <returns>True if there is some overlap of the two BoundingBoxes, false otherwise.</returns>
+		public bool Intersects(BoundingBox other)
+		{
+			if (other.MinY >= this.MaxY ||
+				other.MaxY <= this.MinY ||
+				other.MinX >= this.MaxX ||
+				other.MaxX <= this.MinX)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
 		#endregion
 
 		#region Overrides

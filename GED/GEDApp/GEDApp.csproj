@@ -33,10 +33,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dapxmlclient, Version=12.1.0.3524, Culture=neutral, PublicKeyToken=25af711bae526fce, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExternalAssemblies\dapxmlclient.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -156,6 +152,10 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\dapxmlclient\dapxmlclient.csproj">
+      <Project>{9AAC9C17-33E3-4DBF-8F50-2EBFD678FC80}</Project>
+      <Name>dapxmlclient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GEDCore\GEDCore.csproj">
       <Project>{F18236CD-E6A0-4D4F-96A8-4CB58F3E9540}</Project>
       <Name>GEDCore</Name>
