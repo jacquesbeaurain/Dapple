@@ -27,7 +27,7 @@ namespace GEDCore
 			if (iLevel < 0) throw new ArgumentException("Level must be >= 0", "iLevel");
 			m_iLevel = iLevel;
 
-			while (iColumn > NumColumns) iColumn -= NumColumns;
+			while (iColumn >= NumColumns) iColumn -= NumColumns;
 			while (iColumn < 0) iColumn += NumColumns;
 			m_iColumn = iColumn;
 
