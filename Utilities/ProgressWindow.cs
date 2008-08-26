@@ -117,6 +117,8 @@ namespace MWA.Progress
 		/// </summary>
 		public void End()
 		{
+			initEvent.WaitOne();
+
 			if( requiresClose )
 			{
 				Invoke( new MethodInvoker( DoEnd ) );

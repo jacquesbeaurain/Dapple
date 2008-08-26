@@ -25,6 +25,8 @@ namespace Utility
 
       public static void DeleteFolderGUI(IWin32Window parent, string strFolder, string strTitle)
       {
+			if (!Directory.Exists(strFolder)) return;
+
          ProgressInfo pi = new ProgressInfo();
          pi.progress = new ProgressWindow();
          pi.strOrigFolder = pi.strFolder = strFolder;
