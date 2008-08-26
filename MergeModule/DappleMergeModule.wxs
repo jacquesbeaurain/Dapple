@@ -55,6 +55,19 @@
         <Component Id="Dapple.exe" Guid="E1AD78EE-C801-4355-98CA-3D98E8384D58">
           <File Id="Dapple.exe" Name="Dapple.exe" Source="..\Dapple\bin\x86\Release\Dapple.exe" Vital="yes" KeyPath="yes" />
         </Component>
+			<Component Id="GEDapple.exe" Guid="f4ceb203-a42e-47d4-afc9-f57c0c8301b4">
+				<File Id="GEDapple.exe" Name="GEDapple.exe" Source="..\GED\GEDApp\bin\Release\GEDapple.exe" Vital="yes" KeyPath="yes" />
+				<File Id="GEDapple.exe.config" Name="GEDapple.exe.config" Source="..\GED\GEDApp\bin\Release\GEDapple.exe.config" Vital="yes" />
+			</Component>
+			<Component Id="GEDCore.dll" Guid="ecfa989f-a236-4892-8764-1f3155b4f6ca">
+				<File Id="GEDCore.dll" Name="GEDCore.dll" Source="..\GED\GEDApp\bin\Release\GEDCore.dll" Vital="yes" KeyPath="yes" />
+			</Component>
+			<Component Id="GEDWebService.dll" Guid="664ce796-f5ae-4744-be0b-404906f4729a">
+				<File Id="GEDWebService.dll" Name="GEDWebService.dll" Source="..\GED\GEDApp\bin\Release\GEDWebService.dll" Vital="yes" KeyPath="yes" />
+			</Component>
+			<Component Id="Interop.EARTHLib.dll" Guid="b550e507-7f07-41d1-83f6-f57ebe7a4c56">
+				<File Id="Interop.EARTHLib.dll" Name="Interop.EARTHLib.dll" Source="..\GED\GEDApp\bin\Release\Interop.EARTHLib.dll" Vital="yes" KeyPath="yes" />
+			</Component>
 			<Component Id="OtherRootFiles" Guid="46389ae2-6c69-4090-9189-7b29c676a4f3">
           <File Id="app.ico" Name="app.ico" Source="..\Dapple\bin\x86\Release\app.ico" Vital="yes" />
           <File Id="version.txt" Name="version.txt" Source="..\Dapple\bin\x86\Release\version.txt" Vital="yes" />
@@ -69,25 +82,7 @@
             <File Id="Placenames.xml" Name="^Placenames.xml" Source="..\Dapple\bin\x86\Release\Config\^Placenames.xml" Vital="yes" />
           </Component>
         </Directory>
-        <Directory Id="GED" Name="GED">
-				<Component Id="GEDapple.exe" Guid="f4ceb203-a42e-47d4-afc9-f57c0c8301b4">
-					<File Id="GEDapple.exe" Name="GEDapple.exe" Source="..\GED\GEDApp\bin\Release\GEDapple.exe" Vital="yes" KeyPath="yes" />
-					<File Id="GEDapple.exe.config" Name="GEDapple.exe.config" Source="..\GED\GEDApp\bin\Release\GEDapple.exe.config" Vital="yes" />
-				</Component>
-				<Component Id="GEdapxmlclient.dll" Guid="7da3a886-6a6d-4778-a313-654ba920d75a">
-					<File Id="GEdapxmlclient.dll" Name="dapxmlclient.dll" Source="..\GED\ExternalAssemblies\dapxmlclient.dll" Vital="yes" KeyPath="yes" />
-				</Component>
-				<Component Id="GEDCore.dll" Guid="ecfa989f-a236-4892-8764-1f3155b4f6ca">
-					<File Id="GEDCore.dll" Name="GEDCore.dll" Source="..\GED\GEDApp\bin\Release\GEDCore.dll" Vital="yes" KeyPath="yes" />
-				</Component>
-				<Component Id="GEDWebService.dll" Guid="664ce796-f5ae-4744-be0b-404906f4729a">
-					<File Id="GEDWebService.dll" Name="GEDWebService.dll" Source="..\GED\GEDApp\bin\Release\GEDWebService.dll" Vital="yes" KeyPath="yes" />
-				</Component>
-				<Component Id="Interop.EARTHLib.dll" Guid="b550e507-7f07-41d1-83f6-f57ebe7a4c56">
-					<File Id="Interop.EARTHLib.dll" Name="Interop.EARTHLib.dll" Source="..\GED\GEDApp\bin\Release\Interop.EARTHLib.dll" Vital="yes" KeyPath="yes" />
-				</Component>
-			</Directory>
-			<Directory Id="System" Name="System">
+        <Directory Id="System" Name="System">
           <Component Id="System7za.exe" Guid="e5f7ca90-efc5-4c78-b35b-df88fa3e25c9">
             <File Id="System7za.exe" Name="7za.exe" Source="..\Dapple\bin\x86\Release\System\7za.exe" Vital="yes" KeyPath="yes" />
           </Component>
