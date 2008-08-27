@@ -7,18 +7,43 @@ using System.ServiceModel.Description;
 
 namespace GED.WebService
 {
+	/// <summary>
+	/// Provides static methos for other modules to use the GED web service.
+	/// </summary>
 	public static class ControlPanel
 	{
+		#region Constants
+
+		/// <summary>
+		/// The port that the web service will listen on if no port is specified in the Start() method.
+		/// </summary>
 		public const int DefaultPort = 39277;
+
+		#endregion
+
+
+		#region Member Variables
 
 		static ServiceHost s_oHost;
 		static Uri s_oBaseAddress;
 
+		#endregion
+
+
+		#region Public Methods
+
+		/// <summary>
+		/// Starts the GED web service listening on the default port.
+		/// </summary>
 		public static void Start()
 		{
 			Start(DefaultPort);
 		}
 
+		/// <summary>
+		/// Starts the GED web service.
+		/// </summary>
+		/// <param name="iPort">The port that the GED web service will listen on.</param>
 		public static void Start(int iPort)
 		{
 			#region // Input and state checking
@@ -34,11 +59,9 @@ namespace GED.WebService
 			s_oHost.Open();
 		}
 
-		public static Uri BaseAddress
-		{
-			get { return s_oBaseAddress; }
-		}
-
+		/// <summary>
+		/// Stop the GED web service.
+		/// </summary>
 		public static void Stop()
 		{
 			#region // Input and state checking
@@ -50,5 +73,20 @@ namespace GED.WebService
 				s_oHost = null;
 			}
 		}
+
+		#endregion
+
+
+		#region Properties
+
+		/// <summary>
+		/// The base address of the GED web service.
+		/// </summary>
+		public static Uri BaseAddress
+		{
+			get { return s_oBaseAddress; }
+		}
+
+		#endregion
 	}
 }

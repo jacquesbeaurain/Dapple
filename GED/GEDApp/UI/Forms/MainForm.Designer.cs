@@ -33,10 +33,12 @@
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.dappleSearchList1 = new GED.App.UI.Controls.DappleSearchList();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miExit = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miTools = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miOptions = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miEdit = new System.Windows.Forms.ToolStripMenuItem();
+			this.c_miRefreshView = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -75,43 +77,59 @@
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.c_miFile,
+            this.c_miEdit,
+            this.c_miTools});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(538, 24);
 			this.menuStrip1.TabIndex = 3;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
-			// fileToolStripMenuItem
+			// c_miFile
 			// 
-			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
-			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
-			this.fileToolStripMenuItem.Text = "&File";
+			this.c_miFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.c_miExit});
+			this.c_miFile.Name = "c_miFile";
+			this.c_miFile.Size = new System.Drawing.Size(35, 20);
+			this.c_miFile.Text = "&File";
 			// 
-			// exitToolStripMenuItem
+			// c_miExit
 			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.exitToolStripMenuItem.Text = "E&xit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			this.c_miExit.Name = "c_miExit";
+			this.c_miExit.Size = new System.Drawing.Size(152, 22);
+			this.c_miExit.Text = "E&xit";
+			this.c_miExit.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
-			// toolsToolStripMenuItem
+			// c_miTools
 			// 
-			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem});
-			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-			this.toolsToolStripMenuItem.Text = "&Tools";
+			this.c_miTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.c_miOptions});
+			this.c_miTools.Name = "c_miTools";
+			this.c_miTools.Size = new System.Drawing.Size(44, 20);
+			this.c_miTools.Text = "&Tools";
 			// 
-			// optionsToolStripMenuItem
+			// c_miOptions
 			// 
-			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.optionsToolStripMenuItem.Text = "&Options";
-			this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+			this.c_miOptions.Name = "c_miOptions";
+			this.c_miOptions.Size = new System.Drawing.Size(152, 22);
+			this.c_miOptions.Text = "&Options";
+			this.c_miOptions.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+			// 
+			// c_miEdit
+			// 
+			this.c_miEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.c_miRefreshView});
+			this.c_miEdit.Name = "c_miEdit";
+			this.c_miEdit.Size = new System.Drawing.Size(37, 20);
+			this.c_miEdit.Text = "&Edit";
+			// 
+			// c_miRefreshView
+			// 
+			this.c_miRefreshView.Name = "c_miRefreshView";
+			this.c_miRefreshView.Size = new System.Drawing.Size(174, 22);
+			this.c_miRefreshView.Text = "&Trigger View Refresh";
+			this.c_miRefreshView.Click += new System.EventHandler(this.c_miRefreshView_Click);
 			// 
 			// MainForm
 			// 
@@ -139,10 +157,12 @@
 		private System.Windows.Forms.Button c_bSearch;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.MenuStrip menuStrip1;
-		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem c_miFile;
+		private System.Windows.Forms.ToolStripMenuItem c_miExit;
+		private System.Windows.Forms.ToolStripMenuItem c_miTools;
+		private System.Windows.Forms.ToolStripMenuItem c_miOptions;
+		private System.Windows.Forms.ToolStripMenuItem c_miEdit;
+		private System.Windows.Forms.ToolStripMenuItem c_miRefreshView;
 
 	}
 }

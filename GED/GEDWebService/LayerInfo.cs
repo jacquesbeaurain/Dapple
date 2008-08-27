@@ -11,6 +11,7 @@ using System.Globalization;
 using GED.Core;
 using System.Drawing;
 using GEDCore;
+using GEDWebService;
 
 namespace GED.WebService
 {
@@ -31,7 +32,12 @@ namespace GED.WebService
 		public String Server { get { return m_strServer; } }
 		public String Layer { get { return m_strLayer; } }
 
-		public String GetCacheFilename(TileInfo oTile)
+		/// <summary>
+		/// Get the filename that this LayerInfo will save a given TileInfo as.
+		/// </summary>
+		/// <param name="oTile">The TileInfo for the tile to cache.</param>
+		/// <returns>A filename relative to the cache root that the tile will be saved as.</returns>
+		internal String GetCacheFilename(TileInfo oTile)
 		{
 			if (m_strServerType.ToUpperInvariant().Equals("DAP"))
 			{
@@ -48,19 +54,27 @@ namespace GED.WebService
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Get the raw data for the given TileInfo.
+		/// </summary>
+		/// <param name="oTile">The TileInfo of the tile of this LayerInfo to get.</param>
+		/// <returns>The raw data of the tile image, or null if it could not be downloaded.</returns>
 		internal byte[] GetTileImage(TileInfo oTile)
 		{
-			if (m_strServerType.ToUpperInvariant().Equals("DAP"))
-			{
-				return GetDapTileImage(oTile);
-			}
+			String strFilename = CacheTileImage(oTile);
+
+			if (!String.IsNullOrEmpty(strFilename) && File.Exists(strFilename))
+				return File.ReadAllBytes(strFilename);
 			else
-			{
 				return null;
-			}
 		}
 
-		private byte[] GetDapTileImage(TileInfo oTile)
+		/// <summary>
+		/// Download the image for the given TileInfo.
+		/// </summary>
+		/// <param name="oTile">The TileInfo of the tile of this LayerInfo to download.</param>
+		/// <returns>The filename for the image, or null if it could not be downloaded.</returns>
+		private String CacheTileImage(TileInfo oTile)
 		{
 			String strCacheFilename = Path.Combine(CacheUtils.CacheRoot, GetCacheFilename(oTile));
 
@@ -70,26 +84,24 @@ namespace GED.WebService
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(strCacheFilename));
 
-				try
+				if (m_strServerType.ToUpperInvariant().Equals("DAP"))
 				{
-					DownloadDapImage(strCacheFilename, oTile);
+					try
+					{
+						DownloadDapImage(strCacheFilename, oTile);
+					}
+					catch (DapException)
+					{
+						return null;
+					}
 				}
-				catch (DapException)
+				else
 				{
-					// --- Do nothing.  There just won't be a file. ---
+					throw new NotImplementedException();
 				}
 			}
 
-			// --- Read and deliver the file ---
-
-			if (File.Exists(strCacheFilename))
-			{
-				return File.ReadAllBytes(strCacheFilename);
-			}
-			else
-			{
-				return null;
-			}
+			return strCacheFilename;
 		}
 
 		/// <summary>
@@ -144,69 +156,67 @@ namespace GED.WebService
 
 		internal byte[] GetCompositeImage(BoundingBox oLayerBoundingBox, BoundingBox oViewBoundingBox)
 		{
-			const int iImageSize = 512;
-
-			double dLatitude = oViewBoundingBox.MaxY - oViewBoundingBox.MinY;
+			const int iImageSize = 768;
 			double dLongitude = oViewBoundingBox.MaxX - oViewBoundingBox.MinX;
+			double dLatitude = oViewBoundingBox.MaxY - oViewBoundingBox.MinY;
 			double dMajorAxis = Math.Max(dLongitude, dLatitude);
 			double dDegreesPerPixel = dMajorAxis / iImageSize;
+			TileSet oRequiredTiles = new TileSet(oViewBoundingBox);
+			TileSet oServiceTiles = oRequiredTiles;
 
 
-			// --- Calculate tile level to use ---
+			// --- Keep going to lower-levelled tiles until we can service the request ---
 
-			int iLevel = 0;
-			while (dMajorAxis < 180.0 / Math.Pow(2.0, iLevel))
+			while (oServiceTiles.Level > 0 && !AllTilesCached(oServiceTiles))
 			{
-				iLevel++;
+				oServiceTiles = new TileSet(oViewBoundingBox, oServiceTiles.Level - 1);
 			}
 
 
-			// --- Calculate the number of tiles to use ---
-
-			double dTileSize = 180.0 / Math.Pow(2.0, iLevel);
-			int iMinCol = (int)Math.Floor((oViewBoundingBox.MinX + 180.0) / dTileSize);
-			int iMaxCol = (int)Math.Floor((oViewBoundingBox.MaxX + 180.0) / dTileSize);
-			int iMinRow = (int)Math.Floor((oViewBoundingBox.MinY + 90.0) / dTileSize);
-			int iMaxRow = (int)Math.Floor((oViewBoundingBox.MaxY + 90.0) / dTileSize);
-			System.Diagnostics.Debug.Assert(iMaxCol >= iMinCol);
-			System.Diagnostics.Debug.Assert(iMaxRow >= iMinRow);
-
-
-			// --- Render the image ---
+			// --- Render the image for the tile level requested ---
 
 			MemoryStream result = new MemoryStream();
 			using (Bitmap oResult = new Bitmap((int)(iImageSize * dLongitude / dMajorAxis), (int)(iImageSize * dLatitude / dMajorAxis)))
 			{
 				using (Graphics oResultGraphics = Graphics.FromImage(oResult))
 				{
-					for (int iRow = iMinRow; iRow <= iMaxRow; iRow++)
-						for (int iCol = iMinCol; iCol <= iMaxCol; iCol++)
+					foreach (TileInfo oTile in oServiceTiles)
+					{
+						double dTileSize = TileInfo.GetTileSize(oTile.Level);
+
+						BoundingBox oTileBoundingBox = oTile.Bounds;
+						if (!oTileBoundingBox.Intersects(oLayerBoundingBox)) continue;
+
+						RectangleF oTileDrawRectangle = new RectangleF(
+							(float)((oTileBoundingBox.MinX - oViewBoundingBox.MinX) / dDegreesPerPixel),
+							(float)((oViewBoundingBox.MaxY - oTileBoundingBox.MaxY) / dDegreesPerPixel),
+							(float)(dTileSize / dDegreesPerPixel),
+							(float)(dTileSize / dDegreesPerPixel)
+							);
+
+						byte[] oTileData = GetTileImage(oTile);
+						if (oTileData != null)
 						{
-							TileInfo oTile = new TileInfo(iLevel, iCol, iRow);
-							BoundingBox oTileBoundingBox = oTile.Bounds;
-							if (!oTileBoundingBox.Intersects(oLayerBoundingBox)) continue;
-
-							RectangleF oTileDrawRectangle = new RectangleF(
-								(float)((oTileBoundingBox.MinX - oViewBoundingBox.MinX) / dDegreesPerPixel),
-								(float)((oViewBoundingBox.MaxY - oTileBoundingBox.MaxY) / dDegreesPerPixel),
-								(float)(dTileSize / dDegreesPerPixel),
-								(float)(dTileSize / dDegreesPerPixel)
-								);
-
-							byte[] oTileData = GetTileImage(oTile);
-							if (oTileData != null)
+							using (Bitmap oTileImage = new Bitmap(new MemoryStream(oTileData)))
 							{
-								using (Bitmap oTileImage = new Bitmap(new MemoryStream(oTileData)))
-								{
-									oResultGraphics.DrawImage(oTileImage, oTileDrawRectangle);
-								}
+								oResultGraphics.DrawImage(oTileImage, oTileDrawRectangle);
 							}
 						}
+					}	
 				}
-
 				oResult.Save(result, System.Drawing.Imaging.ImageFormat.Png);
 			}
 			return result.ToArray();
+		}
+
+		private bool AllTilesCached(TileSet oTileSet)
+		{
+			foreach (TileInfo oTile in oTileSet)
+			{
+				if (!new DownloadInfo(this, oTile).IsCached)
+					return false;
+			}
+			return true;
 		}
 	}
 }

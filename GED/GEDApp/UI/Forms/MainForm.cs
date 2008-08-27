@@ -48,6 +48,11 @@ namespace GED.App.UI.Forms
 			}
 		}
 
+		private void c_miRefreshView_Click(object sender, EventArgs e)
+		{
+			GoogleEarth.TriggerRefresh();
+		}
+
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
