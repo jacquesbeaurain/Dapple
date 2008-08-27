@@ -53,7 +53,7 @@
     <Compile Include="..\Version.Assembly.cs">
       <Link>Version.Assembly.cs</Link>
     </Compile>
-    <Compile Include="BackgroundDownloader.cs" />
+    <Compile Include="DownloadInfo.cs" />
     <Compile Include="Contract.cs" />
     <Compile Include="Implementation.cs" />
     <Compile Include="LayerInfo.cs" />
