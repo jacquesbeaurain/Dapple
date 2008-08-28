@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using GED.WebService;
-using GEDCore;
-using System.IO;
+﻿using System.IO;
+using GED.Core;
 
-namespace GEDWebService
+namespace GED.WebService
 {
 	class DownloadInfo
 	{

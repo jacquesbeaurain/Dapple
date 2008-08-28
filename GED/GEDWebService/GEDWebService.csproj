@@ -8,7 +8,7 @@
     <ProjectGuid>{764C9F34-BCB6-4A1E-9766-2D48382CA562}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GEDWebService</RootNamespace>
+    <RootNamespace>GED.WebService</RootNamespace>
     <AssemblyName>GEDWebService</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

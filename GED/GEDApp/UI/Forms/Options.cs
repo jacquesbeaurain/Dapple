@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using GED.Core;
-using GED.App.Properties;
-using GED.App.Core;
 using System.IO;
+using System.Windows.Forms;
+using GED.App.Core;
+using GED.App.Properties;
+using GED.Core;
 
 namespace GED.App.UI.Forms
 {

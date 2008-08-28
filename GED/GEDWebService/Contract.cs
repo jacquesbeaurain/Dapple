@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.IO;
 using System.ServiceModel;
 using System.ServiceModel.Web;
-using System.IO;
-using System.Collections.Specialized;
 using System.Web;
-using System.Globalization;
+using GED.Core;
 using Geosoft.Dap.Common;
-using GEDCore;
 
 namespace GED.WebService
 {

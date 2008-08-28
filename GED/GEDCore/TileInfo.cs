@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Geosoft.Dap.Common;
-using System.Globalization;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using Geosoft.Dap.Common;
 
-namespace GEDCore
+namespace GED.Core
 {
 	/// <summary>
 	/// Represents the parameters for a single cache tile.

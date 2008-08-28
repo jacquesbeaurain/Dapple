@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 using EARTHLib;
+using GED.App.Core;
 using GED.App.UI.Controls;
 using Geosoft.Dap.Common;
-using GED.App.Core;
-using GED.App.Properties;
 
 namespace GED.App.UI.Forms
 {

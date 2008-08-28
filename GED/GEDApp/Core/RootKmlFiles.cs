@@ -2,12 +2,10 @@
 using System.Globalization;
 using System.IO;
 using System.Xml;
-using GED.App.UI.Controls;
-using GED.WebService;
-using GED.Core;
 using GED.App.Properties;
-using Geosoft.Dap.Common;
-using GEDCore;
+using GED.App.UI.Controls;
+using GED.Core;
+using GED.WebService;
 
 namespace GED.App.Core
 {

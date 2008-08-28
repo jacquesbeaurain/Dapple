@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Threading;
 using System.Windows.Forms;
-using GED.App.UI.Forms;
-using GED.App.Properties;
 using GED.App.Core;
+using GED.App.Properties;
+using GED.App.UI.Forms;
 
 namespace GED.App
 {
