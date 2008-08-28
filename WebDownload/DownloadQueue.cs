@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace WorldWind.Net
 {
@@ -10,8 +11,8 @@ namespace WorldWind.Net
 	{
 		public static int MaxQueueLength = 200;
 		public static int MaxConcurrentDownloads = 2;
-		private ArrayList m_requests = new ArrayList();
-		private ArrayList m_activeDownloads = new ArrayList();
+		private List<DownloadRequest> m_requests = new List<DownloadRequest>();
+		private List<DownloadRequest> m_activeDownloads = new List<DownloadRequest>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Net.DownloadRequest"/> class 
@@ -25,7 +26,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Request for download queue
 		/// </summary>
-		public ArrayList Requests
+		public List<DownloadRequest> Requests
 		{
 			get
 			{
@@ -36,7 +37,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Currently active downloads
 		/// </summary>
-		public ArrayList ActiveDownloads
+		public List<DownloadRequest> ActiveDownloads
 		{
 			get
 			{
@@ -50,7 +51,7 @@ namespace WorldWind.Net
 		/// <param name="owner"></param>
 		public virtual void Clear(object owner)
 		{
-			lock(m_requests.SyncRoot)
+			lock(((ICollection)m_requests).SyncRoot)
 			{
 				for(int i=m_requests.Count-1; i>=0; i--)
 				{
@@ -73,7 +74,7 @@ namespace WorldWind.Net
 			DownloadRequest bestRequest = null;
 			float highestScore = float.MinValue;
 
-			lock(m_requests.SyncRoot)
+			lock (((ICollection)m_requests).SyncRoot)
 			{
 				for (int i = m_requests.Count-1; i>=0; i--)
 				{
@@ -109,7 +110,7 @@ namespace WorldWind.Net
 			if(newRequest==null)
 				throw new NullReferenceException();
 
-			lock(m_requests.SyncRoot)
+			lock (((ICollection)m_requests).SyncRoot)
 			{
 				foreach(DownloadRequest request in m_requests)
 				{
@@ -176,7 +177,7 @@ namespace WorldWind.Net
 		/// </summary>
 		public virtual void Remove( DownloadRequest request )
 		{
-			lock(m_requests.SyncRoot)
+			lock (((ICollection)m_requests).SyncRoot)
 			{
 				for (int i = m_activeDownloads.Count-1; i>=0; i--)
 					if(request == m_activeDownloads[i])
@@ -195,7 +196,7 @@ namespace WorldWind.Net
 		/// </summary>
 		protected virtual void ServiceDownloadQueue()
 		{
-			lock(m_requests.SyncRoot)
+			lock (((ICollection)m_requests).SyncRoot)
 			{
 				// Remove finished downloads
 				for (int i = m_activeDownloads.Count-1; i>=0; i--)
@@ -223,7 +224,7 @@ namespace WorldWind.Net
 		/// </summary>
 		internal void OnComplete( DownloadRequest request )
 		{
-			lock(m_requests.SyncRoot)
+			lock (((ICollection)m_requests).SyncRoot)
 			{
 				// Remove the finished item from queue
 				m_requests.Remove(request);
@@ -238,7 +239,7 @@ namespace WorldWind.Net
 
 		public void Dispose()
 		{
-			lock(m_requests.SyncRoot)
+			lock (((ICollection)m_requests).SyncRoot)
 			{
 				foreach(DownloadRequest request in m_requests)
 					request.Dispose();

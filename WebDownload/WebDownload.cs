@@ -537,12 +537,6 @@ namespace WorldWind.Net
 					Log.Write(Log.Levels.Verbose, "Re-throwing ThreadAbortException.");
 					throw;
 				}
-				catch (System.Configuration.ConfigurationException)
-				{
-					// is thrown by WebRequest.Create if App.config is not in the correct format
-					// TODO: don't know what to do with it
-					throw;
-				}
 				catch (Exception caught)
 				{
 					try
@@ -748,11 +742,7 @@ namespace WorldWind.Net
 		/// </summary>
 		public void Verify()
 		{
-			if (Exception != null)
-				//these occur regularly - ignore
-            // Why?  They're exceptions!  They indicate a problem!
-				//if (!(Exception is WebException))
-					throw Exception;
+			if (Exception != null) throw Exception;
 		}
 
 		/// <summary>

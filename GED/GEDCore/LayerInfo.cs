@@ -10,7 +10,7 @@ using Geosoft.Dap.Common;
 
 namespace GED.WebService
 {
-	internal class LayerInfo
+	public class LayerInfo
 	{
 		private String m_strServerType;
 		private String m_strServer;
@@ -54,7 +54,7 @@ namespace GED.WebService
 		/// </summary>
 		/// <param name="oTile">The TileInfo of the tile of this LayerInfo to get.</param>
 		/// <returns>The raw data of the tile image, or null if it could not be downloaded.</returns>
-		internal byte[] GetTileImage(TileInfo oTile)
+		public byte[] GetTileImage(TileInfo oTile)
 		{
 			String strFilename = CacheTileImage(oTile);
 
@@ -149,7 +149,7 @@ namespace GED.WebService
 		}
 
 
-		internal byte[] GetCompositeImage(BoundingBox oLayerBoundingBox, BoundingBox oViewBoundingBox)
+		public byte[] GetCompositeImage(BoundingBox oLayerBoundingBox, BoundingBox oViewBoundingBox)
 		{
 			const int iImageSize = 768;
 			double dLongitude = oViewBoundingBox.MaxX - oViewBoundingBox.MinX;

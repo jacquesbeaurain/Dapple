@@ -313,17 +313,6 @@ namespace WorldWind
       {
       }
 
-      public WMSImageLayerInfo(WMSDownload dl)
-      {
-         this.Id = dl.Name + "-" + Path.GetFileName(dl.SavedFilePath);
-         this.Description = dl.Title;
-         this.ImageFilePath = dl.SavedFilePath;
-         this.North = (float)dl.North;
-         this.South = (float)dl.South;
-         this.West = (float)dl.West;
-         this.East = (float)dl.East;
-      }
-
       public static WMSImageLayerInfo FromFile(string filePath)
       {
          using (FileStream stream = File.OpenRead(filePath))

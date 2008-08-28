@@ -5,12 +5,9 @@ using System.Web;
 
 namespace Utility
 {
-   public class URI
+	// TODO: Delete this class.  System.Uri provides the same functionality.
+   public static class URI
    {
-      private URI()
-      {
-      }
-
       static string StripSchemeFromURI(string strScheme, string strURI)
       {
          string strPre = strScheme + "://";
@@ -57,7 +54,6 @@ namespace Utility
          else
             return String.Empty;
       }
-
 
       static public NameValueCollection ParseURI(string strScheme, string strURI, ref string strHost, ref string strPath)
       {

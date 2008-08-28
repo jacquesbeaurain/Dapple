@@ -86,12 +86,6 @@ namespace WorldWind.Net
 		{
 		}
 
-		// returns true if string is either null or of zero length
-		static bool IsEmpty(string s) 
-		{
-			return (s == null || s.Length == 0);
-		}
-
 		// Keep track of WinHTTP Session handle as that is used to cache proxy information
 		static IntPtr hSession = IntPtr.Zero;
 
@@ -119,7 +113,7 @@ namespace WorldWind.Net
 		static ICredentials DetermineCredentials(string name, string password, string domain) 
 		{
 			ICredentials theCreds = null;
-			if(!IsEmpty(name)) 
+			if(!String.IsNullOrEmpty(name)) 
 			{
 				theCreds = (domain == null) ? 
 					new NetworkCredential(name, password) :
@@ -140,7 +134,7 @@ namespace WorldWind.Net
 			WINHTTP_PROXY_INFO proxyInfo = new WINHTTP_PROXY_INFO(); 
 			proxyInfo.pwszProxy = proxyInfo.pwszProxyBypass = IntPtr.Zero;
 
-			if(!IsEmpty(proxyScriptUrl)) 
+			if (!String.IsNullOrEmpty(proxyScriptUrl)) 
 			{
 				// The proxy script URL is already known.  
 				// Therefore, auto-detection is not required.
@@ -186,7 +180,7 @@ namespace WorldWind.Net
 			}
 			if(proxyInfo.pwszProxyBypass != IntPtr.Zero) Marshal.FreeHGlobal(proxyInfo.pwszProxyBypass);
 
-			return IsEmpty(proxyUrl) ? null : new WebProxy(proxyUrl);
+			return String.IsNullOrEmpty(proxyUrl) ? null : new WebProxy(proxyUrl);
 		}
 
 
@@ -232,13 +226,13 @@ namespace WorldWind.Net
 							String.Format(
 							CultureInfo.CurrentCulture,
 							"Determining dynamic proxy for target url '{0}' using script url '{1}' failed with Win32 error '{2}'",
-							targetUrl, IsEmpty(proxyUrl) ? "(none)" : proxyUrl, Win32Message.GetMessage(errCode))
+							targetUrl, String.IsNullOrEmpty(proxyUrl) ? "(none)" : proxyUrl, Win32Message.GetMessage(errCode))
 							);
 					}
 				}
 				else 
 				{
-					if(IsEmpty(proxyUrl)) 
+					if (String.IsNullOrEmpty(proxyUrl)) 
 					{
 						// no scripting, no default -> no proxy
                         theProxy = null;
