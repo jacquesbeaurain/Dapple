@@ -33,8 +33,9 @@ namespace GED.App.UI.Controls
 			this.c_msContext = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.c_miAddLayer = new System.Windows.Forms.ToolStripMenuItem();
 			this.c_pBase = new System.Windows.Forms.Panel();
-			this.c_oPageNavigator = new PageNavigator();
-			this.c_tsTabToolstrip = new TabToolStrip();
+			this.c_oPageNavigator = new GED.App.UI.Controls.PageNavigator();
+			this.c_tsTabToolstrip = new GED.App.UI.Controls.TabToolStrip();
+			this.precacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.c_msContext.SuspendLayout();
 			this.c_pBase.SuspendLayout();
 			this.SuspendLayout();
@@ -64,14 +65,15 @@ namespace GED.App.UI.Controls
 			// c_msContext
 			// 
 			this.c_msContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.c_miAddLayer});
+            this.c_miAddLayer,
+            this.precacheToolStripMenuItem});
 			this.c_msContext.Name = "cContextMenu";
-			this.c_msContext.Size = new System.Drawing.Size(168, 48);
+			this.c_msContext.Size = new System.Drawing.Size(168, 70);
 			this.c_msContext.Opening += new System.ComponentModel.CancelEventHandler(this.cContextMenu_Opening);
 			// 
 			// c_miAddLayer
 			// 
-			this.c_miAddLayer.Image = GED.App.Properties.Resources.layers_add;
+			this.c_miAddLayer.Image = global::GED.App.Properties.Resources.layers_add;
 			this.c_miAddLayer.Name = "c_miAddLayer";
 			this.c_miAddLayer.Size = new System.Drawing.Size(167, 22);
 			this.c_miAddLayer.Text = "Add to Data Layers";
@@ -110,6 +112,13 @@ namespace GED.App.UI.Controls
 			this.c_tsTabToolstrip.TabStop = true;
 			this.c_tsTabToolstrip.Text = "tabToolbar1";
 			// 
+			// precacheToolStripMenuItem
+			// 
+			this.precacheToolStripMenuItem.Name = "precacheToolStripMenuItem";
+			this.precacheToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+			this.precacheToolStripMenuItem.Text = "Precache";
+			this.precacheToolStripMenuItem.Click += new System.EventHandler(this.precacheToolStripMenuItem_Click);
+			// 
 			// DappleSearchList
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -133,5 +142,6 @@ namespace GED.App.UI.Controls
       private System.Windows.Forms.Panel c_pBase;
       private System.Windows.Forms.ContextMenuStrip c_msContext;
       private System.Windows.Forms.ToolStripMenuItem c_miAddLayer;
+		private System.Windows.Forms.ToolStripMenuItem precacheToolStripMenuItem;
    }
 }

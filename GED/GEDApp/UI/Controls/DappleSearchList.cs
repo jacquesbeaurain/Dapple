@@ -226,6 +226,19 @@ namespace GED.App.UI.Controls
 			CmdAddSelected();
 		}
 
+		private void precacheToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SearchResult oResult = c_lbResults.SelectedItem as SearchResult;
+			GED.Core.LayerInfo oInfo = new GED.Core.LayerInfo(oResult.ServerType, oResult.ServerUrl, oResult.GetAttribute("datasetname"));
+			Geosoft.Dap.Common.BoundingBox oBounds = new Geosoft.Dap.Common.BoundingBox(oResult.MaxX, oResult.MaxY, oResult.MinX, oResult.MinY);
+			for (int count = 0; count < 7; count++)
+			{
+				GED.Core.TileSet oSet = new GED.Core.TileSet(oBounds, count);
+				GED.Core.DownloadSet oDownloads = new GED.Core.DownloadSet(oInfo, oSet);
+				oDownloads.DownloadSync();
+			}
+		}
+
 		private void DisplayModeChanged(int iIndex)
 		{
 			DisplayMode eNewDisplayMode = (DisplayMode)Enum.Parse(typeof(DisplayMode), iIndex.ToString(CultureInfo.InvariantCulture));

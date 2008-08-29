@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using EARTHLib;
 using GED.App.Core;
 using GED.App.UI.Controls;
+using GED.Core;
 using Geosoft.Dap.Common;
 
 namespace GED.App.UI.Forms
