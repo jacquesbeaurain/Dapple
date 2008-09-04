@@ -621,6 +621,10 @@ namespace Dapple.CustomControls
 				oResponse = oRequest.GetResponse();
 				m_oBitmap = new Bitmap(oResponse.GetResponseStream());
 			}
+			catch (Exception)
+			{
+				m_oBitmap = Dapple.Properties.Resources.delete;
+			}
 			finally
 			{
 				if (oResponse != null) oResponse.Close();
