@@ -32,7 +32,7 @@ namespace Dapple
          InitializeComponent();
          Icon = global::Dapple.Properties.Resources.dapple;
 
-         this.labelVersionNumber.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+         this.labelVersionNumber.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(4);
       }
 
       #region Windows Form Designer generated code
