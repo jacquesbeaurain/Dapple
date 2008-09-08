@@ -174,7 +174,28 @@ namespace Dapple.LayerGeneration
 					CultureInfo oInfo = CultureInfo.CurrentCulture;
 					if (oLocaleNode != null && oLocaleNode.HasAttribute("language") && oLocaleNode.HasAttribute("country"))
 					{
-						oInfo = new CultureInfo(String.Format("{0}-{1}", oLocaleNode.GetAttribute("language"), oLocaleNode.GetAttribute("country")));
+						String strLanguage = oLocaleNode.GetAttribute("language");
+						String strCountry = oLocaleNode.GetAttribute("country");
+						try
+						{
+							oInfo = new CultureInfo(String.Format("{0}-{1}", strLanguage.ToLowerInvariant(), strCountry.ToUpperInvariant()));
+						}
+						catch (ArgumentException)
+						{
+							try
+							{
+								// --- A server returned en-IT, which Windows didn't understand.  If we can't process the
+								// --- language and country code, use the neutral language instead
+								oInfo = new CultureInfo(strLanguage.ToLowerInvariant());
+							}
+							catch (ArgumentException)
+							{
+								// --- If they sent back something truly bizarre, then just use invariant.  If it doesn't work,
+								// --- then that's the server's problem, not ours.
+								oInfo = CultureInfo.InvariantCulture;
+							}
+						}
+						
 					}
 
                serverDir.SubList.Add(new ArcIMSServiceBuilder(serverDir, ((XmlElement)nServiceNode).GetAttribute("name"), LoadFinished, oInfo));
