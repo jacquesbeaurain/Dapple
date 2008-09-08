@@ -103,42 +103,16 @@ namespace WorldWind.Renderable
         /// <returns>The first <c>RenderableObject</c> that matched the specified name, or <c>nullk</c> if none was found.</returns>
 		public virtual RenderableObject GetObject(string name)
 		{
-			foreach (RenderableObject ro in this.m_children)
+			lock (m_children.SyncRoot)
 			{
-				if (ro.Name.Equals(name))
-					return ro;
-			}
-			return null;
-		}
-
-        /// <summary>
-        /// Return a list of all direct and indirect children that match the given name and/or object type.
-        /// </summary>
-        /// <example> Get all QuadTileSets defined in this world:
-        /// <code>
-        /// RenderableObjectList allQTS = CurrentWorld.RenderableObjects.GetObjects(null, typeof(QuadTileSet));
-        /// </code></example>
-        /// <param name="name">The name of the <c>RenderableObject</c> to search for, or <c>null</c> if any name should match.</param>
-        /// <param name="objectType">The object type to search for, or <c>null</c> if any type should match.</param>
-        /// <returns>A list of all <c>RenderableObject</c>s that match the given search criteria (may be empty), or <c>null</c> if an error occurred.</returns>
-		public virtual RenderableObjectList GetObjects(string name, Type objectType)
-		{
-			RenderableObjectList result = new RenderableObjectList("results");
-
-			foreach (RenderableObject ro in this.m_children)
-			{
-				if (ro.GetType() == typeof(RenderableObjectList))
+				foreach (RenderableObject ro in this.m_children)
 				{
-					RenderableObjectList sub = ro as RenderableObjectList;
-
-					RenderableObjectList subres = sub.GetObjects(name, objectType);
-					foreach (RenderableObject hit in subres.ChildObjects)
-						result.Add(hit);
+					if (ro.Name.Equals(name))
+						return ro;
 				}
-				if (ro.Name.Equals(name) && ((objectType == null) || (ro.GetType() == objectType)))
-					result.Add(ro);
+
+				return null;
 			}
-			return result;
 		}
 
 		/// <summary>
