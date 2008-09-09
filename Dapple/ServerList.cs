@@ -554,6 +554,14 @@ namespace Dapple
             {
                m_oCurrServerLayers = new List<LayerBuilder>();
                ((AsyncBuilder)obj).getLayerBuilders(ref m_oCurrServerLayers);
+					for (int index = m_oCurrServerLayers.Count - 1; index > 0; index--)
+					{
+						if (!String.IsNullOrEmpty(m_strSearchString) && m_oCurrServerLayers[index].Title.IndexOf(m_strSearchString, StringComparison.InvariantCultureIgnoreCase) == -1
+							|| m_oSearchBox != null && !m_oCurrServerLayers[index].Extents.Intersects(m_oSearchBox))
+						{
+							m_oCurrServerLayers.RemoveAt(index);
+						}
+					}
             }
             else
                throw new ArgumentException("obj is unknown type " + obj.GetType());

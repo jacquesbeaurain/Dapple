@@ -422,7 +422,7 @@ namespace Dapple.LayerGeneration
          {
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.Text = Title + "(Loading...)";
+            oParent.Text = Title + " (Loading...)";
          }
          else if (LoadingErrorOccurred)
          {

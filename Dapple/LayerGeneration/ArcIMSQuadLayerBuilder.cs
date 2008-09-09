@@ -80,8 +80,10 @@ namespace Dapple.LayerGeneration
          }
 
          // --- Check the calculations ---
-         if (m_dLevelZeroTileSizeDegrees > m_dMaxScale * m_iPixels) throw new InvalidDataException("LZTS is wrong");
-         if (m_dLevelZeroTileSizeDegrees < m_dMinScale * m_iPixels * Math.Pow(2.0, m_iLevels - 1)) throw new InvalidDataException("Levels is wrong");
+         if (m_dLevelZeroTileSizeDegrees > m_dMaxScale * m_iPixels)
+				throw new InvalidDataException("LZTS is wrong");
+         if (m_dLevelZeroTileSizeDegrees < m_dMinScale * m_iPixels * Math.Pow(2.0, m_iLevels - 1))
+				throw new InvalidDataException("Levels is wrong");
       }
 
       #endregion

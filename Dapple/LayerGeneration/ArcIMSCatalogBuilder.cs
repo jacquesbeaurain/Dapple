@@ -248,7 +248,7 @@ namespace Dapple.LayerGeneration
       bool m_blLoadingPending = true;
 
       public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname, bool blEnabled)
-         : base(oUri.ToBaseUri(), parent, oUri, blEnabled)
+         : base(oUri.ServerTreeDisplayName, parent, oUri, blEnabled)
       {
          m_strCatalogPathname = strCatalogPathname;
       }
@@ -311,6 +311,21 @@ namespace Dapple.LayerGeneration
 				}
 			}
 			return null;
+		}
+
+		public bool HasUnloadedServices
+		{
+			get
+			{
+				foreach (ArcIMSServiceBuilder oBuilder in m_colSublist)
+				{
+					if (oBuilder.IsLoading)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
 		}
 	}
 
@@ -445,6 +460,13 @@ namespace Dapple.LayerGeneration
 							Double.TryParse(szMaxScale, NumberStyles.Any, CultureInfo.InvariantCulture, out dMaxScale);
                   }
 
+						if (dMaxScale > dMinScale || dMinScale > 1.0)
+						{
+							// --- If the server sends back weird values, ignore them ---
+							dMaxScale = ArcIMSQuadLayerBuilder.DefaultMaxScale;
+							dMinScale = ArcIMSQuadLayerBuilder.DefaultMinScale;
+						}
+
                   GeographicBoundingBox oLayerBounds = oServiceBounds.Clone() as GeographicBoundingBox;
 
                   if (blRecognizedCRS)
@@ -505,5 +527,21 @@ namespace Dapple.LayerGeneration
             return "imageservice";
          }
       }
+
+		public override void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, string strSearch)
+		{
+			if (IsLoading)
+			{
+				oParent.Text = Title + " (Click to load layers)";
+			}
+			else if (LoadingErrorOccurred)
+			{
+				oParent.Text = Title + " (" + ErrorMessage + ")";
+			}
+			else
+			{
+				oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
+			}
+		}
    }
 }

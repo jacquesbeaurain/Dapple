@@ -873,7 +873,7 @@ namespace Dapple
          iCount = 0;
          foreach (ArcIMSServerBuilder entry in m_oArcIMSServers)
          {
-            if (entry.IsLoading || entry.LoadingErrorOccurred || entry.iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) > 0)
+            if (entry.IsLoading || entry.HasUnloadedServices || entry.LoadingErrorOccurred || entry.iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) > 0)
                iCount++;
          }
          m_hArcIMSRootNode.Text = "ArcIMS Servers (" + iCount + ")";
@@ -882,6 +882,14 @@ namespace Dapple
          foreach (TreeNode treeNode in m_hArcIMSRootNode.Nodes)
          {
             ((AsyncBuilder)treeNode.Tag).updateTreeNode(treeNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
+
+				foreach (TreeNode oServerNode in treeNode.Nodes)
+				{
+					if (oServerNode.Tag is ArcIMSServiceBuilder)
+					{
+						((ArcIMSServiceBuilder)oServerNode.Tag).updateTreeNode(oServerNode, this, m_bAOIFilter, m_filterExtents, m_strSearch);
+					}
+				}
          }
 		}
 
@@ -906,15 +914,23 @@ namespace Dapple
 				if (treeNode.Tag is BuilderDirectory && !(treeNode.Tag is WMSCatalogBuilder) && !(treeNode.Tag is ArcIMSCatalogBuilder) &&
 				  (treeNode.Tag as BuilderDirectory).iGetLayerCount(m_bAOIFilter, m_filterExtents, m_strSearch) == 0)
 				{
-               // Don't remove loading or busted servers
+               // --- Don't remove loading or busted servers ---
+
                if (treeNode.Tag is AsyncBuilder && !((AsyncBuilder)treeNode.Tag).IsLoadedSuccessfully)
                   continue;
-					
+
+
+					// --- Don't remove ArcIMS servers with unloaded services ---
+
+					if (treeNode.Tag is ArcIMSServerBuilder && ((ArcIMSServerBuilder)treeNode.Tag).HasUnloadedServices)
+						continue;
+
 					treeNode.Remove();
 				}
 			}
 
-			// Update counts accross the board
+			// --- Update counts accross the board ---
+
 			UpdateCounts();
 		}
 

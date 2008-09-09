@@ -46,6 +46,24 @@ namespace Dapple.LayerGeneration
 			return base.ToString();
 		}
 
+		public String ServerTreeDisplayName
+		{
+			get
+			{
+				String result = this.Host;
+				if (this.Port != 80)
+				{
+					result += ":" + this.Port.ToString(CultureInfo.InvariantCulture);
+				}
+				if (!this.PathAndQuery.Trim().Equals("/servlet/com.esri.esrimap.Esrimap", StringComparison.InvariantCultureIgnoreCase))
+				{
+					result += this.PathAndQuery;
+				}
+
+				return result;
+			}
+		}
+
 		public override bool Equals(object comparand)
 		{
 			return base.Equals(comparand);
