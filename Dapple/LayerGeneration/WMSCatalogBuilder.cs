@@ -170,9 +170,9 @@ namespace Dapple.LayerGeneration
                oServer = new WMSList(serverDir.Uri.ToBaseUri(), serverDir.CapabilitiesFilePath);
                serverDir.ChangeName(oServer.Name);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-               serverDir.SetLoadFailed(e.Message);
+               serverDir.SetLoadFailed("Unable to parse server capabilities");
                return;
             }
 
