@@ -1149,16 +1149,24 @@ namespace Dapple
 			}
 		}
 
-		private void DisplayMetadataDocument(String szMessage)
+		private void DisplayMetadataDocument(String strFilename)
 		{
 			c_wbMetadata.Visible = true;
-			Uri metaUri = new Uri(szMessage);
+			Uri metaUri = new Uri(strFilename);
 			if (!metaUri.Equals(c_wbMetadata.Url))
 			{
 				// --- Delete the file we were pointing to before ---
 				if (c_wbMetadata.Url != null && c_wbMetadata.Url.Scheme.Equals("file"))
 				{
-					File.Delete(c_wbMetadata.Url.LocalPath);
+					try
+					{
+						File.Delete(c_wbMetadata.Url.LocalPath);
+					}
+					catch (IOException)
+					{
+						// --- Not a big deal if we can't delete a temp. file, Dapple
+						// --- empties the folder each time it starts up anyway
+					}
 				}
 				c_wbMetadata.Url = metaUri;
 			}
