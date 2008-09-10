@@ -182,6 +182,7 @@ namespace Dapple.LayerGeneration
                return;
             }
 
+				serverDir.Clear();
             foreach (WMSLayer layer in oServer.Layers)
             {
                // Each server's layers are compacted into one root parent layer; don't add that root to the tree
@@ -330,5 +331,11 @@ namespace Dapple.LayerGeneration
       {
          ((WMSCatalogBuilder)Parent).Enable(this);
       }
-   }
+
+		internal void Clear()
+		{
+			m_colChildren.Clear();
+			m_colSublist.Clear();
+		}
+	}
 }

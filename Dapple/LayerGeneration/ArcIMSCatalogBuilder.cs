@@ -168,6 +168,7 @@ namespace Dapple.LayerGeneration
                return;
             }
 
+				serverDir.Clear();
             foreach (XmlNode nServiceNode in oNodeList)
             {
 					XmlElement oLocaleNode = nServiceNode.SelectSingleNode("ENVIRONMENT/LOCALE") as XmlElement;
@@ -326,6 +327,12 @@ namespace Dapple.LayerGeneration
 				}
 				return false;
 			}
+		}
+
+		internal void Clear()
+		{
+			m_colChildren.Clear();
+			m_colSublist.Clear();
 		}
 	}
 
