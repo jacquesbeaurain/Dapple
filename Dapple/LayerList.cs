@@ -1283,10 +1283,7 @@ namespace Dapple
 					iExportPixelsX = (int)(oViewedArea.Longitude * dPixelsPerDegree);
 					iExportPixelsY = (int)(oViewedArea.Latitude * dPixelsPerDegree);
 
-					System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("fr-FR");
-					System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.CreateSpecificCulture("fr-FR");
-
-               // Make geotiff metadata file to use for georeferencing images
+					// Make geotiff metadata file to use for georeferencing images
                szGeoTiff = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                using (StreamWriter sw = new StreamWriter(szGeoTiff, false))
                {
