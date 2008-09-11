@@ -411,7 +411,22 @@ namespace Dapple.LayerGeneration
 				{
 					try
 					{
-						return m_oServer.Command.GetXMLMetaData(m_hDataSet);
+						XmlDocument oMetaDoc = m_oServer.Command.GetXMLMetaData(m_hDataSet);
+
+						// --- Remove all xml-stylesheet processing instructions in the metadata. This is
+						// --- necessary in cases where someone catalogs extracted data, and there would
+						// --- otherwise be two processing instructions, where the first one most likely
+						// --- pointed to a file that can't be found
+
+						for (int count = oMetaDoc.ChildNodes.Count - 1; count >= 0; count--)
+						{
+							if (oMetaDoc.ChildNodes[count].NodeType == XmlNodeType.ProcessingInstruction && oMetaDoc.ChildNodes[count].Name.Equals("xml-stylesheet"))
+							{
+								oMetaDoc.RemoveChild(oMetaDoc.ChildNodes[count]);
+							}
+						}
+
+						return oMetaDoc;
 					}
 					catch (Geosoft.Dap.DapException)
 					{
