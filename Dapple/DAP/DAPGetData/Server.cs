@@ -554,18 +554,30 @@ namespace Geosoft.GX.DAPGetData
 		/// </summary>
 		public void UpdateConfigurationIfNecessary()
 		{
+			String strConfigEdition, strEdition;
+
 			try
 			{
-				String strConfigEdition, strEdition;
+				if ('e'.Equals('e')) throw new System.Net.WebException("404d");
 				m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
-
-				if (m_strCacheVersion != strConfigEdition)
-					UpdateConfiguration();
 			}
-			catch (System.Net.WebException)
+			catch (System.Net.WebException ex)
 			{
 				// --- Failed to get the configuration ---
+				Status = ServerStatus.OffLine;
+				GetDapError.Instance.Write("UpdateConfigurationIfNecessary, Get Catalog Edition (" + m_strUrl + ") - " + ex.Message);
+				return;
 			}
+			catch (DapException ex)
+			{
+				// --- Failed to get the configuration ---
+				Status = ServerStatus.OffLine;
+				GetDapError.Instance.Write("UpdateConfigurationIfNecessary, Get Catalog Edition (" + m_strUrl + ") - " + ex.Message);
+				return;
+			}
+
+			if (m_strCacheVersion != strConfigEdition)
+				UpdateConfiguration();
 		}
 
 

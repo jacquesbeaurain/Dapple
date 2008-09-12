@@ -711,6 +711,11 @@ namespace Geosoft.Dap.Xml
 				hResponseDocument = new System.Xml.XmlDocument();
 				hResponseDocument.Load(oResponse);
 			}
+			catch (System.Xml.XmlException)
+			{
+				hResponseDocument = null;
+				throw new DapException("Error reading server response");
+			}
 			catch (Exception e)
 			{
 				hResponseDocument = null;
