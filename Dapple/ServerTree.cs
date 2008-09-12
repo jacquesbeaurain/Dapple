@@ -1198,9 +1198,11 @@ namespace Dapple
       {
          base.OnNodeMouseClick(e);
 
-         if ((e.Button & MouseButtons.Right) == MouseButtons.Right && e.Node != null)
+         if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
          {
             this.SelectedNode = e.Node;
+
+				if (SelectedNode == null) return;
 
             if (SelectedNode == m_hDAPRootNode || SelectedNode == m_hWMSRootNode || SelectedNode == m_hArcIMSRootNode)
             {
