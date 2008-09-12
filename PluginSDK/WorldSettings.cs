@@ -1002,18 +1002,16 @@ namespace WorldWind
       private bool m_UseBelowNormalPriorityUpdateThread = false;
       private bool m_AlwaysRenderWindow = false;
 
-      private bool convertDownloadedImagesToDds = true;
       [Browsable(true), Category("3D settings")]
-      [Description("Enables image conversion to DDS files when loading images. TextureFormat controls the sub-format of the DDS file.")]
+      [Description("This feature is not supported in Dapple and will always return false.")]
       public bool ConvertDownloadedImagesToDds
       {
          get
          {
-            return convertDownloadedImagesToDds;
+            return false;
          }
          set
          {
-            convertDownloadedImagesToDds = value;
          }
       }
 

@@ -324,33 +324,6 @@ namespace WorldWind
 				File.Delete(filename);
 		}
 
-
-		/// <summary>
-		/// Converts image file to DDS
-		/// </summary>
-		protected virtual void ConvertImage(Texture texture, string filePath)
-		{
-			if (filePath.ToLower().EndsWith(".dds"))
-				// Image is already DDS
-				return;
-
-			// User has selected to convert downloaded images to DDS
-			string convertedPath = Path.Combine(
-			   Path.GetDirectoryName(filePath),
-			   Path.GetFileNameWithoutExtension(filePath) + ".dds");
-
-			TextureLoader.Save(convertedPath, ImageFileFormat.Dds, texture);
-
-			// Delete the old file
-			try
-			{
-				File.Delete(filePath);
-			}
-			catch
-			{
-			}
-		}
-
 		public Texture LoadFile(IGeoSpatialDownloadTile tile)
 		{
 			string filePath = GetLocalPath(tile);
@@ -415,10 +388,6 @@ namespace WorldWind
 				if (DateTime.UtcNow > expiry)
 					QueueDownload(tile, filePath);
 			}
-
-			// Only convert images that are downloadable (don't mess with things the user put here!)
-			if (World.Settings.ConvertDownloadedImagesToDds && IsDownloadableLayer)
-				ConvertImage(texture, filePath);
 
 			return texture;
 		}
