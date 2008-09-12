@@ -1198,7 +1198,7 @@ namespace Dapple
       {
          base.OnNodeMouseClick(e);
 
-         if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+         if ((e.Button & MouseButtons.Right) == MouseButtons.Right && e.Node != null)
          {
             this.SelectedNode = e.Node;
 
