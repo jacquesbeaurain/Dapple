@@ -2702,35 +2702,26 @@ namespace Dapple
 		private bool OpenView(string filename, bool bGoto, bool bLoadLayers)
 		{
 			bool bOldView = false;
-			try
+
+			if (File.Exists(filename))
 			{
-				if (File.Exists(filename))
+				DappleView view = new DappleView(filename);
+				bool bShowBlueMarble = true;
+
+				if (view.View.Hasshowbluemarble())
+					bShowBlueMarble = view.View.showbluemarble.Value;
+
+				if (bGoto && view.View.Hascameraorientation())
 				{
-					DappleView view = new DappleView(filename);
-					bool bShowBlueMarble = true;
-
-					if (view.View.Hasshowbluemarble())
-						bShowBlueMarble = view.View.showbluemarble.Value;
-
-					if (bGoto && view.View.Hascameraorientation())
-					{
-						cameraorientationType orient = view.View.cameraorientation;
-						c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-						c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
-					}
-
-					this.c_oServerTree.LoadFromView(view);
-					if (bLoadLayers && view.View.Hasactivelayers())
-					{
-						bOldView = c_oLayerList.CmdLoadFromView(view, c_oServerTree);
-					}
+					cameraorientationType orient = view.View.cameraorientation;
+					c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+					c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
 				}
-			}
-			catch (Exception e)
-			{
-				if (MessageBox.Show(this, "Error loading view from " + filename + "\n(" + e.Message + ")\nDo you want to open the Dapple default view?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+
+				this.c_oServerTree.LoadFromView(view);
+				if (bLoadLayers && view.View.Hasactivelayers())
 				{
-					return OpenView(Path.Combine(Settings.DataPath, DefaultView), true, true);
+					bOldView = c_oLayerList.CmdLoadFromView(view, c_oServerTree);
 				}
 			}
 
