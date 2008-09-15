@@ -190,5 +190,31 @@ namespace Dapple.Extract
 				throw new ApplicationException("Unknown SPF download option");
 			}
 		}
+
+		private void tbFilename_Validating(object sender, CancelEventArgs e)
+		{
+			if (String.IsNullOrEmpty(tbFilename.Text))
+			{
+				m_oErrorProvider.SetError(tbFilename, "Field cannot be empty.");
+				e.Cancel = true;
+			}
+			else
+			{
+				m_oErrorProvider.SetError(tbFilename, String.Empty);
+			}
+		}
+
+		private void tbGroupName_Validating(object sender, CancelEventArgs e)
+		{
+			if (String.IsNullOrEmpty(tbGroupName.Text))
+			{
+				m_oErrorProvider.SetError(tbGroupName, "Field cannot be empty.");
+				e.Cancel = true;
+			}
+			else
+			{
+				m_oErrorProvider.SetError(tbGroupName, String.Empty);
+			}
+		}
    }
 }

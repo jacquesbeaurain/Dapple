@@ -125,7 +125,6 @@ namespace Dapple.Extract
 			// bCancel
 			// 
 			this.bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.bCancel.CausesValidation = false;
 			this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.bCancel.Location = new System.Drawing.Point(452, 17);
 			this.bCancel.Name = "bCancel";
@@ -191,6 +190,7 @@ namespace Dapple.Extract
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
 			this.CancelButton = this.bCancel;
 			this.ClientSize = new System.Drawing.Size(547, 498);
 			this.Controls.Add(this.label1);

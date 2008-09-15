@@ -213,7 +213,9 @@ namespace Dapple.Extract
 			else
 			{
 				oControl = new PictureWithoutResolution(oBuilder);
-			}         
+			}
+
+			if (oControl != null) oControl.ErrorProvider = cErrorProvider;
          return oControl;
       }
       #endregion
@@ -246,6 +248,12 @@ namespace Dapple.Extract
       /// <param name="e"></param>
       private void bDownload_Click(object sender, EventArgs e)
       {
+			if (!this.ValidateChildren())
+			{
+				this.DialogResult = DialogResult.None;
+				return;
+			}
+
 			if (!DoFilenamePrompt())
 			{
 				this.DialogResult = DialogResult.None;

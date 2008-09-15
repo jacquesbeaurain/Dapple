@@ -28,8 +28,17 @@ namespace Dapple.Extract
       /// </summary>
       private void InitializeComponent()
       {
-         components = new System.ComponentModel.Container();
-         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.SuspendLayout();
+			// 
+			// DownloadOptions
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Name = "DownloadOptions";
+			this.Padding = new System.Windows.Forms.Padding(0, 0, 20, 0);
+			this.Size = new System.Drawing.Size(266, 153);
+			this.ResumeLayout(false);
+
       }
 
       #endregion

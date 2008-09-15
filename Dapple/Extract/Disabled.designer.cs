@@ -38,7 +38,7 @@ namespace Dapple.Extract
 							| System.Windows.Forms.AnchorStyles.Right)));
 			this.lNoOptions.Location = new System.Drawing.Point(3, 0);
 			this.lNoOptions.Name = "lNoOptions";
-			this.lNoOptions.Size = new System.Drawing.Size(163, 300);
+			this.lNoOptions.Size = new System.Drawing.Size(474, 200);
 			this.lNoOptions.TabIndex = 0;
 			this.lNoOptions.Text = "This data layer will not be extracted.";
 			// 
@@ -48,7 +48,8 @@ namespace Dapple.Extract
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.lNoOptions);
 			this.Name = "Disabled";
-			this.Size = new System.Drawing.Size(169, 300);
+			this.Padding = new System.Windows.Forms.Padding(0, 0, 20, 0);
+			this.Size = new System.Drawing.Size(500, 200);
 			this.ResumeLayout(false);
 
       }

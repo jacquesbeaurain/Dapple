@@ -45,6 +45,7 @@ namespace Dapple.Extract
       protected WorldWind.GeographicBoundingBox m_oViewedAoi;
       protected WorldWind.GeographicBoundingBox m_oMapAoi;
       protected string m_strMapProjection;
+		protected ErrorProvider m_oErrorProvider;
       #endregion
 
 
@@ -75,6 +76,16 @@ namespace Dapple.Extract
 		public virtual bool OpenInMap
 		{
 			get { return true; }
+		}
+
+		[DefaultValue(null)]
+		[Description("The ErrorProvider used to notify users of errors.")]
+		[Browsable(true)]
+		[Category("Behavior")]
+		public virtual ErrorProvider ErrorProvider
+		{
+			get { return m_oErrorProvider; }
+			set { m_oErrorProvider = value; }
 		}
 
 		public virtual DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)

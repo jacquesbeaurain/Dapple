@@ -28,65 +28,64 @@ namespace Dapple.Extract
       /// </summary>
       private void InitializeComponent()
       {
-         this.lDownload = new System.Windows.Forms.Label();
-         this.cbDownload = new System.Windows.Forms.ComboBox();
-         this.tbFilename = new System.Windows.Forms.TextBox();
-         this.lFileName = new System.Windows.Forms.Label();
-         this.SuspendLayout();
-         // 
-         // lDownload
-         // 
-         this.lDownload.AutoSize = true;
-         this.lDownload.Location = new System.Drawing.Point(3, 32);
-         this.lDownload.Name = "lDownload";
-         this.lDownload.Size = new System.Drawing.Size(95, 13);
-         this.lDownload.TabIndex = 2;
-         this.lDownload.Text = "Download options:";
-         // 
-         // cbDownload
-         // 
-         this.cbDownload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.cbDownload.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-         this.cbDownload.FormattingEnabled = true;
-         this.cbDownload.Items.AddRange(new object[] {
+			this.lDownload = new System.Windows.Forms.Label();
+			this.cbDownload = new System.Windows.Forms.ComboBox();
+			this.tbFilename = new System.Windows.Forms.TextBox();
+			this.lFileName = new System.Windows.Forms.Label();
+			this.SuspendLayout();
+			// 
+			// lDownload
+			// 
+			this.lDownload.AutoSize = true;
+			this.lDownload.Location = new System.Drawing.Point(3, 32);
+			this.lDownload.Name = "lDownload";
+			this.lDownload.Size = new System.Drawing.Size(95, 13);
+			this.lDownload.TabIndex = 2;
+			this.lDownload.Text = "Download options:";
+			// 
+			// cbDownload
+			// 
+			this.cbDownload.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbDownload.FormattingEnabled = true;
+			this.cbDownload.Items.AddRange(new object[] {
             "Download And Open",
             "Download Only"});
-         this.cbDownload.Location = new System.Drawing.Point(104, 29);
-         this.cbDownload.Name = "cbDownload";
-         this.cbDownload.Size = new System.Drawing.Size(93, 21);
-         this.cbDownload.TabIndex = 3;
-         // 
-         // tbFilename
-         // 
-         this.tbFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                     | System.Windows.Forms.AnchorStyles.Right)));
-         this.tbFilename.Location = new System.Drawing.Point(104, 3);
-         this.tbFilename.Name = "tbFilename";
-         this.tbFilename.Size = new System.Drawing.Size(93, 20);
-         this.tbFilename.TabIndex = 1;
-         // 
-         // lFileName
-         // 
-         this.lFileName.AutoSize = true;
-         this.lFileName.Location = new System.Drawing.Point(3, 6);
-         this.lFileName.Name = "lFileName";
-         this.lFileName.Size = new System.Drawing.Size(68, 13);
-         this.lFileName.TabIndex = 0;
-         this.lFileName.Text = "Folder name:";
-         // 
-         // ArcGIS
-         // 
-         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.Controls.Add(this.cbDownload);
-         this.Controls.Add(this.lDownload);
-         this.Controls.Add(this.tbFilename);
-         this.Controls.Add(this.lFileName);
-         this.Name = "ArcGIS";
-         this.Size = new System.Drawing.Size(200, 300);
-         this.ResumeLayout(false);
-         this.PerformLayout();
+			this.cbDownload.Location = new System.Drawing.Point(104, 29);
+			this.cbDownload.Name = "cbDownload";
+			this.cbDownload.Size = new System.Drawing.Size(250, 21);
+			this.cbDownload.TabIndex = 3;
+			// 
+			// tbFilename
+			// 
+			this.tbFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.tbFilename.Location = new System.Drawing.Point(104, 3);
+			this.tbFilename.Name = "tbFilename";
+			this.tbFilename.Size = new System.Drawing.Size(373, 20);
+			this.tbFilename.TabIndex = 1;
+			this.tbFilename.Validating += new System.ComponentModel.CancelEventHandler(this.tbFilename_Validating);
+			// 
+			// lFileName
+			// 
+			this.lFileName.AutoSize = true;
+			this.lFileName.Location = new System.Drawing.Point(3, 6);
+			this.lFileName.Name = "lFileName";
+			this.lFileName.Size = new System.Drawing.Size(68, 13);
+			this.lFileName.TabIndex = 0;
+			this.lFileName.Text = "Folder name:";
+			// 
+			// ArcGIS
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.cbDownload);
+			this.Controls.Add(this.lDownload);
+			this.Controls.Add(this.tbFilename);
+			this.Controls.Add(this.lFileName);
+			this.Name = "ArcGIS";
+			this.Size = new System.Drawing.Size(500, 200);
+			this.ResumeLayout(false);
+			this.PerformLayout();
 
       }
 

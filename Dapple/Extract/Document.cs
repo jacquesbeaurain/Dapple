@@ -72,5 +72,18 @@ namespace Dapple.Extract
 				return DuplicateFileCheckResult.Yes;
 			}
 		}
+
+		private void tbFilename_Validating(object sender, CancelEventArgs e)
+		{
+			if (String.IsNullOrEmpty(tbFilename.Text))
+			{
+				m_oErrorProvider.SetError(tbFilename, "Field cannot be empty.");
+				e.Cancel = true;
+			}
+			else
+			{
+				m_oErrorProvider.SetError(tbFilename, String.Empty);
+			}
+		}
    }
 }

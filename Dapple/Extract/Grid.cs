@@ -50,6 +50,19 @@ namespace Dapple.Extract
          SetDefaultResolution();
       }
 
+		public override ErrorProvider ErrorProvider
+		{
+			get
+			{
+				return base.ErrorProvider;
+			}
+			set
+			{
+				base.ErrorProvider = value;
+				oResolution.ErrorProvider = value;
+			}
+		}
+
       /// <summary>
       /// Set the default resolution
       /// </summary>
@@ -116,6 +129,19 @@ namespace Dapple.Extract
 			else
 			{
 				return DuplicateFileCheckResult.Yes;
+			}
+		}
+
+		private void tbFilename_Validating(object sender, CancelEventArgs e)
+		{
+			if (String.IsNullOrEmpty(tbFilename.Text))
+			{
+				m_oErrorProvider.SetError(tbFilename, "Field cannot be empty.");
+				e.Cancel = true;
+			}
+			else
+			{
+				m_oErrorProvider.SetError(tbFilename, String.Empty);
 			}
 		}
    }

@@ -21,6 +21,9 @@ namespace Dapple.Extract
       private double m_dCellConversionFactor = 1;
       private string m_strResolutionUnits = string.Empty;
       private string m_strCellUnits = string.Empty;
+		private double m_dMinResolution;
+		private double m_dMaxResolution;
+		private ErrorProvider m_oErrorProvider;
 
       private double m_dPercentOverlap = 1.0;
 
@@ -64,6 +67,16 @@ namespace Dapple.Extract
             return (ResolutionValue * m_dResolutionConversionFactor) / m_dCellConversionFactor;
          }
       }
+
+		[DefaultValue(null)]
+		[Description("The ErrorProvider used to notify users of errors.")]
+		[Browsable(true)]
+		[Category("Behavior")]
+		public ErrorProvider ErrorProvider
+		{
+			get { return m_oErrorProvider; }
+			set { m_oErrorProvider = value; }
+		}
       #endregion
 
       public Resolution()
@@ -149,12 +162,16 @@ namespace Dapple.Extract
 
             if (m_bLatLon) {
                tbRes.Text = DisplayInMetres();
-               lMinResolution.Text = Round(m_dCellSize * m_dCellConversionFactor).ToString();
-               lMaxResolution.Text = Round(m_iSize * m_dCellSize * m_dCellConversionFactor).ToString();
+					m_dMinResolution = Round(m_dCellSize * m_dCellConversionFactor);
+               lMinResolution.Text = m_dMinResolution.ToString();
+					m_dMaxResolution = Round(m_iSize * m_dCellSize * m_dCellConversionFactor);
+               lMaxResolution.Text = m_dMaxResolution.ToString();
             } else {
                tbRes.Text = m_dResolution.ToString();
-               lMinResolution.Text = Round((m_dCellSize * m_dCellConversionFactor) / m_dResolutionConversionFactor).ToString();
-               lMaxResolution.Text = Round((m_iSize * m_dCellSize * m_dCellConversionFactor) / m_dResolutionConversionFactor).ToString();
+					m_dMinResolution = Round((m_dCellSize * m_dCellConversionFactor) / m_dResolutionConversionFactor);
+               lMinResolution.Text = m_dMinResolution.ToString();
+					m_dMaxResolution = Round((m_iSize * m_dCellSize * m_dCellConversionFactor) / m_dResolutionConversionFactor);
+               lMaxResolution.Text = m_dMaxResolution.ToString();
             }
 
             CalculateScrollPosition();
@@ -245,8 +262,10 @@ namespace Dapple.Extract
             tbResolution.Minimum = 0;
             tbResolution.TickFrequency = 1;
 
-            lMinResolution.Text = Round((double)m_oResolutions.Keys[0] * m_dCellConversionFactor).ToString();
-            lMaxResolution.Text = Round((double)m_oResolutions.Keys[m_oResolutions.Count - 1] * m_dCellConversionFactor).ToString();
+				m_dMinResolution = Round((double)m_oResolutions.Keys[0] * m_dCellConversionFactor);
+            lMinResolution.Text = m_dMinResolution.ToString();
+				m_dMaxResolution = Round((double)m_oResolutions.Keys[m_oResolutions.Count - 1] * m_dCellConversionFactor);
+            lMaxResolution.Text = m_dMaxResolution.ToString();
 
             
             // --- calculate the overlap extents ---
@@ -710,5 +729,29 @@ namespace Dapple.Extract
 
       }
       #endregion
+
+		private void tbRes_Validating(object sender, CancelEventArgs e)
+		{
+			double dRes;
+			if (!Double.TryParse(tbRes.Text, out dRes))
+			{
+				if (m_oErrorProvider != null) m_oErrorProvider.SetError(tbRes, "Invalid numeric value.");
+				e.Cancel = true;
+			}
+			else if (dRes < m_dMinResolution)
+			{
+				if (m_oErrorProvider != null) m_oErrorProvider.SetError(tbRes, "Resolution is too small.");
+				e.Cancel = true;
+			}
+			else if (dRes > m_dMaxResolution)
+			{
+				if (m_oErrorProvider != null) m_oErrorProvider.SetError(tbRes, "Resolution is too large.");
+				e.Cancel = true;
+			}
+			else
+			{
+				m_oErrorProvider.SetError(tbRes, String.Empty);
+			}
+		}
    }
 }
