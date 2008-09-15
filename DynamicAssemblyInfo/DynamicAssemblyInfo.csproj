@@ -52,6 +52,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>$(TargetPath) $(SolutionDir)Dapple\version.txt $(SolutionDir)Version.Assembly.cs</PostBuildEvent>
+    <PostBuildEvent>"$(TargetPath)" "$(SolutionDir)Dapple\version.txt" "$(SolutionDir)Version.Assembly.cs"</PostBuildEvent>
   </PropertyGroup>
 </Project>
