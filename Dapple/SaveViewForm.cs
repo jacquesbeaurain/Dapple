@@ -45,7 +45,13 @@ namespace Dapple
          }
          catch
          {
-				// m_fOpenEditControl is most likely null!
+				try
+				{
+					File.Delete(Path.Combine(strConfigDir, "viewhistory.cfg"));
+				}
+				catch
+				{
+				}
          }
          m_fEditControl = new Geosoft.OpenGX.UtilityForms.FEditControl();
          m_fEditControl.FilterIndex = 1;
@@ -95,6 +101,7 @@ namespace Dapple
       #endregion
 
       #region Event Handlers
+
       private void btnOK_Click(object sender, EventArgs e)
       {
          string strError = "";
@@ -133,6 +140,7 @@ namespace Dapple
          e.Graphics.Clear(Color.Black);
          e.Graphics.DrawImage(m_imgPreview, new Rectangle(x, y, (int)Math.Round((double)m_imgPreview.Width / scale), (int)Math.Round((double)m_imgPreview.Height / scale)));
       }
+
       #endregion
    }
 }
