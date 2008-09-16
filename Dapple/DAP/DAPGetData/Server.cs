@@ -558,7 +558,6 @@ namespace Geosoft.GX.DAPGetData
 
 			try
 			{
-				if ('e'.Equals('e')) throw new System.Net.WebException("404d");
 				m_oCommand.GetCatalogEdition(out strConfigEdition, out strEdition);
 			}
 			catch (System.Net.WebException ex)
