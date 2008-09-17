@@ -30,12 +30,22 @@ namespace MWA.Progress
 		private System.Threading.ManualResetEvent abortEvent = new System.Threading.ManualResetEvent(false);
 		private bool requiresClose = true;
 
-		public ProgressWindow()
+		public ProgressWindow() : this(true)
+		{
+		}
+
+		public ProgressWindow(bool blAllowCancel)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+			if (!blAllowCancel)
+			{
+				cancelButton.Visible = false;
+				progressBar.Width = progressBar.Parent.ClientSize.Width - 2 * progressBar.Left;
+			}
 		}
 
 		#region Implementation of IProgressCallback
@@ -130,6 +140,7 @@ namespace MWA.Progress
 		private void DoSetText( String text )
 		{
 			label.Text = text;
+			label.Refresh();
 		}
 
 		private void DoIncrement( int val )
@@ -217,6 +228,7 @@ namespace MWA.Progress
 		private void UpdateStatusText()
 		{
 			Text = titleRoot + String.Format( " - {0}% complete", (progressBar.Maximum - progressBar.Minimum) > 0 ? (progressBar.Value * 100 ) / (progressBar.Maximum - progressBar.Minimum) : 0);
+			Refresh();
 		}
 		
 		/// <summary>

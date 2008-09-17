@@ -16,6 +16,8 @@ using Geosoft.DotNetTools;
 using WorldWind.PluginEngine;
 using System.Collections;
 using System.Drawing;
+using MWA.Progress;
+using System.Threading;
 
 namespace Dapple
 {
@@ -764,24 +766,74 @@ namespace Dapple
             {
                if (entry.builderdirectory.specialcontainer.Value == "ImageServers")
                   m_hTileRootNode.Tag = entry.builderdirectory;
+					if (entry.builderdirectory.specialcontainer.Value == "DAPServers")
+						LoadDapServersWithProgress(entry);
             }
 
             for (i = 0; i < entry.builderdirectory.builderentryCount; i++)
                LoadServers(entry.builderdirectory.GetbuilderentryAt(i));
-         }
-         else if (entry.Hasdapcatalog())
-         {
-            Geosoft.GX.DAPGetData.Server dapServer;
-				if (!entry.dapcatalog.url.Value.Equals(PERSONAL_DAP_URI))
-				{
-					AddDAPServer(entry.dapcatalog.url.Value, out dapServer, entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, false);
-				}
          }
          else if (entry.Haswmscatalog())
             AddWMSServer(entry.wmscatalog.capabilitiesurl.Value, false, entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true, false);
          else if (entry.Hasarcimscatalog())
             AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), false, entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true, false);
       }
+
+		/// <summary>
+		/// Loads DAP servers from a DAPServers builderentryType.
+		/// </summary>
+		/// <param name="entry"></param>
+		private void LoadDapServersWithProgress(builderentryType entry)
+		{
+			if (entry.builderdirectory.builderentryCount > 0)
+			{
+				ProgressWindow oProgress = new ProgressWindow(false);
+				oProgress.Text = "Loading DAP Servers";
+				ThreadPool.QueueUserWorkItem(new WaitCallback(LoadDapServers), new Object[] { entry, oProgress });
+				oProgress.ShowDialog();
+			}
+		}
+
+		/// <summary>
+		/// Loops through all the DAP catalog nodes in a view, adding them to the server tree
+		/// and driving a Progress window. Runs on a background worker thread so that the event thread
+		/// is as unblocked as possible.
+		/// </summary>
+		/// <param name="oParams"></param>
+		private void LoadDapServers(object oParams)
+		{
+			builderentryType entry = ((Object[])oParams)[0] as builderentryType;
+			ProgressWindow oProgress = ((Object[])oParams)[1] as ProgressWindow;
+
+			oProgress.Begin(0, entry.builderdirectory.builderentryCount);
+
+			for (int i = 0; i < entry.builderdirectory.builderentryCount; i++)
+			{
+				dapcatalogType oDapCatalog = entry.builderdirectory.GetbuilderentryAt(i).dapcatalog;
+				oProgress.StepTo(i);
+				oProgress.SetText("Contacting server '" + oDapCatalog.url.Value + "'...");
+				Invoke(new LoadDapServerDelegate(LoadDapServerOnEventThread), oDapCatalog);
+				Application.DoEvents();
+			}
+
+			oProgress.End();
+		}
+
+		private delegate void LoadDapServerDelegate(dapcatalogType oDapCatalog);
+		/// <summary>
+		/// Loads a single DAP server from a view. Needs to run on event thread because the implementation of
+		/// AddDAPServer makes calls to UI methods.
+		/// </summary>
+		/// <param name="oDapCatalog"></param>
+		private void LoadDapServerOnEventThread(dapcatalogType oDapCatalog)
+		{
+			Geosoft.GX.DAPGetData.Server dapServer;
+			if (!oDapCatalog.url.Value.Equals(PERSONAL_DAP_URI))
+			{
+				AddDAPServer(oDapCatalog.url.Value, out dapServer, oDapCatalog.Hasenabled() ? oDapCatalog.enabled.Value : true, false);
+			}
+		}
+
 		#endregion
 
 		#region Search
