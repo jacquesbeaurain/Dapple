@@ -977,6 +977,12 @@ namespace Dapple
 					if (treeNode.Tag is ArcIMSServerBuilder && ((ArcIMSServerBuilder)treeNode.Tag).HasUnloadedServices)
 						continue;
 
+
+					// --- Don't remove VE root node ---
+
+					if (treeNode == m_hVERootNode)
+						continue;
+
 					treeNode.Remove();
 				}
 			}
