@@ -52,6 +52,12 @@ namespace Dapple.LayerGeneration
          m_dMaxScale = dMaxScale;
 			if (m_dMaxScale > DefaultMaxScale)
 				m_dMaxScale = DefaultMaxScale;
+			if (m_dMaxScale < m_dMinScale)
+			{
+				// --- Weird scale values, ignore them and hope for the best ---
+				m_dMaxScale = DefaultMaxScale;
+				m_dMinScale = DefaultMinScale;
+			}
 
          m_dLevelZeroTileSizeDegrees = 22.5;
          m_iLevels = 1;
