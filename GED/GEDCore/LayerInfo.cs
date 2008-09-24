@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml;
 using Geosoft.Dap;
 using Geosoft.Dap.Common;
+using System.Net;
 
 namespace GED.Core
 {
@@ -131,6 +132,10 @@ namespace GED.Core
 						DownloadDapImage(strCacheFilename, oTile);
 					}
 					catch (DapException)
+					{
+						return null;
+					}
+					catch (WebException)
 					{
 						return null;
 					}
