@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using GED.App.Properties;
 using GED.App.UI.Forms;
 using GED.Core;
+using System.IO;
 
 namespace GED.App
 {
@@ -15,6 +16,8 @@ namespace GED.App
 		public static void Main(String[] args)
 		{
 			MaintainAndApplyUserSettings();
+
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
 			GoogleEarth.Init();
 			GED.WebService.ControlPanel.Start();
@@ -31,6 +34,13 @@ namespace GED.App
 				// --- Deinit program context ---
 				GED.WebService.ControlPanel.Stop();
 			}
+		}
+
+		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			Exception ex = e.ExceptionObject as Exception;
+
+			File.WriteAllText(Path.Combine(Application.StartupPath, "abort.txt"), ex.GetType().ToString() + ": " + ex.Message + Environment.NewLine + ex.StackTrace);
 		}
 
 		/// <summary>
