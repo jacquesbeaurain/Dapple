@@ -11,12 +11,13 @@ namespace Dapple.Extract
       {
          public enum ClientType
          {
-				[Description("Oasis Montaj")]
+				[Description("Oasis montaj")]
             OasisMontaj,
 				[Description("ArcMap")]
             ArcMAP,
 				[Description("MapInfo")]
             MapInfo,
+				[Description("the host application")]
             None
          }
       }

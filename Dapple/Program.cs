@@ -323,6 +323,22 @@ namespace Dapple
 								return;
 							}
 						}
+						catch (System.Runtime.Remoting.RemotingException)
+						{
+							if (g_blTestingMode == true)
+							{
+								throw;
+							}
+							else
+							{
+								ShowMessageBox(
+									"Dapple has experienced an error attempting to connect to '" + EnumUtils.GetDescription(eClientType) + "'. Restarting the application or your computer may fix this problem.",
+									"Dapple Startup",
+									MessageBoxButtons.OK,
+									MessageBoxDefaultButton.Button1,
+									MessageBoxIcon.Error);
+							}
+						}
 					}
 					else
 					{
