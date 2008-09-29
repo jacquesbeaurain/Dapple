@@ -63,6 +63,19 @@ namespace Dapple
             DialogResult = DialogResult.None;
             return;
          }
+
+			if (!oServerUrl.Scheme.Equals("http"))
+			{
+				Program.ShowMessageBox(
+					"Only web urls are permitted (must start with \"http://\")",
+					"Add WMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
+
 			txtWmsURL.Text = oServerUrl.ToString();
       }
 

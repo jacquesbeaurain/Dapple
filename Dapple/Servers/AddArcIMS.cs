@@ -59,6 +59,18 @@ namespace Dapple
 				return;
 			}
 
+			if (!oServerUrl.Scheme.Equals("http"))
+			{
+				Program.ShowMessageBox(
+					"Only web urls are permitted (must start with \"http://\")",
+					"Add ArcIMS Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
+
 			if (oServerUrl.AbsolutePath.Equals("/"))
 			{
 				String szUpdatedPath = oServerUrl.ToString();

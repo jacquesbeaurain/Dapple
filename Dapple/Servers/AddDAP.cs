@@ -66,6 +66,19 @@ namespace Dapple
 				DialogResult = DialogResult.None;
 				return;
 			}
+
+			if (!oServerUrl.Scheme.Equals("http"))
+			{
+				Program.ShowMessageBox(
+					"Only web urls are permitted (must start with \"http://\")",
+					"Add DAP Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
+
 			txtDapURL.Text = oServerUrl.ToString();
       }
    }
