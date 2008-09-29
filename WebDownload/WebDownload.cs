@@ -802,13 +802,11 @@ namespace WorldWind.Net
 			if (request != null)
 			{
 				request.Abort();
-				request = null;
 			}
 
 			if (ContentStream != null)
 			{
 				ContentStream.Close();
-				ContentStream = null;
 			}
 
 			if (DownloadStartTime != DateTime.MinValue)
