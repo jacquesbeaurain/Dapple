@@ -16,7 +16,7 @@
 							<RegistryValue Id="DFEExt" Root="HKCU" Key="Software\Classes\.dapple" Value="Dapple View" Type="string" KeyPath="yes" />
 							<RemoveRegistryKey Root="HKCU" Key="Software\Classes\.dapple" Action="removeOnUninstall" />
 						</Component>
-						<Component Id="dapple_file_class" Guid="">
+						<Component Id="dapple_file_class" Guid="{411B410F-CB75-4316-BE75-38B5888CC634}">
 							<RegistryValue Id="DFCRoot" Root="HKCU" Key="Software\Classes\Dapple View" Value="Dapple View" Type="string" KeyPath="yes" />
 							<RegistryValue Id="DFCDesc" Root="HKCU" Key="Software\Classes\Dapple View\Shell\Open" Value="Open &amp;Dapple View" Type="string" KeyPath="no" />
 							<RegistryValue Id="DFCOpenCmd" Root="HKCU" Key="Software\Classes\Dapple View\Shell\Open\Command" Value="&quot;[INSTALLDIR]Dapple.exe&quot; &quot;%1&quot;" Type="string" KeyPath="no" />
