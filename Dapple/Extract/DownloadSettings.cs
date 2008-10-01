@@ -62,7 +62,16 @@ namespace Dapple.Extract
 					rbCSNative.Checked = true;
 			}
 
-			cFolderControl.Value = System.IO.Path.GetDirectoryName(MainForm.MontajInterface.BaseDirectory());
+			String strBaseDirectory = MainForm.MontajInterface.BaseDirectory();
+			if (String.IsNullOrEmpty(strBaseDirectory))
+			{
+				cFolderControl.Value = String.Empty;
+			}
+			else
+			{
+				cFolderControl.Value = System.IO.Path.GetDirectoryName(strBaseDirectory);
+			}
+
 
          lvDatasets.SmallImageList = MainForm.DataTypeImageList;
          lvDatasets.LargeImageList = MainForm.DataTypeImageList;
@@ -352,6 +361,11 @@ namespace Dapple.Extract
 				}
 				oDisclaimers.ShowInTaskbar = false;
 
+#if DEBUG
+				ExtractDebug oDebug = new ExtractDebug(oExtractDoc);
+				oDebug.ShowDialog(this);
+#endif
+
 				if (oDisclaimers.HasDisclaimer)
 				{
 					if (oDisclaimers.ShowDialog(this) == DialogResult.OK)
@@ -404,7 +418,7 @@ namespace Dapple.Extract
 			this.ResumeLayout(true);
 		}
 
-		private bool DoDownload(System.Xml.XmlDocument oExtractDoc)
+		public bool DoDownload(System.Xml.XmlDocument oExtractDoc)
 		{
 			this.Hide();
 			m_oParentForm.Activate();

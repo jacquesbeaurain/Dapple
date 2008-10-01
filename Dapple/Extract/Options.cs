@@ -211,6 +211,7 @@ namespace Dapple.Extract
             PNG,
             JPG,
             TIFF,
+				ECW,
             Native,
             Default
          }
@@ -221,7 +222,7 @@ namespace Dapple.Extract
             DoNotDisplay
          }
          
-         public static string[] DownloadOptionStrings = new string[] { "PNG", "JPG", "TIFF", "Native", "Default" };
+         public static string[] DownloadOptionStrings = new string[] { "PNG", "JPG", "TIFF", "ECW", "Native", "Default" };
          public static string[] DisplayOptionStrings = new string[] { "Download and display", "Do not display" };
       }
 

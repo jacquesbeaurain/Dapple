@@ -129,9 +129,9 @@ namespace Dapple.Extract
 		private void SetExtension()
 		{
 			string strOption = cbDownloadOptions.SelectedItem.ToString().ToLower();
-			if (strOption == Options.Picture.DownloadOptionStrings[3].ToLower())
+			if (strOption == Options.Picture.DownloadOptionStrings[4].ToLower())
 				tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
-			else if (strOption == Options.Picture.DownloadOptionStrings[4].ToLower())
+			else if (strOption == Options.Picture.DownloadOptionStrings[5].ToLower())
 				tbFilename.Text = System.IO.Path.GetFileNameWithoutExtension(tbFilename.Text);
 			else
 				tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, "." + strOption.ToLower());

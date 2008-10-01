@@ -163,6 +163,12 @@
     <Compile Include="Extract\DatasetDisclaimer.designer.cs">
       <DependentUpon>DatasetDisclaimer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extract\ExtractDebug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extract\ExtractDebug.Designer.cs">
+      <DependentUpon>ExtractDebug.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extract\OverwriteDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -356,6 +362,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Extract\DownloadOptions.resx">
       <DependentUpon>DownloadOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\ExtractDebug.resx">
+      <DependentUpon>ExtractDebug.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extract\OverwriteDialog.resx">
       <SubType>Designer</SubType>
