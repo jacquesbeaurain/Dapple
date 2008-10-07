@@ -94,7 +94,18 @@ namespace Dapple.Extract
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          int iIndex = cbDownloadOptions.SelectedIndex;
-         string strFileName = System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), Options.Grid.DownloadOptionExtension[iIndex]);
+         string strFileName = Utility.FileSystem.SanitizeFilename(tbFilename.Text);
+			if (!String.IsNullOrEmpty(Options.Grid.DownloadOptionExtension[iIndex]))
+			{
+				strFileName = System.IO.Path.ChangeExtension(strFileName, Options.Grid.DownloadOptionExtension[iIndex]);
+			}
+			else
+			{
+				if (String.IsNullOrEmpty(System.IO.Path.GetExtension(strFileName)))
+				{
+					strFileName = System.IO.Path.ChangeExtension(strFileName, ".grd");
+				}
+			}
          strFileName = string.Format("{0}({1})", strFileName, Options.Grid.DownloadOptionQualifier[iIndex]);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");

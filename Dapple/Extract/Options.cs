@@ -137,7 +137,7 @@ namespace Dapple.Extract
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".flt",
-                                                                        string.Empty,//20
+                                                                        null,//20
                                                                         ".ers",
                                                                         ".ecw",
                                                                         ".ers",
@@ -145,14 +145,14 @@ namespace Dapple.Extract
                                                                         ".gxf",//25
 				                                                            ".gxf",
                                                                         ".dat",
-                                                                        string.Empty,
-                                                                        string.Empty,
+                                                                        null,
+                                                                        null,
                                                                         ".pix",
                                                                         ".grd",//30
                                                                         ".grd",
                                                                         ".grd",
-                                                                        string.Empty,
-                                                                        string.Empty,//35
+                                                                        null,
+                                                                        null,//35
                                                                         ".h"};
 
          public static string[] DownloadOptionQualifier = new string[] { "GRD",
