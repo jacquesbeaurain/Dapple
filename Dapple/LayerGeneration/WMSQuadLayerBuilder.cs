@@ -498,6 +498,11 @@ namespace Dapple.LayerGeneration
          return null;
       }
 
+		public override string ToString()
+		{
+			return String.Format("WMSQuadLayerBuilder, Server=\"{0}\", LayerName=\"{1}\"", m_Server.Uri.ToBaseUri(), m_wmsLayer.Name);
+		}
+
       #endregion
    }
 }

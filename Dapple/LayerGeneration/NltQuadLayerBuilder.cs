@@ -340,13 +340,22 @@ namespace Dapple.LayerGeneration
          oResElement.SetAttribute("level_zero_tilesize", LevelZeroTileSize.ToString());
          oResElement.SetAttribute("levels", Levels.ToString());
          oResElement.SetAttribute("tile_size", m_iTextureSizePixels.ToString());
-      }
+		}
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+		#region Public Methods
+
+		public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "tile";
          szServerURL = m_strServerUrl;
          szLayerId = m_strDatasetName;
-      }
-   }
+		}
+
+		public override string ToString()
+		{
+			return String.Format("NLTQuadLayerBuilder, DatasetName=\"{0}\", ServerUrl=\"{1}\"", m_strDatasetName, m_strServerUrl);
+		}
+
+		#endregion
+	}
 }

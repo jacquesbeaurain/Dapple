@@ -451,9 +451,18 @@ namespace Dapple.LayerGeneration
 
 		#endregion
 
-      #region Private Members
+		#region Public Methods
 
-      private QuadTileSet GetQuadTileSet()
+		public override string ToString()
+		{
+			return String.Format("DAPQuadLayerBuilder, Title=\"{0}\", UniqueName=\"{1}\"", m_hDataSet.Title, m_hDataSet.UniqueName);
+		}
+		#endregion
+
+
+		#region Private Members
+
+		private QuadTileSet GetQuadTileSet()
       {
          if (m_layer == null)
          {

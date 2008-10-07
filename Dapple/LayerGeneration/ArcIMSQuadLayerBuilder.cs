@@ -347,5 +347,14 @@ namespace Dapple.LayerGeneration
       }
 
       #endregion
-   }
+
+		#region Public Methods
+
+		public override string ToString()
+		{
+			return String.Format("ArcIMSQuadLayerBuilder, Server=\"{0}\", Service=\"{1}\", Layer=\"{2}\"", m_oServer.Uri.ToBaseUri(), m_szServiceName, m_szLayerID);
+		}
+
+		#endregion
+	}
 }
