@@ -1084,6 +1084,78 @@ namespace Geosoft.Dap
 		}
 
 		/// <summary>
+		/// Get the full path to the filename of this dataset on the dap server
+		/// </summary>
+		/// <remarks>This is only valid in personal dap</remarks>
+		/// <param name="hDataSet">The dataset to get the path to</param>
+		/// <returns>The dataset edition response in GeosoftXML</returns>
+		public System.Xml.XmlDocument GetDataSetFileName(DataSet hDataSet)
+		{
+			return GetDataSetFileName(hDataSet, null);
+		}
+
+		/// <summary>
+		/// Get the full path to the filename of this dataset on the dap server
+		/// </summary>
+		/// <remarks>This is only valid in personal dap</remarks>
+		/// <param name="hDataSet">The dataset to get the path to</param>
+		/// <param name="progressCallBack">Progress handler (may be null)</param>
+		/// <returns>The dataset edition response in GeosoftXML</returns>		
+		public System.Xml.XmlDocument GetDataSetFileName(DataSet hDataSet, UpdateProgessCallback progressCallBack)
+		{
+			string szUrl;
+			System.Xml.XmlDocument hRequestDocument;
+			System.Xml.XmlDocument hResponseDocument;
+
+
+			// --- check to make sure that the dataset is located on the server this command is connected to ---
+
+			if (hDataSet.Url != Url)
+				throw new DapException("The dataset is not located on this server.");
+
+			try
+			{
+				m_oLock.AcquireReaderLock(-1);
+				szUrl = CreateUrl(Constant.Request.DATASET_EDITION);
+
+				hRequestDocument = m_hEncodeRequest.DatasetFileName(null, hDataSet.Name);
+				hResponseDocument = m_oCommunication.Send(szUrl, hRequestDocument, progressCallBack);
+			}
+			finally
+			{
+				m_oLock.ReleaseReaderLock();
+			}
+			return hResponseDocument;
+		}
+
+		/// <summary>
+		/// Get the full path to the filename of this dataset on the dap server
+		/// </summary>
+		/// <remarks>This is only valid in personal dap</remarks>
+		/// <param name="hDataSet">The dataset to get the path to</param>
+		/// <param name="strFileName">The path of the dataset</param>
+		public void GetDataSetFileName(DataSet hDataSet, out String strFileName)
+		{
+			GetDataSetFileName(hDataSet, out strFileName, null);
+		}
+
+		/// <summary>
+		/// Get the full path to the filename of this dataset on the dap server
+		/// </summary>
+		/// <remarks>This is only valid in personal dap</remarks>
+		/// <param name="hDataSet">The dataset to get the path to</param>
+		/// <param name="strFileName">The path of the dataset</param>
+		/// <param name="progressCallBack">Progress handler (may be null)</param>
+		public void GetDataSetFileName(DataSet hDataSet, out String strFileName, UpdateProgessCallback progressCallBack)
+		{
+			System.Xml.XmlDocument hResponseDocument;
+
+			hResponseDocument = GetDataSetFileName(hDataSet, progressCallBack);
+
+			m_hParse.DataSetFileName(hResponseDocument, out strFileName);
+		}
+
+		/// <summary>
 		/// Get meta information for a particular dataset
 		/// </summary>
 		/// <param name="hDataSet">The dataset to retrieve meta information for</param>

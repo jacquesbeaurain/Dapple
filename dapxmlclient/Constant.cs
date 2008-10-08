@@ -245,6 +245,9 @@ namespace Geosoft.Dap.Xml.Common
 			public const string DATASET_EDITION_TAG = "dataset_edition";
 
 			/// <summary></summary>
+			public const string DATASET_FILENAME_TAG = "dataset_filename";
+
+			/// <summary></summary>
 			public const string CAPABILITIES_TAG = "capabilities";
 
 			/// <summary></summary>

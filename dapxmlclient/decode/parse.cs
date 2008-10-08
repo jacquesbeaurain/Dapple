@@ -415,6 +415,36 @@ namespace Geosoft.Dap.Xml
 			}
 		}
 
+
+		/// <summary>
+		/// Parse the dataset filename response.
+		/// </summary>
+		/// <param name="hDocument">The GeosoftXML response</param>
+		/// <param name="strFileName">The path of the dataset</param>
+		public void DataSetFileName(System.Xml.XmlDocument hDocument, out string strFileName)
+		{
+			System.Xml.XmlNode hFileName;
+			System.Xml.XmlNode hAttr;
+
+			strFileName = null;
+
+			try
+			{
+				// --- find the dataset edition element ---
+
+				hFileName = hDocument.SelectSingleNode("/" + Constant.Tag.GEO_XML_TAG + "/" + Constant.Tag.RESPONSE_TAG + "/" + Constant.Tag.DATASET_FILENAME_TAG);
+
+				if (hFileName == null) throw new DapException("No filename found in dataset");
+
+				hAttr = hFileName.Attributes.GetNamedItem(Constant.Attribute.VALUE_ATTR);
+				if (hAttr != null) strFileName = hAttr.Value;
+			}
+			catch (Exception e)
+			{
+				throw new DapException("Error retrieving dataset file name", e);
+			}
+		}
+
 		/// <summary>
 		/// Transform the item element, found in the catalog response, to its corresponding structure.
 		/// </summary>
