@@ -30,6 +30,7 @@ namespace Dapple.Extract
       {
 			this.lFileName = new System.Windows.Forms.Label();
 			this.tbFilename = new System.Windows.Forms.TextBox();
+			this.c_lArcMapNote = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// lFileName
@@ -51,14 +52,27 @@ namespace Dapple.Extract
 			this.tbFilename.TabIndex = 1;
 			this.tbFilename.Validating += new System.ComponentModel.CancelEventHandler(this.tbFilename_Validating);
 			// 
+			// c_lArcMapNote
+			// 
+			this.c_lArcMapNote.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+							| System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.c_lArcMapNote.Location = new System.Drawing.Point(0, 26);
+			this.c_lArcMapNote.Name = "c_lArcMapNote";
+			this.c_lArcMapNote.Size = new System.Drawing.Size(500, 174);
+			this.c_lArcMapNote.TabIndex = 2;
+			this.c_lArcMapNote.Text = "Note: \'Point\' datasets are always extracted using the dataset\'s native projection" +
+				 " when using ArcMap.";
+			this.c_lArcMapNote.Visible = false;
+			// 
 			// HyperXYZ
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.c_lArcMapNote);
 			this.Controls.Add(this.tbFilename);
 			this.Controls.Add(this.lFileName);
 			this.Name = "HyperXYZ";
-			this.Padding = new System.Windows.Forms.Padding(0, 0, 20, 0);
 			this.Size = new System.Drawing.Size(500, 200);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -69,5 +83,6 @@ namespace Dapple.Extract
 
       private System.Windows.Forms.Label lFileName;
       private System.Windows.Forms.TextBox tbFilename;
+		private System.Windows.Forms.Label c_lArcMapNote;
    }
 }

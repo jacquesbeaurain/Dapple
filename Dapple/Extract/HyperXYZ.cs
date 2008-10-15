@@ -35,6 +35,13 @@ namespace Dapple.Extract
 			get { return true; }
 		}
 
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			c_lArcMapNote.Visible = (MainForm.Client == Options.Client.ClientType.ArcMAP);
+		}
+
       /// <summary>
       /// Write out settings for the HyperXYZ dataset
       /// </summary>
@@ -44,6 +51,10 @@ namespace Dapple.Extract
       /// <returns></returns>
 		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
       {
+			// --- Always download point data in its native projection when in ArcMap ---
+			if (MainForm.Client == Options.Client.ClientType.ArcMAP)
+				eCS = DownloadSettings.DownloadCoordinateSystem.Native;
+
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
