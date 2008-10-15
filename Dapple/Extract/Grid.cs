@@ -89,9 +89,9 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
-         ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
+         ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
          int iIndex = cbDownloadOptions.SelectedIndex;
          string strFileName = Utility.FileSystem.SanitizeFilename(tbFilename.Text);

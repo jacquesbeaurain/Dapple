@@ -49,13 +49,13 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
 			// --- Always download point data in its native projection when in ArcMap ---
 			if (MainForm.Client == Options.Client.ClientType.ArcMAP)
 				eCS = DownloadSettings.DownloadCoordinateSystem.Native;
 
-         ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, eCS);
+         ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
 			oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), ExtensionForHXYZ));

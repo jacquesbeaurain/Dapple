@@ -136,7 +136,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public virtual ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+      public virtual ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          double dMaxX, dMinX, dMaxY, dMinY;
          double dProjMinX, dProjMinY, dProjMaxX, dProjMaxY;
@@ -220,77 +220,31 @@ namespace Dapple.Extract
          dProjMinY = dMinY;
          strProjCoordinateSystem = strSrcCoordinateSystem;
 
-         if (eClip == DownloadSettings.DownloadClip.None)
+         if (MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, Resolution.WGS_84))
          {
+            dProjMaxX = Math.Min(m_oViewedAoi.East, dProjMaxX);
+            dProjMinX = Math.Max(m_oViewedAoi.West, dProjMinX);
+            dProjMaxY = Math.Min(m_oViewedAoi.North, dProjMaxY);
+            dProjMinY = Math.Max(m_oViewedAoi.South, dProjMinY);
+
             if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap)
             {
-               if (MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, m_strMapProjection))
-               {                  
+               if (MainForm.MontajInterface.ProjectBoundingRectangle(Resolution.WGS_84, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, m_strMapProjection))
                   strProjCoordinateSystem = m_strMapProjection;
-               }
                else
-               {
                   bInvalidReprojection = true;
-               }
-            }
-         }
-         else if (eClip == DownloadSettings.DownloadClip.OriginalMap)
-         {
-            if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap)
-            {
-               if (MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, m_strMapProjection))
-               {
-                  strProjCoordinateSystem = m_strMapProjection;
-               }
-               else
-               {
-                  bInvalidReprojection = true;
-               }
             }
             else
             {
-               dProjMaxX = m_oMapAoi.East;
-               dProjMinX = m_oMapAoi.West;
-               dProjMaxY = m_oMapAoi.North;
-               dProjMinY = m_oMapAoi.South;
-               if (!MainForm.MontajInterface.ProjectBoundingRectangle(m_strMapProjection, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strSrcCoordinateSystem))
-						return ExtractSaveResult.Ignore;
-
-               dProjMaxX = Math.Min(dMaxX, dProjMaxX);
-               dProjMinX = Math.Max(dMinX, dProjMinX);
-               dProjMaxY = Math.Min(dMaxY, dProjMaxY);
-               dProjMinY = Math.Max(dMinY, dProjMinY);
-               strProjCoordinateSystem = strSrcCoordinateSystem;
+               if (MainForm.MontajInterface.ProjectBoundingRectangle(Resolution.WGS_84, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strSrcCoordinateSystem))
+                  strProjCoordinateSystem = strSrcCoordinateSystem;
+               else
+                  bInvalidReprojection = true;
             }
          }
-         else if (eClip == DownloadSettings.DownloadClip.ViewedArea)
+         else
          {
-            if (MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, Resolution.WGS_84))
-            {
-               dProjMaxX = Math.Min(m_oViewedAoi.East, dProjMaxX);
-               dProjMinX = Math.Max(m_oViewedAoi.West, dProjMinX);
-               dProjMaxY = Math.Min(m_oViewedAoi.North, dProjMaxY);
-               dProjMinY = Math.Max(m_oViewedAoi.South, dProjMinY);
-
-               if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap)
-               {
-                  if (MainForm.MontajInterface.ProjectBoundingRectangle(Resolution.WGS_84, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, m_strMapProjection))
-                     strProjCoordinateSystem = m_strMapProjection;
-                  else
-                     bInvalidReprojection = true;
-               }
-               else
-               {
-                  if (MainForm.MontajInterface.ProjectBoundingRectangle(Resolution.WGS_84, ref dProjMinX, ref dProjMinY, ref dProjMaxX, ref dProjMaxY, strSrcCoordinateSystem))
-                     strProjCoordinateSystem = strSrcCoordinateSystem;
-                  else
-                     bInvalidReprojection = true;
-               }
-            }
-            else
-            {
-               bInvalidReprojection = true;
-            }
+            bInvalidReprojection = true;
          }
 
          // --- check to see if we require a new ---

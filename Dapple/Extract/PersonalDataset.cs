@@ -19,7 +19,7 @@ namespace Dapple.Extract
 			InitializeComponent();
 		}
 
-		public override DownloadOptions.ExtractSaveResult Save(XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override DownloadOptions.ExtractSaveResult Save(XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
 		{
 			bool blFileExists;
 

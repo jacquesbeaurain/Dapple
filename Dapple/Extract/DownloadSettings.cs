@@ -19,13 +19,6 @@ namespace Dapple.Extract
          OriginalMap
       }
 
-      public enum DownloadClip
-      {
-         None,
-         ViewedArea,
-         OriginalMap
-      }
-
       #region Member Variables
       List<Dapple.LayerGeneration.LayerBuilder> m_oLayersToDownload;
       private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
@@ -279,7 +272,6 @@ namespace Dapple.Extract
 
          try
          {
-            DownloadClip eClip = DownloadClip.ViewedArea;
             DownloadCoordinateSystem eCS = DownloadCoordinateSystem.Native;
 
             if (rbReproject.Checked)
@@ -308,7 +300,7 @@ namespace Dapple.Extract
 						oDatasetElement = oExtractDoc.CreateElement("dataset");
 					}
 
-					switch (m_oDownloadSettings[count].Save(oDatasetElement, cFolderControl.Value, eClip, eCS))
+					switch (m_oDownloadSettings[count].Save(oDatasetElement, cFolderControl.Value, eCS))
 					{
 						case DownloadOptions.ExtractSaveResult.Cancel:
 							SetActivePage(count);
@@ -337,7 +329,6 @@ namespace Dapple.Extract
             oDebugElement.SetAttribute("wgs84_south", oViewAOI.South.ToString("f2"));
             oDebugElement.SetAttribute("wgs84_east", oViewAOI.East.ToString("f2"));
             oDebugElement.SetAttribute("wgs84_north", oViewAOI.North.ToString("f2"));
-            oDebugElement.SetAttribute("clip_setting", eClip.ToString());
             oExtractElement.AppendChild(oDebugElement);
 #endif
 				DatasetDisclaimer oDisclaimers = null;

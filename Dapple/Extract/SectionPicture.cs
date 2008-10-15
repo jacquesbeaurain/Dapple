@@ -86,10 +86,10 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadClip eClip, DownloadSettings.DownloadCoordinateSystem eCS)
+		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          // --- cannot reproject section data --- 
-			ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eClip, DownloadSettings.DownloadCoordinateSystem.Native);
+			ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, DownloadSettings.DownloadCoordinateSystem.Native);
          
          string strFileName = System.IO.Path.ChangeExtension(tbFilename.Text, TIF_EXT);         
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
