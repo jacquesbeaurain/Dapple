@@ -150,13 +150,21 @@ namespace Dapple.Extract
          {
             Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
 
+				if (oDAPbuilder.IsFromPersonalDapServer)
+				{
+					oControl = new PersonalDataset(oDAPbuilder);
+					oControl.ErrorProvider = cErrorProvider;
+					return oControl;
+				}
+
 				double dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0;
 				if (MainForm.MontajInterface.GetExtents(oDAPbuilder.ServerURL, oDAPbuilder.DatasetName, out dummy1, out dummy2, out dummy3, out dummy4) == false)
 				{
 					return new Disabled("This data layer will not be extracted because its metadata could not be accessed.  This usually indicates that you do not have the required permissions to access it.");
 				}
-            
-            if (oDAPbuilder.DAPType.ToLower() == "map") {
+
+            if (oDAPbuilder.DAPType.ToLower() == "map")
+				{
                oControl = new HyperMAP(oDAPbuilder);
             }
             else if (oDAPbuilder.DAPType.ToLower() == "grid")
@@ -290,7 +298,15 @@ namespace Dapple.Extract
 				int iCount = 0;
 				for (int count = 0; count < m_oDownloadSettings.Count; count++)
 				{
-					System.Xml.XmlElement oDatasetElement = oExtractDoc.CreateElement("dataset");
+					System.Xml.XmlElement oDatasetElement;
+					if (m_oDownloadSettings[count] is PersonalDataset)
+					{
+						oDatasetElement = oExtractDoc.CreateElement("personal_dataset");
+					}
+					else
+					{
+						oDatasetElement = oExtractDoc.CreateElement("dataset");
+					}
 
 					switch (m_oDownloadSettings[count].Save(oDatasetElement, cFolderControl.Value, eClip, eCS))
 					{

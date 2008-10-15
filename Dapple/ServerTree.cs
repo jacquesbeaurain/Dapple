@@ -664,7 +664,7 @@ namespace Dapple
 			dir.Addspecialcontainer(new SpecialDirectoryType("DAPServers"));
 			foreach (string strDapUrl in m_oFullServerList.Keys)
 			{
-				if (strDapUrl.Equals(PERSONAL_DAP_URI)) continue;
+				if (strDapUrl.Equals(Server.PERSONAL_DAP_URI)) continue;
 				builderentryType subentry = servers.Newbuilderentry();
 				dapcatalogType dap = subentry.Newdapcatalog();
 				dap.Addurl(new SchemaString(strDapUrl));
@@ -828,7 +828,7 @@ namespace Dapple
 		private void LoadDapServerOnEventThread(dapcatalogType oDapCatalog)
 		{
 			Geosoft.GX.DAPGetData.Server dapServer;
-			if (!oDapCatalog.url.Value.Equals(PERSONAL_DAP_URI))
+			if (!oDapCatalog.url.Value.Equals(Server.PERSONAL_DAP_URI))
 			{
 				AddDAPServer(oDapCatalog.url.Value, out dapServer, oDapCatalog.Hasenabled() ? oDapCatalog.enabled.Value : true, false);
 			}
@@ -1319,7 +1319,7 @@ namespace Dapple
          if (SelectedNode.Tag is Server)
          {
             cMenuItem_SetDefault.Enabled = blServerEnabled && !(m_szDefaultServer.Equals(((Server)SelectedNode.Tag).Url));
-				cMenuItem_RemoveServer.Enabled = !(SelectedNode.Tag as Server).Url.Equals(PERSONAL_DAP_URI);
+				cMenuItem_RemoveServer.Enabled = !(SelectedNode.Tag as Server).Url.Equals(Server.PERSONAL_DAP_URI);
          }
          else if (SelectedNode.Tag is ServerBuilder)
          {

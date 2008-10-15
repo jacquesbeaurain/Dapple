@@ -27,6 +27,7 @@ namespace Geosoft.GX.DAPGetData
       #region Constants
       protected const string CONFIGURATION_FILE = "_configuration.xml";
       protected const string BROWSERMAP_FILE = "_browser_map.xml";
+		public const string PERSONAL_DAP_URI = "http://localhost:10205/";
       #endregion
 
       #region Member Variables
@@ -281,6 +282,12 @@ namespace Geosoft.GX.DAPGetData
 				}
 				return m_oStyleSheets;
 			}
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public bool IsPersonal
+		{
+			get { return m_strUrl.Equals(PERSONAL_DAP_URI); }
 		}
 
 		public static String GetStyleSheetFilename(String szName, String szCRC)

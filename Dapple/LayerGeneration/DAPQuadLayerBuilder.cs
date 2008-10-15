@@ -219,6 +219,33 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+		[System.ComponentModel.Category("DAP")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The location on your hard drive of this dataset, for datasets which are hosted on your Personal DAP server")]
+		public string LocalFilename
+		{
+			get
+			{
+				if (IsFromPersonalDapServer)
+				{
+					try
+					{
+						String result;
+						m_oServer.Command.GetDataSetFileName(m_hDataSet, out result);
+						return result;
+					}
+					catch (Exception)
+					{
+						return "Error contacting Personal DAP server.";
+					}
+				}
+				else
+				{
+					return "This dataset is from a remote server.";
+				}
+			}
+		}
+
 		[System.ComponentModel.Browsable(false)]
 		public override bool IsChanged
 		{
@@ -298,6 +325,12 @@ namespace Dapple.LayerGeneration
 		public override bool LayerFromSupportedServer
 		{
 			get { return true; }
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public bool IsFromPersonalDapServer
+		{
+			get { return m_oServer.IsPersonal; }
 		}
 
 		#endregion

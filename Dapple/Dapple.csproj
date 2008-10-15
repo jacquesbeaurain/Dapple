@@ -175,6 +175,12 @@
     <Compile Include="Extract\OverwriteDialog.Designer.cs">
       <DependentUpon>OverwriteDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extract\PersonalDataset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Extract\PersonalDataset.Designer.cs">
+      <DependentUpon>PersonalDataset.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extract\SectionPicture.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -369,6 +375,9 @@
     <EmbeddedResource Include="Extract\OverwriteDialog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>OverwriteDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extract\PersonalDataset.resx">
+      <DependentUpon>PersonalDataset.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extract\SectionPicture.resx">
       <DependentUpon>SectionPicture.cs</DependentUpon>

@@ -15,12 +15,6 @@ namespace Geosoft.GX.DAPGetData
 {
    public class ServerTree : TreeView
 	{
-		#region Constants
-
-		protected const String PERSONAL_DAP_URI = "http://localhost:10205/";
-
-		#endregion
-
 		#region Enums
 		public enum SearchModeEnum
       {
@@ -145,7 +139,7 @@ namespace Geosoft.GX.DAPGetData
 				{
 					// --- personal dap server is running, add it to the list ---
 
-					m_oPersonalDAPServer = new Server(PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
+					m_oPersonalDAPServer = new Server(Server.PERSONAL_DAP_URI, m_strCacheDir, m_strSecureToken, true);
 					AddDAPServer(m_oPersonalDAPServer);
 					break;
 				}
