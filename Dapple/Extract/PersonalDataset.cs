@@ -22,10 +22,14 @@ namespace Dapple.Extract
 		public override DownloadOptions.ExtractSaveResult Save(XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
 		{
 			bool blFileExists;
+			String strFilename = String.Empty;
 
 			try
 			{
-				blFileExists = File.Exists(m_oDAPLayer.LocalFilename);
+				strFilename = m_oDAPLayer.LocalFilename;
+				String strStrippedFilename = StripQualifiers(strFilename);
+
+				blFileExists = File.Exists(strStrippedFilename);
 			}
 			catch (Exception)
 			{
@@ -34,8 +38,9 @@ namespace Dapple.Extract
 
 			if (blFileExists)
 			{
-				oDatasetElement.SetAttribute("filename", m_oDAPLayer.LocalFilename);
+				oDatasetElement.SetAttribute("filename", strFilename);
 				oDatasetElement.SetAttribute("type", m_oDAPLayer.DAPType);
+				oDatasetElement.SetAttribute("id", m_oDAPLayer.DatasetName);
 
 				return ExtractSaveResult.Extract;
 			}
@@ -50,6 +55,44 @@ namespace Dapple.Extract
 					return ExtractSaveResult.Cancel;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Takes a filename with Geosoft qualifications and removes the qualifications.
+		/// </summary>
+		/// <param name="strFilename">The filename to strip.</param>
+		/// <returns>The stripped filename.</returns>
+		private String StripQualifiers(String strFilename)
+		{
+			// --- Find last open bracket ---
+
+			int iLastBracketPos = strFilename.LastIndexOf('(');
+
+
+			// --- No open bracket means no qualifiers ---
+
+			if (iLastBracketPos == -1)
+			{
+				return strFilename;
+			}
+
+
+			// --- Get potential qualifier string ---
+
+			String strQualifyString = strFilename.Substring(iLastBracketPos + 1);
+
+
+			// --- Valid qualifiers contain no periods or backslashes ---
+
+			if (strQualifyString.IndexOf('.') != -1 || strQualifyString.IndexOf('\\') != -1)
+			{
+				return strFilename;
+			}
+
+
+			// --- We've got a valid qualifier, so strip it ---
+
+			return strFilename.Substring(0, iLastBracketPos);
 		}
 	}
 }

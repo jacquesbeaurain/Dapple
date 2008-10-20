@@ -141,19 +141,19 @@ namespace Dapple.Extract
          DownloadOptions oControl = null;
          if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder)
          {
-            Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
+				Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
+
+				double dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0;
+				if (MainForm.MontajInterface.GetExtents(oDAPbuilder.ServerURL, oDAPbuilder.DatasetName, out dummy1, out dummy2, out dummy3, out dummy4) == false)
+				{
+					return new Disabled("This data layer will not be extracted because its metadata could not be accessed.  This usually indicates that you do not have the required permissions to access it.");
+				}
 
 				if (oDAPbuilder.IsFromPersonalDapServer)
 				{
 					oControl = new PersonalDataset(oDAPbuilder);
 					oControl.ErrorProvider = cErrorProvider;
 					return oControl;
-				}
-
-				double dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0;
-				if (MainForm.MontajInterface.GetExtents(oDAPbuilder.ServerURL, oDAPbuilder.DatasetName, out dummy1, out dummy2, out dummy3, out dummy4) == false)
-				{
-					return new Disabled("This data layer will not be extracted because its metadata could not be accessed.  This usually indicates that you do not have the required permissions to access it.");
 				}
 
             if (oDAPbuilder.DAPType.ToLower() == "map")
