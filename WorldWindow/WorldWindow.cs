@@ -1,4 +1,3 @@
-
 #region OPEN SOURCE AGREEMENT
 /*
 	NASA OPEN SOURCE AGREEMENT VERSION 1.3
@@ -324,11 +323,7 @@ namespace WorldWind
 		private long lastFpsUpdateTime;
 		private int frameCounter;
 		private float fps;
-		private string saveScreenShotFilePath;
-		private ImageFileFormat saveScreenShotImageFileFormat = ImageFileFormat.Bmp;
 		private bool m_WorkerThreadRunning;
-		//private LayerManagerButton layerManagerButton;
-		//private MenuBar _menuBar = new MenuBar(MenuAnchor.Top, 90);
 		private bool m_isRenderDisabled = true; // True when WW isn't active - CPU saver
 		private bool isMouseDragging;
 		private Point mouseDownStartPosition = Point.Empty;
@@ -336,8 +331,6 @@ namespace WorldWind
 		private System.Timers.Timer m_FpsTimer = new System.Timers.Timer(250);
 		private bool supressUpdates = false;
 		public static event MethodInvoker VideoMemoryExhausted;
-
-		//		protected DownloadIndicator m_downloadIndicator;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.WorldWindow"/> class.
@@ -399,16 +392,6 @@ namespace WorldWind
 					this.drawArgs.WorldCamera = camera;
 
 					this.drawArgs.CurrentWorld = value;
-					/*
-					this.layerManagerButton = new LayerManagerButton(
-						 Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), @"Data\Icons\Interface\layer-manager2.png"),
-						 m_World);
-
-					this._menuBar.AddToolsMenuButton(this.layerManagerButton, 0);
-					this._menuBar.AddToolsMenuButton(new PositionMenuButton(Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\coordinates.png"), 1);
-					this._menuBar.AddToolsMenuButton(new LatLonMenuButton(Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\lat-long.png", m_World), 2);
-					this.layerManagerButton.SetPushed(World.Settings.ShowLayerManager);
-					*/
 					// TODO: Decide how to load grids
 					m_World.RenderableObjects.Add(new Renderable.LatLongGrid(m_World));
 				}
@@ -454,31 +437,6 @@ namespace WorldWind
 			get { return this.drawArgs; }
 		}
 
-		/*
-		public MenuBar MenuBar
-		{
-			get
-			{
-				return this._menuBar;
-			}
-		}
-
-		public bool ShowLayerManager
-		{
-			get
-			{
-				if (this.layerManagerButton != null)
-					return this.layerManagerButton.IsPushed();
-				else
-					return false;
-			}
-			set
-			{
-				if (this.layerManagerButton != null)
-					this.layerManagerButton.SetPushed(value);
-			}
-		}
-		*/
 		public Cache Cache
 		{
 			get
@@ -908,33 +866,6 @@ namespace WorldWind
 		}
 
 		/// <summary>
-		/// Saves the current view to file.
-		/// </summary>
-		/// <param name="filePath">Path and filename of output file.  
-		/// Extension is used to determine the image format.</param>
-		public void SaveScreenshot(string filePath)
-		{
-			if (m_Device3d == null)
-				return;
-
-			FileInfo saveFileInfo = new FileInfo(filePath);
-			string ext = saveFileInfo.Extension.Replace(".", "");
-			try
-			{
-				this.saveScreenShotImageFileFormat = (ImageFileFormat)Enum.Parse(typeof(ImageFileFormat), ext, true);
-			}
-			catch (ArgumentException)
-			{
-				throw new ApplicationException("Unknown file type/file extension for file '" + filePath + "'.  Unable to save.");
-			}
-
-			if (!saveFileInfo.Directory.Exists)
-				saveFileInfo.Directory.Create();
-
-			this.saveScreenShotFilePath = filePath;
-		}
-
-		/// <summary>
 		/// The world render loop.  
 		/// Borrowed from FlightGear and Tom Miller's blog
 		/// </summary>
@@ -974,12 +905,6 @@ namespace WorldWind
 					{
 						// Don't sleep too long. We don't know the accuracy of Thread.Sleep
 						Thread.Sleep((int)(1000 * sleepSeconds));
-
-						// Burn off what little time still remains at 100% CPU load
-						//while (DrawArgs.SecondsSinceLastFrame < frameSeconds)
-						//{
-						// Patience
-						//}
 					}
 					//}
 					// Flip
@@ -1080,23 +1005,6 @@ namespace WorldWind
 					// Render the sky according to view - example, close to earth, render sky blue, render space as black
 					System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
 
-					/*if (drawArgs.WorldCamera != null &&
-						drawArgs.WorldCamera.Altitude < 1000000f &&
-						m_World != null &&
-						m_World.Name.IndexOf("Earth") >= 0)
-					{
-						float percent = 1 - (float)(drawArgs.WorldCamera.Altitude / 1000000);
-						if (percent > 1.0f)
-							percent = 1.0f;
-						else if (percent < 0.0f)
-							percent = 0.0f;
-
-						backgroundColor = System.Drawing.Color.FromArgb(
-							(int)(World.Settings.SkyColor.R * percent),
-							(int)(World.Settings.SkyColor.G * percent),
-							(int)(World.Settings.SkyColor.B * percent));
-					}*/
-
 					m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
 
 					if (m_World == null)
@@ -1158,9 +1066,6 @@ namespace WorldWind
 					m_RootWidget.Render(drawArgs);
 					m_NewRootWidget.Render(drawArgs);
 
-					if (saveScreenShotFilePath != null)
-						SaveScreenShot();
-
 					drawArgs.device.RenderState.ZBufferEnable = false;
 
 					// 3D rendering complete, switch to 2D for UI rendering
@@ -1172,19 +1077,8 @@ namespace WorldWind
 					// Disable fog for UI
 					m_Device3d.RenderState.FogEnable = false;
 
-					/*
-										 if(World.Settings.ShowDownloadIndicator)
-										 {
-											  if(m_downloadIndicator == null)
-													m_downloadIndicator = new DownloadIndicator();
-											  m_downloadIndicator.Render(drawArgs);
-										 }
-					*/
 					RenderPositionInfo();
 
-					/*
-					_menuBar.Render(drawArgs);
-					 */
 					m_FpsGraph.Render(drawArgs);
 
 					if (m_World.OnScreenMessages != null)
@@ -1229,37 +1123,8 @@ namespace WorldWind
 
 		private LineGraph m_FpsGraph = new LineGraph();
 
-		/*
-		public void ResetToolbar()
-		{
-			lock (this._menuBar.LayersMenuButtons.SyncRoot)
-			{
-				foreach (IMenu m in this._menuBar.LayersMenuButtons)
-				{
-					m.Dispose();
-				}
-				this._menuBar.LayersMenuButtons.Clear();
-			}
-
-			lock (this._menuBar.ToolsMenuButtons.SyncRoot)
-			{
-
-				for (int i = 0; i < this._menuBar.ToolsMenuButtons.Count; i++)
-				{
-					IMenu m = (IMenu)this._menuBar.ToolsMenuButtons[i];
-					if (m != null)
-					{
-						m.Dispose();
-					}
-				}
-
-				this._menuBar.ToolsMenuButtons.Clear();
-			}
-		}
-		*/
 		private const int positionAlphaStep = 20;
 		private int positionAlpha = 255;
-		//private int positionAlphaMin = 40;
 		private int positionAlphaMax = 205;
 
 		protected void RenderPositionInfo()
@@ -1332,15 +1197,6 @@ namespace WorldWind
 					{
 						captionText += String.Format("\nTerrain Elevation: {0:n} feet\n", terrainElevation * feetPerMeter);
 					}
-					/*double terrainElevationUC = drawArgs.WorldCamera.TerrainElevationUnderCamera;
-					if (World.Settings.DisplayUnits == Units.Metric)
-					{
-						 captionText += String.Format("Under camera: {0:n} meters\n", terrainElevationUC);
-					}
-					else
-					{
-						 captionText += String.Format("Under camera: {0:n} feet\n", terrainElevationUC * feetPerMeter);
-					}*/
 				}
 			}
 
@@ -1390,19 +1246,6 @@ namespace WorldWind
 			int y = 7;//_menuBar!=null && World.Settings.ShowToolbar ? 65 : 7;
 			Rectangle textRect = Rectangle.FromLTRB(x, y, this.Width - 8, this.Height - 8);
 
-			// Hide position info when toolbar is open
-			/*
-							if (_menuBar.IsActive)
-							{
-								 positionAlpha -= positionAlphaStep;
-								 if (positionAlpha < positionAlphaMin)
-								 {
-									  positionAlpha = positionAlphaMin;
-								 }
-							}
-							else
-							{
-			*/
 			positionAlpha += positionAlphaStep;
 			if (positionAlpha > positionAlphaMax)
 				positionAlpha = positionAlphaMax;
@@ -1497,11 +1340,6 @@ namespace WorldWind
 			}
 			try
 			{
-				/*
-									 if (this._menuBar.OnMouseWheel(e))
-										  return;
-				*/
-
 				this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia * 2;
 				this.drawArgs.WorldCamera.ZoomStepped(-e.Delta / 120.0f);
 			}
@@ -1509,13 +1347,7 @@ namespace WorldWind
 			{
 				if (m_NewRootWidget != null)
 				{
-					try
-					{
-						m_NewRootWidget.OnMouseWheel(e);
-					}
-					finally
-					{
-					}
+					m_NewRootWidget.OnMouseWheel(e);
 				}
 
 				// Call the base class's OnMouseWheel method so that registered delegates receive the event.
@@ -1843,16 +1675,6 @@ namespace WorldWind
 				{
 					handled = m_NewRootWidget.OnMouseDown(e);
 				}
-
-				if (!handled)
-				{
-					/*
-					if (!this._menuBar.OnMouseDown(e))
-					{
-
-					}
-					 */
-				}
 			}
 			finally
 			{
@@ -1900,14 +1722,6 @@ namespace WorldWind
 						return;
 
 					mouseDownStartPosition = Point.Empty;
-
-					if (!this.isMouseDragging)
-					{
-						/*
-						if (this._menuBar.OnMouseUp(e))
-							return;
-						 */
-					}
 
 					if (m_World == null)
 						return;
@@ -2036,17 +1850,6 @@ namespace WorldWind
 					float deltaXNormalized = (float)deltaX / drawArgs.screenWidth;
 					float deltaYNormalized = (float)deltaY / drawArgs.screenHeight;
 
-					if (!this.isMouseDragging)
-					{
-						/*
-						if (this._menuBar.OnMouseMove(e))
-						{
-							base.OnMouseMove(e);
-							return;
-						}
-						 */
-					}
-
 					if (mouseDownStartPosition == Point.Empty)
 						return;
 
@@ -2171,29 +1974,10 @@ namespace WorldWind
 			{
 				return;
 			}
-			/*
-			if (_menuBar != null)
-				// reset menu bar mouse hover state.
-				_menuBar.OnMouseMove(new MouseEventArgs(MouseButtons.None, 0, -1, -1, 0));
-			 */
 			base.OnMouseLeave(e);
 		}
 
 		#endregion
-
-		protected void SaveScreenShot()
-		{
-			try
-			{
-				using (Surface backbuffer = m_Device3d.GetBackBuffer(0, 0, BackBufferType.Mono))
-					SurfaceLoader.Save(saveScreenShotFilePath, saveScreenShotImageFileFormat, backbuffer);
-				saveScreenShotFilePath = null;
-			}
-			catch (InvalidCallException caught)
-			{
-				MessageBox.Show(caught.Message, "Screenshot save failed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
 
 		public void KillWorkerThread()
 		{
