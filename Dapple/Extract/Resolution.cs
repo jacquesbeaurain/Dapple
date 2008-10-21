@@ -75,14 +75,7 @@ namespace Dapple.Extract
 		public ErrorProvider ErrorProvider
 		{
 			get { return m_oErrorProvider; }
-			set
-			{
-				m_oErrorProvider = value;
-				if (m_oErrorProvider != null)
-				{
-					m_oErrorProvider.SetIconAlignment(tbRes, ErrorIconAlignment.MiddleLeft);
-				}
-			}
+			set { m_oErrorProvider = value; }
 		}
       #endregion
 
@@ -742,22 +735,22 @@ namespace Dapple.Extract
 			double dRes;
 			if (!Double.TryParse(tbRes.Text, out dRes))
 			{
-				if (m_oErrorProvider != null) m_oErrorProvider.SetError(tbRes, "Invalid numeric value.");
+				if (m_oErrorProvider != null) m_oErrorProvider.SetError(lUnit, "Invalid numeric value.");
 				e.Cancel = true;
 			}
 			else if (dRes < m_dMinResolution)
 			{
-				if (m_oErrorProvider != null) m_oErrorProvider.SetError(tbRes, "Resolution is too small.");
+				if (m_oErrorProvider != null) m_oErrorProvider.SetError(lUnit, "Resolution is too small.");
 				e.Cancel = true;
 			}
 			else if (dRes > m_dMaxResolution)
 			{
-				if (m_oErrorProvider != null) m_oErrorProvider.SetError(tbRes, "Resolution is too large.");
+				if (m_oErrorProvider != null) m_oErrorProvider.SetError(lUnit, "Resolution is too large.");
 				e.Cancel = true;
 			}
 			else
 			{
-				m_oErrorProvider.SetError(tbRes, String.Empty);
+				m_oErrorProvider.SetError(lUnit, String.Empty);
 			}
 		}
    }
