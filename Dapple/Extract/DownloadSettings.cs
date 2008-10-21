@@ -186,11 +186,25 @@ namespace Dapple.Extract
             }
             else if (oDAPbuilder.DAPType.ToLower() == "generic")
             {
-               oControl = new Generic(oDAPbuilder);
+					if (MainForm.Client != Options.Client.ClientType.MapInfo)
+					{
+						oControl = new Generic(oDAPbuilder);
+					}
+					else
+					{
+						oControl = new Disabled("This data layer will not be extracted as acQuire connections are not a supported format in MapInfo.");
+					}
             }
             else if (oDAPbuilder.DAPType.ToLower() == "voxel")
             {
-               oControl = new Voxel(oDAPbuilder);
+					if (MainForm.Client != Options.Client.ClientType.MapInfo)
+					{
+						oControl = new Voxel(oDAPbuilder);
+					}
+					else
+					{
+						oControl = new Disabled("This data layer will not be extracted as voxel is not a supported format in MapInfo.");
+					}
             }
             else if (oDAPbuilder.DAPType.ToLower() == "arcgis")
             {
