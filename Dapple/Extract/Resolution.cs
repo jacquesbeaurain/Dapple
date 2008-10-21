@@ -75,7 +75,14 @@ namespace Dapple.Extract
 		public ErrorProvider ErrorProvider
 		{
 			get { return m_oErrorProvider; }
-			set { m_oErrorProvider = value; }
+			set
+			{
+				m_oErrorProvider = value;
+				if (m_oErrorProvider != null)
+				{
+					m_oErrorProvider.SetIconAlignment(tbRes, ErrorIconAlignment.MiddleLeft);
+				}
+			}
 		}
       #endregion
 
