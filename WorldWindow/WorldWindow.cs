@@ -523,9 +523,9 @@ namespace WorldWind
 			return 180 - Math.Acos((Math.Pow(X, 2) - Math.Pow(dDistance + dRadius, 2) - Math.Pow(dRadius, 2)) / (2 * (dDistance + dRadius) * dRadius)) * Rad2Deg;
 		}
 
-		public double CameraHeightFromVisibleAngles(double dLatArc, double dLonArc)
+		public double CameraHeightFromVisibleAngles(double dLatArc, double dLonArc, double dLat)
 		{
-			return Math.Max(CameraHeightFromLatitudeVisibleAngle(dLatArc), CameraHeightFromLatitudeVisibleAngle(dLonArc * Math.Cos(drawArgs.WorldCamera.Latitude.Radians) * (double)this.Height / (double)this.Width));
+			return Math.Max(CameraHeightFromLatitudeVisibleAngle(dLatArc), CameraHeightFromLatitudeVisibleAngle(dLonArc * Math.Cos(dLat) * (double)this.Height / (double)this.Width));
 		}
 
 		/// <summary>
@@ -849,7 +849,7 @@ namespace WorldWind
 					dLatitude,
 					dLongitude,
 					0.0,
-					CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle),
+					CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle, dLatitude),
 					0.0,
 					0.0);
 			}
@@ -859,7 +859,7 @@ namespace WorldWind
 					dLatitude,
 					dLongitude,
 					0.0,
-					CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle),
+					CameraHeightFromVisibleAngles(dLatitudeAngle, dLongitudeAngle, dLatitude),
 					0.0,
 					0.0);
 			}
