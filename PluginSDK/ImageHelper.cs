@@ -209,6 +209,13 @@ namespace WorldWind
 		/// <param name="textureFormat">Desired pixel format of the returned texture.</param>
 		private static Texture LoadTexture(Stream textureStream, int colorKey, Format textureFormat)
 		{
+			// --- The abort tool doesn't immediately kill the worker thread, so prevent it
+			// --- from accessing the Direct3D device if the runtime has disposed it for us.
+			if (DrawArgs.Device.Disposed)
+			{
+				return null;
+			}
+
 			try
 			{
 				Texture texture = TextureLoader.FromStream(DrawArgs.Device, textureStream, 0, 0,
