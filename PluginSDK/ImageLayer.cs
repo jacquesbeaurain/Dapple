@@ -689,22 +689,6 @@ namespace WorldWind.Renderable
 				drawArgs.device.RenderState.ZBufferEnable = true;
 				drawArgs.device.Clear(ClearFlags.ZBuffer, 0, 1.0f, 0);
 
-				/*	if (m_opacity < 255 && device.DeviceCaps.DestinationBlendCaps.SupportsBlendFactor)
-					{
-						// Blend
-						device.RenderState.AlphaBlendEnable = true;
-						device.RenderState.SourceBlend = m_sourceBlend;
-						device.RenderState.DestinationBlend = m_destinationBlend;
-						// Set Red, Green and Blue = opacity
-						device.RenderState.BlendFactorColor = (m_opacity << 16) | (m_opacity << 8) | m_opacity;
-					}*/
-				//	else if (EnableColorKeying && device.DeviceCaps.TextureCaps.SupportsAlpha)
-				//	{
-				//		device.RenderState.AlphaBlendEnable = true;
-				//		device.RenderState.SourceBlend = Blend.SourceAlpha;
-				//		device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-				//	}
-
 				drawArgs.device.Transform.World = Matrix.Translation(
 						  (float)-drawArgs.WorldCamera.ReferenceCenter.X,
 						  (float)-drawArgs.WorldCamera.ReferenceCenter.Y,
@@ -760,7 +744,7 @@ namespace WorldWind.Renderable
 					drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
 						 vertices.Length, indices.Length / 3, indices, true, vertices);
 
-
+					device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb();
 				}
 				else
 				{
