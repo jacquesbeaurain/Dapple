@@ -234,9 +234,9 @@ namespace Dapple
          AddLayer(oLayer, 0);
       }
 
-      private void AddLayer(LayerBuilder oNewBuilder, int iInsertIndex)
+      private bool AddLayer(LayerBuilder oNewBuilder, int iInsertIndex)
       {
-         if (m_oLayers.Contains(oNewBuilder)) return;
+         if (m_oLayers.Contains(oNewBuilder)) return false;
 
 			if (!m_blLoadingFromView)
 				oNewBuilder.Reset();
@@ -266,6 +266,8 @@ namespace Dapple
 
 			ResizeColumn();
          CheckIsValid();
+
+			return true;
       }
 
       private bool AddLayerToGlobe(LayerBuilder oBuilder)
@@ -1119,7 +1121,10 @@ namespace Dapple
 				{
 					oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
 					oBuilder.Opacity = (byte)dataset.opacity.Value;
-					AddLayer(oBuilder, iInsertIndex++);
+					if (AddLayer(oBuilder, iInsertIndex))
+					{
+						iInsertIndex++;
+					}
 				}
          }
 
