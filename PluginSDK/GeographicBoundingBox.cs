@@ -20,57 +20,46 @@ namespace WorldWind
       }
    }
 
-   public class GeographicBoundingBox : ICloneable
-   {
-      public double North;
-      public double South;
-      public double West;
-      public double East;
+	public class GeographicBoundingBox : ICloneable
+	{
+		public double North;
+		public double South;
+		public double West;
+		public double East;
 		public double MinimumAltitude;
 		public double MaximumAltitude;
 
-		public GeographicBoundingBox() : this(90.0, -90.0, -180.0, 180.0, 0.0 , 0.0)
+		public GeographicBoundingBox()
+			: this(90.0, -90.0, -180.0, 180.0, 0.0, 0.0)
 		{
 		}
 
-      public GeographicBoundingBox(double north, double south, double west, double east) : this(north, south, west, east, 0.0, 0.0)
-      {
-      }
+		public GeographicBoundingBox(double north, double south, double west, double east)
+			: this(north, south, west, east, 0.0, 0.0)
+		{
+		}
 
 		public GeographicBoundingBox(double north, double south, double west, double east, double minAltitude, double maxAltitude)
 		{
-			if (north < south) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: north is less than south");
-			if (east < west) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: east is less than west");
-			if (maxAltitude < minAltitude) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: max altitude is less than min altitude");
-
-			// --- Normalize longitude coordinates ---
-
-			while ((east + west) / 2.0 < -180.0)
-			{
-				east += 360.0;
-				west += 360.0;
-			}
-			while ((east + west) / 2.0 > 180.0)
-			{
-				east -= 360.0;
-				west -= 360.0;
-			}
-
 			North = north;
 			South = south;
 			West = west;
 			East = east;
 			MinimumAltitude = minAltitude;
 			MaximumAltitude = maxAltitude;
+
+			if (north < south) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: north is less than south");
+			if (east < west) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: east is less than west");
+			if (maxAltitude < minAltitude) throw new ArgumentOutOfRangeException("Invalid bounding box parameters: max altitude is less than min altitude");
 		}
 
-      public static GeographicBoundingBox FromQuad(GeographicQuad quad)
-      {
-         return new GeographicBoundingBox(Math.Max(Math.Max(Math.Max(quad.Y1, quad.Y2), quad.Y3), quad.Y4),
-            Math.Min(Math.Min(Math.Min(quad.Y1, quad.Y2), quad.Y3), quad.Y4),
-            Math.Min(Math.Min(Math.Min(quad.X1, quad.X2), quad.X3), quad.X4),
-            Math.Max(Math.Max(Math.Max(quad.X1, quad.X2), quad.X3), quad.X4));
-      }
+		public static GeographicBoundingBox FromQuad(GeographicQuad quad)
+		{
+			return new GeographicBoundingBox(Math.Max(Math.Max(Math.Max(quad.Y1, quad.Y2), quad.Y3), quad.Y4),
+				Math.Min(Math.Min(Math.Min(quad.Y1, quad.Y2), quad.Y3), quad.Y4),
+				Math.Min(Math.Min(Math.Min(quad.X1, quad.X2), quad.X3), quad.X4),
+				Math.Max(Math.Max(Math.Max(quad.X1, quad.X2), quad.X3), quad.X4));
+		}
 
 		public static GeographicBoundingBox NullBox()
 		{
@@ -140,31 +129,53 @@ namespace WorldWind
 
 		public bool Intersects(GeographicBoundingBox boundingBox)
 		{
-			if(North <= boundingBox.South ||
-				South >= boundingBox.North ||
-				West >= boundingBox.East ||
-				East <= boundingBox.West)
+			// --- Calculate the center and the width of the bounding boxes ---
+
+			double thisDLat = this.North - this.South;
+			double thisCLat = (this.North + this.South) / 2.0;
+			double thisDLon = this.East - this.West;
+			double thisCLon = (this.East + this.West) / 2.0;
+			double otherDLat = boundingBox.North - boundingBox.South;
+			double otherCLat = (boundingBox.North + boundingBox.South) / 2.0;
+			double otherDLon = boundingBox.East - boundingBox.West;
+			double otherCLon = (boundingBox.East + boundingBox.West) / 2.0;
+
+
+			// --- Swap centers so thisCLon is the west one ---
+
+			if (thisCLon > otherCLon)
 			{
-				return false;
+				double temp = thisCLon;
+				thisCLon = otherCLon;
+				otherCLon = temp;
 			}
-			else
+
+			// --- Minimize the distance between the bounding boxes ---
+
+			while (otherCLon - thisCLon > 180.0)
 			{
-				return true;
+				thisCLon += 360.0;
 			}
+
+			// --- Check that the separation between the two boxes' centers is 
+			// --- less than half the sum of their extents
+
+			return (Math.Abs(thisCLat - otherCLat) < (thisDLat + otherDLat) / 2.0) &&
+				(Math.Abs(thisCLon - otherCLon) < (thisDLon + otherDLon) / 2.0);
 		}
 
-      public bool Contains(GeographicBoundingBox test)
-      {
-         return (test.West >= this.West && test.East <= this.East && test.South >= this.South && test.North < this.North);
-      }
+		public bool Contains(GeographicBoundingBox test)
+		{
+			return (test.West >= this.West && test.East <= this.East && test.South >= this.South && test.North < this.North);
+		}
 
-      public override bool Equals(object obj)
-      {
-         if (!(obj is GeographicBoundingBox)) return false;
-         GeographicBoundingBox castObj = obj as GeographicBoundingBox;
+		public override bool Equals(object obj)
+		{
+			if (!(obj is GeographicBoundingBox)) return false;
+			GeographicBoundingBox castObj = obj as GeographicBoundingBox;
 
-         return North == castObj.North && East == castObj.East && South == castObj.South && West == castObj.West;
-      }
+			return North == castObj.North && East == castObj.East && South == castObj.South && West == castObj.West;
+		}
 
 		public bool Equivalent(GeographicBoundingBox other, double tolerance)
 		{
@@ -176,35 +187,35 @@ namespace WorldWind
 			return North.GetHashCode() ^ East.GetHashCode() ^ South.GetHashCode() ^ West.GetHashCode() ^ MinimumAltitude.GetHashCode() ^ MaximumAltitude.GetHashCode();
 		}
 
-      public override string ToString()
-      {
-         return String.Format("({0:F2} {4},{1:F2} {5}) -> ({2:F2} {6},{3:F2} {7})", Math.Abs(West), Math.Abs(South), Math.Abs(East), Math.Abs(North),
-            West < 0 ? "W" : "E", South < 0 ? "S" : "N", East < 0 ? "W" : "E", North < 0 ? "S" : "N");
-      }
+		public override string ToString()
+		{
+			return String.Format("({0:F2} {4},{1:F2} {5}) -> ({2:F2} {6},{3:F2} {7})", Math.Abs(West), Math.Abs(South), Math.Abs(East), Math.Abs(North),
+				West < 0 ? "W" : "E", South < 0 ? "S" : "N", East < 0 ? "W" : "E", North < 0 ? "S" : "N");
+		}
 
-      #region ICloneable Members
+		#region ICloneable Members
 
-      public object Clone()
-      {
-         return new GeographicBoundingBox(North, South, West, East, MinimumAltitude, MaximumAltitude);
-      }
+		public object Clone()
+		{
+			return new GeographicBoundingBox(North, South, West, East, MinimumAltitude, MaximumAltitude);
+		}
 
-      #endregion
-        public bool Contains(Point3d p)
-        {
-            if (North < p.Y ||
-                South > p.Y ||
-                West > p.X ||
-                East < p.X ||
-                MaximumAltitude < p.Z ||
-                MinimumAltitude > p.Z)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+		#endregion
+		public bool Contains(Point3d p)
+		{
+			if (North < p.Y ||
+				 South > p.Y ||
+				 West > p.X ||
+				 East < p.X ||
+				 MaximumAltitude < p.Z ||
+				 MinimumAltitude > p.Z)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
 	}
 }
