@@ -147,6 +147,7 @@ namespace Dapple
 			this.c_lvLayers.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cLayerList_ItemCheck);
 			this.c_lvLayers.DragDrop += new System.Windows.Forms.DragEventHandler(this.cLayerList_DragDrop);
 			this.c_lvLayers.MouseMove += new System.Windows.Forms.MouseEventHandler(this.cLayerList_MouseMove);
+			this.c_lvLayers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_lvLayers_MouseDown);
 			this.c_lvLayers.DragEnter += new System.Windows.Forms.DragEventHandler(this.cLayerList_DragEnter);
 			this.c_lvLayers.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cLayerList_KeyUp);
 			this.c_lvLayers.DragLeave += new System.EventHandler(this.cLayerList_DragLeave);
@@ -164,14 +165,14 @@ namespace Dapple
             this.c_miRemoveLayer,
             this.c_miAddOrGoToServer});
 			this.c_msContext.Name = "cLayerListContextMenu";
-			this.c_msContext.Size = new System.Drawing.Size(158, 186);
+			this.c_msContext.Size = new System.Drawing.Size(158, 164);
 			this.c_msContext.Opening += new System.ComponentModel.CancelEventHandler(this.cLayerListContextMenu_Opening);
 			// 
 			// c_miGoToLayer
 			// 
 			this.c_miGoToLayer.Image = global::Dapple.Properties.Resources.layers_goto;
 			this.c_miGoToLayer.Name = "c_miGoToLayer";
-			this.c_miGoToLayer.Size = new System.Drawing.Size(196, 22);
+			this.c_miGoToLayer.Size = new System.Drawing.Size(157, 22);
 			this.c_miGoToLayer.Text = "Go To";
 			this.c_miGoToLayer.Click += new System.EventHandler(this.cGoToToolStripMenuItem_Click);
 			// 
@@ -179,7 +180,7 @@ namespace Dapple
 			// 
 			this.c_miProperties.Image = global::Dapple.Properties.Resources.properties;
 			this.c_miProperties.Name = "c_miProperties";
-			this.c_miProperties.Size = new System.Drawing.Size(196, 22);
+			this.c_miProperties.Size = new System.Drawing.Size(157, 22);
 			this.c_miProperties.Text = "Properties...";
 			this.c_miProperties.Click += new System.EventHandler(this.cViewPropertiesToolStripMenuItem_Click);
 			// 
@@ -187,20 +188,20 @@ namespace Dapple
 			// 
 			this.c_miViewLegend.Image = global::Dapple.Properties.Resources.legend;
 			this.c_miViewLegend.Name = "c_miViewLegend";
-			this.c_miViewLegend.Size = new System.Drawing.Size(196, 22);
+			this.c_miViewLegend.Size = new System.Drawing.Size(157, 22);
 			this.c_miViewLegend.Text = "View Legend...";
 			this.c_miViewLegend.Click += new System.EventHandler(this.cViewLegendToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(193, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(154, 6);
 			// 
 			// c_miRefreshLayer
 			// 
 			this.c_miRefreshLayer.Image = global::Dapple.Properties.Resources.refresh;
 			this.c_miRefreshLayer.Name = "c_miRefreshLayer";
-			this.c_miRefreshLayer.Size = new System.Drawing.Size(196, 22);
+			this.c_miRefreshLayer.Size = new System.Drawing.Size(157, 22);
 			this.c_miRefreshLayer.Text = "Refresh";
 			this.c_miRefreshLayer.Click += new System.EventHandler(this.cRefreshToolStripMenuItem_Click);
 			// 
@@ -208,7 +209,7 @@ namespace Dapple
 			// 
 			this.c_miClearLayerChache.Image = global::Dapple.Properties.Resources.refresh_cache;
 			this.c_miClearLayerChache.Name = "c_miClearLayerChache";
-			this.c_miClearLayerChache.Size = new System.Drawing.Size(196, 22);
+			this.c_miClearLayerChache.Size = new System.Drawing.Size(157, 22);
 			this.c_miClearLayerChache.Text = "Clear Cache";
 			this.c_miClearLayerChache.Click += new System.EventHandler(this.cClearCacheToolStripMenuItem_Click);
 			// 
@@ -216,7 +217,7 @@ namespace Dapple
 			// 
 			this.c_miRemoveLayer.Image = global::Dapple.Properties.Resources.layers_remove;
 			this.c_miRemoveLayer.Name = "c_miRemoveLayer";
-			this.c_miRemoveLayer.Size = new System.Drawing.Size(196, 22);
+			this.c_miRemoveLayer.Size = new System.Drawing.Size(157, 22);
 			this.c_miRemoveLayer.Text = "Remove";
 			this.c_miRemoveLayer.Click += new System.EventHandler(this.cRemoveToolStripMenuItem_Click);
 			// 

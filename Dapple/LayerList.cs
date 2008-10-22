@@ -85,6 +85,8 @@ namespace Dapple
 		static System.Drawing.Pen m_oDragPen = new System.Drawing.Pen(System.Drawing.Brushes.Black, 2.0f);
 		static System.Drawing.Pen m_oDragNoPen = new System.Drawing.Pen(System.Drawing.Brushes.White, 2.0f);
 
+		private bool m_blDragAllowed = false;
+
       #endregion
 
       #region Constructors
@@ -463,7 +465,7 @@ namespace Dapple
 
       private void cLayerList_MouseMove(object sender, MouseEventArgs e)
       {
-         if ((e.Button & MouseButtons.Left) == MouseButtons.Left && c_lvLayers.SelectedIndices.Count > 0)
+         if ((e.Button & MouseButtons.Left) == MouseButtons.Left && c_lvLayers.SelectedIndices.Count > 0 && m_blDragAllowed)
          {
             DoDragDrop(new LayerListInternalShuffleToken(), DragDropEffects.Move);
          }
@@ -476,6 +478,11 @@ namespace Dapple
             CmdRemoveSelectedLayers();
          }
       }
+
+		private void c_lvLayers_MouseDown(object sender, MouseEventArgs e)
+		{
+			m_blDragAllowed = e.X >= 23;
+		}
 
       #endregion
 
