@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="{ca334281-f2c0-44ee-9d8c-1988d9bf3f36}" Name="Dapple" Language="1033" Version="2.0.0" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
+	<Product Id="{ca334281-f2c0-44ee-9d8c-1988d9bf3f36}" Name="Dapple" Language="1033" Version="$(var.ReleaseVersion)" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
 		<Package InstallerVersion="200" Compressed="yes" Description="Explore the earth" />
 		<Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
 		<Directory Id="TARGETDIR" Name="SourceDir">
@@ -57,7 +57,7 @@
 		<CustomAction Id="RemoveCacheDirectory" BinaryKey="GEOBINARY" DllEntry="DeleteCacheDirectory" Execute="deferred" Return="check" Impersonate="no" />
 		<Binary Id="GEOBINARY" SourceFile="custom\geodapple_customactions.dll" />
 		<Upgrade Id="DFEA744A-F951-4BED-B156-44478FAB86D6">
-			<UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="1.0.20" IncludeMaximum="yes" />
+			<UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="$(var.PrevVersion)" IncludeMaximum="yes" />
 		</Upgrade>
 		<InstallExecuteSequence>
 			<Custom Action="SetDappleShortcut" Before="RemoveShortcuts">

@@ -76,6 +76,17 @@
     <WixVariables>
     </WixVariables>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <WixVariables>
+    </WixVariables>
+    <DefineConstants>ReleaseVersion=$georelease;PrevRelease=$geoprevrelease</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <WixVariables>
+    </WixVariables>
+    <Cultures>en-US</Cultures>
+    <DefineConstants>Debug;ReleaseVersion=$georelease;PrevRelease=$geoprevrelease</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="DappleInstall.wxs" />
     <Compile Include="Dapple_ExitDialog.wxs" />
@@ -92,7 +103,9 @@
     <Content Include="ui\License.rtf" />
   </ItemGroup>
   <ItemGroup>
-    <WixExtension Include="$(GEOBUILD)\build\installs\Wix\WixUIExtension.dll" />
+    <WixExtension Include="WixUIExtension">
+      <HintPath>M:\b\\build\installs\Wix\WixUIExtension.dll</HintPath>
+    </WixExtension>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bitmaps" />
