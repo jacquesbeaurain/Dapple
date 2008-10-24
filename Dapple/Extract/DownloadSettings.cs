@@ -5,6 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
+using MWA.Progress;
+using System.Xml;
 
 namespace Dapple.Extract
 {
@@ -439,12 +442,24 @@ namespace Dapple.Extract
 			this.ResumeLayout(true);
 		}
 
-		public bool DoDownload(System.Xml.XmlDocument oExtractDoc)
+		public bool DoDownload(XmlDocument oExtractDoc)
 		{
-			this.Hide();
-			m_oParentForm.Activate();
-			Application.DoEvents();
-			return MainForm.MontajInterface.Download(oExtractDoc.OuterXml) > 0;
+			ProgressWindow oProgress = new ProgressWindow(false, false);
+			oProgress.Text = "Extraction in Progress";
+			oProgress.SetText(Utility.EnumUtils.GetDescription(MainForm.Client) + " is extracting your datasets.");
+			oProgress.Height = 77;
+			ThreadPool.QueueUserWorkItem(new WaitCallback(DoDownloadThreadMain), new Object[] { oExtractDoc, oProgress});
+			oProgress.ShowDialog();
+			return (bool)oProgress.ReturnValue;
+		}
+
+		private void DoDownloadThreadMain(Object args)
+		{
+			XmlDocument oExtractDoc = ((Object[])args)[0] as XmlDocument;
+			ProgressWindow oProgress = ((Object[])args)[1] as ProgressWindow;
+
+			oProgress.ReturnValue = MainForm.MontajInterface.Download(oExtractDoc.OuterXml) > 0;
+			oProgress.End();
 		}
 
       #endregion

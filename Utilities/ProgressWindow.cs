@@ -29,12 +29,13 @@ namespace MWA.Progress
 		private System.Threading.ManualResetEvent initEvent = new System.Threading.ManualResetEvent(false);
 		private System.Threading.ManualResetEvent abortEvent = new System.Threading.ManualResetEvent(false);
 		private bool requiresClose = true;
+		private Object m_oResult = null;
 
-		public ProgressWindow() : this(true)
+		public ProgressWindow() : this(true, true)
 		{
 		}
 
-		public ProgressWindow(bool blAllowCancel)
+		public ProgressWindow(bool blAllowCancel, bool blShowProgessBar)
 		{
 			//
 			// Required for Windows Form Designer support
@@ -45,6 +46,18 @@ namespace MWA.Progress
 			{
 				cancelButton.Visible = false;
 				progressBar.Width = progressBar.Parent.ClientSize.Width - 2 * progressBar.Left;
+			}
+
+			if (!blShowProgessBar)
+			{
+				progressBar.Visible = false;
+			}
+
+			if (!(blAllowCancel || blShowProgessBar))
+			{
+				label.Height = label.Parent.ClientSize.Height - 2 * label.Top;
+				label.TextAlign = ContentAlignment.MiddleCenter;
+				this.Height = 85;
 			}
 		}
 
@@ -89,7 +102,14 @@ namespace MWA.Progress
 		/// <param name="text">The progress text to display</param>
 		public void SetText( String text )
 		{
-			Invoke( new SetTextInvoker(DoSetText), new object[] { text } );
+			if (InvokeRequired)
+			{
+				Invoke(new SetTextInvoker(DoSetText), new object[] { text });
+			}
+			else
+			{
+				DoSetText(text);
+			}
 		}
 
 		/// <summary>
@@ -107,7 +127,14 @@ namespace MWA.Progress
 		/// <param name="val"></param>
 		public void StepTo( int val )
 		{
-			Invoke( new StepToInvoker( DoStepTo ), new object[] { val } );
+			if (InvokeRequired)
+			{
+				Invoke(new StepToInvoker(DoStepTo), new object[] { val });
+			}
+			else
+			{
+				DoStepTo(val);
+			}
 		}
 
 		
@@ -120,6 +147,15 @@ namespace MWA.Progress
 			{
 				return abortEvent.WaitOne( 0, false );
 			}
+		}
+
+		/// <summary>
+		/// This property lets worker threads return values back to the thread waiting on the progress bar.
+		/// </summary>
+		public Object ReturnValue
+		{
+			get { return m_oResult; }
+			set { m_oResult = value; }
 		}
 
 		/// <summary>
@@ -164,7 +200,6 @@ namespace MWA.Progress
 		private void DoBegin()
 		{
 			cancelButton.Enabled = true;
-			ControlBox = true;
 		}
 
 		private void DoSetRange( int minimum, int maximum )
@@ -190,7 +225,6 @@ namespace MWA.Progress
 		protected override void OnLoad(System.EventArgs e)
 		{
 			base.OnLoad( e );
-			ControlBox = false;
 			initEvent.Set();
 		}
 
@@ -287,6 +321,7 @@ namespace MWA.Progress
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(290, 114);
+			this.ControlBox = false;
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.progressBar);
 			this.Controls.Add(this.label);

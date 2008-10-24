@@ -787,7 +787,7 @@ namespace Dapple
 		{
 			if (entry.builderdirectory.builderentryCount > 0)
 			{
-				ProgressWindow oProgress = new ProgressWindow(false);
+				ProgressWindow oProgress = new ProgressWindow(false, true);
 				oProgress.Text = "Loading DAP Servers";
 				ThreadPool.QueueUserWorkItem(new WaitCallback(LoadDapServers), new Object[] { entry, oProgress });
 				oProgress.ShowDialog();

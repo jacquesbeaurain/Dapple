@@ -17,6 +17,7 @@ namespace Dapple
    static class Program
 	{
 		public static bool g_blTestingMode = false;
+		public static int g_iCallerProcID = -1;
 
 		/// <summary>
       /// The main entry point for the application.
@@ -76,6 +77,11 @@ namespace Dapple
 				{
 					PrintUsage();
 					return;
+				}
+
+				if (cmdl["callerprocid"] != null)
+				{
+					g_iCallerProcID = Int32.Parse(cmdl["callerprocid"]);
 				}
 
 				if (cmdl[0] != null)
@@ -398,6 +404,22 @@ namespace Dapple
 						ChannelServices.UnregisterChannel(oClientChannel);
 					}
 					catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
+				}
+			}
+		}
+
+		public static void FocusOnCaller()
+		{
+			if (g_iCallerProcID != -1)
+			{
+				try
+				{
+					Process caller = Process.GetProcessById(g_iCallerProcID);
+					SetForegroundWindow(caller.MainWindowHandle);
+				}
+				catch (ArgumentException)
+				{
+					// --- Invalid process.  Just don't switch ---
 				}
 			}
 		}

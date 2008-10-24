@@ -1913,6 +1913,8 @@ namespace Dapple
 
 		private void MainForm_Closing(object sender, CancelEventArgs e)
 		{
+			Program.FocusOnCaller();
+
 			// Turn off the metadata display thread and background search thread
 			m_oMetadataDisplay.Abort();
 

@@ -62,6 +62,16 @@ namespace MWA.Progress
 		}
 
 		/// <summary>
+		/// Worker thread methods can assign this variable, which lets users of the IProgressCallback
+		/// get return values from it.
+		/// </summary>
+		Object ReturnValue
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Call this method from the worker thread to finalize the progress meter
 		/// </summary>
 		/// <remarks>You must have called one of the Begin() methods prior to this call.</remarks>
