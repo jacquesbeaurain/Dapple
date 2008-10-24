@@ -57,8 +57,8 @@
 		<CustomAction Id="RemoveCacheDirectory" BinaryKey="GEOBINARY" DllEntry="DeleteCacheDirectory" Execute="deferred" Return="check" Impersonate="no" />
 		<Binary Id="GEOBINARY" SourceFile="custom\geodapple_customactions.dll" />
 		<Upgrade Id="DFEA744A-F951-4BED-B156-44478FAB86D6">
-			<UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="$(var.PrevVersion)" IncludeMaximum="yes" />
-		</Upgrade>
+			<UpgradeVersion Property="MAJORUPGRADEPREVIOUSVERSION" Maximum="$(var.PrevRelease)" IncludeMaximum="yes" />
+    </Upgrade>
 		<InstallExecuteSequence>
 			<Custom Action="SetDappleShortcut" Before="RemoveShortcuts">
 			</Custom>

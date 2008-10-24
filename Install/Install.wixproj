@@ -75,7 +75,9 @@
     <LinkerVerboseOutput>False</LinkerVerboseOutput>
     <WixVariables>
     </WixVariables>
-    <DefineConstants>ReleaseVersion=$georelease;PrevRelease=$geoprevrelease;DappleProductCode=$dapple_product_code</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants>ReleaseVersion=$(georelease);PrevRelease=$(geoprevrelease);DappleProductCode=$(dapple_product_code)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DappleInstall.wxs" />
