@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="{ca334281-f2c0-44ee-9d8c-1988d9bf3f36}" Name="Dapple" Language="1033" Version="$(var.ReleaseVersion)" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
+	<Product Id="$(var.DappleProductCode)" Name="Dapple" Language="1033" Version="$(var.ReleaseVersion)" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
 		<Package InstallerVersion="200" Compressed="yes" Description="Explore the earth" />
 		<Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
 		<Directory Id="TARGETDIR" Name="SourceDir">
