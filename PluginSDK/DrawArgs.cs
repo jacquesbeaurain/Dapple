@@ -82,15 +82,7 @@ namespace WorldWind
                 CurrentWorldStatic = value;
 			}
 		}
-		/*
-		public Device ReferenceDevice
-		{
-			get
-			{
-				return m_Device3dReference;
-			}
-		}
-		*/
+
 		/// <summary>
 		/// Absolute time of current frame render start (ticks)
 		/// </summary>
@@ -134,96 +126,8 @@ namespace WorldWind
 		
 			bitmap = new System.Drawing.Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			DrawArgs.Graphics = System.Drawing.Graphics.FromImage(bitmap);
-		//	InitializeReference();
 		}
 
-		System.Windows.Forms.Control m_ReferenceForm;
-		private void InitializeReference()
-		{
-			PresentParameters presentParameters = new PresentParameters();
-			presentParameters.Windowed = true;
-			presentParameters.SwapEffect = SwapEffect.Discard;
-			presentParameters.AutoDepthStencilFormat = DepthFormat.D16;
-			presentParameters.EnableAutoDepthStencil = true;
-
-			m_ReferenceForm = new System.Windows.Forms.Control("Reference", 0,0,1,1);
-			m_ReferenceForm.Visible = false;
-
-			int adapterOrdinal = 0;
-			try
-			{
-				// Store the default adapter
-				adapterOrdinal = Manager.Adapters.Default.Adapter;
-			}
-			catch
-			{
-				// User probably needs to upgrade DirectX or install a 3D capable graphics adapter
-				throw new NotAvailableException();
-			}
-
-	//		DeviceType dType = DeviceType.Reference;
-
-			CreateFlags flags = CreateFlags.SoftwareVertexProcessing;
-
-			flags |= CreateFlags.MultiThreaded | CreateFlags.FpuPreserve;
-/*
-			try
-			{
-				// Create our m_Device3d
-				m_Device3dReference = new Device(adapterOrdinal, dType, m_ReferenceForm, flags, presentParameters);
-			}
-			catch( Microsoft.DirectX.DirectXException	)
-			{
-				throw new NotSupportedException("Unable to create the Direct3D m_Device3d.");
-			}
-
-			// Hook the m_Device3d reset event
-			m_Device3dReference.DeviceReset += new EventHandler(OnDeviceReset);
-		//	m_Device3dReference.DeviceResizing += new CancelEventHandler(m_Device3d_DeviceResizing);
-			OnDeviceReset(m_Device3dReference, null);
-			*/
-		}
-
-		private void OnDeviceReset(object sender, EventArgs e)
-		{
-            using(new DirectXProfilerEvent("DrawArgs::OnDeviceReset"))
-            {
-			// Can we use anisotropic texture minify filter?
-			if( m_Device3dReference.DeviceCaps.TextureFilterCaps.SupportsMinifyAnisotropic)
-			{
-				m_Device3dReference.SamplerState[0].MinFilter = TextureFilter.Anisotropic;
-			}
-			else if( m_Device3dReference.DeviceCaps.TextureFilterCaps.SupportsMinifyLinear)
-			{
-				m_Device3dReference.SamplerState[0].MinFilter = TextureFilter.Linear;
-			}
-
-			// What about magnify filter?
-			if( m_Device3dReference.DeviceCaps.TextureFilterCaps.SupportsMagnifyAnisotropic )
-			{
-				m_Device3dReference.SamplerState[0].MagFilter = TextureFilter.Anisotropic;
-			}
-			else if( m_Device3dReference.DeviceCaps.TextureFilterCaps.SupportsMagnifyLinear )
-			{
-				m_Device3dReference.SamplerState[0].MagFilter = TextureFilter.Linear;
-			}
-
-			m_Device3dReference.SamplerState[0].AddressU = TextureAddress.Clamp;
-			m_Device3dReference.SamplerState[0].AddressV = TextureAddress.Clamp;
-
-			m_Device3dReference.RenderState.Clipping = true;
-			m_Device3dReference.RenderState.CullMode = Cull.Clockwise;
-			m_Device3dReference.RenderState.Lighting = false;
-			m_Device3dReference.RenderState.Ambient = System.Drawing.Color.FromArgb(0x40, 0x40, 0x40);
-
-			m_Device3dReference.RenderState.ZBufferEnable = true;
-			m_Device3dReference.RenderState.AlphaBlendEnable = true;
-			m_Device3dReference.RenderState.SourceBlend = Blend.SourceAlpha;
-			m_Device3dReference.RenderState.DestinationBlend = Blend.InvSourceAlpha;
-		}
-        }
-
-		Device m_Device3dReference = null;
 		public void BeginRender()
 		{
 			// Development variable to see the number of tiles drawn - Added for frustum culling testing
@@ -393,14 +297,6 @@ namespace WorldWind
 				PerformanceTimer.QueryPerformanceCounter( ref curTicks );
 				float elapsedSeconds = (curTicks - CurrentFrameStartTicks)/(float)PerformanceTimer.TicksPerSecond;
 				return elapsedSeconds;
-			}
-		}
-
-		public bool IsPainting
-		{
-			get
-			{
-				return this.isPainting;
 			}
 		}
 
