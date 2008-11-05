@@ -5,7 +5,6 @@ namespace WorldWind
 {
 	public interface IGlobe
 	{
-		void SetDisplayMessages(System.Collections.IList messages);
 		void SetLatLonGridShow(bool show);
 		void SetLayers(System.Collections.IList layers);
 		void SetVerticalExaggeration(double exageration);

@@ -1081,28 +1081,6 @@ namespace WorldWind
 
 					m_FpsGraph.Render(drawArgs);
 
-					if (m_World.OnScreenMessages != null)
-					{
-						try
-						{
-							foreach (OnScreenMessage dm in m_World.OnScreenMessages)
-							{
-								int xPos = (int)Math.Round(dm.X * this.Width);
-								int yPos = (int)Math.Round(dm.Y * this.Height);
-								Rectangle posRect =
-									new Rectangle(xPos, yPos, this.Width, this.Height);
-								this.drawArgs.defaultDrawingFont.DrawText(null,
-									dm.Message, posRect,
-									DrawTextFormat.NoClip | DrawTextFormat.WordBreak,
-									Color.White);
-							}
-						}
-						catch (Exception)
-						{
-							// Don't let a script error cancel the frame.
-						}
-					}
-
 					m_Device3d.EndScene();
 				}
 				finally
@@ -2159,11 +2137,6 @@ namespace WorldWind
 		}
 
 		#region IGlobe Members
-
-		public void SetDisplayMessages(IList messages)
-		{
-			m_World.OnScreenMessages = messages;
-		}
 
 		public void SetLatLonGridShow(bool show)
 		{

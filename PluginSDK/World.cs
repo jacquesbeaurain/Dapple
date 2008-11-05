@@ -29,21 +29,8 @@ namespace WorldWind
 		const double SemiMinorAxis = 6356752.31425;
 		TerrainAccessor _terrainAccessor;
 		RenderableObjectList _renderableObjects;
-		private System.Collections.IList onScreenMessages;
 		private DateTime lastElevationUpdate = System.DateTime.Now;
 		WorldSurfaceRenderer m_WorldSurfaceRenderer = null;
-
-		public System.Collections.IList OnScreenMessages
-		{
-			get
-			{
-				return this.onScreenMessages;
-			}
-			set
-			{
-				this.onScreenMessages = value;
-			}
-		}
 
 		#endregion
 
