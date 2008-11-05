@@ -304,7 +304,7 @@ namespace Dapple
 
 					Process instance = RunningInstance();
 
-					if (RunningInstance() == null)
+					if (instance == null)
 					{
 						try
 						{
@@ -455,6 +455,18 @@ namespace Dapple
             //Ignore the current process
             if (process.Id != current.Id)
             {
+					if (current.ProcessName.Contains("vshost"))
+					{
+						if (MessageBox.Show("Another instance of Dapple is running, but this is a Visual Studio hosting process. Ignore other process and run anyway?", "Dapple Process Conflict", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+						{
+							return null;
+						}
+						else
+						{
+							return process;
+						}
+					}
+
                //Make sure that the process is running from the exe file.
                //if (Assembly.GetExecutingAssembly().Location.Replace("/", "\\") ==
                //current.MainModule.FileName)
