@@ -135,7 +135,8 @@ namespace Dapple.KML
 
 		public override string GetCachePath()
 		{
-			throw new Exception("Unimplemented GetCachePath.");
+			// --- KML layers don't cache anything ---
+			return String.Empty;
 		}
 
 		protected override void CleanUpLayer(bool bFinal)
