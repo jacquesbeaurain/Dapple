@@ -875,58 +875,21 @@ namespace WorldWind
 			// 2ms in the hopes of never oversleeping.
 			const float SleepOverHeadSeconds = 2e-3f;
 
-			// Overhead associated with displaying the frame
-			const float PresentOverheadSeconds = 3e-4f;
+			if (Parent.Focused && !Focused)
+				Focus();
 
-			try
+			while (IsAppStillIdle)
 			{
-				if (Parent.Focused && !Focused)
-					Focus();
+				if (!World.Settings.AlwaysRenderWindow && m_isRenderDisabled && !World.Settings.CameraHasMomentum)
+					return;
 
-				while (IsAppStillIdle)
+				float fRenderTime = Render();
+
+				float fSleepNeeded = (1.0f / 25.0f) - SleepOverHeadSeconds - fRenderTime;
+				if (fSleepNeeded > 0)
 				{
-					if (!World.Settings.AlwaysRenderWindow && m_isRenderDisabled && !World.Settings.CameraHasMomentum)
-						return;
-
-					Render();
-
-					//if (World.Settings.ThrottleFpsHz > 0)
-					//{
-					// DAPPLE: Ignore the setting, 20FPS should be just fine, 
-					// DAPPLE: we don't have animated moving objects (yet)
-					// optionally throttle the frame rate (to get consistent frame
-					// rates or reduce CPU usage.
-					//float frameSeconds = 1.0f / World.Settings.ThrottleFpsHz - PresentOverheadSeconds;
-					float frameSeconds = 1.0f / 20.0f - PresentOverheadSeconds;
-
-					// Sleep for remaining period of time until next render
-					float sleepSeconds = frameSeconds - SleepOverHeadSeconds - DrawArgs.SecondsSinceLastFrame;
-					if (sleepSeconds > 0)
-					{
-						// Don't sleep too long. We don't know the accuracy of Thread.Sleep
-						Thread.Sleep((int)(1000 * sleepSeconds));
-					}
-					//}
-					// Flip
-					drawArgs.Present();
+					Thread.Sleep((int)(fSleepNeeded * 1000));
 				}
-			}
-			catch (DeviceLostException)
-			{
-				AttemptRecovery();
-			}
-		}
-
-		public void SafeRender()
-		{
-			try
-			{
-				Render();
-				drawArgs.Present();
-			}
-			catch (DeviceLostException)
-			{
-				AttemptRecovery();
 			}
 		}
 		#endregion
@@ -950,33 +913,13 @@ namespace WorldWind
 		/// <param name="e"></param>
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			// Paint the last active scene if rendering is disabled to keep the ui responsive
-			try
+			if (m_Device3d == null)
 			{
-				if (m_Device3d == null)
-				{
-					e.Graphics.Clear(SystemColors.Control);
-					return;
-				}
-
-				// to prevent screen garbage when resizing
-				//Render();
-				m_Device3d.Present();
+				e.Graphics.Clear(SystemColors.Control);
 			}
-			catch (DeviceLostException)
+			else
 			{
-				try
-				{
-					AttemptRecovery();
-
-					// Our surface was lost, force re-render
-					Render();
-					m_Device3d.Present();
-				}
-				catch (DirectXException)
-				{
-					// Ignore a 2nd failure
-				}
+				Render();
 			}
 		}
 
@@ -988,11 +931,34 @@ namespace WorldWind
 		System.Collections.ArrayList m_FrameTimes = new ArrayList();
 		WorldWind.Widgets.RootWidget m_RootWidget = null;
 		WorldWind.NewWidgets.RootWidget m_NewRootWidget = null;
+		private bool m_blDeviceLost = false;
+
+		/// <summary>
+		/// This method is a redirect; delete it sometime and call the redirected method directly.
+		/// </summary>
+		public void SafeRender()
+		{
+			Render();
+		}
+
 		/// <summary>
 		/// Render the scene.
 		/// </summary>
-		public void Render()
+		/// <returns>The number of seconds taken to render everything.</returns>
+		public float Render()
 		{
+			float result;
+
+			// --- Ensure the Device isn't lost, and cancel if it is ---
+			if (m_blDeviceLost)
+			{
+				AttemptRecovery();
+			}
+			if (m_blDeviceLost)
+			{
+				return 0;
+			}
+
 			using (new DirectXProfilerEvent("WorldWindow::Render"))
 			{
 				long startTicks = 0;
@@ -1007,96 +973,115 @@ namespace WorldWind
 
 					m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
 
-					if (m_World == null)
+					if (m_World != null)
 					{
-						m_Device3d.BeginScene();
-						m_Device3d.EndScene();
-						m_Device3d.Present();
-						Thread.Sleep(25);
-						return;
-					}
-
-					if (m_WorkerThread == null)
-					{
-						m_WorkerThreadRunning = true;
-						m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
-						m_WorkerThread.Name = ThreadNames.WorldWindowBackground;
-						m_WorkerThread.IsBackground = true;
-						if (World.Settings.UseBelowNormalPriorityUpdateThread)
+						if (m_WorkerThread == null)
 						{
-							m_WorkerThread.Priority = ThreadPriority.BelowNormal;
+							m_WorkerThreadRunning = true;
+							m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
+							m_WorkerThread.Name = ThreadNames.WorldWindowBackground;
+							m_WorkerThread.IsBackground = true;
+							if (World.Settings.UseBelowNormalPriorityUpdateThread)
+							{
+								m_WorkerThread.Priority = ThreadPriority.BelowNormal;
+							}
+							else
+							{
+								m_WorkerThread.Priority = ThreadPriority.Normal;
+							}
+							// BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
+							// TODO: Implement dynamic FPS limiter (or different solution)
+							m_WorkerThread.Start();
 						}
-						else
+
+						// Update camera view
+						this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
+						this.drawArgs.WorldCamera.Update(m_Device3d);
+
+						try
 						{
-							m_WorkerThread.Priority = ThreadPriority.Normal;
+							m_Device3d.BeginScene();
+
+							// Set fill mode
+							if (renderWireFrame)
+								m_Device3d.RenderState.FillMode = FillMode.WireFrame;
+							else
+								m_Device3d.RenderState.FillMode = FillMode.Solid;
+
+							drawArgs.RenderWireFrame = renderWireFrame;
+
+							// Render the current planet
+							m_World.Render(this.drawArgs);
+
+							if (World.Settings.ShowCrosshairs)
+								this.DrawCrossHairs();
+
+							frameCounter++;
+							if (frameCounter == 30)
+							{
+								fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
+								frameCounter = 0;
+								lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
+							}
+
+							m_RootWidget.Render(drawArgs);
+							m_NewRootWidget.Render(drawArgs);
+
+							drawArgs.device.RenderState.ZBufferEnable = false;
+
+							// 3D rendering complete, switch to 2D for UI rendering
+
+							// Restore normal fill mode
+							if (renderWireFrame)
+								m_Device3d.RenderState.FillMode = FillMode.Solid;
+
+							// Disable fog for UI
+							m_Device3d.RenderState.FogEnable = false;
+
+							RenderPositionInfo();
+
+							m_FpsGraph.Render(drawArgs);
 						}
-						// BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
-						// TODO: Implement dynamic FPS limiter (or different solution)
-						m_WorkerThread.Start();
+						finally
+						{
+							m_Device3d.EndScene();
+						}
+
+						try
+						{
+							drawArgs.Present();
+						}
+						catch (DeviceLostException)
+						{
+							m_blDeviceLost = true;
+						}
+						catch (InvalidCallException)
+						{
+							// --- We've never managed to isolate what causes this in all cases
+							// --- (a common one was Present called after BeginScene but before EndScene,
+							// --- but it still occurred when all code paths were believed to be checked).
+							// --- Consider the device lost, and see if we can't simply recover using
+							// --- a normal test/reset operation.
+							m_blDeviceLost = true;
+						}
 					}
-
-					// Update camera view
-					this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
-					this.drawArgs.WorldCamera.Update(m_Device3d);
-
-					m_Device3d.BeginScene();
-
-					// Set fill mode
-					if (renderWireFrame)
-						m_Device3d.RenderState.FillMode = FillMode.WireFrame;
-					else
-						m_Device3d.RenderState.FillMode = FillMode.Solid;
-
-					drawArgs.RenderWireFrame = renderWireFrame;
-
-					// Render the current planet
-					m_World.Render(this.drawArgs);
-
-					if (World.Settings.ShowCrosshairs)
-						this.DrawCrossHairs();
-
-					frameCounter++;
-					if (frameCounter == 30)
-					{
-						fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
-						frameCounter = 0;
-						lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
-					}
-
-					m_RootWidget.Render(drawArgs);
-					m_NewRootWidget.Render(drawArgs);
-
-					drawArgs.device.RenderState.ZBufferEnable = false;
-
-					// 3D rendering complete, switch to 2D for UI rendering
-
-					// Restore normal fill mode
-					if (renderWireFrame)
-						m_Device3d.RenderState.FillMode = FillMode.Solid;
-
-					// Disable fog for UI
-					m_Device3d.RenderState.FogEnable = false;
-
-					RenderPositionInfo();
-
-					m_FpsGraph.Render(drawArgs);
-
-					m_Device3d.EndScene();
 				}
 				finally
 				{
+					long endTicks = 0;
+					PerformanceTimer.QueryPerformanceCounter(ref endTicks);
+					result = (float)(endTicks - startTicks) / PerformanceTimer.TicksPerSecond;
 
 					if (World.Settings.ShowFpsGraph)
 					{
-						long endTicks = 0;
-						PerformanceTimer.QueryPerformanceCounter(ref endTicks);
-						float elapsedMilliSeconds = 1000.0f / (1000.0f * (float)(endTicks - startTicks) / PerformanceTimer.TicksPerSecond);
-						m_FrameTimes.Add(elapsedMilliSeconds);
+						m_FrameTimes.Add(result);
 					}
 					this.drawArgs.EndRender();
 				}
 				drawArgs.UpdateMouseCursor(this);
 			}
+
+			return result;
 		}
 
 		private LineGraph m_FpsGraph = new LineGraph();
@@ -1282,20 +1267,18 @@ namespace WorldWind
 			}
 			catch (DeviceLostException)
 			{
-				// This exception is expected if the device is lost and continues to be so.
+				// --- Device is still lost ---
 			}
 			catch (DeviceNotResetException)
 			{
 				try
 				{
 					m_Device3d.Reset(m_presentParams);
+					m_blDeviceLost = false;
 				}
 				catch (DeviceLostException)
 				{
-					// If it's still lost or lost again, just do
-					// nothing
-					// This shouldn't happen in practice: getting the context back and then
-					// losing it again in milliseconds is unlikely.
+					// --- Device was found, but got lost again quickly ---
 				}
 			}
 		}
