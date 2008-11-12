@@ -2224,6 +2224,12 @@ namespace WorldWind
 				KillD3DAndWorkerThread();
 				VideoMemoryExhausted();
 			}
+			catch (InvalidOperationException)
+			{
+				// A few users were getting exceptions here on startup. Set the device lost
+				// flag and hope that the recovery code can take care of it.
+				m_blDeviceLost = true;
+			}
 		}
 
 		public void KillD3DAndWorkerThread()
