@@ -30,6 +30,7 @@ namespace MWA.Progress
 		private System.Threading.ManualResetEvent abortEvent = new System.Threading.ManualResetEvent(false);
 		private bool requiresClose = true;
 		private Object m_oResult = null;
+		private Exception m_oException = null;
 
 		public ProgressWindow() : this(true, true)
 		{
@@ -156,6 +157,12 @@ namespace MWA.Progress
 		{
 			get { return m_oResult; }
 			set { m_oResult = value; }
+		}
+
+		public Exception Exception
+		{
+			get { return m_oException; }
+			set { m_oException = value; }
 		}
 
 		/// <summary>

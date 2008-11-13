@@ -450,6 +450,7 @@ namespace Dapple.Extract
 			oProgress.Height = 77;
 			ThreadPool.QueueUserWorkItem(new WaitCallback(DoDownloadThreadMain), new Object[] { oExtractDoc, oProgress});
 			oProgress.ShowDialog();
+			if (oProgress.Exception != null) throw oProgress.Exception;
 			return (bool)oProgress.ReturnValue;
 		}
 
@@ -457,8 +458,14 @@ namespace Dapple.Extract
 		{
 			XmlDocument oExtractDoc = ((Object[])args)[0] as XmlDocument;
 			ProgressWindow oProgress = ((Object[])args)[1] as ProgressWindow;
-
-			oProgress.ReturnValue = MainForm.MontajInterface.Download(oExtractDoc.OuterXml) > 0;
+			try
+			{
+				oProgress.ReturnValue = MainForm.MontajInterface.Download(oExtractDoc.OuterXml) > 0;
+			}
+			catch (Exception ex)
+			{
+				oProgress.Exception = ex;
+			}
 			oProgress.End();
 		}
 
