@@ -195,8 +195,6 @@ namespace Dapple
             if (c_cbServers.SelectedIndex != -1)
             {
                InitLayerList();
-               FillLayerList();
-               UpdatePageNavigation();
             }
          }
       }
@@ -242,7 +240,6 @@ namespace Dapple
 			{
 				SetSearching();
 				InitLayerList();
-				DrawCurrentPage();
 			}
 		}
 
@@ -269,7 +266,6 @@ namespace Dapple
             {
                SetSearching();
                InitLayerList();
-               DrawCurrentPage();
                m_oSelectedServer = oNewSelectedServer;
             }
          }
@@ -467,17 +463,17 @@ namespace Dapple
       /// <summary>
       /// Call to update the forward, back buttons, page label, and layers in list when the current page changes.
       /// </summary>
-      private void UpdatePageNavigation()
-      {
-         if (m_oCurrServerLayers.Count > 0)
-         {
-            c_oPageNavigator.SetState(m_iCurrPage, m_oCurrServerLayers.Count);
-         }
-         else
-         {
-            c_oPageNavigator.SetState("No results");
-         }
-      }
+		private void UpdatePageNavigation()
+		{
+			if (m_oCurrServerLayers.Count > 0)
+			{
+				c_oPageNavigator.SetState(m_iCurrPage, m_oCurrServerLayers.Count);
+			}
+			else
+			{
+				c_oPageNavigator.SetState("No results");
+			}
+		}
 
       /// <summary>
       /// Call to fill in the layer list.  Takes into account the current page.
@@ -531,6 +527,7 @@ namespace Dapple
       /// <summary>
       /// Gets the list of layers from the server (according to the search criteria) and populates the
       /// local list of layers, and resets the currently viewed page to the first page.
+		/// Finally, updates the UI to show the first page.
       /// </summary>
       private void InitLayerList()
       {
@@ -569,6 +566,7 @@ namespace Dapple
             m_iCurrPage = 0;
             m_iNumPages = m_oCurrServerLayers.Count / LAYERS_PER_PAGE;
             if (m_oCurrServerLayers.Count % LAYERS_PER_PAGE != 0) m_iNumPages++;
+				DrawCurrentPage();
          }
          catch (Exception)
          {
@@ -576,6 +574,7 @@ namespace Dapple
             m_iCurrPage = 0;
             m_iNumPages = -1;
             c_oPageNavigator.SetState("Error occurred");
+				FillLayerList();
          }
       }
 
