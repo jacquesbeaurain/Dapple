@@ -72,6 +72,25 @@ namespace Dapple.LayerGeneration
 			m_blUseXMLMeta = !String.IsNullOrEmpty(m_hDataSet.Stylesheet);
 		}
 
+		/// <summary>
+		/// Husk DAPQuadLayerBuilder. Only supports getting metadata for a server. Don't try to render it.
+		/// </summary>
+		/// <param name="dataset"></param>
+		/// <param name="server"></param>
+		public DAPQuadLayerBuilder(DataSet dataset, Server server)
+			: base(null, null, null)
+		{
+			m_hDataSet = dataset;
+			m_oServer = server;
+
+			m_iHeight = 0;
+			m_iTextureSizePixels = 0;
+			LevelZeroTileSize = 22.5;
+			m_iLevels = 0;
+
+			m_blUseXMLMeta = !String.IsNullOrEmpty(m_hDataSet.Stylesheet);
+		}
+
 		#endregion
 
 		#region Properties

@@ -1028,7 +1028,23 @@ namespace Dapple
                iter = iter.Parent;
             }
 
-            if (m_activeLayers.AllLayers.Contains(new DAPQuadLayerBuilder(oNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null)))
+				bool blLayerDisplayed = false;
+				foreach (LayerBuilder oDataset in m_activeLayers.AllLayers)
+				{
+					if (oDataset is DAPQuadLayerBuilder)
+					{
+						DAPQuadLayerBuilder oDAPDataset = oDataset as DAPQuadLayerBuilder;
+
+						if (oDAPDataset.ServerURL.Equals((oNode.Tag as DataSet).Url) &&
+							oDAPDataset.DatasetName.Equals((oNode.Tag as DataSet).Name))
+						{
+							blLayerDisplayed = true;
+							break;
+						}
+					}
+				}
+
+            if (blLayerDisplayed)
             {
                oNode.ForeColor = System.Drawing.Color.Green;
             }
@@ -1197,7 +1213,7 @@ namespace Dapple
                   iter = iter.Parent;
                }
 
-               ViewMetadata(new DAPQuadLayerBuilder(SelectedNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null));
+               ViewMetadata(new DAPQuadLayerBuilder(SelectedNode.Tag as DataSet, iter.Tag as Server));
             }
          }
       }
