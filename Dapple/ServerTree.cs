@@ -49,6 +49,17 @@ namespace Dapple
       private String m_szDefaultServer = String.Empty;
 
       public event MainForm.ViewMetadataHandler ViewMetadata;
+
+		public event EventHandler ServerToggled;
+
+		protected void OnServerToggled(EventArgs e)
+		{
+			if (ServerToggled != null)
+			{
+				ServerToggled(this, e);
+			}
+		}
+
 		#endregion
 
       #region Delegates
@@ -1730,6 +1741,8 @@ namespace Dapple
 				}
 
 				((ServerBuilder)SelectedNode.Tag).Enabled ^= true; // Toggle it.
+				OnServerToggled(EventArgs.Empty);
+
 				if (SelectedNode.Tag is WMSServerBuilder)
 				{
 					m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ToggleServer, new Object[] { ((ServerBuilder)SelectedNode.Tag).Uri.ToString(), "WMS", ((ServerBuilder)SelectedNode.Tag).Enabled });
@@ -1755,6 +1768,8 @@ namespace Dapple
 				}
 
 				((Server)SelectedNode.Tag).Enabled ^= true;
+				OnServerToggled(EventArgs.Empty);
+
 				m_oParent.CmdUpdateHomeView(MainForm.UpdateHomeViewType.ToggleServer, new Object[] { ((Server)SelectedNode.Tag).Url, "DAP", ((Server)SelectedNode.Tag).Enabled });
 				SelectedNode.ForeColor = ((Server)SelectedNode.Tag).Enabled ? System.Drawing.SystemColors.WindowText : System.Drawing.Color.Gray;
 				GetCatalogHierarchy();

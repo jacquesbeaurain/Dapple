@@ -644,6 +644,7 @@ namespace Dapple
 				c_oServerList.LayerSelectionChanged += new EventHandler(c_oServerList_LayerSelectionChanged);
 
 				this.c_oServerTree.AfterSelect += new TreeViewEventHandler(this.c_oServerTree_AfterSelected);
+				this.c_oServerTree.ServerToggled += new EventHandler(this.c_oServerTree_ServerToggled);
 				this.c_oServerTree.Dock = System.Windows.Forms.DockStyle.Fill;
 				this.c_oServerTree.ImageIndex = 0;
 				this.c_oServerTree.Location = new System.Drawing.Point(0, 0);
@@ -2385,6 +2386,11 @@ namespace Dapple
 			CmdSetupServersMenu();
 		}
 
+		private void c_oServerTree_ServerToggled(object sender, EventArgs e)
+		{
+			populateAoiComboBox();
+		}
+
 		private void c_oServerList_LayerSelectionChanged(object sender, EventArgs e)
 		{
 			CmdSetupToolsMenu();
@@ -2503,39 +2509,63 @@ namespace Dapple
 
 		private void populateAoiComboBox()
 		{
+			// --- Create list of AoIs to assign to the drop-down list ---
+
 			List<KeyValuePair<String, GeographicBoundingBox>> oAois = new List<KeyValuePair<string, GeographicBoundingBox>>();
+
+
+			// --- Get the currently active DAP server if there is one ---
+
+			Server oSelectedDapServer = null;
+			if (c_oServerTree.SelectedNode != null && c_oServerTree.SelectedNode.Tag is Server)
+			{
+				oSelectedDapServer = c_oServerTree.SelectedNode.Tag as Server;
+			}
+			bool blViableDapServer = oSelectedDapServer != null && oSelectedDapServer.Enabled && oSelectedDapServer.Status == Server.ServerStatus.OnLine;
+
+
+			// --- Add header line ---
 
 			oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("--- Select a specific region ---", null));
 
-			if (this.c_oServerTree.SelectedNode != null && this.c_oServerTree.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+
+			// --- Add server extent if available ---
+
+			if (blViableDapServer)
 			{
-				Server oServer = this.c_oServerTree.SelectedNode.Tag as Server;
-				if (oServer.Status == Server.ServerStatus.OnLine)
-				{
-					oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Server extent", new GeographicBoundingBox(oServer.ServerExtents.MaxY, oServer.ServerExtents.MinY, oServer.ServerExtents.MinX, oServer.ServerExtents.MaxX)));
-				}
+				oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Server extent", new GeographicBoundingBox(oSelectedDapServer.ServerExtents.MaxY, oSelectedDapServer.ServerExtents.MinY, oSelectedDapServer.ServerExtents.MinX, oSelectedDapServer.ServerExtents.MaxX)));
 			}
 
-			if (IsMontajChildProcess && m_oOMMapExtentWGS84 != null) oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
+
+			// --- If we're FDWD, add the original map extents ---
+
+			if (IsMontajChildProcess && m_oOMMapExtentWGS84 != null)
+			{
+				oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
+			}
+
+
+			// --- Add divider ---
 
 			oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("-----------------------------", null));
 
-			if (this.c_oServerTree.SelectedNode != null && this.c_oServerTree.SelectedNode.Tag is Geosoft.GX.DAPGetData.Server)
+
+			// --- Add list of AoIs:
+			// --- if we've selected an enabled, online DAP server, get its AoI list
+			// --- otherwise, add the countries of the world AoI list
+
+			if (blViableDapServer)
 			{
-				if (((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).Status == Geosoft.GX.DAPGetData.Server.ServerStatus.OnLine &&
-					((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).Enabled)
+				ArrayList aAOIs = oSelectedDapServer.ServerConfiguration.GetAreaList();
+				foreach (String strAOI in aAOIs)
 				{
-					ArrayList aAOIs = ((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).ServerConfiguration.GetAreaList();
-					foreach (String strAOI in aAOIs)
+					double minX, minY, maxX, maxY;
+					String strCoord;
+					oSelectedDapServer.ServerConfiguration.GetBoundingBox(strAOI, out maxX, out maxY, out minX, out minY, out strCoord);
+					if (strCoord.Equals("WGS 84"))
 					{
-						double minX, minY, maxX, maxY;
-						String strCoord;
-						((Geosoft.GX.DAPGetData.Server)this.c_oServerTree.SelectedNode.Tag).ServerConfiguration.GetBoundingBox(strAOI, out maxX, out maxY, out minX, out minY, out strCoord);
-						if (strCoord.Equals("WGS 84"))
-						{
-							GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
-							oAois.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
-						}
+						GeographicBoundingBox oBox = new GeographicBoundingBox(maxY, minY, minX, maxX);
+						oAois.Add(new KeyValuePair<String, GeographicBoundingBox>(strAOI, oBox));
 					}
 				}
 			}
