@@ -18,26 +18,13 @@ namespace NewServerTree.View
 		#endregion
 
 
-		#region Statics
-
-		private static ImageList s_oImages;
-
-		static ServerTree()
-		{
-			s_oImages = new ImageList();
-			s_oImages.ColorDepth = ColorDepth.Depth32Bit;
-		}
-
-		#endregion
-
-
 		#region Constructors
 
 		public ServerTree()
 		{
 			InitializeComponent();
 
-			c_tvView.ImageList = s_oImages;
+			c_tvView.ImageList = IconKeys.ConstructImageList();
 		}
 
 		#endregion
@@ -200,6 +187,13 @@ namespace NewServerTree.View
 			}
 		}
 
+		private void c_tvView_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+		{
+			// --- Never collapse a treenode in the server tree---
+
+			e.Cancel = true;
+		}
+
 		private void UnmuteController()
 		{
 			c_tvView.BeforeSelect += new TreeViewCancelEventHandler(c_tvView_BeforeSelect);
@@ -248,8 +242,8 @@ namespace NewServerTree.View
 			ModelNode oNode = oNodeToConfigure.Tag as ModelNode;
 
 			oNodeToConfigure.Text = oNode.DisplayText;
-			oNodeToConfigure.ImageKey = GetImageKey(oNode);
-			oNodeToConfigure.SelectedImageKey = GetImageKey(oNode);
+			oNodeToConfigure.ImageKey = oNode.IconKey;
+			oNodeToConfigure.SelectedImageKey = oNode.IconKey;
 
 			switch (oNode.LoadState)
 			{
@@ -268,11 +262,6 @@ namespace NewServerTree.View
 				default:
 					throw new NotImplementedException("Missing enumeration case statement");
 			}
-		}
-
-		private static String GetImageKey(ModelNode oNode)
-		{
-			return "error";
 		}
 
 		/// <summary>
@@ -465,6 +454,7 @@ namespace NewServerTree.View
 
 			c_tvView.BeginUpdate();
 
+			ConfigureTreeNodeDisplay(after);
 			ReconfigureTree(before, after);
 
 			c_tvView.ExpandAll();

@@ -51,6 +51,11 @@ namespace NewServerTree
 		{
 			throw new NotImplementedException();
 		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.ArcIMSRoot; }
+		}
 	}
 
 	public class ArcIMSServerModelNode : ServerModelNode
@@ -120,6 +125,18 @@ namespace NewServerTree
 			{
 				return false;
 			}
+		}
+
+		public override bool Enabled
+		{
+			get { return true; }
+			set { throw new NotImplementedException(); }
+		}
+
+		public override bool Favourite
+		{
+			get { return false; }
+			set { throw new NotImplementedException(); }
 		}
 
 		public override string DisplayText
@@ -258,6 +275,11 @@ namespace NewServerTree
 		{
 			get { return m_strServiceName; }
 		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.ArcIMSService; }
+		}
 	}
 
 	class ArcIMSLayerModelNode : LayerModelNode
@@ -269,7 +291,7 @@ namespace NewServerTree
 
 
 		public ArcIMSLayerModelNode(DappleModel oModel, String strTitle, String strID, GeographicBoundingBox oBounds, double dMinScale, double dMaxScale, CultureInfo oCultureInfo)
-			:base(oModel)
+			: base(oModel)
 		{
 			m_strTitle = strTitle;
 			m_strID = strID;
@@ -295,6 +317,11 @@ namespace NewServerTree
 		public override string DisplayText
 		{
 			get { return m_strTitle; }
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.ArcIMSLayer; }
 		}
 	}
 }

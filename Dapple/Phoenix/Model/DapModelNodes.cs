@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using Geosoft.Dap.Common;
 using System.Windows.Forms;
+using Geosoft.Dap;
 
 namespace NewServerTree
 {
@@ -60,6 +61,11 @@ namespace NewServerTree
 		{
 			throw new NotImplementedException();
 		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.DapRoot; }
+		}
 	}
 
 	public class DapServerModelNode : ServerModelNode
@@ -84,6 +90,12 @@ namespace NewServerTree
 			String strCacheDir = @"C:\c\dap\" + m_oUri.GetHashCode() + @"\";
 			Directory.CreateDirectory(strCacheDir);
 			m_oServer = new Server(m_oUri.ToBaseUri(), strCacheDir, String.Empty, true);
+
+			if (m_oServer.Status != Server.ServerStatus.OnLine)
+			{
+				throw new DapException("Server is " + m_oServer.Status.ToString());
+			}
+
 			m_strTitle = m_oServer.Name;
 			m_blEntireCatalogMode = m_oServer.MajorVersion < 6 || (m_oServer.MajorVersion == 6 && m_oServer.MinorVersion < 3);
 
@@ -129,21 +141,15 @@ namespace NewServerTree
 			get { return m_oUri; }
 		}
 
-		public bool Enabled
+		public override bool Enabled
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return true; }
+			set { throw new NotImplementedException(); }
 		}
 
-		public bool Favourite
+		public override bool Favourite
 		{
-			get { throw new NotImplementedException(); }
+			get { return false; }
 			set { throw new NotImplementedException(); }
 		}
 
@@ -165,6 +171,14 @@ namespace NewServerTree
 			get
 			{
 				return "Whatever Title Marketing Decides to Use for Personal Dap";
+			}
+		}
+
+		public override string IconKey
+		{
+			get
+			{
+				return IconKeys.PersonalDAPServer;
 			}
 		}
 	}
@@ -196,7 +210,7 @@ namespace NewServerTree
 			{
 				result.Add(new DapDatasetModelNode(m_oModel, oDataset));
 			}
-			
+
 			return result.ToArray();
 		}
 
@@ -227,6 +241,21 @@ namespace NewServerTree
 			if (oServerNode == null) throw new ApplicationException("Orphaned DAP folder node");
 
 			return (oServerNode as DapServerModelNode).Server;
+		}
+
+		public override string IconKey
+		{
+			get
+			{
+				if (m_oModel.IsSelectedOrAncestor(this))
+				{
+					return IconKeys.OpenFolder;
+				}
+				else
+				{
+					return IconKeys.ClosedFolder;
+				}
+			}
 		}
 	}
 
@@ -261,6 +290,11 @@ namespace NewServerTree
 			{
 				return true;
 			}
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.DapLayerPrefix + m_oDataSet.Type.ToLowerInvariant(); }
 		}
 	}
 }

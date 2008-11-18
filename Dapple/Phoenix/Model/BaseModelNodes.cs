@@ -88,6 +88,8 @@ namespace NewServerTree
 			get { return false; }
 		}
 
+		public abstract String IconKey { get; }
+
 		#endregion
 
 
@@ -331,9 +333,28 @@ namespace NewServerTree
 		{
 		}
 
-		bool Enabled { get; set; }
+		public abstract bool Enabled { get; set; }
 
-		bool Favourite { get; set; }
+		public abstract bool Favourite { get; set; }
+
+		public override string IconKey
+		{
+			get
+			{
+				if (!Enabled)
+				{
+					return IconKeys.DisabledServer;
+				}
+				else if (LoadState == LoadState.LoadFailed)
+				{
+					return IconKeys.OfflineServer;
+				}
+				else
+				{
+					return IconKeys.OnlineServer;
+				}
+			}
+		}
 
 		public ToolStripMenuItem[] MenuItems
 		{
@@ -396,14 +417,18 @@ namespace NewServerTree
 		private WMSRootModelNode m_oWMSRootNode;
 		private ArcIMSRootModelNode m_oArcIMSRootNode;
 		private DapServerRootModelNode m_oDAPRootNode;
+		private ImageTileSetRootModelNode m_oTileRootNode;
 
 		public AvailableServersModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			m_oDAPRootNode = new DapServerRootModelNode(m_oModel);
 			AddChildSilently(m_oDAPRootNode);
-			AddChildSilently(new PersonalDapServerModelNode(m_oModel));
-			AddChildSilently(new ImageTileServerRootModelNode(m_oModel));
+			PersonalDapServerModelNode oPDNode = new PersonalDapServerModelNode(m_oModel);
+			oPDNode.BeginLoad();
+			AddChildSilently(oPDNode);
+			m_oTileRootNode = new ImageTileSetRootModelNode(m_oModel);
+			AddChildSilently(m_oTileRootNode);
 			AddChildSilently(new VERootModelNode(m_oModel));
 			m_oWMSRootNode = new WMSRootModelNode(m_oModel);
 			AddChildSilently(m_oWMSRootNode);
@@ -448,6 +473,16 @@ namespace NewServerTree
 		{
 			get { return m_oDAPRootNode; }
 		}
+
+		public ImageTileSetRootModelNode ImageTileSets
+		{
+			get { return m_oTileRootNode; }
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.AvailableServers; }
+		}
 	}
 
 	public abstract class MessageModelNode : ModelNode, IAnnotationModelNode
@@ -490,6 +525,11 @@ namespace NewServerTree
 				return true;
 			}
 		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.LoadingMessage; }
+		}
 	}
 
 	public class ErrorModelNode : MessageModelNode
@@ -510,6 +550,11 @@ namespace NewServerTree
 			{
 				return true;
 			}
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.ErrorMessage; }
 		}
 	}
 }

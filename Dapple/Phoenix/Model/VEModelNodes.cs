@@ -26,6 +26,11 @@ namespace NewServerTree
 				return "Virtual Earth";
 			}
 		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.VERoot; }
+		}
 	}
 
 	public class VELayerModelNode : LayerModelNode
@@ -76,6 +81,11 @@ namespace NewServerTree
 			{
 				return true;
 			}
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.VELayer; }
 		}
 	}
 }

@@ -53,6 +53,11 @@ namespace NewServerTree
 			}
 		}
 
+		public override string IconKey
+		{
+			get { return IconKeys.WMSRoot; }
+		}
+
 		public ToolStripMenuItem[] MenuItems
 		{
 			get
@@ -124,6 +129,18 @@ namespace NewServerTree
 			}
 		}
 
+		public override bool Enabled
+		{
+			get { return true; }
+			set { throw new NotImplementedException(); }
+		}
+
+		public override bool Favourite
+		{
+			get { return false; }
+			set { throw new NotImplementedException(); }
+		}
+
 		public WMSServerUri Uri
 		{
 			get { return m_oUri; }
@@ -174,6 +191,21 @@ namespace NewServerTree
 				return m_oData.Title;
 			}
 		}
+
+		public override string IconKey
+		{
+			get
+			{
+				if (m_oModel.IsSelectedOrAncestor(this))
+				{
+					return IconKeys.OpenFolder;
+				}
+				else
+				{
+					return IconKeys.ClosedFolder;
+				}
+			}
+		}
 	}
 
 	public class WMSLayerModelNode : LayerModelNode, IContextModelNode
@@ -207,6 +239,11 @@ namespace NewServerTree
 			{
 				return true;
 			}
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.WMSLayer; }
 		}
 	}
 }

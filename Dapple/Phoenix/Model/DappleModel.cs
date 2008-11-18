@@ -256,14 +256,22 @@ namespace NewServerTree
 			}
 		}
 
-		public void RefreshServer(ModelNode oServer)
+		public void AddImageTileLayer(String strTileSetName, ImageTileLayerModelNode oLayer)
 		{
-			throw new NotImplementedException();
+			lock (m_oLock)
+			{
+				// --- Get the tileset to add to ---
+
+				ImageTileSetModelNode oSet = m_oRootNode.ImageTileSets.GetImageTileSet(strTileSetName);
+
+				// --- Add the tileset ---
+
+				oSet.AddLayer(oLayer);
+			}
 		}
 
-		public void RemoveServer(ModelNode oServer)
+		public void AddTileServer(TileServerUri oUri, String strTileSet)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void Save()
@@ -285,6 +293,10 @@ namespace NewServerTree
 			AddWMSServer(new WMSServerUri("http://maps.customweather.com/image"));
 			AddWMSServer(new WMSServerUri("http://cgkn.net/cgi-bin/cgkn_wms"));
 			AddWMSServer(new WMSServerUri("http://wms.jpl.nasa.gov/wms.cgi"));
+
+			AddImageTileLayer("NASA Landsat Imagery", new ImageTileLayerModelNode(this, "NLT Landsat7 (Visible Color)", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 2.25, "105", 5));
+			AddImageTileLayer("USGS Imagery", new ImageTileLayerModelNode(this, "USGS Digital Ortho", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 0.8, "101", 8));
+			
 
 			AddArcIMSServer(new ArcIMSServerUri("http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap"));
 			AddArcIMSServer(new ArcIMSServerUri("http://gisdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"));
@@ -377,6 +389,16 @@ namespace NewServerTree
 					return;
 				}
 			}
+		}
+
+		public bool IsSelectedOrAncestor(ModelNode oNode)
+		{
+			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
+			{
+				if (iter == oNode) return true;
+			}
+
+			return false;
 		}
 
 		#endregion
