@@ -620,9 +620,6 @@ namespace Dapple
 
 				c_oWorldWindow.MouseEnter += new EventHandler(this.c_oWorldWindow_MouseEnter);
 				c_oWorldWindow.MouseLeave += new EventHandler(this.c_oWorldWindow_MouseLeave);
-
-				c_oWorldWindow.ClearDevice();
-
 				c_oOverview.AOISelected += new Overview.AOISelectedDelegate(c_oOverview_AOISelected);
 
 				#region Search view setup
