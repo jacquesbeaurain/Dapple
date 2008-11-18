@@ -9,8 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dapple</RootNamespace>
     <AssemblyName>Dapple</AssemblyName>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Dapple.Program</StartupObject>
     <ManifestCertificateThumbprint>90ED3252828314F7A9CE17A65EAE4693BEA5CA54</ManifestCertificateThumbprint>
     <ManifestKeyFile>Dapple_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>false</GenerateManifests>
@@ -301,6 +300,25 @@
     <Compile Include="PageNavigator.Designer.cs">
       <DependentUpon>PageNavigator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Phoenix\Model\ArcIMSModelNodes.cs" />
+    <Compile Include="Phoenix\Model\BaseModelNodes.cs" />
+    <Compile Include="Phoenix\Model\DapModelNodes.cs" />
+    <Compile Include="Phoenix\Model\DappleModel.cs" />
+    <Compile Include="Phoenix\Model\ImageTileModelNodes.cs" />
+    <Compile Include="Phoenix\Model\VEModelNodes.cs" />
+    <Compile Include="Phoenix\Model\WMSModelNodes.cs" />
+    <Compile Include="Phoenix\View\ServerTree.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Phoenix\View\ServerTree.Designer.cs">
+      <DependentUpon>ServerTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Phoenix\View\ServerTreeTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Phoenix\View\ServerTreeTest.Designer.cs">
+      <DependentUpon>ServerTreeTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Plugins\3DConnexion\TDxWWInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -442,6 +460,12 @@
     <EmbeddedResource Include="PageNavigator.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PageNavigator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Phoenix\View\ServerTree.resx">
+      <DependentUpon>ServerTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Phoenix\View\ServerTreeTest.resx">
+      <DependentUpon>ServerTreeTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ServerList.resx">
       <SubType>Designer</SubType>

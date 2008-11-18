@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
-   internal class CatalogFolder
+   public class CatalogFolder
    {
       #region Member Variables
       protected SortedList m_oSubFolders = new SortedList();

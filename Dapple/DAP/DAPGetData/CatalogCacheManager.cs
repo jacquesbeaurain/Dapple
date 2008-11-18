@@ -14,7 +14,7 @@ using Geosoft.Dap.Common;
 
 namespace Geosoft.GX.DAPGetData
 {
-   internal class CatalogCacheManager : IDisposable
+   public class CatalogCacheManager : IDisposable
    {
       // Make Cache upper limit fixed at 10 MB and cleanup to 9MB lower limit
       // and cleanup every 60 seconds
@@ -205,14 +205,16 @@ namespace Geosoft.GX.DAPGetData
 #if !DAPPLE
                m_oServerTree.NoResponseError();
 #else
-               m_oServerTree.NoResponseError(oServer);
+					if (m_oServerTree != null)
+						m_oServerTree.NoResponseError(oServer);
 #endif
                return null;
             }
 
 #if DAPPLE
             // --- Looks like the server is online now ---
-            m_oServerTree.ReenableServer(oServer);
+				if (m_oServerTree != null)
+					m_oServerTree.ReenableServer(oServer);
 #endif
             CatalogFolder oCatalogFolder = CatalogFolder.Parse(oDoc, out strEdition);
 
