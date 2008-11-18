@@ -2224,7 +2224,7 @@ namespace WorldWind
 				KillD3DAndWorkerThread();
 				VideoMemoryExhausted();
 			}
-			catch (InvalidOperationException)
+			catch (InvalidCallException)
 			{
 				// A few users were getting exceptions here on startup. Set the device lost
 				// flag and hope that the recovery code can take care of it.
