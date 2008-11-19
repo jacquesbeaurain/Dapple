@@ -301,11 +301,13 @@
       <DependentUpon>PageNavigator.cs</DependentUpon>
     </Compile>
     <Compile Include="Phoenix\Model\ArcIMSModelNodes.cs" />
+    <Compile Include="Phoenix\Model\AvailableServersModelNode.cs" />
     <Compile Include="Phoenix\Model\BaseModelNodes.cs" />
     <Compile Include="Phoenix\Model\DapModelNodes.cs" />
     <Compile Include="Phoenix\Model\DappleModel.cs" />
     <Compile Include="Phoenix\Model\IconKeys.cs" />
     <Compile Include="Phoenix\Model\ImageTileModelNodes.cs" />
+    <Compile Include="Phoenix\Model\MessageModelNodes.cs" />
     <Compile Include="Phoenix\Model\VEModelNodes.cs" />
     <Compile Include="Phoenix\Model\WMSModelNodes.cs" />
     <Compile Include="Phoenix\View\ServerTree.cs">

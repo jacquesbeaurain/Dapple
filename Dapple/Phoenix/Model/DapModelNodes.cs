@@ -12,39 +12,32 @@ namespace NewServerTree
 {
 	public class DapServerRootModelNode : ModelNode, IContextModelNode
 	{
+		#region Constructors
+
 		public DapServerRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
-		{
-			throw new ApplicationException(ErrLoadedBadNode);
-		}
+		#endregion
 
-		public DapServerModelNode AddServer(DapServerUri oUri)
+
+		#region Properties
+
+		public override bool ShowAllChildren
 		{
-			DapServerModelNode result = new DapServerModelNode(m_oModel, oUri);
-			result.BeginLoad();
-			AddChild(result);
-			return result;
+			get { return UseShowAllChildren; }
 		}
 
 		public override String DisplayText
 		{
-			get
-			{
-				return "DAP Servers";
-			}
+			get { return "DAP Servers"; }
 		}
 
-		public override bool ShowAllChildren
+		public override string IconKey
 		{
-			get
-			{
-				return UseShowAllChildren;
-			}
+			get { return IconKeys.DapRoot; }
 		}
 
 		public ToolStripMenuItem[] MenuItems
@@ -57,26 +50,64 @@ namespace NewServerTree
 			}
 		}
 
+		#endregion
+
+
+		#region Event Hanlders
+
 		protected void c_miAddDAPServer_Click(object sender, EventArgs e)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override string IconKey
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
-			get { return IconKeys.DapRoot; }
+			throw new ApplicationException(ErrLoadedBadNode);
 		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		public DapServerModelNode AddServer(DapServerUri oUri)
+		{
+			DapServerModelNode result = new DapServerModelNode(m_oModel, oUri);
+			result.BeginLoad();
+			AddChild(result);
+			return result;
+		}
+
+		#endregion
 	}
+
 
 	public class DapServerModelNode : ServerModelNode
 	{
+		#region Statics
+
 		public static CatalogCacheManager s_oCCM = new CatalogCacheManager(null, @"c:\c\ccm\");
+
+		#endregion
+
+
+		#region Member Variables
 
 		private DapServerUri m_oUri;
 		private String m_strTitle;
 		private Server m_oServer;
 		private bool m_blEntireCatalogMode;
 		private CatalogFolder m_oFolder;
+
+		#endregion
+
+
+		#region Constructors
 
 		public DapServerModelNode(DappleModel oModel, DapServerUri oUri)
 			: base(oModel)
@@ -85,7 +116,32 @@ namespace NewServerTree
 			m_strTitle = m_oUri.ToBaseUri();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Properites
+
+		public override string DisplayText
+		{
+			get { return m_strTitle; }
+		}
+
+		public DapServerUri Uri
+		{
+			get { return m_oUri; }
+		}
+
+		public Server Server
+		{
+			get { return m_oServer; }
+		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
 			String strCacheDir = @"C:\c\dap\" + m_oUri.GetHashCode() + @"\";
 			Directory.CreateDirectory(strCacheDir);
@@ -120,72 +176,49 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		public override bool LoadSynchronously
-		{
-			get
-			{
-				return false;
-			}
-		}
+		#endregion
 
-		public override string DisplayText
-		{
-			get
-			{
-				return m_strTitle;
-			}
-		}
-
-		public DapServerUri Uri
-		{
-			get { return m_oUri; }
-		}
-
-		public override bool Enabled
-		{
-			get { return true; }
-			set { throw new NotImplementedException(); }
-		}
-
-		public override bool Favourite
-		{
-			get { return false; }
-			set { throw new NotImplementedException(); }
-		}
-
-		public Server Server
-		{
-			get { return m_oServer; }
-		}
 	}
+
 
 	public class PersonalDapServerModelNode : DapServerModelNode
 	{
+		#region Constructors
+
 		public PersonalDapServerModelNode(DappleModel oModel)
 			: base(oModel, new DapServerUri("http://localhost:10205/"))
 		{
 		}
 
+		#endregion
+
+
+		#region Properties
+
 		public override string DisplayText
 		{
-			get
-			{
-				return "Whatever Title Marketing Decides to Use for Personal Dap";
-			}
+			get { return "Whatever Title Marketing Decides to Use for Personal Dap"; }
 		}
 
 		public override string IconKey
 		{
-			get
-			{
-				return IconKeys.PersonalDAPServer;
-			}
+			get { return IconKeys.PersonalDAPServer; }
 		}
+
+		#endregion
 	}
+
 
 	public class DapDirectoryModelNode : ModelNode
 	{
+		#region Member Variables
+
 		private CatalogFolder m_oFolder;
+
+		#endregion
+
+
+		#region Constructors
 
 		public DapDirectoryModelNode(DappleModel oModel, CatalogFolder oFolder)
 			: base(oModel)
@@ -198,29 +231,10 @@ namespace NewServerTree
 			}
 		}
 
-		public override ModelNode[] Load()
-		{
-			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer(), m_oFolder.Hierarchy, m_oFolder.Timestamp, null, false, false, null)) { }
+		#endregion
 
-			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer(), m_oFolder, null, false, false, null);
 
-			List<ModelNode> result = new List<ModelNode>();
-
-			foreach (DataSet oDataset in oDatasets.Datasets)
-			{
-				result.Add(new DapDatasetModelNode(m_oModel, oDataset));
-			}
-
-			return result.ToArray();
-		}
-
-		public override bool LoadSynchronously
-		{
-			get
-			{
-				return false;
-			}
-		}
+		#region Properties
 
 		public override string DisplayText
 		{
@@ -228,19 +242,6 @@ namespace NewServerTree
 			{
 				return m_oFolder.Name;
 			}
-		}
-
-		private Server GetServer()
-		{
-			ModelNode oServerNode = this;
-			while (oServerNode != null && !(oServerNode is DapServerModelNode))
-			{
-				oServerNode = oServerNode.Parent;
-			}
-
-			if (oServerNode == null) throw new ApplicationException("Orphaned DAP folder node");
-
-			return (oServerNode as DapServerModelNode).Server;
 		}
 
 		public override string IconKey
@@ -257,11 +258,55 @@ namespace NewServerTree
 				}
 			}
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer(), m_oFolder.Hierarchy, m_oFolder.Timestamp, null, false, false, null)) { }
+
+			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer(), m_oFolder, null, false, false, null);
+
+			List<ModelNode> result = new List<ModelNode>();
+
+			foreach (DataSet oDataset in oDatasets.Datasets)
+			{
+				result.Add(new DapDatasetModelNode(m_oModel, oDataset));
+			}
+
+			return result.ToArray();
+		}
+
+		private Server GetServer()
+		{
+			ModelNode oServerNode = this;
+			while (oServerNode != null && !(oServerNode is DapServerModelNode))
+			{
+				oServerNode = oServerNode.Parent;
+			}
+
+			if (oServerNode == null) throw new ApplicationException("Orphaned DAP folder node");
+
+			return (oServerNode as DapServerModelNode).Server;
+		}
+
+		#endregion
 	}
+
 
 	public class DapDatasetModelNode : LayerModelNode
 	{
+		#region Member Variables
+
 		DataSet m_oDataSet;
+
+		#endregion
+
+
+		#region Constructors
 
 		public DapDatasetModelNode(DappleModel oModel, DataSet oDataSet)
 			: base(oModel)
@@ -271,30 +316,36 @@ namespace NewServerTree
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Properties
+
+		public override bool IsLeaf
 		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
+			get { return true; }
 		}
 
 		public override string DisplayText
 		{
-			get
-			{
-				return m_oDataSet.Title;
-			}
-		}
-
-		public override bool IsLeaf
-		{
-			get
-			{
-				return true;
-			}
+			get { return m_oDataSet.Title; }
 		}
 
 		public override string IconKey
 		{
 			get { return IconKeys.DapLayerPrefix + m_oDataSet.Type.ToLowerInvariant(); }
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new NotImplementedException(ErrLoadedLeafNode);
+		}
+
+		#endregion
 	}
 }

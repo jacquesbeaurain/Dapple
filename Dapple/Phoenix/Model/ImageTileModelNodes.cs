@@ -4,29 +4,38 @@ namespace NewServerTree
 {
 	public class ImageTileSetRootModelNode : ModelNode
 	{
+		#region Constructors
+
 		public ImageTileSetRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Properties
+
+		public override bool ShowAllChildren
 		{
-			throw new ApplicationException(ErrLoadedBadNode);
+			get { return UseShowAllChildren; }
 		}
 
 		public override String DisplayText
 		{
-			get
-			{
-				return "Image Tile Servers";
-			}
+			get { return "Image Tile Servers"; }
 		}
 
 		public override string IconKey
 		{
 			get { return IconKeys.TileRoot; }
 		}
+
+		#endregion
+
+
+		#region Public Methods
 
 		public ImageTileSetModelNode GetImageTileSet(String strName)
 		{
@@ -42,11 +51,31 @@ namespace NewServerTree
 			AddChild(oNewSet);
 			return oNewSet;
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new ApplicationException(ErrLoadedBadNode);
+		}
+
+		#endregion
 	}
+
 
 	public class ImageTileSetModelNode : ModelNode
 	{
+		#region Member Variables
+
 		String m_strName;
+
+		#endregion
+
+
+		#region Constructors
 
 		public ImageTileSetModelNode(DappleModel oModel, String strName)
 			: base(oModel)
@@ -56,10 +85,10 @@ namespace NewServerTree
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
-		{
-			throw new ApplicationException(ErrLoadedBadNode);
-		}
+		#endregion
+
+
+		#region Properties
 
 		public override string DisplayText
 		{
@@ -76,14 +105,34 @@ namespace NewServerTree
 			get { return m_strName; }
 		}
 
+		#endregion
+
+
+		#region Public Methods
+
 		public void AddLayer(ImageTileLayerModelNode oNewLayer)
 		{
 			AddChild(oNewLayer);
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new ApplicationException(ErrLoadedBadNode);
+		}
+
+		#endregion
 	}
+
 
 	public class ImageTileLayerModelNode : ModelNode
 	{
+		#region Memeber Variables
+
 		private String m_strName;
 		private Uri m_oUri;
 		private String m_strExtension;
@@ -91,8 +140,13 @@ namespace NewServerTree
 		private String m_strDataset;
 		private int m_iLevels;
 
+		#endregion
+
+
+		#region Constructors
+
 		public ImageTileLayerModelNode(DappleModel oModel, String strName, Uri oUri, String strExtension, double dLZTS, String strDataset, int iLevels)
-			:base(oModel)
+			: base(oModel)
 		{
 			m_strName = strName;
 			m_oUri = oUri;
@@ -104,10 +158,10 @@ namespace NewServerTree
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
-		{
-			throw new ApplicationException(ErrLoadedLeafNode);
-		}
+		#endregion
+
+
+		#region Properties
 
 		public override string DisplayText
 		{
@@ -118,5 +172,17 @@ namespace NewServerTree
 		{
 			get { return IconKeys.TileLayer; }
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new ApplicationException(ErrLoadedLeafNode);
+		}
+
+		#endregion
 	}
 }

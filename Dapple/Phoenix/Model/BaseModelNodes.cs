@@ -6,6 +6,21 @@ using System.Threading;
 
 namespace NewServerTree
 {
+	/// <summary>
+	/// The current load status of a ModelNode.
+	/// </summary>
+	public enum LoadState
+	{
+		Unloaded,
+		Loading,
+		LoadFailed,
+		LoadSuccessful
+	}
+
+
+	/// <summary>
+	/// The root of the ModelNode inheritance hierarchy.
+	/// </summary>
 	public abstract class ModelNode
 	{
 		#region Constants
@@ -18,6 +33,26 @@ namespace NewServerTree
 
 		protected const string ErrLoadedLeafNode = "Tried to load a leaf ModelNode";
 		protected const string ErrLoadedBadNode = "Tried to load a ModelNode that doesn't load asynchronously";
+
+		#endregion
+
+
+		#region Events
+
+		private void OnDisplayInfoChanged()
+		{
+			m_oModel.ModelNodeDisplayUpdated(this);
+		}
+
+		private void OnLoaded()
+		{
+			m_oModel.ModelNodeLoaded(this);
+		}
+
+		private void OnUnloaded()
+		{
+			m_oModel.ModelNodeUnloaded(this);
+		}
 
 		#endregion
 
@@ -51,26 +86,6 @@ namespace NewServerTree
 			get { return m_oParent; }
 		}
 
-		private void OnDisplayInfoChanged()
-		{
-			m_oModel.ModelNodeDisplayUpdated(this);
-		}
-
-		private void OnLoaded()
-		{
-			m_oModel.ModelNodeLoaded(this);
-		}
-
-		private void OnUnloaded()
-		{
-			m_oModel.ModelNodeUnloaded(this);
-		}
-
-		/// <summary>
-		/// Get a String describing this ModelNode.
-		/// </summary>
-		public abstract String DisplayText { get; }
-
 		/// <summary>
 		/// Whether this ModelNode is a leaf node (no children, don't collapse parent in 
 		/// ServerTree when selected).
@@ -88,6 +103,14 @@ namespace NewServerTree
 			get { return false; }
 		}
 
+		/// <summary>
+		/// Get a String describing this ModelNode.
+		/// </summary>
+		public abstract String DisplayText { get; }
+
+		/// <summary>
+		/// The ImageKey of the TreeNode for this ModelNode.
+		/// </summary>
 		public abstract String IconKey { get; }
 
 		#endregion
@@ -108,15 +131,18 @@ namespace NewServerTree
 		/// to get the data), then the class should have LoadSynchronously return false.
 		/// </remarks>
 		/// <returns>A list of ModelNodes to add to this ModelNode.</returns>
-		public abstract ModelNode[] Load();
+		protected abstract ModelNode[] Load();
 
+		/// <summary>
+		/// Unloads this ModelNode: its children are cleared, and its LoadState is reset to Unloaded.
+		/// </summary>
 		protected void Unload()
 		{
-			m_oModel.DoWithLock(new MethodInvoker(UnloadInModelLock));
+			m_oModel.DoWithLock(new MethodInvoker(_UnloadInModelLock));
 			OnUnloaded();
 		}
 
-		private void UnloadInModelLock()
+		private void _UnloadInModelLock()
 		{
 			lock (m_oLock)
 			{
@@ -130,12 +156,15 @@ namespace NewServerTree
 			}
 		}
 
+		/// <summary>
+		/// Loads this ModelNode synchronously: don't call this on the main event thread.
+		/// </summary>
 		private void LoadSync()
 		{
-			m_oModel.DoWithLock(new MethodInvoker(LoadSyncInModelLock));
+			m_oModel.DoWithLock(new MethodInvoker(_LoadSyncInModelLock));
 		}
 
-		private void LoadSyncInModelLock()
+		private void _LoadSyncInModelLock()
 		{
 			lock (m_oLock)
 			{
@@ -160,21 +189,24 @@ namespace NewServerTree
 			}
 		}
 
+		/// <summary>
+		/// Loads this ModelNode asynchronously.
+		/// </summary>
 		public void BeginLoad()
 		{
 			LoadDelegate oLoad = new LoadDelegate(Load);
-			oLoad.BeginInvoke(EndLoad, oLoad);
+			oLoad.BeginInvoke(_EndLoad, oLoad);
 			m_eStatus = LoadState.Loading;
 		}
 
-		private void EndLoad(IAsyncResult oResult)
+		private void _EndLoad(IAsyncResult oResult)
 		{
-			m_oModel.DoWithLock(new WaitCallback(EndLoadInModelLock), oResult);
+			m_oModel.DoWithLock(new WaitCallback(_EndLoadInModelLock), oResult);
 			OnDisplayInfoChanged();
 			OnLoaded();
 		}
 
-		private void EndLoadInModelLock(Object oParams)
+		private void _EndLoadInModelLock(Object oParams)
 		{
 			lock (m_oLock)
 			{
@@ -202,7 +234,10 @@ namespace NewServerTree
 			}
 		}
 
-		public virtual ModelNode[] Children
+		/// <summary>
+		/// Gets the child ModelNodes of this ModelNode.
+		/// </summary>
+		public ModelNode[] Children
 		{
 			get
 			{
@@ -212,14 +247,7 @@ namespace NewServerTree
 				{
 					if (m_eStatus == LoadState.Unloaded)
 					{
-						if (LoadSynchronously)
-						{
-							LoadSync();
-						}
-						else
-						{
-							BeginLoad();
-						}
+						BeginLoad();
 					}
 
 					if (m_eStatus == LoadState.Loading)
@@ -236,11 +264,9 @@ namespace NewServerTree
 			}
 		}
 
-		public virtual bool LoadSynchronously
-		{
-			get { return true; }
-		}
-
+		/// <summary>
+		/// The current LoadState of this ModelNode.
+		/// </summary>
 		public LoadState LoadState
 		{
 			get { return m_eStatus; }
@@ -250,6 +276,25 @@ namespace NewServerTree
 
 
 		#region Public Methods
+
+		/// <summary>
+		/// Gets the zero-based index of the given child ModelNode among this ModelNode's children.
+		/// </summary>
+		/// <param name="oChild"></param>
+		/// <returns></returns>
+		public int GetIndex(ModelNode oChild)
+		{
+			#region // Input checking
+			if (!m_oChildren.Contains(oChild)) throw new ArgumentException("The specified node is not a child of this node.");
+			#endregion
+
+			return m_oChildren.IndexOf(oChild);
+		}
+
+		#endregion
+
+
+		#region Helper Methods
 
 		/// <summary>
 		/// Add a ModelNode as child of this ModelNode.
@@ -263,9 +308,11 @@ namespace NewServerTree
 
 		/// <summary>
 		/// Add a ModelNode as a child of this ModelNode, but don't notify the Model.
+		/// </summary>
+		/// <remarks>
 		/// Used in the async loading code, since the NodeLoaded event will cover all the
 		/// nodes added in one event.
-		/// </summary>
+		/// </remarks>
 		/// <param name="child">The child ModelNode to add.</param>
 		protected void AddChildSilently(ModelNode child)
 		{
@@ -281,28 +328,13 @@ namespace NewServerTree
 			m_eStatus = LoadState.LoadSuccessful;
 		}
 
-		public int GetIndex(ModelNode oChild)
-		{
-			if (!m_oChildren.Contains(oChild)) throw new ArgumentException("The specified node is not a child of this node.");
-
-			return m_oChildren.IndexOf(oChild);
-		}
-
 		#endregion
 	}
 
+
 	/// <summary>
-	/// Represents a model node that the user shouldn't be able to select in the tree.
+	/// A ModelNode representing a layer that can appear on the globe.
 	/// </summary>
-	public interface IAnnotationModelNode
-	{
-	}
-
-	public interface IDatasetModelNode
-	{
-		Object GetLayerBuilder();
-	}
-
 	public abstract class LayerModelNode : ModelNode, IContextModelNode
 	{
 		public LayerModelNode(DappleModel oModel)
@@ -326,16 +358,53 @@ namespace NewServerTree
 		}
 	}
 
+
+	/// <summary>
+	/// A ModelNode representing a server.
+	/// </summary>
 	public abstract class ServerModelNode : ModelNode, IContextModelNode
 	{
+		#region Constructors
+
 		public ServerModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 		}
 
-		public abstract bool Enabled { get; set; }
+		#endregion
 
-		public abstract bool Favourite { get; set; }
+
+		#region Event Handlers
+
+		protected void c_miSetFavourite_Click(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected void c_miRefresh_Click(object sender, EventArgs e)
+		{
+			Unload();
+		}
+
+		protected void c_miToggle_Click(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected void c_miRemove_Click(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected void c_miProperties_Click(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+
+		#region Properties
 
 		public override string IconKey
 		{
@@ -370,31 +439,29 @@ namespace NewServerTree
 			}
 		}
 
-		protected void c_miSetFavourite_Click(object sender, EventArgs e)
+		public bool Enabled
 		{
-			throw new NotImplementedException();
+			get { return true; }
+			set { throw new NotImplementedException(); }
 		}
 
-		protected void c_miRefresh_Click(object sender, EventArgs e)
+		public bool Favourite
 		{
-			Unload();
+			get { return false; }
+			set { throw new NotImplementedException(); }
 		}
 
-		protected void c_miToggle_Click(object sender, EventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected void c_miRemove_Click(object sender, EventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected void c_miProperties_Click(object sender, EventArgs e)
-		{
-			throw new NotImplementedException();
-		}
+		#endregion
 	}
+
+
+	/// <summary>
+	/// Interface implemented by modelNodes that the user shouldn't be able to select in the ServerTree.
+	/// </summary>
+	public interface IAnnotationModelNode
+	{
+	}
+
 
 	/// <summary>
 	/// Interface implemented by ModelNodes that have popup menus.
@@ -402,159 +469,5 @@ namespace NewServerTree
 	public interface IContextModelNode
 	{
 		ToolStripMenuItem[] MenuItems { get; }
-	}
-
-	public enum LoadState
-	{
-		Unloaded,
-		Loading,
-		LoadFailed,
-		LoadSuccessful
-	}
-
-	public class AvailableServersModelNode : ModelNode
-	{
-		private WMSRootModelNode m_oWMSRootNode;
-		private ArcIMSRootModelNode m_oArcIMSRootNode;
-		private DapServerRootModelNode m_oDAPRootNode;
-		private ImageTileSetRootModelNode m_oTileRootNode;
-
-		public AvailableServersModelNode(DappleModel oModel)
-			: base(oModel)
-		{
-			m_oDAPRootNode = new DapServerRootModelNode(m_oModel);
-			AddChildSilently(m_oDAPRootNode);
-			PersonalDapServerModelNode oPDNode = new PersonalDapServerModelNode(m_oModel);
-			oPDNode.BeginLoad();
-			AddChildSilently(oPDNode);
-			m_oTileRootNode = new ImageTileSetRootModelNode(m_oModel);
-			AddChildSilently(m_oTileRootNode);
-			AddChildSilently(new VERootModelNode(m_oModel));
-			m_oWMSRootNode = new WMSRootModelNode(m_oModel);
-			AddChildSilently(m_oWMSRootNode);
-			m_oArcIMSRootNode = new ArcIMSRootModelNode(m_oModel);
-			AddChildSilently(m_oArcIMSRootNode);
-
-			MarkLoaded();
-		}
-
-		public override ModelNode[] Load()
-		{
-			throw new ApplicationException(ErrLoadedBadNode);
-		}
-
-		public override String DisplayText
-		{
-			get
-			{
-				return "Available Servers";
-			}
-		}
-
-		public override bool ShowAllChildren
-		{
-			get
-			{
-				return UseShowAllChildren;
-			}
-		}
-
-		public WMSRootModelNode WMSServers
-		{
-			get { return m_oWMSRootNode; }
-		}
-
-		public ArcIMSRootModelNode ArcIMSServers
-		{
-			get { return m_oArcIMSRootNode; }
-		}
-
-		public DapServerRootModelNode DAPServers
-		{
-			get { return m_oDAPRootNode; }
-		}
-
-		public ImageTileSetRootModelNode ImageTileSets
-		{
-			get { return m_oTileRootNode; }
-		}
-
-		public override string IconKey
-		{
-			get { return IconKeys.AvailableServers; }
-		}
-	}
-
-	public abstract class MessageModelNode : ModelNode, IAnnotationModelNode
-	{
-		private String m_strMessage;
-
-		public MessageModelNode(DappleModel oModel, String strMessage)
-			: base(oModel)
-		{
-			m_strMessage = strMessage;
-
-			MarkLoaded();
-		}
-
-		public override string DisplayText
-		{
-			get
-			{
-				return m_strMessage;
-			}
-		}
-	}
-
-	public class LoadingModelNode : MessageModelNode
-	{
-		public LoadingModelNode(DappleModel oModel)
-			: base(oModel, "Loading...")
-		{
-		}
-
-		public override ModelNode[] Load()
-		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
-		}
-
-		public override bool IsLeaf
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		public override string IconKey
-		{
-			get { return IconKeys.LoadingMessage; }
-		}
-	}
-
-	public class ErrorModelNode : MessageModelNode
-	{
-		public ErrorModelNode(DappleModel oModel, String strMessage)
-			: base(oModel, strMessage)
-		{
-		}
-
-		public override ModelNode[] Load()
-		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
-		}
-
-		public override bool IsLeaf
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		public override string IconKey
-		{
-			get { return IconKeys.ErrorMessage; }
-		}
 	}
 }

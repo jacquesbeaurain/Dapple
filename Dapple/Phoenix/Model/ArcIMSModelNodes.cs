@@ -10,31 +10,42 @@ namespace NewServerTree
 {
 	public class ArcIMSRootModelNode : ModelNode, IContextModelNode
 	{
+		#region Constructors
+
 		public ArcIMSRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Event Handlers
+
+		protected void c_miAddArcIMSServer_Click(object sender, EventArgs e)
 		{
-			throw new ApplicationException(ErrLoadedBadNode);
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+
+		#region Properties
+
+		public override bool ShowAllChildren
+		{
+			get { return UseShowAllChildren; }
 		}
 
 		public override string DisplayText
 		{
-			get
-			{
-				return "ArcIMS Servers";
-			}
+			get { return "ArcIMS Servers"; }
 		}
 
-		public ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri)
+		public override string IconKey
 		{
-			ArcIMSServerModelNode result = new ArcIMSServerModelNode(m_oModel, oUri);
-			result.BeginLoad();
-			AddChild(result);
-			return result;
+			get { return IconKeys.ArcIMSRoot; }
 		}
 
 		public ToolStripMenuItem[] MenuItems
@@ -47,20 +58,43 @@ namespace NewServerTree
 			}
 		}
 
-		protected void c_miAddArcIMSServer_Click(object sender, EventArgs e)
+		#endregion
+
+
+		#region Public Methods
+
+		public ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri)
 		{
-			throw new NotImplementedException();
+			ArcIMSServerModelNode result = new ArcIMSServerModelNode(m_oModel, oUri);
+			result.BeginLoad();
+			AddChild(result);
+			return result;
 		}
 
-		public override string IconKey
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
-			get { return IconKeys.ArcIMSRoot; }
+			throw new ApplicationException(ErrLoadedBadNode);
 		}
+
+		#endregion
 	}
+
 
 	public class ArcIMSServerModelNode : ServerModelNode
 	{
+		#region Member Variables
+
 		private ArcIMSServerUri m_oUri;
+
+		#endregion
+
+
+		#region Constructors
 
 		public ArcIMSServerModelNode(DappleModel oModel, ArcIMSServerUri oUri)
 			: base(oModel)
@@ -68,7 +102,27 @@ namespace NewServerTree
 			m_oUri = oUri;
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Properties
+
+		public override string DisplayText
+		{
+			get { return m_oUri.ToBaseUri(); }
+		}
+
+		public ArcIMSServerUri Uri
+		{
+			get { return m_oUri; }
+		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
 			String strCapFilename = @"c:\c\arcims" + Parent.GetIndex(this) + ".xml";
 
@@ -119,41 +173,21 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		public override bool LoadSynchronously
-		{
-			get
-			{
-				return false;
-			}
-		}
-
-		public override bool Enabled
-		{
-			get { return true; }
-			set { throw new NotImplementedException(); }
-		}
-
-		public override bool Favourite
-		{
-			get { return false; }
-			set { throw new NotImplementedException(); }
-		}
-
-		public override string DisplayText
-		{
-			get { return m_oUri.ToBaseUri(); }
-		}
-
-		public ArcIMSServerUri Uri
-		{
-			get { return m_oUri; }
-		}
+		#endregion
 	}
+
 
 	public class ArcIMSServiceModelNode : ModelNode
 	{
+		#region Member Variables
+
 		private CultureInfo m_oCultureInfo;
 		private String m_strServiceName;
+
+		#endregion
+
+
+		#region Constructors
 
 		public ArcIMSServiceModelNode(DappleModel oModel, String strServiceName, CultureInfo oCultureInfo)
 			: base(oModel)
@@ -162,15 +196,27 @@ namespace NewServerTree
 			m_oCultureInfo = oCultureInfo;
 		}
 
-		public override bool LoadSynchronously
+		#endregion
+
+
+		#region Properties
+
+		public override string DisplayText
 		{
-			get
-			{
-				return false;
-			}
+			get { return m_strServiceName; }
 		}
 
-		public override ModelNode[] Load()
+		public override string IconKey
+		{
+			get { return IconKeys.ArcIMSService; }
+		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
 			String strServiceFilename = @"c:\c\arcims" + Parent.Parent.GetIndex(Parent) + "-" + m_strServiceName + ".xml";
 
@@ -271,24 +317,23 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		public override string DisplayText
-		{
-			get { return m_strServiceName; }
-		}
-
-		public override string IconKey
-		{
-			get { return IconKeys.ArcIMSService; }
-		}
+		#endregion
 	}
 
-	class ArcIMSLayerModelNode : LayerModelNode
+
+	public class ArcIMSLayerModelNode : LayerModelNode
 	{
+		#region Member Variables
+
 		private String m_strTitle, m_strID;
 		private GeographicBoundingBox m_oBounds;
 		private double m_dMinScale, m_dMaxScale;
 		private CultureInfo m_oCultureInfo;
 
+		#endregion
+
+
+		#region Constructors
 
 		public ArcIMSLayerModelNode(DappleModel oModel, String strTitle, String strID, GeographicBoundingBox oBounds, double dMinScale, double dMaxScale, CultureInfo oCultureInfo)
 			: base(oModel)
@@ -301,17 +346,14 @@ namespace NewServerTree
 			m_oCultureInfo = oCultureInfo;
 		}
 
-		public override ModelNode[] Load()
-		{
-			throw new ApplicationException(ErrLoadedLeafNode);
-		}
+		#endregion
+
+
+		#region Properties
 
 		public override bool IsLeaf
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		public override string DisplayText
@@ -323,5 +365,17 @@ namespace NewServerTree
 		{
 			get { return IconKeys.ArcIMSLayer; }
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new ApplicationException(ErrLoadedLeafNode);
+		}
+
+		#endregion
 	}
 }

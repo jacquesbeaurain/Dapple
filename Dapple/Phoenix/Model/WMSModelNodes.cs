@@ -10,47 +10,37 @@ namespace NewServerTree
 {
 	public class WMSRootModelNode : ModelNode, IContextModelNode
 	{
+		#region Constructors
+
 		public WMSRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Event Handlers
+
+		protected void c_miAddWMSServer_Click(object sender, EventArgs e)
 		{
-			throw new ApplicationException(ErrLoadedBadNode);
+			throw new NotImplementedException();
 		}
 
-		public WMSServerModelNode AddServer(WMSServerUri oUri)
-		{
-			WMSServerModelNode result = new WMSServerModelNode(m_oModel, oUri);
-			result.BeginLoad();
-			AddChild(result);
-			return result;
-		}
+		#endregion
 
-		public override bool LoadSynchronously
+
+		#region Properties
+
+		public override bool ShowAllChildren
 		{
-			get
-			{
-				return false;
-			}
+			get { return UseShowAllChildren; }
 		}
 
 		public override String DisplayText
 		{
-			get
-			{
-				return "WMS Servers";
-			}
-		}
-
-		public override bool ShowAllChildren
-		{
-			get
-			{
-				return UseShowAllChildren;
-			}
+			get { return "WMS Servers"; }
 		}
 
 		public override string IconKey
@@ -68,16 +58,44 @@ namespace NewServerTree
 			}
 		}
 
-		protected void c_miAddWMSServer_Click(object sender, EventArgs e)
+		#endregion
+
+
+		#region Public Methods
+
+		public WMSServerModelNode AddServer(WMSServerUri oUri)
 		{
-			throw new NotImplementedException();
+			WMSServerModelNode result = new WMSServerModelNode(m_oModel, oUri);
+			result.BeginLoad();
+			AddChild(result);
+			return result;
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new ApplicationException(ErrLoadedBadNode);
+		}
+
+		#endregion
 	}
+
 
 	public class WMSServerModelNode : ServerModelNode
 	{
+		#region Member Variables
+
 		private WMSServerUri m_oUri;
 		private String m_strTitle;
+
+		#endregion
+
+
+		#region Constructors
 
 		public WMSServerModelNode(DappleModel oModel, WMSServerUri oUri)
 			: base(oModel)
@@ -86,7 +104,27 @@ namespace NewServerTree
 			m_strTitle = oUri.ToBaseUri();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Public Methods
+
+		public override string DisplayText
+		{
+			get { return m_strTitle; }
+		}
+
+		public WMSServerUri Uri
+		{
+			get { return m_oUri; }
+		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
 			String strCapFilename = @"c:\c\wms" + Parent.GetIndex(this) + ".xml";
 
@@ -113,43 +151,20 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		public override bool LoadSynchronously
-		{
-			get
-			{
-				return false;
-			}
-		}
-
-		public override string DisplayText
-		{
-			get
-			{
-				return m_strTitle;
-			}
-		}
-
-		public override bool Enabled
-		{
-			get { return true; }
-			set { throw new NotImplementedException(); }
-		}
-
-		public override bool Favourite
-		{
-			get { return false; }
-			set { throw new NotImplementedException(); }
-		}
-
-		public WMSServerUri Uri
-		{
-			get { return m_oUri; }
-		}
+		#endregion
 	}
+
 
 	public class WMSFolderModelNode : ModelNode
 	{
+		#region Member Variables
+
 		private WMSLayer m_oData;
+
+		#endregion
+
+
+		#region Constructors
 
 		public WMSFolderModelNode(DappleModel oModel, WMSLayer oData)
 			: base(oModel)
@@ -157,7 +172,37 @@ namespace NewServerTree
 			m_oData = oData;
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Properties
+
+		public override string DisplayText
+		{
+			get { return m_oData.Title; }
+		}
+
+		public override string IconKey
+		{
+			get
+			{
+				if (m_oModel.IsSelectedOrAncestor(this))
+				{
+					return IconKeys.OpenFolder;
+				}
+				else
+				{
+					return IconKeys.ClosedFolder;
+				}
+			}
+		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
 		{
 			List<ModelNode> result = new List<ModelNode>();
 
@@ -176,41 +221,20 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		public override bool LoadSynchronously
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		public override string DisplayText
-		{
-			get
-			{
-				return m_oData.Title;
-			}
-		}
-
-		public override string IconKey
-		{
-			get
-			{
-				if (m_oModel.IsSelectedOrAncestor(this))
-				{
-					return IconKeys.OpenFolder;
-				}
-				else
-				{
-					return IconKeys.ClosedFolder;
-				}
-			}
-		}
+		#endregion
 	}
+
 
 	public class WMSLayerModelNode : LayerModelNode, IContextModelNode
 	{
+		#region Member Variables
+
 		private WMSLayer m_oData;
+
+		#endregion
+
+
+		#region Constructors
 
 		public WMSLayerModelNode(DappleModel oModel, WMSLayer oData)
 			: base(oModel)
@@ -220,30 +244,36 @@ namespace NewServerTree
 			MarkLoaded();
 		}
 
-		public override ModelNode[] Load()
+		#endregion
+
+
+		#region Properties
+
+		public override bool IsLeaf
 		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
+			get { return true; }
 		}
 
 		public override string DisplayText
 		{
-			get
-			{
-				return m_oData.Title;
-			}
-		}
-
-		public override bool IsLeaf
-		{
-			get
-			{
-				return true;
-			}
+			get { return m_oData.Title; }
 		}
 
 		public override string IconKey
 		{
 			get { return IconKeys.WMSLayer; }
 		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new NotImplementedException(ErrLoadedLeafNode);
+		}
+
+		#endregion
 	}
 }
