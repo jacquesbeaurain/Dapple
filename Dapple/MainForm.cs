@@ -936,12 +936,12 @@ namespace Dapple
 						if (m_downloadList[5].builder == null)
 						{
 							this.toolStripStatusLabel6.ToolTipText = "Base Image";
-							this.toolStripStatusLabel6.Image = this.c_oServerTree.ImageList.Images["marble"];
+							this.toolStripStatusLabel6.Image = global::Dapple.Properties.Resources.marble_icon.ToBitmap();
 						}
 						else
 						{
 							this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Title;
-							this.toolStripStatusLabel6.Image = this.c_oServerTree.ImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel6.Image = m_oImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel6.Visible = true;
 						this.toolStripStatusSpin6.Text = "";
@@ -966,7 +966,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Title;
-							this.toolStripStatusLabel5.Image = this.c_oServerTree.ImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel5.Image = m_oImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel5.Visible = true;
 						this.toolStripStatusSpin5.Text = "";
@@ -991,7 +991,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Title;
-							this.toolStripStatusLabel4.Image = this.c_oServerTree.ImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel4.Image = m_oImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel4.Visible = true;
 						this.toolStripStatusSpin4.Text = "";
@@ -1016,7 +1016,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Title;
-							this.toolStripStatusLabel3.Image = this.c_oServerTree.ImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel3.Image = m_oImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel3.Visible = true;
 						this.toolStripStatusSpin3.Text = "";
@@ -1041,7 +1041,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Title;
-							this.toolStripStatusLabel2.Image = this.c_oServerTree.ImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel2.Image = m_oImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel2.Visible = true;
 						this.toolStripStatusSpin2.Text = "";
@@ -1066,7 +1066,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Title;
-							this.toolStripStatusLabel1.Image = this.c_oServerTree.ImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel1.Image = m_oImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel1.Visible = true;
 						this.toolStripStatusSpin1.Text = "";
