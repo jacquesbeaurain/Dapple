@@ -32,7 +32,11 @@ namespace NewServerTree
 
 		public override String DisplayText
 		{
-			get { return "DAP Servers"; }
+			get
+			{
+				ModelNode[] cache = FilteredChildren;
+				return String.Format("DAP Servers [{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
+			}
 		}
 
 		public override string IconKey

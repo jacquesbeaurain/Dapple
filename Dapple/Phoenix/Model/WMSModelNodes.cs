@@ -40,7 +40,11 @@ namespace NewServerTree
 
 		public override String DisplayText
 		{
-			get { return "WMS Servers"; }
+			get
+			{
+				ModelNode[] cache = FilteredChildren;
+				return String.Format("WMS Servers [{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
+			}
 		}
 
 		public override string IconKey
@@ -190,7 +194,7 @@ namespace NewServerTree
 			{
 				if (LoadState != LoadState.LoadSuccessful)
 				{
-					return 1;
+					return 0;
 				}
 
 				int result = 0;

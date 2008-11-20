@@ -39,9 +39,14 @@ namespace NewServerTree
 			get { return UseShowAllChildren; }
 		}
 
-		public override string DisplayText
+
+		public override String DisplayText
 		{
-			get { return "ArcIMS Servers"; }
+			get
+			{
+				ModelNode[] cache = FilteredChildren;
+				return String.Format("ArcIMS Servers [{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
+			}
 		}
 
 		public override string IconKey
