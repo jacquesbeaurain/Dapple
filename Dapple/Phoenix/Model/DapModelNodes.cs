@@ -63,6 +63,39 @@ namespace NewServerTree
 		#endregion
 
 
+		#region Public Methods
+
+		public DapServerModelNode AddServer(DapServerUri oUri, bool blEnabled)
+		{
+			DapServerModelNode result = new DapServerModelNode(m_oModel, oUri, blEnabled);
+			if (blEnabled)
+			{
+				result.BeginLoad();
+			}
+			AddChild(result);
+			return result;
+		}
+
+		public void SearchFilterChanged()
+		{
+			foreach (DapServerModelNode oServer in UnfilteredChildren)
+			{
+				oServer.UnloadSilently();
+				oServer.BeginLoad();
+			}
+		}
+
+		public void SetFavouriteServer(String strUri)
+		{
+			foreach (DapServerModelNode oServer in UnfilteredChildren)
+			{
+				oServer.UpdateFavouriteStatus(strUri);
+			}
+		}
+
+		#endregion
+
+
 		#region Helper Methods
 
 		protected override ModelNode[] Load()
@@ -71,23 +104,10 @@ namespace NewServerTree
 		}
 
 		#endregion
-
-
-		#region Public Methods
-
-		public DapServerModelNode AddServer(DapServerUri oUri)
-		{
-			DapServerModelNode result = new DapServerModelNode(m_oModel, oUri);
-			result.BeginLoad();
-			AddChild(result);
-			return result;
-		}
-
-		#endregion
 	}
 
 
-	public class DapServerModelNode : ServerModelNode
+	public class DapServerModelNode : ServerModelNode, IFilterableModelNode
 	{
 		#region Statics
 
@@ -109,8 +129,8 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DapServerModelNode(DappleModel oModel, DapServerUri oUri)
-			: base(oModel)
+		public DapServerModelNode(DappleModel oModel, DapServerUri oUri, bool blEnabled)
+			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
 			m_strTitle = m_oUri.ToBaseUri();
@@ -126,7 +146,7 @@ namespace NewServerTree
 			get { return m_strTitle; }
 		}
 
-		public DapServerUri Uri
+		public override ServerUri ServerUri
 		{
 			get { return m_oUri; }
 		}
@@ -134,6 +154,27 @@ namespace NewServerTree
 		public Server Server
 		{
 			get { return m_oServer; }
+		}
+
+		public int FilteredChildCount
+		{
+			get
+			{
+				if (LoadState != LoadState.LoadSuccessful)
+				{
+					return 0;
+				}
+
+				return m_oServer.DatasetCount;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				return m_oServer == null || m_oServer.DatasetCount > 0;
+			}
 		}
 
 		#endregion
@@ -152,21 +193,21 @@ namespace NewServerTree
 				throw new DapException("Server is " + m_oServer.Status.ToString());
 			}
 
-			m_strTitle = m_oServer.Name;
+			m_strTitle = String.Format("{0} [{1} datasets]", m_oServer.Name, m_oServer.GetDatasetCount(m_oModel.SearchBounds_DAP, m_oModel.SearchKeyword));
 			m_blEntireCatalogMode = m_oServer.MajorVersion < 6 || (m_oServer.MajorVersion == 6 && m_oServer.MinorVersion < 3);
 
 			List<ModelNode> result = new List<ModelNode>();
 
 			String strEdition;
-			m_oFolder = s_oCCM.GetCatalogHierarchyRoot(m_oServer, null, false, false, null, out m_blEntireCatalogMode, out strEdition);
+			m_oFolder = s_oCCM.GetCatalogHierarchyRoot(m_oServer, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword, out m_blEntireCatalogMode, out strEdition);
 			foreach (CatalogFolder oSubFolder in m_oFolder.Folders)
 			{
 				result.Add(new DapDirectoryModelNode(m_oModel, oSubFolder));
 			}
 
-			while (!DapServerModelNode.s_oCCM.bGetDatasetList(m_oServer, m_oFolder.Hierarchy, m_oFolder.Timestamp, null, false, false, null)) { }
+			while (!DapServerModelNode.s_oCCM.bGetDatasetList(m_oServer, m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
 
-			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(m_oServer, m_oFolder, null, false, false, null);
+			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(m_oServer, m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
 
 			foreach (DataSet oDataset in oDatasets.Datasets)
 			{
@@ -186,7 +227,7 @@ namespace NewServerTree
 		#region Constructors
 
 		public PersonalDapServerModelNode(DappleModel oModel)
-			: base(oModel, new DapServerUri("http://localhost:10205/"))
+			: base(oModel, new DapServerUri("http://localhost:10205/"), true)
 		{
 		}
 
@@ -266,9 +307,9 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer(), m_oFolder.Hierarchy, m_oFolder.Timestamp, null, false, false, null)) { }
+			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer(), m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
 
-			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer(), m_oFolder, null, false, false, null);
+			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer(), m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
 
 			List<ModelNode> result = new List<ModelNode>();
 
@@ -343,7 +384,7 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
+			throw new ApplicationException(ErrLoadedLeafNode);
 		}
 
 		#endregion

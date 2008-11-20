@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Dapple.Properties;
+using System.Drawing;
 
 namespace NewServerTree
 {
@@ -26,6 +27,7 @@ namespace NewServerTree
 
 		public static String ErrorMessage = "message-error";
 		public static String LoadingMessage = "message-loading";
+		public static String InfoMessage = "message-info";
 
 		public static String DapLayerPrefix = "layer-dap-"; // 13 subtypes
 		public static String TileLayer = "layer-tile";
@@ -64,6 +66,7 @@ namespace NewServerTree
 
 			result.Images.Add(ErrorMessage, Resources.error);
 			result.Images.Add(LoadingMessage, Resources.time);
+			result.Images.Add(InfoMessage, SystemIcons.Information);
 
 			result.Images.Add(DapLayerPrefix + "arcgis", Resources.dap_arcgis);
 			result.Images.Add(DapLayerPrefix + "database", Resources.dap_database);

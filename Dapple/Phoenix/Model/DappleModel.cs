@@ -5,9 +5,14 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
 using Dapple.LayerGeneration;
+using Dapple;
+using dappleview;
+using WorldWind;
 
 namespace NewServerTree
 {
+	#region Event Args
+
 	public class NodeLoadEventArgs : EventArgs
 	{
 		private ModelNode m_oNode;
@@ -29,6 +34,28 @@ namespace NewServerTree
 		private ModelNode m_oChildNode;
 
 		public NodeAddedEventArgs(ModelNode parent, ModelNode child)
+		{
+			m_oParentNode = parent;
+			m_oChildNode = child;
+		}
+
+		public ModelNode Parent
+		{
+			get { return m_oParentNode; }
+		}
+
+		public ModelNode Child
+		{
+			get { return m_oChildNode; }
+		}
+	}
+
+	public class NodeRemovedEventArgs : EventArgs
+	{
+		private ModelNode m_oParentNode;
+		private ModelNode m_oChildNode;
+
+		public NodeRemovedEventArgs(ModelNode parent, ModelNode child)
 		{
 			m_oParentNode = parent;
 			m_oChildNode = child;
@@ -75,6 +102,8 @@ namespace NewServerTree
 		}
 	}
 
+	#endregion
+
 	public class DappleModel
 	{
 		#region Member Variables
@@ -82,6 +111,9 @@ namespace NewServerTree
 		private AvailableServersModelNode m_oRootNode;
 		private ModelNode m_oSelectedNode;
 		private Object m_oLock = new Object();
+		private String m_strSearchKeyword = String.Empty;
+		private GeographicBoundingBox m_oSearchBounds = null;
+		private ServerModelNode m_oFavouriteServer = null;
 
 		#endregion
 
@@ -115,6 +147,15 @@ namespace NewServerTree
 			}
 		}
 
+		public event EventHandler<NodeRemovedEventArgs> NodeRemoved;
+		protected void OnNodeRemoved(NodeRemovedEventArgs e)
+		{
+			if (NodeRemoved != null)
+			{
+				NodeRemoved(this, e);
+			}
+		}
+
 		public event EventHandler<NodeDisplayUpdatedEventArgs> NodeDisplayUpdated;
 		protected void OnNodeDisplayUpdated(NodeDisplayUpdatedEventArgs e)
 		{
@@ -130,6 +171,33 @@ namespace NewServerTree
 			if (NodeUnloaded != null)
 			{
 				NodeUnloaded(this, e);
+			}
+		}
+
+		public event EventHandler Loaded;
+		protected void OnLoaded(EventArgs e)
+		{
+			if (Loaded != null)
+			{
+				Loaded(this, e);
+			}
+		}
+
+		public event EventHandler SearchFilterChanged;
+		protected void OnSearchFilterChanged(EventArgs e)
+		{
+			if (SearchFilterChanged != null)
+			{
+				SearchFilterChanged(this, e);
+			}
+		}
+
+		public event EventHandler FavouriteServerChanged;
+		protected void OnFavouriteServerChanged(EventArgs e)
+		{
+			if (FavouriteServerChanged != null)
+			{
+				FavouriteServerChanged(this, e);
 			}
 		}
 
@@ -184,9 +252,42 @@ namespace NewServerTree
 			}
 		}
 
-		public ModelNode PersonalDapNode
+		public bool SearchKeywordSet
 		{
-			get { throw new NotImplementedException(); }
+			get { return !String.IsNullOrEmpty(m_strSearchKeyword); }
+		}
+
+		public String SearchKeyword
+		{
+			get { return m_strSearchKeyword; }
+		}
+
+		public bool SearchBoundsSet
+		{
+			get { return m_oSearchBounds != null; }
+		}
+
+		public GeographicBoundingBox SearchBounds_Geo
+		{
+			get { return m_oSearchBounds; }
+		}
+
+		public Geosoft.Dap.Common.BoundingBox SearchBounds_DAP
+		{
+			get
+			{
+				if (m_oSearchBounds == null)
+				{
+					return null;
+				}
+
+				return new Geosoft.Dap.Common.BoundingBox(m_oSearchBounds.East, m_oSearchBounds.North, m_oSearchBounds.West, m_oSearchBounds.South);
+			}
+		}
+
+		public bool SearchFilterSet
+		{
+			get { return SearchKeywordSet || SearchBoundsSet; }
 		}
 
 		#endregion
@@ -196,15 +297,15 @@ namespace NewServerTree
 
 		#region Adding Servers
 
-		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri)
+		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled)
 		{
 			lock (m_oLock)
 			{
 				// --- Don't add the server if it's already in the model ---
 
-				foreach (ArcIMSServerModelNode oArcIMSServer in m_oRootNode.ArcIMSServers.Children)
+				foreach (ArcIMSServerModelNode oArcIMSServer in m_oRootNode.ArcIMSServers.UnfilteredChildren)
 				{
-					if (oArcIMSServer.Uri.Equals(oUri))
+					if (oArcIMSServer.ServerUri.Equals(oUri))
 					{
 						return oArcIMSServer;
 					}
@@ -212,19 +313,19 @@ namespace NewServerTree
 
 				// --- Add the server ---
 
-				return m_oRootNode.ArcIMSServers.AddServer(oUri);
+				return m_oRootNode.ArcIMSServers.AddServer(oUri, blEnabled);
 			}
 		}
 
-		public ServerModelNode AddWMSServer(WMSServerUri oUri)
+		public ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled)
 		{
 			lock (m_oLock)
 			{
 				// --- Don't add the server if it's already in the model ---
 
-				foreach (WMSServerModelNode oWMSServer in m_oRootNode.WMSServers.Children)
+				foreach (WMSServerModelNode oWMSServer in m_oRootNode.WMSServers.UnfilteredChildren)
 				{
-					if (oWMSServer.Uri.Equals(oUri))
+					if (oWMSServer.ServerUri.Equals(oUri))
 					{
 						return oWMSServer;
 					}
@@ -232,19 +333,19 @@ namespace NewServerTree
 
 				// --- Add the server ---
 
-				return m_oRootNode.WMSServers.AddServer(oUri);
+				return m_oRootNode.WMSServers.AddServer(oUri, blEnabled);
 			}
 		}
 
-		public ServerModelNode AddDAPServer(DapServerUri oUri)
+		public ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled)
 		{
 			lock (m_oLock)
 			{
 				// --- Don't add the server if it's already in the model ---
 
-				foreach (DapServerModelNode oDAPServer in m_oRootNode.DAPServers.Children)
+				foreach (DapServerModelNode oDAPServer in m_oRootNode.DAPServers.UnfilteredChildren)
 				{
-					if (oDAPServer.Uri.Equals(oUri))
+					if (oDAPServer.ServerUri.Equals(oUri))
 					{
 						return oDAPServer;
 					}
@@ -252,7 +353,7 @@ namespace NewServerTree
 
 				// --- Add the server ---
 
-				return m_oRootNode.DAPServers.AddServer(oUri);
+				return m_oRootNode.DAPServers.AddServer(oUri, blEnabled);
 			}
 		}
 
@@ -270,44 +371,129 @@ namespace NewServerTree
 			}
 		}
 
-		public void AddTileServer(TileServerUri oUri, String strTileSet)
-		{
-		}
-
 		public void Save()
 		{
 			throw new NotImplementedException();
 		}
 
-		internal void Load()
+		public void Load(DappleView oSource)
 		{
-			AddDAPServer(new DapServerUri("http://dap.geosoft.com"));
-			AddDAPServer(new DapServerUri("http://gdrdap.agg.nrcan.gc.ca"));
+			lock (m_oLock)
+			{
+				ClearModel();
 
-			AddWMSServer(new WMSServerUri("http://gdr.ess.nrcan.gc.ca/wmsconnector/com.esri.wms.Esrimap/gdr_e"));
-			AddWMSServer(new WMSServerUri("http://atlas.gc.ca/cgi-bin/atlaswms_en?VERSION=1.1.1"));
-			AddWMSServer(new WMSServerUri("http://apps1.gdr.nrcan.gc.ca/cgi-bin/canmin_en-ca_ows"));
-			AddWMSServer(new WMSServerUri("http://www.ga.gov.au/bin/getmap.pl"));
-			AddWMSServer(new WMSServerUri("http://apps1.gdr.nrcan.gc.ca/cgi-bin/worldmin_en-ca_ows"));
-			AddWMSServer(new WMSServerUri("http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap"));
-			AddWMSServer(new WMSServerUri("http://maps.customweather.com/image"));
-			AddWMSServer(new WMSServerUri("http://cgkn.net/cgi-bin/cgkn_wms"));
-			AddWMSServer(new WMSServerUri("http://wms.jpl.nasa.gov/wms.cgi"));
+				if (oSource.View.Hasservers())
+				{
+					for (int i = 0; i < oSource.View.servers.builderentryCount; i++)
+					{
+						builderentryType entry = oSource.View.servers.GetbuilderentryAt(i);
+						LoadBuilderEntryType(entry);
+					}
+				}
 
-			AddImageTileLayer("NASA Landsat Imagery", new ImageTileLayerModelNode(this, "NLT Landsat7 (Visible Color)", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 2.25, "105", 5));
-			AddImageTileLayer("USGS Imagery", new ImageTileLayerModelNode(this, "USGS Digital Ortho", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 0.8, "101", 8));
-			
-
-			AddArcIMSServer(new ArcIMSServerUri("http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap"));
-			AddArcIMSServer(new ArcIMSServerUri("http://gisdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"));
-			AddArcIMSServer(new ArcIMSServerUri("http://map.ngdc.noaa.gov/servlet/com.esri.esrimap.Esrimap"));
-			AddArcIMSServer(new ArcIMSServerUri("http://mrdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"));
-			AddArcIMSServer(new ArcIMSServerUri("http://gdw.apfo.usda.gov/servlet/com.esri.esrimap.Esrimap"));
+				OnLoaded(EventArgs.Empty);
+			}
 		}
 
-		public void SetFilter(Object keywords, Object bounds)
+		private void LoadBuilderEntryType(builderentryType entry)
 		{
-			throw new NotImplementedException();
+			if (entry.Hasbuilderdirectory())
+				for (int i = 0; i < entry.builderdirectory.builderentryCount; i++)
+					LoadBuilderEntryType(entry.builderdirectory.GetbuilderentryAt(i));
+			else if (entry.Haswmscatalog())
+				AddWMSServer(new WMSServerUri(entry.wmscatalog.capabilitiesurl.Value), entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true);
+			else if (entry.Hasarcimscatalog())
+				AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true);
+			else if (entry.Hasdapcatalog())
+				AddDAPServer(new DapServerUri(entry.dapcatalog.url.Value), entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true);
+			else if (entry.Hastileserverset())
+				LoadTileServerSet(entry.tileserverset);
+		}
+
+		private void LoadTileServerSet(tileserversetType entry)
+		{
+			if (entry.Hastilelayers())
+			{
+				for (int i = 0; i < entry.tilelayers.tilelayerCount; i++)
+				{
+					tilelayerType oLayer = entry.tilelayers.GettilelayerAt(i);
+
+					ImageTileLayerModelNode oNode = new ImageTileLayerModelNode(
+						this,
+						oLayer.name.Value,
+						new Uri(oLayer.url.Value),
+						oLayer.imageextension.Value,
+						oLayer.levelzerotilesize.Value,
+						oLayer.dataset.Value,
+						oLayer.levels.Value);
+
+					this.AddImageTileLayer(entry.name.Value, oNode);
+				}
+			}
+		}
+
+		public void LoadTestView()
+		{
+			lock (m_oLock)
+			{
+				ClearModel();
+
+				bool blHalfEnabled = false;
+
+				AddDAPServer(new DapServerUri("http://dap.geosoft.com"), true);
+				AddDAPServer(new DapServerUri("http://gdrdap.agg.nrcan.gc.ca"), blHalfEnabled);
+
+				AddWMSServer(new WMSServerUri("http://gdr.ess.nrcan.gc.ca/wmsconnector/com.esri.wms.Esrimap/gdr_e"), blHalfEnabled);
+				AddWMSServer(new WMSServerUri("http://atlas.gc.ca/cgi-bin/atlaswms_en?VERSION=1.1.1"), true);
+				AddWMSServer(new WMSServerUri("http://apps1.gdr.nrcan.gc.ca/cgi-bin/canmin_en-ca_ows"), blHalfEnabled);
+				AddWMSServer(new WMSServerUri("http://www.ga.gov.au/bin/getmap.pl"), true);
+				AddWMSServer(new WMSServerUri("http://apps1.gdr.nrcan.gc.ca/cgi-bin/worldmin_en-ca_ows"), blHalfEnabled);
+				AddWMSServer(new WMSServerUri("http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap"), true);
+				AddWMSServer(new WMSServerUri("http://maps.customweather.com/image"), blHalfEnabled);
+				AddWMSServer(new WMSServerUri("http://cgkn.net/cgi-bin/cgkn_wms"), true);
+				AddWMSServer(new WMSServerUri("http://wms.jpl.nasa.gov/wms.cgi"), blHalfEnabled);
+
+				AddImageTileLayer("NASA Landsat Imagery", new ImageTileLayerModelNode(this, "NLT Landsat7 (Visible Color)", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 2.25, "105", 5));
+				AddImageTileLayer("USGS Imagery", new ImageTileLayerModelNode(this, "USGS Digital Ortho", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 0.8, "101", 8));
+
+				AddArcIMSServer(new ArcIMSServerUri("http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap"), blHalfEnabled);
+				AddArcIMSServer(new ArcIMSServerUri("http://gisdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"), blHalfEnabled);
+				AddArcIMSServer(new ArcIMSServerUri("http://map.ngdc.noaa.gov/servlet/com.esri.esrimap.Esrimap"), true);
+				AddArcIMSServer(new ArcIMSServerUri("http://mrdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"), blHalfEnabled);
+				AddArcIMSServer(new ArcIMSServerUri("http://gdw.apfo.usda.gov/servlet/com.esri.esrimap.Esrimap"), true);
+
+				SetFavouriteServer("http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap");
+
+				OnLoaded(EventArgs.Empty);
+			}
+		}
+
+		public void SetSearchFilter(String strKeyword, GeographicBoundingBox oBounds)
+		{
+			lock (m_oLock)
+			{
+				if (strKeyword != m_strSearchKeyword || oBounds != m_oSearchBounds)
+				{
+					if (SelectedServer != null)
+						m_oSelectedNode = SelectedServer;
+
+					m_strSearchKeyword = strKeyword;
+					m_oSearchBounds = oBounds;
+					m_oRootNode.DAPServers.SearchFilterChanged();
+
+					OnSearchFilterChanged(EventArgs.Empty);
+				}
+			}
+		}
+
+		public void SetFavouriteServer(String strUri)
+		{
+			if (m_oFavouriteServer == null || !m_oFavouriteServer.ServerUri.ToString().Equals(strUri))
+			{
+				m_oRootNode.SetFavouriteServer(strUri);
+
+				OnFavouriteServerChanged(EventArgs.Empty);
+			}
 		}
 
 		#endregion
@@ -356,6 +542,16 @@ namespace NewServerTree
 			}
 
 			if (blVisible) OnNodeAdded(new NodeAddedEventArgs(oParentNode, oChildNode));
+		}
+
+		public void ModelNodeRemoved(ModelNode oParentNode, ModelNode oChildNode)
+		{
+			if (IsSelectedOrAncestor(oChildNode))
+			{
+				SelectedNode = oParentNode;
+			}
+
+			OnNodeRemoved(new NodeRemovedEventArgs(oParentNode, oChildNode));
 		}
 
 		public void ModelNodeDisplayUpdated(ModelNode oUpdatedNode)
@@ -416,6 +612,16 @@ namespace NewServerTree
 			}
 
 			return false;
+		}
+
+		private void ClearModel()
+		{
+			lock (m_oLock)
+			{
+				m_oRootNode.Clear();
+			}
+
+			m_oSelectedNode = m_oRootNode;
 		}
 
 		#endregion

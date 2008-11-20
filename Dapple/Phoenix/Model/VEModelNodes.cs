@@ -99,7 +99,7 @@ namespace NewServerTree
 					case VELayerType.Satelite:
 						return "Virtual Earth Satellite";
 					default:
-						throw new NotImplementedException("Missing enumeration case statement");
+						throw new ApplicationException("Missing enumeration case statement");
 				}
 			}
 		}
@@ -116,7 +116,7 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
+			throw new ApplicationException(ErrLoadedLeafNode);
 		}
 
 		#endregion

@@ -43,7 +43,7 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
+			throw new ApplicationException(ErrLoadedLeafNode);
 		}
 
 		#endregion
@@ -90,6 +90,30 @@ namespace NewServerTree
 		public override string IconKey
 		{
 			get { return IconKeys.ErrorMessage; }
+		}
+
+		#endregion
+	}
+
+
+	public class InformationModelNode : MessageModelNode
+	{
+		#region Constructors
+
+		public InformationModelNode(DappleModel oModel, String strMessage)
+			:base(oModel, strMessage)
+		{
+
+		}
+
+		#endregion
+
+
+		#region Properties
+
+		public override string IconKey
+		{
+			get { return IconKeys.InfoMessage; }
 		}
 
 		#endregion

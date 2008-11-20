@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using Dapple.LayerGeneration;
 
 namespace NewServerTree
 {
@@ -21,7 +22,7 @@ namespace NewServerTree
 	/// <summary>
 	/// The root of the ModelNode inheritance hierarchy.
 	/// </summary>
-	public abstract class ModelNode
+	public abstract class ModelNode : IComparable<ModelNode>
 	{
 		#region Constants
 
@@ -119,9 +120,24 @@ namespace NewServerTree
 		#region Loading
 
 		private delegate ModelNode[] LoadDelegate();
-
-		private Object m_oLock = new Object();
 		private LoadState m_eStatus = LoadState.Unloaded;
+		private Object m_oAsyncLock = new Object();
+		private int m_iLoadSync = 0;
+
+		private class AsyncContext
+		{
+			private int m_iLoadSync;
+			private LoadDelegate m_oDelegate;
+
+			public AsyncContext(int iSyncNumber, LoadDelegate oDelegate)
+			{
+				m_iLoadSync = iSyncNumber;
+				m_oDelegate = oDelegate;
+			}
+
+			public int SyncNumber { get { return m_iLoadSync; } }
+			public LoadDelegate LoadDelegate { get { return m_oDelegate; } }
+		}
 
 		/// <summary>
 		/// Gets the child ModelNodes of this ModelNode.
@@ -133,19 +149,26 @@ namespace NewServerTree
 		/// <returns>A list of ModelNodes to add to this ModelNode.</returns>
 		protected abstract ModelNode[] Load();
 
+		public void UnloadSilently()
+		{
+			m_oModel.DoWithLock(new MethodInvoker(_UnloadInModelLock));
+		}
+
 		/// <summary>
 		/// Unloads this ModelNode: its children are cleared, and its LoadState is reset to Unloaded.
 		/// </summary>
-		protected void Unload()
+		public void Unload()
 		{
-			m_oModel.DoWithLock(new MethodInvoker(_UnloadInModelLock));
+			UnloadSilently();
 			OnUnloaded();
 		}
 
 		private void _UnloadInModelLock()
 		{
-			lock (m_oLock)
+			lock (m_oAsyncLock)
 			{
+				m_iLoadSync++;
+
 				foreach (ModelNode oNode in m_oChildren)
 				{
 					oNode.m_oParent = null;
@@ -157,46 +180,17 @@ namespace NewServerTree
 		}
 
 		/// <summary>
-		/// Loads this ModelNode synchronously: don't call this on the main event thread.
-		/// </summary>
-		private void LoadSync()
-		{
-			m_oModel.DoWithLock(new MethodInvoker(_LoadSyncInModelLock));
-		}
-
-		private void _LoadSyncInModelLock()
-		{
-			lock (m_oLock)
-			{
-				ModelNode[] oChildren = null;
-				try
-				{
-					oChildren = Load();
-				}
-				catch (Exception ex)
-				{
-					AddChildSilently(new ErrorModelNode(m_oModel, "Load failed (" + ex.Message + ")"));
-					m_eStatus = LoadState.LoadFailed;
-					return;
-				}
-
-				foreach (ModelNode oChild in oChildren)
-				{
-					AddChildSilently(oChild);
-				}
-
-				m_eStatus = LoadState.LoadSuccessful;
-			}
-		}
-
-		/// <summary>
 		/// Loads this ModelNode asynchronously.
 		/// </summary>
 		public void BeginLoad()
 		{
-			LoadDelegate oLoad = new LoadDelegate(Load);
-			oLoad.BeginInvoke(_EndLoad, oLoad);
-			m_eStatus = LoadState.Loading;
+			lock (m_oAsyncLock)
+			{
+				LoadDelegate oLoad = new LoadDelegate(Load);
+				AsyncContext oContext = new AsyncContext(m_iLoadSync, oLoad);
+				oLoad.BeginInvoke(_EndLoad, oContext);
+				m_eStatus = LoadState.Loading;
+			}
 		}
 
 		private void _EndLoad(IAsyncResult oResult)
@@ -208,42 +202,48 @@ namespace NewServerTree
 
 		private void _EndLoadInModelLock(Object oParams)
 		{
-			lock (m_oLock)
-			{
-				IAsyncResult oResult = oParams as IAsyncResult;
+			IAsyncResult oResult = oParams as IAsyncResult;
+			AsyncContext oContext = oResult.AsyncState as AsyncContext;
 
-				LoadDelegate oLoad = oResult.AsyncState as LoadDelegate;
-				ModelNode[] oChildren = null;
-				try
+			lock (m_oAsyncLock)
+			{
+				if (oContext.SyncNumber != m_iLoadSync)
 				{
-					oChildren = oLoad.EndInvoke(oResult);
-				}
-				catch (Exception ex)
-				{
-					AddChildSilently(new ErrorModelNode(m_oModel, "Load failed (" + ex.Message + ")"));
-					m_eStatus = LoadState.LoadFailed;
+					Console.WriteLine("Abandoning stale load result for " + DisplayText);
 					return;
 				}
-
-				foreach (ModelNode oChild in oChildren)
-				{
-					AddChildSilently(oChild);
-				}
-
-				m_eStatus = LoadState.LoadSuccessful;
 			}
+
+			ModelNode[] oChildren = null;
+			try
+			{
+				oChildren = oContext.LoadDelegate.EndInvoke(oResult);
+			}
+			catch (Exception ex)
+			{
+				AddChildSilently(new ErrorModelNode(m_oModel, "Load failed (" + ex.Message + ")"));
+				m_eStatus = LoadState.LoadFailed;
+				return;
+			}
+
+			foreach (ModelNode oChild in oChildren)
+			{
+				AddChildSilently(oChild);
+			}
+
+			m_eStatus = LoadState.LoadSuccessful;
 		}
 
 		/// <summary>
 		/// Gets the child ModelNodes of this ModelNode.
 		/// </summary>
-		public ModelNode[] Children
+		public virtual ModelNode[] UnfilteredChildren
 		{
 			get
 			{
 				if (IsLeaf) return new ModelNode[0];
 
-				lock (m_oLock)
+				lock (m_oAsyncLock)
 				{
 					if (m_eStatus == LoadState.Unloaded)
 					{
@@ -264,6 +264,24 @@ namespace NewServerTree
 			}
 		}
 
+		public ModelNode[] FilteredChildren
+		{
+			get
+			{
+				List<ModelNode> result = new List<ModelNode>();
+
+				foreach (ModelNode oChild in UnfilteredChildren)
+				{
+					if (oChild is IFilterableModelNode && (oChild as IFilterableModelNode).PassesFilter || !(oChild is IFilterableModelNode) || oChild.LoadState != LoadState.LoadSuccessful)
+					{
+						result.Add(oChild);
+					}
+				}
+
+				return result.ToArray();
+			}
+		}
+
 		/// <summary>
 		/// The current LoadState of this ModelNode.
 		/// </summary>
@@ -277,6 +295,11 @@ namespace NewServerTree
 
 		#region Public Methods
 
+		public int CompareTo(ModelNode other)
+		{
+			return this.DisplayText.CompareTo(other.DisplayText);
+		}
+
 		/// <summary>
 		/// Gets the zero-based index of the given child ModelNode among this ModelNode's children.
 		/// </summary>
@@ -289,6 +312,24 @@ namespace NewServerTree
 			#endregion
 
 			return m_oChildren.IndexOf(oChild);
+		}
+
+		public void ClearSilently()
+		{
+			m_oModel.DoWithLock(new MethodInvoker(_ClearSilentlyInModelLock));
+		}
+
+		private void _ClearSilentlyInModelLock()
+		{
+			m_oChildren.Clear();
+		}
+
+		public void RemoveChild(ModelNode oChild)
+		{
+			if (!m_oChildren.Contains(oChild)) throw new ArgumentException("Invalid child node");
+
+			m_oChildren.Remove(oChild);
+			m_oModel.ModelNodeRemoved(this, oChild);
 		}
 
 		#endregion
@@ -337,10 +378,27 @@ namespace NewServerTree
 	/// </summary>
 	public abstract class LayerModelNode : ModelNode, IContextModelNode
 	{
+		#region Constructors
+
 		public LayerModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 		}
+
+		#endregion
+
+
+		#region Event Handlers
+
+		protected void c_miAddLayer_Click(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+
+		#region Properties
 
 		public ToolStripMenuItem[] MenuItems
 		{
@@ -352,10 +410,7 @@ namespace NewServerTree
 			}
 		}
 
-		protected void c_miAddLayer_Click(object sender, EventArgs e)
-		{
-			throw new NotImplementedException();
-		}
+		#endregion
 	}
 
 
@@ -364,11 +419,21 @@ namespace NewServerTree
 	/// </summary>
 	public abstract class ServerModelNode : ModelNode, IContextModelNode
 	{
+		#region Member Variables
+
+		private bool m_blEnabled;
+		private bool m_blFavourite;
+
+		#endregion
+
+
 		#region Constructors
 
-		public ServerModelNode(DappleModel oModel)
+		public ServerModelNode(DappleModel oModel, bool blEnabled)
 			: base(oModel)
 		{
+			m_blEnabled = blEnabled;
+			m_blFavourite = false;
 		}
 
 		#endregion
@@ -378,7 +443,7 @@ namespace NewServerTree
 
 		protected void c_miSetFavourite_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			m_oModel.SetFavouriteServer(ServerUri.ToString());
 		}
 
 		protected void c_miRefresh_Click(object sender, EventArgs e)
@@ -388,12 +453,12 @@ namespace NewServerTree
 
 		protected void c_miToggle_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			Enabled ^= true;
 		}
 
 		protected void c_miRemove_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			Parent.RemoveChild(this);
 		}
 
 		protected void c_miProperties_Click(object sender, EventArgs e)
@@ -405,6 +470,22 @@ namespace NewServerTree
 
 
 		#region Properties
+
+		public override ModelNode[] UnfilteredChildren
+		{
+			get
+			{
+				if (!m_blEnabled)
+				{
+					return new ModelNode[] 
+					{
+						new InformationModelNode(m_oModel, "Enable this server to view its contents")
+					};
+				}
+
+				return base.UnfilteredChildren;
+			}
+		}
 
 		public override string IconKey
 		{
@@ -432,7 +513,7 @@ namespace NewServerTree
 				return new ToolStripMenuItem[] {
 					new ToolStripMenuItem("Set as Favorite", null, new EventHandler(c_miSetFavourite_Click)),
 					new ToolStripMenuItem("Refresh", null, new EventHandler(c_miRefresh_Click)),
-					new ToolStripMenuItem("Disable", null, new EventHandler(c_miToggle_Click)),
+					new ToolStripMenuItem(m_blEnabled ? "Disable" : "Enable", null, new EventHandler(c_miToggle_Click)),
 					new ToolStripMenuItem("Remove", null, new EventHandler(c_miRemove_Click)),
 					new ToolStripMenuItem("Properties", null, new EventHandler(c_miProperties_Click)),
 				};
@@ -441,14 +522,53 @@ namespace NewServerTree
 
 		public bool Enabled
 		{
-			get { return true; }
-			set { throw new NotImplementedException(); }
+			get { return m_blEnabled; }
+			set
+			{
+				if (m_blEnabled != value)
+				{
+					m_oModel.DoWithLock(new MethodInvoker(_ToggleEnabled));
+				}
+			}
+		}
+
+		private void _ToggleEnabled()
+		{
+			if (m_blEnabled == false)
+			{
+				m_blEnabled = true;
+				BeginLoad();
+			}
+			else
+			{
+				m_blEnabled = false;
+				Unload();
+			}
 		}
 
 		public bool Favourite
 		{
-			get { return false; }
-			set { throw new NotImplementedException(); }
+			get { return m_blFavourite; }
+		}
+
+		public abstract ServerUri ServerUri { get; }
+
+		#endregion
+
+
+		#region Public Methods
+
+		public void UpdateFavouriteStatus(String strUri)
+		{
+			bool f = ServerUri.ToString().Equals(strUri);
+			if (f)
+			{
+				m_blFavourite = f;
+			}
+			else
+			{
+				m_blFavourite = f;
+			}
 		}
 
 		#endregion
@@ -469,5 +589,15 @@ namespace NewServerTree
 	public interface IContextModelNode
 	{
 		ToolStripMenuItem[] MenuItems { get; }
+	}
+
+	/// <summary>
+	/// Interface implemented by filterable ModelNodes: those ModelNodes that have
+	/// some/all of their children removed based on the current search filter.
+	/// </summary>
+	public interface IFilterableModelNode
+	{
+		int FilteredChildCount { get; }
+		bool PassesFilter { get; }
 	}
 }

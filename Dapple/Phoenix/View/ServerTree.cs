@@ -11,6 +11,16 @@ namespace NewServerTree.View
 {
 	public partial class ServerTree : UserControl
 	{
+		#region Constants
+
+		/// <summary>
+		/// Whether to color-code tree nodes based on their loadstate.
+		/// </summary>
+		private static readonly bool ColorTreeNodeText = true;
+
+		#endregion
+
+
 		#region Member Variables
 
 		private DappleModel m_oModel;
@@ -122,6 +132,21 @@ namespace NewServerTree.View
 			c_tvView.Invoke(MethodBody);
 		}
 
+		void m_oModel_Loaded(object sender, EventArgs e)
+		{
+			Repopulate();
+		}
+
+		void m_oModel_SearchFilterChanged(object sender, EventArgs e)
+		{
+			Repopulate();
+		}
+
+		void m_oModel_FavouriteServerChanged(object sender, EventArgs e)
+		{
+			Repopulate();
+		}
+
 		private void UnmuteModel()
 		{
 			m_oModel.SelectedNodeChanged += new EventHandler(m_oModel_SelectedNodeChanged);
@@ -129,6 +154,9 @@ namespace NewServerTree.View
 			m_oModel.NodeUnloaded += new EventHandler<NodeUnloadedEventArgs>(m_oModel_NodeUnloaded);
 			m_oModel.NodeAdded += new EventHandler<NodeAddedEventArgs>(m_oModel_NodeAdded);
 			m_oModel.NodeDisplayUpdated += new EventHandler<NodeDisplayUpdatedEventArgs>(m_oModel_NodeDisplayUpdated);
+			m_oModel.Loaded += new EventHandler(m_oModel_Loaded);
+			m_oModel.SearchFilterChanged += new EventHandler(m_oModel_SearchFilterChanged);
+			m_oModel.FavouriteServerChanged += new EventHandler(m_oModel_FavouriteServerChanged);
 		}
 
 		private void MuteModel()
@@ -138,6 +166,9 @@ namespace NewServerTree.View
 			m_oModel.NodeUnloaded -= new EventHandler<NodeUnloadedEventArgs>(m_oModel_NodeUnloaded);
 			m_oModel.NodeAdded -= new EventHandler<NodeAddedEventArgs>(m_oModel_NodeAdded);
 			m_oModel.NodeDisplayUpdated -= new EventHandler<NodeDisplayUpdatedEventArgs>(m_oModel_NodeDisplayUpdated);
+			m_oModel.Loaded -= new EventHandler(m_oModel_Loaded);
+			m_oModel.SearchFilterChanged -= new EventHandler(m_oModel_SearchFilterChanged);
+			m_oModel.FavouriteServerChanged -= new EventHandler(m_oModel_FavouriteServerChanged);
 		}
 
 		#endregion
@@ -229,7 +260,7 @@ namespace NewServerTree.View
 
 		#region Tree Manipulation
 
-		private static TreeNode WrapModelNode(ModelNode oNode)
+		private TreeNode WrapModelNode(ModelNode oNode)
 		{
 			TreeNode result = new TreeNode();
 			result.Tag = oNode;
@@ -237,42 +268,49 @@ namespace NewServerTree.View
 			return result;
 		}
 
-		private static void ConfigureTreeNodeDisplay(TreeNode oNodeToConfigure)
+		private void ConfigureTreeNodeDisplay(TreeNode oNodeToConfigure)
 		{
 			ModelNode oNode = oNodeToConfigure.Tag as ModelNode;
 
 			oNodeToConfigure.Text = oNode.DisplayText;
 			oNodeToConfigure.ImageKey = oNode.IconKey;
 			oNodeToConfigure.SelectedImageKey = oNode.IconKey;
+			oNodeToConfigure.ForeColor = SystemColors.ControlText;
 
-			switch (oNode.LoadState)
+			if (ColorTreeNodeText)
 			{
-				case LoadState.Unloaded:
-					oNodeToConfigure.ForeColor = Color.Orange;
-					break;
-				case LoadState.Loading:
-					oNodeToConfigure.ForeColor = Color.RosyBrown;
-					break;
-				case LoadState.LoadSuccessful:
-					oNodeToConfigure.ForeColor = Color.Black;
-					break;
-				case LoadState.LoadFailed:
-					oNodeToConfigure.ForeColor = Color.Red;
-					break;
-				default:
-					throw new NotImplementedException("Missing enumeration case statement");
+				switch (oNode.LoadState)
+				{
+					case LoadState.Unloaded:
+						oNodeToConfigure.ForeColor = Color.Orange;
+						break;
+					case LoadState.Loading:
+						oNodeToConfigure.ForeColor = Color.RosyBrown;
+						break;
+					case LoadState.LoadSuccessful:
+						oNodeToConfigure.ForeColor = Color.Black;
+						break;
+					case LoadState.LoadFailed:
+						oNodeToConfigure.ForeColor = Color.Red;
+						break;
+					default:
+						throw new ApplicationException("Missing enumeration case statement");
+				}
 			}
+
+			if (oNode is ServerModelNode && (oNode as ServerModelNode).Favourite) oNodeToConfigure.NodeFont = new Font(c_tvView.Font, FontStyle.Bold);
+			if (oNode is ServerModelNode && !(oNode as ServerModelNode).Enabled) oNodeToConfigure.ForeColor = Color.Gray;
 		}
 
 		/// <summary>
 		/// Add all child TreeNodes to a node.
 		/// </summary>
 		/// <param name="oNode">The node to populate.</param>
-		private static void AddChildTreeNodes(TreeNode oNode)
+		private void AddChildTreeNodes(TreeNode oNode)
 		{
 			oNode.Nodes.Clear();
 
-			foreach (ModelNode oChild in (oNode.Tag as ModelNode).Children)
+			foreach (ModelNode oChild in (oNode.Tag as ModelNode).FilteredChildren)
 			{
 				oNode.Nodes.Add(WrapModelNode(oChild));
 			}
@@ -418,7 +456,7 @@ namespace NewServerTree.View
 
 			if (oModel.ShowAllChildren || (oConstructedChild.Tag as ModelNode).IsLeaf)
 			{
-				foreach (ModelNode oChild in oModel.Children)
+				foreach (ModelNode oChild in oModel.FilteredChildren)
 				{
 					if (oConstructedChild != null && oChild == oConstructedChild.Tag)
 					{

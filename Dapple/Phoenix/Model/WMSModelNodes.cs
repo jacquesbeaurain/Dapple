@@ -63,12 +63,67 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public WMSServerModelNode AddServer(WMSServerUri oUri)
+		public WMSServerModelNode AddServer(WMSServerUri oUri, bool blEnabled)
 		{
-			WMSServerModelNode result = new WMSServerModelNode(m_oModel, oUri);
-			result.BeginLoad();
+			WMSServerModelNode result = new WMSServerModelNode(m_oModel, oUri, blEnabled);
+			if (blEnabled)
+			{
+				result.BeginLoad();
+			}
 			AddChild(result);
 			return result;
+		}
+
+		public void SetFavouriteServer(String strUri)
+		{
+			foreach (WMSServerModelNode oServer in UnfilteredChildren)
+			{
+				oServer.UpdateFavouriteStatus(strUri);
+			}
+		}
+
+		/// <summary>
+		/// Sorts WMS folders before WMS layers.
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static int SortWMSChildNodes(ModelNode first, ModelNode second)
+		{
+			if (first is WMSFolderModelNode)
+			{
+				if (second is WMSLayerModelNode)
+				{
+					return -1;
+				}
+				else if (second is WMSFolderModelNode)
+				{
+					return first.CompareTo(second);
+				}
+				else
+				{
+					throw new ApplicationException("Unexpected model node '" + second.GetType().ToString() + "'in WMS subree");
+				}
+			}
+			else if (first is WMSLayerModelNode)
+			{
+				if (second is WMSLayerModelNode)
+				{
+					return first.CompareTo(second);
+				}
+				else if (second is WMSFolderModelNode)
+				{
+					return 1;
+				}
+				else
+				{
+					throw new ApplicationException("Unexpected model node '" + second.GetType().ToString() + "'in WMS subree");
+				}
+			}
+			else
+			{
+				throw new ApplicationException("Unexpected model node '" + first.GetType().ToString() + "'in WMS subree");
+			}
 		}
 
 		#endregion
@@ -85,7 +140,7 @@ namespace NewServerTree
 	}
 
 
-	public class WMSServerModelNode : ServerModelNode
+	public class WMSServerModelNode : ServerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -97,8 +152,8 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public WMSServerModelNode(DappleModel oModel, WMSServerUri oUri)
-			: base(oModel)
+		public WMSServerModelNode(DappleModel oModel, WMSServerUri oUri, bool blEnabled)
+			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
 			m_strTitle = oUri.ToBaseUri();
@@ -107,16 +162,55 @@ namespace NewServerTree
 		#endregion
 
 
-		#region Public Methods
+		#region Properties
 
 		public override string DisplayText
 		{
-			get { return m_strTitle; }
+			get
+			{
+				if (LoadState == LoadState.LoadSuccessful)
+				{
+					return String.Format("{0} [{1} datasets]", m_strTitle, FilteredChildCount);
+				}
+				else
+				{
+					return m_strTitle;
+				}
+			}
 		}
 
-		public WMSServerUri Uri
+		public override ServerUri ServerUri
 		{
 			get { return m_oUri; }
+		}
+
+		public int FilteredChildCount
+		{
+			get
+			{
+				if (LoadState != LoadState.LoadSuccessful)
+				{
+					return 1;
+				}
+
+				int result = 0;
+				foreach (ModelNode oChild in FilteredChildren)
+				{
+					if (oChild is IFilterableModelNode)
+					{
+						result += (oChild as IFilterableModelNode).FilteredChildCount;
+					}
+				}
+				return result;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				return FilteredChildCount > 0;
+			}
 		}
 
 		#endregion
@@ -136,7 +230,7 @@ namespace NewServerTree
 
 			List<ModelNode> result = new List<ModelNode>();
 
-			foreach (WMSLayer oLayer in oCatalog.Layers)
+			foreach (WMSLayer oLayer in oCatalog.Layers[0].ChildLayers)
 			{
 				if (oLayer.ChildLayers == null)
 				{
@@ -148,6 +242,8 @@ namespace NewServerTree
 				}
 			}
 
+			result.Sort(new Comparison<ModelNode>(WMSRootModelNode.SortWMSChildNodes));
+
 			return result.ToArray();
 		}
 
@@ -155,7 +251,7 @@ namespace NewServerTree
 	}
 
 
-	public class WMSFolderModelNode : ModelNode
+	public class WMSFolderModelNode : ModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -170,6 +266,20 @@ namespace NewServerTree
 			: base(oModel)
 		{
 			m_oData = oData;
+
+			foreach (WMSLayer oLayer in m_oData.ChildLayers)
+			{
+				if (oLayer.ChildLayers == null)
+				{
+					AddChildSilently(new WMSLayerModelNode(m_oModel, oLayer));
+				}
+				else
+				{
+					AddChildSilently(new WMSFolderModelNode(m_oModel, oLayer));
+				}
+			}
+
+			MarkLoaded();
 		}
 
 		#endregion
@@ -197,6 +307,32 @@ namespace NewServerTree
 			}
 		}
 
+		public int FilteredChildCount
+		{
+			get
+			{
+				int result = 0;
+
+				foreach (ModelNode oChild in FilteredChildren)
+				{
+					if (oChild is IFilterableModelNode)
+					{
+						result += (oChild as IFilterableModelNode).FilteredChildCount;
+					}
+				}
+
+				return result;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				return FilteredChildCount > 0;
+			}
+		}
+
 		#endregion
 
 
@@ -204,32 +340,19 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			List<ModelNode> result = new List<ModelNode>();
-
-			foreach (WMSLayer oLayer in m_oData.ChildLayers)
-			{
-				if (oLayer.ChildLayers == null)
-				{
-					result.Add(new WMSLayerModelNode(m_oModel, oLayer));
-				}
-				else
-				{
-					result.Add(new WMSFolderModelNode(m_oModel, oLayer));
-				}
-			}
-
-			return result.ToArray();
+			throw new ApplicationException(ErrLoadedBadNode);
 		}
 
 		#endregion
 	}
 
 
-	public class WMSLayerModelNode : LayerModelNode, IContextModelNode
+	public class WMSLayerModelNode : LayerModelNode, IContextModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
 		private WMSLayer m_oData;
+		private GeographicBoundingBox m_oBounds;
 
 		#endregion
 
@@ -240,6 +363,7 @@ namespace NewServerTree
 			: base(oModel)
 		{
 			m_oData = oData;
+			m_oBounds = new GeographicBoundingBox((double)m_oData.North, (double)m_oData.South, (double)m_oData.West, (double)m_oData.East);
 
 			MarkLoaded();
 		}
@@ -264,6 +388,34 @@ namespace NewServerTree
 			get { return IconKeys.WMSLayer; }
 		}
 
+		public int FilteredChildCount
+		{
+			get
+			{
+				return PassesFilter ? 1 : 0;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				bool blResult = true;
+
+				if (m_oModel.SearchKeywordSet)
+				{
+					blResult &= (m_oData.Description != null && m_oData.Description.Contains(m_oModel.SearchKeyword)) || (m_oData.Title != null && m_oData.Title.Contains(m_oModel.SearchKeyword));
+				}
+
+				if (m_oModel.SearchBoundsSet)
+				{
+					blResult &= m_oBounds.Intersects(m_oModel.SearchBounds_Geo);
+				}
+
+				return blResult;
+			}
+		}
+
 		#endregion
 
 
@@ -271,7 +423,7 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			throw new NotImplementedException(ErrLoadedLeafNode);
+			throw new ApplicationException(ErrLoadedLeafNode);
 		}
 
 		#endregion

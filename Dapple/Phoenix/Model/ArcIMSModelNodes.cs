@@ -5,6 +5,7 @@ using System.Xml;
 using System.Globalization;
 using WorldWind;
 using System.Windows.Forms;
+using Dapple;
 
 namespace NewServerTree
 {
@@ -63,12 +64,23 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri)
+		public ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri, bool blEnabled)
 		{
-			ArcIMSServerModelNode result = new ArcIMSServerModelNode(m_oModel, oUri);
-			result.BeginLoad();
+			ArcIMSServerModelNode result = new ArcIMSServerModelNode(m_oModel, oUri, blEnabled);
+			if (blEnabled)
+			{
+				result.BeginLoad();
+			}
 			AddChild(result);
 			return result;
+		}
+
+		public void SetFavouriteServer(String strUri)
+		{
+			foreach (ArcIMSServerModelNode oServer in UnfilteredChildren)
+			{
+				oServer.UpdateFavouriteStatus(strUri);
+			}
 		}
 
 		#endregion
@@ -85,7 +97,7 @@ namespace NewServerTree
 	}
 
 
-	public class ArcIMSServerModelNode : ServerModelNode
+	public class ArcIMSServerModelNode : ServerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -96,8 +108,8 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ArcIMSServerModelNode(DappleModel oModel, ArcIMSServerUri oUri)
-			: base(oModel)
+		public ArcIMSServerModelNode(DappleModel oModel, ArcIMSServerUri oUri, bool blEnabled)
+			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
 		}
@@ -112,9 +124,45 @@ namespace NewServerTree
 			get { return m_oUri.ToBaseUri(); }
 		}
 
-		public ArcIMSServerUri Uri
+		public override ServerUri ServerUri
 		{
 			get { return m_oUri; }
+		}
+
+		public int FilteredChildCount
+		{
+			get
+			{
+				int result = 0;
+
+				foreach (ModelNode oChild in FilteredChildren)
+				{
+					if (oChild is IFilterableModelNode)
+					{
+						result += (oChild as IFilterableModelNode).FilteredChildCount;
+					}
+				}
+
+				return result;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				// --- Don't remove ArcIMS servers that are still loading their services ---
+
+				foreach (ModelNode oChild in UnfilteredChildren)
+				{
+					if (oChild.LoadState == LoadState.Unloaded || oChild.LoadState == LoadState.Loading)
+					{
+						return true;
+					}
+				}
+
+				return FilteredChildCount > 0;
+			}
 		}
 
 		#endregion
@@ -170,6 +218,8 @@ namespace NewServerTree
 				result.Add(new ArcIMSServiceModelNode(m_oModel, strServiceName, oCultureInfo));
 			}
 
+			result.Sort();
+
 			return result.ToArray();
 		}
 
@@ -177,7 +227,7 @@ namespace NewServerTree
 	}
 
 
-	public class ArcIMSServiceModelNode : ModelNode
+	public class ArcIMSServiceModelNode : ModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -211,6 +261,29 @@ namespace NewServerTree
 			get { return IconKeys.ArcIMSService; }
 		}
 
+		public int FilteredChildCount
+		{
+			get
+			{
+				int result = 0;
+
+				foreach (ModelNode oChild in FilteredChildren)
+				{
+					if (oChild is IFilterableModelNode)
+					{
+						result += (oChild as IFilterableModelNode).FilteredChildCount;
+					}
+				}
+
+				return result;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get { return FilteredChildCount > 0; }
+		}
+
 		#endregion
 
 
@@ -220,7 +293,7 @@ namespace NewServerTree
 		{
 			String strServiceFilename = @"c:\c\arcims" + Parent.Parent.GetIndex(Parent) + "-" + m_strServiceName + ".xml";
 
-			ArcIMSServiceDownload oServiceDownload = new ArcIMSServiceDownload((Parent as ArcIMSServerModelNode).Uri, m_strServiceName, 0);
+			ArcIMSServiceDownload oServiceDownload = new ArcIMSServiceDownload((Parent as ServerModelNode).ServerUri as ArcIMSServerUri, m_strServiceName, 0);
 			oServiceDownload.DownloadFile(strServiceFilename);
 
 
@@ -314,6 +387,8 @@ namespace NewServerTree
 				result.Add(new ArcIMSLayerModelNode(m_oModel, szTitle, szID, oLayerBounds, dMinScale, dMaxScale, m_oCultureInfo));
 			}
 
+			result.Sort();
+
 			return result.ToArray();
 		}
 
@@ -321,7 +396,7 @@ namespace NewServerTree
 	}
 
 
-	public class ArcIMSLayerModelNode : LayerModelNode
+	public class ArcIMSLayerModelNode : LayerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -364,6 +439,34 @@ namespace NewServerTree
 		public override string IconKey
 		{
 			get { return IconKeys.ArcIMSLayer; }
+		}
+
+		public int FilteredChildCount
+		{
+			get
+			{
+				return PassesFilter ? 1 : 0;
+			}
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				bool result = true;
+
+				if (m_oModel.SearchBoundsSet)
+				{
+					result &= m_oBounds.Intersects(m_oModel.SearchBounds_Geo);
+				}
+
+				if (m_oModel.SearchKeywordSet)
+				{
+					result &= DisplayText.Contains(m_oModel.SearchKeyword);
+				}
+
+				return result;
+			}
 		}
 
 		#endregion

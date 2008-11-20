@@ -39,7 +39,7 @@ namespace NewServerTree
 
 		public ImageTileSetModelNode GetImageTileSet(String strName)
 		{
-			foreach (ImageTileSetModelNode oTileSet in this.Children)
+			foreach (ImageTileSetModelNode oTileSet in this.UnfilteredChildren)
 			{
 				if (oTileSet.Name.Equals(strName))
 				{
@@ -129,7 +129,7 @@ namespace NewServerTree
 	}
 
 
-	public class ImageTileLayerModelNode : ModelNode
+	public class ImageTileLayerModelNode : LayerModelNode
 	{
 		#region Memeber Variables
 
@@ -162,6 +162,11 @@ namespace NewServerTree
 
 
 		#region Properties
+
+		public override bool IsLeaf
+		{
+			get { return true; }
+		}
 
 		public override string DisplayText
 		{
