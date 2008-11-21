@@ -11,6 +11,7 @@ namespace NewServerTree
 		private DapServerRootModelNode m_oDAPRootNode;
 		private ImageTileSetRootModelNode m_oTileRootNode;
 		private VERootModelNode m_oVERootNode;
+		private PersonalDapServerModelNode m_oPersonalDAPServer;
 
 		#endregion
 
@@ -22,15 +23,23 @@ namespace NewServerTree
 		{
 			m_oDAPRootNode = new DapServerRootModelNode(m_oModel);
 			AddChildSilently(m_oDAPRootNode);
-			//PersonalDapServerModelNode oPDNode = new PersonalDapServerModelNode(m_oModel);
-			//oPDNode.BeginLoad();
-			//AddChildSilently(oPDNode);
+
+			if (PersonalDapServerModelNode.PersonalDapRunning)
+			{
+				m_oPersonalDAPServer = new PersonalDapServerModelNode(m_oModel);
+				AddChildSilently(m_oPersonalDAPServer);
+				m_oPersonalDAPServer.BeginLoad();
+			}
+
 			m_oTileRootNode = new ImageTileSetRootModelNode(m_oModel);
 			AddChildSilently(m_oTileRootNode);
+
 			m_oVERootNode = new VERootModelNode(m_oModel);
 			AddChildSilently(m_oVERootNode);
+
 			m_oWMSRootNode = new WMSRootModelNode(m_oModel);
 			AddChildSilently(m_oWMSRootNode);
+
 			m_oArcIMSRootNode = new ArcIMSRootModelNode(m_oModel);
 			AddChildSilently(m_oArcIMSRootNode);
 
@@ -75,6 +84,11 @@ namespace NewServerTree
 		public ArcIMSRootModelNode ArcIMSServers
 		{
 			get { return m_oArcIMSRootNode; }
+		}
+
+		public PersonalDapServerModelNode PersonalDapServer
+		{
+			get { return m_oPersonalDAPServer; }
 		}
 
 		#endregion

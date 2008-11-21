@@ -301,6 +301,22 @@ namespace NewServerTree
 			get { return IconKeys.PersonalDAPServer; }
 		}
 
+		public static bool PersonalDapRunning
+		{
+			get
+			{
+				foreach (System.Diagnostics.Process oProcess in System.Diagnostics.Process.GetProcesses())
+				{
+					if (string.Compare(oProcess.ProcessName, "geosoft.dap.server", true) == 0)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+		}
+
 		#endregion
 	}
 
@@ -362,9 +378,9 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer(), m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
+			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer().Server, m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
 
-			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer(), m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
+			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer().Server, m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
 
 			List<ModelNode> result = new List<ModelNode>();
 
@@ -376,7 +392,7 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		private Server GetServer()
+		private DapServerModelNode GetServer()
 		{
 			ModelNode oServerNode = this;
 			while (oServerNode != null && !(oServerNode is DapServerModelNode))
@@ -386,7 +402,7 @@ namespace NewServerTree
 
 			if (oServerNode == null) throw new ApplicationException("Orphaned DAP folder node");
 
-			return (oServerNode as DapServerModelNode).Server;
+			return oServerNode as DapServerModelNode;
 		}
 
 		#endregion
@@ -435,11 +451,35 @@ namespace NewServerTree
 		#endregion
 
 
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override LayerBuilder ConvertToLayerBuilder()
+		{
+			return new DAPQuadLayerBuilder(m_oDataSet, Dapple.MainForm.WorldWindowSingleton, GetServer().Server, null);
+		}
+
+		#endregion
+
+
 		#region Helper Methods
 
 		protected override ModelNode[] Load()
 		{
 			throw new ApplicationException(ErrLoadedLeafNode);
+		}
+
+		private DapServerModelNode GetServer()
+		{
+			ModelNode oServerNode = this;
+			while (oServerNode != null && !(oServerNode is DapServerModelNode))
+			{
+				oServerNode = oServerNode.Parent;
+			}
+
+			if (oServerNode == null) throw new ApplicationException("Orphaned DAP dataset node");
+
+			return oServerNode as DapServerModelNode;
 		}
 
 		#endregion

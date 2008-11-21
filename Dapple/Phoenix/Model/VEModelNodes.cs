@@ -76,6 +76,22 @@ namespace NewServerTree
 			Satelite
 		};
 
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		private static WorldWind.VirtualEarthMapType Convert(VELayerType eType)
+		{
+			switch (eType)
+			{
+				case VELayerType.Hybrid:
+					return WorldWind.VirtualEarthMapType.hybrid;
+				case VELayerType.Map:
+					return WorldWind.VirtualEarthMapType.road;
+				case VELayerType.Satelite:
+					return WorldWind.VirtualEarthMapType.aerial;
+				default:
+					throw new ApplicationException("Missing enum case statement");
+			}
+		}
+
 		#endregion
 
 
@@ -127,6 +143,17 @@ namespace NewServerTree
 		public override string IconKey
 		{
 			get { return IconKeys.VELayer; }
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder()
+		{
+			return new Dapple.LayerGeneration.VEQuadLayerBuilder(DisplayText, Convert(m_eLayerType), Dapple.MainForm.WorldWindowSingleton, true, null);
 		}
 
 		#endregion

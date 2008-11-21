@@ -333,6 +333,11 @@ namespace NewServerTree
 			get { return LoadState != LoadState.LoadSuccessful || FilteredChildCount > 0; }
 		}
 
+		public String ServiceName
+		{
+			get { return m_strServiceName; }
+		}
+
 		#endregion
 
 
@@ -468,6 +473,8 @@ namespace NewServerTree
 			m_dMinScale = dMinScale;
 			m_dMaxScale = dMaxScale;
 			m_oCultureInfo = oCultureInfo;
+
+			MarkLoaded();
 		}
 
 		#endregion
@@ -516,6 +523,30 @@ namespace NewServerTree
 
 				return result;
 			}
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override LayerBuilder ConvertToLayerBuilder()
+		{
+			return new ArcIMSQuadLayerBuilder(
+				(Parent.Parent as ArcIMSServerModelNode).Uri as ArcIMSServerUri,
+				(Parent as ArcIMSServiceModelNode).ServiceName,
+				m_strTitle,
+				m_strID,
+				m_oBounds,
+				Dapple.MainForm.WorldWindowSingleton,
+				null,
+				m_dMinScale,
+				m_dMaxScale,
+				m_oCultureInfo
+				);
+
+			throw new NotImplementedException();
 		}
 
 		#endregion

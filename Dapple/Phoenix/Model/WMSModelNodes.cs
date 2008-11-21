@@ -5,6 +5,7 @@ using WorldWind.Net;
 using WorldWind;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.IO;
 
 namespace NewServerTree
 {
@@ -261,6 +262,14 @@ namespace NewServerTree
 			}
 		}
 
+		public String CapabilitiesFilename
+		{
+			get
+			{
+				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("WMS Catalog Cache", Path.Combine(m_oUri.ToCacheDirectory(), "capabilities.xml")));
+			}
+		}
+
 		#endregion
 
 
@@ -268,12 +277,10 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			String strCapFilename = @"c:\c\wms" + Parent.GetIndex(this) + ".xml";
-
 			WebDownload oCatalogDownload = new WebDownload(m_oUri.ToCapabilitiesUri(), true);
-			oCatalogDownload.DownloadFile(strCapFilename);
+			oCatalogDownload.DownloadFile(CapabilitiesFilename);
 
-			WMSList oCatalog = new WMSList(m_oUri.ToCapabilitiesUri(), strCapFilename);
+			WMSList oCatalog = new WMSList(m_oUri.ToCapabilitiesUri(), CapabilitiesFilename);
 			m_strTitle = oCatalog.Name;
 
 			List<ModelNode> result = new List<ModelNode>();
@@ -391,6 +398,20 @@ namespace NewServerTree
 			throw new ApplicationException(ErrLoadedBadNode);
 		}
 
+		private WMSServerModelNode GetServer()
+		{
+			ModelNode iter = this;
+
+			while (iter != null && !(iter is WMSServerModelNode))
+			{
+				iter = iter.Parent;
+			}
+
+			if (iter == null) throw new ApplicationException("Orphaned WMS folder node");
+
+			return iter as WMSServerModelNode;
+		}
+
 		#endregion
 	}
 
@@ -467,11 +488,38 @@ namespace NewServerTree
 		#endregion
 
 
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override LayerBuilder ConvertToLayerBuilder()
+		{
+			WMSServerModelNode oSMN = GetServer();
+			WMSServerBuilder oServer = new WMSServerBuilder(null, oSMN.Uri as WMSServerUri, oSMN.CapabilitiesFilename, true);
+			return new WMSQuadLayerBuilder(m_oData, Dapple.MainForm.WorldWindowSingleton, oServer, null);
+		}
+
+		#endregion
+
+
 		#region Helper Methods
 
 		protected override ModelNode[] Load()
 		{
 			throw new ApplicationException(ErrLoadedLeafNode);
+		}
+
+		private WMSServerModelNode GetServer()
+		{
+			ModelNode iter = this;
+
+			while (iter != null && !(iter is WMSServerModelNode))
+			{
+				iter = iter.Parent;
+			}
+
+			if (iter == null) throw new ApplicationException("Orphaned WMS layer node");
+
+			return iter as WMSServerModelNode;
 		}
 
 		#endregion

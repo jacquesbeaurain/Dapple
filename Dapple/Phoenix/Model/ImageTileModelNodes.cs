@@ -174,13 +174,15 @@ namespace NewServerTree
 		private String m_strDataset;
 		private int m_iLevels;
 		private GeographicBoundingBox m_oBounds;
+		private int m_iDistanceAboveSurface;
+		private int m_iTextureSize;
 
 		#endregion
 
 
 		#region Constructors
 
-		public ImageTileLayerModelNode(DappleModel oModel, String strName, Uri oUri, String strExtension, double dLZTS, String strDataset, int iLevels, GeographicBoundingBox oBounds)
+		public ImageTileLayerModelNode(DappleModel oModel, String strName, Uri oUri, String strExtension, double dLZTS, String strDataset, int iLevels, GeographicBoundingBox oBounds, int iDistanceAboveSurface, int iTextureSize)
 			: base(oModel)
 		{
 			m_strName = strName;
@@ -190,6 +192,8 @@ namespace NewServerTree
 			m_strDataset = strDataset;
 			m_iLevels = iLevels;
 			m_oBounds = oBounds;
+			m_iDistanceAboveSurface = iDistanceAboveSurface;
+			m_iTextureSize = iTextureSize;
 
 			MarkLoaded();
 		}
@@ -245,6 +249,25 @@ namespace NewServerTree
 		}
 
 		#endregion
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder()
+		{
+			return new Dapple.LayerGeneration.NltQuadLayerBuilder(
+				m_strName,
+				m_iDistanceAboveSurface,
+				true,
+				m_oBounds,
+				m_dLZTS,
+				m_iLevels,
+				m_iTextureSize,
+				m_oUri.ToString(),
+				m_strDataset,
+				m_strExtension,
+				Byte.MaxValue,
+				Dapple.MainForm.WorldWindowSingleton,
+				null);
+		}
 
 		#endregion
 

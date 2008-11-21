@@ -17,7 +17,7 @@ namespace NewServerTree.View
 		{
 			InitializeComponent();
 
-			m_oModel = new DappleModel();
+			m_oModel = new DappleModel(null);
 
 			serverTree1.Attach(m_oModel);
 			serverTree2.Attach(m_oModel);

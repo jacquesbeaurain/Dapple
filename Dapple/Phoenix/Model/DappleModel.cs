@@ -115,6 +115,7 @@ namespace NewServerTree
 		private String m_strSearchKeyword = String.Empty;
 		private GeographicBoundingBox m_oSearchBounds = null;
 		private ServerModelNode m_oFavouriteServer = null;
+		private ViewedDatasetsModel m_oViewedDatasets;
 
 		#endregion
 
@@ -216,8 +217,9 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DappleModel()
+		public DappleModel(LayerList oTarget)
 		{
+			m_oViewedDatasets = new ViewedDatasetsModel(oTarget);
 			m_oRootNode = new AvailableServersModelNode(this);
 			m_oSelectedNode = m_oRootNode;
 		}
@@ -262,6 +264,14 @@ namespace NewServerTree
 			}
 		}
 
+		public PersonalDapServerModelNode PersonalDapServer
+		{
+			get
+			{
+				return m_oRootNode.PersonalDapServer;
+			}
+		}
+
 		public bool SearchKeywordSet
 		{
 			get { return !String.IsNullOrEmpty(m_strSearchKeyword); }
@@ -298,6 +308,11 @@ namespace NewServerTree
 		public bool SearchFilterSet
 		{
 			get { return SearchKeywordSet || SearchBoundsSet; }
+		}
+
+		public ViewedDatasetsModel ViewedDatasets
+		{
+			get { return m_oViewedDatasets; }
 		}
 
 		#endregion
@@ -581,6 +596,7 @@ namespace NewServerTree
 						oBoundsData.minlon.Value,
 						oBoundsData.maxlon.Value);
 
+
 					ImageTileLayerModelNode oNode = new ImageTileLayerModelNode(
 						this,
 						oLayer.name.Value,
@@ -589,7 +605,10 @@ namespace NewServerTree
 						oLayer.levelzerotilesize.Value,
 						oLayer.dataset.Value,
 						oLayer.levels.Value,
-						oBounds);
+						oBounds,
+						oLayer.Hasdistanceabovesurface() ? oLayer.distanceabovesurface.Value : Convert.ToInt32(dappleview.tilelayerType.GetdistanceabovesurfaceDefault()),
+						oLayer.Hastilepixelsize() ? oLayer.tilepixelsize.Value : Convert.ToInt32(dappleview.tilelayerType.GettilepixelsizeDefault())
+						);
 
 					this.AddImageTileLayer(entry.name.Value, oNode);
 				}
@@ -901,6 +920,41 @@ namespace NewServerTree
 			}
 
 			m_oSelectedNode = m_oRootNode;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
+	/// Class representing the datasets that are visible on the globe.
+	/// </summary>
+	/// <remarks>
+	/// This is currently a proxy for converting ModelNodes to LayerBuilders
+	/// to isolate the model from the rest of the system. 
+	/// </remarks>
+	public class ViewedDatasetsModel
+	{
+		#region Member Variables
+
+		public LayerList m_oLayerList;
+
+		#endregion
+
+		#region Constructors
+
+		public ViewedDatasetsModel(LayerList oTarget)
+		{
+			m_oLayerList = oTarget;
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		public void Add(LayerModelNode oNewLayer)
+		{
+			m_oLayerList.AddLayer(oNewLayer.ConvertToLayerBuilder());
 		}
 
 		#endregion

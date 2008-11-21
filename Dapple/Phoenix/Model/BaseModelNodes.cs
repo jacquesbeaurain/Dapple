@@ -392,7 +392,7 @@ namespace NewServerTree
 
 		protected void c_miAddLayer_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			AddToVisibleLayers();
 		}
 
 		#endregion
@@ -410,16 +410,17 @@ namespace NewServerTree
 			}
 		}
 
-		public bool Visible
+		#endregion
+
+
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public abstract Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder();
+
+		public void AddToVisibleLayers()
 		{
-			get
-			{
-				return false;
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			m_oModel.ViewedDatasets.Add(this);
 		}
 
 		#endregion

@@ -225,6 +225,14 @@ namespace NewServerTree.View
 			}
 		}
 
+		private void c_tvView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Node.Tag is LayerModelNode)
+			{
+				(e.Node.Tag as LayerModelNode).AddToVisibleLayers();
+			}
+		}
+
 		private void c_tvView_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
 		{
 			// --- Never collapse a treenode in the server tree---
