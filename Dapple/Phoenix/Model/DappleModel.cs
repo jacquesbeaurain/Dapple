@@ -954,7 +954,9 @@ namespace NewServerTree
 
 		public void Add(LayerModelNode oNewLayer)
 		{
+#pragma warning disable 618
 			m_oLayerList.AddLayer(oNewLayer.ConvertToLayerBuilder());
+#pragma warning restore 618
 		}
 
 		#endregion
