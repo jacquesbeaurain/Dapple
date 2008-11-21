@@ -1213,7 +1213,7 @@ namespace Dapple
                   iter = iter.Parent;
                }
 
-               ViewMetadata(new DAPQuadLayerBuilder(SelectedNode.Tag as DataSet, iter.Tag as Server));
+               ViewMetadata(new DAPQuadLayerBuilder(SelectedNode.Tag as DataSet, MainForm.WorldWindowSingleton, iter.Tag as Server, null));
             }
          }
       }

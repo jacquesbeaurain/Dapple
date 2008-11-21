@@ -62,33 +62,21 @@ namespace Dapple.LayerGeneration
 			this.LevelZeroTileSize = lvl0tilesize;
          m_iLevels = levels;
 
-         if (server.MajorVersion >= 11)
-         {
-            m_iTextureSizePixels = DAP_TILE_SIZE;
-            m_dLevelZeroTileSizeDegrees = DAP_TILE_LZTS;
-				m_iLevels = DappleUtils.TileLevels(m_oServer.Command, dataSet);
-         }
-
 			m_blUseXMLMeta = !String.IsNullOrEmpty(m_hDataSet.Stylesheet);
 		}
 
 		/// <summary>
-		/// Husk DAPQuadLayerBuilder. Only supports getting metadata for a server. Don't try to render it.
+		/// For DAP 11 and later servers, switch to using the tile interface, updating the texture
+		/// info appropriately.
 		/// </summary>
-		/// <param name="dataset"></param>
-		/// <param name="server"></param>
-		public DAPQuadLayerBuilder(DataSet dataset, Server server)
-			: base(null, null, null)
+		private void SwitchToUseTiles()
 		{
-			m_hDataSet = dataset;
-			m_oServer = server;
-
-			m_iHeight = 0;
-			m_iTextureSizePixels = 0;
-			LevelZeroTileSize = 22.5;
-			m_iLevels = 0;
-
-			m_blUseXMLMeta = !String.IsNullOrEmpty(m_hDataSet.Stylesheet);
+			if (m_oServer.MajorVersion >= 11)
+			{
+				m_iTextureSizePixels = DAP_TILE_SIZE;
+				m_dLevelZeroTileSizeDegrees = DAP_TILE_LZTS;
+				m_iLevels = DappleUtils.TileLevels(m_oServer.Command, m_hDataSet);
+			}
 		}
 
 		#endregion
@@ -518,6 +506,8 @@ namespace Dapple.LayerGeneration
       {
          if (m_layer == null)
          {
+				SwitchToUseTiles();
+
             string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString());
             System.IO.Directory.CreateDirectory(strCachePath);
 
