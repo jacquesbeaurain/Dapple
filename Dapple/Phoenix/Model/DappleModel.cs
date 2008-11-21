@@ -685,7 +685,7 @@ namespace NewServerTree
 
 				// --- Add the server ---
 
-				ServerModelNode result = m_oRootNode.DAPServers.AddServer(oUri, blEnabled);
+				result = m_oRootNode.DAPServers.AddServer(oUri, blEnabled);
 
 				if (blUpdateHomeView)
 				{
