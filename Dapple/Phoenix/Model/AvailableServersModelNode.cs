@@ -10,6 +10,7 @@ namespace NewServerTree
 		private ArcIMSRootModelNode m_oArcIMSRootNode;
 		private DapServerRootModelNode m_oDAPRootNode;
 		private ImageTileSetRootModelNode m_oTileRootNode;
+		private VERootModelNode m_oVERootNode;
 
 		#endregion
 
@@ -26,7 +27,8 @@ namespace NewServerTree
 			//AddChildSilently(oPDNode);
 			m_oTileRootNode = new ImageTileSetRootModelNode(m_oModel);
 			AddChildSilently(m_oTileRootNode);
-			AddChildSilently(new VERootModelNode(m_oModel));
+			m_oVERootNode = new VERootModelNode(m_oModel);
+			AddChildSilently(m_oVERootNode);
 			m_oWMSRootNode = new WMSRootModelNode(m_oModel);
 			AddChildSilently(m_oWMSRootNode);
 			m_oArcIMSRootNode = new ArcIMSRootModelNode(m_oModel);
@@ -88,12 +90,46 @@ namespace NewServerTree
 			m_oArcIMSRootNode.ClearSilently();
 		}
 
-		public void SetFavouriteServer(String strUri)
+		public ServerModelNode SetFavouriteServer(String strUri)
 		{
-			m_oDAPRootNode.SetFavouriteServer(strUri);
-			m_oWMSRootNode.SetFavouriteServer(strUri);
-			m_oArcIMSRootNode.SetFavouriteServer(strUri);
+			ServerModelNode temp, result = null;
+
+			temp = m_oDAPRootNode.SetFavouriteServer(strUri);
+			if (temp != null) result = temp;
+			temp = m_oWMSRootNode.SetFavouriteServer(strUri);
+			if (temp != null) result = temp;
+			temp = m_oArcIMSRootNode.SetFavouriteServer(strUri);
+			if (temp != null) result = temp;
+
+			return result;
 		}
+
+		#region Saving and Loading old Dapple Views
+
+		public void SaveToView(Dapple.DappleView oView)
+		{
+			dappleview.serversType oServers = oView.View.Newservers();
+
+			m_oDAPRootNode.SaveToView(oServers);
+			m_oTileRootNode.SaveToView(oServers);
+			m_oVERootNode.SaveToView(oServers);
+
+			dappleview.builderentryType oWMSBuilder = oServers.Newbuilderentry();
+			dappleview.builderdirectoryType oWMSDir = oWMSBuilder.Newbuilderdirectory();
+			oWMSDir.Addname(new Altova.Types.SchemaString("WMS Servers"));
+			oWMSDir.Addspecialcontainer(new dappleview.SpecialDirectoryType("WMSServers"));
+
+			m_oWMSRootNode.SaveToView(oWMSDir);
+			m_oArcIMSRootNode.SaveToView(oWMSDir);
+
+
+			oWMSBuilder.Addbuilderdirectory(oWMSDir);
+			oServers.Addbuilderentry(oWMSBuilder);
+
+			oView.View.Addservers(oServers);
+		}
+
+		#endregion
 
 		#endregion
 

@@ -147,6 +147,11 @@ namespace NewServerTree.View
 			Repopulate();
 		}
 
+		void m_oModel_ServerToggled(object sender, EventArgs e)
+		{
+			Repopulate();
+		}
+
 		private void UnmuteModel()
 		{
 			m_oModel.SelectedNodeChanged += new EventHandler(m_oModel_SelectedNodeChanged);
@@ -157,6 +162,7 @@ namespace NewServerTree.View
 			m_oModel.Loaded += new EventHandler(m_oModel_Loaded);
 			m_oModel.SearchFilterChanged += new EventHandler(m_oModel_SearchFilterChanged);
 			m_oModel.FavouriteServerChanged += new EventHandler(m_oModel_FavouriteServerChanged);
+			m_oModel.ServerToggled += new EventHandler(m_oModel_ServerToggled);
 		}
 
 		private void MuteModel()
@@ -169,6 +175,7 @@ namespace NewServerTree.View
 			m_oModel.Loaded -= new EventHandler(m_oModel_Loaded);
 			m_oModel.SearchFilterChanged -= new EventHandler(m_oModel_SearchFilterChanged);
 			m_oModel.FavouriteServerChanged -= new EventHandler(m_oModel_FavouriteServerChanged);
+			m_oModel.ServerToggled -= new EventHandler(m_oModel_ServerToggled);
 		}
 
 		#endregion

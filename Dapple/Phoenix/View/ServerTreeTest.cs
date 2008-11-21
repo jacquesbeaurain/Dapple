@@ -32,12 +32,13 @@ namespace NewServerTree.View
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			m_oModel.LoadTestView();
+			System.Media.SystemSounds.Beep.Play();
+			//m_oModel.LoadTestView();
 		}
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			m_oModel.Load(new Dapple.DappleView(@"C:\Documents and Settings\chrismac\Local Settings\Application Data\DappleData\Config\lastview.dapple"));
+			m_oModel.LoadFromView(new Dapple.DappleView(@"C:\Documents and Settings\chrismac\Local Settings\Application Data\DappleData\Config\lastview.dapple"));
 		}
 
 		private void bSearch_Click(object sender, EventArgs e)

@@ -4,10 +4,11 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
-using Dapple.LayerGeneration;
-using Dapple;
-using dappleview;
 using WorldWind;
+using Dapple.LayerGeneration;
+using System.Xml;
+using System.IO;
+using Dapple;
 
 namespace NewServerTree
 {
@@ -201,6 +202,15 @@ namespace NewServerTree
 			}
 		}
 
+		public event EventHandler ServerToggled;
+		protected void OnServerToggled(EventArgs e)
+		{
+			if (ServerToggled != null)
+			{
+				ServerToggled(this, e);
+			}
+		}
+
 		#endregion
 
 
@@ -295,65 +305,394 @@ namespace NewServerTree
 
 		#region Public Methods
 
+		#region Saving and Loading old Dapple Views
+
+		#region Updating the home view
+
+		public enum UpdateHomeViewType
+		{
+			AddServer,
+			RemoveServer,
+			ToggleServer,
+			ChangeFavorite
+		};
+
+		private Object LOCK = new object();
+		/// <summary>
+		/// This command modifies the home view, but doesn't do a full save.  Useful for changing the server list.
+		/// </summary>
+		/// <param name="eType"></param>
+		/// <param name="szServer"></param>
+		private void UpdateHomeView(UpdateHomeViewType eType, Object[] data)
+		{
+			lock (LOCK)
+			{
+				XmlDocument oHomeViewDoc = new XmlDocument();
+				oHomeViewDoc.Load(Path.Combine(Path.Combine(MainForm.UserPath, MainForm.Settings.ConfigPath), MainForm.HomeView));
+
+				switch (eType)
+				{
+					case UpdateHomeViewType.AddServer:
+						{
+							String szUrl = data[0] as String;
+							ServerModelNode.ServerType eServerType = (ServerModelNode.ServerType)data[1];
+
+							switch (eServerType)
+							{
+								case ServerModelNode.ServerType.DAP:
+									{
+										XmlElement oDAPRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"DAPServers\"]") as XmlElement;
+										XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+										oDAPRoot.AppendChild(oBuilderEntry);
+										XmlElement oDapCatalog = oHomeViewDoc.CreateElement("dapcatalog");
+										oDapCatalog.SetAttribute("url", szUrl);
+										oDapCatalog.SetAttribute("enabled", "true");
+										oBuilderEntry.AppendChild(oDapCatalog);
+									}
+									break;
+								case ServerModelNode.ServerType.WMS:
+									{
+										XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
+										XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+										oWMSRoot.AppendChild(oBuilderEntry);
+										XmlElement oDapCatalog = oHomeViewDoc.CreateElement("wmscatalog");
+										oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
+										oDapCatalog.SetAttribute("enabled", "true");
+										oBuilderEntry.AppendChild(oDapCatalog);
+									}
+									break;
+								case ServerModelNode.ServerType.ArcIMS:
+									{
+										XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
+										XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
+										oWMSRoot.AppendChild(oBuilderEntry);
+										XmlElement oDapCatalog = oHomeViewDoc.CreateElement("arcimscatalog");
+										oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
+										oDapCatalog.SetAttribute("enabled", "true");
+										oBuilderEntry.AppendChild(oDapCatalog);
+									}
+									break;
+								default:
+									throw new ApplicationException("Missing enum switch statement");
+							}
+						}
+						break;
+					case UpdateHomeViewType.ChangeFavorite:
+						{
+							String szUrl = data[0] as String;
+
+							XmlElement oDocRoot = oHomeViewDoc.SelectSingleNode("/dappleview") as XmlElement;
+							oDocRoot.SetAttribute("favouriteserverurl", szUrl);
+						}
+						break;
+					case UpdateHomeViewType.RemoveServer:
+						{
+							String szUrl = data[0] as String;
+							ServerModelNode.ServerType eServerType = (ServerModelNode.ServerType)data[1];
+							switch (eServerType)
+							{
+								case ServerModelNode.ServerType.DAP:
+									{
+										Uri oUri = new Uri(szUrl);
+										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
+										{
+											if (new DapServerUri(oDapCatalog.GetAttribute("url")).ToBaseUri().Equals(oUri))
+											{
+												oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+											}
+										}
+									}
+									break;
+								case ServerModelNode.ServerType.WMS:
+									{
+										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
+										{
+											if (new WMSServerUri(oDapCatalog.GetAttribute("capabilitiesurl")).ToBaseUri().Equals(szUrl))
+											{
+												oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+											}
+										}
+									}
+									break;
+								case ServerModelNode.ServerType.ArcIMS:
+									{
+										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
+										{
+											if (new ArcIMSServerUri(oDapCatalog.GetAttribute("capabilitiesurl")).ToBaseUri().Equals(szUrl))
+											{
+												oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
+											}
+										}
+									}
+									break;
+								default:
+									throw new ApplicationException("Missing enum switch statement");
+							}
+						}
+						break;
+					case UpdateHomeViewType.ToggleServer:
+						{
+							String szUrl = data[0] as String;
+							ServerModelNode.ServerType eServerType = (ServerModelNode.ServerType)data[1];
+							bool blStatus = (bool)data[2];
+
+							switch (eServerType)
+							{
+								case ServerModelNode.ServerType.DAP:
+									{
+										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
+										{
+											if (new DapServerUri(oDapCatalog.GetAttribute("url")).ToString().Equals(szUrl))
+											{
+												oDapCatalog.SetAttribute("enabled", blStatus.ToString());
+											}
+										}
+									}
+									break;
+								case ServerModelNode.ServerType.WMS:
+									{
+										foreach (XmlElement oWmsCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
+										{
+											if (new WMSServerUri(oWmsCatalog.GetAttribute("capabilitiesurl")).ToString().Equals(szUrl))
+											{
+												oWmsCatalog.SetAttribute("enabled", blStatus.ToString());
+											}
+										}
+									}
+									break;
+								case ServerModelNode.ServerType.ArcIMS:
+									{
+										foreach (XmlElement oArcIMSCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
+										{
+											if (new ArcIMSServerUri(oArcIMSCatalog.GetAttribute("capabilitiesurl")).ToString().Equals(szUrl))
+											{
+												oArcIMSCatalog.SetAttribute("enabled", blStatus.ToString());
+											}
+										}
+									}
+									break;
+								default:
+									throw new ApplicationException("Missing enum switch statement");
+							}
+						}
+						break;
+				}
+
+				oHomeViewDoc.Save(Path.Combine(Path.Combine(MainForm.UserPath, MainForm.Settings.ConfigPath), MainForm.HomeView));
+			}
+		}
+
+		#endregion
+
+		public void SaveToView(Dapple.DappleView oView)
+		{
+			m_oRootNode.SaveToView(oView);
+
+			if (m_oFavouriteServer != null)
+			{
+				oView.View.Addfavouriteserverurl(new Altova.Types.SchemaString(m_oFavouriteServer.Uri.ToString()));
+			}
+		}
+
+		public void LoadFromView(Dapple.DappleView oSource)
+		{
+			lock (m_oLock)
+			{
+				ClearModel();
+
+				ServerModelNode oFavouriteServer = null;
+
+				if (oSource.View.Hasservers())
+				{
+					for (int i = 0; i < oSource.View.servers.builderentryCount; i++)
+					{
+						dappleview.builderentryType entry = oSource.View.servers.GetbuilderentryAt(i);
+						ServerModelNode temp = LoadBuilderEntryType(entry, oSource.View.Hasfavouriteserverurl() ? new Uri(oSource.View.favouriteserverurl.Value) : null);
+						if (temp != null) oFavouriteServer = temp;
+					}
+				}
+
+				if (oFavouriteServer != null)
+				{
+					SetFavouriteServer(oFavouriteServer, false);
+				}
+
+				OnLoaded(EventArgs.Empty);
+			}
+		}
+
+		private ServerModelNode LoadBuilderEntryType(dappleview.builderentryType entry, Uri favouriteServerUri)
+		{
+			bool DontUpdateHomeView = false;
+			ServerModelNode result = null;
+
+			if (entry.Hasbuilderdirectory())
+				for (int i = 0; i < entry.builderdirectory.builderentryCount; i++)
+				{
+					ServerModelNode newServer = LoadBuilderEntryType(entry.builderdirectory.GetbuilderentryAt(i), favouriteServerUri);
+					if (newServer != null)
+					{
+						result = newServer;
+					}
+				}
+			else if (entry.Haswmscatalog())
+			{
+				ServerModelNode newServer = AddWMSServer(new WMSServerUri(entry.wmscatalog.capabilitiesurl.Value), entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true, DontUpdateHomeView);
+				if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
+				{
+					result = newServer;
+				}
+			}
+			else if (entry.Hasarcimscatalog())
+			{
+				ServerModelNode newServer = AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true, DontUpdateHomeView);
+				if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
+				{
+					result = newServer;
+				}
+			}
+			else if (entry.Hasdapcatalog())
+			{
+				ServerModelNode newServer = AddDAPServer(new DapServerUri(entry.dapcatalog.url.Value), entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, DontUpdateHomeView);
+				if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
+				{
+					result = newServer;
+				}
+			}
+			else if (entry.Hastileserverset())
+			{
+				LoadTileServerSet(entry.tileserverset);
+			}
+
+			return result;
+		}
+
+		private void LoadTileServerSet(dappleview.tileserversetType entry)
+		{
+			if (entry.Hastilelayers())
+			{
+				for (int i = 0; i < entry.tilelayers.tilelayerCount; i++)
+				{
+					dappleview.tilelayerType oLayer = entry.tilelayers.GettilelayerAt(i);
+					dappleview.boundingboxType oBoundsData = oLayer.boundingbox;
+					GeographicBoundingBox oBounds = new GeographicBoundingBox(
+						oBoundsData.maxlat.Value,
+						oBoundsData.minlat.Value,
+						oBoundsData.minlon.Value,
+						oBoundsData.maxlon.Value);
+
+					ImageTileLayerModelNode oNode = new ImageTileLayerModelNode(
+						this,
+						oLayer.name.Value,
+						new Uri(oLayer.url.Value),
+						oLayer.imageextension.Value,
+						oLayer.levelzerotilesize.Value,
+						oLayer.dataset.Value,
+						oLayer.levels.Value,
+						oBounds);
+
+					this.AddImageTileLayer(entry.name.Value, oNode);
+				}
+			}
+		}
+
+		#endregion
+
 		#region Adding Servers
 
-		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled)
+		public ServerModelNode AddArcIMSServer()
+		{
+			// --- Pop up dialog, etc ---
+
+			throw new NotImplementedException();
+		}
+
+		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled, bool blUpdateHomeView)
 		{
 			lock (m_oLock)
 			{
 				// --- Don't add the server if it's already in the model ---
 
-				foreach (ArcIMSServerModelNode oArcIMSServer in m_oRootNode.ArcIMSServers.UnfilteredChildren)
+				ServerModelNode result = m_oRootNode.ArcIMSServers.GetServer(oUri);
+				if (result != null)
 				{
-					if (oArcIMSServer.ServerUri.Equals(oUri))
-					{
-						return oArcIMSServer;
-					}
+					return result;
 				}
 
 				// --- Add the server ---
 
-				return m_oRootNode.ArcIMSServers.AddServer(oUri, blEnabled);
+				result = m_oRootNode.ArcIMSServers.AddServer(oUri, blEnabled);
+
+				if (blUpdateHomeView)
+				{
+					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.ArcIMS });
+				}
+
+				return result;
 			}
 		}
 
-		public ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled)
+		public ServerModelNode AddWMSServer()
+		{
+			// --- Pop up dialog, etc ---
+
+			throw new NotImplementedException();
+		}
+
+		public ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled, bool blUpdateHomeView)
 		{
 			lock (m_oLock)
 			{
 				// --- Don't add the server if it's already in the model ---
 
-				foreach (WMSServerModelNode oWMSServer in m_oRootNode.WMSServers.UnfilteredChildren)
+				ServerModelNode result = m_oRootNode.WMSServers.GetServer(oUri);
+				if (result != null)
 				{
-					if (oWMSServer.ServerUri.Equals(oUri))
-					{
-						return oWMSServer;
-					}
+					return result;
 				}
 
 				// --- Add the server ---
 
-				return m_oRootNode.WMSServers.AddServer(oUri, blEnabled);
+				result = m_oRootNode.WMSServers.AddServer(oUri, blEnabled);
+
+				if (blUpdateHomeView)
+				{
+					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.WMS });
+				}
+
+				return result;
 			}
 		}
 
-		public ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled)
+		public void AddDAPServer()
+		{
+			// --- Pop up dialog, etc ---
+
+			throw new NotImplementedException();
+		}
+
+		public ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled, bool blUpdateHomeView)
 		{
 			lock (m_oLock)
 			{
 				// --- Don't add the server if it's already in the model ---
 
-				foreach (DapServerModelNode oDAPServer in m_oRootNode.DAPServers.UnfilteredChildren)
+				ServerModelNode result = m_oRootNode.DAPServers.GetServer(oUri);
+				if (result != null)
 				{
-					if (oDAPServer.ServerUri.Equals(oUri))
-					{
-						return oDAPServer;
-					}
+					return result;
 				}
 
 				// --- Add the server ---
 
-				return m_oRootNode.DAPServers.AddServer(oUri, blEnabled);
+				ServerModelNode result = m_oRootNode.DAPServers.AddServer(oUri, blEnabled);
+
+				if (blUpdateHomeView)
+				{
+					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.DAP });
+				}
+
+				return result;
 			}
 		}
 
@@ -368,103 +707,6 @@ namespace NewServerTree
 				// --- Add the tileset ---
 
 				oSet.AddLayer(oLayer);
-			}
-		}
-
-		public void Save()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Load(DappleView oSource)
-		{
-			lock (m_oLock)
-			{
-				ClearModel();
-
-				if (oSource.View.Hasservers())
-				{
-					for (int i = 0; i < oSource.View.servers.builderentryCount; i++)
-					{
-						builderentryType entry = oSource.View.servers.GetbuilderentryAt(i);
-						LoadBuilderEntryType(entry);
-					}
-				}
-
-				OnLoaded(EventArgs.Empty);
-			}
-		}
-
-		private void LoadBuilderEntryType(builderentryType entry)
-		{
-			if (entry.Hasbuilderdirectory())
-				for (int i = 0; i < entry.builderdirectory.builderentryCount; i++)
-					LoadBuilderEntryType(entry.builderdirectory.GetbuilderentryAt(i));
-			else if (entry.Haswmscatalog())
-				AddWMSServer(new WMSServerUri(entry.wmscatalog.capabilitiesurl.Value), entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true);
-			else if (entry.Hasarcimscatalog())
-				AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true);
-			else if (entry.Hasdapcatalog())
-				AddDAPServer(new DapServerUri(entry.dapcatalog.url.Value), entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true);
-			else if (entry.Hastileserverset())
-				LoadTileServerSet(entry.tileserverset);
-		}
-
-		private void LoadTileServerSet(tileserversetType entry)
-		{
-			if (entry.Hastilelayers())
-			{
-				for (int i = 0; i < entry.tilelayers.tilelayerCount; i++)
-				{
-					tilelayerType oLayer = entry.tilelayers.GettilelayerAt(i);
-
-					ImageTileLayerModelNode oNode = new ImageTileLayerModelNode(
-						this,
-						oLayer.name.Value,
-						new Uri(oLayer.url.Value),
-						oLayer.imageextension.Value,
-						oLayer.levelzerotilesize.Value,
-						oLayer.dataset.Value,
-						oLayer.levels.Value);
-
-					this.AddImageTileLayer(entry.name.Value, oNode);
-				}
-			}
-		}
-
-		public void LoadTestView()
-		{
-			lock (m_oLock)
-			{
-				ClearModel();
-
-				bool blHalfEnabled = false;
-
-				AddDAPServer(new DapServerUri("http://dap.geosoft.com"), true);
-				AddDAPServer(new DapServerUri("http://gdrdap.agg.nrcan.gc.ca"), blHalfEnabled);
-
-				AddWMSServer(new WMSServerUri("http://gdr.ess.nrcan.gc.ca/wmsconnector/com.esri.wms.Esrimap/gdr_e"), blHalfEnabled);
-				AddWMSServer(new WMSServerUri("http://atlas.gc.ca/cgi-bin/atlaswms_en?VERSION=1.1.1"), true);
-				AddWMSServer(new WMSServerUri("http://apps1.gdr.nrcan.gc.ca/cgi-bin/canmin_en-ca_ows"), blHalfEnabled);
-				AddWMSServer(new WMSServerUri("http://www.ga.gov.au/bin/getmap.pl"), true);
-				AddWMSServer(new WMSServerUri("http://apps1.gdr.nrcan.gc.ca/cgi-bin/worldmin_en-ca_ows"), blHalfEnabled);
-				AddWMSServer(new WMSServerUri("http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap"), true);
-				AddWMSServer(new WMSServerUri("http://maps.customweather.com/image"), blHalfEnabled);
-				AddWMSServer(new WMSServerUri("http://cgkn.net/cgi-bin/cgkn_wms"), true);
-				AddWMSServer(new WMSServerUri("http://wms.jpl.nasa.gov/wms.cgi"), blHalfEnabled);
-
-				AddImageTileLayer("NASA Landsat Imagery", new ImageTileLayerModelNode(this, "NLT Landsat7 (Visible Color)", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 2.25, "105", 5));
-				AddImageTileLayer("USGS Imagery", new ImageTileLayerModelNode(this, "USGS Digital Ortho", new Uri("http://worldwind25.arc.nasa.gov/tile/tile.aspx"), "jpg", 0.8, "101", 8));
-
-				AddArcIMSServer(new ArcIMSServerUri("http://www.geographynetwork.com/servlet/com.esri.esrimap.Esrimap"), blHalfEnabled);
-				AddArcIMSServer(new ArcIMSServerUri("http://gisdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"), blHalfEnabled);
-				AddArcIMSServer(new ArcIMSServerUri("http://map.ngdc.noaa.gov/servlet/com.esri.esrimap.Esrimap"), true);
-				AddArcIMSServer(new ArcIMSServerUri("http://mrdata.usgs.gov/servlet/com.esri.esrimap.Esrimap"), blHalfEnabled);
-				AddArcIMSServer(new ArcIMSServerUri("http://gdw.apfo.usda.gov/servlet/com.esri.esrimap.Esrimap"), true);
-
-				SetFavouriteServer("http://gisdata.usgs.net/servlet/com.esri.wms.Esrimap");
-
-				OnLoaded(EventArgs.Empty);
 			}
 		}
 
@@ -486,13 +728,50 @@ namespace NewServerTree
 			}
 		}
 
-		public void SetFavouriteServer(String strUri)
+		public void SetFavouriteServer(ServerModelNode oServer, bool blUpdateHomeView)
 		{
-			if (m_oFavouriteServer == null || !m_oFavouriteServer.ServerUri.ToString().Equals(strUri))
+			lock (m_oLock)
 			{
-				m_oRootNode.SetFavouriteServer(strUri);
+				if (m_oFavouriteServer == null || !m_oFavouriteServer.Uri.ToBaseUri().Equals(oServer.Uri.ToBaseUri()))
+				{
+					m_oFavouriteServer = m_oRootNode.SetFavouriteServer(oServer.Uri.ToBaseUri());
 
-				OnFavouriteServerChanged(EventArgs.Empty);
+					if (blUpdateHomeView)
+					{
+						UpdateHomeView(UpdateHomeViewType.ChangeFavorite, new object[] { m_oFavouriteServer.Uri.ToString()});
+					}
+
+					m_oSelectedNode = m_oFavouriteServer;
+					OnFavouriteServerChanged(EventArgs.Empty);
+				}
+			}
+		}
+
+		public void ToggleServer(ServerModelNode oServer, bool blUpdateHomeView)
+		{
+			lock (m_oLock)
+			{
+				oServer.ToggleEnabled();
+
+				if (blUpdateHomeView)
+				{
+					UpdateHomeView(UpdateHomeViewType.ToggleServer, new object[] { oServer.Uri.ToString(), oServer.Type, oServer.Enabled });
+				}
+
+				OnServerToggled(EventArgs.Empty);
+			}
+		}
+
+		public void RemoveServer(ServerModelNode oServer, bool blUpdateHomeView)
+		{
+			lock (m_oLock)
+			{
+				oServer.Parent.RemoveChild(oServer);
+
+				if (blUpdateHomeView)
+				{
+					UpdateHomeView(UpdateHomeViewType.RemoveServer, new object[] { oServer.Uri.ToString(), oServer.Type });
+				}
 			}
 		}
 

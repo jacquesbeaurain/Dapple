@@ -34,6 +34,26 @@ namespace NewServerTree
 		#endregion
 
 
+		#region Public Methods
+
+		#region Saving and Loading old Dapple Views
+
+		public void SaveToView(dappleview.serversType oServers)
+		{
+			dappleview.builderentryType oVEEntry = oServers.Newbuilderentry();
+			dappleview.virtualearthType oVEType = oVEEntry.Newvirtualearth();
+
+			oVEType.Addname(new Altova.Types.SchemaString("Virtual Earth"));
+
+			oVEEntry.Addvirtualearth(oVEType);
+			oServers.Addbuilderentry(oVEEntry);
+		}
+
+		#endregion
+
+		#endregion
+
+
 		#region Helper Methods
 
 		protected override ModelNode[] Load()

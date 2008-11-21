@@ -25,7 +25,7 @@ namespace NewServerTree
 
 		protected void c_miAddWMSServer_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			m_oModel.AddWMSServer();
 		}
 
 		#endregion
@@ -67,23 +67,43 @@ namespace NewServerTree
 
 		#region Public Methods
 
+		public WMSServerModelNode GetServer(WMSServerUri oUri)
+		{
+			foreach (WMSServerModelNode oServer in UnfilteredChildren)
+			{
+				if (oServer.Uri.Equals(oUri))
+				{
+					return oServer;
+				}
+			}
+
+			return null;
+		}
+
 		public WMSServerModelNode AddServer(WMSServerUri oUri, bool blEnabled)
 		{
 			WMSServerModelNode result = new WMSServerModelNode(m_oModel, oUri, blEnabled);
+			AddChild(result);
 			if (blEnabled)
 			{
 				result.BeginLoad();
 			}
-			AddChild(result);
 			return result;
 		}
 
-		public void SetFavouriteServer(String strUri)
+		public ServerModelNode SetFavouriteServer(String strUri)
 		{
+			ServerModelNode result = null;
+
 			foreach (WMSServerModelNode oServer in UnfilteredChildren)
 			{
-				oServer.UpdateFavouriteStatus(strUri);
+				if (oServer.UpdateFavouriteStatus(strUri))
+				{
+					result = oServer;
+				}
 			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -130,6 +150,25 @@ namespace NewServerTree
 			}
 		}
 
+		#region Saving and Loading old Dapple Views
+
+		public void SaveToView(dappleview.builderdirectoryType oWMSDir)
+		{
+			foreach (WMSServerModelNode oChild in UnfilteredChildren)
+			{
+				dappleview.builderentryType oChildEntry = oWMSDir.Newbuilderentry();
+				dappleview.wmscatalogType oChildCatalog = oChildEntry.Newwmscatalog();
+
+				oChildCatalog.Addcapabilitiesurl(new Altova.Types.SchemaString(oChild.Uri.ToBaseUri()));
+				oChildCatalog.Addenabled(new Altova.Types.SchemaBoolean(oChild.Enabled));
+
+				oChildEntry.Addwmscatalog(oChildCatalog);
+				oWMSDir.Addbuilderentry(oChildEntry);
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 
@@ -160,7 +199,7 @@ namespace NewServerTree
 			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
-			m_strTitle = oUri.ToBaseUri();
+			m_strTitle = oUri.ServerTreeDisplayName;
 		}
 
 		#endregion
@@ -183,9 +222,14 @@ namespace NewServerTree
 			}
 		}
 
-		public override ServerUri ServerUri
+		public override ServerUri Uri
 		{
 			get { return m_oUri; }
+		}
+
+		public override ServerModelNode.ServerType Type
+		{
+			get { return ServerType.WMS; }
 		}
 
 		public int FilteredChildCount
@@ -213,7 +257,7 @@ namespace NewServerTree
 		{
 			get
 			{
-				return FilteredChildCount > 0;
+				return LoadState != LoadState.LoadSuccessful || FilteredChildCount > 0;
 			}
 		}
 

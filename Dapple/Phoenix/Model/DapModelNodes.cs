@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Geosoft.Dap.Common;
 using System.Windows.Forms;
 using Geosoft.Dap;
-
 namespace NewServerTree
 {
 	public class DapServerRootModelNode : ModelNode, IContextModelNode
@@ -61,7 +60,7 @@ namespace NewServerTree
 
 		protected void c_miAddDAPServer_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			m_oModel.AddDAPServer();
 		}
 
 		#endregion
@@ -69,14 +68,27 @@ namespace NewServerTree
 
 		#region Public Methods
 
+		public DapServerModelNode GetServer(DapServerUri oUri)
+		{
+			foreach (DapServerModelNode oServer in UnfilteredChildren)
+			{
+				if (oServer.Uri.Equals(oUri))
+				{
+					return oServer;
+				}
+			}
+
+			return null;
+		}
+
 		public DapServerModelNode AddServer(DapServerUri oUri, bool blEnabled)
 		{
 			DapServerModelNode result = new DapServerModelNode(m_oModel, oUri, blEnabled);
+			AddChild(result);
 			if (blEnabled)
 			{
 				result.BeginLoad();
 			}
-			AddChild(result);
 			return result;
 		}
 
@@ -89,13 +101,47 @@ namespace NewServerTree
 			}
 		}
 
-		public void SetFavouriteServer(String strUri)
+		public ServerModelNode SetFavouriteServer(String strUri)
 		{
+			ServerModelNode result = null;
+
 			foreach (DapServerModelNode oServer in UnfilteredChildren)
 			{
-				oServer.UpdateFavouriteStatus(strUri);
+				if (oServer.UpdateFavouriteStatus(strUri))
+				{
+					result = oServer;
+				}
 			}
+
+			return result;
 		}
+
+		#region Saving and Loading old Dapple Views
+
+		public void SaveToView(dappleview.serversType oServers)
+		{
+			dappleview.builderentryType oDAPBuilder = oServers.Newbuilderentry();
+			dappleview.builderdirectoryType oDAPDir = oDAPBuilder.Newbuilderdirectory();
+			oDAPDir.Addname(new Altova.Types.SchemaString("DAP Servers"));
+			oDAPDir.Addspecialcontainer(new dappleview.SpecialDirectoryType("DAPServers"));
+
+			foreach (DapServerModelNode oChild in UnfilteredChildren)
+			{
+				dappleview.builderentryType oChildEntry = oDAPDir.Newbuilderentry();
+				dappleview.dapcatalogType oChildCatalog = oChildEntry.Newdapcatalog();
+
+				oChildCatalog.Addurl(new Altova.Types.SchemaString(oChild.Uri.ToBaseUri()));
+				oChildCatalog.Addenabled(new Altova.Types.SchemaBoolean(oChild.Enabled));
+
+				oChildEntry.Adddapcatalog(oChildCatalog);
+				oDAPDir.Addbuilderentry(oChildEntry);
+			}
+
+			oDAPBuilder.Addbuilderdirectory(oDAPDir);
+			oServers.Addbuilderentry(oDAPBuilder);
+		}
+
+		#endregion
 
 		#endregion
 
@@ -137,7 +183,7 @@ namespace NewServerTree
 			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
-			m_strTitle = m_oUri.ToBaseUri();
+			m_strTitle = m_oUri.ServerTreeDisplayName;
 		}
 
 		#endregion
@@ -150,7 +196,7 @@ namespace NewServerTree
 			get { return m_strTitle; }
 		}
 
-		public override ServerUri ServerUri
+		public override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
@@ -158,6 +204,11 @@ namespace NewServerTree
 		public Server Server
 		{
 			get { return m_oServer; }
+		}
+
+		public override ServerModelNode.ServerType Type
+		{
+			get { return ServerType.DAP; }
 		}
 
 		public int FilteredChildCount

@@ -410,6 +410,18 @@ namespace NewServerTree
 			}
 		}
 
+		public bool Visible
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		#endregion
 	}
 
@@ -419,6 +431,17 @@ namespace NewServerTree
 	/// </summary>
 	public abstract class ServerModelNode : ModelNode, IContextModelNode
 	{
+		#region Enums
+
+		public enum ServerType
+		{
+			DAP,
+			WMS,
+			ArcIMS
+		}
+
+		#endregion
+
 		#region Member Variables
 
 		private bool m_blEnabled;
@@ -443,27 +466,27 @@ namespace NewServerTree
 
 		protected void c_miSetFavourite_Click(object sender, EventArgs e)
 		{
-			m_oModel.SetFavouriteServer(ServerUri.ToString());
+			m_oModel.SetFavouriteServer(this, true);
 		}
 
 		protected void c_miRefresh_Click(object sender, EventArgs e)
 		{
-			Unload();
+			RefreshServer();
 		}
 
 		protected void c_miToggle_Click(object sender, EventArgs e)
 		{
-			Enabled ^= true;
+			m_oModel.ToggleServer(this, true);
 		}
 
 		protected void c_miRemove_Click(object sender, EventArgs e)
 		{
-			Parent.RemoveChild(this);
+			m_oModel.RemoveServer(this, true);
 		}
 
 		protected void c_miProperties_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			ViewServerProperties();
 		}
 
 		#endregion
@@ -523,16 +546,29 @@ namespace NewServerTree
 		public bool Enabled
 		{
 			get { return m_blEnabled; }
-			set
-			{
-				if (m_blEnabled != value)
-				{
-					m_oModel.DoWithLock(new MethodInvoker(_ToggleEnabled));
-				}
-			}
 		}
 
-		private void _ToggleEnabled()
+		public bool Favourite
+		{
+			get { return m_blFavourite; }
+		}
+
+		public abstract ServerUri Uri { get; }
+
+		public abstract ServerType Type { get; }
+
+		#endregion
+
+
+		#region Public Methods
+
+		public bool UpdateFavouriteStatus(String strUri)
+		{
+			m_blFavourite = Uri.ToString().Equals(strUri);
+			return m_blFavourite;
+		}
+
+		public void ToggleEnabled()
 		{
 			if (m_blEnabled == false)
 			{
@@ -542,33 +578,18 @@ namespace NewServerTree
 			else
 			{
 				m_blEnabled = false;
-				Unload();
+				UnloadSilently();
 			}
 		}
 
-		public bool Favourite
+		public void RefreshServer()
 		{
-			get { return m_blFavourite; }
+			Unload();
 		}
 
-		public abstract ServerUri ServerUri { get; }
-
-		#endregion
-
-
-		#region Public Methods
-
-		public void UpdateFavouriteStatus(String strUri)
+		public void ViewServerProperties()
 		{
-			bool f = ServerUri.ToString().Equals(strUri);
-			if (f)
-			{
-				m_blFavourite = f;
-			}
-			else
-			{
-				m_blFavourite = f;
-			}
+			throw new NotImplementedException();
 		}
 
 		#endregion

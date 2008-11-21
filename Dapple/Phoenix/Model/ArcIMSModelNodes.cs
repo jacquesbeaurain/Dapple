@@ -5,7 +5,6 @@ using System.Xml;
 using System.Globalization;
 using WorldWind;
 using System.Windows.Forms;
-using Dapple;
 
 namespace NewServerTree
 {
@@ -26,7 +25,7 @@ namespace NewServerTree
 
 		protected void c_miAddArcIMSServer_Click(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			m_oModel.AddArcIMSServer();
 		}
 
 		#endregion
@@ -69,22 +68,57 @@ namespace NewServerTree
 
 		#region Public Methods
 
+		public ArcIMSServerModelNode GetServer(ArcIMSServerUri oUri)
+		{
+			foreach (ArcIMSServerModelNode oServer in UnfilteredChildren)
+			{
+				if (oServer.Uri.Equals(oUri))
+				{
+					return oServer;
+				}
+			}
+
+			return null;
+		}
+
 		public ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri, bool blEnabled)
 		{
 			ArcIMSServerModelNode result = new ArcIMSServerModelNode(m_oModel, oUri, blEnabled);
+			AddChild(result);
 			if (blEnabled)
 			{
 				result.BeginLoad();
 			}
-			AddChild(result);
 			return result;
 		}
 
-		public void SetFavouriteServer(String strUri)
+		public ServerModelNode SetFavouriteServer(String strUri)
 		{
+			ServerModelNode result = null;
+
 			foreach (ArcIMSServerModelNode oServer in UnfilteredChildren)
 			{
-				oServer.UpdateFavouriteStatus(strUri);
+				if (oServer.UpdateFavouriteStatus(strUri))
+				{
+					result = oServer;
+				}
+			}
+
+			return result;
+		}
+
+		public void SaveToView(dappleview.builderdirectoryType oArcDir)
+		{
+			foreach (ArcIMSServerModelNode oChild in UnfilteredChildren)
+			{
+				dappleview.builderentryType oChildEntry = oArcDir.Newbuilderentry();
+				dappleview.arcimscatalogType oChildCatalog = oChildEntry.Newarcimscatalog();
+
+				oChildCatalog.Addcapabilitiesurl(new Altova.Types.SchemaString(oChild.Uri.ToBaseUri()));
+				oChildCatalog.Addenabled(new Altova.Types.SchemaBoolean(oChild.Enabled));
+
+				oChildEntry.Addarcimscatalog(oChildCatalog);
+				oArcDir.Addbuilderentry(oChildEntry);
 			}
 		}
 
@@ -126,12 +160,17 @@ namespace NewServerTree
 
 		public override string DisplayText
 		{
-			get { return m_oUri.ToBaseUri(); }
+			get { return m_oUri.ServerTreeDisplayName; }
 		}
 
-		public override ServerUri ServerUri
+		public override ServerUri Uri
 		{
 			get { return m_oUri; }
+		}
+
+		public override ServerModelNode.ServerType Type
+		{
+			get { return ServerType.ArcIMS; }
 		}
 
 		public int FilteredChildCount
@@ -270,6 +309,11 @@ namespace NewServerTree
 		{
 			get
 			{
+				if (LoadState != LoadState.LoadSuccessful)
+				{
+					return 0;
+				}
+
 				int result = 0;
 
 				foreach (ModelNode oChild in FilteredChildren)
@@ -286,7 +330,7 @@ namespace NewServerTree
 
 		public bool PassesFilter
 		{
-			get { return FilteredChildCount > 0; }
+			get { return LoadState != LoadState.LoadSuccessful || FilteredChildCount > 0; }
 		}
 
 		#endregion
@@ -298,7 +342,7 @@ namespace NewServerTree
 		{
 			String strServiceFilename = @"c:\c\arcims" + Parent.Parent.GetIndex(Parent) + "-" + m_strServiceName + ".xml";
 
-			ArcIMSServiceDownload oServiceDownload = new ArcIMSServiceDownload((Parent as ServerModelNode).ServerUri as ArcIMSServerUri, m_strServiceName, 0);
+			ArcIMSServiceDownload oServiceDownload = new ArcIMSServiceDownload((Parent as ServerModelNode).Uri as ArcIMSServerUri, m_strServiceName, 0);
 			oServiceDownload.DownloadFile(strServiceFilename);
 
 
