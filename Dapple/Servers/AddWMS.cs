@@ -56,7 +56,7 @@ namespace Dapple
          {
 				Program.ShowMessageBox(
 					"The specified server has already been added.",
-					"Add ArcIMS Server",
+					"Add WMS Server",
 					MessageBoxButtons.OK,
 					MessageBoxDefaultButton.Button1,
 					MessageBoxIcon.Information);
