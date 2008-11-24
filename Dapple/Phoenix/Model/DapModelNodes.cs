@@ -48,7 +48,7 @@ namespace NewServerTree
 			get
 			{
 				return new ToolStripMenuItem[] {
-					new ToolStripMenuItem("Add DAP Server...", null, new EventHandler(c_miAddDAPServer_Click))
+					new ToolStripMenuItem("Add DAP Server...", IconKeys.ImageList.Images[IconKeys.AddDAPServerMenuItem], new EventHandler(c_miAddDAPServer_Click))
 				};
 			}
 		}
@@ -96,8 +96,7 @@ namespace NewServerTree
 		{
 			foreach (DapServerModelNode oServer in UnfilteredChildren)
 			{
-				oServer.UnloadSilently();
-				oServer.BeginLoad();
+				oServer.SearchFilterChanged();
 			}
 		}
 
@@ -173,6 +172,7 @@ namespace NewServerTree
 		private Server m_oServer;
 		private bool m_blEntireCatalogMode;
 		private CatalogFolder m_oFolder;
+		private bool m_blBrowserMapAvailable;
 
 		#endregion
 
@@ -193,7 +193,18 @@ namespace NewServerTree
 
 		public override string DisplayText
 		{
-			get { return m_strTitle; }
+			get
+			{
+				if (LoadState == LoadState.LoadSuccessful)
+				{
+					int cache = FilteredChildCount;
+					return String.Format("{0} [{1} dataset{2}]", m_strTitle, cache, cache == 1 ? String.Empty : "s");
+				}
+				else
+				{
+					return m_strTitle;
+				}
+			}
 		}
 
 		public override ServerUri Uri
@@ -220,7 +231,10 @@ namespace NewServerTree
 					return 0;
 				}
 
-				return m_oServer.DatasetCount;
+				int result = m_oServer.DatasetCount;
+				if (m_blBrowserMapAvailable) result++;
+
+				return result;
 			}
 		}
 
@@ -228,8 +242,19 @@ namespace NewServerTree
 		{
 			get
 			{
-				return m_oServer == null || m_oServer.DatasetCount > 0;
+				return m_oServer == null || FilteredChildCount > 0;
 			}
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		public void SearchFilterChanged()
+		{
+			UnloadSilently();
+			BeginLoad();
 		}
 
 		#endregion
@@ -248,10 +273,20 @@ namespace NewServerTree
 				throw new DapException("Server is " + m_oServer.Status.ToString());
 			}
 
-			m_strTitle = String.Format("{0} [{1} datasets]", m_oServer.Name, m_oServer.GetDatasetCount(m_oModel.SearchBounds_DAP, m_oModel.SearchKeyword));
+			m_oServer.GetDatasetCount(m_oModel.SearchBounds_DAP, m_oModel.SearchKeyword);
+
+			DapBrowserMapModelNode oBrowserMap = new DapBrowserMapModelNode(m_oModel, m_oServer);
+			m_blBrowserMapAvailable = oBrowserMap.PassesFilter;
+
+			m_strTitle = m_oServer.Name;
 			m_blEntireCatalogMode = m_oServer.MajorVersion < 6 || (m_oServer.MajorVersion == 6 && m_oServer.MinorVersion < 3);
 
 			List<ModelNode> result = new List<ModelNode>();
+
+			if (m_blBrowserMapAvailable)
+			{
+				result.Add(oBrowserMap);
+			}
 
 			String strEdition;
 			m_oFolder = s_oCCM.GetCatalogHierarchyRoot(m_oServer, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword, out m_blEntireCatalogMode, out strEdition);
@@ -291,11 +326,6 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
-		{
-			get { return "Whatever Title Marketing Decides to Use for Personal Dap"; }
-		}
-
 		public override string IconKey
 		{
 			get { return IconKeys.PersonalDAPServer; }
@@ -314,6 +344,18 @@ namespace NewServerTree
 				}
 
 				return false;
+			}
+		}
+
+		public override ToolStripMenuItem[] MenuItems
+		{
+			get
+			{
+				return new ToolStripMenuItem[] {
+					m_oProperties,
+					m_oRefresh,
+					m_oSetFavourite
+				};
 			}
 		}
 
@@ -480,6 +522,84 @@ namespace NewServerTree
 			if (oServerNode == null) throw new ApplicationException("Orphaned DAP dataset node");
 
 			return oServerNode as DapServerModelNode;
+		}
+
+		#endregion
+	}
+
+
+	public class DapBrowserMapModelNode : LayerModelNode, IFilterableModelNode
+	{
+		#region Member Variables
+
+		Server m_oData;
+
+		#endregion
+
+
+		#region Constructors
+
+		public DapBrowserMapModelNode(DappleModel oModel, Server oData)
+			: base(oModel)
+		{
+			m_oData = oData;
+		}
+
+		#endregion
+
+
+		#region Properties
+
+		public override bool IsLeaf
+		{
+			get { return true; }
+		}
+
+		public override string DisplayText
+		{
+			get { return "Browser Map"; }
+		}
+
+		public override string IconKey
+		{
+			get { return IconKeys.DapBrowserMapLayer; }
+		}
+
+		public bool PassesFilter
+		{
+			get
+			{
+				return !m_oModel.SearchBoundsSet || m_oModel.SearchBounds_DAP.Intersects(m_oData.ServerExtents);
+			}
+		}
+
+		public int FilteredChildCount
+		{
+			get
+			{
+				return PassesFilter ? 1 : 0;
+			}
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override LayerBuilder ConvertToLayerBuilder()
+		{
+			return new DAPBrowserMapBuilder(Dapple.MainForm.WorldWindowSingleton, m_oData, null);
+		}
+
+		#endregion
+
+
+		#region Helper Methods
+
+		protected override ModelNode[] Load()
+		{
+			throw new ApplicationException(ErrLoadedLeafNode);
 		}
 
 		#endregion

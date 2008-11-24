@@ -16,7 +16,7 @@ namespace NewServerTree.View
 		/// <summary>
 		/// Whether to color-code tree nodes based on their loadstate.
 		/// </summary>
-		private static readonly bool ColorTreeNodeText = true;
+		private static readonly bool ColorTreeNodeText = false;
 
 		#endregion
 
@@ -24,6 +24,7 @@ namespace NewServerTree.View
 		#region Member Variables
 
 		private DappleModel m_oModel;
+		private Point? m_oDragStartPoint = null;
 
 		#endregion
 
@@ -34,7 +35,7 @@ namespace NewServerTree.View
 		{
 			InitializeComponent();
 
-			c_tvView.ImageList = IconKeys.ConstructImageList();
+			c_tvView.ImageList = IconKeys.ImageList;
 		}
 
 		#endregion
@@ -238,6 +239,46 @@ namespace NewServerTree.View
 			// --- Never collapse a treenode in the server tree---
 
 			e.Cancel = true;
+		}
+
+		private void c_tvView_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				TreeNode oMouseNode = c_tvView.GetNodeAt(e.Location);
+
+				if (oMouseNode != null && oMouseNode.Tag is LayerModelNode)
+				{
+					m_oDragStartPoint = e.Location;
+				}
+			}
+		}
+
+		private void c_tvView_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (m_oDragStartPoint != null)
+			{
+				if (e.Button == MouseButtons.Left && m_oDragStartPoint.Value != e.Location)
+				{
+					List<Dapple.LayerGeneration.LayerBuilder> oDragData = new List<Dapple.LayerGeneration.LayerBuilder>();
+					TreeNode oMouseNode = c_tvView.GetNodeAt(m_oDragStartPoint.Value);
+
+					if (oMouseNode != null && oMouseNode.Tag is LayerModelNode)
+					{
+#pragma warning disable 618
+						oDragData.Add((oMouseNode.Tag as LayerModelNode).ConvertToLayerBuilder());
+#pragma warning restore 618
+					}
+
+					if (oDragData.Count > 0)
+					{
+						m_oModel.SelectedNode = oMouseNode.Tag as ModelNode;
+						DragDropEffects dropEffect = this.DoDragDrop(oDragData, DragDropEffects.All);
+					}
+				}
+
+				m_oDragStartPoint = null;
+			}
 		}
 
 		private void UnmuteController()

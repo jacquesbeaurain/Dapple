@@ -58,7 +58,7 @@ namespace NewServerTree
 			get
 			{
 				return new ToolStripMenuItem[] {
-					new ToolStripMenuItem("Add ArcIMS Server...", null, new EventHandler(c_miAddArcIMSServer_Click))
+					new ToolStripMenuItem("Add ArcIMS Server...", IconKeys.ImageList.Images[IconKeys.AddArcIMSServerMenuItem], new EventHandler(c_miAddArcIMSServer_Click))
 				};
 			}
 		}
@@ -541,13 +541,10 @@ namespace NewServerTree
 				m_oBounds,
 				Dapple.MainForm.WorldWindowSingleton,
 				null,
-				null,
 				m_dMinScale,
 				m_dMaxScale,
 				m_oCultureInfo
 				);
-
-			throw new NotImplementedException();
 		}
 
 		#endregion

@@ -58,7 +58,7 @@ namespace NewServerTree
 			get
 			{
 				return new ToolStripMenuItem[] {
-					new ToolStripMenuItem("Add WMS Server...", null, new EventHandler(c_miAddWMSServer_Click))
+					new ToolStripMenuItem("Add WMS Server...", IconKeys.ImageList.Images[IconKeys.AddWMSServerMenuItem], new EventHandler(c_miAddWMSServer_Click))
 				};
 			}
 		}
@@ -214,7 +214,8 @@ namespace NewServerTree
 			{
 				if (LoadState == LoadState.LoadSuccessful)
 				{
-					return String.Format("{0} [{1} datasets]", m_strTitle, FilteredChildCount);
+					int cache = FilteredChildCount;
+					return String.Format("{0} [{1} dataset{2}]", m_strTitle, cache, cache == 1 ? String.Empty : "s");
 				}
 				else
 				{
@@ -273,6 +274,32 @@ namespace NewServerTree
 		#endregion
 
 
+		#region Public Methods
+
+		public WMSLayerModelNode GetLayer(String strLayerName)
+		{
+			foreach (ModelNode oChild in UnfilteredChildren)
+			{
+				if (oChild is WMSLayerModelNode)
+				{
+					WMSLayerModelNode oLayer = oChild as WMSLayerModelNode;
+
+					if (oLayer.LayerData.Name.Equals(strLayerName)) return oLayer;
+				}
+				if (oChild is WMSFolderModelNode)
+				{
+					WMSFolderModelNode oFolder = oChild as WMSFolderModelNode;
+					WMSLayerModelNode oLayer = oFolder.GetLayer(strLayerName);
+					if (oLayer != null) return oLayer;
+				}
+			}
+
+			return null;
+		}
+
+		#endregion
+
+
 		#region Helper Methods
 
 		protected override ModelNode[] Load()
@@ -298,6 +325,8 @@ namespace NewServerTree
 			}
 
 			result.Sort(new Comparison<ModelNode>(WMSRootModelNode.SortWMSChildNodes));
+
+			Thread.Sleep(5000);
 
 			return result.ToArray();
 		}
@@ -386,6 +415,32 @@ namespace NewServerTree
 			{
 				return FilteredChildCount > 0;
 			}
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		public WMSLayerModelNode GetLayer(String strLayerName)
+		{
+			foreach (ModelNode oChild in UnfilteredChildren)
+			{
+				if (oChild is WMSLayerModelNode)
+				{
+					WMSLayerModelNode oLayer = oChild as WMSLayerModelNode;
+
+					if (oLayer.LayerData.Name.Equals(strLayerName)) return oLayer;
+				}
+				if (oChild is WMSFolderModelNode)
+				{
+					WMSFolderModelNode oFolder = oChild as WMSFolderModelNode;
+					WMSLayerModelNode oLayer = oFolder.GetLayer(strLayerName);
+					if (oLayer != null) return oLayer;
+				}
+			}
+
+			return null;
 		}
 
 		#endregion
@@ -483,6 +538,11 @@ namespace NewServerTree
 
 				return blResult;
 			}
+		}
+
+		public WMSLayer LayerData
+		{
+			get { return m_oData; }
 		}
 
 		#endregion

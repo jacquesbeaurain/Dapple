@@ -221,7 +221,7 @@ namespace NewServerTree
 		#endregion
 
 
-		#region Helper Methods
+		#region Public Methods
 
 		#region Saving and Loading old Dapple Views
 

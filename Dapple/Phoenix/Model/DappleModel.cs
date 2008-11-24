@@ -741,6 +741,11 @@ namespace NewServerTree
 					m_strSearchKeyword = strKeyword;
 					m_oSearchBounds = oBounds;
 					m_oRootNode.DAPServers.SearchFilterChanged();
+					if (m_oRootNode.PersonalDapServer != null)
+					{
+						m_oRootNode.PersonalDapServer.SearchFilterChanged();
+					}
+
 
 					OnSearchFilterChanged(EventArgs.Empty);
 				}

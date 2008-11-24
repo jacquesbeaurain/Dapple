@@ -120,6 +120,7 @@ namespace NewServerTree
 		#region Loading
 
 		private delegate ModelNode[] LoadDelegate();
+		private IAsyncResult m_oCurrentAsyncResult = null;
 		private LoadState m_eStatus = LoadState.Unloaded;
 		private Object m_oAsyncLock = new Object();
 		private int m_iLoadSync = 0;
@@ -188,7 +189,7 @@ namespace NewServerTree
 			{
 				LoadDelegate oLoad = new LoadDelegate(Load);
 				AsyncContext oContext = new AsyncContext(m_iLoadSync, oLoad);
-				oLoad.BeginInvoke(_EndLoad, oContext);
+				m_oCurrentAsyncResult = oLoad.BeginInvoke(_EndLoad, oContext);
 				m_eStatus = LoadState.Loading;
 			}
 		}
@@ -232,6 +233,15 @@ namespace NewServerTree
 			}
 
 			m_eStatus = LoadState.LoadSuccessful;
+		}
+
+		public void WaitForLoad()
+		{
+			if (m_oCurrentAsyncResult != null)
+			{
+				m_oCurrentAsyncResult.AsyncWaitHandle.WaitOne();
+				while (m_eStatus == LoadState.Loading) { }
+			}
 		}
 
 		/// <summary>
@@ -405,7 +415,7 @@ namespace NewServerTree
 			get
 			{
 				return new ToolStripMenuItem[] {
-					new ToolStripMenuItem("Add to Data Layers", null, new EventHandler(c_miAddLayer_Click))
+					new ToolStripMenuItem("Add to Data Layers", IconKeys.ImageList.Images[IconKeys.AddLayerMenuItem], new EventHandler(c_miAddLayer_Click))
 				};
 			}
 		}
@@ -443,10 +453,18 @@ namespace NewServerTree
 
 		#endregion
 
+
 		#region Member Variables
 
 		private bool m_blEnabled;
 		private bool m_blFavourite;
+
+		protected ToolStripMenuItem m_oEnable;
+		protected ToolStripMenuItem m_oSetFavourite;
+		protected ToolStripMenuItem m_oRefresh;
+		protected ToolStripMenuItem m_oDisable;
+		protected ToolStripMenuItem m_oRemove;
+		protected ToolStripMenuItem m_oProperties;
 
 		#endregion
 
@@ -458,6 +476,13 @@ namespace NewServerTree
 		{
 			m_blEnabled = blEnabled;
 			m_blFavourite = false;
+
+			m_oEnable = new ToolStripMenuItem("Enable", IconKeys.ImageList.Images[IconKeys.EnableServerMenuItem], new EventHandler(c_miToggle_Click));
+			m_oSetFavourite = new ToolStripMenuItem("Set as Favorite", IconKeys.ImageList.Images[IconKeys.MakeServerFavouriteMenuItem], new EventHandler(c_miSetFavourite_Click));
+			m_oRefresh = new ToolStripMenuItem("Refresh", IconKeys.ImageList.Images[IconKeys.RefreshServerMenuItem], new EventHandler(c_miRefresh_Click));
+			m_oDisable = new ToolStripMenuItem("Disable", IconKeys.ImageList.Images[IconKeys.DisableServerMenuItem], new EventHandler(c_miToggle_Click));
+			m_oRemove = new ToolStripMenuItem("Remove", IconKeys.ImageList.Images[IconKeys.RemoveServerMenuItem], new EventHandler(c_miRemove_Click));
+			m_oProperties = new ToolStripMenuItem("Properties", IconKeys.ImageList.Images[IconKeys.ViewServerPropertiesMenuItem], new EventHandler(c_miProperties_Click));
 		}
 
 		#endregion
@@ -530,16 +555,20 @@ namespace NewServerTree
 			}
 		}
 
-		public ToolStripMenuItem[] MenuItems
+		public virtual ToolStripMenuItem[] MenuItems
 		{
 			get
 			{
+				m_oSetFavourite.Enabled = m_blEnabled && !m_blFavourite;
+				m_oRefresh.Enabled = m_blEnabled;
+				m_oProperties.Enabled = m_blEnabled;
+
 				return new ToolStripMenuItem[] {
-					new ToolStripMenuItem("Set as Favorite", null, new EventHandler(c_miSetFavourite_Click)),
-					new ToolStripMenuItem("Refresh", null, new EventHandler(c_miRefresh_Click)),
-					new ToolStripMenuItem(m_blEnabled ? "Disable" : "Enable", null, new EventHandler(c_miToggle_Click)),
-					new ToolStripMenuItem("Remove", null, new EventHandler(c_miRemove_Click)),
-					new ToolStripMenuItem("Properties", null, new EventHandler(c_miProperties_Click)),
+					m_blEnabled ? m_oDisable : m_oEnable,
+					m_oProperties,
+					m_oRefresh,
+					m_oSetFavourite,
+					m_oRemove
 				};
 			}
 		}
@@ -612,6 +641,7 @@ namespace NewServerTree
 	{
 		ToolStripMenuItem[] MenuItems { get; }
 	}
+
 
 	/// <summary>
 	/// Interface implemented by filterable ModelNodes: those ModelNodes that have

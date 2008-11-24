@@ -30,21 +30,45 @@ namespace NewServerTree
 		public static String InfoMessage = "message-info";
 
 		public static String DapLayerPrefix = "layer-dap-"; // 13 subtypes
+		public static String DapBrowserMapLayer = "layer-dap-browsermap";
 		public static String TileLayer = "layer-tile";
 		public static String VELayer = "layer-ve";
 		public static String WMSLayer = "layer-wms";
 		public static String ArcIMSLayer = "layer-arcims";
 
+		public static String MissingImage = "no-image-set";
 
-		public static String MissingImage = "error";
+		public static String AddDAPServerMenuItem = "menu-add-dap";
+		public static String AddWMSServerMenuItem = "menu-add-wms";
+		public static String AddArcIMSServerMenuItem = "menu-add-arcims";
 
-		public static ImageList ConstructImageList()
+		public static String MakeServerFavouriteMenuItem = "menu-server-makefavourite";
+		public static String RefreshServerMenuItem = "menu-server-refresh";
+		public static String EnableServerMenuItem = "menu-server-enable";
+		public static String DisableServerMenuItem = "menu-server-disable";
+		public static String RemoveServerMenuItem = "menu-server-remove";
+		public static String ViewServerPropertiesMenuItem = "menu-server-viewproperties";
+
+		public static String AddLayerMenuItem = "menu-layer-add";
+
+		public static ImageList ImageList;
+
+		static IconKeys()
+		{
+			ImageList = ConstructImageList();
+		}
+
+		private static ImageList ConstructImageList()
 		{
 			ImageList result = new ImageList();
 			result.ColorDepth = ColorDepth.Depth32Bit;
 
 			// --- Any ModelNodes that return invalid values will have this icon ---
+#if DEBUG
 			result.Images.Add(MissingImage, Resources.exit);
+#else
+			result.Images.Add(MissingImage, new Bitmap(16, 16));
+#endif
 
 			result.Images.Add(AvailableServers, Resources.dapple);
 
@@ -81,11 +105,25 @@ namespace NewServerTree
 			result.Images.Add(DapLayerPrefix + "point", Resources.dap_point);
 			result.Images.Add(DapLayerPrefix + "spf", Resources.dap_spf);
 			result.Images.Add(DapLayerPrefix + "voxel", Resources.dap_voxel);
+			result.Images.Add(DapBrowserMapLayer, Resources.dap_picture);
 
 			result.Images.Add(TileLayer, Resources.layer);
 			result.Images.Add(VELayer, Resources.live);
 			result.Images.Add(WMSLayer, Resources.layer);
 			result.Images.Add(ArcIMSLayer, Resources.layer);
+
+			result.Images.Add(AddDAPServerMenuItem, Resources.addserver);
+			result.Images.Add(AddWMSServerMenuItem, Resources.addserver);
+			result.Images.Add(AddArcIMSServerMenuItem, Resources.addserver);
+
+			result.Images.Add(MakeServerFavouriteMenuItem, Resources.server_favourite);
+			result.Images.Add(RefreshServerMenuItem, Resources.server_refresh);
+			result.Images.Add(EnableServerMenuItem, Resources.enserver);
+			result.Images.Add(DisableServerMenuItem, Resources.disserver);
+			result.Images.Add(RemoveServerMenuItem, Resources.server_remove);
+			result.Images.Add(ViewServerPropertiesMenuItem, Resources.properties);
+
+			result.Images.Add(AddLayerMenuItem, Resources.layers_add);
 
 			return result;
 		}
