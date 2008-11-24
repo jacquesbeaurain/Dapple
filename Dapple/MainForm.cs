@@ -2912,7 +2912,7 @@ namespace Dapple
 
 			if (treeNode != null)
 			{
-				AddWMS dlg = new AddWMS(c_oWorldWindow, treeNode.Tag as WMSCatalogBuilder);
+				AddWMS dlg = new AddWMS();
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					try
@@ -2942,7 +2942,7 @@ namespace Dapple
 
 			if (treeNode != null)
 			{
-				AddArcIMS dlg = new AddArcIMS(c_oWorldWindow, treeNode.Tag as ArcIMSCatalogBuilder);
+				AddArcIMS dlg = new AddArcIMS();
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					try

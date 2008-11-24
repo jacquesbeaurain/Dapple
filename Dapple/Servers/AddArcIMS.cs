@@ -14,12 +14,10 @@ namespace Dapple
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      ArcIMSCatalogBuilder m_oParent;
-		public const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
+      public const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
 
-      public AddArcIMS(WorldWind.WorldWindow worldWindow, ArcIMSCatalogBuilder oParent)
+      public AddArcIMS()
       {
-         m_oParent = oParent;
          InitializeComponent();
       }
 
@@ -78,17 +76,6 @@ namespace Dapple
 				oServerUrl = new Uri(szUpdatedPath + DEFAULT_ARCIMS_PATH);
 			}
 
-			if (m_oParent.ContainsServer(new ArcIMSServerUri(oServerUrl.ToString())))
-			{
-				Program.ShowMessageBox(
-					"The specified server has already been added.",
-					"Add ArcIMS Server",
-					MessageBoxButtons.OK,
-					MessageBoxDefaultButton.Button1,
-					MessageBoxIcon.Information);
-				DialogResult = DialogResult.None;
-				return;
-			}
 			txtArcIMSURL.Text = oServerUrl.ToString();
       }
 

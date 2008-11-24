@@ -9,11 +9,8 @@ namespace Dapple
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      WMSCatalogBuilder m_oParent;
-
-      public AddWMS(WorldWind.WorldWindow worldWindow, WMSCatalogBuilder oParent)
+      public AddWMS()
       {
-         m_oParent = oParent;
          InitializeComponent();
       }
 
@@ -49,17 +46,6 @@ namespace Dapple
 					MessageBoxButtons.OK,
 					MessageBoxDefaultButton.Button1,
 					MessageBoxIcon.Error);
-            DialogResult = DialogResult.None;
-            return;
-         }
-         if (m_oParent.ContainsServer(new WMSServerUri(oServerUrl.ToString())))
-         {
-				Program.ShowMessageBox(
-					"The specified server has already been added.",
-					"Add WMS Server",
-					MessageBoxButtons.OK,
-					MessageBoxDefaultButton.Button1,
-					MessageBoxIcon.Information);
             DialogResult = DialogResult.None;
             return;
          }

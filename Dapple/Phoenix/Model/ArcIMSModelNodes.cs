@@ -541,6 +541,7 @@ namespace NewServerTree
 				m_oBounds,
 				Dapple.MainForm.WorldWindowSingleton,
 				null,
+				null,
 				m_dMinScale,
 				m_dMaxScale,
 				m_oCultureInfo

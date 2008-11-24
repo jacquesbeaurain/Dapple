@@ -1367,12 +1367,12 @@ namespace Dapple
          else if (SelectedNode == m_hWMSRootNode)
          {
             cMenuItem_AddServer.Text = "Add WMS Server...";
-            cMenuItem_AddServer.Tag = new AddWMS(MainForm.WorldWindowSingleton, m_hWMSRootNode.Tag as WMSCatalogBuilder);
+            cMenuItem_AddServer.Tag = new AddWMS();
          }
          else if (SelectedNode == m_hArcIMSRootNode)
          {
             cMenuItem_AddServer.Text = "Add ArcIMS Server...";
-            cMenuItem_AddServer.Tag = new AddArcIMS(MainForm.WorldWindowSingleton, m_hArcIMSRootNode.Tag as ArcIMSCatalogBuilder);
+            cMenuItem_AddServer.Tag = new AddArcIMS();
          }
          else
          {
