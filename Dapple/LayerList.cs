@@ -15,6 +15,7 @@ using System.Drawing.Imaging;
 using WorldWind.PluginEngine;
 using System.Diagnostics;
 using Geosoft.GX.DAPGetData;
+using NewServerTree;
 
 namespace Dapple
 {
@@ -78,7 +79,6 @@ namespace Dapple
       public event GoToHandler GoTo;
       public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
       public event ActiveLayersChangedHandler ActiveLayersChanged;
-		private ServerTree m_hServerTree;
 
 		bool m_bClearDropHint = false;
 		Point m_ptDropHint1, m_ptDropHint2;
@@ -86,6 +86,8 @@ namespace Dapple
 		static System.Drawing.Pen m_oDragNoPen = new System.Drawing.Pen(System.Drawing.Brushes.White, 2.0f);
 
 		private bool m_blDragAllowed = false;
+
+		private DappleModel m_oModel;
 
       #endregion
 
@@ -186,6 +188,11 @@ namespace Dapple
       #endregion
 
       #region Public Members
+
+		public void Attach(DappleModel oModel)
+		{
+			m_oModel = oModel;
+		}
 
       public void AddLayers(List<LayerBuilder> oLayers)
       {
@@ -291,11 +298,6 @@ namespace Dapple
          }
          return true;
       }
-
-		public ServerTree ServerTree
-		{
-			set { m_hServerTree = value; }
-		}
 
       #endregion
 
@@ -504,26 +506,6 @@ namespace Dapple
 			c_miGoToLayer.Enabled = blOneSelected;
 			c_miProperties.Enabled = blOneSelected;
 			c_miViewLegend.Enabled = blOneSelected && m_oLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend;
-
-			if (blOneSelected && m_oLayers[c_lvLayers.SelectedIndices[0]].LayerFromSupportedServer)
-			{
-				c_miAddOrGoToServer.Visible = true;
-				c_miAddOrGoToServer.Enabled = true;
-
-				if (m_oLayers[c_lvLayers.SelectedIndices[0]].ServerIsInHomeView)
-				{
-					c_miAddOrGoToServer.Text = "Open Server in Server Tree";
-				}
-				else
-				{
-					c_miAddOrGoToServer.Text = "Add Server to Home View";
-				}
-			}
-			else
-			{
-				c_miAddOrGoToServer.Enabled = false;
-				c_miAddOrGoToServer.Visible = false;
-			}
       }
 
       private void cGoToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -573,19 +555,6 @@ namespace Dapple
             if (!String.IsNullOrEmpty(szLegend)) MainForm.BrowseTo(szLegend);
          }
       }
-
-		private void c_miAddOrGoToServer_Click(object sender, EventArgs e)
-		{
-			LayerBuilder oBuilder = m_oLayers[c_lvLayers.SelectedIndices[0]];
-
-			if (!oBuilder.ServerIsInHomeView)
-			{
-				oBuilder.AddServerToHomeView(this.FindForm() as MainForm);
-			}
-
-			oBuilder.SelectServer(m_hServerTree);
-			(this.FindForm() as MainForm).CmdShowServerTree();
-		}
 
       #endregion
 
@@ -982,6 +951,8 @@ namespace Dapple
          SetButtonState();
          CmdViewMetadata();
 
+			m_oModel.ViewedDatasets.Remove(null);
+
          if (ActiveLayersChanged != null) ActiveLayersChanged();
          CheckIsValid();
       }
@@ -1089,9 +1060,8 @@ namespace Dapple
       /// Set the active layers from a saved view.
       /// </summary>
       /// <param name="view">The view to load from.</param>
-      /// <param name="oTree">The ServerTree to save servers to.</param>
       /// <returns>True if one or more of the layers is in an old/improper format.</returns>
-      public bool CmdLoadFromView(DappleView view, ServerTree oTree)
+      public bool CmdLoadFromView(DappleView view, NewServerTree.DappleModel oModel)
       {
          bool blIncompleteLoad = false;
 
@@ -1116,7 +1086,7 @@ namespace Dapple
                continue;
             }
 
-            LayerBuilder oBuilder = oUri.getBuilder(MainForm.WorldWindowSingleton, oTree);
+            LayerBuilder oBuilder = oUri.getBuilder(oModel);
 				if (oBuilder != null)
 				{
 					oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;

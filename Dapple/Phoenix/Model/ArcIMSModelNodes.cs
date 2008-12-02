@@ -5,6 +5,8 @@ using System.Xml;
 using System.Globalization;
 using WorldWind;
 using System.Windows.Forms;
+using System.ComponentModel;
+using System.IO;
 
 namespace NewServerTree
 {
@@ -33,6 +35,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
@@ -41,18 +44,25 @@ namespace NewServerTree
 
 		public override String DisplayText
 		{
+			get { return "ArcIMS Servers"; }
+		}
+
+		public override string Annotation
+		{
 			get
 			{
 				ModelNode[] cache = FilteredChildren;
-				return String.Format("ArcIMS Servers [{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
+				return String.Format("[{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
 			}
 		}
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.ArcIMSRoot; }
 		}
 
+		[Browsable(false)]
 		public ToolStripMenuItem[] MenuItems
 		{
 			get
@@ -163,16 +173,58 @@ namespace NewServerTree
 			get { return m_oUri.ServerTreeDisplayName; }
 		}
 
+		public override string Annotation
+		{
+			get
+			{
+				switch (LoadState)
+				{
+					case LoadState.LoadSuccessful:
+						{
+							int cache = FilteredChildCount;
+							return String.Format("[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
+						}
+					case LoadState.Loading:
+						{
+							return "[Loading...]";
+						}
+					case LoadState.LoadFailed:
+						{
+							return "[Unable to contact server]";
+						}
+					case LoadState.Unloaded:
+						{
+							return String.Empty;
+						}
+					default:
+						throw new ApplicationException("Missing enum case statement");
+				}
+			}
+		}
+
+		[Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return IconKeys.ArcIMSRoot; }
+		}
+
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("The URI for this server.")]
 		public override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
 		public override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.ArcIMS; }
 		}
 
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -191,6 +243,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get
@@ -209,6 +262,25 @@ namespace NewServerTree
 			}
 		}
 
+		public String CapabilitiesFilename
+		{
+			get
+			{
+				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("ArcIMS Catalog Cache", Path.Combine(m_oUri.ToCacheDirectory(), "__catalog.xml")));
+			}
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override List<LayerBuilder> GetBuildersInternal()
+		{
+			return new List<LayerBuilder>();
+		}
+
 		#endregion
 
 
@@ -216,7 +288,7 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			String strCapFilename = @"c:\c\arcims" + Parent.GetIndex(this) + ".xml";
+			String strCapFilename = CapabilitiesFilename;
 
 			ArcIMSCatalogDownload oCatalogDownload = new ArcIMSCatalogDownload(m_oUri, 0);
 			oCatalogDownload.DownloadFile(strCapFilename);
@@ -300,11 +372,18 @@ namespace NewServerTree
 			get { return m_strServiceName; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.ArcIMSService; }
 		}
 
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -328,6 +407,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get { return LoadState != LoadState.LoadSuccessful || FilteredChildCount > 0; }
@@ -338,6 +418,14 @@ namespace NewServerTree
 			get { return m_strServiceName; }
 		}
 
+		public String CapabilitiesFilename
+		{
+			get
+			{
+				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("ArcIMS Catalog Cache", Path.Combine(((this.Parent as ArcIMSServerModelNode).Uri as ArcIMSServerUri).ToCacheDirectory(), Path.Combine(m_strServiceName, "__catalog.xml"))));
+			}
+		}
+
 		#endregion
 
 
@@ -345,7 +433,7 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			String strServiceFilename = @"c:\c\arcims" + Parent.Parent.GetIndex(Parent) + "-" + m_strServiceName + ".xml";
+			String strServiceFilename = CapabilitiesFilename;
 
 			ArcIMSServiceDownload oServiceDownload = new ArcIMSServiceDownload((Parent as ServerModelNode).Uri as ArcIMSServerUri, m_strServiceName, 0);
 			oServiceDownload.DownloadFile(strServiceFilename);
@@ -482,6 +570,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -492,11 +581,18 @@ namespace NewServerTree
 			get { return m_strTitle; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.ArcIMSLayer; }
 		}
 
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -505,6 +601,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get
@@ -540,7 +637,6 @@ namespace NewServerTree
 				m_strID,
 				m_oBounds,
 				Dapple.MainForm.WorldWindowSingleton,
-				null,
 				null,
 				m_dMinScale,
 				m_dMaxScale,

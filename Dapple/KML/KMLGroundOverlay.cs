@@ -50,7 +50,6 @@ namespace Dapple.KML
 				{
 					GeographicBoundingBox oRenderBox = GetNewBox(drawArgs.CurrentRoI, m_oGroundOverlay.Icon.ViewBoundScale);
 
-					Console.WriteLine("GroundOverlay imagelayer created as: " + oRenderBox.ToString());
 					m_oLayer = new ImageLayer(
 						m_oGroundOverlay.Name,
 						drawArgs.CurrentWorld,
@@ -129,7 +128,6 @@ namespace Dapple.KML
 							catch (IOException) { return; }
 							GeographicBoundingBox oRenderBox = GetNewBox(drawArgs.CurrentRoI, m_oGroundOverlay.Icon.ViewBoundScale);
 
-							Console.WriteLine("GroundOverlay imagelayer updated to: " + oRenderBox.ToString());
 							m_oLayer = new ImageLayer(
 								m_oGroundOverlay.Name,
 								drawArgs.CurrentWorld,

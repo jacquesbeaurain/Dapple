@@ -14,6 +14,7 @@ using Dapple.LayerGeneration;
 using System.Web;
 using WorldWind.Net;
 using System.Globalization;
+using NewServerTree;
 
 namespace Dapple.CustomControls
 {
@@ -54,7 +55,7 @@ namespace Dapple.CustomControls
 		private DisplayMode m_eDisplayMode = DisplayMode.Thumbnail;
 		private Point m_oDragDropStartPoint = Point.Empty;
 		private LayerList m_hLayerList;
-		private ServerTree m_hServerTree;
+		private DappleModel m_oModel;
 
 		long m_lSearchIndex = 0;
 
@@ -80,22 +81,6 @@ namespace Dapple.CustomControls
 		#endregion
 
 		#region Properties
-
-		public LayerList LayerList
-		{
-			set
-			{
-				m_hLayerList = value;
-			}
-		}
-
-		public ServerTree ServerTree
-		{
-			set
-			{
-				m_hServerTree = value;
-			}
-		}
 
 		public bool HasLayersSelected
 		{
@@ -270,6 +255,18 @@ namespace Dapple.CustomControls
 
 		#endregion
 
+
+		#region Public Methods
+
+		public void Attach(DappleModel oModel, LayerList oList)
+		{
+			m_oModel = oModel;
+			m_hLayerList = oList;
+		}
+
+		#endregion
+
+
 		private void BackPage()
 		{
 			m_iCurrentPage--;
@@ -366,10 +363,17 @@ namespace Dapple.CustomControls
 			foreach (LayerUri oUri in oUris)
 			{
 				LayerBuilder oLayerToAdd = null;
-				oLayerToAdd = oUri.getBuilder(MainForm.WorldWindowSingleton, m_hServerTree);
-				if (oLayerToAdd != null)
+				try
 				{
-					result.Add(oLayerToAdd);
+					oLayerToAdd = oUri.getBuilder(m_oModel);
+					if (oLayerToAdd != null)
+					{
+						result.Add(oLayerToAdd);
+					}
+				}
+				catch (Exception ex)
+				{
+					Program.ShowMessageBox("An error occurred while accessing dataset:" + Environment.NewLine + ex.Message, "Add Dataset to Globe", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
 				}
 			}
 
@@ -613,21 +617,15 @@ namespace Dapple.CustomControls
 		{
 			if (!MainForm.Settings.UseDappleSearch) return;
 
-			// --- This non-WebDownload download is permitted because this method is only called by threadpool threads ---
-			WebRequest oRequest = WebRequest.Create(MainForm.Settings.DappleSearchURL + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
-			WebResponse oResponse = null;
+			WebDownload oThumbnailDownload = new WebDownload(MainForm.Settings.DappleSearchURL + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"], false);
 			try
 			{
-				oResponse = oRequest.GetResponse();
-				m_oBitmap = new Bitmap(oResponse.GetResponseStream());
+				oThumbnailDownload.DownloadMemory();
+				m_oBitmap = new Bitmap(oThumbnailDownload.ContentStream);
 			}
 			catch (Exception)
 			{
 				m_oBitmap = Dapple.Properties.Resources.delete;
-			}
-			finally
-			{
-				if (oResponse != null) oResponse.Close();
 			}
 		}
 

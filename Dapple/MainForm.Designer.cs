@@ -69,7 +69,6 @@ namespace Dapple
 			  this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			  this.c_miViewProperties = new System.Windows.Forms.ToolStripMenuItem();
 			  this.c_miSetFavouriteServer = new System.Windows.Forms.ToolStripMenuItem();
-			  this.c_miAddBrowserMap = new System.Windows.Forms.ToolStripMenuItem();
 			  this.c_miRefreshServer = new System.Windows.Forms.ToolStripMenuItem();
 			  this.c_miToggleServerStatus = new System.Windows.Forms.ToolStripMenuItem();
 			  this.c_miRemoveServer = new System.Windows.Forms.ToolStripMenuItem();
@@ -411,6 +410,7 @@ namespace Dapple
 			  this.c_miTools.Name = "c_miTools";
 			  this.c_miTools.Size = new System.Drawing.Size(44, 20);
 			  this.c_miTools.Text = "Tools";
+			  this.c_miTools.DropDownOpening += new System.EventHandler(this.c_miTools_DropDownOpening);
 			  // 
 			  // c_miSearch
 			  // 
@@ -466,19 +466,19 @@ namespace Dapple
             this.toolStripSeparator4,
             this.c_miViewProperties,
             this.c_miSetFavouriteServer,
-            this.c_miAddBrowserMap,
             this.c_miRefreshServer,
             this.c_miToggleServerStatus,
             this.c_miRemoveServer});
 			  this.c_miServers.Name = "c_miServers";
 			  this.c_miServers.Size = new System.Drawing.Size(56, 20);
 			  this.c_miServers.Text = "Servers";
+			  this.c_miServers.DropDownOpening += new System.EventHandler(this.c_miServers_DropDownOpening);
 			  // 
 			  // c_miAddDAPServer
 			  // 
 			  this.c_miAddDAPServer.Image = global::Dapple.Properties.Resources.addserver;
 			  this.c_miAddDAPServer.Name = "c_miAddDAPServer";
-			  this.c_miAddDAPServer.Size = new System.Drawing.Size(232, 22);
+			  this.c_miAddDAPServer.Size = new System.Drawing.Size(176, 22);
 			  this.c_miAddDAPServer.Text = "Add DAP server...";
 			  this.c_miAddDAPServer.Click += new System.EventHandler(this.c_miAddDAPServer_Click);
 			  // 
@@ -486,7 +486,7 @@ namespace Dapple
 			  // 
 			  this.c_miAddWMSServer.Image = global::Dapple.Properties.Resources.addserver;
 			  this.c_miAddWMSServer.Name = "c_miAddWMSServer";
-			  this.c_miAddWMSServer.Size = new System.Drawing.Size(232, 22);
+			  this.c_miAddWMSServer.Size = new System.Drawing.Size(176, 22);
 			  this.c_miAddWMSServer.Text = "Add WMS server...";
 			  this.c_miAddWMSServer.Click += new System.EventHandler(this.c_miAddWMSServer_Click);
 			  // 
@@ -494,20 +494,20 @@ namespace Dapple
 			  // 
 			  this.c_miAddArcIMSServer.Image = global::Dapple.Properties.Resources.addserver;
 			  this.c_miAddArcIMSServer.Name = "c_miAddArcIMSServer";
-			  this.c_miAddArcIMSServer.Size = new System.Drawing.Size(232, 22);
+			  this.c_miAddArcIMSServer.Size = new System.Drawing.Size(176, 22);
 			  this.c_miAddArcIMSServer.Text = "Add ArcIMS server...";
 			  this.c_miAddArcIMSServer.Click += new System.EventHandler(this.c_miAddArcIMSServer_Click);
 			  // 
 			  // toolStripSeparator4
 			  // 
 			  this.toolStripSeparator4.Name = "toolStripSeparator4";
-			  this.toolStripSeparator4.Size = new System.Drawing.Size(229, 6);
+			  this.toolStripSeparator4.Size = new System.Drawing.Size(173, 6);
 			  // 
 			  // c_miViewProperties
 			  // 
 			  this.c_miViewProperties.Image = global::Dapple.Properties.Resources.properties;
 			  this.c_miViewProperties.Name = "c_miViewProperties";
-			  this.c_miViewProperties.Size = new System.Drawing.Size(232, 22);
+			  this.c_miViewProperties.Size = new System.Drawing.Size(176, 22);
 			  this.c_miViewProperties.Text = "Properties...";
 			  this.c_miViewProperties.Click += new System.EventHandler(this.c_miViewProperties_Click);
 			  // 
@@ -515,23 +515,15 @@ namespace Dapple
 			  // 
 			  this.c_miSetFavouriteServer.Image = global::Dapple.Properties.Resources.server_favourite;
 			  this.c_miSetFavouriteServer.Name = "c_miSetFavouriteServer";
-			  this.c_miSetFavouriteServer.Size = new System.Drawing.Size(232, 22);
+			  this.c_miSetFavouriteServer.Size = new System.Drawing.Size(176, 22);
 			  this.c_miSetFavouriteServer.Text = "Set as Favourite";
 			  this.c_miSetFavouriteServer.Click += new System.EventHandler(this.c_miSetFavouriteServer_Click);
-			  // 
-			  // c_miAddBrowserMap
-			  // 
-			  this.c_miAddBrowserMap.Image = global::Dapple.Properties.Resources.layers_bottom;
-			  this.c_miAddBrowserMap.Name = "c_miAddBrowserMap";
-			  this.c_miAddBrowserMap.Size = new System.Drawing.Size(232, 22);
-			  this.c_miAddBrowserMap.Text = "Add Browser Map to Data Layers";
-			  this.c_miAddBrowserMap.Click += new System.EventHandler(this.c_miAddBrowserMap_Click);
 			  // 
 			  // c_miRefreshServer
 			  // 
 			  this.c_miRefreshServer.Image = global::Dapple.Properties.Resources.server_refresh;
 			  this.c_miRefreshServer.Name = "c_miRefreshServer";
-			  this.c_miRefreshServer.Size = new System.Drawing.Size(232, 22);
+			  this.c_miRefreshServer.Size = new System.Drawing.Size(176, 22);
 			  this.c_miRefreshServer.Text = "Refresh";
 			  this.c_miRefreshServer.Click += new System.EventHandler(this.c_miRefreshServer_Click);
 			  // 
@@ -539,7 +531,7 @@ namespace Dapple
 			  // 
 			  this.c_miToggleServerStatus.Image = global::Dapple.Properties.Resources.disserver;
 			  this.c_miToggleServerStatus.Name = "c_miToggleServerStatus";
-			  this.c_miToggleServerStatus.Size = new System.Drawing.Size(232, 22);
+			  this.c_miToggleServerStatus.Size = new System.Drawing.Size(176, 22);
 			  this.c_miToggleServerStatus.Text = "Disable";
 			  this.c_miToggleServerStatus.Click += new System.EventHandler(this.c_miToggleServerStatus_Click);
 			  // 
@@ -547,7 +539,7 @@ namespace Dapple
 			  // 
 			  this.c_miRemoveServer.Image = global::Dapple.Properties.Resources.server_remove;
 			  this.c_miRemoveServer.Name = "c_miRemoveServer";
-			  this.c_miRemoveServer.Size = new System.Drawing.Size(232, 22);
+			  this.c_miRemoveServer.Size = new System.Drawing.Size(176, 22);
 			  this.c_miRemoveServer.Text = "Remove";
 			  this.c_miRemoveServer.Click += new System.EventHandler(this.c_miRemoveServer_Click);
 			  // 
@@ -1443,8 +1435,7 @@ namespace Dapple
        private System.Windows.Forms.TabPage c_tpServerView;
        private System.Windows.Forms.TabPage c_tpWebView;
        private System.Windows.Forms.ToolStripMenuItem c_miSetHomeView;
-       private System.Windows.Forms.ToolStripMenuItem c_miSetFavouriteServer;
-       private System.Windows.Forms.ToolStripMenuItem c_miAddBrowserMap;
+		 private System.Windows.Forms.ToolStripMenuItem c_miSetFavouriteServer;
        private System.Windows.Forms.ToolStripMenuItem c_miToggleServerStatus;
        private System.Windows.Forms.ToolStripMenuItem c_miGetDatahelp;
        private System.Windows.Forms.ToolStripMenuItem c_miVertExaggeration;

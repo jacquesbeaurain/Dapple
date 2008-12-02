@@ -7,10 +7,24 @@ using System.Collections.Generic;
 using Geosoft.Dap.Common;
 using System.Windows.Forms;
 using Geosoft.Dap;
+using System.ComponentModel;
 namespace NewServerTree
 {
 	public class DapServerRootModelNode : ModelNode, IContextModelNode
 	{
+		#region Statics
+
+		public static readonly string DAPSecureToken;
+
+		static DapServerRootModelNode()
+		{
+			GeoSecureClient.CGeoSecureInterfaceClass tokenGenerator = new GeoSecureClient.CGeoSecureInterfaceClass();
+			tokenGenerator.CreateSecureToken(out DAPSecureToken);
+		}
+
+		#endregion
+
+
 		#region Constructors
 
 		public DapServerRootModelNode(DappleModel oModel)
@@ -24,6 +38,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
@@ -31,18 +46,25 @@ namespace NewServerTree
 
 		public override String DisplayText
 		{
+			get { return "DAP Servers"; }
+		}
+
+		public override string Annotation
+		{
 			get
 			{
 				ModelNode[] cache = FilteredChildren;
-				return String.Format("DAP Servers [{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
+				return String.Format("[{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
 			}
 		}
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.DapRoot; }
 		}
 
+		[Browsable(false)]
 		public ToolStripMenuItem[] MenuItems
 		{
 			get
@@ -158,9 +180,16 @@ namespace NewServerTree
 
 	public class DapServerModelNode : ServerModelNode, IFilterableModelNode
 	{
+		#region Constants
+
+		private const int MAX_SEARCH_RESULTS = 1000;
+
+		#endregion
+
+
 		#region Statics
 
-		public static CatalogCacheManager s_oCCM = new CatalogCacheManager(null, @"c:\c\ccm\");
+		public static CatalogCacheManager s_oCCM = new CatalogCacheManager(null, Dapple.MainForm.Settings.CachePath);
 
 		#endregion
 
@@ -195,18 +224,48 @@ namespace NewServerTree
 		{
 			get
 			{
-				if (LoadState == LoadState.LoadSuccessful)
+				return m_strTitle;
+			}
+		}
+
+		public override string Annotation
+		{
+			get
+			{
+				switch (LoadState)
 				{
-					int cache = FilteredChildCount;
-					return String.Format("{0} [{1} dataset{2}]", m_strTitle, cache, cache == 1 ? String.Empty : "s");
-				}
-				else
-				{
-					return m_strTitle;
+					case LoadState.LoadSuccessful:
+						{
+							int cache = FilteredChildCount;
+							return String.Format("[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
+						}
+					case LoadState.Loading:
+						{
+							return "[Loading...]";
+						}
+					case LoadState.LoadFailed:
+						{
+							return "[Unable to contact server]";
+						}
+					case LoadState.Unloaded:
+						{
+							return String.Empty;
+						}
+					default:
+						throw new ApplicationException("Missing enum case statement");
 				}
 			}
 		}
 
+		[Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return IconKeys.DapRoot; }
+		}
+
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("The URI for this server.")]
 		public override ServerUri Uri
 		{
 			get { return m_oUri; }
@@ -217,11 +276,15 @@ namespace NewServerTree
 			get { return m_oServer; }
 		}
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
 		public override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.DAP; }
 		}
 
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -238,6 +301,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get
@@ -253,8 +317,28 @@ namespace NewServerTree
 
 		public void SearchFilterChanged()
 		{
-			UnloadSilently();
-			BeginLoad();
+			if (this.Enabled)
+			{
+				UnloadSilently();
+				BeginLoad();
+			}
+		}
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override List<LayerBuilder> GetBuildersInternal()
+		{
+			this.WaitForLoad();
+
+			List<LayerBuilder> result = new List<LayerBuilder>();
+			System.Collections.ArrayList oDapDatasets;
+			m_oServer.Command.GetCatalog(null, 0, 0, 1000, m_oModel.SearchKeyword, m_oModel.SearchBounds_DAP, out oDapDatasets);
+
+			foreach (Geosoft.Dap.Common.DataSet oDataSet in oDapDatasets)
+			{
+				result.Add(new DAPQuadLayerBuilder(oDataSet, Dapple.MainForm.WorldWindowSingleton, m_oServer, null));
+			}
+
+			return result;
 		}
 
 		#endregion
@@ -264,9 +348,9 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			String strCacheDir = @"C:\c\dap\" + m_oUri.GetHashCode() + @"\";
+			String strCacheDir = Dapple.MainForm.Settings.CachePath;
 			Directory.CreateDirectory(strCacheDir);
-			m_oServer = new Server(m_oUri.ToBaseUri(), strCacheDir, String.Empty, true);
+			m_oServer = new Server(m_oUri.ToBaseUri(), strCacheDir, DapServerRootModelNode.DAPSecureToken, true);
 
 			if (m_oServer.Status != Server.ServerStatus.OnLine)
 			{
@@ -326,6 +410,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.PersonalDAPServer; }
@@ -347,6 +432,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public override ToolStripMenuItem[] MenuItems
 		{
 			get
@@ -392,12 +478,15 @@ namespace NewServerTree
 
 		public override string DisplayText
 		{
-			get
-			{
-				return m_oFolder.Name;
-			}
+			get { return m_oFolder.Name; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get
@@ -475,6 +564,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -485,6 +575,12 @@ namespace NewServerTree
 			get { return m_oDataSet.Title; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.DapLayerPrefix + m_oDataSet.Type.ToLowerInvariant(); }
@@ -550,6 +646,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -560,24 +657,32 @@ namespace NewServerTree
 			get { return "Browser Map"; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.DapBrowserMapLayer; }
 		}
 
-		public bool PassesFilter
-		{
-			get
-			{
-				return !m_oModel.SearchBoundsSet || m_oModel.SearchBounds_DAP.Intersects(m_oData.ServerExtents);
-			}
-		}
-
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
 			{
 				return PassesFilter ? 1 : 0;
+			}
+		}
+
+		[Browsable(false)]
+		public bool PassesFilter
+		{
+			get
+			{
+				return !m_oModel.SearchBoundsSet || m_oModel.SearchBounds_DAP.Intersects(m_oData.ServerExtents);
 			}
 		}
 

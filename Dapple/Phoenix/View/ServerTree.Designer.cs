@@ -35,6 +35,7 @@
 			// 
 			this.c_tvView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.c_tvView.HideSelection = false;
+			this.c_tvView.Indent = 19;
 			this.c_tvView.Location = new System.Drawing.Point(0, 0);
 			this.c_tvView.Name = "c_tvView";
 			this.c_tvView.ShowPlusMinus = false;

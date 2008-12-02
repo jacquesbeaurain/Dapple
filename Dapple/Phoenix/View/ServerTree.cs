@@ -11,6 +11,173 @@ namespace NewServerTree.View
 {
 	public partial class ServerTree : UserControl
 	{
+		#region Interop
+
+		#region Structs
+
+		/// <summary>
+		/// Wrapper for Windows SCROLLINFO structure.
+		/// </summary>
+		/// <seealso cref="http://msdn.microsoft.com/en-us/library/bb787537(VS.85).aspx"/>
+		private struct SCROLLINFO
+		{
+			#region Member Variables
+			/// <summary>
+			/// Specifies the size, in bytes, of this structure.
+			/// </summary>
+			public uint cbSize;
+
+			/// <summary>
+			/// Specifies the scroll bar parameters to set or retrieve.
+			/// </summary>
+			public SIF fMask;
+
+			/// <summary>
+			/// Specifies the minimum scrolling position.
+			/// </summary>
+			public int nMin;
+
+			/// <summary>
+			/// Specifies the maximum scrolling position.
+			/// </summary>
+			public int nMax;
+
+			/// <summary>
+			/// Specifies the page size.
+			/// </summary>
+			public uint nPage;
+
+			/// <summary>
+			/// Specifies the position of the scroll box.
+			/// </summary>
+			public int nPos;
+
+			/// <summary>
+			/// Specifies the immediate position of a scroll box that the user is dragging.
+			/// </summary>
+			public int nTrackPos;
+
+			#endregion
+
+			#region Constructors
+
+			public SCROLLINFO(SIF mask, int min, int max, uint page, int pos, int trackPos)
+			{
+				cbSize = 28;
+				fMask = mask;
+				nMin = min;
+				nMax = max;
+				nPage = page;
+				nPos = pos;
+				nTrackPos = trackPos;
+			}
+
+			#endregion
+		}
+
+		#endregion
+
+
+		#region Enums
+
+		/// <summary>
+		/// Enum for the Windows SB_* defines.
+		/// </summary>
+		private enum SB : int
+		{
+			HORZ = 0,
+			VERT = 1,
+			CTL = 2
+		}
+
+		/// <summary>
+		/// Enum for the Win32 SIF_* defines.
+		/// </summary>
+		[System.Flags]
+		private enum SIF : uint
+		{
+			RANGE = 0x0001,
+			PAGE = 0x0002,
+			POS = 0x0004,
+			DISABLENOSCROLL = 0x0008,
+			TRACKPOS = 0x0010,
+			ALL = (RANGE | PAGE | POS | TRACKPOS)
+		}
+
+		#endregion
+
+
+		#region Methods
+
+		/// <summary>
+		/// Import for the Win32 SetScrollInfo function. 
+		/// </summary>
+		/// <seealso cref="http://msdn.microsoft.com/en-us/library/bb787595(VS.85).aspx"/>
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		private static extern int SetScrollInfo(IntPtr hwnd, SB fnBar, IntPtr lpsi, int fRedraw);
+
+
+		/// <summary>
+		/// Coder-friendly version of SetScrollInfo.
+		/// </summary>
+		/// <param name="hwnd">The window handle of the window to set scroll information for.</param>
+		/// <param name="fnBar">Which scroll bar to set information for.</param>
+		/// <param name="lpsi">The information to set.</param>
+		/// <param name="fRedraw">Whether to repaint the window after changing the information.</param>
+		private static void SetScrollPos(IntPtr hwnd, SB fnBar, SCROLLINFO lpsi, bool fRedraw)
+		{
+			int iSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(SCROLLINFO));
+			IntPtr buffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(iSize);
+			System.Runtime.InteropServices.Marshal.StructureToPtr(
+				lpsi, buffer, false);
+
+			SetScrollInfo(hwnd, fnBar, buffer, 0);
+
+			System.Runtime.InteropServices.Marshal.DestroyStructure(buffer, typeof(SCROLLINFO));
+		}
+
+		/// <summary>
+		/// Import for the Windows GetScrollInfo function.
+		/// </summary>
+		/// <seealso cref="http://msdn.microsoft.com/en-us/library/bb787583(VS.85).aspx"/>
+		[System.Runtime.InteropServices.DllImport("user32.dll", SetLastError=true)]
+		private static extern int GetScrollInfo(IntPtr hwnd, SB fnBar, ref SCROLLINFO lpsi);
+
+		/// <summary>
+		/// Coder-friendly version of GetScrollInfo.
+		/// </summary>
+		/// <param name="hwnd">The window handle of the window to get scroll information for.</param>
+		/// <param name="axis">Which axis to get information for.</param>
+		/// <returns>A SCROLLINFO structure containing the requested information.</returns>
+		private static SCROLLINFO? GetScrollInfo(IntPtr hwnd, SB fnBar)
+		{
+			SCROLLINFO hScrollInfo = new SCROLLINFO();
+			hScrollInfo.cbSize = 28;
+			hScrollInfo.fMask = SIF.POS | SIF.RANGE | SIF.PAGE;
+			
+			int result = GetScrollInfo(hwnd, fnBar, ref hScrollInfo);
+			if (result == 0)
+			{
+				int error = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+
+				if (error == 1447)
+				{
+					return null;
+				}
+				else
+				{
+					throw new ApplicationException("Call to GetScrollInfo failed with error code " + error);
+				}
+			}
+
+			return hScrollInfo;
+		}
+
+		#endregion
+
+		#endregion
+
+
 		#region Constants
 
 		/// <summary>
@@ -65,6 +232,11 @@ namespace NewServerTree.View
 					c_tvView.ExpandAll();
 					TreeIntegrityCheck();
 					c_tvView.EndUpdate();
+
+					c_tvView.BeginUpdate();
+					RepositionScrollBars(c_tvView.SelectedNode);
+					c_tvView.EndUpdate();
+					c_tvView.Invalidate();
 				}
 			};
 
@@ -153,6 +325,16 @@ namespace NewServerTree.View
 			Repopulate();
 		}
 
+		void ViewedDatasets_LayersRemoved(object sender, EventArgs e)
+		{
+			ConfigureEntireTreeDisplay();
+		}
+
+		void ViewedDatasets_LayersAdded(object sender, EventArgs e)
+		{
+			ConfigureEntireTreeDisplay();
+		}
+
 		private void UnmuteModel()
 		{
 			m_oModel.SelectedNodeChanged += new EventHandler(m_oModel_SelectedNodeChanged);
@@ -164,6 +346,9 @@ namespace NewServerTree.View
 			m_oModel.SearchFilterChanged += new EventHandler(m_oModel_SearchFilterChanged);
 			m_oModel.FavouriteServerChanged += new EventHandler(m_oModel_FavouriteServerChanged);
 			m_oModel.ServerToggled += new EventHandler(m_oModel_ServerToggled);
+
+			m_oModel.ViewedDatasets.LayersRemoved += new EventHandler(ViewedDatasets_LayersRemoved);
+			m_oModel.ViewedDatasets.LayersAdded += new EventHandler(ViewedDatasets_LayersAdded);
 		}
 
 		private void MuteModel()
@@ -177,6 +362,9 @@ namespace NewServerTree.View
 			m_oModel.SearchFilterChanged -= new EventHandler(m_oModel_SearchFilterChanged);
 			m_oModel.FavouriteServerChanged -= new EventHandler(m_oModel_FavouriteServerChanged);
 			m_oModel.ServerToggled -= new EventHandler(m_oModel_ServerToggled);
+
+			m_oModel.ViewedDatasets.LayersRemoved += new EventHandler(ViewedDatasets_LayersRemoved);
+			m_oModel.ViewedDatasets.LayersAdded += new EventHandler(ViewedDatasets_LayersAdded);
 		}
 
 		#endregion
@@ -328,7 +516,7 @@ namespace NewServerTree.View
 		{
 			ModelNode oNode = oNodeToConfigure.Tag as ModelNode;
 
-			oNodeToConfigure.Text = oNode.DisplayText;
+			oNodeToConfigure.Text = oNode.DisplayText + " " + oNode.Annotation;
 			oNodeToConfigure.ImageKey = oNode.IconKey;
 			oNodeToConfigure.SelectedImageKey = oNode.IconKey;
 			oNodeToConfigure.ForeColor = SystemColors.ControlText;
@@ -356,6 +544,23 @@ namespace NewServerTree.View
 
 			if (oNode is ServerModelNode && (oNode as ServerModelNode).Favourite) oNodeToConfigure.NodeFont = new Font(c_tvView.Font, FontStyle.Bold);
 			if (oNode is ServerModelNode && !(oNode as ServerModelNode).Enabled) oNodeToConfigure.ForeColor = Color.Gray;
+
+			if (oNode is LayerModelNode && (oNode as LayerModelNode).Visible) oNodeToConfigure.ForeColor = Color.ForestGreen;
+		}
+
+		private void ConfigureEntireTreeDisplay()
+		{
+			_ConfigureEntireTreeDisplayRecursive(c_tvView.Nodes[0]);
+		}
+
+		private void _ConfigureEntireTreeDisplayRecursive(TreeNode oNode)
+		{
+			ConfigureTreeNodeDisplay(oNode);
+
+			foreach (TreeNode oChildNode in oNode.Nodes)
+			{
+				_ConfigureEntireTreeDisplayRecursive(oChildNode);
+			}
 		}
 
 		/// <summary>
@@ -404,7 +609,7 @@ namespace NewServerTree.View
 		private void ReconfigureTree(TreeNode oBefore, TreeNode oAfter)
 		{
 			if (oBefore == null) return;
-			if (oBefore == null || oAfter == null) throw new ArgumentException("Need to handle this case");
+			if (oAfter == null) throw new ArgumentException("Need to handle this case");
 
 			if (oBefore == oAfter) throw new ApplicationException("How did we manage this?");
 
@@ -467,6 +672,47 @@ namespace NewServerTree.View
 			AddChildTreeNodes(oAfter);
 		}
 
+		/// <summary>
+		/// Moves the scroll bars of the TreeView so that the given node is as near the upper-left as possible.
+		/// </summary>
+		/// <remarks>
+		/// Should be called between c_tvView.BeginUpdate() and c_tvView.BeginUpdate().
+		/// </remarks>
+		/// <param name="oNode"></param>
+		private void RepositionScrollBars(TreeNode oNode)
+		{
+			// --- Get the current scroll bar positions ---
+
+			SCROLLINFO? hScrollInfo = GetScrollInfo(c_tvView.Handle, SB.HORZ);
+			SCROLLINFO? vScrollInfo = GetScrollInfo(c_tvView.Handle, SB.VERT);
+
+			if (hScrollInfo == null || vScrollInfo == null) return;
+
+			// --- Get the selected node's bounding box in client coordinates, ignoring the scroll position --
+
+			Rectangle oSelectedBounds = oNode.Bounds;
+			oSelectedBounds.X += hScrollInfo.Value.nPos;
+			oSelectedBounds.Y += vScrollInfo.Value.nPos * c_tvView.ItemHeight;
+
+			// --- Calculate desired horizontal scroll position (measured in pixels) ---
+
+			int iDesiredHScroll = oSelectedBounds.Left - 2 * c_tvView.Indent;
+			int iMaxHScroll = hScrollInfo.Value.nMax - (int)hScrollInfo.Value.nPage + 1;
+			if (iDesiredHScroll < 0) iDesiredHScroll = 0;
+			if (iDesiredHScroll > iMaxHScroll) iDesiredHScroll = iMaxHScroll;
+
+			// --- Calculate desired vertical scroll position (measured in TreeNodes) ---
+
+			int iDesiredVScroll = oSelectedBounds.Y / c_tvView.ItemHeight - 1;
+			if (iDesiredVScroll < 0) iDesiredVScroll = 0;
+			if (iDesiredVScroll > vScrollInfo.Value.nMax) iDesiredVScroll = vScrollInfo.Value.nMax;
+
+			// --- Update the scroll bar positions ---
+
+			SetScrollPos(c_tvView.Handle, SB.HORZ, new SCROLLINFO(SIF.POS, 0, 0, 0, iDesiredHScroll, 0), false);
+			SetScrollPos(c_tvView.Handle, SB.VERT, new SCROLLINFO(SIF.POS, 0, 0, 0, iDesiredVScroll, 0), false);
+		}
+
 		#endregion
 
 		/// <summary>
@@ -492,9 +738,8 @@ namespace NewServerTree.View
 			TreeNode oRootNode = CreateParentTreeNodes(m_oModel.SelectedNode.Parent, oSelectedNode);
 
 			c_tvView.Nodes.Add(oRootNode);
-			c_tvView.SelectedNode = oSelectedNode;
-
 			c_tvView.ExpandAll();
+			c_tvView.SelectedNode = oSelectedNode;
 			TreeIntegrityCheck();
 			c_tvView.EndUpdate();
 
@@ -554,6 +799,14 @@ namespace NewServerTree.View
 			c_tvView.ExpandAll();
 			TreeIntegrityCheck();
 			c_tvView.EndUpdate();
+
+			if (!(c_tvView.SelectedNode.Tag as ModelNode).IsLeaf)
+			{
+				c_tvView.BeginUpdate();
+				RepositionScrollBars(c_tvView.SelectedNode);
+				c_tvView.EndUpdate();
+				c_tvView.Invalidate();
+			}
 
 			UnmuteModel();
 		}

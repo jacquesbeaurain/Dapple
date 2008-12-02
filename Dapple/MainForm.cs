@@ -26,6 +26,7 @@ using WorldWind;
 using WorldWind.Net;
 using WorldWind.PluginEngine;
 using WorldWind.Renderable;
+using NewServerTree;
 
 namespace Dapple
 {
@@ -128,7 +129,7 @@ namespace Dapple
 		#region Private Members
 
 		private Splash splashScreen;
-		private ServerTree c_oServerTree;
+		private DappleModel m_oModel;
 		private ServerList c_oServerList;
 		private JanaTab cServerViewsTab;
 		private DappleSearchList c_oDappleSearch;
@@ -479,6 +480,7 @@ namespace Dapple
 				c_oWorldWindow.DragDrop += new DragEventHandler(c_oWorldWindow_DragDrop);
 				InitializeComponent();
 				this.SuspendLayout();
+				c_oLayerList.ImageList = m_oImageList;
 
 /*#if DEBUG
 				// --- Make the server tree HOOGE ---
@@ -625,9 +627,12 @@ namespace Dapple
 				#region Search view setup
 
 				this.c_oServerList = new ServerList();
-				this.c_oServerTree = new ServerTree(m_oImageList, Settings.CachePath, this, c_oLayerList, c_oServerList);
-				c_oServerList.ImageList = this.c_oServerTree.ImageList;
-				c_oLayerList.ImageList = this.c_oServerTree.ImageList;
+				m_oModel = new DappleModel(c_oLayerList);
+				m_oModel.SelectedNodeChanged += new EventHandler(m_oModel_SelectedNodeChanged);
+				c_oLayerList.Attach(m_oModel);
+				NewServerTree.View.ServerTree newServerTree = new NewServerTree.View.ServerTree();
+				newServerTree.Attach(m_oModel);
+				c_oServerList.Attach(m_oModel);
 				c_oLayerList.LayerSelectionChanged += new EventHandler(c_oLayerList_LayerSelectionChanged);
 
 				m_oMetadataDisplay = new MetadataDisplayThread(this);
@@ -636,18 +641,8 @@ namespace Dapple
 				c_oLayerList.GoTo += new LayerList.GoToHandler(this.GoTo);
 
 				c_oLayerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
-				c_oServerTree.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
 				c_oServerList.ViewMetadata += new ViewMetadataHandler(m_oMetadataDisplay.AddBuilder);
 				c_oServerList.LayerSelectionChanged += new EventHandler(c_oServerList_LayerSelectionChanged);
-
-				this.c_oServerTree.AfterSelect += new TreeViewEventHandler(this.c_oServerTree_AfterSelected);
-				this.c_oServerTree.ServerToggled += new EventHandler(this.c_oServerTree_ServerToggled);
-				this.c_oServerTree.Dock = System.Windows.Forms.DockStyle.Fill;
-				this.c_oServerTree.ImageIndex = 0;
-				this.c_oServerTree.Location = new System.Drawing.Point(0, 0);
-				this.c_oServerTree.Name = "treeViewServers";
-				this.c_oServerTree.SelectedImageIndex = 0;
-				this.c_oServerTree.TabIndex = 0;
 
 				this.cServerViewsTab = new JanaTab();
 				this.cServerViewsTab.SetImage(0, Resources.tab_tree);
@@ -656,14 +651,13 @@ namespace Dapple
 				this.cServerViewsTab.SetToolTip(1, "Server list view");
 				this.cServerViewsTab.SetNameAndText(0, "TreeView");
 				this.cServerViewsTab.SetNameAndText(1, "ListView");
-				this.cServerViewsTab.SetPage(0, this.c_oServerTree);
+				this.cServerViewsTab.SetPage(0, newServerTree);
 				this.cServerViewsTab.SetPage(1, this.c_oServerList);
 				cServerViewsTab.PageChanged += new JanaTab.PageChangedDelegate(ServerPageChanged);
 
 				c_oDappleSearch = new DappleSearchList();
 				c_oDappleSearch.LayerSelectionChanged += new EventHandler(c_oDappleSearch_LayerSelectionChanged);
-				c_oDappleSearch.ServerTree = c_oServerTree;
-				c_oDappleSearch.LayerList = c_oLayerList;
+				c_oDappleSearch.Attach(m_oModel, c_oLayerList);
 
 				c_tcSearchViews.TabPages[0].Controls.Add(cServerViewsTab);
 				cServerViewsTab.Dock = DockStyle.Fill;
@@ -754,6 +748,20 @@ namespace Dapple
 				c_tbSearchKeywords.Text = NO_SEARCH;
 			}
 			//#endif
+		}
+
+		void m_oModel_SelectedNodeChanged(object sender, EventArgs e)
+		{
+			if (m_oModel.SelectedNode is LayerModelNode)
+			{
+#pragma warning disable 618
+				m_oMetadataDisplay.AddBuilder((m_oModel.SelectedNode as LayerModelNode).ConvertToLayerBuilder());
+#pragma warning restore 618
+			}
+
+			populateAoiComboBox();
+			CmdSetupToolsMenu();
+			CmdSetupServersMenu();
 		}
 
 		#endregion
@@ -1631,7 +1639,7 @@ namespace Dapple
 
 		private void c_miViewProperties_Click(object sender, EventArgs e)
 		{
-			this.c_oServerTree.CmdServerProperties();
+			m_oModel.SelectedServer.ViewServerProperties();
 		}
 
 		private void c_miTakeSnapshot_Click(object sender, EventArgs e)
@@ -1646,12 +1654,12 @@ namespace Dapple
 
 		private void c_miRefreshServer_Click(object sender, EventArgs e)
 		{
-			this.c_oServerTree.RefreshCurrentServer();
+			m_oModel.SelectedServer.RefreshServer();
 		}
 
 		private void c_miRemoveServer_Click(object sender, EventArgs e)
 		{
-			this.c_oServerTree.RemoveCurrentServer();
+			m_oModel.RemoveServer(m_oModel.SelectedServer, true);
 		}
 
 		private void c_miSetHomeView_Click(object sender, EventArgs e)
@@ -1675,11 +1683,6 @@ namespace Dapple
 			CmdSetupToolsMenu();
 		}
 
-		private void c_miAddBrowserMap_Click(object sender, EventArgs e)
-		{
-			c_oServerTree.CmdAddBrowserMap();
-		}
-
 		private void c_miGetDataHelp_Click(object sender, EventArgs e)
 		{
 			CmdDisplayOMHelp();
@@ -1687,12 +1690,12 @@ namespace Dapple
 
 		private void c_miSetFavouriteServer_Click(object sender, EventArgs e)
 		{
-			c_oServerTree.CmdSetFavoriteServer();
+			m_oModel.SetFavouriteServer(m_oModel.SelectedServer, true);
 		}
 
 		private void c_miToggleServerStatus_Click(object sender, EventArgs e)
 		{
-			c_oServerTree.CmdToggleServerEnabled();
+			m_oModel.ToggleServer(m_oModel.SelectedServer, true);
 		}
 
 		private void c_miOpenKeyhole_Click(object sender, EventArgs e)
@@ -1748,6 +1751,16 @@ namespace Dapple
 					Program.ShowMessageBox("An error occurred while loading file '" + Path.GetFileName(bob.FileName) + "':" + Environment.NewLine + Environment.NewLine + ex.Message, "Open KML File", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
 				}
 			}
+		}
+
+		private void c_miServers_DropDownOpening(object sender, EventArgs e)
+		{
+			CmdSetupServersMenu();
+		}
+
+		private void c_miTools_DropDownOpening(object sender, EventArgs e)
+		{
+			CmdSetupToolsMenu();
 		}
 
 		#endregion
@@ -1807,9 +1820,9 @@ namespace Dapple
 					CmdLoadHomeView();
 				}
 
-				if (m_blSelectPersonalDAP)
+				if (m_blSelectPersonalDAP && m_oModel.PersonalDapServer != null)
 				{
-					c_oServerTree.SelectPersonalDAP();
+					m_oModel.SelectedNode = m_oModel.PersonalDapServer;
 				}
 
 				if (this.m_strOpenGeoTiffFile.Length > 0)
@@ -1905,8 +1918,6 @@ namespace Dapple
 			this.toolStripStatusSpin6.Visible = false;
 			this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right;
 			c_oWorldWindow.Updated += new WorldWindow.UpdatedDelegate(c_oWorldWindow_Updated);
-
-			this.c_oServerTree.Load();
 		}
 
 		private void MainForm_Closing(object sender, CancelEventArgs e)
@@ -2301,15 +2312,6 @@ namespace Dapple
 
 		private void ServerPageChanged(int iIndex)
 		{
-			if (iIndex == 0) // Changed to tree view
-			{
-				c_oServerTree.SelectedServer = c_oServerList.SelectedServer;
-			}
-			else if (iIndex == 1) // Changed to list view
-			{
-				c_oServerList.SelectedServer = c_oServerTree.SelectedServer;
-			}
-
 			CmdSetupToolsMenu();
 			CmdSetupServersMenu();
 		}
@@ -2375,13 +2377,6 @@ namespace Dapple
 		}
 
 		#endregion
-
-		private void c_oServerTree_AfterSelected(object sender, TreeViewEventArgs e)
-		{
-			populateAoiComboBox();
-			CmdSetupToolsMenu();
-			CmdSetupServersMenu();
-		}
 
 		private void c_oServerTree_ServerToggled(object sender, EventArgs e)
 		{
@@ -2514,9 +2509,9 @@ namespace Dapple
 			// --- Get the currently active DAP server if there is one ---
 
 			Server oSelectedDapServer = null;
-			if (c_oServerTree.SelectedNode != null && c_oServerTree.SelectedNode.Tag is Server)
+			if (m_oModel.SelectedServer != null && m_oModel.SelectedServer is DapServerModelNode)
 			{
-				oSelectedDapServer = c_oServerTree.SelectedNode.Tag as Server;
+				oSelectedDapServer = (m_oModel.SelectedServer as DapServerModelNode).Server;
 			}
 			bool blViableDapServer = oSelectedDapServer != null && oSelectedDapServer.Enabled && oSelectedDapServer.Status == Server.ServerStatus.OnLine;
 
@@ -2645,7 +2640,7 @@ namespace Dapple
 			camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
 
 			//store the servers
-			this.c_oServerTree.SaveToView(view);
+			m_oModel.SaveToView(view);
 
 			// store the current layers
 			if (c_oLayerList.AllLayers.Count > 0)
@@ -2739,10 +2734,10 @@ namespace Dapple
 					c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
 				}
 
-				this.c_oServerTree.LoadFromView(view);
+				m_oModel.LoadFromView(view);
 				if (bLoadLayers && view.View.Hasactivelayers())
 				{
-					bOldView = c_oLayerList.CmdLoadFromView(view, c_oServerTree);
+					c_oLayerList.CmdLoadFromView(view, m_oModel);
 				}
 			}
 
@@ -2882,297 +2877,17 @@ namespace Dapple
 
 		public void AddDAPServer()
 		{
-			AddDAP dlg = new AddDAP();
-			if (dlg.ShowDialog(this) == DialogResult.OK)
-			{
-				Geosoft.GX.DAPGetData.Server oServer;
-				try
-				{
-					if (this.c_oServerTree.AddDAPServer(dlg.Url, out oServer, true, true))
-					{
-						ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.Url, "DAP" });
-					}
-				}
-				catch (Exception except)
-				{
-					Program.ShowMessageBox(
-						"Error adding server \"" + dlg.Url + "\":\n" + except.Message,
-						"Add DAP Server",
-						MessageBoxButtons.OK,
-						MessageBoxDefaultButton.Button1,
-						MessageBoxIcon.Error);
-				}
-				SaveLastView();
-			}
+			m_oModel.AddDAPServer();
 		}
 
 		public void AddWMSServer()
 		{
-			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(WMSCatalogBuilder), this.c_oServerTree.Nodes);
-
-			if (treeNode != null)
-			{
-				AddWMS dlg = new AddWMS();
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					try
-					{
-						if (this.c_oServerTree.AddWMSServer(dlg.WmsURL, true, true, true))
-						{
-							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.WmsURL, "WMS" });
-						}
-					}
-					catch (Exception except)
-					{
-						Program.ShowMessageBox(
-							"Error adding server \"" + dlg.WmsURL + "\":\n" + except.Message,
-							"Add WMS Server",
-							MessageBoxButtons.OK,
-							MessageBoxDefaultButton.Button1,
-							MessageBoxIcon.Error);
-					}
-					SaveLastView();
-				}
-			}
+			m_oModel.AddWMSServer();
 		}
 
 		public void AddArcIMSServer()
 		{
-			TreeNode treeNode = TreeUtils.FindNodeOfTypeBFS(typeof(ArcIMSCatalogBuilder), this.c_oServerTree.Nodes);
-
-			if (treeNode != null)
-			{
-				AddArcIMS dlg = new AddArcIMS();
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					try
-					{
-						if (this.c_oServerTree.AddArcIMSServer(new ArcIMSServerUri(dlg.URL), true, true, true))
-						{
-							ThreadPool.QueueUserWorkItem(new WaitCallback(submitServerToSearchEngine), new Object[] { dlg.URL, "ArcIMS" });
-						}
-					}
-					catch (Exception except)
-					{
-						Program.ShowMessageBox(
-							"Error adding server \"" + dlg.URL + "\":\n" + except.Message,
-							"Add ArcIMS Server",
-							MessageBoxButtons.OK,
-							MessageBoxDefaultButton.Button1,
-							MessageBoxIcon.Error);
-					}
-					SaveLastView();
-				}
-			}
-		}
-
-		#endregion
-
-		#region Updating the home view
-
-		public enum UpdateHomeViewType
-		{
-			AddServer,
-			RemoveServer,
-			ToggleServer,
-			ChangeFavorite
-		};
-
-		private Object LOCK = new object();
-		/// <summary>
-		/// This command modifies the home view, but doesn't do a full save.  Useful for changing the server list.
-		/// </summary>
-		/// <param name="eType"></param>
-		/// <param name="szServer"></param>
-		public void CmdUpdateHomeView(UpdateHomeViewType eType, Object[] data)
-		{
-			lock (LOCK)
-			{
-				XmlDocument oHomeViewDoc = new XmlDocument();
-				oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
-
-				switch (eType)
-				{
-					case UpdateHomeViewType.AddServer:
-						{
-							String szUrl = data[0] as String;
-							String szType = data[1] as String;
-
-							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
-							{
-								XmlElement oDAPRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"DAPServers\"]") as XmlElement;
-								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-								oDAPRoot.AppendChild(oBuilderEntry);
-								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("dapcatalog");
-								oDapCatalog.SetAttribute("url", szUrl);
-								oDapCatalog.SetAttribute("enabled", "true");
-								oBuilderEntry.AppendChild(oDapCatalog);
-							}
-							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
-								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-								oWMSRoot.AppendChild(oBuilderEntry);
-								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("wmscatalog");
-								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
-								oDapCatalog.SetAttribute("enabled", "true");
-								oBuilderEntry.AppendChild(oDapCatalog);
-							}
-							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
-								XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-								oWMSRoot.AppendChild(oBuilderEntry);
-								XmlElement oDapCatalog = oHomeViewDoc.CreateElement("arcimscatalog");
-								oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
-								oDapCatalog.SetAttribute("enabled", "true");
-								oBuilderEntry.AppendChild(oDapCatalog);
-							}
-						}
-						break;
-					case UpdateHomeViewType.ChangeFavorite:
-						{
-							String szUrl = data[0] as String;
-
-							XmlElement oDocRoot = oHomeViewDoc.SelectSingleNode("/dappleview") as XmlElement;
-							oDocRoot.SetAttribute("favouriteserverurl", szUrl);
-						}
-						break;
-					case UpdateHomeViewType.RemoveServer:
-						{
-							String szUrl = data[0] as String;
-							String szType = data[1] as String;
-
-							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
-							{
-								Uri oUri = new Uri(szUrl);
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
-								{
-									if (new Uri(oDapCatalog.GetAttribute("url")).Equals(oUri))
-									{
-										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-									}
-								}
-							}
-							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-									}
-								}
-							}
-							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-									}
-								}
-							}
-						}
-						break;
-					case UpdateHomeViewType.ToggleServer:
-						{
-							String szUrl = data[0] as String;
-							String szType = data[1] as String;
-							bool blStatus = (bool)data[2];
-
-							if (szType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
-								{
-									if (oDapCatalog.GetAttribute("url").Equals(szUrl))
-									{
-										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-									}
-								}
-							}
-							else if (szType.Equals("WMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-									}
-								}
-							}
-							else if (szType.Equals("ArcIMS", StringComparison.InvariantCultureIgnoreCase))
-							{
-								foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
-								{
-									if (oDapCatalog.GetAttribute("capabilitiesurl").Equals(szUrl))
-									{
-										oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-									}
-								}
-							}
-						}
-						break;
-				}
-
-				oHomeViewDoc.Save(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
-			}
-		}
-
-		public enum ServerType
-		{
-			DAP,
-			WMS,
-			ArcIMS
-		}
-
-		public static bool HomeViewContains(String strURI, ServerType eType)
-		{
-			XmlDocument oHomeViewDoc = new XmlDocument();
-			oHomeViewDoc.Load(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView));
-			Uri oURI = new Uri(strURI);
-
-			switch(eType)
-			{
-				case ServerType.ArcIMS:
-					{
-						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//arcimscatalog/@capabilitiesurl"))
-						{
-							if (new Uri(oAttr.Value).Equals(oURI))
-							{
-								return true;
-							}
-						}
-					}
-					break;
-				case ServerType.DAP:
-					{
-						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//dapcatalog/@url"))
-						{
-							if (new Uri(oAttr.Value).Equals(oURI))
-							{
-								return true;
-							}
-						}
-					}
-					break;
-				case ServerType.WMS:
-					{
-						foreach (XmlAttribute oAttr in oHomeViewDoc.SelectNodes("//wmscatalog/@capabilitiesurl"))
-						{
-							if (new Uri(oAttr.Value).Equals(oURI))
-							{
-								return true;
-							}
-						}
-					}
-					break;
-				default:
-					throw new ArgumentException("eType");
-			}
-
-			return false;
+			m_oModel.AddArcIMSServer();
 		}
 
 		#endregion
@@ -3205,7 +2920,7 @@ namespace Dapple
 			{
 				if (cServerViewsTab.SelectedIndex == 0)
 				{
-					c_oServerTree.AddCurrentDataset();
+					m_oModel.ViewedDatasets.Add(m_oModel.SelectedNode as LayerModelNode);
 				}
 				else if (cServerViewsTab.SelectedIndex == 1)
 				{
@@ -3215,32 +2930,6 @@ namespace Dapple
 			else if (c_tcSearchViews.SelectedIndex == 1)
 			{
 				c_oDappleSearch.CmdAddSelected();
-			}
-		}
-
-		private void submitServerToSearchEngine(object param)
-		{
-			if (!Settings.UseDappleSearch) return;
-
-			try
-			{
-				XmlDocument query = new XmlDocument();
-				XmlElement geoRoot = query.CreateElement("geosoft_xml");
-				query.AppendChild(geoRoot);
-				XmlElement root = query.CreateElement("add_server");
-				root.SetAttribute("url", ((Object[])param)[0] as String);
-				root.SetAttribute("type", ((Object[])param)[1] as String);
-				geoRoot.AppendChild(root);
-
-				// --- This non-WebDownload download is permitted because this method is called from a threadpool thread ---
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Settings.DappleSearchURL + NEW_SERVER_GATEWAY);
-				request.Headers["GeosoftAddServerRequest"] = query.InnerXml;
-				WebResponse response = request.GetResponse();
-				response.Close();
-			}
-			catch
-			{
-				// Never crash, just silently fail to send the data to the server.
 			}
 		}
 
@@ -3402,7 +3091,7 @@ namespace Dapple
 		{
 			this.UseWaitCursor = true;
 			Application.DoEvents();
-			this.c_oServerTree.Search(m_oLastSearchROI, m_szLastSearchString);
+			m_oModel.SetSearchFilter(m_szLastSearchString, m_oLastSearchROI);
 			this.c_oServerList.setSearchCriteria(m_szLastSearchString, m_oLastSearchROI);
 			this.c_oDappleSearch.SetSearchParameters(m_szLastSearchString, m_oLastSearchROI);
 			this.UseWaitCursor = false;
@@ -3411,18 +3100,16 @@ namespace Dapple
 
 		private void CmdSetupServersMenu()
 		{
-			bool blServerSelected = c_oServerTree.SelectedNode != null &&
-						(c_oServerTree.SelectedNode.Tag is Server || c_oServerTree.SelectedNode.Tag is ServerBuilder);
+			bool blServerSelected = m_oModel.SelectedServer != null;
 			blServerSelected &= c_tcSearchViews.SelectedIndex == 0;
 			blServerSelected &= cServerViewsTab.SelectedIndex == 0;
 
-			bool blDAPServerSelected = blServerSelected && c_oServerTree.SelectedNode.Tag is Server;
+			bool blDAPServerSelected = blServerSelected && m_oModel.SelectedServer is DapServerModelNode;
 
 			c_miViewProperties.Enabled = blServerSelected;
 			c_miRefreshServer.Enabled = blServerSelected;
 			c_miRemoveServer.Enabled = blServerSelected;
-			c_miSetFavouriteServer.Enabled = blServerSelected && !c_oServerTree.SelectedIsFavorite;
-			c_miAddBrowserMap.Enabled = blDAPServerSelected;
+			c_miSetFavouriteServer.Enabled = blServerSelected && !m_oModel.SelectedServer.Favourite;
 
 			if (blServerSelected == false)
 			{
@@ -3432,11 +3119,7 @@ namespace Dapple
 			}
 			else
 			{
-				bool blServerEnabled = true;
-				if (c_oServerTree.SelectedNode.Tag is Server)
-					blServerEnabled = ((Server)c_oServerTree.SelectedNode.Tag).Enabled;
-				else if (c_oServerTree.SelectedNode.Tag is ServerBuilder)
-					blServerEnabled = ((ServerBuilder)c_oServerTree.SelectedNode.Tag).Enabled;
+				bool blServerEnabled = m_oModel.SelectedServer.Enabled;
 
 				if (blServerEnabled)
 				{
@@ -3459,7 +3142,7 @@ namespace Dapple
 				if (cServerViewsTab.SelectedIndex == 0)
 				{
 					// --- Active is server tree ---
-					c_miAddLayer.Enabled = c_oServerTree.SelectedNode != null && (c_oServerTree.SelectedNode.Tag is LayerBuilder || c_oServerTree.SelectedNode.Tag is Geosoft.Dap.Common.DataSet);
+					c_miAddLayer.Enabled = m_oModel.SelectedNode is LayerModelNode;
 				}
 				else if (cServerViewsTab.SelectedIndex == 1)
 				{
@@ -3472,6 +3155,8 @@ namespace Dapple
 				// --- Active is dapple search list ---
 				c_miAddLayer.Enabled = c_oDappleSearch.HasLayersSelected;
 			}
+
+			c_miRemoveLayer.Enabled = c_oLayerList.RemoveAllowed;
 		}
 
 		public void CmdShowServerTree()

@@ -222,12 +222,6 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool ServerIsInHomeView
-		{
-			get { return MainForm.HomeViewContains(m_Server.Uri.ToString(), MainForm.ServerType.WMS); }
-		}
-
-		[System.ComponentModel.Browsable(false)]
 		public override bool LayerFromSupportedServer
 		{
 			get { return true; }
@@ -343,11 +337,6 @@ namespace Dapple.LayerGeneration
 			return m_Server.Uri.ToString().GetHashCode() ^ m_wmsLayer.Name.GetHashCode();
 		}
 
-		public override void AddServerToHomeView(MainForm bob)
-		{
-			bob.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] { m_Server.Uri.ToString(), "WMS" });
-		}
-
       #endregion
 
       #region ImageBuilder Overrides
@@ -399,11 +388,6 @@ namespace Dapple.LayerGeneration
          }
          return null;
       }
-
-		public override void SelectServer(ServerTree oTree)
-		{
-			oTree.SelectedServer = m_Server;
-		}
 
       #endregion
 

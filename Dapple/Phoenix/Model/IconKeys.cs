@@ -50,6 +50,7 @@ namespace NewServerTree
 		public static String ViewServerPropertiesMenuItem = "menu-server-viewproperties";
 
 		public static String AddLayerMenuItem = "menu-layer-add";
+		public static String ViewLegendMenuItem = "menu-layer-viewlegend";
 
 		public static ImageList ImageList;
 
@@ -124,6 +125,7 @@ namespace NewServerTree
 			result.Images.Add(ViewServerPropertiesMenuItem, Resources.properties);
 
 			result.Images.Add(AddLayerMenuItem, Resources.layers_add);
+			result.Images.Add(ViewLegendMenuItem, Resources.legend);
 
 			return result;
 		}

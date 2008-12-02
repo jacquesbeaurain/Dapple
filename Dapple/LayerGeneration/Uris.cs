@@ -9,6 +9,7 @@ using WorldWind;
 using Geosoft.Dap.Common;
 using System.Collections.Specialized;
 using System.Globalization;
+using NewServerTree;
 
 namespace Dapple.LayerGeneration
 {
@@ -184,6 +185,16 @@ namespace Dapple.LayerGeneration
 	public class DapServerUri : ServerUri
 	{
 		public DapServerUri(String strUri) : base(strUri) { }
+
+		public bool IsForPersonalDAP
+		{
+			get
+			{
+				return this.Host.Equals("localhost", StringComparison.InvariantCultureIgnoreCase)
+					&& this.Port == 10205
+					&& this.AbsolutePath.Equals("/");
+			}
+		}
 	}
 
 	public class GeoTiffFileUri : ServerUri
@@ -316,7 +327,7 @@ namespace Dapple.LayerGeneration
 
 		protected abstract ServerUri getServerUri(UriBuilder oBuilder);
 
-		public abstract LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree);
+		public abstract LayerBuilder getBuilder(DappleModel oModel);
 
 
 	}
@@ -370,22 +381,8 @@ namespace Dapple.LayerGeneration
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
-			ArcIMSServerBuilder oServerBuilder = oTree.ArcIMSCatalog.GetServer(m_oServer as ArcIMSServerUri);
-			if (oServerBuilder == null)
-			{
-				oTree.AddArcIMSServer(m_oServer as ArcIMSServerUri, true, true, false);
-				oServerBuilder = oTree.ArcIMSCatalog.GetServer(m_oServer as ArcIMSServerUri);
-			}
-
-			oServerBuilder.WaitUntilLoaded();
-
-			if (oServerBuilder.LoadingErrorOccurred)
-				return null;
-
-			CultureInfo oServiceCultureInfo = oServerBuilder.GetService(getAttribute("servicename")).CultureInfo;
-
 			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
 			double dMinScale, dMaxScale;
 			if (!Double.TryParse(getAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.West)) return null;
@@ -401,12 +398,11 @@ namespace Dapple.LayerGeneration
 				getAttribute("title"),
 				getAttribute("layerid"),
 				oLayerBounds,
-				oWindow,
-				oServerBuilder.GetService(getAttribute("servicename")),
-				oServerBuilder,
+				MainForm.WorldWindowSingleton,
+				null,
 				dMinScale,
 				dMaxScale,
-				oServiceCultureInfo);
+				new CultureInfo("en-US"));
 		}
 	}
 
@@ -455,28 +451,16 @@ namespace Dapple.LayerGeneration
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
-			// Get the ServerBuilder (need its WMSLayers to make the QuadLayer
-			WMSServerBuilder oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
-			if (oServerBuilder == null)
-			{
-				oTree.AddWMSServer(((WMSServerUri)m_oServer).ToCapabilitiesUri(), true, true, false);
-				oServerBuilder = oTree.WMSCatalog.GetServer(m_oServer as WMSServerUri);
-			}
+			WMSServerModelNode oServer = oModel.AddWMSServer(m_oServer as WMSServerUri, true, false, false) as WMSServerModelNode;
+			oServer.WaitForLoad();
+			if (oServer.LoadState == LoadState.LoadFailed) return null;
 
-			oServerBuilder.WaitUntilLoaded();
-
-			// Throw the loading error up, if there was one
-			if (oServerBuilder.LoadingErrorOccurred)
-				return null;
-
-			// Otherwise, make a layer and send it up now
-			WMSLayer oLayer = WMSQuadLayerBuilder.GetLayer(getAttribute("layer"), oServerBuilder.List.Layers);
-			if (oLayer == null)
-				return null;
-
-			return new WMSQuadLayerBuilder(oLayer, oWindow, oServerBuilder, null);
+			WMSLayerModelNode oLayer = oServer.GetLayer(getAttribute("layer"));
+			if (oLayer == null) throw new ArgumentException("The layer '" + getAttribute("layer") + "' was not found in server " + m_oServer.ServerTreeDisplayName);
+			WMSServerBuilder oDummyServer = new WMSServerBuilder(null, m_oServer as WMSServerUri, oServer.CapabilitiesFilename, true);
+			return new WMSQuadLayerBuilder(oLayer.LayerData, MainForm.WorldWindowSingleton, oDummyServer, null);
 		}
 	}
 
@@ -532,7 +516,7 @@ namespace Dapple.LayerGeneration
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
 			bool blTerrainMapped;
@@ -561,7 +545,7 @@ namespace Dapple.LayerGeneration
 				getAttribute("datasetname"),
 				getAttribute("imgfileext"),
 				255,
-				oWindow,
+				MainForm.WorldWindowSingleton,
 				null);
 		}
 	}
@@ -612,14 +596,14 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			if (String.Compare(m_oServer.Host, VirtualEarthMapType.road.ToString(), true) == 0)
-				return new VEQuadLayerBuilder("Virtual Earth Map", VirtualEarthMapType.road, oWindow, true, null);
+				return new VEQuadLayerBuilder("Virtual Earth Map", VirtualEarthMapType.road, MainForm.WorldWindowSingleton, true, null);
 			else if (String.Compare(m_oServer.Host, VirtualEarthMapType.aerial.ToString(), true) == 0)
-				return new VEQuadLayerBuilder("Virtual Earth Satellite", VirtualEarthMapType.aerial, oWindow, true, null);
+				return new VEQuadLayerBuilder("Virtual Earth Satellite", VirtualEarthMapType.aerial, MainForm.WorldWindowSingleton, true, null);
 			else if (String.Compare(m_oServer.Host, VirtualEarthMapType.hybrid.ToString(), true) == 0)
-				return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VirtualEarthMapType.hybrid, oWindow, true, null);
+				return new VEQuadLayerBuilder("Virtual Earth Map & Satellite", VirtualEarthMapType.hybrid, MainForm.WorldWindowSingleton, true, null);
 			else
 				return null;
 		}
@@ -678,7 +662,7 @@ namespace Dapple.LayerGeneration
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			DataSet hDataSet = new DataSet();
 			hDataSet.Name = getAttribute("datasetname");
@@ -702,13 +686,12 @@ namespace Dapple.LayerGeneration
 			if (!Int32.TryParse(getAttribute("levels"), NumberStyles.Any, CultureInfo.InvariantCulture, out levels)) return null;
 			if (!Double.TryParse(getAttribute("lvl0tilesize"), NumberStyles.Any, CultureInfo.InvariantCulture, out lvl0tilesize)) return null;
 
-			Geosoft.GX.DAPGetData.Server oServer = null;
-			if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
-				oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true, false);
-			else
-				oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
+			DapServerModelNode oServerMN = oModel.AddDAPServer(m_oServer as DapServerUri, true, false, false) as DapServerModelNode;
+			oServerMN.WaitForLoad();
+			if (oServerMN.LoadState == LoadState.LoadFailed) return null;
 
-			return new DAPQuadLayerBuilder(hDataSet, oWindow, oServer, null, height, size, lvl0tilesize, levels);
+			Geosoft.GX.DAPGetData.Server oServer = oServerMN.Server;
+			return new DAPQuadLayerBuilder(hDataSet, MainForm.WorldWindowSingleton, oServer, null, height, size, lvl0tilesize, levels);
 		}
 	}
 
@@ -752,15 +735,14 @@ namespace Dapple.LayerGeneration
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
-			Geosoft.GX.DAPGetData.Server oServer = null;
-			if (!oTree.FullServerList.ContainsKey(m_oServer.ToBaseUri()))
-				oTree.AddDAPServer(m_oServer.ToBaseUri(), out oServer, true, false);
-			else
-				oServer = oTree.FullServerList[m_oServer.ToBaseUri()];
+			DapServerModelNode oServerMN = oModel.AddDAPServer(m_oServer as DapServerUri, true, false, false) as DapServerModelNode;
+			oServerMN.WaitForLoad();
+			if (oServerMN.LoadState == LoadState.LoadFailed) return null;
 
-			return new DAPBrowserMapBuilder(oWindow, oServer, null);
+			Geosoft.GX.DAPGetData.Server oServer = oServerMN.Server;
+			return new DAPBrowserMapBuilder(MainForm.WorldWindowSingleton, oServer, null);
 		}
 	}
 
@@ -806,9 +788,9 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
-			return new GeorefImageLayerBuilder(m_oServer.LocalPath, false, oWindow, null);
+			return new GeorefImageLayerBuilder(m_oServer.LocalPath, false, MainForm.WorldWindowSingleton, null);
 		}
 	}
 
@@ -848,9 +830,9 @@ namespace Dapple.LayerGeneration
 			return new KeyholeFileUri(oBuilder.Uri.ToString());
 		}
 
-		public override LayerBuilder getBuilder(WorldWindow oWindow, ServerTree oTree)
+		public override LayerBuilder getBuilder(DappleModel oModel)
 		{
-			return new KML.KMLLayerBuilder(m_oServer.LocalPath, oWindow, null);
+			return new KML.KMLLayerBuilder(m_oServer.LocalPath, MainForm.WorldWindowSingleton, null);
 		}
 	}
 }

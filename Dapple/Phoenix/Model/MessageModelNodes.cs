@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace NewServerTree
 {
@@ -26,6 +27,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -34,6 +36,11 @@ namespace NewServerTree
 		public override string DisplayText
 		{
 			get { return m_strMessage; }
+		}
+
+		public override string Annotation
+		{
+			get { return String.Empty; }
 		}
 
 		#endregion
@@ -64,6 +71,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.LoadingMessage; }
@@ -87,6 +95,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.ErrorMessage; }
@@ -111,6 +120,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.InfoMessage; }

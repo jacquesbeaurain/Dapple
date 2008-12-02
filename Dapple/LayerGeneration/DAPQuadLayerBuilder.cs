@@ -323,12 +323,6 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool ServerIsInHomeView
-		{
-			get { return MainForm.HomeViewContains(m_oServer.Url, MainForm.ServerType.DAP); }
-		}
-
-		[System.ComponentModel.Browsable(false)]
 		public override bool LayerFromSupportedServer
 		{
 			get { return true; }
@@ -429,16 +423,6 @@ namespace Dapple.LayerGeneration
 		public override int GetHashCode()
 		{
 			return m_hDataSet.UniqueName.GetHashCode();
-		}
-
-		public override void AddServerToHomeView(MainForm oMainForm)
-		{
-			oMainForm.CmdUpdateHomeView(MainForm.UpdateHomeViewType.AddServer, new String[] { m_oServer.Url, "DAP" });
-		}
-
-		public override void SelectServer(ServerTree oTree)
-		{
-			oTree.SelectedServer = m_oServer;
 		}
 
       #endregion

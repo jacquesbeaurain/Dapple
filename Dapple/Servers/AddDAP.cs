@@ -79,6 +79,19 @@ namespace Dapple
 				return;
 			}
 
+			DapServerUri oUri = new DapServerUri(txtDapURL.Text);
+			if (oUri.IsForPersonalDAP)
+			{
+				Program.ShowMessageBox(
+					"Cannot add Desktop Cataloger to DAP server tree." + Environment.NewLine + "If \"My Data\" is not visible in the server tree, ensure that Desktop Cataloger is running, then restart Dapple.",
+					"Add DAP Server",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				DialogResult = DialogResult.None;
+				return;
+			}
+
 			txtDapURL.Text = oServerUrl.ToString();
       }
    }

@@ -533,14 +533,6 @@ namespace Dapple.LayerGeneration
 		{
 		}
 
-		/// <summary>
-		/// Make this LayerBuilder's host server selected.
-		/// </summary>
-		/// <param name="oTree"></param>
-		public virtual void SelectServer(ServerTree oTree)
-		{
-		}
-
 		#endregion
 
 		private void LoadLayer(object stateInfo)

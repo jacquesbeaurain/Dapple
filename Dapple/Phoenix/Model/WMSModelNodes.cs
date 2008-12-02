@@ -6,6 +6,7 @@ using WorldWind;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
+using System.ComponentModel;
 
 namespace NewServerTree
 {
@@ -34,6 +35,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
@@ -41,18 +43,25 @@ namespace NewServerTree
 
 		public override String DisplayText
 		{
+			get { return "WMS Servers"; }
+		}
+
+		public override string Annotation
+		{
 			get
 			{
 				ModelNode[] cache = FilteredChildren;
-				return String.Format("WMS Servers [{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
+				return String.Format("[{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
 			}
 		}
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.WMSRoot; }
 		}
 
+		[Browsable(false)]
 		public ToolStripMenuItem[] MenuItems
 		{
 			get
@@ -212,28 +221,62 @@ namespace NewServerTree
 		{
 			get
 			{
-				if (LoadState == LoadState.LoadSuccessful)
+				return m_strTitle;
+			}
+		}
+
+		public override string Annotation
+		{
+			get
+			{
+				switch (LoadState)
 				{
-					int cache = FilteredChildCount;
-					return String.Format("{0} [{1} dataset{2}]", m_strTitle, cache, cache == 1 ? String.Empty : "s");
-				}
-				else
-				{
-					return m_strTitle;
+					case LoadState.LoadSuccessful:
+						{
+							int cache = FilteredChildCount;
+							return String.Format("[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
+						}
+					case LoadState.Loading:
+						{
+							return "[Loading...]";
+						}
+					case LoadState.LoadFailed:
+						{
+							return "[Unable to contact server]";
+						}
+					case LoadState.Unloaded:
+						{
+							return String.Empty;
+						}
+					default:
+						throw new ApplicationException("Missing enum case statement");
 				}
 			}
 		}
 
+		[Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return IconKeys.WMSRoot; }
+		}
+
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("The URI for this server.")]
 		public override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
 		public override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.WMS; }
 		}
 
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -255,6 +298,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get
@@ -295,6 +339,26 @@ namespace NewServerTree
 			}
 
 			return null;
+		}
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public override List<LayerBuilder> GetBuildersInternal()
+		{
+			List<LayerBuilder> result = new List<LayerBuilder>();
+
+			foreach (ModelNode oNode in FilteredChildren)
+			{
+				if (oNode is WMSFolderModelNode)
+				{
+					result.AddRange((oNode as WMSFolderModelNode).GetBuilders());
+				}
+				else if (oNode is WMSLayerModelNode)
+				{
+					result.Add((oNode as WMSLayerModelNode).ConvertToLayerBuilder());
+				}
+			}
+
+			return result;
 		}
 
 		#endregion
@@ -376,6 +440,12 @@ namespace NewServerTree
 			get { return m_oData.Title; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get
@@ -391,6 +461,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -409,6 +480,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get
@@ -441,6 +513,26 @@ namespace NewServerTree
 			}
 
 			return null;
+		}
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public List<LayerBuilder> GetBuilders()
+		{
+			List<LayerBuilder> result = new List<LayerBuilder>();
+
+			foreach (ModelNode oNode in FilteredChildren)
+			{
+				if (oNode is WMSFolderModelNode)
+				{
+					result.AddRange((oNode as WMSFolderModelNode).GetBuilders());
+				}
+				else if (oNode is WMSLayerModelNode)
+				{
+					result.Add((oNode as WMSLayerModelNode).ConvertToLayerBuilder());
+				}
+			}
+
+			return result;
 		}
 
 		#endregion
@@ -478,6 +570,8 @@ namespace NewServerTree
 		private WMSLayer m_oData;
 		private GeographicBoundingBox m_oBounds;
 
+		private ToolStripMenuItem m_oViewLegend;
+
 		#endregion
 
 
@@ -489,6 +583,8 @@ namespace NewServerTree
 			m_oData = oData;
 			m_oBounds = new GeographicBoundingBox((double)m_oData.North, (double)m_oData.South, (double)m_oData.West, (double)m_oData.East);
 
+			m_oViewLegend = new ToolStripMenuItem("View Legend...", IconKeys.ImageList.Images[IconKeys.ViewLegendMenuItem], new EventHandler(c_miViewLegend_Click));
+
 			MarkLoaded();
 		}
 
@@ -497,6 +593,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -507,11 +604,34 @@ namespace NewServerTree
 			get { return m_oData.Title; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.WMSLayer; }
 		}
 
+		public override ToolStripMenuItem[] MenuItems
+		{
+			get
+			{
+				ToolStripMenuItem[] baseItems = base.MenuItems;
+				ToolStripMenuItem[] result = new ToolStripMenuItem[baseItems.Length + 1];
+
+				Array.Copy(baseItems, result, baseItems.Length);
+
+				result[result.Length - 1] = m_oViewLegend;
+				m_oViewLegend.Enabled = m_oData.HasLegend;
+
+				return result;
+			}
+		}
+
+		[Browsable(false)]
 		public int FilteredChildCount
 		{
 			get
@@ -520,6 +640,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public bool PassesFilter
 		{
 			get
@@ -543,6 +664,30 @@ namespace NewServerTree
 		public WMSLayer LayerData
 		{
 			get { return m_oData; }
+		}
+
+		#endregion
+
+
+		#region Event Handlers
+
+		private void c_miViewLegend_Click(object sender, EventArgs e)
+		{
+			List<String> oLegendUrls = new List<String>();
+
+			foreach (WMSLayerStyle oStyle in m_oData.Styles)
+			{
+				if (oStyle.legendURL != null && oStyle.legendURL.Length > 0)
+					foreach (WMSLayerStyleLegendURL oUrl in oStyle.legendURL)
+					{
+						oLegendUrls.Add(oUrl.href);
+					}
+			}
+
+			foreach (String strLegendUrl in oLegendUrls)
+			{
+				Dapple.MainForm.BrowseTo(strLegendUrl);
+			}
 		}
 
 		#endregion

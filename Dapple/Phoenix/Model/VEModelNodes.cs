@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace NewServerTree
 {
@@ -26,6 +27,12 @@ namespace NewServerTree
 			get { return "Virtual Earth"; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.VERoot; }
@@ -117,6 +124,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -140,6 +148,12 @@ namespace NewServerTree
 			}
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.VELayer; }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using Dapple.LayerGeneration;
+using System.ComponentModel;
 
 namespace NewServerTree
 {
@@ -40,7 +41,7 @@ namespace NewServerTree
 
 		#region Events
 
-		private void OnDisplayInfoChanged()
+		protected void OnDisplayInfoChanged()
 		{
 			m_oModel.ModelNodeDisplayUpdated(this);
 		}
@@ -82,6 +83,7 @@ namespace NewServerTree
 		/// <summary>
 		/// Get the parent ModelNode of this ModelNode.
 		/// </summary>
+		[Browsable(false)]
 		public ModelNode Parent
 		{
 			get { return m_oParent; }
@@ -91,6 +93,7 @@ namespace NewServerTree
 		/// Whether this ModelNode is a leaf node (no children, don't collapse parent in 
 		/// ServerTree when selected).
 		/// </summary>
+		[Browsable(false)]
 		public virtual bool IsLeaf
 		{
 			get { return false; }
@@ -99,6 +102,7 @@ namespace NewServerTree
 		/// <summary>
 		/// Whether to disallow pruning of this ModelNode's child nodes in the ServerTree.
 		/// </summary>
+		[Browsable(false)]
 		public virtual bool ShowAllChildren
 		{
 			get { return false; }
@@ -110,8 +114,14 @@ namespace NewServerTree
 		public abstract String DisplayText { get; }
 
 		/// <summary>
+		/// Get a String annotating this ModelNode (such as the number of datasets in a server).
+		/// </summary>
+		public abstract String Annotation { get; }
+
+		/// <summary>
 		/// The ImageKey of the TreeNode for this ModelNode.
 		/// </summary>
+		[Browsable(false)]
 		public abstract String IconKey { get; }
 
 		#endregion
@@ -210,7 +220,6 @@ namespace NewServerTree
 			{
 				if (oContext.SyncNumber != m_iLoadSync)
 				{
-					Console.WriteLine("Abandoning stale load result for " + DisplayText);
 					return;
 				}
 			}
@@ -247,6 +256,7 @@ namespace NewServerTree
 		/// <summary>
 		/// Gets the child ModelNodes of this ModelNode.
 		/// </summary>
+		[Browsable(false)]
 		public virtual ModelNode[] UnfilteredChildren
 		{
 			get
@@ -274,6 +284,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public ModelNode[] FilteredChildren
 		{
 			get
@@ -295,6 +306,7 @@ namespace NewServerTree
 		/// <summary>
 		/// The current LoadState of this ModelNode.
 		/// </summary>
+		[Browsable(false)]
 		public LoadState LoadState
 		{
 			get { return m_eStatus; }
@@ -403,6 +415,7 @@ namespace NewServerTree
 		protected void c_miAddLayer_Click(object sender, EventArgs e)
 		{
 			AddToVisibleLayers();
+			OnDisplayInfoChanged();
 		}
 
 		#endregion
@@ -410,13 +423,22 @@ namespace NewServerTree
 
 		#region Properties
 
-		public ToolStripMenuItem[] MenuItems
+		[Browsable(false)]
+		public virtual ToolStripMenuItem[] MenuItems
 		{
 			get
 			{
 				return new ToolStripMenuItem[] {
 					new ToolStripMenuItem("Add to Data Layers", IconKeys.ImageList.Images[IconKeys.AddLayerMenuItem], new EventHandler(c_miAddLayer_Click))
 				};
+			}
+		}
+
+		public bool Visible
+		{
+			get
+			{
+				return m_oModel.ViewedDatasets.Contains(this);
 			}
 		}
 
@@ -512,7 +534,7 @@ namespace NewServerTree
 
 		protected void c_miProperties_Click(object sender, EventArgs e)
 		{
-			ViewServerProperties();
+			Dapple.frmProperties.DisplayForm(this);
 		}
 
 		#endregion
@@ -520,6 +542,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override ModelNode[] UnfilteredChildren
 		{
 			get
@@ -536,6 +559,7 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get
@@ -555,6 +579,10 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
+		public abstract string ServerTypeIconKey { get; }
+
+		[Browsable(false)]
 		public virtual ToolStripMenuItem[] MenuItems
 		{
 			get
@@ -573,18 +601,30 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("Whether this server is currently enabled.")]
 		public bool Enabled
 		{
 			get { return m_blEnabled; }
 		}
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("Whether this server is your current favourite server.")]
 		public bool Favourite
 		{
 			get { return m_blFavourite; }
 		}
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("The URI for this server.")]
 		public abstract ServerUri Uri { get; }
 
+		[Browsable(true)]
+		[Category("Server")]
+		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
 		public abstract ServerType Type { get; }
 
 		#endregion
@@ -622,6 +662,22 @@ namespace NewServerTree
 			throw new NotImplementedException();
 		}
 
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public List<LayerBuilder> GetBuilders()
+		{
+			if (m_blEnabled)
+			{
+				return GetBuildersInternal();
+			}
+			else
+			{
+				return new List<LayerBuilder>();
+			}
+		}
+
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		abstract public List<LayerBuilder> GetBuildersInternal();
+
 		#endregion
 	}
 
@@ -639,6 +695,7 @@ namespace NewServerTree
 	/// </summary>
 	public interface IContextModelNode
 	{
+		[Browsable(false)]
 		ToolStripMenuItem[] MenuItems { get; }
 	}
 

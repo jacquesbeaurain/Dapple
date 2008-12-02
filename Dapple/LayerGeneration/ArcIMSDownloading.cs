@@ -282,8 +282,7 @@ namespace Dapple.LayerGeneration
       {
          get
          {
-				Console.WriteLine("==== Creating ArcIMS image download request for " + m_oEnvelope.ToString(2));
-            XmlDocument oRequestDoc = new XmlDocument();
+				XmlDocument oRequestDoc = new XmlDocument();
 
             XmlNode nXmlNode = oRequestDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
             oRequestDoc.AppendChild(nXmlNode);

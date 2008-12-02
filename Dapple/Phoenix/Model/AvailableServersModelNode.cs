@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace NewServerTree
 {
@@ -51,6 +52,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
@@ -61,6 +63,12 @@ namespace NewServerTree
 			get { return "Available Servers"; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.AvailableServers; }

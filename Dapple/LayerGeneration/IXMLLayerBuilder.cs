@@ -251,7 +251,7 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
       /// <param name="oTree">The ServerTree which contains oParent.</param>
-      public override void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
+      public override void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
       {
          if (m_blEnabled == false)
          {
@@ -261,7 +261,7 @@ namespace Dapple.LayerGeneration
          }
          else
          {
-            base.updateTreeNode(oParent, oTree, blnAOIFilter, oAOI, strSearch);
+            base.updateTreeNode(oParent, blnAOIFilter, oAOI, strSearch);
          }
       }
 
@@ -406,9 +406,10 @@ namespace Dapple.LayerGeneration
       /// <returns></returns>
       protected virtual TreeNode getLoadingNode()
       {
-         TreeNode result = new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
+         /*TreeNode result = new TreeNode("Retrieving Datasets...", MainForm.ImageListIndex("loading"), MainForm.ImageListIndex("loading"));
          result.Tag = new ServerTree.TempNodeTag();
-         return result;
+         return result;*/
+			throw new NotImplementedException();
       }
 
       /// <summary>
@@ -416,7 +417,7 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
       /// <param name="oTree">The ServerTree which contains oParent.</param>
-      public virtual void updateTreeNode(TreeNode oParent, ServerTree oTree, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
+      public virtual void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
       {
          if (IsLoading)
          {

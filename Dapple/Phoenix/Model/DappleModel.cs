@@ -9,6 +9,8 @@ using Dapple.LayerGeneration;
 using System.Xml;
 using System.IO;
 using Dapple;
+using WorldWind.Net;
+using System.Net;
 
 namespace NewServerTree
 {
@@ -212,6 +214,15 @@ namespace NewServerTree
 			}
 		}
 
+		public event EventHandler ServerAdded;
+		protected void OnServerAdded(EventArgs e)
+		{
+			if (ServerAdded != null)
+			{
+				ServerAdded(this, e);
+			}
+		}
+
 		#endregion
 
 
@@ -313,6 +324,36 @@ namespace NewServerTree
 		public ViewedDatasetsModel ViewedDatasets
 		{
 			get { return m_oViewedDatasets; }
+		}
+
+		public List<ServerModelNode> ListableServers
+		{
+			get
+			{
+				List<ServerModelNode> result = new List<ServerModelNode>();
+
+				foreach (ServerModelNode oServer in m_oRootNode.DAPServers.UnfilteredChildren)
+				{
+					result.Add(oServer);
+				}
+
+				if (m_oRootNode.PersonalDapServer != null)
+				{
+					result.Add(m_oRootNode.PersonalDapServer);
+				}
+
+				foreach (ServerModelNode oServer in m_oRootNode.WMSServers.UnfilteredChildren)
+				{
+					result.Add(oServer);
+				}
+
+				foreach (ServerModelNode oServer in m_oRootNode.ArcIMSServers.UnfilteredChildren)
+				{
+					result.Add(oServer);
+				}
+
+				return result;
+			}
 		}
 
 		#endregion
@@ -539,6 +580,7 @@ namespace NewServerTree
 		private ServerModelNode LoadBuilderEntryType(dappleview.builderentryType entry, Uri favouriteServerUri)
 		{
 			bool DontUpdateHomeView = false;
+			bool DontSubmitToDappleSearch = false;
 			ServerModelNode result = null;
 
 			if (entry.Hasbuilderdirectory())
@@ -552,7 +594,7 @@ namespace NewServerTree
 				}
 			else if (entry.Haswmscatalog())
 			{
-				ServerModelNode newServer = AddWMSServer(new WMSServerUri(entry.wmscatalog.capabilitiesurl.Value), entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true, DontUpdateHomeView);
+				ServerModelNode newServer = AddWMSServer(new WMSServerUri(entry.wmscatalog.capabilitiesurl.Value), entry.wmscatalog.Hasenabled() ? entry.wmscatalog.enabled.Value : true, DontUpdateHomeView, DontSubmitToDappleSearch);
 				if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
 				{
 					result = newServer;
@@ -560,7 +602,7 @@ namespace NewServerTree
 			}
 			else if (entry.Hasarcimscatalog())
 			{
-				ServerModelNode newServer = AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true, DontUpdateHomeView);
+				ServerModelNode newServer = AddArcIMSServer(new ArcIMSServerUri(entry.arcimscatalog.capabilitiesurl.Value), entry.arcimscatalog.Hasenabled() ? entry.arcimscatalog.enabled.Value : true, DontUpdateHomeView, DontSubmitToDappleSearch);
 				if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
 				{
 					result = newServer;
@@ -568,10 +610,14 @@ namespace NewServerTree
 			}
 			else if (entry.Hasdapcatalog())
 			{
-				ServerModelNode newServer = AddDAPServer(new DapServerUri(entry.dapcatalog.url.Value), entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, DontUpdateHomeView);
-				if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
+				DapServerUri oUri = new DapServerUri(entry.dapcatalog.url.Value);
+				if (!oUri.IsForPersonalDAP)
 				{
-					result = newServer;
+					ServerModelNode newServer = AddDAPServer(oUri, entry.dapcatalog.Hasenabled() ? entry.dapcatalog.enabled.Value : true, DontUpdateHomeView, DontSubmitToDappleSearch);
+					if (favouriteServerUri != null && newServer.Uri.ToBaseUri().Equals(favouriteServerUri.ToString()))
+					{
+						result = newServer;
+					}
 				}
 			}
 			else if (entry.Hastileserverset())
@@ -619,14 +665,18 @@ namespace NewServerTree
 
 		#region Adding Servers
 
-		public ServerModelNode AddArcIMSServer()
+		public void AddArcIMSServer()
 		{
-			// --- Pop up dialog, etc ---
+			AddArcIMS oDialog = new AddArcIMS();
 
-			throw new NotImplementedException();
+			if (oDialog.ShowDialog() == DialogResult.OK)
+			{
+				ModelNode result = AddArcIMSServer(new ArcIMSServerUri(oDialog.URL), true, true, true);
+				SelectedNode = result;
+			}
 		}
 
-		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled, bool blUpdateHomeView)
+		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
 		{
 			lock (m_oLock)
 			{
@@ -642,23 +692,37 @@ namespace NewServerTree
 
 				result = m_oRootNode.ArcIMSServers.AddServer(oUri, blEnabled);
 
+				// --- Update home view if necessary ---
+
 				if (blUpdateHomeView)
 				{
 					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.ArcIMS });
 				}
 
+				// --- Submit to DappleSearch if necessary ---
+
+				if (blSubmitToDappleSearch)
+				{
+					SubmitServerToSearchEngine(oUri.ToBaseUri(), ServerModelNode.ServerType.ArcIMS);
+				}
+
+				OnServerAdded(EventArgs.Empty);
 				return result;
 			}
 		}
 
-		public ServerModelNode AddWMSServer()
+		public void AddWMSServer()
 		{
-			// --- Pop up dialog, etc ---
+			AddWMS oDialog = new AddWMS();
 
-			throw new NotImplementedException();
+			if (oDialog.ShowDialog() == DialogResult.OK)
+			{
+				ModelNode result = AddWMSServer(new WMSServerUri(oDialog.WmsURL), true, true, true);
+				SelectedNode = result;
+			}
 		}
 
-		public ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled, bool blUpdateHomeView)
+		public ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
 		{
 			lock (m_oLock)
 			{
@@ -674,26 +738,46 @@ namespace NewServerTree
 
 				result = m_oRootNode.WMSServers.AddServer(oUri, blEnabled);
 
+				// --- Update home view if necessary ---
+
 				if (blUpdateHomeView)
 				{
 					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.WMS });
 				}
 
+				// --- Submit to DappleSearch if necessary ---
+
+				if (blSubmitToDappleSearch)
+				{
+					SubmitServerToSearchEngine(oUri.ToBaseUri(), ServerModelNode.ServerType.WMS);
+				}
+
+				OnServerAdded(EventArgs.Empty);
 				return result;
 			}
 		}
 
 		public void AddDAPServer()
 		{
-			// --- Pop up dialog, etc ---
+			AddDAP oDialog = new AddDAP();
 
-			throw new NotImplementedException();
+			if (oDialog.ShowDialog() == DialogResult.OK)
+			{
+				ModelNode result = AddDAPServer(new DapServerUri(oDialog.Url), true, true, true);
+				SelectedNode = result;
+			}
 		}
 
-		public ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled, bool blUpdateHomeView)
+		public ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
 		{
 			lock (m_oLock)
 			{
+				// --- Don't add 
+				if (oUri.IsForPersonalDAP)
+				{
+					return m_oRootNode.PersonalDapServer;
+				}
+
 				// --- Don't add the server if it's already in the model ---
 
 				ServerModelNode result = m_oRootNode.DAPServers.GetServer(oUri);
@@ -706,11 +790,22 @@ namespace NewServerTree
 
 				result = m_oRootNode.DAPServers.AddServer(oUri, blEnabled);
 
+				// --- Update home view if necessary ---
+
 				if (blUpdateHomeView)
 				{
 					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.DAP });
 				}
 
+				// --- Submit to DappleSerach if necessary ---
+
+				if (blSubmitToDappleSearch)
+				{
+					SubmitServerToSearchEngine(oUri.ToBaseUri(), ServerModelNode.ServerType.DAP);
+				}
+				
+
+				OnServerAdded(EventArgs.Empty);
 				return result;
 			}
 		}
@@ -927,6 +1022,82 @@ namespace NewServerTree
 			m_oSelectedNode = m_oRootNode;
 		}
 
+		/// <remarks>
+		/// TODO: Move this into a separate DappleSearchInterface class, along with the communications in the
+		/// DappleSearch list.
+		/// </remarks>
+		private static void SubmitServerToSearchEngine(String strUrl, NewServerTree.ServerModelNode.ServerType eType)
+		{
+#if !DEBUG
+			if (!MainForm.Settings.UseDappleSearch) return;
+
+			DappleSearchAddServerDownload oSubmission = new DappleSearchAddServerDownload(strUrl, eType);
+			oSubmission.BackgroundDownloadMemory();
+#endif
+		}
+
+		private class DappleSearchAddServerDownload : WebDownload
+		{
+			#region Member Variables
+
+			private String m_strNewServerUrl;
+			private NewServerTree.ServerModelNode.ServerType m_eType;
+
+			#endregion
+
+
+			#region Constructor
+
+			public DappleSearchAddServerDownload(String strUrl, NewServerTree.ServerModelNode.ServerType eType)
+			{
+				m_strNewServerUrl = strUrl;
+				m_eType = eType;
+
+				this.Url = MainForm.Settings.DappleSearchURL + "AddNewServer.aspx";
+				this.CompleteCallback = new DownloadCompleteHandler(DownloadComplete);
+			}
+
+			#endregion
+
+
+			#region WebDownload Overrides
+
+			protected override void Download()
+			{
+				// --- Ensure that this download only happens asynchronously ---
+				throw new ApplicationException("Don't perform a DappleSearchAddServerDownload download synchronously");
+			}
+
+			protected override HttpWebRequest BuildRequest()
+			{
+				HttpWebRequest result = base.BuildRequest();
+
+				request.Headers["GeosoftAddServerRequest"] = CreateAddServerXML();
+
+				return result;
+			}
+
+			#endregion
+
+
+			#region Helper Methods
+
+			private string CreateAddServerXML()
+			{
+				return String.Format("<geosoft_xml><add_server url=\"{0}\" type=\"{1}\"/></geosoft_xml>",
+					m_strNewServerUrl,
+					m_eType.ToString());
+			}
+
+			private void DownloadComplete(WebDownload oDownload)
+			{
+				// --- Sending it is what matters, we don't care what comes back ---
+				oDownload.Dispose();
+			}
+
+			#endregion
+		}
+
 		#endregion
 	}
 
@@ -945,6 +1116,30 @@ namespace NewServerTree
 
 		#endregion
 
+
+		#region Events
+
+		public event EventHandler LayersRemoved;
+		protected void OnLayersRemoved(EventArgs e)
+		{
+			if (LayersRemoved != null)
+			{
+				LayersRemoved(this, e);
+			}
+		}
+
+		public event EventHandler LayersAdded;
+		protected void OnLayersAdded(EventArgs e)
+		{
+			if (LayersAdded != null)
+			{
+				LayersAdded(this, e);
+			}
+		}
+
+		#endregion
+
+
 		#region Constructors
 
 		public ViewedDatasetsModel(LayerList oTarget)
@@ -962,6 +1157,19 @@ namespace NewServerTree
 #pragma warning disable 618
 			m_oLayerList.AddLayer(oNewLayer.ConvertToLayerBuilder());
 #pragma warning restore 618
+			OnLayersAdded(EventArgs.Empty);
+		}
+
+		public bool Contains(LayerModelNode oLayer)
+		{
+#pragma warning disable 618
+			return m_oLayerList.AllLayers.Contains(oLayer.ConvertToLayerBuilder());
+#pragma warning restore 618
+		}
+
+		public void Remove(List<LayerModelNode> oLayersToRemove)
+		{
+			OnLayersRemoved(EventArgs.Empty);
 		}
 
 		#endregion

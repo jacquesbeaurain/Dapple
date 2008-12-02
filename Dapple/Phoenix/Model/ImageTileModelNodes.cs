@@ -1,5 +1,6 @@
 ﻿using System;
 using WorldWind;
+using System.ComponentModel;
 
 namespace NewServerTree
 {
@@ -18,6 +19,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
@@ -28,6 +30,12 @@ namespace NewServerTree
 			get { return "Image Tile Servers"; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.TileRoot; }
@@ -112,6 +120,12 @@ namespace NewServerTree
 			get { return m_strName; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.TileSet; }
@@ -203,6 +217,7 @@ namespace NewServerTree
 
 		#region Properties
 
+		[Browsable(false)]
 		public override bool IsLeaf
 		{
 			get { return true; }
@@ -213,6 +228,12 @@ namespace NewServerTree
 			get { return m_strName; }
 		}
 
+		public override string Annotation
+		{
+			get { return String.Empty; }
+		}
+
+		[Browsable(false)]
 		public override string IconKey
 		{
 			get { return IconKeys.TileLayer; }
