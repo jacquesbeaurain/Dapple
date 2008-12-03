@@ -249,7 +249,10 @@ namespace NewServerTree
 			if (m_oCurrentAsyncResult != null)
 			{
 				m_oCurrentAsyncResult.AsyncWaitHandle.WaitOne();
-				while (m_eStatus == LoadState.Loading) { }
+				while (m_eStatus == LoadState.Loading)
+				{
+					Thread.Sleep(0);
+				}
 			}
 		}
 

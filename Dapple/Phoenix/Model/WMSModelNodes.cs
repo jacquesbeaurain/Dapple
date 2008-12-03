@@ -390,8 +390,6 @@ namespace NewServerTree
 
 			result.Sort(new Comparison<ModelNode>(WMSRootModelNode.SortWMSChildNodes));
 
-			Thread.Sleep(5000);
-
 			return result.ToArray();
 		}
 
