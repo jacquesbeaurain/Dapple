@@ -29,7 +29,6 @@
 							</RegistryKey>
 							<Shortcut Id="NewShortcut1" Directory="newfolder1" Name="Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[DappleShortcut]" />
 							<Shortcut Id="NewShortcut2" Directory="DesktopFolder" Name="Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[DappleShortcut]" />
-							<Shortcut Id="NewShortcut3" Directory="newfolder1" Name="Google Earth Dapple" WorkingDirectory="INSTALLDIR" Icon="dapple_icon.ico" Target="[GEDappleShortcut]" />
 							<RemoveFolder Directory="newfolder1" On="uninstall" Id="Remove_newfolder1" />
 						</Component>
 					</Directory>
@@ -51,7 +50,6 @@
 			<ComponentRef Id="dapple_file_class"/>
 		</Feature>
 		<CustomAction Id="SetDappleShortcut" Property="DappleShortcut" Value="[INSTALLDIR]\Dapple.exe" />
-		<CustomAction Id="SetGEDappleShortcut" Property="GEDappleShortcut" Value="[INSTALLDIR]\GEDapple.exe" />
 		<CustomAction Id="LaunchProgram" Directory="INSTALLDIR" ExeCommand="[INSTALLDIR]dapple.exe" Execute="immediate" Return="asyncNoWait" />
 		<CustomAction Id="SetSettingsFile" Return="check" Property="RemoveCacheDirectory" Value="SETTINGS_FILE=[LocalAppDataFolder]\DappleData\Config\WorldWind.xml" />
 		<CustomAction Id="RemoveCacheDirectory" BinaryKey="GEOBINARY" DllEntry="DeleteCacheDirectory" Execute="deferred" Return="check" Impersonate="no" />
@@ -61,8 +59,6 @@
     </Upgrade>
 		<InstallExecuteSequence>
 			<Custom Action="SetDappleShortcut" Before="RemoveShortcuts">
-			</Custom>
-			<Custom Action="SetGEDappleShortcut" After="SetDappleShortcut">
 			</Custom>
 			<Custom Action="SetSettingsFile" After="RemoveFiles">
 			</Custom>
