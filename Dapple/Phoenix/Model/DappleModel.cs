@@ -558,12 +558,30 @@ namespace NewServerTree
 
 				ServerModelNode oFavouriteServer = null;
 
+				// --- Create favourite server Uri ---
+
+				Uri oFavouriteServerUri = null;
+				if (oSource.View.Hasfavouriteserverurl() && !String.IsNullOrEmpty(oSource.View.favouriteserverurl.Value))
+				{
+					try
+					{
+						oFavouriteServerUri = new Uri(oSource.View.favouriteserverurl.Value);
+					}
+					catch (UriFormatException)
+					{
+						// --- The favourite server is invalid. Default to no favourite server ---
+					}
+				}
+
+
+				// --- Load the servers ---
+
 				if (oSource.View.Hasservers())
 				{
 					for (int i = 0; i < oSource.View.servers.builderentryCount; i++)
 					{
 						dappleview.builderentryType entry = oSource.View.servers.GetbuilderentryAt(i);
-						ServerModelNode temp = LoadBuilderEntryType(entry, oSource.View.Hasfavouriteserverurl() ? new Uri(oSource.View.favouriteserverurl.Value) : null);
+						ServerModelNode temp = LoadBuilderEntryType(entry, oFavouriteServerUri);
 						if (temp != null) oFavouriteServer = temp;
 					}
 				}
