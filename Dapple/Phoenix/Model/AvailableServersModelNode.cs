@@ -118,6 +118,8 @@ namespace NewServerTree
 
 			temp = m_oDAPRootNode.SetFavouriteServer(strUri);
 			if (temp != null) result = temp;
+			if (m_oPersonalDAPServer != null && m_oPersonalDAPServer.UpdateFavouriteStatus(strUri))
+				result = m_oPersonalDAPServer;
 			temp = m_oWMSRootNode.SetFavouriteServer(strUri);
 			if (temp != null) result = temp;
 			temp = m_oArcIMSRootNode.SetFavouriteServer(strUri);
