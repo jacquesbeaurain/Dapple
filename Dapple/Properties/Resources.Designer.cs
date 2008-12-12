@@ -224,6 +224,13 @@ namespace Dapple.Properties {
             }
         }
         
+        internal static System.Drawing.Icon dcat {
+            get {
+                object obj = ResourceManager.GetObject("dcat", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);

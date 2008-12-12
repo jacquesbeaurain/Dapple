@@ -82,7 +82,7 @@ namespace NewServerTree
 			result.Images.Add(OnlineServer, Resources.enserver);
 			result.Images.Add(OfflineServer, Resources.offline);
 			result.Images.Add(DisabledServer, Resources.disserver);
-			result.Images.Add(PersonalDAPServer, Resources.dap);
+			result.Images.Add(PersonalDAPServer, Resources.dcat);
 			result.Images.Add(ArcIMSService, Resources.layers_top);
 			result.Images.Add(TileSet, Resources.tile);
 

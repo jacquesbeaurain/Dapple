@@ -262,7 +262,17 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		public override string ServerTypeIconKey
 		{
-			get { return "dap"; }
+			get
+			{
+				if (this.IsFromPersonalDapServer)
+				{
+					return "desktopcataloger";
+				}
+				else
+				{
+					return "dap";
+				}
+			}
 		}
 
 		[System.ComponentModel.Browsable(false)]

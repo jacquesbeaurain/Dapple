@@ -960,6 +960,7 @@
     <Content Include="Resources\dap_point.ico" />
     <Content Include="Resources\dap_spf.ico" />
     <Content Include="Resources\dap_voxel.ico" />
+    <None Include="Resources\dcat.ico" />
     <Content Include="Resources\delete.ico" />
     <None Include="Resources\disserver.png" />
     <Content Include="Resources\email-view.png" />

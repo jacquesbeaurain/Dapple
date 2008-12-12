@@ -469,6 +469,7 @@ namespace Dapple
 				m_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
 				m_oImageList.Images.Add("imageservice", Dapple.Properties.Resources.layers_top);
 				m_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
+				m_oImageList.Images.Add("desktopcataloger", Dapple.Properties.Resources.dcat);
 
 
 				c_oWorldWindow = new WorldWindow();
