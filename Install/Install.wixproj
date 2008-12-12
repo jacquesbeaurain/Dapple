@@ -79,6 +79,9 @@
   <PropertyGroup>
     <DefineConstants>ReleaseVersion=$(georelease);PrevRelease=$(geoprevrelease);DappleProductCode=$(dapple_product_code)</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <SuppressSpecificWarnings>1080</SuppressSpecificWarnings>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="DappleInstall.wxs" />
     <Compile Include="Dapple_ExitDialog.wxs" />
