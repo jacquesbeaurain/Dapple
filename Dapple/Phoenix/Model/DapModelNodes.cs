@@ -445,6 +445,12 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
+		public override string ServerTypeIconKey
+		{
+			get { return IconKeys.PersonalDAPServer; }
+		}
+
 		#endregion
 	}
 
