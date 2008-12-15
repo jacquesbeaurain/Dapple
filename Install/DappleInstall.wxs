@@ -8,7 +8,9 @@
         <Directory Id="CommonFilesFolder" Name="Common Files">
           <Directory Id="COMMONFILES_GEOSOFT_DIRECTORY" Name="Geosoft">
             <Directory Id="COMMONFILES_GEOSOFT_SECURECLIENT_DIRECTORY" Name="SecureClient">
-              <Component Id="GeoSecureClient.exe" Guid="{8AA6870B-23EF-40ED-B31D-DC7EA38DA9DD}" SharedDllRefCount="yes" />
+              <Component Id="GeoSecureClient.exe" Guid="{8AA6870B-23EF-40ED-B31D-DC7EA38DA9DD}" SharedDllRefCount="yes" >
+                <File Id="GeoSecureClient.exe_0" Name="GeoSecureClient.exe" DiskId="1" Source="$(var.GeoBuild)\obj\release\GeoSecureClient.exe" Vital="yes" KeyPath="yes" />
+              </Component>
             </Directory>
           </Directory>
         </Directory>

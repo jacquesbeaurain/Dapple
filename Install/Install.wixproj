@@ -77,7 +77,7 @@
     </WixVariables>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants>ReleaseVersion=$(georelease);PrevRelease=$(geoprevrelease);DappleProductCode=$(dapple_product_code)</DefineConstants>
+    <DefineConstants>GeoBuild=$(geobuild);ReleaseVersion=$(georelease);PrevRelease=$(geoprevrelease);DappleProductCode=$(dapple_product_code)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <SuppressSpecificWarnings>1080</SuppressSpecificWarnings>
