@@ -1022,7 +1022,24 @@ namespace Dapple
 				return;
 			}
 
-         Extract.DownloadSettings oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers, this.TopLevelControl as Form);
+			Extract.DownloadSettings oDownloadDialog = null;
+			try
+			{
+				 oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers, this.TopLevelControl as Form);
+			}
+			catch (System.Runtime.Remoting.RemotingException)
+			{
+				Program.ShowMessageBox(
+					"Connection to " + Utility.EnumUtils.GetDescription(MainForm.Client) + " lost, unable to extract datasets.",
+					"Extract Layers",
+					MessageBoxButtons.OK,
+					MessageBoxDefaultButton.Button1,
+					MessageBoxIcon.Error);
+				m_blAllowExtract = false;
+				c_bExtract.Enabled = false;
+				return;
+			}
+
          oDownloadDialog.ShowInTaskbar = false;
          DialogResult oResult = oDownloadDialog.ShowDialog(this);
 			if (oResult == DialogResult.OK)
