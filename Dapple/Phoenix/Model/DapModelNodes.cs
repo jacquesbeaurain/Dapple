@@ -333,6 +333,11 @@ namespace NewServerTree
 			System.Collections.ArrayList oDapDatasets;
 			m_oServer.Command.GetCatalog(null, 0, 0, 1000, m_oModel.SearchKeyword, m_oModel.SearchBounds_DAP, out oDapDatasets);
 
+			if (!m_oModel.SearchBoundsSet || this.m_oServer.ServerExtents.Intersects(m_oModel.SearchBounds_DAP))
+			{
+				result.Add(new DAPBrowserMapBuilder(Dapple.MainForm.WorldWindowSingleton, this.m_oServer, null));
+			}
+
 			foreach (Geosoft.Dap.Common.DataSet oDataSet in oDapDatasets)
 			{
 				result.Add(new DAPQuadLayerBuilder(oDataSet, Dapple.MainForm.WorldWindowSingleton, m_oServer, null));
