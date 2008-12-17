@@ -224,24 +224,25 @@ namespace ThreeDconnexion.Plugin
 
             m_TheCamera = m_WW.DrawArgs.WorldCamera;
 
-            try
+            m_TheInputDevice = new TDconnexion.TDxDeviceWrapper();
+            if (m_TheInputDevice != null)
             {
-               m_TheInputDevice = new TDconnexion.TDxDeviceWrapper();
-               if (m_TheInputDevice != null)
-               {
-                  // JBTODO: m_app.MenuStrip.Items.Add(menuItem);
+					if (m_TheInputDevice.InitializationSuccessful)
+					{
+						// JBTODO: m_app.MenuStrip.Items.Add(menuItem);
 
-                  m_TheSensor = m_TheInputDevice.Sensor;
-                  m_TheKeyBoard = m_TheInputDevice.Keyboard;
-                  m_Position = new Point3d();
-                  SetCameraMode();
-                  m_KeyEventHandler = new TDconnexion.TDxKeyboardEvent(KeyboardEventHandler);
-                  m_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;
-                  m_TheInputDevice.Connect();
-               }
-            }
-            catch
-            {
+						m_TheSensor = m_TheInputDevice.Sensor;
+						m_TheKeyBoard = m_TheInputDevice.Keyboard;
+						m_Position = new Point3d();
+						SetCameraMode();
+						m_KeyEventHandler = new TDconnexion.TDxKeyboardEvent(KeyboardEventHandler);
+						m_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;
+						m_TheInputDevice.Connect();
+					}
+					else
+					{
+						m_TheInputDevice = null;
+					}
             }
         }
 
@@ -1292,6 +1293,7 @@ namespace ThreeDconnexion.Plugin
             private object m_OKeyboard;
             private C3DxSensor m_C3dxSensor;
             private C3DxKeyboard m_C3dxKeyboard;
+				private bool m_blInitializationSuccessful;
 
             private class ConversionEventHandler : ITypeLibImporterNotifySink
             {
@@ -1311,7 +1313,7 @@ namespace ThreeDconnexion.Plugin
 
             public TDxDeviceWrapper()
             {
-                InitializeTDxInputWrapper();
+                m_blInitializationSuccessful = InitializeTDxInputWrapper();
             }
 
             private bool InitializeTDxInputWrapper()
@@ -1324,22 +1326,24 @@ namespace ThreeDconnexion.Plugin
                     RegistryKey regKey
                        = Registry.LocalMachine.OpenSubKey("Software\\Classes\\CLSID\\{82C5AB54-C92C-4D52-AAC5-27E25E22604C}\\InprocServer32", false);
 
-                    if (regKey != null)
-                    {
-                       string strTypeLibName = regKey.GetValue("").ToString();
-                       regKey.Close();
+						  if (regKey != null)
+						  {
+							  string strTypeLibName = regKey.GetValue("").ToString();
+							  regKey.Close();
 
-                       LoadTypeLibEx(strTypeLibName
-                                     , RegKind.RegKind_None
-                                     , out typeLib);
-                    }
+							  LoadTypeLibEx(strTypeLibName
+												 , RegKind.RegKind_None
+												 , out typeLib);
+						  }
+						  else
+						  {
+							  // --- No registry set, there must be no 3DConnexion ---
+							  return false;
+						  }
                 }
                 catch (Exception e)
                 {
                     string sError = e.Message;
-                }
-                finally
-                {
                 }
 
                 if (typeLib == null)
@@ -1385,7 +1389,7 @@ namespace ThreeDconnexion.Plugin
             {
                 if (m_OSimpleDevice == null)
                 {
-                    InitializeTDxInputWrapper();
+						 m_blInitializationSuccessful = InitializeTDxInputWrapper();
                 }
 
                 if (m_OSimpleDevice != null)
@@ -1406,6 +1410,11 @@ namespace ThreeDconnexion.Plugin
                     method.Invoke(m_OSimpleDevice, null);  // kein Parameter
                 }
             }
+
+				public bool InitializationSuccessful
+				{
+					get { return m_blInitializationSuccessful; }
+				}
 
 
             /// <summary>
