@@ -13,15 +13,7 @@ namespace Dapple.Extract
    /// </summary>
    public partial class Disabled : DownloadOptions
    {
-      /// <summary>
-      /// Constructor
-      /// </summary>
-      /// <param name="oDAPbuilder"></param>
-		public Disabled() : this("This data layer will not be extracted.")
-      {
-      }
-
-		public Disabled(String szReason)
+      public Disabled(String szReason)
 			:base(null)
 		{
 			InitializeComponent();

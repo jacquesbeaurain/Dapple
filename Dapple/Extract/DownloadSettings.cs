@@ -129,6 +129,18 @@ namespace Dapple.Extract
       }
 
       #region Private Methods
+
+		private static string GetExtractionVerb(Dapple.LayerGeneration.LayerBuilder oBuilder)
+		{
+			if (oBuilder is Dapple.LayerGeneration.DAPQuadLayerBuilder &&
+				(oBuilder as Dapple.LayerGeneration.DAPQuadLayerBuilder).IsFromPersonalDapServer)
+			{
+				return "open";
+			}
+
+			return "extract";
+		}
+
       /// <summary>
       /// Create the correct control for this dataset
       /// </summary>
@@ -138,7 +150,7 @@ namespace Dapple.Extract
       {
 			if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
 			{
-				return new Disabled("This data layer will not be extracted because it does not intersect with the viewed area.");
+				return new Disabled("This data layer cannot be " + GetExtractionVerb(oBuilder) + "ed. View the data layer extents within the currently viewed area and try again.");
 			}
 
          DownloadOptions oControl = null;
