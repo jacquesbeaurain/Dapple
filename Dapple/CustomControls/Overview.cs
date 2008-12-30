@@ -73,7 +73,10 @@ namespace Dapple.CustomControls
 
 		private void c_pOverview_Resize(object sender, EventArgs e)
 		{
-			c_Overview.Refresh();
+			if (c_Overview != null)
+			{
+				c_Overview.Refresh();
+			}
 		}
 
 		#endregion
