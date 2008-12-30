@@ -295,6 +295,11 @@ namespace NewServerTree
 		{
 			get
 			{
+				if (!m_oModel.SearchFilterSet)
+				{
+					return UnfilteredChildren;
+				}
+
 				List<ModelNode> result = new List<ModelNode>();
 
 				foreach (ModelNode oChild in UnfilteredChildren)
