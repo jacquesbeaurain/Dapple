@@ -63,11 +63,6 @@ namespace NewServerTree
 			get { return "Available Servers"; }
 		}
 
-		public override string Annotation
-		{
-			get { return String.Empty; }
-		}
-
 		[Browsable(false)]
 		public override string IconKey
 		{

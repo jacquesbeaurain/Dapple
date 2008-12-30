@@ -116,7 +116,10 @@ namespace NewServerTree
 		/// <summary>
 		/// Get a String annotating this ModelNode (such as the number of datasets in a server).
 		/// </summary>
-		public abstract String Annotation { get; }
+		public virtual String Annotation
+		{
+			get { return String.Empty; }
+		}
 
 		/// <summary>
 		/// The ImageKey of the TreeNode for this ModelNode.

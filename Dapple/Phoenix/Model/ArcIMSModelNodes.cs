@@ -49,11 +49,7 @@ namespace NewServerTree
 
 		public override string Annotation
 		{
-			get
-			{
-				ModelNode[] cache = FilteredChildren;
-				return String.Format("[{0} server{1}]", cache.Length, cache.Length != 1 ? "s" : String.Empty);
-			}
+			get { return String.Format("[{0}]", FilteredChildren.Length); }
 		}
 
 		[Browsable(false)]
@@ -372,11 +368,6 @@ namespace NewServerTree
 			get { return m_strServiceName; }
 		}
 
-		public override string Annotation
-		{
-			get { return String.Empty; }
-		}
-
 		[Browsable(false)]
 		public override string IconKey
 		{
@@ -579,11 +570,6 @@ namespace NewServerTree
 		public override string DisplayText
 		{
 			get { return m_strTitle; }
-		}
-
-		public override string Annotation
-		{
-			get { return String.Empty; }
 		}
 
 		[Browsable(false)]

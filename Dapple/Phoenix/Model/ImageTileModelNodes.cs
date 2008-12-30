@@ -30,11 +30,6 @@ namespace NewServerTree
 			get { return "Image Tile Servers"; }
 		}
 
-		public override string Annotation
-		{
-			get { return String.Empty; }
-		}
-
 		[Browsable(false)]
 		public override string IconKey
 		{
@@ -118,11 +113,6 @@ namespace NewServerTree
 		public override string DisplayText
 		{
 			get { return m_strName; }
-		}
-
-		public override string Annotation
-		{
-			get { return String.Empty; }
 		}
 
 		[Browsable(false)]
@@ -226,11 +216,6 @@ namespace NewServerTree
 		public override string DisplayText
 		{
 			get { return m_strName; }
-		}
-
-		public override string Annotation
-		{
-			get { return String.Empty; }
 		}
 
 		[Browsable(false)]

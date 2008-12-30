@@ -516,7 +516,7 @@ namespace NewServerTree.View
 		{
 			ModelNode oNode = oNodeToConfigure.Tag as ModelNode;
 
-			oNodeToConfigure.Text = oNode.DisplayText + " " + oNode.Annotation;
+			oNodeToConfigure.Text = oNode.DisplayText + (String.IsNullOrEmpty(oNode.Annotation) ? String.Empty : " " + oNode.Annotation);
 			oNodeToConfigure.ImageKey = oNode.IconKey;
 			oNodeToConfigure.SelectedImageKey = oNode.IconKey;
 			oNodeToConfigure.ForeColor = SystemColors.ControlText;

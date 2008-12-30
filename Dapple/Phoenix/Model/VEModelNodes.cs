@@ -27,11 +27,6 @@ namespace NewServerTree
 			get { return "Virtual Earth"; }
 		}
 
-		public override string Annotation
-		{
-			get { return String.Empty; }
-		}
-
 		[Browsable(false)]
 		public override string IconKey
 		{
@@ -146,11 +141,6 @@ namespace NewServerTree
 						throw new ApplicationException("Missing enumeration case statement");
 				}
 			}
-		}
-
-		public override string Annotation
-		{
-			get { return String.Empty; }
 		}
 
 		[Browsable(false)]

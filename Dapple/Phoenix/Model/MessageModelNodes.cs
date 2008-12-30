@@ -38,11 +38,6 @@ namespace NewServerTree
 			get { return m_strMessage; }
 		}
 
-		public override string Annotation
-		{
-			get { return String.Empty; }
-		}
-
 		#endregion
 
 
