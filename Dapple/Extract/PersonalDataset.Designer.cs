@@ -38,7 +38,7 @@
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(240, 153);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "This dataset is hosted on your Personal DAP server. It will be opened directly.";
+			this.label1.Text = "This dataset is in your Desktop Catalog. It will be opened directly.";
 			// 
 			// PersonalDataset
 			// 
