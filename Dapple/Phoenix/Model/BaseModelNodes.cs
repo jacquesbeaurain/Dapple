@@ -466,6 +466,45 @@ namespace NewServerTree
 			m_oModel.ViewedDatasets.Add(this);
 		}
 
+		/// <summary>
+		/// Takes a LayerBuilder, adds its server to the server tree and home view, and returns it.
+		/// </summary>
+		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
+		public static ServerModelNode AddServerToHomeView(DappleModel oModel, LayerBuilder oLayer)
+		{
+			const bool Enabled = true;
+			const bool DontAddToHomeViewYet = false;
+			const bool DontSubmitToDappleSearch = false;
+
+			ServerModelNode result = null;
+
+			// --- Add the server to the model ---
+
+			if (oLayer is ArcIMSQuadLayerBuilder)
+			{
+				ArcIMSQuadLayerBuilder castLayer = oLayer as ArcIMSQuadLayerBuilder;
+				result = oModel.AddArcIMSServer(new ArcIMSServerUri(castLayer.ServerURL), Enabled, DontAddToHomeViewYet, DontSubmitToDappleSearch);
+			}
+			else if (oLayer is DAPQuadLayerBuilder)
+			{
+				DAPQuadLayerBuilder castLayer = oLayer as DAPQuadLayerBuilder;
+				result = oModel.AddDAPServer(new DapServerUri(castLayer.ServerURL), Enabled, DontAddToHomeViewYet, DontSubmitToDappleSearch);
+			}
+			else if (oLayer is WMSQuadLayerBuilder)
+			{
+				WMSQuadLayerBuilder castLayer = oLayer as WMSQuadLayerBuilder;
+				result = oModel.AddWMSServer(new WMSServerUri(castLayer.ServerURL), Enabled, DontAddToHomeViewYet, DontSubmitToDappleSearch);
+			}
+			else
+			{
+				throw new ApplicationException("Don't know how to get the server of type " + oLayer.GetType().ToString());
+			}
+
+			result.AddToHomeView();
+
+			return result;
+		}
+
 		#endregion
 	}
 
@@ -545,7 +584,7 @@ namespace NewServerTree
 
 		protected void c_miProperties_Click(object sender, EventArgs e)
 		{
-			Dapple.frmProperties.DisplayForm(this);
+			ViewProperties();
 		}
 
 		#endregion
@@ -643,6 +682,11 @@ namespace NewServerTree
 
 		#region Public Methods
 
+		public void ViewProperties()
+		{
+			Dapple.frmProperties.DisplayForm(this);
+		}
+
 		public bool UpdateFavouriteStatus(String strUri)
 		{
 			m_blFavourite = Uri.ToString().Equals(strUri);
@@ -668,11 +712,6 @@ namespace NewServerTree
 			Unload();
 		}
 
-		public void ViewServerProperties()
-		{
-			throw new NotImplementedException();
-		}
-
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
 		public List<LayerBuilder> GetBuilders()
 		{
@@ -688,6 +727,9 @@ namespace NewServerTree
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
 		abstract public List<LayerBuilder> GetBuildersInternal();
+
+
+		public abstract void AddToHomeView();
 
 		#endregion
 	}

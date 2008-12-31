@@ -305,6 +305,7 @@
     <Compile Include="Phoenix\Model\BaseModelNodes.cs" />
     <Compile Include="Phoenix\Model\DapModelNodes.cs" />
     <Compile Include="Phoenix\Model\DappleModel.cs" />
+    <Compile Include="Phoenix\Model\HomeView.cs" />
     <Compile Include="Phoenix\Model\IconKeys.cs" />
     <Compile Include="Phoenix\Model\ImageTileModelNodes.cs" />
     <Compile Include="Phoenix\Model\MessageModelNodes.cs" />

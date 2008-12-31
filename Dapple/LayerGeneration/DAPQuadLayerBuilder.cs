@@ -344,6 +344,15 @@ namespace Dapple.LayerGeneration
 			get { return m_oServer.IsPersonal; }
 		}
 
+		[System.ComponentModel.Browsable(false)]
+		public override bool ServerIsInHomeView
+		{
+			get
+			{
+				return NewServerTree.HomeView.ContainsServer(new DapServerUri(this.m_oServer.Url));
+			}
+		}
+
 		#endregion
 
 		#region ImageBuilder Implementations

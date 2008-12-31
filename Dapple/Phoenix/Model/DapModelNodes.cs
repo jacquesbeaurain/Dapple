@@ -342,6 +342,14 @@ namespace NewServerTree
 			return result;
 		}
 
+		public override void AddToHomeView()
+		{
+			if (!HomeView.ContainsServer(m_oUri))
+			{
+				HomeView.AddServer(m_oUri);
+			}
+		}
+
 		#endregion
 
 
@@ -450,6 +458,16 @@ namespace NewServerTree
 		public override string ServerTypeIconKey
 		{
 			get { return IconKeys.PersonalDAPServer; }
+		}
+
+		#endregion
+
+
+		#region Public Methods
+
+		public override void AddToHomeView()
+		{
+			// --- This space intentionally left blank ---
 		}
 
 		#endregion

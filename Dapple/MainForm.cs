@@ -106,7 +106,6 @@ namespace Dapple
 		public const string FavouriteServerExt = ".dapple_serverlist";
 		public const string LastView = "lastview" + ViewExt;
 		public const string DefaultView = "default" + ViewExt;
-		public const string HomeView = "homeview_2.0.0" + ViewExt;
 		public const string ViewFileDescr = "Dapple View";
 		public const string LinkFileDescr = "Dapple Link";
 		public const string WebsiteUrl = "http://dapple.geosoft.com/";
@@ -363,10 +362,7 @@ namespace Dapple
 			{
 				File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple_serverlist"), Path.Combine(CurrentSettingsDirectory, "user.dapple_serverlist"));
 			}*/
-			if (!File.Exists(Path.Combine(CurrentSettingsDirectory, HomeView)))
-			{
-				File.Copy(Path.Combine(Path.Combine(DirectoryPath, "Data"), "default.dapple"), Path.Combine(CurrentSettingsDirectory, HomeView));
-			}
+			HomeView.CreateDefault();
 
 			InitSettings();
 
@@ -1640,7 +1636,7 @@ namespace Dapple
 
 		private void c_miViewProperties_Click(object sender, EventArgs e)
 		{
-			m_oModel.SelectedServer.ViewServerProperties();
+			m_oModel.SelectedServer.ViewProperties();
 		}
 
 		private void c_miTakeSnapshot_Click(object sender, EventArgs e)
@@ -2936,12 +2932,12 @@ namespace Dapple
 
 		public void CmdSaveHomeView()
 		{
-			SaveCurrentView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
+			SaveCurrentView(HomeView.FullPath, Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
 		}
 
 		public void CmdLoadHomeView()
 		{
-			OpenView(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), HomeView), true, true);
+			OpenView(HomeView.FullPath, true, true);
 		}
 
 		private void CmdDisplayOMHelp()

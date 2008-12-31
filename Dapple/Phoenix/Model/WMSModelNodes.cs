@@ -357,6 +357,14 @@ namespace NewServerTree
 			return result;
 		}
 
+		public override void AddToHomeView()
+		{
+			if (!HomeView.ContainsServer(m_oUri))
+			{
+				HomeView.AddServer(m_oUri);
+			}
+		}
+
 		#endregion
 
 

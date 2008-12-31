@@ -363,183 +363,6 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		#region Updating the home view
-
-		public enum UpdateHomeViewType
-		{
-			AddServer,
-			RemoveServer,
-			ToggleServer,
-			ChangeFavorite
-		};
-
-		private Object LOCK = new object();
-		/// <summary>
-		/// This command modifies the home view, but doesn't do a full save.  Useful for changing the server list.
-		/// </summary>
-		/// <param name="eType"></param>
-		/// <param name="szServer"></param>
-		private void UpdateHomeView(UpdateHomeViewType eType, Object[] data)
-		{
-			lock (LOCK)
-			{
-				XmlDocument oHomeViewDoc = new XmlDocument();
-				oHomeViewDoc.Load(Path.Combine(Path.Combine(MainForm.UserPath, MainForm.Settings.ConfigPath), MainForm.HomeView));
-
-				switch (eType)
-				{
-					case UpdateHomeViewType.AddServer:
-						{
-							String szUrl = data[0] as String;
-							ServerModelNode.ServerType eServerType = (ServerModelNode.ServerType)data[1];
-
-							switch (eServerType)
-							{
-								case ServerModelNode.ServerType.DAP:
-									{
-										XmlElement oDAPRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"DAPServers\"]") as XmlElement;
-										XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-										oDAPRoot.AppendChild(oBuilderEntry);
-										XmlElement oDapCatalog = oHomeViewDoc.CreateElement("dapcatalog");
-										oDapCatalog.SetAttribute("url", szUrl);
-										oDapCatalog.SetAttribute("enabled", "true");
-										oBuilderEntry.AppendChild(oDapCatalog);
-									}
-									break;
-								case ServerModelNode.ServerType.WMS:
-									{
-										XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
-										XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-										oWMSRoot.AppendChild(oBuilderEntry);
-										XmlElement oDapCatalog = oHomeViewDoc.CreateElement("wmscatalog");
-										oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
-										oDapCatalog.SetAttribute("enabled", "true");
-										oBuilderEntry.AppendChild(oDapCatalog);
-									}
-									break;
-								case ServerModelNode.ServerType.ArcIMS:
-									{
-										XmlElement oWMSRoot = oHomeViewDoc.SelectSingleNode("/dappleview/servers/builderentry/builderdirectory[@specialcontainer=\"WMSServers\"]") as XmlElement;
-										XmlElement oBuilderEntry = oHomeViewDoc.CreateElement("builderentry");
-										oWMSRoot.AppendChild(oBuilderEntry);
-										XmlElement oDapCatalog = oHomeViewDoc.CreateElement("arcimscatalog");
-										oDapCatalog.SetAttribute("capabilitiesurl", szUrl);
-										oDapCatalog.SetAttribute("enabled", "true");
-										oBuilderEntry.AppendChild(oDapCatalog);
-									}
-									break;
-								default:
-									throw new ApplicationException("Missing enum switch statement");
-							}
-						}
-						break;
-					case UpdateHomeViewType.ChangeFavorite:
-						{
-							String szUrl = data[0] as String;
-
-							XmlElement oDocRoot = oHomeViewDoc.SelectSingleNode("/dappleview") as XmlElement;
-							oDocRoot.SetAttribute("favouriteserverurl", szUrl);
-						}
-						break;
-					case UpdateHomeViewType.RemoveServer:
-						{
-							String szUrl = data[0] as String;
-							ServerModelNode.ServerType eServerType = (ServerModelNode.ServerType)data[1];
-							switch (eServerType)
-							{
-								case ServerModelNode.ServerType.DAP:
-									{
-										Uri oUri = new Uri(szUrl);
-										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
-										{
-											if (new DapServerUri(oDapCatalog.GetAttribute("url")).ToBaseUri().Equals(oUri))
-											{
-												oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-											}
-										}
-									}
-									break;
-								case ServerModelNode.ServerType.WMS:
-									{
-										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
-										{
-											if (new WMSServerUri(oDapCatalog.GetAttribute("capabilitiesurl")).ToBaseUri().Equals(szUrl))
-											{
-												oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-											}
-										}
-									}
-									break;
-								case ServerModelNode.ServerType.ArcIMS:
-									{
-										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
-										{
-											if (new ArcIMSServerUri(oDapCatalog.GetAttribute("capabilitiesurl")).ToBaseUri().Equals(szUrl))
-											{
-												oDapCatalog.ParentNode.ParentNode.RemoveChild(oDapCatalog.ParentNode);
-											}
-										}
-									}
-									break;
-								default:
-									throw new ApplicationException("Missing enum switch statement");
-							}
-						}
-						break;
-					case UpdateHomeViewType.ToggleServer:
-						{
-							String szUrl = data[0] as String;
-							ServerModelNode.ServerType eServerType = (ServerModelNode.ServerType)data[1];
-							bool blStatus = (bool)data[2];
-
-							switch (eServerType)
-							{
-								case ServerModelNode.ServerType.DAP:
-									{
-										foreach (XmlElement oDapCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/dapcatalog"))
-										{
-											if (new DapServerUri(oDapCatalog.GetAttribute("url")).ToString().Equals(szUrl))
-											{
-												oDapCatalog.SetAttribute("enabled", blStatus.ToString());
-											}
-										}
-									}
-									break;
-								case ServerModelNode.ServerType.WMS:
-									{
-										foreach (XmlElement oWmsCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/wmscatalog"))
-										{
-											if (new WMSServerUri(oWmsCatalog.GetAttribute("capabilitiesurl")).ToString().Equals(szUrl))
-											{
-												oWmsCatalog.SetAttribute("enabled", blStatus.ToString());
-											}
-										}
-									}
-									break;
-								case ServerModelNode.ServerType.ArcIMS:
-									{
-										foreach (XmlElement oArcIMSCatalog in oHomeViewDoc.SelectNodes("/dappleview/servers/builderentry/builderdirectory/builderentry/arcimscatalog"))
-										{
-											if (new ArcIMSServerUri(oArcIMSCatalog.GetAttribute("capabilitiesurl")).ToString().Equals(szUrl))
-											{
-												oArcIMSCatalog.SetAttribute("enabled", blStatus.ToString());
-											}
-										}
-									}
-									break;
-								default:
-									throw new ApplicationException("Missing enum switch statement");
-							}
-						}
-						break;
-				}
-
-				oHomeViewDoc.Save(Path.Combine(Path.Combine(MainForm.UserPath, MainForm.Settings.ConfigPath), MainForm.HomeView));
-			}
-		}
-
-		#endregion
-
 		public void SaveToView(Dapple.DappleView oView)
 		{
 			m_oRootNode.SaveToView(oView);
@@ -714,7 +537,7 @@ namespace NewServerTree
 
 				if (blUpdateHomeView)
 				{
-					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.ArcIMS });
+					result.AddToHomeView();
 				}
 
 				// --- Submit to DappleSearch if necessary ---
@@ -760,7 +583,7 @@ namespace NewServerTree
 
 				if (blUpdateHomeView)
 				{
-					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.WMS });
+					result.AddToHomeView();
 				}
 
 				// --- Submit to DappleSearch if necessary ---
@@ -812,7 +635,7 @@ namespace NewServerTree
 
 				if (blUpdateHomeView)
 				{
-					UpdateHomeView(UpdateHomeViewType.AddServer, new object[] { result.Uri.ToString(), ServerModelNode.ServerType.DAP });
+					result.AddToHomeView();
 				}
 
 				// --- Submit to DappleSerach if necessary ---
@@ -875,7 +698,8 @@ namespace NewServerTree
 
 					if (blUpdateHomeView)
 					{
-						UpdateHomeView(UpdateHomeViewType.ChangeFavorite, new object[] { m_oFavouriteServer.Uri.ToString()});
+						oServer.AddToHomeView();
+						HomeView.SetFavourite(m_oFavouriteServer.Uri);
 					}
 
 					m_oSelectedNode = m_oFavouriteServer;
@@ -892,7 +716,8 @@ namespace NewServerTree
 
 				if (blUpdateHomeView)
 				{
-					UpdateHomeView(UpdateHomeViewType.ToggleServer, new object[] { oServer.Uri.ToString(), oServer.Type, oServer.Enabled });
+					oServer.AddToHomeView();
+					HomeView.SetServerEnabled(oServer.Uri, oServer.Enabled);
 				}
 
 				OnServerToggled(EventArgs.Empty);
@@ -907,7 +732,12 @@ namespace NewServerTree
 
 				if (blUpdateHomeView)
 				{
-					UpdateHomeView(UpdateHomeViewType.RemoveServer, new object[] { oServer.Uri.ToString(), oServer.Type });
+					if (oServer.Favourite)
+					{
+						HomeView.ClearFavourite();
+					}
+
+					HomeView.RemoveServer(oServer.Uri);
 				}
 			}
 		}

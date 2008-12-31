@@ -506,6 +506,17 @@ namespace Dapple
 			c_miGoToLayer.Enabled = blOneSelected;
 			c_miProperties.Enabled = blOneSelected;
 			c_miViewLegend.Enabled = blOneSelected && m_oLayers[c_lvLayers.SelectedIndices[0]].SupportsLegend;
+
+			bool blCanGotoServer = blOneSelected && m_oLayers[c_lvLayers.SelectedIndices[0]].LayerFromSupportedServer;
+			c_miAddOrGotoServer.Visible = blCanGotoServer;
+			c_miAddOrGotoServer.Enabled = blCanGotoServer;
+			if (blCanGotoServer)
+			{
+				if (m_oLayers[c_lvLayers.SelectedIndices[0]].ServerIsInHomeView)
+					c_miAddOrGotoServer.Text = "Open Server in Server Tree";
+				else
+					c_miAddOrGotoServer.Text = "Add Server to Server Tree";
+			}
       }
 
       private void cGoToToolStripMenuItem_Click(object sender, EventArgs e)
@@ -555,6 +566,17 @@ namespace Dapple
             if (!String.IsNullOrEmpty(szLegend)) MainForm.BrowseTo(szLegend);
          }
       }
+
+		private void c_miAddOrGotoServer_Click(object sender, EventArgs e)
+		{
+			LayerBuilder oSelectedLayer = m_oLayers[c_lvLayers.SelectedIndices[0]];
+
+#pragma warning disable 618
+			ServerModelNode oSelectedLayerServer = LayerModelNode.AddServerToHomeView(m_oModel, oSelectedLayer);
+#pragma warning restore 618
+
+			m_oModel.SelectedNode = oSelectedLayerServer;
+		}
 
       #endregion
 

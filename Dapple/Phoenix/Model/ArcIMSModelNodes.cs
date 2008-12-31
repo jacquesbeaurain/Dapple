@@ -277,6 +277,14 @@ namespace NewServerTree
 			return new List<LayerBuilder>();
 		}
 
+		public override void AddToHomeView()
+		{
+			if (!HomeView.ContainsServer(m_oUri))
+			{
+				HomeView.AddServer(m_oUri);
+			}
+		}
+
 		#endregion
 
 
@@ -300,7 +308,7 @@ namespace NewServerTree
 			{
 				String strServiceName = ((XmlElement)oServiceNode).GetAttribute("name");
 				XmlElement oLocaleNode = oServiceNode.SelectSingleNode("ENVIRONMENT/LOCALE") as XmlElement;
-				CultureInfo oCultureInfo = CultureInfo.CurrentCulture;
+				CultureInfo oCultureInfo = CultureInfo.InvariantCulture;
 				if (oLocaleNode != null && oLocaleNode.HasAttribute("language") && oLocaleNode.HasAttribute("country"))
 				{
 					String strLanguage = oLocaleNode.GetAttribute("language");
@@ -325,6 +333,12 @@ namespace NewServerTree
 						}
 					}
 
+					// --- We can't parse strings with neutral cultures, so if we get one, then default
+					// --- to the invariant culture.
+					if (oCultureInfo.IsNeutralCulture)
+					{
+						oCultureInfo = CultureInfo.InvariantCulture;
+					}
 				}
 
 				result.Add(new ArcIMSServiceModelNode(m_oModel, strServiceName, oCultureInfo));
