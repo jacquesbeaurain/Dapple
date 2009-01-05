@@ -197,9 +197,14 @@ namespace Dapple
 			}
 		}
 
-		private static bool IsMontajChildProcess
+		private static bool IsRunningAsDapClient
 		{
 			get { return m_oMontajRemoteInterface != null; }
+		}
+
+		public static bool IsRunningAsMapinfoDapClient
+		{
+			get { return IsRunningAsDapClient && m_eClientType == Dapple.Extract.Options.Client.ClientType.MapInfo; }
 		}
 
 		public static ImageList DataTypeImageList
@@ -678,7 +683,7 @@ namespace Dapple
 
 				#region OM Forked Process configuration
 
-				if (IsMontajChildProcess)
+				if (IsRunningAsDapClient)
 				{
 					c_oLayerList.OMFeaturesEnabled = true;
 					this.MinimizeBox = false;
@@ -1766,7 +1771,7 @@ namespace Dapple
 
 		private void MainForm_Shown(object sender, EventArgs e)
 		{
-			if (IsMontajChildProcess)
+			if (IsRunningAsDapClient)
 			{
 				try
 				{
@@ -1790,7 +1795,7 @@ namespace Dapple
 
 				if (this.openView.Length > 0)
 					OpenView(this.openView, m_strOpenGeoTiffFile.Length == 0 && m_strOpenKMLFile.Length == 0, true);
-				else if (!IsMontajChildProcess && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
+				else if (!IsRunningAsDapClient && File.Exists(Path.Combine(Path.Combine(UserPath, Settings.ConfigPath), LastView)))
 				{
 					if (Settings.AskLastViewAtStartup)
 					{
@@ -1829,7 +1834,7 @@ namespace Dapple
 
 
 				// Check for updates daily
-				if (IsMontajChildProcess == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
+				if (IsRunningAsDapClient == false && Settings.UpdateCheckDate.Date != System.DateTime.Now.Date)
 					CheckForUpdates(false);
 				Settings.UpdateCheckDate = System.DateTime.Now;
 
@@ -2528,7 +2533,7 @@ namespace Dapple
 
 			// --- If we're FDWD, add the original map extents ---
 
-			if (IsMontajChildProcess && m_oOMMapExtentWGS84 != null)
+			if (IsRunningAsDapClient && m_oOMMapExtentWGS84 != null)
 			{
 				oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
 			}
@@ -2606,7 +2611,7 @@ namespace Dapple
 		private void SaveLastView()
 		{
 			// --- Don't save views when we're running inside OM ---
-			if (IsMontajChildProcess) return;
+			if (IsRunningAsDapClient) return;
 
 			string tempFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg");
 			if (this.lastView.Length == 0)

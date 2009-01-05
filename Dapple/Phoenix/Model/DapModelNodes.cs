@@ -429,6 +429,12 @@ namespace NewServerTree
 		{
 			get
 			{
+				// --- Don't display desktop cataloger in MapInfo ---
+				if (Dapple.MainForm.IsRunningAsMapinfoDapClient)
+				{
+					return false;
+				}
+
 				foreach (System.Diagnostics.Process oProcess in System.Diagnostics.Process.GetProcesses())
 				{
 					if (string.Compare(oProcess.ProcessName, "geosoft.dap.server", true) == 0)
