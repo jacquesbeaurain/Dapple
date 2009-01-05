@@ -166,7 +166,10 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "dap"; }
+			get
+			{
+				return ServerTypeIconKey;
+			}
 		}
 
 		#endregion
