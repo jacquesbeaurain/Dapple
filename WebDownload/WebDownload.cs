@@ -703,10 +703,10 @@ namespace WorldWind.Net
 				IAsyncResult result = responseStream.BeginRead(readBuffer, 0, readBuffer.Length, new AsyncCallback(AsyncReadCallback), this);
 				return;
 			}
-			catch (WebException e)
+			catch (Exception e)
 			{
 				// Abort() was called.
-				Utility.Log.Write(Log.Levels.Debug, "NET", "DownloadAsync(): WebException: " + e.Status.ToString());
+				Utility.Log.Write(Log.Levels.Debug, "NET", "DownloadAsync(): Exception: " + e.Message);
 				Cancel();
 				downloadException = e;
 				CompleteCallback(this);
