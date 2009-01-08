@@ -413,7 +413,7 @@ namespace NewServerTree
 				{
 					SetFavouriteServer(oFavouriteServer, false);
 				}
-				else if (PersonalDapServerModelNode.PersonalDapRunning && oSource.View.favouriteserverurl.Value.Equals(Geosoft.GX.DAPGetData.Server.PERSONAL_DAP_URI))
+				else if (oSource.View.Hasfavouriteserverurl() && PersonalDapServerModelNode.PersonalDapRunning && oSource.View.favouriteserverurl.Value.Equals(Geosoft.GX.DAPGetData.Server.PERSONAL_DAP_URI))
 				{
 					SetFavouriteServer(PersonalDapServer, false);
 				}
