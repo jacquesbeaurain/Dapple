@@ -472,6 +472,7 @@ namespace Dapple.Extract
 			ProgressWindow oProgress = ((Object[])args)[1] as ProgressWindow;
 			try
 			{
+				Program.FocusOnCaller();
 				oProgress.ReturnValue = MainForm.MontajInterface.Download(oExtractDoc.OuterXml) > 0;
 			}
 			catch (Exception ex)

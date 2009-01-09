@@ -1064,6 +1064,7 @@ namespace Dapple
 
          oDownloadDialog.ShowInTaskbar = false;
          DialogResult oResult = oDownloadDialog.ShowDialog(this);
+			Application.DoEvents();
 			if (oResult == DialogResult.OK)
 			{
 				if (MainForm.Client == Dapple.Extract.Options.Client.ClientType.MapInfo)
