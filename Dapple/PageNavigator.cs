@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Dapple
 {
-   public partial class PageNavigator : UserControl, IPageNavigator
+   public partial class PageNavigator : UserControl
    {
       #region Events
 
