@@ -23,6 +23,7 @@ namespace Dapple.Extract
 		{
 			InitializeComponent();
 			m_oExtractDoc = oExtractDoc;
+			c_lFilename.Text = m_strFilename;
 		}
 
 		protected override void OnShown(EventArgs e)

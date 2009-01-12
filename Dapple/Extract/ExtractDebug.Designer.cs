@@ -33,12 +33,13 @@
 			this.c_wbExtract = new System.Windows.Forms.WebBrowser();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
+			this.c_lFilename = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// c_bDone
 			// 
 			this.c_bDone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.c_bDone.Location = new System.Drawing.Point(369, 341);
+			this.c_bDone.Location = new System.Drawing.Point(706, 470);
 			this.c_bDone.Name = "c_bDone";
 			this.c_bDone.Size = new System.Drawing.Size(75, 23);
 			this.c_bDone.TabIndex = 1;
@@ -49,7 +50,7 @@
 			// c_bExecute
 			// 
 			this.c_bExecute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.c_bExecute.Location = new System.Drawing.Point(288, 341);
+			this.c_bExecute.Location = new System.Drawing.Point(625, 470);
 			this.c_bExecute.Name = "c_bExecute";
 			this.c_bExecute.Size = new System.Drawing.Size(75, 23);
 			this.c_bExecute.TabIndex = 2;
@@ -62,10 +63,10 @@
 			this.c_wbExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 							| System.Windows.Forms.AnchorStyles.Left)
 							| System.Windows.Forms.AnchorStyles.Right)));
-			this.c_wbExtract.Location = new System.Drawing.Point(12, 49);
+			this.c_wbExtract.Location = new System.Drawing.Point(12, 75);
 			this.c_wbExtract.MinimumSize = new System.Drawing.Size(20, 20);
 			this.c_wbExtract.Name = "c_wbExtract";
-			this.c_wbExtract.Size = new System.Drawing.Size(432, 255);
+			this.c_wbExtract.Size = new System.Drawing.Size(769, 358);
 			this.c_wbExtract.TabIndex = 3;
 			// 
 			// label1
@@ -74,7 +75,7 @@
 							| System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.Location = new System.Drawing.Point(12, 9);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(432, 37);
+			this.label1.Size = new System.Drawing.Size(769, 37);
 			this.label1.TabIndex = 4;
 			this.label1.Text = "This is a debugging dialog. If you see this, but are not debugging Dapple, you sh" +
 				 "ould report this to Geosoft at dapple@geosoft.com.";
@@ -83,28 +84,40 @@
 			// 
 			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
 							| System.Windows.Forms.AnchorStyles.Right)));
-			this.label2.Location = new System.Drawing.Point(12, 307);
+			this.label2.Location = new System.Drawing.Point(12, 436);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(432, 31);
+			this.label2.Size = new System.Drawing.Size(769, 31);
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Hit close to close this dialog and let the extract dialog perform extraction. Hit" +
 				 " execute to perform extraction but leave this dialog open.";
+			// 
+			// c_lFilename
+			// 
+			this.c_lFilename.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+							| System.Windows.Forms.AnchorStyles.Right)));
+			this.c_lFilename.Location = new System.Drawing.Point(12, 49);
+			this.c_lFilename.Name = "c_lFilename";
+			this.c_lFilename.ReadOnly = true;
+			this.c_lFilename.Size = new System.Drawing.Size(769, 20);
+			this.c_lFilename.TabIndex = 6;
 			// 
 			// ExtractDebug
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(456, 376);
+			this.ClientSize = new System.Drawing.Size(793, 505);
 			this.ControlBox = false;
+			this.Controls.Add(this.c_lFilename);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.c_wbExtract);
 			this.Controls.Add(this.c_bExecute);
 			this.Controls.Add(this.c_bDone);
-			this.MinimumSize = new System.Drawing.Size(400, 200);
+			this.MinimumSize = new System.Drawing.Size(400, 250);
 			this.Name = "ExtractDebug";
 			this.Text = "Extraction Debugging Dialog";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -115,6 +128,7 @@
 		private System.Windows.Forms.WebBrowser c_wbExtract;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox c_lFilename;
 
 	}
 }
