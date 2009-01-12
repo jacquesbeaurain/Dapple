@@ -416,6 +416,12 @@ namespace NewServerTree
 
 	public class PersonalDapServerModelNode : DapServerModelNode
 	{
+		#region Statics
+
+		private static bool s_blDisabled = false;
+
+		#endregion
+
 		#region Constructors
 
 		public PersonalDapServerModelNode(DappleModel oModel)
@@ -439,7 +445,7 @@ namespace NewServerTree
 			get
 			{
 				// --- Don't display desktop cataloger in MapInfo ---
-				if (Dapple.MainForm.IsRunningAsMapinfoDapClient)
+				if (Dapple.MainForm.IsRunningAsMapinfoDapClient || s_blDisabled)
 				{
 					return false;
 				}
@@ -489,6 +495,11 @@ namespace NewServerTree
 		public override void AddToHomeView()
 		{
 			// --- This space intentionally left blank ---
+		}
+
+		public static void DisableDesktopCataloger()
+		{
+			s_blDisabled = true;
 		}
 
 		#endregion

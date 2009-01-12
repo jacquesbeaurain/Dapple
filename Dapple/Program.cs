@@ -79,6 +79,8 @@ namespace Dapple
 					return;
 				}
 
+				SetDCAvailability(cmdl);
+
 				if (cmdl["callerprocid"] != null)
 				{
 					g_iCallerProcID = Int32.Parse(cmdl["callerprocid"]);
@@ -405,6 +407,14 @@ namespace Dapple
 					}
 					catch (System.Runtime.Remoting.RemotingException) { } // Ignore these, they most likely mean that OM was closed before Dapple was.
 				}
+			}
+		}
+
+		private static void SetDCAvailability(CommandLineArguments cmdl)
+		{
+			if (cmdl["unlicensed"] != null)
+			{
+				NewServerTree.PersonalDapServerModelNode.DisableDesktopCataloger();
 			}
 		}
 
