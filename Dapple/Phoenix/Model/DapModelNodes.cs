@@ -291,7 +291,7 @@ namespace NewServerTree
 				}
 
 				int result = m_oServer.DatasetCount;
-				if (m_blBrowserMapAvailable) result++;
+				if (DisplayBrowserMap) result++;
 
 				return result;
 			}
@@ -303,6 +303,15 @@ namespace NewServerTree
 			get
 			{
 				return m_oServer == null || FilteredChildCount > 0;
+			}
+		}
+
+		[Browsable(false)]
+		protected virtual bool DisplayBrowserMap
+		{
+			get
+			{
+				return m_blBrowserMapAvailable;
 			}
 		}
 
@@ -376,7 +385,7 @@ namespace NewServerTree
 
 			List<ModelNode> result = new List<ModelNode>();
 
-			if (m_blBrowserMapAvailable)
+			if (DisplayBrowserMap)
 			{
 				result.Add(oBrowserMap);
 			}
@@ -464,6 +473,12 @@ namespace NewServerTree
 		public override string ServerTypeIconKey
 		{
 			get { return IconKeys.PersonalDAPServer; }
+		}
+
+		[Browsable(false)]
+		protected override bool DisplayBrowserMap
+		{
+			get { return false; }
 		}
 
 		#endregion
