@@ -78,11 +78,19 @@ namespace NewServerTree
 
 	public class ErrorModelNode : MessageModelNode
 	{
+		#region Member Variables
+
+		private string m_strAdditionalInfo;
+
+		#endregion
+
+
 		#region Constructors
 
-		public ErrorModelNode(DappleModel oModel, String strMessage)
+		public ErrorModelNode(DappleModel oModel, String strMessage, String strAdditionalInfo)
 			: base(oModel, strMessage)
 		{
+			m_strAdditionalInfo = strAdditionalInfo;
 		}
 
 		#endregion
@@ -94,6 +102,12 @@ namespace NewServerTree
 		public override string IconKey
 		{
 			get { return IconKeys.ErrorMessage; }
+		}
+
+		[Browsable(false)]
+		public string AdditionalInfo
+		{
+			get { return m_strAdditionalInfo; }
 		}
 
 		#endregion

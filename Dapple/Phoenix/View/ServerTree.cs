@@ -393,6 +393,16 @@ namespace NewServerTree.View
 
 		private void c_tvView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
+			if ((e.Button & MouseButtons.Left) == MouseButtons.Left && e.Node.Tag is ErrorModelNode)
+			{
+				ErrorModelNode emn = e.Node.Tag as ErrorModelNode;
+
+				if (!String.IsNullOrEmpty(emn.AdditionalInfo))
+				{
+					MessageBox.Show(emn.AdditionalInfo, "Additional Error Information", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+				}
+			}
+
 			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
 			{
 				c_tvView.SelectedNode = e.Node;
