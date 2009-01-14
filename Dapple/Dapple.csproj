@@ -272,7 +272,6 @@
     <Compile Include="Extract\Resolution.Designer.cs">
       <DependentUpon>Resolution.cs</DependentUpon>
     </Compile>
-    <Compile Include="IPageNavigator.cs" />
     <Compile Include="KML\KMLCreation.cs" />
     <Compile Include="KML\KMLGroundOverlay.cs" />
     <Compile Include="KML\KMLLayerBuilder.cs" />
@@ -343,9 +342,6 @@
     </Compile>
     <Compile Include="Servers\AddArcIMS.designer.cs">
       <DependentUpon>AddArcIMS.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ServerTree.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Splash.cs">
       <SubType>Form</SubType>
@@ -479,10 +475,6 @@
       <DependentUpon>AddArcIMS.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ServerTree.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ServerTree.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Splash.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Splash.cs</DependentUpon>
@@ -568,7 +560,6 @@
     <Compile Include="frmProperties.designer.cs">
       <DependentUpon>frmProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="LayerGeneration\VETileSetBuilder.cs" />
     <Compile Include="LayerGeneration\WMSQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\DAPQuadLayerBuilder.cs" />
     <Compile Include="LayerGeneration\IXMLLayerBuilder.cs" />
@@ -699,7 +690,6 @@
     <Compile Include="TrackBarWithPaint.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TreeUtils.cs" />
     <Compile Include="ViewOpenDialog.cs">
       <SubType>Form</SubType>
     </Compile>
