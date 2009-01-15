@@ -408,6 +408,12 @@ namespace NewServerTree
 
 			String strEdition;
 			m_oFolder = s_oCCM.GetCatalogHierarchyRoot(m_oServer, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword, out m_blEntireCatalogMode, out strEdition);
+
+			if (m_oFolder == null)
+			{
+				throw new Exception("Catalog hierarchy root was inaccessible. Try refreshing the server.");
+			}
+
 			foreach (CatalogFolder oSubFolder in m_oFolder.Folders)
 			{
 				result.Add(new DapDirectoryModelNode(m_oModel, oSubFolder));
@@ -416,6 +422,10 @@ namespace NewServerTree
 			while (!DapServerModelNode.s_oCCM.bGetDatasetList(m_oServer, m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
 
 			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(m_oServer, m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
+			if (oDatasets == null)
+			{
+				throw new Exception("Dataset list was inaccessible. Try refreshing the server.");
+			}
 
 			foreach (DataSet oDataset in oDatasets.Datasets)
 			{
@@ -437,6 +447,7 @@ namespace NewServerTree
 		private static bool s_blDisabled = false;
 
 		#endregion
+
 
 		#region Constructors
 
