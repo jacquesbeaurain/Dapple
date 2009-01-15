@@ -18,8 +18,24 @@ namespace NewServerTree
 
 		static DapServerRootModelNode()
 		{
+			try
+			{
+				DAPSecureToken = CreateSecureToken();
+			}
+			catch
+			{
+				DAPSecureToken = String.Empty;
+			}
+		}
+
+		private static String CreateSecureToken()
+		{
+			String result;
+
 			GeoSecureClient.CGeoSecureInterfaceClass tokenGenerator = new GeoSecureClient.CGeoSecureInterfaceClass();
-			tokenGenerator.CreateSecureToken(out DAPSecureToken);
+			tokenGenerator.CreateSecureToken(out result);
+
+			return result;
 		}
 
 		#endregion
