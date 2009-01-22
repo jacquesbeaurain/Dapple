@@ -499,7 +499,6 @@ namespace Dapple
 			c_cbServers.SelectedIndex = -1;
 			c_lvLayers.Items.Clear();
 			c_oPageNavigator.SetState(String.Empty);
-
 			m_oCurrServerLayers = new List<LayerBuilder>();
 		}
 
@@ -510,6 +509,7 @@ namespace Dapple
 		{
 			c_lvLayers.Items.Clear();
 			c_oPageNavigator.SetState("Searching...");
+			m_oCurrServerLayers = new List<LayerBuilder>();
 
 			Refresh();
 		}
