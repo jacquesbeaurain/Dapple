@@ -240,7 +240,8 @@ namespace NewServerTree.View
 				}
 			};
 
-			c_tvView.Invoke(MethodBody);
+			if (c_tvView.IsHandleCreated)
+				c_tvView.Invoke(MethodBody);
 		}
 
 		void m_oModel_NodeAdded(object sender, NodeAddedEventArgs e)
@@ -273,7 +274,8 @@ namespace NewServerTree.View
 				}
 			};
 
-			c_tvView.Invoke(MethodBody);
+			if (c_tvView.IsHandleCreated)
+				c_tvView.Invoke(MethodBody);
 		}
 
 		void m_oModel_NodeDisplayUpdated(object sender, NodeDisplayUpdatedEventArgs e)
@@ -287,7 +289,9 @@ namespace NewServerTree.View
 					ConfigureTreeNodeDisplay(oUpdatedNode);
 				}
 			};
-			c_tvView.Invoke(MethodBody);
+
+			if (c_tvView.IsHandleCreated)
+				c_tvView.Invoke(MethodBody);
 		}
 
 		void m_oModel_NodeUnloaded(object sender, NodeUnloadedEventArgs e)
@@ -302,7 +306,9 @@ namespace NewServerTree.View
 					AddChildTreeNodes(oUnloadedNode);
 				}
 			};
-			c_tvView.Invoke(MethodBody);
+
+			if (c_tvView.IsHandleCreated)
+				c_tvView.Invoke(MethodBody);
 		}
 
 		void m_oModel_Loaded(object sender, EventArgs e)
@@ -393,7 +399,7 @@ namespace NewServerTree.View
 
 		private void c_tvView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if ((e.Button & MouseButtons.Left) == MouseButtons.Left && e.Node.Tag is ErrorModelNode)
+			if ((e.Button & MouseButtons.Right) == MouseButtons.Right && e.Node.Tag is ErrorModelNode)
 			{
 				ErrorModelNode emn = e.Node.Tag as ErrorModelNode;
 
@@ -401,6 +407,8 @@ namespace NewServerTree.View
 				{
 					MessageBox.Show(emn.AdditionalInfo, "Additional Error Information", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 				}
+
+				return;
 			}
 
 			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)

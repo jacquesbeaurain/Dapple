@@ -264,7 +264,8 @@ namespace Dapple
 				}
 			};
 
-			Invoke(methodBody);
+			if (IsHandleCreated)
+				Invoke(methodBody);
 		}
 
 		#region Attach and Unattach
