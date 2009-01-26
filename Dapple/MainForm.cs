@@ -880,6 +880,10 @@ namespace Dapple
 		private delegate void UpdateDownloadIndicatorsDelegate(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList);
 		private void UpdateDownloadIndicators(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList)
 		{
+			// --- Version 2.0.0 was getting into this method somehow even after the main form was disposed.
+			// --- Check for it and return if we're not in a state to update anything.
+			if (IsHandleCreated == false || IsDisposed == true) return;
+
 			// --- This always happens in main thread (but protect it anyway) ---
 			if (!m_bDownloadUpdating)
 			{
