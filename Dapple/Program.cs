@@ -347,6 +347,24 @@ namespace Dapple
 									MessageBoxIcon.Error);
 							}
 						}
+						catch (System.ComponentModel.Win32Exception)
+						{
+							if (g_blTestingMode == true)
+							{
+								throw;
+							}
+							else
+							{
+								ShowMessageBox(
+									"Dapple has encountered an internal Win32 error during startup." + Environment.NewLine +
+									"If this error persists, and you have a Logitech webcam installed, you may be able to resolve the error" + Environment.NewLine +
+									"by disabling the 'Process Monitor' and 'LvSrvLauncher' services on your computer.",
+									"Dapple Startup",
+									MessageBoxButtons.OK,
+									MessageBoxDefaultButton.Button1,
+									MessageBoxIcon.Error);
+							}
+						}
 					}
 					else
 					{
