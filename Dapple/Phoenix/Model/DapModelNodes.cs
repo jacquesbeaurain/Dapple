@@ -212,7 +212,6 @@ namespace NewServerTree
 		private String m_strTitle;
 		private Server m_oServer;
 		private bool m_blEntireCatalogMode;
-		private CatalogFolder m_oFolder;
 		private bool m_blBrowserMapAvailable;
 
 		#endregion
@@ -407,30 +406,28 @@ namespace NewServerTree
 			}
 
 			String strEdition;
-			m_oFolder = s_oCCM.GetCatalogHierarchyRoot(m_oServer, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword, out m_blEntireCatalogMode, out strEdition);
+			CatalogFolder folder = null;
 
-			if (m_oFolder == null)
+			// --- Make three attempts to get the catalog hierarchy root ---
+			for (int attempt = 0; attempt < 3; attempt++)
 			{
-				throw new Exception("Catalog hierarchy root was inaccessible. Try refreshing the server.");
+				folder = s_oCCM.GetCatalogHierarchyRoot(m_oServer, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword, out m_blEntireCatalogMode, out strEdition);
+				if (folder != null) break;
+				Thread.Sleep(5000);
 			}
+			if (folder == null) throw new Exception("Catalog hierarchy root was inaccessible. Try refreshing the server.");
 
-			foreach (CatalogFolder oSubFolder in m_oFolder.Folders)
-			{
+			foreach (CatalogFolder oSubFolder in folder.Folders)
 				result.Add(new DapDirectoryModelNode(m_oModel, oSubFolder));
-			}
 
-			while (!DapServerModelNode.s_oCCM.bGetDatasetList(m_oServer, m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
+			while (!DapServerModelNode.s_oCCM.bGetDatasetList(m_oServer, folder.Hierarchy, folder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword))
+			{ }
 
-			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(m_oServer, m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
-			if (oDatasets == null)
-			{
-				throw new Exception("Dataset list was inaccessible. Try refreshing the server.");
-			}
+			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(m_oServer, folder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
+			if (oDatasets == null) throw new Exception("Dataset list was inaccessible. Try refreshing the server.");
 
 			foreach (DataSet oDataset in oDatasets.Datasets)
-			{
 				result.Add(new DapDatasetModelNode(m_oModel, oDataset));
-			}
 
 			return result.ToArray();
 		}
@@ -588,16 +585,16 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
-			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer().Server, m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword)) { }
+			while (!DapServerModelNode.s_oCCM.bGetDatasetList(GetServer().Server, m_oFolder.Hierarchy, m_oFolder.Timestamp, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword))
+			{ }
 
 			FolderDatasetList oDatasets = DapServerModelNode.s_oCCM.GetDatasets(GetServer().Server, m_oFolder, m_oModel.SearchBounds_DAP, m_oModel.SearchBoundsSet, m_oModel.SearchKeywordSet, m_oModel.SearchKeyword);
+			if (oDatasets == null) throw new Exception("Dataset list was inaccessible. Try refreshing the server.");
 
 			List<ModelNode> result = new List<ModelNode>();
 
 			foreach (DataSet oDataset in oDatasets.Datasets)
-			{
 				result.Add(new DapDatasetModelNode(m_oModel, oDataset));
-			}
 
 			return result.ToArray();
 		}
