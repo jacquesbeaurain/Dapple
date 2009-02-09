@@ -74,8 +74,8 @@ namespace Dapple.CustomControls
 			c_tsTabToolstrip.SetNameAndText(1, "HideThumbnails");
 			c_tsTabToolstrip.ButtonPressed += new TabToolStrip.TabToolbarButtonDelegate(DisplayModeChanged);
 			SetNoSearch();
-			c_oPageNavigator.PageBack += new ThreadStart(BackPage);
-			c_oPageNavigator.PageForward += new ThreadStart(ForwardPage);
+			c_oPageNavigator.PageBack += BackPage;
+			c_oPageNavigator.PageForward += ForwardPage;
 		}
 
 		#endregion
@@ -267,13 +267,13 @@ namespace Dapple.CustomControls
 		#endregion
 
 
-		private void BackPage()
+		private void BackPage(object sender, EventArgs e)
 		{
 			m_iCurrentPage--;
 			RefreshResultList();
 		}
 
-		private void ForwardPage()
+		private void ForwardPage(object sender, EventArgs e)
 		{
 			m_iCurrentPage++;
 			if (m_iCurrentPage >= m_iAccessedPages)

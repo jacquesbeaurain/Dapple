@@ -56,8 +56,8 @@ namespace Dapple
 			c_lvLayers.SmallImageList = Dapple.MainForm.DataTypeImageList;
 			c_lvLayers.LargeImageList = Dapple.MainForm.DataTypeImageList;
 
-			c_oPageNavigator.PageBack += new System.Threading.ThreadStart(BackPage);
-			c_oPageNavigator.PageForward += new System.Threading.ThreadStart(ForwardPage);
+			c_oPageNavigator.PageBack += BackPage;
+			c_oPageNavigator.PageForward += ForwardPage;
 
 			m_strSearchString = String.Empty;
 			m_oSearchBox = null;
@@ -473,7 +473,7 @@ namespace Dapple
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void BackPage()
+		private void BackPage(object sender, EventArgs e)
 		{
 			m_iCurrPage--;
 			DrawCurrentPage();
@@ -484,7 +484,7 @@ namespace Dapple
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void ForwardPage()
+		private void ForwardPage(object sender, EventArgs e)
 		{
 			m_iCurrPage++;
 			DrawCurrentPage();

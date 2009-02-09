@@ -414,12 +414,6 @@ namespace Flobbster.Windows.Forms
 	}
 
 	/// <summary>
-	/// Represents the method that will handle the GetValue and SetValue events of the
-	/// PropertyBag class.
-	/// </summary>
-	public delegate void PropertySpecEventHandler(object sender, PropertySpecEventArgs e);
-
-	/// <summary>
 	/// Represents a collection of custom properties that can be selected into a
 	/// PropertyGrid to provide functionality beyond that of the simple reflection
 	/// normally used to query an object's properties.
@@ -846,12 +840,12 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Occurs when a PropertyGrid requests the value of a property.
 		/// </summary>
-		public event PropertySpecEventHandler GetValue;
+		public event EventHandler<PropertySpecEventArgs> GetValue;
 
 		/// <summary>
 		/// Occurs when the user changes the value of a property in a PropertyGrid.
 		/// </summary>
-		public event PropertySpecEventHandler SetValue;
+		public event EventHandler<PropertySpecEventArgs> SetValue;
 
 		/// <summary>
 		/// Raises the GetValue event.

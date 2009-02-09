@@ -36,8 +36,8 @@ namespace Dapple
             m_propetyTable = new Hashtable();
             m_isChangableTable = new Hashtable();
 
-            bag.GetValue += new PropertySpecEventHandler(bag_GetValue);
-            bag.SetValue += new PropertySpecEventHandler(bag_SetValue);
+            bag.GetValue += bag_GetValue;
+            bag.SetValue += bag_SetValue;
 
             PropertyInfo[] props = m_Object.GetType().GetProperties();
             

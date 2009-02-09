@@ -16,12 +16,12 @@ namespace Dapple
       /// <summary>
       /// Invoked when the back button is pressed.
       /// </summary>
-      public event ThreadStart PageBack;
+      public event EventHandler PageBack;
 
       /// <summary>
       /// Invoked when the forward button is pressed.
       /// </summary>
-      public event ThreadStart PageForward;
+      public event EventHandler PageForward;
 
       #endregion
 
@@ -38,12 +38,12 @@ namespace Dapple
 
       private void cBackButton_Click(object sender, EventArgs e)
       {
-         if (PageBack != null) PageBack();
+         if (PageBack != null) PageBack(sender, e);
       }
 
       private void cForwardButton_Click(object sender, EventArgs e)
       {
-         if (PageForward != null) PageForward();
+         if (PageForward != null) PageForward(sender, e);
       }
 
       #endregion
