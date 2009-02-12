@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using Dapple.LayerGeneration;
 using Geosoft.GX.DAPGetData;
@@ -8,6 +10,7 @@ using Geosoft.Dap.Common;
 using System.Windows.Forms;
 using Geosoft.Dap;
 using System.ComponentModel;
+
 namespace NewServerTree
 {
 	public class DapServerRootModelNode : ModelNode, IContextModelNode
@@ -28,14 +31,14 @@ namespace NewServerTree
 			}
 		}
 
+		[DllImport("CreateSecureDAPToken.dll", CharSet=CharSet.Ansi)]
+		static extern bool CreateSecureToken(StringBuilder token, Int32 tokenLength);
+
 		private static String CreateSecureToken()
 		{
-			String result;
-
-			GeoSecureClient.CGeoSecureInterfaceClass tokenGenerator = new GeoSecureClient.CGeoSecureInterfaceClass();
-			tokenGenerator.CreateSecureToken(out result);
-
-			return result;
+			var result = new StringBuilder(4096);
+			CreateSecureToken(result, result.Capacity);
+			return result.ToString();
 		}
 
 		#endregion

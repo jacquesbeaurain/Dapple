@@ -102,21 +102,9 @@ namespace Geosoft.GX.DAPGetData
       {
          m_strCacheDir = strCacheDir;
          m_oServerList = new ServerList(m_strCacheDir);
-         m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);         
-
-         try
-         {
-            // --- Create Secure Token ---
-
-            GeoSecureClient.CGeoSecureInterfaceClass scClass = new GeoSecureClient.CGeoSecureInterfaceClass();
-            scClass.CreateSecureToken(out m_strSecureToken);
-         }
-         catch
-         {
-            m_strSecureToken = "";
-         }
-
-
+         m_oCacheManager = new CatalogCacheManager(this, m_strCacheDir);
+      	m_strSecureToken = string.Empty;
+         
          InitializeComponent();
 
          this.ShowLines = true;
