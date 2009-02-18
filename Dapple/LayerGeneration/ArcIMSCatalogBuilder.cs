@@ -300,19 +300,7 @@ namespace Dapple.LayerGeneration
 		protected override void SetEnabled(bool blValue)
 		{
 			((ArcIMSCatalogBuilder)Parent).Enable(this);
-		}
-
-		internal ArcIMSServiceBuilder GetService(string strServiceName)
-		{
-			foreach (BuilderDirectory oDir in m_colSublist)
-			{
-				if (oDir.Title.Equals(strServiceName))
-				{
-					return oDir as ArcIMSServiceBuilder;
-				}
-			}
-			return null;
-		}
+		}		
 
 		public bool HasUnloadedServices
 		{

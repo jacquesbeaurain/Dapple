@@ -111,37 +111,34 @@ namespace Dapple
 
       private void pictureBox_Paint(object sender, PaintEventArgs e)
       {
-         StringFormat format = new StringFormat();
-         System.Drawing.Imaging.ImageAttributes imageAttr = new System.Drawing.Imaging.ImageAttributes();
+         var format = new StringFormat
+                               	{
+                               		LineAlignment = StringAlignment.Center,
+                               		Alignment = StringAlignment.Center
+                               	};
 
-         format.LineAlignment = StringAlignment.Center;
-         format.Alignment = StringAlignment.Center;
-
-         if (m_viewImage != null)
+      	if (m_viewImage != null)
          {
-            double scale;
-            int    x, y;
-
-            if (this.c_pbPreview.ClientRectangle.Width <= 0 || this.c_pbPreview.ClientRectangle.Height <= 0 ||
+         	if (c_pbPreview.ClientRectangle.Width <= 0 || c_pbPreview.ClientRectangle.Height <= 0 ||
                 m_viewImage.Width <= 0 || m_viewImage.Height <= 0)
                return;
 
             double scaleH = (double)m_viewImage.Height / (double)c_pbPreview.ClientRectangle.Height;
-            double scaleW = (double)m_viewImage.Width / (double)this.c_pbPreview.ClientRectangle.Width;
-            scale = Math.Max(scaleH, scaleW);
+            double scaleW = (double)m_viewImage.Width / (double)c_pbPreview.ClientRectangle.Width;
+            double scale = Math.Max(scaleH, scaleW);
 
-            x = (int)Math.Round((double)this.c_pbPreview.ClientRectangle.Width / 2.0 - (double)m_viewImage.Width / (scale * 2.0));
-            y = (int) Math.Round((double)this.c_pbPreview.ClientRectangle.Height / 2.0 - (double)m_viewImage.Height / (scale * 2.0));
+            int x = (int)Math.Round((double)c_pbPreview.ClientRectangle.Width / 2.0 - (double)m_viewImage.Width / (scale * 2.0));
+            int y = (int) Math.Round((double)c_pbPreview.ClientRectangle.Height / 2.0 - (double)m_viewImage.Height / (scale * 2.0));
 
             e.Graphics.Clear(Color.Black);
             e.Graphics.DrawImage(m_viewImage, new Rectangle(x, y, (int)Math.Round((double)m_viewImage.Width / scale), (int)Math.Round((double)m_viewImage.Height / scale)));
          }
-         else if (m_strViewFile != null && m_strViewFile.Length > 0)
-            e.Graphics.DrawString("No preview available in this view", this.Font, Brushes.Black, this.c_pbPreview.ClientRectangle, format);
+         else if (!string.IsNullOrEmpty(m_strViewFile))
+            e.Graphics.DrawString("No preview available in this view", Font, Brushes.Black, c_pbPreview.ClientRectangle, format);
          else
-            e.Graphics.DrawString("Select Dapple view for preview", this.Font, Brushes.Black, this.c_pbPreview.ClientRectangle, format);
+            e.Graphics.DrawString("Select Dapple view for preview", Font, Brushes.Black, c_pbPreview.ClientRectangle, format);
 
-         e.Graphics.DrawRectangle(Pens.Black, this.c_pbPreview.ClientRectangle.Left, this.c_pbPreview.ClientRectangle.Top, this.c_pbPreview.ClientRectangle.Width - 1, this.c_pbPreview.ClientRectangle.Height - 1);
+         e.Graphics.DrawRectangle(Pens.Black, c_pbPreview.ClientRectangle.Left, c_pbPreview.ClientRectangle.Top, c_pbPreview.ClientRectangle.Width - 1, c_pbPreview.ClientRectangle.Height - 1);
       }
 
       private void pictureBox_SizeChanged(object sender, EventArgs e)

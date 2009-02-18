@@ -303,8 +303,6 @@ namespace Dapple.Extract
 			}
 
 #if DEBUG
-         System.Xml.XmlElement oDebugElement = oDatasetElement.OwnerDocument.CreateElement("debug");
-
          double dMapBoundMinX_WGS84 = dMinX;
          double dMapBoundMaxX_WGS84 = dMaxX;
          double dMapBoundMinY_WGS84 = dMinY;

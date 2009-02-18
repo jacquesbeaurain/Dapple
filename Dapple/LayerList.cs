@@ -1047,7 +1047,7 @@ namespace Dapple
 			Extract.DownloadSettings oDownloadDialog = null;
 			try
 			{
-				 oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers, this.TopLevelControl as Form);
+				 oDownloadDialog = new Dapple.Extract.DownloadSettings(aExtractLayers);
 			}
 			catch (System.Runtime.Remoting.RemotingException)
 			{

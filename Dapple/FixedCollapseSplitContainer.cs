@@ -23,10 +23,6 @@ namespace Dapple
       [Category("FixedCollapseSplitContainer")]
       public bool InvertSplitterFix
       {
-         get
-         {
-            return m_bInvertSplitterFix;
-         }
          set
          {
             m_bInvertSplitterFix = value;

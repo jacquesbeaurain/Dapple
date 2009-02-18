@@ -127,14 +127,6 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		[System.ComponentModel.Category("Common")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The server providing this data layer")]
-		public string ServerURL
-		{
-			get { return m_oServer.Url; }
-		}
-
 		[System.ComponentModel.Browsable(false)]
 		public override bool IsChanged
 		{

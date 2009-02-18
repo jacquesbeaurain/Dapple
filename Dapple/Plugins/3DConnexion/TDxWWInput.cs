@@ -515,7 +515,6 @@ namespace ThreeDconnexion.Plugin
             Angle rTilt = m_TheCamera.Tilt;                  //angle between line [center of earth ... crosshairs] and line [crosshairs ... camera]
             double dDeltaLatitude = 0;                       //change of Latitude
             double dDeltaLongitude = 0;                      //change of Longitude
-            double dTargetDist = m_TheCamera.TargetDistance; //distance between crosshairs and camera
             double dSinus = Math.Sin(rTilt.Radians);
             double dLength = dAltitude + dRadius;            //distance earth center - camera
             double dSinusLaw = dSinus / dLength;               //const of law of sines
@@ -538,7 +537,6 @@ namespace ThreeDconnexion.Plugin
                     dDeltaLatitude = -dAlpha;
                     dAlpha = rTilt.Radians - Math.Asin(dRadius * dSinusLaw); // == dAlpha after Tilt
                     dDeltaLatitude += dAlpha;
-                    dTargetDist = Math.Sin(dAlpha) / dSinusLaw;
                 }
             }
 
@@ -874,14 +872,7 @@ namespace ThreeDconnexion.Plugin
         /// </summary>
         internal sealed class C3DxRotation : I3DxRotation
         {
-            public C3DxRotation(ref double dX_p, ref double dY_p, ref double dZ_p, ref double dAngle_p)
-            {
-                m_dX = dX_p;
-                m_dY = dY_p;
-                m_dZ = dZ_p;
-                m_dAng = dAngle_p;
-            }
-            public C3DxRotation(ref C3DxRotation rCopy_p)
+            public C3DxRotation(C3DxRotation rCopy_p)
             {
                 m_dX = rCopy_p.m_dX;
                 m_dY = rCopy_p.m_dY;
@@ -951,7 +942,7 @@ namespace ThreeDconnexion.Plugin
 
             public static C3DxRotation operator *(C3DxRotation oAngleAxis_p, double dScalar_p)
             {
-                C3DxRotation oReturn = new C3DxRotation(ref oAngleAxis_p);
+                C3DxRotation oReturn = new C3DxRotation(oAngleAxis_p);
                 oReturn.m_dAng *= dScalar_p;
                 return (oReturn);
             }
@@ -1039,15 +1030,17 @@ namespace ThreeDconnexion.Plugin
                 {
                     try
                     {
-                        EventInfo TheSensorEvent = m_tyComSensor.GetEvent("SensorInput");
-                        Delegate TheDelegate = Delegate.CreateDelegate(TheSensorEvent.EventHandlerType
-                                                                       , value.Method);
-                        TheSensorEvent.AddEventHandler(m_oComSensor, TheDelegate);
+                    		EventInfo TheSensorEvent = m_tyComSensor.GetEvent("SensorInput");
+								if (TheSensorEvent != null && TheSensorEvent.EventHandlerType != null)
+								{
+									Delegate TheDelegate = Delegate.CreateDelegate(TheSensorEvent.EventHandlerType
+																								  , value.Method);
+									TheSensorEvent.AddEventHandler(m_oComSensor, TheDelegate);
+								}
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("{0} Exception caught.", e);
-                        string WhatHappend = e.Message;
                     }
                 }
 
@@ -1056,14 +1049,16 @@ namespace ThreeDconnexion.Plugin
                     try
                     {
                         EventInfo TheSensorEvent = m_tyComSensor.GetEvent("SensorInput");
-                        Delegate TheDelegate = Delegate.CreateDelegate(TheSensorEvent.EventHandlerType
-                                                                       , value.Method);
-                        TheSensorEvent.RemoveEventHandler(m_oComSensor, TheDelegate);
+								if (TheSensorEvent != null && TheSensorEvent.EventHandlerType != null)
+								{
+									Delegate TheDelegate = Delegate.CreateDelegate(TheSensorEvent.EventHandlerType
+									                                               , value.Method);
+									TheSensorEvent.RemoveEventHandler(m_oComSensor, TheDelegate);
+								}
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("{0} Exception caught.", e);
-                        string WhatHappend = e.Message;
                     }
                 }
             }
@@ -1104,7 +1099,7 @@ namespace ThreeDconnexion.Plugin
                 get
                 {
                     I3DxRotation Return = m_AngleAxis;
-                    m_AngleAxis = new C3DxRotation(ref m_AngleAxis);
+                    m_AngleAxis = new C3DxRotation(m_AngleAxis);
                     return Return;
                 }
             }
@@ -1200,14 +1195,17 @@ namespace ThreeDconnexion.Plugin
                     {
                         //EventInfo[] AllEvents = m_tyComKeyboard.GetEvents();
                         EventInfo TheKeyboardEvent = m_tyComKeyboard.GetEvent("KeyUp");
-                        Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
-                                                                       , value.Method);
-                        TheKeyboardEvent.AddEventHandler(m_oComKeyboard, TheDelegate);
+
+								if (TheKeyboardEvent != null && TheKeyboardEvent.EventHandlerType != null)
+								{
+									Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
+									                                               , value.Method);
+									TheKeyboardEvent.AddEventHandler(m_oComKeyboard, TheDelegate);
+								}
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("{0} Exception caught.", e);
-                        string WhatHappend = e.Message;
                     }
                 }
 
@@ -1217,14 +1215,16 @@ namespace ThreeDconnexion.Plugin
                     {
                         //EventInfo[] AllEvents = m_tyComKeyboard.GetEvents();
                         EventInfo TheKeyboardEvent = m_tyComKeyboard.GetEvent("KeyUp");
-                        Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
-                                                                       , value.Method);
-                        TheKeyboardEvent.RemoveEventHandler(m_oComKeyboard, TheDelegate);
+								if (TheKeyboardEvent != null && TheKeyboardEvent.EventHandlerType != null)
+								{
+									Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
+									                                               , value.Method);
+									TheKeyboardEvent.RemoveEventHandler(m_oComKeyboard, TheDelegate);
+								}
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("{0} Exception caught.", e);
-                        string WhatHappend = e.Message;
                     }
                 }
             }//KeyboardEventUP
@@ -1237,14 +1237,16 @@ namespace ThreeDconnexion.Plugin
                     {
                         //EventInfo[] AllEvents = m_tyComKeyboard.GetEvents();
                         EventInfo TheKeyDownEvent = m_tyComKeyboard.GetEvent("KeyDown");
-                        Delegate TheDelegate = Delegate.CreateDelegate(TheKeyDownEvent.EventHandlerType
-                                                                       , value.Method);
-                        TheKeyDownEvent.AddEventHandler(m_oComKeyboard, TheDelegate);
+								if (TheKeyDownEvent != null && TheKeyDownEvent.EventHandlerType != null)
+								{
+									Delegate TheDelegate = Delegate.CreateDelegate(TheKeyDownEvent.EventHandlerType
+									                                               , value.Method);
+									TheKeyDownEvent.AddEventHandler(m_oComKeyboard, TheDelegate);
+								}
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("{0} Exception caught.", e);
-                        string WhatHappend = e.Message;
                     }
                 }
 
@@ -1260,7 +1262,6 @@ namespace ThreeDconnexion.Plugin
                     catch (Exception e)
                     {
                         Console.WriteLine("{0} Exception caught.", e);
-                        string WhatHappend = e.Message;
                     }
                 }
             }//KeyboardEventDOWN
@@ -1341,9 +1342,8 @@ namespace ThreeDconnexion.Plugin
 							  return false;
 						  }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    string sError = e.Message;
                 }
 
                 if (typeLib == null)

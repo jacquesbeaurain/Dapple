@@ -37,11 +37,7 @@ namespace Dapple.LayerGeneration
       }
 
       protected override void DownloadComplete(WebDownload downloadInfo)
-      {
-         ArcIMSImageDownload oCastDL = downloadInfo as ArcIMSImageDownload;
-
-         XmlDocument oArcXMLResponse = new XmlDocument();
-
+      {         
          try
          {
             downloadInfo.Verify();
@@ -52,10 +48,10 @@ namespace Dapple.LayerGeneration
                return;
             }
 
-            System.Xml.XmlDocument hResponseDocument = new System.Xml.XmlDocument();
-            System.Xml.XmlReaderSettings oSettings = new System.Xml.XmlReaderSettings();
+            XmlDocument hResponseDocument = new XmlDocument();
+            XmlReaderSettings oSettings = new XmlReaderSettings();
             oSettings.IgnoreWhitespace = true;
-            System.Xml.XmlReader oResponseXmlStream = System.Xml.XmlReader.Create(downloadInfo.ContentStream, oSettings);
+            XmlReader oResponseXmlStream = XmlReader.Create(downloadInfo.ContentStream, oSettings);
             hResponseDocument.Load(oResponseXmlStream);
             downloadInfo.ContentStream.Close();
 
@@ -71,7 +67,8 @@ namespace Dapple.LayerGeneration
             else
             {
                XmlElement nErrorElement = hResponseDocument.SelectSingleNode("/ARCXML/RESPONSE/ERROR") as XmlElement;
-               Log.Write(Log.Levels.Debug, "ADGR", nErrorElement.InnerText);
+					if (nErrorElement != null)
+						Log.Write(Log.Levels.Debug, "ADGR", nErrorElement.InnerText);
             }
 
             m_tile.TileSet.NumberRetries = 0;

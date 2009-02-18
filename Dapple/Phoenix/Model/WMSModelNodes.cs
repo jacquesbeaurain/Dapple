@@ -540,22 +540,7 @@ namespace NewServerTree
 		protected override ModelNode[] Load()
 		{
 			throw new ApplicationException(ErrLoadedBadNode);
-		}
-
-		private WMSServerModelNode GetServer()
-		{
-			ModelNode iter = this;
-
-			while (iter != null && !(iter is WMSServerModelNode))
-			{
-				iter = iter.Parent;
-			}
-
-			if (iter == null) throw new ApplicationException("Orphaned WMS folder node");
-
-			return iter as WMSServerModelNode;
-		}
-
+		}	
 		#endregion
 	}
 

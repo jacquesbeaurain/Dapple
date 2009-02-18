@@ -11,6 +11,7 @@ using System.IO;
 using Dapple;
 using WorldWind.Net;
 using System.Net;
+using WorldWind.PluginEngine;
 
 namespace NewServerTree
 {
@@ -851,19 +852,6 @@ namespace NewServerTree
 
 
 		#region Helper Methods
-
-		private bool NodeIsOpened(ModelNode oNode)
-		{
-			ModelNode iter = m_oSelectedNode;
-			while (iter != null)
-			{
-				if (iter == oNode) return true;
-				iter = iter.Parent;
-			}
-
-			return false;
-		}
-
 		private void ClearModel()
 		{
 			lock (m_oLock)
@@ -881,7 +869,7 @@ namespace NewServerTree
 		private static void SubmitServerToSearchEngine(String strUrl, NewServerTree.ServerModelNode.ServerType eType)
 		{
 #if !DEBUG
-			if (!MainForm.Settings.UseDappleSearch) return;
+			if (!MainApplication.Settings.UseDappleSearch) return;
 
 			DappleSearchAddServerDownload oSubmission = new DappleSearchAddServerDownload(strUrl, eType);
 			oSubmission.BackgroundDownloadMemory();
@@ -949,7 +937,6 @@ namespace NewServerTree
 
 			#endregion
 		}
-
 		#endregion
 	}
 

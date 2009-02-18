@@ -243,7 +243,6 @@ namespace Murris.Plugins
 			if (!String.IsNullOrEmpty(line))
 			{
 				string[] settingsList = line.Split(';');
-				string saveVersion = settingsList[0];	// version when settings where saved
 				if (settingsList[1] != null) textureFileName = settingsList[1];
 			}
 		}
@@ -667,14 +666,6 @@ namespace Murris.Plugins
 		int retryCount = 0;
 		int retryDelaySeconds = 60;
 		DateTime lastDownloadTime = DateTime.MinValue;
-
-		private void DownloadCloudMap(string filePath, string fileName) // NOT USED (synchronous)
-		{
-			string url = GetServerUrl();
-			System.Net.WebClient wc = new System.Net.WebClient();
-			wc.DownloadFile(url, Path.Combine(filePath, fileName));
-			wc.Dispose();
-		}
 
 		public virtual void StartDownload(string filePath, string fileName) // Asynch download here
 		{

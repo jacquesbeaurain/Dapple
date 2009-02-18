@@ -476,10 +476,9 @@ namespace NewServerTree.View
 #pragma warning restore 618
 					}
 
-					if (oDragData.Count > 0)
+					if (oDragData.Count > 0 && oMouseNode != null)
 					{
 						m_oModel.SelectedNode = oMouseNode.Tag as ModelNode;
-						DragDropEffects dropEffect = this.DoDragDrop(oDragData, DragDropEffects.All);
 					}
 				}
 

@@ -527,23 +527,24 @@ namespace Dapple.LayerGeneration
             }
 
             ImageStore[] imageStores = new ImageStore[1];
-            imageStores[0] = new DAPImageStore(m_hDataSet, m_oServer);
-            imageStores[0].DataDirectory = null;
-            imageStores[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
-            imageStores[0].LevelCount = m_iLevels;
-            imageStores[0].ImageExtension = ".png";
-            imageStores[0].CacheDirectory = strCachePath;
-            imageStores[0].TextureFormat = World.Settings.TextureFormat;
-            imageStores[0].TextureSizePixels = m_iTextureSizePixels;
+            imageStores[0] = new DAPImageStore(m_hDataSet, m_oServer)
+                             	{
+                             		DataDirectory = null,
+                             		LevelZeroTileSizeDegrees = LevelZeroTileSize,
+                             		LevelCount = m_iLevels,
+                             		ImageExtension = ".png",
+                             		CacheDirectory = strCachePath,
+                             		TextureFormat = World.Settings.TextureFormat,
+                             		TextureSizePixels = m_iTextureSizePixels
+                             	};
 
-            GeographicBoundingBox box = new WorldWind.GeographicBoundingBox(m_hDataSet.Boundary.MaxY,
-               m_hDataSet.Boundary.MinY, m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX);
-
-            m_layer = new QuadTileSet(m_hDataSet.Title, m_oWorldWindow.CurrentWorld, 0, m_hDataSet.Boundary.MaxY, m_hDataSet.Boundary.MinY,
-               m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX, true, imageStores);
-            m_layer.AlwaysRenderBaseTiles = true;
-            m_layer.IsOn = m_IsOn;
-            m_layer.Opacity = m_bOpacity;
+         	m_layer = new QuadTileSet(m_hDataSet.Title, m_oWorldWindow.CurrentWorld, 0, m_hDataSet.Boundary.MaxY, m_hDataSet.Boundary.MinY,
+               m_hDataSet.Boundary.MinX, m_hDataSet.Boundary.MaxX, true, imageStores)
+                      	{
+                      		AlwaysRenderBaseTiles = true,
+                      		IsOn = m_IsOn,
+                      		Opacity = m_bOpacity
+                      	};
          }
          return m_layer;
       }

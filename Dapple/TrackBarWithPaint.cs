@@ -136,9 +136,6 @@ namespace Dapple
       [DllImport("User32.dll")]
       public static extern int GetUpdateRect(IntPtr hwnd, ref RECT rect, bool erase);
 
-      [DllImport("User32.dll", SetLastError = true)]
-      public static extern bool GetWindowRect(IntPtr handle, ref RECT rect);
-
       [DllImport("User32.dll")]
       public static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
 

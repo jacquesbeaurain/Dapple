@@ -91,7 +91,6 @@ namespace Dapple.Extract
          // --- cannot reproject section data --- 
 			ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, DownloadSettings.DownloadCoordinateSystem.Native);
 
-         string strFileName = System.IO.Path.ChangeExtension(tbFilename.Text, GRD_EXT);         
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), GRD_EXT));
          oDatasetElement.Attributes.Append(oPathAttr);

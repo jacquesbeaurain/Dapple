@@ -46,15 +46,7 @@ namespace Dapple.KML
 			m_oRenderable = KMLCreation.CreateKMLLayer(m_oSourceFile, MainForm.WorldWindowSingleton.CurrentWorld, out m_oBounds);
 			m_oRenderable.RenderPriority = RenderPriority.TerrainMappedImages;
 		}
-
-		[System.ComponentModel.Category("KML")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The filename of the KML file for this data layer")]
-		public string Filename
-		{
-			get { return m_strInitFilename; }
-		}
-
+		
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]

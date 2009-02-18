@@ -262,20 +262,7 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region Private Members
-
-      private static string getRenderablePathString(RenderableObject renderable)
-      {
-         if (renderable.ParentList == null)
-         {
-            return renderable.Name;
-         }
-         else
-         {
-            return getRenderablePathString(renderable.ParentList) + Path.DirectorySeparatorChar + renderable.Name;
-         }
-      }
-
+      #region Private Members   
       private static string GetBuilderPathString(IBuilder builder)
       {
          if (builder.Parent == null)
@@ -322,26 +309,7 @@ namespace Dapple.LayerGeneration
       }
 
       #endregion
-
-      internal void SaveToXml(XmlElement oServerElement)
-      {
-         oServerElement.SetAttribute("name", Title);
-         oServerElement.SetAttribute("url", m_strServerUrl);
-         oServerElement.SetAttribute("dataset", m_strDatasetName);
-         oServerElement.SetAttribute("image_extension", m_strImageExt);
-
-         XmlElement oBoundsElement = oServerElement.OwnerDocument.CreateElement("bounding_box");
-         oBoundsElement.SetAttribute("minx", m_hBoundary.West.ToString());
-         oBoundsElement.SetAttribute("miny", m_hBoundary.South.ToString());
-         oBoundsElement.SetAttribute("maxx", m_hBoundary.East.ToString());
-         oBoundsElement.SetAttribute("maxy", m_hBoundary.North.ToString());
-
-         XmlElement oResElement = oServerElement.OwnerDocument.CreateElement("resolution");
-         oResElement.SetAttribute("level_zero_tilesize", LevelZeroTileSize.ToString());
-         oResElement.SetAttribute("levels", Levels.ToString());
-         oResElement.SetAttribute("tile_size", m_iTextureSizePixels.ToString());
-		}
-
+      
 		#region Public Methods
 
 		public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)

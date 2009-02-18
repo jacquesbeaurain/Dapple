@@ -160,22 +160,7 @@ namespace Dapple.KML
 			}
 
 			return result;
-		}
-
-		private static WorldWind.AltitudeMode KMLAltitudeModeToWorldWind(KMLAltitudeMode oInput)
-		{
-			switch (oInput)
-			{
-				case KMLAltitudeMode.absolute:
-					return WorldWind.AltitudeMode.Absolute;
-				case KMLAltitudeMode.clampToGround:
-					return WorldWind.AltitudeMode.ClampedToGround;
-				case KMLAltitudeMode.relativeToGround:
-					return WorldWind.AltitudeMode.RelativeToGround;
-				default:
-					throw new ArgumentException("Unknow AltitudeMode " + oInput.ToString());
-			}
-		}
+		}		
 	}
 
 	class KMLRenderableObjectList : RenderableObjectList

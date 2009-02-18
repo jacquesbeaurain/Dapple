@@ -56,19 +56,13 @@ namespace Dapple
 		private const int DCX_LOCKWINDOWUPDATE = 0x00000400;
 		private const int SRCCOPY = 0x00CC0020;
 		private const int CAPTUREBLT = 0x40000000;
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
-
+		
 		[System.Runtime.InteropServices.DllImport("user32.dll")]
 		private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
 		[System.Runtime.InteropServices.DllImport("user32.dll")]
 		private static extern IntPtr GetDCEx(IntPtr hWnd, IntPtr hrgnClip, int
 		flags);
-
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern IntPtr GetDC(IntPtr hWnd);
 
 		[System.Runtime.InteropServices.DllImport("user32.dll")]
 		private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDc);
@@ -163,8 +157,6 @@ namespace Dapple
 		private string metaviewerDir = "";
 
 		private MetadataDisplayThread m_oMetadataDisplay;
-
-		Geosoft.GX.DAPGetData.GetDapError dapErrors;
 
 		private static ImageList m_oImageList = new ImageList();
 		private static RemoteInterface m_oMontajRemoteInterface;
@@ -531,8 +523,6 @@ namespace Dapple
 				WorldWind.Terrain.TerrainTileService terrainTileService = new WorldWind.Terrain.TerrainTileService("http://worldwind25.arc.nasa.gov/wwelevation/wwelevation.aspx", "srtm30pluszip", 20, 150, "bil", 12, Path.Combine(Settings.CachePath, "Earth\\TerrainAccessor\\SRTM"), TimeSpan.FromMinutes(30), "Int16");
 				WorldWind.Terrain.TerrainAccessor terrainAccessor = new WorldWind.Terrain.NltTerrainAccessor("SRTM", -180, -90, 180, 90, terrainTileService, null);
 
-				this.dapErrors = new Geosoft.GX.DAPGetData.GetDapError(Path.Combine(Settings.CachePath, "DapErrors.log"));
-
 				WorldWind.World world = new WorldWind.World("Earth",
 					new Point3d(0, 0, 0), Quaternion4d.RotationYawPitchRoll(0, 0, 0),
 					(float)6378137,
@@ -863,19 +853,13 @@ namespace Dapple
 			public LayerBuilder builder; // null indicates Blue Marble
 			public bool bOn;
 			public bool bRead;
-			public int iPos;
-			public int iTotal;
-
-			public static int Compare(ActiveDownload x, ActiveDownload y)
-			{
-				return (y.iTotal - y.iPos).CompareTo(x.iTotal - x.iPos);
-			}
 		}
 
-		bool m_bDownloadUpdating = false;
+		bool m_bDownloadUpdating;
 		List<ActiveDownload> m_downloadList = new List<ActiveDownload>();
-		int m_iPos = 0, m_iTotal = 0;
-		bool m_bDownloading = false;
+		int m_iTotal;
+		int m_iPos;
+		bool m_bDownloading;
 
 		private delegate void UpdateDownloadIndicatorsDelegate(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList);
 		private void UpdateDownloadIndicators(bool bDownloading, int iPos, int iTotal, List<ActiveDownload> newList)
@@ -2050,8 +2034,6 @@ namespace Dapple
 				iTotal += iBuilderTotal;
 				ActiveDownload dl = new ActiveDownload();
 				dl.builder = null;
-				dl.iPos = iBuilderPos;
-				dl.iTotal = iBuilderTotal;
 				dl.bOn = true;
 				dl.bRead = false;
 				currentList.Add(dl);
@@ -2066,8 +2048,6 @@ namespace Dapple
 					iTotal += iBuilderTotal;
 					ActiveDownload dl = new ActiveDownload();
 					dl.builder = oBuilder;
-					dl.iPos = iBuilderPos;
-					dl.iTotal = iBuilderTotal;
 					dl.bOn = true;
 					dl.bRead = false;
 					currentList.Add(dl);
@@ -2383,11 +2363,6 @@ namespace Dapple
 		}
 
 		#endregion
-
-		private void c_oServerTree_ServerToggled(object sender, EventArgs e)
-		{
-			populateAoiComboBox();
-		}
 
 		private void c_oServerList_LayerSelectionChanged(object sender, EventArgs e)
 		{
@@ -2728,11 +2703,7 @@ namespace Dapple
 			if (File.Exists(filename))
 			{
 				DappleView view = new DappleView(filename);
-				bool bShowBlueMarble = true;
-
-				if (view.View.Hasshowbluemarble())
-					bShowBlueMarble = view.View.showbluemarble.Value;
-
+				
 				if (bGoto && view.View.Hascameraorientation())
 				{
 					cameraorientationType orient = view.View.cameraorientation;
@@ -3109,8 +3080,6 @@ namespace Dapple
 			bool blServerSelected = m_oModel.SelectedServer != null;
 			blServerSelected &= c_tcSearchViews.SelectedIndex == 0;
 			blServerSelected &= cServerViewsTab.SelectedIndex == 0;
-
-			bool blDAPServerSelected = blServerSelected && m_oModel.SelectedServer is DapServerModelNode;
 
 			c_miViewProperties.Enabled = blServerSelected;
 			c_miRefreshServer.Enabled = blServerSelected;

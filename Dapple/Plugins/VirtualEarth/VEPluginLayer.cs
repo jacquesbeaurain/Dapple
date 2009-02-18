@@ -174,8 +174,6 @@ namespace bNb.Plugins_GD
 				double lat = drawArgs.WorldCamera.Latitude.Degrees;
 				double lon = drawArgs.WorldCamera.Longitude.Degrees;
 				double tilt = drawArgs.WorldCamera.Tilt.Degrees;
-				//determine zoom level
-				double alt = drawArgs.WorldCamera.Altitude;
 				//could go off distance, but this changes when view angle changes
 				//Angle fov = drawArgs.WorldCamera.Fov; //stays at 45 degress
 				//Angle viewRange = drawArgs.WorldCamera.ViewRange; //off of distance, same as TVR but changes when view angle changes
@@ -188,36 +186,13 @@ namespace bNb.Plugins_GD
 				//WW _levelZeroTileSizeDegrees
 				//180 90 45 22.5 11.25 5.625 2.8125 1.40625 .703125 .3515625 .17578125 .087890625 0.0439453125 0.02197265625 0.010986328125 0.0054931640625
 				int zoomLevel = GetZoomLevelByTrueViewRange(tvr.Degrees);
-			
-				//dont start VE tiles until a certain zoom level
-				//if (zoomLevel < veForm.StartZoomLevel)
-				//{
-				//	this.RemoveAllTiles();
-				// this.ForceRefresh();
-				//	return;
-				//}
-
-				//WW tiles
-				//double tileDegrees = GetLevelDegrees(zoomLevel);
-				//int row = MathEngine.GetRowFromLatitude(lat, tileDegrees);
-				//int col = MathEngine.GetColFromLongitude(lon, tileDegrees);
-
+							
 				//VE tiles
 				double metersY;
 				double yMeters;
 				int yMetersPerPixel;
 				int row;
-				/*
-				//WRONG - doesn't stay centered away from equator
-				//int yMeters = LatitudeToYAtZoom(lat, zoomLevel); //1024
-				double sinLat = Math.Sin(DegToRad(lat));
-				metersY = earthRadius / 2 * Math.Log((1 + sinLat) / (1 - sinLat)); //0
-				yMeters = earthHalfCirc - metersY; //20037508.342789244
-				yMetersPerPixel = (int) Math.Round(yMeters / MetersPerPixel(zoomLevel));
-				row = yMetersPerPixel / pixelsPerTile;
-				*/
-				//CORRECT
-				//int xMeters = LongitudeToXAtZoom(lon, zoomLevel); //1024
+				
 				double metersX = earthRadius * DegToRad(lon); //0
 				double xMeters = earthHalfCirc + metersX; //20037508.342789244
 				int xMetersPerPixel = (int)Math.Round(xMeters / MetersPerPixel(zoomLevel));
@@ -270,18 +245,7 @@ namespace bNb.Plugins_GD
 				
 				//metadata
 				ArrayList alMetadata = null;
-				//if (veForm.IsDebug == true)
-				//{
-				//   alMetadata = new ArrayList();
-				//   alMetadata.Add("yMeters " + yMeters.ToString());
-				//   alMetadata.Add("metersY " + metersY.ToString());
-				//   alMetadata.Add("yMeters2 " + yMeters.ToString());
-				//   alMetadata.Add("vLat " + uvCurrent.V.ToString());
-				//   //alMetadata.Add("xMeters " + xMeters.ToString());
-				//   //alMetadata.Add("metersX " + metersX.ToString());
-				//   //alMetadata.Add("uLon " + uvCurrent.U.ToString());
-				//}
-
+				
 				//add current tiles first
 				AddVeTile(drawArgs, row, col, zoomLevel, alMetadata);
 				//then add other tiles outwards in surrounding circles
@@ -291,12 +255,7 @@ namespace bNb.Plugins_GD
 				// Extend tile grid if camera tilt above some values
 				if (tilt > 45) AddNeighborTiles(drawArgs, row, col, zoomLevel, null, 4);
 				if (tilt > 60) AddNeighborTiles(drawArgs, row, col, zoomLevel, null, 5);
-
-
-				//if(prevLvl > zoomLevel) //zooming out
-				//{
-				//}			
-
+				
 				lock (veTiles.SyncRoot)
 				{
 					VeTile veTile;
@@ -454,26 +413,15 @@ namespace bNb.Plugins_GD
 			return newVeTile;
 		}
 
-		private static double MetersPerTile(int zoom)
-		{
-			return MetersPerPixel(zoom) * pixelsPerTile;
-		}
-
 		private static double MetersPerPixel(int zoom)
 		{
-			double arc;
-			arc = earthCircum / ((1 << zoom) * pixelsPerTile);
+			double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
 			return arc;
 		}
 
 		private static double DegToRad(double d)
 		{
 			return d * Math.PI / 180.0;
-		}
-
-		private static double RadToDeg(double d)
-		{
-			return d * 180 / Math.PI;
 		}
 
 		public double GetLevelDegrees(int level)
@@ -524,35 +472,7 @@ namespace bNb.Plugins_GD
 			}
 			return level - 1;
 		}
-
-		private int LatitudeToYAtZoom(double lat, int zoom)
-		{
-			int y;
-			//code VE Mobile v1 - NO LONGER VALID
-			//double sinLat = Math.Sin(DegToRad(lat));
-			//double metersY = 6378137 / 2 * Math.Log((1 + sinLat) / (1 - sinLat));
-			//y = (int)Math.Round((20971520 - metersY) / MetersPerPixel(zoom));
-			//forum - SKIPS TILES THE FURTHER YOU GET FROM EQUATOR
-			double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
-			double sinLat = Math.Sin(DegToRad(lat));
-			double metersY = earthRadius / 2 * Math.Log((1 + sinLat) / (1 - sinLat));
-			y = (int)Math.Round((earthHalfCirc - metersY) / arc);
-			//HACK - THIS HANDLES THE SKIPPING OF TILES THE FURTHER YOU GET FROM EQUATOR
-			//double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
-			//double metersY = earthRadius * DegToRad(lat);
-			//y = (int) Math.Round((earthHalfCirc - metersY) / arc);
-			return y;
-		}
-
-		private int LongitudeToXAtZoom(double lon, int zoom)
-		{
-			int x;
-			double arc = earthCircum / ((1 << zoom) * pixelsPerTile);
-			double metersX = earthRadius * DegToRad(lon);
-			x = (int)Math.Round((earthHalfCirc + metersX) / arc);
-			return x;
-		}
-
+		
 		/// <summary>
 		/// Draws the layer
 		/// </summary>
@@ -680,8 +600,6 @@ namespace bNb.Plugins_GD
             int iMaxCol = int.MinValue;
             int iMinRow = int.MaxValue;
             int iMaxRow = int.MinValue;
-
-            int iLevel = ((VeTile)veTiles[0]).Level;
 
             foreach (VeTile oTile in veTiles)
             {
@@ -1314,9 +1232,7 @@ namespace bNb.Plugins_GD
 		public void CreateMesh(byte opacity, float verticalExaggeration)
 		{
 			this.vertEx = verticalExaggeration;
-
-			int opacityColor = System.Drawing.Color.FromArgb(opacity, 0, 0, 0).ToArgb();
-
+			
 			meshPointCount = 32; //64; //96 // How many vertices for each direction in mesh (total: n^2)
 			//vertices = new CustomVertex.PositionColoredTextured[meshPointCount * meshPointCount];
 
@@ -1613,7 +1529,6 @@ namespace bNb.Plugins_GD
 			}
 			catch (Exception ex)
 			{
-				string sex = ex.ToString();
 				Utility.Log.Write(ex);
 			}
 			finally

@@ -533,32 +533,36 @@ namespace Dapple.CustomControls
 
 	class SearchResultSet
 	{
-		private int m_iOffset;
-		private int m_iTotalCount;
-		private List<SearchResult> m_aResults;
+		private readonly int m_iTotalCount;
+		private readonly List<SearchResult> m_aResults;
 
-		private Object LOCK = new Object();
-		private bool m_blThumbnailsQueued = false;
+		private readonly Object LOCK = new Object();
+		private bool m_blThumbnailsQueued;
 
-		public SearchResultSet(XmlDocument oSearchResult)
+		public SearchResultSet(XmlNode oSearchResult)
 		{
-			if (oSearchResult.SelectSingleNode("/geosoft_xml/error") != null) throw new ArgumentException("Server sent error message");
+			if (oSearchResult.SelectSingleNode("/geosoft_xml/error") != null) 
+				throw new ArgumentException("Server sent error message");
 
-			XmlElement oRootElement = oSearchResult.SelectSingleNode("/geosoft_xml/search_result") as XmlElement;
-
-			m_iOffset = Int32.Parse(oRootElement.GetAttribute("offset"), NumberStyles.Any, CultureInfo.InvariantCulture);
-			m_iTotalCount = Int32.Parse(oRootElement.GetAttribute("totalcount"), NumberStyles.Any, CultureInfo.InvariantCulture);
 			m_aResults = new List<SearchResult>();
 
-			foreach (XmlNode oResult in oRootElement.SelectNodes("/geosoft_xml/search_result/layers/layer"))
+			var oRootElement = oSearchResult.SelectSingleNode("/geosoft_xml/search_result") as XmlElement;
+
+			if (oRootElement != null)
 			{
-				m_aResults.Add(new SearchResult(oResult as XmlElement));
+				m_iTotalCount = Int32.Parse(oRootElement.GetAttribute("totalcount"), NumberStyles.Any, CultureInfo.InvariantCulture);
+
+				var layerElements = oRootElement.SelectNodes("/geosoft_xml/search_result/layers/layer");
+				if (layerElements != null)
+				{
+					foreach (XmlNode oResult in layerElements)
+						m_aResults.Add(new SearchResult(oResult as XmlElement));
+				}
 			}
 		}
 
 		public int TotalCount { get { return m_iTotalCount; } }
 		public List<SearchResult> Results { get { return m_aResults; } }
-		public int Offset { get { return m_iOffset; } }
 
 		#region Asynchronous Thumbnail Loading
 
@@ -633,7 +637,6 @@ namespace Dapple.CustomControls
 		public UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
 		public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
 		public Bitmap Thumbnail { get { return m_oBitmap; } }
-		public String Description { get { return m_aCommonAttributes["description"]; } }
 		public String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
 
 		public LayerUri Uri

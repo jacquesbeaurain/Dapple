@@ -133,7 +133,6 @@ namespace Murris.Plugins
 			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
-				string saveVersion = settingsList[0];   // version when settings where saved
 				if (settingsList[1] != null) presetFileName = settingsList[1];
 				if (settingsList.Length >= 3) IsOn = (settingsList[2] == "False") ? false : true;
 				if (settingsList.Length >= 4) useFog = (settingsList[3] == "False") ? false : true;
@@ -159,7 +158,6 @@ namespace Murris.Plugins
 			if (line != "")
 			{
 				string[] settingsList = line.Split(';');
-				string saveVersion = settingsList[0];   // version when settings where saved
 				if (settingsList[1] != null) Double.TryParse(settingsList[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out thickness);
 				if (settingsList[2] != null) zenithColor = ColorFromPreset(settingsList[2]);
 				if (settingsList[3] != null) horizonColor = ColorFromPreset(settingsList[3]);

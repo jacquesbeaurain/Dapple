@@ -169,33 +169,7 @@ namespace Dapple.LayerGeneration
 		public string ServerURL
 		{
 			get { return m_oServerUri.ToBaseUri(); }
-		}
-
-		[System.ComponentModel.Category("ArcIMS")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The name used to access this data layer on the ArcIMS service")]
-		public String Name
-		{
-			get { return m_szLayerID; }
-		}
-
-		[System.ComponentModel.Category("ArcIMS")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The name of the ArcIMS service serving this data layer")]
-		public String Service
-		{
-			get { return m_szServiceName; }
-		}
-
-		[System.ComponentModel.Category("ArcIMS")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The minimum scale this data layer is visible at")]
-		public double MinScale { get { return m_dMinScale; } }
-
-		[System.ComponentModel.Category("ArcIMS")]
-		[System.ComponentModel.Browsable(true)]
-		[System.ComponentModel.Description("The maximum scale this data layer is visible at")]
-		public double MaxScale { get { return m_dMaxScale; } }
+		}	
 
 		[System.ComponentModel.Browsable(false)]
 		public override bool IsChanged

@@ -23,10 +23,9 @@ namespace Dapple.Extract
       }
 
       #region Member Variables
-      List<Dapple.LayerGeneration.LayerBuilder> m_oLayersToDownload;
-      private List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
-      private DownloadOptions m_oCurUserControl = null;
-		private Form m_oParentForm = null;
+   	private readonly List<LayerGeneration.LayerBuilder> m_oLayersToDownload;
+      private readonly List<DownloadOptions> m_oDownloadSettings = new List<DownloadOptions>();
+      private DownloadOptions m_oCurUserControl;
 		private bool m_blLayersDownloaded = true;
       #endregion
 
@@ -34,13 +33,11 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oLayersToDownload"></param>
-      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload, Form oParentForm)
+      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload)
       {
          InitializeComponent();
 
-			m_oParentForm = oParentForm;
-
-         m_oLayersToDownload = oLayersToDownload;
+			m_oLayersToDownload = oLayersToDownload;
 
 			if (MainForm.Client == Options.Client.ClientType.OasisMontaj)
 			{
