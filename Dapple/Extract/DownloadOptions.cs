@@ -348,7 +348,7 @@ namespace Dapple.Extract
       /// <param name="dMaxX"></param>
       /// <param name="dMaxY"></param>
       /// <returns></returns>
-      private bool IntersectMap(ref double dMinX, ref double dMinY, ref double dMaxX, ref double dMaxY, string strCoordinateSystem)
+      protected bool IntersectMap(ref double dMinX, ref double dMinY, ref double dMaxX, ref double dMaxY, string strCoordinateSystem)
       {
          double dTempMinX = dMinX;
          double dTempMinY = dMinY;

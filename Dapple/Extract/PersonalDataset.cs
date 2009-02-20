@@ -24,6 +24,26 @@ namespace Dapple.Extract
 			bool blFileExists;
 			String strFilename = String.Empty;
 
+
+			bool openANewMap;
+
+			if (MainForm.MontajInterface.HostHasOpenMap())
+			{
+				string strSrcCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+				if (string.IsNullOrEmpty(strSrcCoordinateSystem))
+					return ExtractSaveResult.Ignore;
+				double dMinX, dMinY, dMaxX, dMaxY;
+				if (!MainForm.MontajInterface.GetExtents(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY))
+					return ExtractSaveResult.Ignore;
+
+				openANewMap = !IntersectMap(ref dMinX, ref dMinY, ref dMaxX, ref dMaxY, strSrcCoordinateSystem);
+			}
+			else
+			{
+				openANewMap = false;
+			}
+
+
 			try
 			{
 				strFilename = m_oDAPLayer.LocalFilename;
@@ -41,6 +61,7 @@ namespace Dapple.Extract
 				oDatasetElement.SetAttribute("filename", strFilename);
 				oDatasetElement.SetAttribute("type", m_oDAPLayer.DAPType);
 				oDatasetElement.SetAttribute("id", m_oDAPLayer.DatasetName);
+				oDatasetElement.SetAttribute("new_map", openANewMap.ToString());
 
 				return ExtractSaveResult.Extract;
 			}
