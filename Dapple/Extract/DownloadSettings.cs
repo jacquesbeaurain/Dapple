@@ -163,17 +163,16 @@ namespace Dapple.Extract
 
 				if (oDAPbuilder.IsFromPersonalDapServer)
 				{
-					if (oDAPbuilder.DAPType.Equals("spf", StringComparison.OrdinalIgnoreCase)
+					if (MainForm.Client == Options.Client.ClientType.ArcMAP 
+						&& oDAPbuilder.DAPType.Equals("spf", StringComparison.OrdinalIgnoreCase)
 						&& oDAPbuilder.LocalFilename.EndsWith("(TAB)", StringComparison.OrdinalIgnoreCase))
 					{
 						return new Disabled("This data layer will not be opened because TAB files are not supported in ArcMap.");
 					}
-					else
-					{
-						oControl = new PersonalDataset(oDAPbuilder);
-						oControl.ErrorProvider = cErrorProvider;
-						return oControl;
-					}
+
+					oControl = new PersonalDataset(oDAPbuilder);
+					oControl.ErrorProvider = cErrorProvider;
+					return oControl;
 				}
 
             if (oDAPbuilder.DAPType.ToLower() == "map")
