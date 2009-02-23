@@ -40,7 +40,7 @@ namespace Dapple.Extract
 			}
 			else
 			{
-				openANewMap = false;
+				openANewMap = true;
 			}
 
 
