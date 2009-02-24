@@ -458,8 +458,11 @@ namespace Dapple.Extract
 			this.ResumeLayout(true);
 		}
 
+		public string ExtractXML { get; private set; }
+
 		public bool DoDownload(XmlDocument oExtractDoc)
 		{
+			ExtractXML = oExtractDoc.OuterXml;
 			ProgressWindow oProgress = new ProgressWindow(false, false);
 			oProgress.Text = "Extraction in Progress";
 			oProgress.SetText(Utility.EnumUtils.GetDescription(MainForm.Client) + " is extracting your datasets.");

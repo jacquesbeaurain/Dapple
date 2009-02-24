@@ -1075,12 +1075,24 @@ namespace Dapple
 				}
 				else
 				{
-					Program.ShowMessageBox(
-						"Extraction complete.",
-						"Extract Layers",
-						MessageBoxButtons.OK,
-						MessageBoxDefaultButton.Button1,
-						MessageBoxIcon.Information);
+					String errorMessage = MainForm.MontajInterface.GetLastError();
+
+					if (errorMessage != null)
+					{
+						if (DialogResult.Yes == MessageBox.Show("An unexpected error has occurred while extracting your data." + Environment.NewLine + Environment.NewLine + "Would you like to send a mail message containing the error log and what you were doing when the program aborted?", "Error Encountered During Extraction", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1))
+						{
+							Utility.ErrorDisplay.ReportExtractionError(errorMessage, oDownloadDialog.ExtractXML, MainForm.Client.ToString());
+						}
+					}
+					else
+					{
+						Program.ShowMessageBox(
+							"Extraction complete.",
+							"Extract Layers",
+							MessageBoxButtons.OK,
+							MessageBoxDefaultButton.Button1,
+							MessageBoxIcon.Information);
+					}
 				}
 			}
 			else if (oResult == DialogResult.Abort)

@@ -14,6 +14,8 @@ namespace Utility
 	/// </summary>
 	public class ErrorDisplay : System.Windows.Forms.Form
 	{
+		const string DAPSupportEmail = "dapple@geosoft.com";
+
 		private System.Windows.Forms.TextBox errorText;
 		private System.Windows.Forms.Button copyButton;
 		private System.Windows.Forms.Button exitButton;
@@ -61,13 +63,12 @@ namespace Utility
 
 		private void copyButton_Click(object sender, System.EventArgs e)
 		{
-         string strVersion = Application.ProductVersion;
          string tempBodyFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
          string tempAbortFile = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".log");
 
          using (StreamWriter sw = new StreamWriter(tempAbortFile, false))
          {
-				String szTemp = "DAPPLE " + strVersion + " ABORT" + Environment.NewLine +
+				String szTemp = "DAPPLE " + Application.ProductVersion + " ABORT" + Environment.NewLine +
 					Environment.NewLine + 
 					this.errorText.Text;
             sw.Write(szTemp);
@@ -81,21 +82,8 @@ namespace Utility
             sw.WriteLine();
          }
 
-         string strMailApp = Path.Combine(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "System"), "mailer.exe");
-
-         this.TopMost = false;
-
-         ProcessStartInfo psi = new ProcessStartInfo(strMailApp);
-         psi.UseShellExecute = false;
-         psi.CreateNoWindow = true;
-         psi.Arguments = String.Format(CultureInfo.InvariantCulture,
-            " \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" \"{5}\"",
-            "Dapple(" + strVersion + ") Abort Log Report", "", "dapple@geosoft.com",
-            tempAbortFile, "abort.log", tempBodyFile);
-         using (Process p = Process.Start(psi))
-         {
-            p.WaitForExit();
-         }
+			this.TopMost = false;
+			OpenMailProgram(DAPSupportEmail, "Dapple(" + Application.ProductVersion + ") Abort Log Report", tempBodyFile, tempAbortFile);
 
 			try
 			{
@@ -105,6 +93,64 @@ namespace Utility
 			catch (IOException)
 			{
 				// File is in user's temp directory, so will get cleaned up eventually.  No big deal.
+			}
+		}
+
+		public static void ReportExtractionError(string hostError, string xmlFile, string hostApplication)
+		{
+			String temporaryEmailBodyFilename = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".txt");
+			String temporaryAbortFilename = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".log");
+
+			using (StreamWriter abort = new StreamWriter(temporaryAbortFilename, false))
+			{
+				abort.WriteLine("FIND DATA WITH DAPPLE " + Application.ProductVersion + " IN " + hostApplication + " EXTRACTION ERROR");
+				abort.WriteLine();
+				abort.WriteLine(hostError);
+				abort.WriteLine();
+				abort.WriteLine("EXTRACTION XML DOCUMENT");
+				abort.Write(xmlFile);
+			}
+
+			using (StreamWriter body = new StreamWriter(temporaryEmailBodyFilename, false))
+			{
+				body.WriteLine("Thank you very much for helping us to improve Dapple.");
+				body.WriteLine();
+				body.WriteLine("Please also attach any files you were working with that we could potentially use to reproduce the error.");
+				body.WriteLine();
+			}
+
+			OpenMailProgram(DAPSupportEmail, "Dapple(" + Application.ProductVersion + ") Extraction Error Report", temporaryEmailBodyFilename, temporaryAbortFilename);
+
+			try
+			{
+				File.Delete(temporaryAbortFilename);
+				File.Delete(temporaryEmailBodyFilename);
+			}
+			catch (IOException)
+			{
+				// File is in user's temp directory, so will get cleaned up eventually.  No big deal.
+			}
+		}
+
+		private static void OpenMailProgram(string email, string subjectLine, string emailBodyFilename, string abortFilename)
+		{
+			string strMailApp = Path.Combine(Path.Combine(Application.StartupPath, "System"), "mailer.exe");
+
+			ProcessStartInfo psi = new ProcessStartInfo(strMailApp);
+			psi.UseShellExecute = false;
+			psi.CreateNoWindow = true;
+			psi.Arguments = String.Format(CultureInfo.InvariantCulture,
+				" \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" \"{5}\"",
+				subjectLine,
+				String.Empty,
+				email,
+				abortFilename,
+				"abort.log",
+				emailBodyFilename);
+
+			using (Process p = Process.Start(psi))
+			{
+				p.WaitForExit();
 			}
 		}
 
