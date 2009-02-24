@@ -542,7 +542,7 @@ namespace Geosoft.GX.DAPGetData
       public void UpdateConfiguration()
       {
 			// --- Delete the tile cache ---
-			Utility.FileSystem.DeleteFolderGUI(Dapple.MainForm.ActiveForm, Path.Combine(Path.Combine(m_strCacheRoot, Dapple.LayerGeneration.DAPQuadLayerBuilder.CacheSubDir), Url.Replace("http://", "")), "Deleting Stale Cache");
+			Utility.FileSystem.DeleteFolderGUI(Dapple.MainForm.ActiveForm, Path.Combine(Path.Combine(m_strCacheRoot, Dapple.LayerGeneration.DAPQuadLayerBuilder.CacheSubDir), Utility.FileSystem.SanitizeFilename(Url.Replace("http://", ""))), "Deleting Stale Cache");
 
          // --- delete the browser map and configuration ---
 
