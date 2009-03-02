@@ -5,15 +5,6 @@
     <Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="CommonFilesFolder" Name="Common Files">
-          <Directory Id="COMMONFILES_GEOSOFT_DIRECTORY" Name="Geosoft">
-            <Directory Id="COMMONFILES_GEOSOFT_SECURECLIENT_DIRECTORY" Name="SecureClient">
-              <Component Id="GeoSecureClient.exe" Guid="{8AA6870B-23EF-40ED-B31D-DC7EA38DA9DD}" SharedDllRefCount="yes" >
-                <File Id="GeoSecureClient.exe_0" Name="GeoSecureClient.exe" DiskId="1" Source="$(var.GeoBuild)\obj\release\GeoSecureClient.exe" Vital="yes" KeyPath="yes" />
-              </Component>
-            </Directory>
-          </Directory>
-        </Directory>
         <Directory Id="INSTALLLOCATION" Name="Dapple">
           <Directory Id="INSTALLDIR" Name=".">
             <Merge Id="DappleMergeModule" Language="1033" DiskId="1" SourceFile="..\MergeModule\bin\Release\Dapple.msm" />
@@ -57,7 +48,6 @@
       <ComponentRef Id="dapple_registry" />
       <ComponentRef Id="dapple_file_extension" />
       <ComponentRef Id="dapple_file_class" />
-      <ComponentRef Id="GeoSecureClient.exe" />
     </Feature>
     <CustomAction Id="SetDappleShortcut" Property="DappleShortcut" Value="[INSTALLDIR]\Dapple.exe" />
     <CustomAction Id="LaunchProgram" Directory="INSTALLDIR" ExeCommand="[INSTALLDIR]dapple.exe" Execute="immediate" Return="asyncNoWait" />

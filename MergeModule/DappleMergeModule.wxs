@@ -16,8 +16,8 @@
         <Component Id="ICSharpCode.SharpZipLib.dll" Guid="b63e153a-92f8-4deb-8478-d9635f7095de">
           <File Id="ICSharpCode.SharpZipLib.dll" Name="ICSharpCode.SharpZipLib.dll" Source="..\Dapple\bin\x86\Release\ICSharpCode.SharpZipLib.dll" Vital="yes" KeyPath="yes" />
         </Component>
-        <Component Id="Interop.GeoSecureClient.dll" Guid="99857d7d-1173-4c25-9450-4ba3007249a0">
-          <File Id="Interop.GeoSecureClient.dll" Name="Interop.GeoSecureClient.dll" Source="..\Dapple\bin\x86\Release\Interop.GeoSecureClient.dll" Vital="yes" KeyPath="yes" />
+        <Component Id="CreateSecureDAPToken.dll" Guid="861130B0-4531-4973-A4D2-74B3066DEF4D">
+          <File Id="CreateSecureDAPToken.dll" Name="CreateSecureDAPToken.dll" Source="..\Dapple\bin\x86\Release\CreateSecureDAPToken.dll" Vital="yes" KeyPath="yes" />
         </Component>
         <Component Id="JhuaplWorldWind.dll" Guid="9ff344bb-7c4c-417e-ae07-d04d307e301d">
           <File Id="JhuaplWorldWind.dll" Name="JhuaplWorldWind.dll" Source="..\Dapple\bin\x86\Release\JhuaplWorldWind.dll" Vital="yes" KeyPath="yes" />
@@ -72,7 +72,7 @@
           <File Id="app.ico" Name="app.ico" Source="..\Dapple\bin\x86\Release\app.ico" Vital="yes" />
           <File Id="version.txt" Name="version.txt" Source="..\Dapple\bin\x86\Release\version.txt" Vital="yes" />
           <File Id="Dapple.exe.config" Name="Dapple.exe.config" Source="..\Dapple\bin\x86\Release\Dapple.exe.config" Vital="yes" />
-          <File Id="WorldWindDings1.04.ttf" Name="World Wind Dings 1.04.ttf" Source="..\Dapple\bin\x86\Release\World Wind Dings 1.04.ttf" Vital="yes" DefaultLanguage="1033" TrueType="yes" />
+          <File Id="WorldWindDings1.04.ttf" Name="World Wind Dings 1.04.ttf" Source="..\Dapple\bin\x86\Release\World Wind Dings 1.04.ttf" Vital="yes" TrueType="yes" />
         </Component>
         <Directory Id="Config" Name="Config">
           <Component Id="ConfigFiles" Guid="7897c300-fb9c-48d3-8fea-82b7f917effa">
