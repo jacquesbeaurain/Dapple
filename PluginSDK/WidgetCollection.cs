@@ -5,11 +5,11 @@ namespace WorldWind.Widgets
 	/// <summary>
 	/// Summary description for WidgetCollection.
 	/// </summary>
-	public class WidgetCollection : IWidgetCollection
+	internal class WidgetCollection : IWidgetCollection
 	{
 		System.Collections.ArrayList m_ChildWidgets = new System.Collections.ArrayList();
 		
-		public WidgetCollection()
+		internal WidgetCollection()
 		{
 
 		}

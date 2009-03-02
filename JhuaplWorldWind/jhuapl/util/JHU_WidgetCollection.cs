@@ -52,7 +52,7 @@ namespace jhuapl.util
 	{
 		System.Collections.ArrayList m_ChildWidgets = new System.Collections.ArrayList();
 		
-		public JHU_WidgetCollection()
+		internal JHU_WidgetCollection()
 		{
 		}
 

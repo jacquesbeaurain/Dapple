@@ -13,7 +13,7 @@ namespace WorldWind.DataSource
     /// into a local memory buffer, and the DataRequest's content stream is fed from memory (unless
     /// it could be fulfilled from Cache anyway).
     /// </summary>
-    public class DataRequestHTTP : DataRequest
+    internal class DataRequestHTTP : DataRequest
     {
         #region HTTP Request Data
         private WebRequest m_webRequest;
@@ -29,7 +29,7 @@ namespace WorldWind.DataSource
         #endregion
 
         #region DataRequest Property Overrides
-        public override float Progress
+        internal override float Progress
         {
             get
             { 
@@ -41,7 +41,7 @@ namespace WorldWind.DataSource
         }
         #endregion
 
-        public DataRequestHTTP(DataRequestDescriptor request)
+        internal DataRequestHTTP(DataRequestDescriptor request)
             : base(request)
         {
         }
@@ -49,7 +49,7 @@ namespace WorldWind.DataSource
         /// <summary>
         /// Initiate an asynchronous request
         /// </summary>
-        public override void Start()
+        internal override void Start()
         {
 #if VERBOSE
             Log.Write(Log.Levels.Verbose, "DataRequest: starting async request for " + m_request.Source);

@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	public class AvailableServersModelNode : ModelNode
+	internal class AvailableServersModelNode : ModelNode
 	{
 		#region Member Variables
 
@@ -19,7 +19,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public AvailableServersModelNode(DappleModel oModel)
+		internal AvailableServersModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			m_oDAPRootNode = new DapServerRootModelNode(m_oModel);
@@ -53,43 +53,43 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool ShowAllChildren
+		internal override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
 		}
 
-		public override String DisplayText
+		internal override String DisplayText
 		{
 			get { return "Available Servers"; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.AvailableServers; }
 		}
 
-		public DapServerRootModelNode DAPServers
+		internal DapServerRootModelNode DAPServers
 		{
 			get { return m_oDAPRootNode; }
 		}
 
-		public ImageTileSetRootModelNode ImageTileSets
+		internal ImageTileSetRootModelNode ImageTileSets
 		{
 			get { return m_oTileRootNode; }
 		}
 
-		public WMSRootModelNode WMSServers
+		internal WMSRootModelNode WMSServers
 		{
 			get { return m_oWMSRootNode; }
 		}
 
-		public ArcIMSRootModelNode ArcIMSServers
+		internal ArcIMSRootModelNode ArcIMSServers
 		{
 			get { return m_oArcIMSRootNode; }
 		}
 
-		public PersonalDapServerModelNode PersonalDapServer
+		internal PersonalDapServerModelNode PersonalDapServer
 		{
 			get { return m_oPersonalDAPServer; }
 		}
@@ -99,7 +99,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public void Clear()
+		internal void Clear()
 		{
 			m_oDAPRootNode.ClearSilently();
 			m_oTileRootNode.ClearSilently();
@@ -107,7 +107,7 @@ namespace NewServerTree
 			m_oArcIMSRootNode.ClearSilently();
 		}
 
-		public ServerModelNode SetFavouriteServer(String strUri)
+		internal ServerModelNode SetFavouriteServer(String strUri)
 		{
 			ServerModelNode temp, result = null;
 
@@ -125,7 +125,7 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		public void SaveToView(Dapple.DappleView oView)
+		internal void SaveToView(Dapple.DappleView oView)
 		{
 			dappleview.serversType oServers = oView.View.Newservers();
 

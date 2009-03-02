@@ -6,14 +6,14 @@ namespace WorldWind.PluginEngine
 	/// <summary>
 	/// Listview item in the plugin dialog.
 	/// </summary>
-	public class PluginListItem : ListViewItem
+	internal class PluginListItem : ListViewItem
 	{
 		PluginInfo pluginInfo;
 
 		/// <summary>
 		/// Plugin information container.
 		/// </summary>
-		public PluginInfo PluginInfo
+		internal PluginInfo PluginInfo
 		{
 			get
 			{
@@ -24,7 +24,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Plugin name.
 		/// </summary>
-		public new string Name
+		internal new string Name
 		{
 			get
 			{
@@ -35,7 +35,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.PluginEngine.PluginListItem"/> class.
 		/// </summary>
-		public PluginListItem(PluginInfo pi)
+		internal PluginListItem(PluginInfo pi)
 		{
 			this.pluginInfo = pi;
 			this.Text = pi.Name;	

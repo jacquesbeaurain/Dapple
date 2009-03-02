@@ -13,15 +13,15 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for ShapeFileInfoDlg.
 	/// </summary>
-	public class ShapeFileInfoDlg : System.Windows.Forms.Form
+	internal class ShapeFileInfoDlg : System.Windows.Forms.Form
 	{
-		public System.Windows.Forms.DataGrid dataGrid1;
+		internal System.Windows.Forms.DataGrid dataGrid1;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public ShapeFileInfoDlg(string dbfPath, bool isInZip)
+		internal ShapeFileInfoDlg(string dbfPath, bool isInZip)
 		{
 			//
 			// Required for Windows Form Designer support

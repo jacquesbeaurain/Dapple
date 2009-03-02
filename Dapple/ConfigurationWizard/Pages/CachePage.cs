@@ -7,7 +7,7 @@ namespace ConfigurationWizard
 	/// <summary>
 	/// Summary description for CachePage.
 	/// </summary>
-	public class CachePage : WizardPage
+	internal class CachePage : WizardPage
 	{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label6;
@@ -165,7 +165,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:ConfigurationWizard.CachePage"/> class.
 		/// </summary>
-		public CachePage()
+		internal CachePage()
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();

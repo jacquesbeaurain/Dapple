@@ -56,7 +56,7 @@ using System.IO;
 
 namespace WorldWind.NewWidgets
 {
-    public delegate void VisibleChangedHandler(object o, bool state);
+	public delegate void VisibleChangedHandler(object o, bool state);
 
 	/// <summary>
 	/// FormWidget - This class implements a basic form with no layout management whatsoever but
@@ -67,13 +67,13 @@ namespace WorldWind.NewWidgets
 	/// because each form widget creates a new ViewPort.  Typically a PanelWidget should work
 	/// fine instead.
 	/// </summary>
-	public class FormWidget : WidgetCollection, WorldWind.NewWidgets.IWidget, WorldWind.NewWidgets.IInteractive
+	 public class FormWidget : WidgetCollection, WorldWind.NewWidgets.IWidget, WorldWind.NewWidgets.IInteractive
 	{
 		/// <summary>
 		/// Possible Resize Directions
 		/// </summary>
 		[Flags]
-		public enum ResizeDirection : ushort
+		 public enum ResizeDirection : ushort
 		{
 			None = 0x00,
 			Left = 0x01,
@@ -318,27 +318,27 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether or not to ever render the header
         /// </summary>
-        public bool HeaderEnabled = true;
+        internal bool HeaderEnabled = true;
 
         /// <summary>
         /// Whether or not to ever render the border
         /// </summary>
-        public bool BorderEnabled = true;
+		  public bool BorderEnabled = true;
 
 		/// <summary>
 		/// Whether or not to hide the header when form doesn't have focus.
 		/// </summary>
-		public bool AutoHideHeader = false;
+		  public bool AutoHideHeader = false;
 
 		/// <summary>
 		/// Minimum drawing size
 		/// </summary>
-		public System.Drawing.Size MinSize = new System.Drawing.Size(20, 60);
+		internal System.Drawing.Size MinSize = new System.Drawing.Size(20, 60);
 
 		/// <summary>
 		/// Flag that indicates whether the user can resize vertically
 		/// </summary>
-		public bool VerticalResizeEnabled = true;
+		internal bool VerticalResizeEnabled = true;
 
 		/// <summary>
 		/// Flag that indicates whether the user can resize horizontally
@@ -358,7 +358,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Flag that indicates this form should get deleted on close
 		/// </summary>
-		public bool DestroyOnClose = false;
+		internal bool DestroyOnClose = false;
 
 		public WidgetEnums.AnchorStyles Anchor = WidgetEnums.AnchorStyles.None;
 
@@ -366,25 +366,25 @@ namespace WorldWind.NewWidgets
 
 		#region Properties
 
-		public Microsoft.DirectX.Direct3D.Font TextFont
+		internal Microsoft.DirectX.Direct3D.Font TextFont
 		{
 			get { return m_TextFont; }
 			set { m_TextFont = value; }
 		}
 
-		public System.Drawing.Color HeaderColor
+		internal System.Drawing.Color HeaderColor
 		{
 			get { return m_HeaderColor; }
 			set { m_HeaderColor = value; }
 		}
 
-		public int HeaderHeight
+		internal int HeaderHeight
 		{
 			get { return m_headerHeight; }
 			set { m_headerHeight = value; }
 		}
 
-		public System.Drawing.Color BorderColor
+		internal System.Drawing.Color BorderColor
 		{
 			get { return m_BorderColor; }
 			set { m_BorderColor = value; }
@@ -400,7 +400,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// The top edge of this widget.
 		/// </summary>
-		public int Top
+		internal int Top
 		{
 			get
 			{
@@ -415,7 +415,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// The bottom edge of this widget
 		/// </summary>
-		public int Bottom
+		internal int Bottom
 		{
 			get 
 			{
@@ -430,7 +430,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// The left edge of this widget
 		/// </summary>
-		public int Left
+		internal int Left
 		{
 			get
 			{
@@ -442,7 +442,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// The right edge of this widget
 		/// </summary>
-		public int Right
+		internal int Right
 		{
 			get
 			{
@@ -454,7 +454,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Location within the form of where the client area is
 		/// </summary>
-		public System.Drawing.Point BodyLocation
+		internal System.Drawing.Point BodyLocation
 		{
 			get
 			{
@@ -482,7 +482,7 @@ namespace WorldWind.NewWidgets
 		/// Adds a new child widget
 		/// </summary>
 		/// <param name="widget">The widget to be added</param>
-		new public void Add(WorldWind.NewWidgets.IWidget widget)
+		new internal void Add(WorldWind.NewWidgets.IWidget widget)
 		{
 			m_ChildWidgets.Add(widget);
 			widget.ParentWidget = this;
@@ -492,7 +492,7 @@ namespace WorldWind.NewWidgets
 		/// Removes a child widget
 		/// </summary>
 		/// <param name="widget">The widget to be removed</param>
-		new public void Remove(WorldWind.NewWidgets.IWidget widget)
+		new internal void Remove(WorldWind.NewWidgets.IWidget widget)
 		{
 			m_ChildWidgets.Remove(widget);
 		}
@@ -706,12 +706,12 @@ namespace WorldWind.NewWidgets
 			set { m_enabled = value; }
 		}
 
-        public event VisibleChangedHandler OnVisibleChanged;
+		public event VisibleChangedHandler OnVisibleChanged;
 
 		/// <summary>
 		/// Whether this widget is visible
 		/// </summary>
-		public bool Visible
+		  public bool Visible
 		{
 			get { return m_visible; }
 			set 
@@ -726,7 +726,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Whether this widget should count for height calculations - HACK until we do real layout
 		/// </summary>
-		public bool CountHeight
+		  public bool CountHeight
 		{
 			get { return m_countHeight; }
 			set { m_countHeight = value; }
@@ -736,7 +736,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Whether this widget should count for width calculations - HACK until we do real layout
 		/// </summary>
-		public bool CountWidth		
+		  public bool CountWidth		
 		{
 			get { return m_countWidth; }
 			set { m_countWidth = value; }
@@ -746,7 +746,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// The parent widget of this widget.
 		/// </summary>
-		public WorldWind.NewWidgets.IWidget ParentWidget
+		  public WorldWind.NewWidgets.IWidget ParentWidget
 		{
 			get { return m_parentWidget; }
 			set { m_parentWidget = value; }
@@ -756,7 +756,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// List of children widgets - None in the case of button widgets.
 		/// </summary>
-		public IWidgetCollection ChildWidgets
+		  public IWidgetCollection ChildWidgets
 		{
 			get { return m_ChildWidgets; }
 			set { m_ChildWidgets = value; }
@@ -766,7 +766,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// A link to an object.
 		/// </summary>
-		public object Tag
+		  public object Tag
 		{
 			get { return m_tag; }
 			set { m_tag = value; }
@@ -783,7 +783,7 @@ namespace WorldWind.NewWidgets
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize(DrawArgs drawArgs)
+		  public void Initialize(DrawArgs drawArgs)
 		{
 			if(!m_enabled)
 				return;
@@ -830,7 +830,7 @@ namespace WorldWind.NewWidgets
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Render(DrawArgs drawArgs)
+		  public void Render(DrawArgs drawArgs)
 		{
 			if ((!m_visible) || (!m_enabled))
 				return;
@@ -1250,7 +1250,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Action to perform when the left mouse button is clicked
 		/// </summary>
-		public MouseClickAction LeftClickAction
+		  public MouseClickAction LeftClickAction
 		{
 			get { return m_leftClickAction; }
 			set { m_leftClickAction = value; }
@@ -1260,7 +1260,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Action to perform when the right mouse button is clicked
 		/// </summary>
-		public MouseClickAction RightClickAction
+		  public MouseClickAction RightClickAction
 		{
 			get { return m_rightClickAction; }
 			set { m_rightClickAction = value; }
@@ -1276,7 +1276,7 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
+		  public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			// Whether or not the event was handled
 			bool handled = false;
@@ -1590,15 +1590,15 @@ namespace WorldWind.NewWidgets
 			return false;
 		}
 
-        public delegate void ResizeHandler(object IWidget, System.Drawing.Size size);
-        public event ResizeHandler OnResizeEvent;
+		public delegate void ResizeHandler(object IWidget, System.Drawing.Size size);
+		  public event ResizeHandler OnResizeEvent;
 
 		/// <summary>
 		/// Mouse move event handler.
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+		  public bool OnMouseMove(System.Windows.Forms.MouseEventArgs e)
 		{
 			// if we aren't active do nothing.
 			if ((!m_visible) || (!m_enabled))
@@ -1709,7 +1709,7 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnMouseWheel(System.Windows.Forms.MouseEventArgs e)
+		  public bool OnMouseWheel(System.Windows.Forms.MouseEventArgs e)
 		{
 			// if we aren't active do nothing.
 			if ((!m_visible) || (!m_enabled))
@@ -1731,7 +1731,7 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnMouseEnter(EventArgs e)
+		  public bool OnMouseEnter(EventArgs e)
 		{
 			return false;
 		}
@@ -1742,7 +1742,7 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnMouseLeave(EventArgs e)
+		  public bool OnMouseLeave(EventArgs e)
 		{
 			return false;
 		}
@@ -1753,7 +1753,7 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)
+		  public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)
 		{
 			return false;
 		}
@@ -1764,7 +1764,7 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		/// <param name="e">Event args</param>
 		/// <returns>If this widget handled this event</returns>
-		public bool OnKeyUp(System.Windows.Forms.KeyEventArgs e)
+		  public bool OnKeyUp(System.Windows.Forms.KeyEventArgs e)
 		{
 			return false;
 		}
@@ -1775,7 +1775,7 @@ namespace WorldWind.NewWidgets
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+		  public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
         {
             return false;
         }

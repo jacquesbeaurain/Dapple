@@ -4,19 +4,19 @@ using System.Text;
 
 namespace WorldWind
 {
-   public struct Plane2d
+   internal struct Plane2d
    {
-      public double A;
-      public double B;
-      public double C;
-      public double D;
+      internal double A;
+      internal double B;
+      internal double C;
+      internal double D;
 
-		public Plane2d(double ai, double bi, double ci, double di)	
+		internal Plane2d(double ai, double bi, double ci, double di)	
 		{
          A = ai; B = bi; C = ci; D = di;
 		}
 
-      public void Normalize()
+      internal void Normalize()
       {
          //Microsoft.DirectX.Plane test = new Microsoft.DirectX.Plane((float)this.A, (float)this.B, (float)this.C, (float)this.D);
          //test.Normalize();
@@ -27,12 +27,12 @@ namespace WorldWind
          this.A *= dInverseLength; this.B *= dInverseLength; this.C *= dInverseLength; this.D *= dInverseLength; 
       }
 
-      public double DistanceToPoint(Point3d p)
+      internal double DistanceToPoint(Point3d p)
       {
          return this.A * p.X + this.B * p.Y + this.C * p.Z + this.D;
       }
 
-      public override string ToString()
+		public override string ToString()
       {
          return "(" + A.ToString() + ", " + B.ToString() + ", " + C.ToString() + ", " + D.ToString() + ")";
       }

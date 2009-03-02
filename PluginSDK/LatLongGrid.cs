@@ -12,7 +12,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Planet radius (constant)
 		/// </summary>
-		public double WorldRadius;
+		internal double WorldRadius;
 
 		/// <summary>
 		/// Grid line radius (varies, >= world radius
@@ -22,47 +22,47 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Current planet == Earth?
 		/// </summary>
-		public bool IsEarth;
+		internal bool IsEarth;
 
 		/// <summary>
 		/// Lowest visible longitude
 		/// </summary>
-		public int MinVisibleLongitude;
+		internal int MinVisibleLongitude;
 
 		/// <summary>
 		/// Highest visible longitude
 		/// </summary>
-		public int MaxVisibleLongitude;
+		internal int MaxVisibleLongitude;
 
 		/// <summary>
 		/// Lowest visible Latitude
 		/// </summary>
-		public int MinVisibleLatitude;
+		internal int MinVisibleLatitude;
 
 		/// <summary>
 		/// Highest visible Latitude
 		/// </summary>
-		public int MaxVisibleLatitude;
+		internal int MaxVisibleLatitude;
 
 		/// <summary>
 		/// Interval in degrees between visible latitudes
 		/// </summary>
-		public int LongitudeInterval;
+		internal int LongitudeInterval;
 
 		/// <summary>
 		/// Interval in degrees between visible longitudes
 		/// </summary>
-		public int LatitudeInterval;
+		internal int LatitudeInterval;
 
 		/// <summary>
 		/// The number of visible longitude lines
 		/// </summary>
-		public int LongitudePointCount;
+		internal int LongitudePointCount;
 
 		/// <summary>
 		/// The number of visible latitude lines
 		/// </summary>
-		public int LatitudePointCount;
+		internal int LatitudePointCount;
 
 		/// <summary>
 		/// Temporary buffer used for rendering  lines
@@ -295,7 +295,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Recalculates the grid bounds + interval values
 		/// </summary>
-		public void ComputeGridValues(DrawArgs drawArgs)
+		internal void ComputeGridValues(DrawArgs drawArgs)
 		{
 			double vr = drawArgs.WorldCamera.TrueViewRange.Radians;
 

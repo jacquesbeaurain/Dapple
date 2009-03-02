@@ -188,7 +188,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public JHU_ButtonWidget()
+		internal JHU_ButtonWidget()
 		{
 			m_textures = JHU_Globals.getInstance().Textures;
 
@@ -204,7 +204,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Filename of button graphic
 		/// </summary>
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -217,7 +217,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Foreground color
 		/// </summary>
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get { return m_ForeColor; }
 			set { m_ForeColor = value; }
@@ -378,7 +378,7 @@ namespace jhuapl.util
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			object key = null;
 

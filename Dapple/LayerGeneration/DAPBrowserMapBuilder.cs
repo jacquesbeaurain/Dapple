@@ -15,9 +15,9 @@ namespace Dapple.LayerGeneration
    {
       #region Static
 
-		public static readonly string URISchemeName = "gxdapbm";
+		internal static readonly string URISchemeName = "gxdapbm";
 
-		public static readonly string CacheSubDir = "DAPImages";
+		internal static readonly string CacheSubDir = "DAPImages";
 
 		#endregion
 
@@ -26,20 +26,20 @@ namespace Dapple.LayerGeneration
       private QuadTileSet m_layer;
 		private Server m_oServer;
 
-      public int m_iHeight;
-      public int m_iTextureSizePixels;
+      internal int m_iHeight;
+      internal int m_iTextureSizePixels;
 
       #endregion
 
 		#region Constructor
 
-		public DAPBrowserMapBuilder(WorldWindow worldWindow, Server server, IBuilder parent)
+		internal DAPBrowserMapBuilder(WorldWindow worldWindow, Server server, IBuilder parent)
 			:
 		   this(worldWindow,  server, parent, 0, 256)
 		{
 		}
 
-		public DAPBrowserMapBuilder(WorldWindow worldWindow, Server server, IBuilder parent, int height, int size)
+		internal DAPBrowserMapBuilder(WorldWindow worldWindow, Server server, IBuilder parent, int height, int size)
          :base("Browser map for " + server.Name, worldWindow, parent)
 		{
 			m_oServer = server;
@@ -55,7 +55,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get
 			{
@@ -71,7 +71,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -100,7 +100,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -134,7 +134,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get
 			{
@@ -150,7 +150,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool IsFromPersonalDapServer
+		internal bool IsFromPersonalDapServer
 		{
 			get { return m_oServer.IsPersonal; }
 		}
@@ -168,7 +168,7 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+      internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_layer != null)
             return m_layer.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -180,12 +180,12 @@ namespace Dapple.LayerGeneration
          }
       }
       
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          return GetQuadTileSet();
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          NameValueCollection queryColl = new NameValueCollection();
 
@@ -196,7 +196,7 @@ namespace Dapple.LayerGeneration
          return Utility.URI.CreateURI(URISchemeName, strHost, strPath, queryColl);
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), "BrowserMap");
       }
@@ -208,12 +208,12 @@ namespace Dapple.LayerGeneration
          m_layer = null;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          return new DAPBrowserMapBuilder(m_oWorldWindow, m_oServer, m_Parent, m_iHeight, m_iTextureSizePixels);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is DAPBrowserMapBuilder)) return false;
          DAPBrowserMapBuilder castObj = obj as DAPBrowserMapBuilder;
@@ -227,7 +227,7 @@ namespace Dapple.LayerGeneration
 			return m_oServer.Url.GetHashCode() ^ "BROWSERMAP".GetHashCode();
 		}
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "dap";
          szServerURL = m_oServer.Url;

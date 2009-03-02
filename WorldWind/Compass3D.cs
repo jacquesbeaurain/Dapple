@@ -10,15 +10,15 @@ using Microsoft.DirectX.Direct3D;
 
 namespace NASA.Plugins
 {
-    public class Compass3D : WorldWind.PluginEngine.Plugin
+    internal class Compass3D : WorldWind.PluginEngine.Plugin
     {
         string basePath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
         FormWidget m_form = null;
         Compass3DWidget m_compass = null;
         System.Windows.Forms.MenuItem m_menuItem = null;
         WorldWind.NewWidgets.WidgetMenuButton m_toolbarItem = null;
-        
-        public override void Load()
+
+		  public override void Load()
         {
             m_menuItem = new System.Windows.Forms.MenuItem("Compass");
             m_menuItem.Click += new EventHandler(m_menuItem_Click);
@@ -59,7 +59,7 @@ namespace NASA.Plugins
             base.Load();
         }
 
-        public override void Unload()
+		  public override void Unload()
         {
             if (m_form != null)
             {
@@ -102,7 +102,7 @@ namespace NASA.Plugins
         }
     }
 
-    public class Compass3DWidget : IWidget
+    internal class Compass3DWidget : IWidget
     {
         System.Drawing.Point m_Location = new System.Drawing.Point(0, 0);
         System.Drawing.Size m_Size = new System.Drawing.Size(200, 200);
@@ -125,13 +125,13 @@ namespace NASA.Plugins
         /// </summary>
         protected bool m_countWidth = true;
 
-        public Compass3DWidget()
+        internal Compass3DWidget()
         {
 
         }
 
         #region Properties
-        public System.Drawing.Font Font
+        internal System.Drawing.Font Font
         {
             get { return m_localFont; }
             set
@@ -144,7 +144,7 @@ namespace NASA.Plugins
                 }
             }
         }
-        public string Name
+		  public string Name
         {
             get
             {
@@ -155,7 +155,7 @@ namespace NASA.Plugins
                 m_Name = value;
             }
         }
-        public System.Drawing.Color ForeColor
+        internal System.Drawing.Color ForeColor
         {
             get
             {
@@ -170,7 +170,7 @@ namespace NASA.Plugins
 
         #region IWidget Members
 
-        public IWidget ParentWidget
+		  public IWidget ParentWidget
         {
             get
             {
@@ -182,7 +182,7 @@ namespace NASA.Plugins
             }
         }
 
-        public bool Visible
+		  public bool Visible
         {
             get
             {
@@ -194,7 +194,7 @@ namespace NASA.Plugins
             }
         }
 
-        public object Tag
+		  public object Tag
         {
             get
             {
@@ -206,7 +206,7 @@ namespace NASA.Plugins
             }
         }
 
-        public IWidgetCollection ChildWidgets
+		  public IWidgetCollection ChildWidgets
         {
             get
             {
@@ -218,7 +218,7 @@ namespace NASA.Plugins
             }
         }
 
-        public System.Drawing.Size ClientSize
+		  public System.Drawing.Size ClientSize
         {
             get
             {
@@ -230,7 +230,7 @@ namespace NASA.Plugins
             }
         }
 
-        public bool Enabled
+		  public bool Enabled
         {
             get
             {
@@ -242,7 +242,7 @@ namespace NASA.Plugins
             }
         }
 
-        public System.Drawing.Point ClientLocation
+		  public System.Drawing.Point ClientLocation
         {
             get
             {
@@ -254,7 +254,7 @@ namespace NASA.Plugins
             }
         }
 
-        public System.Drawing.Point AbsoluteLocation
+		  public System.Drawing.Point AbsoluteLocation
         {
             get
             {
@@ -278,7 +278,7 @@ namespace NASA.Plugins
         /// <summary>
         /// Location of this widget relative to the client area of the parent
         /// </summary>
-        public System.Drawing.Point Location
+		  public System.Drawing.Point Location
         {
             get { return m_Location; }
             set { m_Location = value; }
@@ -287,7 +287,7 @@ namespace NASA.Plugins
         /// <summary>
         /// Size of widget in pixels
         /// </summary>
-        public System.Drawing.Size WidgetSize
+		  public System.Drawing.Size WidgetSize
         {
             get { return m_Size; }
             set { m_Size = value; }
@@ -297,7 +297,7 @@ namespace NASA.Plugins
         /// <summary>
         /// Whether this widget should count for height calculations - HACK until we do real layout
         /// </summary>
-        public bool CountHeight
+		  public bool CountHeight
         {
             get { return m_countHeight; }
             set { m_countHeight = value; }
@@ -307,19 +307,19 @@ namespace NASA.Plugins
         /// <summary>
         /// Whether this widget should count for width calculations - HACK until we do real layout
         /// </summary>
-        public bool CountWidth
+		  public bool CountWidth
         {
             get { return m_countWidth; }
             set { m_countWidth = value; }
         }
 
-        public void Initialize(DrawArgs drawArgs)
+		  public void Initialize(DrawArgs drawArgs)
         {
         }
 
         Viewport viewport = new Viewport();
-                    
-        public void Render(DrawArgs drawArgs)
+
+		  public void Render(DrawArgs drawArgs)
         {
             try
             {

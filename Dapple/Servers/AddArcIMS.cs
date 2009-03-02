@@ -10,18 +10,18 @@ using Dapple.LayerGeneration;
 
 namespace Dapple
 {
-   public partial class AddArcIMS : Form
+   internal partial class AddArcIMS : Form
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      public const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
+      internal const String DEFAULT_ARCIMS_PATH = "/servlet/com.esri.esrimap.Esrimap";
 
-      public AddArcIMS()
+      internal AddArcIMS()
       {
          InitializeComponent();
       }
 
-      public string URL
+      internal string URL
       {
          get
          {

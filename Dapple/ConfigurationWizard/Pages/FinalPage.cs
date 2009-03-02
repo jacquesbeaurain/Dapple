@@ -5,7 +5,7 @@ namespace ConfigurationWizard
 	/// <summary>
 	/// Summary description for FinalPage .
 	/// </summary>
-	public class FinalPage : WizardPage
+	internal class FinalPage : WizardPage
 	{
       private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label label1;
@@ -57,7 +57,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:ConfigurationWizard.FinalPage"/> class.
 		/// </summary>
-		public FinalPage()
+		internal FinalPage()
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();

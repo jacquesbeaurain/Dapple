@@ -9,8 +9,8 @@ namespace WorldWind.Net
 	/// </summary>
 	public class DownloadQueue : IDisposable
 	{
-		public static int MaxQueueLength = 200;
-		public static int MaxConcurrentDownloads = 2;
+		internal static int MaxQueueLength = 200;
+		internal static int MaxConcurrentDownloads = 2;
 		private List<DownloadRequest> m_requests = new List<DownloadRequest>();
 		private List<DownloadRequest> m_activeDownloads = new List<DownloadRequest>();
 
@@ -26,7 +26,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Request for download queue
 		/// </summary>
-		public List<DownloadRequest> Requests
+		internal List<DownloadRequest> Requests
 		{
 			get
 			{
@@ -37,7 +37,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Currently active downloads
 		/// </summary>
-		public List<DownloadRequest> ActiveDownloads
+		internal List<DownloadRequest> ActiveDownloads
 		{
 			get
 			{
@@ -105,7 +105,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Add a download request to the queue.
 		/// </summary>
-		public virtual void Add(DownloadRequest newRequest)
+		internal virtual void Add(DownloadRequest newRequest)
 		{
 			if(newRequest==null)
 				throw new NullReferenceException();
@@ -175,7 +175,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Removes a request from the download queue.
 		/// </summary>
-		public virtual void Remove( DownloadRequest request )
+		internal virtual void Remove( DownloadRequest request )
 		{
 			lock (((ICollection)m_requests).SyncRoot)
 			{

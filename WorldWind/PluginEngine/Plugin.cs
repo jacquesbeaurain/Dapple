@@ -48,7 +48,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Whether the plugin is currently running.
 		/// </summary>
-		public virtual bool IsLoaded
+		internal virtual bool IsLoaded
 		{
 			get
 			{
@@ -78,7 +78,7 @@ namespace WorldWind.PluginEngine
 		/// Base class load, calls Load. 
 		/// </summary>
 		/// <param name="parent"></param>
-		public virtual void PluginLoad( MainApplication parent, string pluginDirectory )
+		public virtual void PluginLoad(MainApplication parent, string pluginDirectory)
 		{
 			if(m_isLoaded)
 				// Already loaded
@@ -93,7 +93,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Base class unload, calls Unload. 
 		/// </summary>
-		public virtual void PluginUnload()
+		internal virtual void PluginUnload()
 		{
 			Unload();
 			m_isLoaded = false;

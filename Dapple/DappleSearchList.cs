@@ -18,7 +18,7 @@ using NewServerTree;
 
 namespace Dapple.CustomControls
 {
-	public partial class DappleSearchList : UserControl
+	internal partial class DappleSearchList : UserControl
 	{
 		#region Enums
 
@@ -32,7 +32,7 @@ namespace Dapple.CustomControls
 
 		#region Events
 
-		public event EventHandler LayerSelectionChanged;
+		internal event EventHandler LayerSelectionChanged;
 
 		#endregion
 
@@ -63,7 +63,7 @@ namespace Dapple.CustomControls
 
 		#region Constructors
 
-		public DappleSearchList()
+		internal DappleSearchList()
 		{
 			InitializeComponent();
 			c_tsTabToolstrip.SetImage(0, Dapple.Properties.Resources.tab_thumbnail);
@@ -82,7 +82,7 @@ namespace Dapple.CustomControls
 
 		#region Properties
 
-		public bool HasLayersSelected
+		internal bool HasLayersSelected
 		{
 			get
 			{
@@ -90,7 +90,7 @@ namespace Dapple.CustomControls
 			}
 		}
 
-		public List<LayerUri> SelectedLayers
+		internal List<LayerUri> SelectedLayers
 		{
 			get
 			{
@@ -258,7 +258,7 @@ namespace Dapple.CustomControls
 
 		#region Public Methods
 
-		public void Attach(DappleModel oModel, LayerList oList)
+		internal void Attach(DappleModel oModel, LayerList oList)
 		{
 			m_oModel = oModel;
 			m_hLayerList = oList;
@@ -303,7 +303,7 @@ namespace Dapple.CustomControls
 			}
 		}
 
-		public void SetSearchParameters(String szKeyword, GeographicBoundingBox oBoundingBox)
+		internal void SetSearchParameters(String szKeyword, GeographicBoundingBox oBoundingBox)
 		{
 			if (!MainForm.Settings.UseDappleSearch) return;
 
@@ -380,7 +380,7 @@ namespace Dapple.CustomControls
 			return result;
 		}
 
-		public void CmdAddSelected()
+		internal void CmdAddSelected()
 		{
 			if (c_lbResults.SelectedIndices.Count > 0 && m_hLayerList != null)
 			{
@@ -539,7 +539,7 @@ namespace Dapple.CustomControls
 		private readonly Object LOCK = new Object();
 		private bool m_blThumbnailsQueued;
 
-		public SearchResultSet(XmlNode oSearchResult)
+		internal SearchResultSet(XmlNode oSearchResult)
 		{
 			if (oSearchResult.SelectSingleNode("/geosoft_xml/error") != null) 
 				throw new ArgumentException("Server sent error message");
@@ -561,12 +561,12 @@ namespace Dapple.CustomControls
 			}
 		}
 
-		public int TotalCount { get { return m_iTotalCount; } }
-		public List<SearchResult> Results { get { return m_aResults; } }
+		internal int TotalCount { get { return m_iTotalCount; } }
+		internal List<SearchResult> Results { get { return m_aResults; } }
 
 		#region Asynchronous Thumbnail Loading
 
-		public void QueueThumbnails(ListBox oView)
+		internal void QueueThumbnails(ListBox oView)
 		{
 			lock (LOCK)
 			{
@@ -600,7 +600,7 @@ namespace Dapple.CustomControls
 		private Dictionary<String, String> m_aCommonAttributes = new Dictionary<string, string>();
 		private Dictionary<String, String> m_aTypeSpecificAttributes = new Dictionary<string, string>();
 
-		public SearchResult(XmlElement oLayerElement)
+		internal SearchResult(XmlElement oLayerElement)
 		{
 
 			XmlElement oCommonElement = oLayerElement.SelectSingleNode("common") as XmlElement;
@@ -617,7 +617,7 @@ namespace Dapple.CustomControls
 			}
 		}
 
-		public void downloadThumbnail()
+		internal void downloadThumbnail()
 		{
 			if (!MainForm.Settings.UseDappleSearch) return;
 
@@ -633,13 +633,13 @@ namespace Dapple.CustomControls
 			}
 		}
 
-		public String Title { get { return m_aCommonAttributes["layertitle"]; } }
-		public UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
-		public double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
-		public Bitmap Thumbnail { get { return m_oBitmap; } }
-		public String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
+		internal String Title { get { return m_aCommonAttributes["layertitle"]; } }
+		internal UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
+		internal double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
+		internal Bitmap Thumbnail { get { return m_oBitmap; } }
+		internal String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
 
-		public LayerUri Uri
+		internal LayerUri Uri
 		{
 			get
 			{
@@ -730,7 +730,7 @@ namespace Dapple.CustomControls
 		private int m_iNumResults = PageNavigator.ResultsPerPage;
 		private long m_lSearchIndex;
 
-		public DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex)
+		internal DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex)
 			: base(MainForm.Settings.DappleSearchURL, true)
 		{
 			m_oBoundingBox = oBoundingBox;
@@ -739,7 +739,7 @@ namespace Dapple.CustomControls
 			m_lSearchIndex = lSearchIndex;
 		}
 
-		public long SearchIndex
+		internal long SearchIndex
 		{
 			get { return m_lSearchIndex; }
 		}

@@ -9,14 +9,14 @@ namespace WorldWind.PluginEngine
 	/// <summary>
 	/// The list view in the plugin dialog.
 	/// </summary>
-	public class PluginListView : ListView
+	internal class PluginListView : ListView
 	{
 		ImageList imageList;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.PluginEngine.PluginListView"/> class.
 		/// </summary>
-		public PluginListView()
+		internal PluginListView()
 		{
 			this.View = View.Details;
 			this.ResizeRedraw = true;		

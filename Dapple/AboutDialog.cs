@@ -10,7 +10,7 @@ namespace Dapple
    /// <summary>
    /// World Wind Help->About
    /// </summary>
-   public class AboutDialog : System.Windows.Forms.Form
+   internal class AboutDialog : System.Windows.Forms.Form
    {
       private System.Windows.Forms.Button buttonClose;
       private System.Windows.Forms.Label labelVersion;
@@ -27,7 +27,7 @@ namespace Dapple
       /// Initializes a new instance of the <see cref= "T:WorldWind.AboutDialog"/> class.
       /// </summary>
       /// <param name="ww"></param>
-      public AboutDialog()
+      internal AboutDialog()
       {
          InitializeComponent();
          Icon = global::Dapple.Properties.Resources.dapple;

@@ -9,7 +9,7 @@ using WorldWind.Configuration;
 namespace WorldWind
 {
 
-   public enum MeasureMode
+   internal enum MeasureMode
    {
       Single,
       Multi
@@ -19,26 +19,26 @@ namespace WorldWind
    /// World user configurable settings
    /// TODO: Group settings
    /// </summary>
-   public class WorldSettings : SettingsBase
+	public class WorldSettings : SettingsBase
    {
       #region Atmosphere
       internal bool enableAtmosphericScattering = false;
 
       [Browsable(true), Category("Atmosphere")]
       [Description("Enable Atmospheric Scattering")]
-      public bool EnableAtmosphericScattering
+		public bool EnableAtmosphericScattering
       {
          get { return enableAtmosphericScattering; }
-         set { enableAtmosphericScattering = value; }
+			set { enableAtmosphericScattering = value; }
       }
 
       internal bool forceCpuAtmosphere = true;
       [Browsable(true), Category("Atmosphere")]
       [Description("Forces CPU calculation instead of GPU for Atmospheric Scattering")]
-      public bool ForceCpuAtmosphere
+      internal bool ForceCpuAtmosphere
       {
          get { return forceCpuAtmosphere; }
-         set { forceCpuAtmosphere = value; }
+			private set { forceCpuAtmosphere = value; }
       }
 
       #endregion
@@ -59,7 +59,7 @@ namespace WorldWind
       /// Display cross-hair symbol on screen
       /// </summary>
       internal bool showCrosshairs = false;
-      public int crosshairColor = Color.Beige.ToArgb();
+      internal int crosshairColor = Color.Beige.ToArgb();
       internal int crosshairSize = 10;
 
       /// <summary>
@@ -95,7 +95,7 @@ namespace WorldWind
       /// <summary>
       /// Menu bar background color
       /// </summary>
-      public int menuBarBackgroundColor = Color.FromArgb(128, 128, 128, 128).ToArgb();
+      internal int menuBarBackgroundColor = Color.FromArgb(128, 128, 128, 128).ToArgb();
 
       /// <summary>
       /// Font name used in the layer manager 
@@ -143,12 +143,12 @@ namespace WorldWind
       internal int downloadTerrainRectangleColor = Color.FromArgb(50, 0, 0, 255).ToArgb();
       internal int downloadProgressColor = Color.FromArgb(50, 255, 0, 0).ToArgb();
       internal int downloadLogoColor = Color.FromArgb(180, 255, 255, 255).ToArgb();
-      public int menuBackColor = Color.FromArgb(170, 40, 40, 40).ToArgb();
+      internal int menuBackColor = Color.FromArgb(170, 40, 40, 40).ToArgb();
       internal int menuOutlineColor = Color.FromArgb(150, 160, 160, 160).ToArgb();
       internal int widgetBackgroundColor = Color.FromArgb(0, 0, 0, 255).ToArgb();
       internal int scrollbarColor = System.Drawing.Color.FromArgb(170, 100, 100, 100).ToArgb();
       internal int scrollbarHotColor = System.Drawing.Color.FromArgb(170, 255, 255, 255).ToArgb();
-      public int toolBarBackColor = System.Drawing.Color.FromArgb(100, 255, 255, 255).ToArgb();
+      internal int toolBarBackColor = System.Drawing.Color.FromArgb(100, 255, 255, 255).ToArgb();
       internal bool showDownloadIndicator = true;
       internal bool outlineText = false;
       internal bool showCompass = false;
@@ -163,35 +163,35 @@ namespace WorldWind
 
       [Browsable(true), Category("UI")]
       [Description("Show Compass Indicator.")]
-      public bool ShowCompass
+		public bool ShowCompass
       {
          get { return showCompass; }
-         set { showCompass = value; }
+			set { showCompass = value; }
       }
 
 
       [Browsable(true), Category("UI")]
       [Description("Draw outline around WFS text to improve visibility.")]
-      public bool WFSOutlineText
+      internal bool WFSOutlineText
       {
          get { return outlineText; }
-         set { outlineText = value; }
+			private set { outlineText = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Change name colors for visibility.")]
-      public WFSNameColors WFSNameColors
+      internal WFSNameColors WFSNameColors
       {
          get { return nameColors; }
-         set { nameColors = value; }
+			private set { nameColors = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Factor by which default text size will be multiplied")]
-      public float WFSNameSizeMultiplier
+      internal float WFSNameSizeMultiplier
       {
          get { return nameSizeMultiplier; }
-         set
+			private set
          {
             if (value < 0.1f || value > 10f)
                throw new ArgumentException("WFSNameSize out of range: " + value);
@@ -202,232 +202,232 @@ namespace WorldWind
 
       [Browsable(true), Category("UI")]
       [Description("Display download progress and rectangles.")]
-      public bool ShowDownloadIndicator
+		public bool ShowDownloadIndicator
       {
          get { return showDownloadIndicator; }
-         set { showDownloadIndicator = value; }
+			set { showDownloadIndicator = value; }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Toolbar Background color.")]
-      public Color ToolBarBackColor
+      internal Color ToolBarBackColor
       {
          get { return Color.FromArgb(toolBarBackColor); }
-         set { toolBarBackColor = value.ToArgb(); }
+			private set { toolBarBackColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of scrollbar when scrolling.")]
-      public Color ScrollbarHotColor
+      internal Color ScrollbarHotColor
       {
          get { return Color.FromArgb(scrollbarHotColor); }
-         set { scrollbarHotColor = value.ToArgb(); }
+			private set { scrollbarHotColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of scrollbar.")]
-      public Color ScrollbarColor
+      internal Color ScrollbarColor
       {
          get { return Color.FromArgb(scrollbarColor); }
-         set { scrollbarColor = value.ToArgb(); }
+			private set { scrollbarColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Menu border color.")]
-      public Color MenuOutlineColor
+      internal Color MenuOutlineColor
       {
          get { return Color.FromArgb(menuOutlineColor); }
-         set { menuOutlineColor = value.ToArgb(); }
+			private set { menuOutlineColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Widget background color.")]
-      public Color WidgetBackgroundColor
+		public Color WidgetBackgroundColor
       {
          get { return Color.FromArgb(widgetBackgroundColor); }
-         set { widgetBackgroundColor = value.ToArgb(); }
+			private set { widgetBackgroundColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Background color of the menu.")]
-      public Color MenuBackColor
+      internal Color MenuBackColor
       {
          get { return Color.FromArgb(menuBackColor); }
-         set { menuBackColor = value.ToArgb(); }
+			private set { menuBackColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color/transparency of the download progress icon.")]
-      public Color DownloadLogoColor
+      internal Color DownloadLogoColor
       {
          get { return Color.FromArgb(downloadLogoColor); }
-         set { downloadLogoColor = value.ToArgb(); }
+			private set { downloadLogoColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of the download progress bar.")]
-      public Color DownloadProgressColor
+		public Color DownloadProgressColor
       {
          get { return Color.FromArgb(downloadProgressColor); }
-         set { downloadProgressColor = value.ToArgb(); }
+			private set { downloadProgressColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of the terrain download in progress rectangle.")]
-      public Color DownloadTerrainRectangleColor
+      internal Color DownloadTerrainRectangleColor
       {
          get { return Color.FromArgb(downloadTerrainRectangleColor); }
-         set { downloadTerrainRectangleColor = value.ToArgb(); }
+			private set { downloadTerrainRectangleColor = value.ToArgb(); }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Show the top tool button bar.")]
-      public bool ShowToolbar
+		public bool ShowToolbar
       {
          get { return showToolbar; }
-         set { showToolbar = value; }
+			private set { showToolbar = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Display the layer manager window.")]
-      public bool ShowLayerManager
+      internal bool ShowLayerManager
       {
          get { return showLayerManager; }
-         set { showLayerManager = value; }
+			private set { showLayerManager = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Display cross-hair symbol on screen.")]
-      public bool ShowCrosshairs
+		public bool ShowCrosshairs
       {
          get { return showCrosshairs; }
-         set { showCrosshairs = value; }
+			set { showCrosshairs = value; }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Cross-hair symbol color.")]
-      public Color CrosshairColor
+		public Color CrosshairColor
       {
          get { return Color.FromArgb(crosshairColor); }
-         set { crosshairColor = value.ToArgb(); }
+			private set { crosshairColor = value.ToArgb(); }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Size of cross-hair.")]
-      public int CrosshairSize
+		public int CrosshairSize
       {
          get { return crosshairSize; }
-         set { crosshairSize = value; }
+			private set { crosshairSize = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font name for the default font used in UI.")]
-      public string DefaultFontName
+      internal string DefaultFontName
       {
          get { return defaultFontName; }
-         set { defaultFontName = value; }
+			private set { defaultFontName = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font size for the default font used in UI.")]
-      public float DefaultFontSize
+      internal float DefaultFontSize
       {
          get { return defaultFontSize; }
-         set { defaultFontSize = value; }
+			private set { defaultFontSize = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font style for the default font used in UI.")]
-      public FontStyle DefaultFontStyle
+      internal FontStyle DefaultFontStyle
       {
          get { return defaultFontStyle; }
-         set { defaultFontStyle = value; }
+			private set { defaultFontStyle = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font name for the toolbar font used in UI.")]
-      public string ToolbarFontName
+      internal string ToolbarFontName
       {
          get { return toolbarFontName; }
-         set { toolbarFontName = value; }
+			private set { toolbarFontName = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font size (em) for the toolbar font used in UI.")]
-      public float ToolbarFontSize
+      internal float ToolbarFontSize
       {
          get { return toolbarFontSize; }
-         set { toolbarFontSize = value; }
+			private set { toolbarFontSize = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font style for the toolbar font used in UI.")]
-      public FontStyle ToolbarFontStyle
+      internal FontStyle ToolbarFontStyle
       {
          get { return toolbarFontStyle; }
-         set { toolbarFontStyle = value; }
+			private set { toolbarFontStyle = value; }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Menu bar background color.")]
-      public Color MenuBarBackgroundColor
+      internal Color MenuBarBackgroundColor
       {
          get { return Color.FromArgb(menuBarBackgroundColor); }
-         set { menuBarBackgroundColor = value.ToArgb(); }
+			private set { menuBarBackgroundColor = value.ToArgb(); }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font name for the layer manager font.")]
-      public string LayerManagerFontName
+      internal string LayerManagerFontName
       {
          get { return layerManagerFontName; }
-         set { layerManagerFontName = value; }
+			private set { layerManagerFontName = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font size for the layer manager font.")]
-      public float LayerManagerFontSize
+      internal float LayerManagerFontSize
       {
          get { return layerManagerFontSize; }
-         set { layerManagerFontSize = value; }
+			private set { layerManagerFontSize = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Font style for the layer manager font used in UI.")]
-      public FontStyle LayerManagerFontStyle
+      internal FontStyle LayerManagerFontStyle
       {
          get { return layerManagerFontStyle; }
-         set { layerManagerFontStyle = value; }
+			private set { layerManagerFontStyle = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Layer manager width (pixels)")]
-      public int LayerManagerWidth
+      internal int LayerManagerWidth
       {
          get { return layerManagerWidth; }
-         set { layerManagerWidth = value; }
+			private set { layerManagerWidth = value; }
       }
 
       /// <summary>
@@ -435,90 +435,90 @@ namespace WorldWind
       /// </summary>
       [Browsable(true), Category("UI")]
       [Description("Enable anti-aliased text rendering. Change active only after program restart.")]
-      public bool AntiAliasedText
+      internal bool AntiAliasedText
       {
          get { return antiAliasedText; }
-         set { antiAliasedText = value; }
+			private set { antiAliasedText = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Maximum frames-per-second setting. Optionally throttles the frame rate (to get consistent frame rates or reduce CPU usage. 0 = Disabled")]
-      public int ThrottleFpsHz
+      internal int ThrottleFpsHz
       {
          get { return throttleFpsHz; }
-         set { throttleFpsHz = value; }
+			private set { throttleFpsHz = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Synchronize render buffer swaps with the monitor's refresh rate (vertical retrace). Change active only after program restart.")]
-      public bool VSync
+		public bool VSync
       {
          get { return vSync; }
-         set { vSync = value; }
+			private set { vSync = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Changes the size of the Rapid Fire Modis icons.")]
-      public int ModisIconSize
+      internal int ModisIconSize
       {
          get { return modisIconSize; }
-         set { modisIconSize = value; }
+			private set { modisIconSize = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Enables the Frames Per Second Graph")]
-      public bool ShowFpsGraph
+		public bool ShowFpsGraph
       {
          get { return m_ShowFpsGraph; }
-         set { m_ShowFpsGraph = value; }
+			private set { m_ShowFpsGraph = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Changes length of the Fps Graph History")]
-      public int FpsFrameCount
+		public int FpsFrameCount
       {
          get { return m_FpsFrameCount; }
-         set { m_FpsFrameCount = value; }
+			private set { m_FpsFrameCount = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Initial visiblity of browser.")]
-      public bool BrowserVisible
+      internal bool BrowserVisible
       {
          get { return browserVisible; }
-         set { browserVisible = value; }
+			private set { browserVisible = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Browser orientation.")]
-      public bool BrowserOrientationHorizontal
+      internal bool BrowserOrientationHorizontal
       {
          get { return browserOrientationHorizontal; }
-         set { browserOrientationHorizontal = value; }
+			private set { browserOrientationHorizontal = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Size of browser panel.")]
-      public int BrowserSize
+      internal int BrowserSize
       {
          get { return browserSize; }
-         set { browserSize = value; }
+			private set { browserSize = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Use Internal Browser?")]
-      public bool UseInternalBrowser
+      internal bool UseInternalBrowser
       {
          get { return useInternalBrowser; }
-         set { useInternalBrowser = value; }
+			private set { useInternalBrowser = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Use Offline Placename Search?")]
-      public bool UseOfflineSearch
+      internal bool UseOfflineSearch
       {
          get { return useOfflineSearch; }
-         set { useOfflineSearch = value; }
+			private set { useOfflineSearch = value; }
       }
 
 
@@ -535,12 +535,12 @@ namespace WorldWind
       /// <summary>
       /// The color of the latitude/longitude grid
       /// </summary>
-      public int latLonLinesColor = System.Drawing.Color.FromArgb(200, 160, 160, 160).ToArgb();
+      internal int latLonLinesColor = System.Drawing.Color.FromArgb(200, 160, 160, 160).ToArgb();
 
       /// <summary>
       /// The color of the equator latitude line
       /// </summary>
-      public int equatorLineColor = System.Drawing.Color.FromArgb(160, 64, 224, 208).ToArgb();
+      internal int equatorLineColor = System.Drawing.Color.FromArgb(160, 64, 224, 208).ToArgb();
 
       /// <summary>
       /// Display the tropic of capricorn/cancer lines
@@ -550,52 +550,52 @@ namespace WorldWind
       /// <summary>
       /// The color of the latitude/longitude grid
       /// </summary>
-      public int tropicLinesColor = System.Drawing.Color.FromArgb(160, 176, 224, 230).ToArgb();
+      internal int tropicLinesColor = System.Drawing.Color.FromArgb(160, 176, 224, 230).ToArgb();
 
       [Browsable(true), Category("Grid Lines")]
       [Description("Display the latitude/longitude grid.")]
-      public bool ShowLatLonLines
+		public bool ShowLatLonLines
       {
          get { return showLatLonLines; }
-         set { showLatLonLines = value; }
+			set { showLatLonLines = value; }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("Grid Lines")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("The color of the latitude/longitude grid.")]
-      public Color LatLonLinesColor
+      internal Color LatLonLinesColor
       {
          get { return Color.FromArgb(latLonLinesColor); }
-         set { latLonLinesColor = value.ToArgb(); }
+			private set { latLonLinesColor = value.ToArgb(); }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("Grid Lines")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("The color of the equator latitude line.")]
-      public Color EquatorLineColor
+      internal Color EquatorLineColor
       {
          get { return Color.FromArgb(equatorLineColor); }
-         set { equatorLineColor = value.ToArgb(); }
+			private set { equatorLineColor = value.ToArgb(); }
       }
 
       [Browsable(true), Category("Grid Lines")]
       [Description("Display the tropic latitude lines.")]
-      public bool ShowTropicLines
+      internal bool ShowTropicLines
       {
          get { return showTropicLines; }
-         set { showTropicLines = value; }
+			private set { showTropicLines = value; }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("Grid Lines")]
       [Description("The color of the latitude/longitude grid.")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
-      public Color TropicLinesColor
+      internal Color TropicLinesColor
       {
          get { return Color.FromArgb(tropicLinesColor); }
-         set { tropicLinesColor = value.ToArgb(); }
+			private set { tropicLinesColor = value.ToArgb(); }
       }
 
       #endregion
@@ -642,10 +642,10 @@ namespace WorldWind
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of the sky at sea level.")]
-      public Color SkyColor
+		public Color SkyColor
       {
          get { return Color.FromArgb(skyColor); }
-         set { skyColor = value.ToArgb(); }
+			set { skyColor = value.ToArgb(); }
       }
 
       /// <summary>
@@ -655,43 +655,43 @@ namespace WorldWind
 
       [Browsable(true), Category("World")]
       [Description("Whether to display the planet axis line (through poles).")]
-      public bool ShowPlanetAxis
+      internal bool ShowPlanetAxis
       {
          get { return showPlanetAxis; }
-         set { showPlanetAxis = value; }
+			private set { showPlanetAxis = value; }
       }
 
       internal bool showClouds = false;
       [Browsable(true), Category("World")]
       [Description("Whether to show clouds.")]
-      public bool ShowClouds
+		public bool ShowClouds
       {
          get { return showClouds; }
-         set { showClouds = value; }
+			set { showClouds = value; }
       }
 
       [Browsable(true), Category("World")]
       [Description("Whether place name labels should display")]
-      public bool ShowPlacenames
+		public bool ShowPlacenames
       {
          get { return showPlacenames; }
-         set { showPlacenames = value; }
+			set { showPlacenames = value; }
       }
 
       [Browsable(true), Category("World")]
       [Description("Whether country borders and other boundaries should display")]
-      public bool ShowBoundaries
+      internal bool ShowBoundaries
       {
          get { return showBoundaries; }
-         set { showBoundaries = value; }
+			private set { showBoundaries = value; }
       }
 
       [Browsable(true), Category("World")]
       [Description("Displays coordinates of current position.")]
-      public bool ShowPosition
+		public bool ShowPosition
       {
          get { return showPosition; }
-         set { showPosition = value; }
+			set { showPosition = value; }
       }
 
 		[Browsable(true), Category("World")]
@@ -704,18 +704,18 @@ namespace WorldWind
 
       [Browsable(true), Category("World")]
       [Description("Keep the original (unconverted) NASA SVS image files on disk (in addition to converted files). ")]
-      public bool KeepOriginalSvsImages
+      internal bool KeepOriginalSvsImages
       {
          get { return keepOriginalSvsImages; }
-         set { keepOriginalSvsImages = value; }
+			private set { keepOriginalSvsImages = value; }
       }
 
       [Browsable(false), Category("World")]
       [Description("Index of Blue Marble version to show.")]
-      public int BmngVersion
+		public int BmngVersion
       {
          get { return bmngVersion; }
-         set { bmngVersion = value; }
+			set { bmngVersion = value; }
       }
 
       #endregion
@@ -753,81 +753,81 @@ namespace WorldWind
       internal bool allowNegativeAltitude = false;
 
       [Browsable(true), Category("Camera")]
-      public bool ElevateCameraLookatPoint
+      internal bool ElevateCameraLookatPoint
       {
          get { return elevateCameraLookatPoint; }
-         set { elevateCameraLookatPoint = value; }
+			private set { elevateCameraLookatPoint = value; }
       }
 
       [Browsable(true), Category("Camera")]
       [Description("Allow camera to go below sea level - experimental.")]
-      public bool AllowNegativeAltitude
+      internal bool AllowNegativeAltitude
       {
          get { return allowNegativeAltitude; }
-         set { allowNegativeAltitude = value; }
+			private set { allowNegativeAltitude = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public bool CameraResetsAtStartup
+		public bool CameraResetsAtStartup
       {
          get { return cameraResetsAtStartup; }
-         set { cameraResetsAtStartup = value; }
+			private set { cameraResetsAtStartup = value; }
       }
 
       //[Browsable(true),Category("Camera")]
-      public Angle CameraLatitude
+		public Angle CameraLatitude
       {
          get { return cameraLatitude; }
-         set { cameraLatitude = value; }
+			private set { cameraLatitude = value; }
       }
 
       //[Browsable(true),Category("Camera")]
-      public Angle CameraLongitude
+		public Angle CameraLongitude
       {
          get { return cameraLongitude; }
-         set { cameraLongitude = value; }
+			private set { cameraLongitude = value; }
       }
 
-      public double CameraAltitude
+		public double CameraAltitude
       {
          get { return cameraAltitudeMeters; }
-         set { cameraAltitudeMeters = value; }
+         private set { cameraAltitudeMeters = value; }
       }
 
       //[Browsable(true),Category("Camera")]
-      public Angle CameraHeading
+		public Angle CameraHeading
       {
          get { return cameraHeading; }
-         set { cameraHeading = value; }
+			private set { cameraHeading = value; }
       }
 
-      public Angle CameraTilt
+		public Angle CameraTilt
       {
          get { return cameraTilt; }
-         set { cameraTilt = value; }
+			private set { cameraTilt = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public bool CameraIsPointGoto
+      internal bool CameraIsPointGoto
       {
          get { return cameraIsPointGoto; }
-         set { cameraIsPointGoto = value; }
+			private set { cameraIsPointGoto = value; }
       }
 
       [Browsable(true), Category("Camera")]
       [Description("Smooth camera movement.")]
-      public bool CameraSmooth
+		public bool CameraSmooth
       {
          get { return cameraSmooth; }
-         set { cameraSmooth = value; }
+			set { cameraSmooth = value; }
       }
 
       [Browsable(true), Category("Camera")]
       [Description("See CameraSlerp settings for responsiveness adjustment.")]
-      public bool CameraHasInertia
+      internal bool CameraHasInertia
       {
          get { return cameraHasInertia; }
-         set
+			private set
          {
             cameraHasInertia = value;
             cameraSlerpPercentage = cameraHasInertia ? cameraSlerpInertia : cameraSlerpStandard;
@@ -835,32 +835,32 @@ namespace WorldWind
       }
 
       [Browsable(true), Category("Camera")]
-      public bool CameraHasMomentum
+		public bool CameraHasMomentum
       {
          get { return cameraHasMomentum; }
-         set { cameraHasMomentum = value; }
+			private set { cameraHasMomentum = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public bool CameraTwistLock
+		public bool CameraTwistLock
       {
          get { return cameraTwistLock; }
-         set { cameraTwistLock = value; }
+			private set { cameraTwistLock = value; }
       }
 
       [Browsable(true), Category("Camera")]
       public bool CameraBankLock
       {
          get { return cameraBankLock; }
-         set { cameraBankLock = value; }
+			private set { cameraBankLock = value; }
       }
 
       [Browsable(true), Category("Camera")]
       [Description("Responsiveness of movement when inertia is enabled.")]
-      public float CameraSlerpInertia
+		public float CameraSlerpInertia
       {
          get { return cameraSlerpInertia; }
-         set
+			private set
          {
             cameraSlerpInertia = value;
             if (cameraHasInertia)
@@ -870,10 +870,10 @@ namespace WorldWind
 
       [Browsable(true), Category("Camera")]
       [Description("Responsiveness of movement when inertia is disabled.")]
-      public float CameraSlerpStandard
+      internal float CameraSlerpStandard
       {
          get { return cameraSlerpStandard; }
-         set
+			private set
          {
             cameraSlerpStandard = value;
             if (!cameraHasInertia)
@@ -882,31 +882,31 @@ namespace WorldWind
       }
 
       [Browsable(true), Category("Camera")]
-      public Angle CameraFov
+      internal Angle CameraFov
       {
          get { return cameraFov; }
-         set { cameraFov = value; }
+			private set { cameraFov = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public Angle CameraFovMin
+      internal Angle CameraFovMin
       {
          get { return cameraFovMin; }
-         set { cameraFovMin = value; }
+			private set { cameraFovMin = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public Angle CameraFovMax
+      internal Angle CameraFovMax
       {
          get { return cameraFovMax; }
-         set { cameraFovMax = value; }
+			private set { cameraFovMax = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public float CameraZoomStepFactor
+      internal float CameraZoomStepFactor
       {
          get { return cameraZoomStepFactor; }
-         set
+			private set
          {
             const float maxValue = 0.3f;
             const float minValue = 1e-4f;
@@ -920,10 +920,10 @@ namespace WorldWind
       }
 
       [Browsable(true), Category("Camera")]
-      public float CameraZoomAcceleration
+      internal float CameraZoomAcceleration
       {
          get { return cameraZoomAcceleration; }
-         set
+			private set
          {
             const float maxValue = 50f;
             const float minValue = 1f;
@@ -939,17 +939,17 @@ namespace WorldWind
 
       [Browsable(true), Category("Camera")]
       [Description("Analog zoom factor (Mouse LMB+RMB)")]
-      public float CameraZoomAnalogFactor
+		public float CameraZoomAnalogFactor
       {
          get { return cameraZoomAnalogFactor; }
-         set { cameraZoomAnalogFactor = value; }
+			private set { cameraZoomAnalogFactor = value; }
       }
 
       [Browsable(true), Category("Camera")]
-      public float CameraZoomStepKeyboard
+		public float CameraZoomStepKeyboard
       {
          get { return cameraZoomStepKeyboard; }
-         set
+			private set
          {
             const float maxValue = 0.3f;
             const float minValue = 1e-4f;
@@ -965,20 +965,20 @@ namespace WorldWind
 
       float m_cameraDoubleClickZoomFactor = 2.0f;
       [Browsable(true), Category("Camera")]
-      public float CameraDoubleClickZoomFactor
+		public float CameraDoubleClickZoomFactor
       {
          get { return m_cameraDoubleClickZoomFactor; }
-         set
+			private set
          {
             m_cameraDoubleClickZoomFactor = value;
          }
       }
 
       [Browsable(true), Category("Camera")]
-      public float CameraRotationSpeed
+		public float CameraRotationSpeed
       {
          get { return cameraRotationSpeed; }
-         set { cameraRotationSpeed = value; }
+			private set { cameraRotationSpeed = value; }
       }
 
       #endregion
@@ -988,10 +988,10 @@ namespace WorldWind
       [Browsable(true), Category("Time")]
       [Description("Controls the time multiplier for the Time Keeper.")]
       [XmlIgnore]
-      public float TimeMultiplier
+      internal float TimeMultiplier
       {
          get { return TimeKeeper.TimeMultiplier; }
-         set { TimeKeeper.TimeMultiplier = value; }
+			private set { TimeKeeper.TimeMultiplier = value; }
       }
 
       #endregion
@@ -1004,13 +1004,13 @@ namespace WorldWind
 
       [Browsable(true), Category("3D settings")]
       [Description("This feature is not supported in Dapple and will always return false.")]
-      public bool ConvertDownloadedImagesToDds
+      internal bool ConvertDownloadedImagesToDds
       {
          get
          {
             return false;
          }
-         set
+			private set
          {
          }
       }
@@ -1023,7 +1023,7 @@ namespace WorldWind
          {
             return m_AlwaysRenderWindow;
          }
-         set
+         private set
          {
             m_AlwaysRenderWindow = value;
          }
@@ -1031,14 +1031,14 @@ namespace WorldWind
 
       [Browsable(true), Category("3D settings")]
       [Description("In-memory texture format.  Also used for converted files on disk when image conversion is enabled.")]
-      public Format TextureFormat
+		public Format TextureFormat
       {
          get
          {
             //	return Format.Dxt3;
             return textureFormat;
          }
-         set
+			private set
          {
             textureFormat = value;
          }
@@ -1047,13 +1047,13 @@ namespace WorldWind
       private bool m_enableSunShading = false;
       [Browsable(true), Category("3D settings")]
       [Description("Shade the Earth according to the Sun's position at a certain time.")]
-      public bool EnableSunShading
+		public bool EnableSunShading
       {
          get
          {
             return m_enableSunShading;
          }
-         set
+			set
          {
             m_enableSunShading = value;
          }
@@ -1062,13 +1062,13 @@ namespace WorldWind
       private bool m_sunSynchedWithTime = false;
       [Browsable(true), Category("3D settings")]
       [Description("Sun position is computed according to time.")]
-      public bool SunSynchedWithTime
+		public bool SunSynchedWithTime
       {
          get
          {
             return m_sunSynchedWithTime;
          }
-         set
+			set
          {
             m_sunSynchedWithTime = value;
          }
@@ -1077,13 +1077,13 @@ namespace WorldWind
       private double m_sunElevation = Math.PI / 4;
       [Browsable(true), Category("3D settings")]
       [Description("Sun elevation when not synched to time.")]
-      public double SunElevation
+		public double SunElevation
       {
          get
          {
             return m_sunElevation;
          }
-         set
+			set
          {
             m_sunElevation = value;
          }
@@ -1092,13 +1092,13 @@ namespace WorldWind
       private double m_sunHeading = -Math.PI / 4;
       [Browsable(true), Category("3D settings")]
       [Description("Sun direction when not synched to time.")]
-      public double SunHeading
+		public double SunHeading
       {
          get
          {
             return m_sunHeading;
          }
-         set
+			set
          {
             m_sunHeading = value;
          }
@@ -1107,13 +1107,13 @@ namespace WorldWind
       private double m_sunDistance = 150000000000;
       [Browsable(true), Category("3D settings")]
       [Description("Sun distance in meter.")]
-      public double SunDistance
+      internal double SunDistance
       {
          get
          {
             return m_sunDistance;
          }
-         set
+			private set
          {
             m_sunDistance = value;
          }
@@ -1122,13 +1122,13 @@ namespace WorldWind
       [Browsable(true), Category("3D settings")]
       [Description("The light color when sun shading is enabled.")]
       [XmlIgnore]
-      public System.Drawing.Color LightColor
+      internal System.Drawing.Color LightColor
       {
          get
          {
             return System.Drawing.Color.FromArgb(m_LightColor);
          }
-         set
+			private set
          {
             m_LightColor = value.ToArgb();
          }
@@ -1138,13 +1138,13 @@ namespace WorldWind
       [Browsable(true), Category("3D settings")]
       [Description("The background ambient color when sun shading is enabled.")]
       [XmlIgnore]
-      public System.Drawing.Color ShadingAmbientColor
+      internal System.Drawing.Color ShadingAmbientColor
       {
          get
          {
             return System.Drawing.Color.FromArgb(m_shadingAmbientColor);
          }
-         set
+			private set
          {
             m_shadingAmbientColor = value.ToArgb();
          }
@@ -1154,13 +1154,13 @@ namespace WorldWind
       [Browsable(true), Category("3D settings")]
       [Description("The background ambient color only ambient lighting is used.")]
       [XmlIgnore]
-      public System.Drawing.Color StandardAmbientColor
+		public System.Drawing.Color StandardAmbientColor
       {
          get
          {
             return System.Drawing.Color.FromArgb(m_standardAmbientColor);
          }
-         set
+			private set
          {
             m_standardAmbientColor = value.ToArgb();
          }
@@ -1168,13 +1168,13 @@ namespace WorldWind
 
       [Browsable(true), Category("3D settings")]
       [Description("Use lower priority update thread to allow smoother rendering at the expense of data update frequency.")]
-      public bool UseBelowNormalPriorityUpdateThread
+		public bool UseBelowNormalPriorityUpdateThread
       {
          get
          {
             return m_UseBelowNormalPriorityUpdateThread;
          }
-         set
+			private set
          {
             m_UseBelowNormalPriorityUpdateThread = value;
          }
@@ -1188,13 +1188,13 @@ namespace WorldWind
 
       [Browsable(true), Category("Terrain")]
       [Description("Sets the minimum samples per degree for which elevation is applied.")]
-      public float MinSamplesPerDegree
+      internal float MinSamplesPerDegree
       {
          get
          {
             return minSamplesPerDegree;
          }
-         set
+			private set
          {
             minSamplesPerDegree = value;
          }
@@ -1204,13 +1204,13 @@ namespace WorldWind
 
       [Browsable(true), Category("Terrain")]
       [Description("Use World Surface Renderer for the visualization of multiple terrain-mapped layers.")]
-      public bool UseWorldSurfaceRenderer
+      internal bool UseWorldSurfaceRenderer
       {
          get
          {
             return useWorldSurfaceRenderer;
          }
-         set
+			private set
          {
             useWorldSurfaceRenderer = value;
          }
@@ -1220,13 +1220,13 @@ namespace WorldWind
 
       [Browsable(true), Category("Terrain")]
       [Description("Terrain height multiplier.")]
-      public float VerticalExaggeration
+		public float VerticalExaggeration
       {
          get
          {
             return verticalExaggeration;
          }
-         set
+			set
          {
             if (value > 20)
                throw new ArgumentException("Vertical exaggeration out of range: " + value);
@@ -1252,50 +1252,50 @@ namespace WorldWind
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of the linear distance measure line.")]
-      public Color MeasureLineLinearColor
+      internal Color MeasureLineLinearColor
       {
          get { return Color.FromArgb(measureLineLinearColor); }
-         set { measureLineLinearColor = value.ToArgb(); }
+			private set { measureLineLinearColor = value.ToArgb(); }
       }
 
       [Browsable(false)]
-      public int MeasureLineLinearColorXml
+		public int MeasureLineLinearColorXml
       {
          get { return measureLineLinearColor; }
-         set { measureLineLinearColor = value; }
+			private set { measureLineLinearColor = value; }
       }
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of the ground track measure line.")]
-      public Color MeasureLineGroundColor
+      internal Color MeasureLineGroundColor
       {
          get { return Color.FromArgb(measureLineGroundColor); }
-         set { measureLineGroundColor = value.ToArgb(); }
+			private set { measureLineGroundColor = value.ToArgb(); }
       }
 
       [Browsable(false)]
-      public int MeasureLineGroundColorXml
+      internal int MeasureLineGroundColorXml
       {
          get { return measureLineGroundColor; }
-         set { measureLineGroundColor = value; }
+			private set { measureLineGroundColor = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Display the ground track column in the measurement statistics table.")]
-      public bool MeasureShowGroundTrack
+      internal bool MeasureShowGroundTrack
       {
          get { return measureShowGroundTrack; }
-         set { measureShowGroundTrack = value; }
+			private set { measureShowGroundTrack = value; }
       }
 
       [Browsable(true), Category("UI")]
       [Description("Measure tool operation mode.")]
-      public MeasureMode MeasureMode
+      internal MeasureMode MeasureMode
       {
          get { return measureMode; }
-         set { measureMode = value; }
+			private set { measureMode = value; }
       }
 
       #endregion
@@ -1304,13 +1304,13 @@ namespace WorldWind
       private Units m_displayUnits = Units.Metric;
       [Browsable(true), Category("Units")]
       [Description("The target display units for measurements.")]
-      public Units DisplayUnits
+		public Units DisplayUnits
       {
          get
          {
             return m_displayUnits;
          }
-         set
+			private set
          {
             m_displayUnits = value;
          }
@@ -1322,13 +1322,13 @@ namespace WorldWind
       [Browsable(true), Category("Terrain")]
       [Description("Retry Interval for missing terrain tiles.")]
       [XmlIgnore]
-      public TimeSpan TerrainTileRetryInterval
+      internal TimeSpan TerrainTileRetryInterval
       {
          get
          {
             return terrainTileRetryInterval;
          }
-         set
+			private set
          {
             TimeSpan minimum = TimeSpan.FromMinutes(1);
             if (value < minimum)
@@ -1343,10 +1343,10 @@ namespace WorldWind
       [Browsable(true), Category("UI")]
       [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
       [Description("Color of queued for download image tile rectangles.")]
-      public Color DownloadQueuedColor
+      internal Color DownloadQueuedColor
       {
          get { return Color.FromArgb(downloadQueuedColor); }
-         set { downloadQueuedColor = value.ToArgb(); }
+			private set { downloadQueuedColor = value.ToArgb(); }
       }
 
       #region Layers
@@ -1355,17 +1355,17 @@ namespace WorldWind
       internal int maxSimultaneousDownloads = 1;
 
       [Browsable(true), Category("Layers")]
-      public bool UseDefaultLayerStates
+      internal bool UseDefaultLayerStates
       {
          get { return useDefaultLayerStates; }
-         set { useDefaultLayerStates = value; }
+			private set { useDefaultLayerStates = value; }
       }
 
       [Browsable(true), Category("Layers")]
-      public int MaxSimultaneousDownloads
+      internal int MaxSimultaneousDownloads
       {
          get { return maxSimultaneousDownloads; }
-         set
+			private set
          {
             if (value > 20)
                maxSimultaneousDownloads = 20;
@@ -1377,22 +1377,22 @@ namespace WorldWind
       }
 
       [Browsable(true), Category("Layers")]
-      public System.Collections.ArrayList LoadedLayers
+      internal System.Collections.ArrayList LoadedLayers
       {
          get { return loadedLayers; }
-         set { loadedLayers = value; }
+			private set { loadedLayers = value; }
       }
       #endregion
 
       [Browsable(true), Category("Logging")]
-      public bool Log404Errors
+		public bool Log404Errors
       {
          get { return WorldWind.Net.WebDownload.Log404Errors; }
-         set { WorldWind.Net.WebDownload.Log404Errors = value; }
+			private set { WorldWind.Net.WebDownload.Log404Errors = value; }
       }
 
       // comment out ToString() to have namespace+class name being used as filename
-      public override string ToString()
+		public override string ToString()
       {
          return "World";
       }

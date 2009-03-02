@@ -16,8 +16,8 @@ namespace Dapple
 {
    static class Program
 	{
-		public static bool g_blTestingMode = false;
-		public static int g_iCallerProcID = -1;
+		internal static bool g_blTestingMode = false;
+		internal static int g_iCallerProcID = -1;
 
 		/// <summary>
       /// The main entry point for the application.
@@ -436,7 +436,7 @@ namespace Dapple
 			}
 		}
 
-		public static void FocusOnCaller()
+		internal static void FocusOnCaller()
 		{
 			if (g_iCallerProcID != -1)
 			{
@@ -452,7 +452,7 @@ namespace Dapple
 			}
 		}
 
-      public static void PrintUsage()
+      internal static void PrintUsage()
       {
          ShowMessageBox("Dapple command line usage:\n" +
 				"\n" +
@@ -472,7 +472,7 @@ namespace Dapple
 				MessageBoxIcon.Information);
       }
 
-      public static Process RunningInstance()
+      internal static Process RunningInstance()
       {
          Process current = Process.GetCurrentProcess();
          Process[] processes = Process.GetProcessesByName(current.ProcessName);
@@ -507,7 +507,7 @@ namespace Dapple
          return null;
       }
 
-      public static void HandleRunningInstance(Process instance)
+      internal static void HandleRunningInstance(Process instance)
       {
          //Make sure the window is not minimized or maximized
          if (IsIconic(instance.MainWindowHandle))
@@ -576,12 +576,12 @@ namespace Dapple
 		/// <param name="eIcon"></param>
 		/// <param name="eDefBuffon"></param>
 		/// <returns></returns>
-		public static DialogResult ShowMessageBox(String strMessage, String strCaption, MessageBoxButtons eButtons, MessageBoxDefaultButton eDefBuffon, MessageBoxIcon eIcon)
+		internal static DialogResult ShowMessageBox(String strMessage, String strCaption, MessageBoxButtons eButtons, MessageBoxDefaultButton eDefBuffon, MessageBoxIcon eIcon)
 		{
 			return MessageBox.Show(strMessage, strCaption, eButtons, eIcon, eDefBuffon);
 		}
 
-		public static void ReportVideoMemoryExhaustion()
+		internal static void ReportVideoMemoryExhaustion()
 		{
 			ShowMessageBox(
 				"Dapple has run out of video memory and must close. To increase the amount of video memory available to Dapple, close any other applications that have 3D displays open, or upgrade your video card.",

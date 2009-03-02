@@ -22,12 +22,12 @@ namespace Dapple.KML
 		private RenderableObject m_oRenderable;
 		private GeographicBoundingBox m_oBounds;
 
-		public KMLLayerBuilder(String strFilename, WorldWindow oWorldWindow, IBuilder oParent)
+		internal KMLLayerBuilder(String strFilename, WorldWindow oWorldWindow, IBuilder oParent)
 			:this(strFilename, Path.GetFileNameWithoutExtension(strFilename), oWorldWindow, oParent)
 		{
 		}
 
-		public KMLLayerBuilder(String strFilename, String strLayerName, WorldWindow oWorldWindow, IBuilder oParent)
+		internal KMLLayerBuilder(String strFilename, String strLayerName, WorldWindow oWorldWindow, IBuilder oParent)
 			: base(strLayerName, oWorldWindow, oParent)
 		{
 			m_strInitFilename = strFilename;
@@ -50,7 +50,7 @@ namespace Dapple.KML
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace Dapple.KML
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -82,7 +82,7 @@ namespace Dapple.KML
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override WorldWind.GeographicBoundingBox Extents
+		internal override WorldWind.GeographicBoundingBox Extents
 		{
 			get
 			{
@@ -97,7 +97,7 @@ namespace Dapple.KML
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return "kml"; }
 		}
@@ -108,24 +108,24 @@ namespace Dapple.KML
 			get { return "kml"; }
 		}
 
-		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
 		{
 			iBytesRead = 0;
 			iTotalBytes = 0;
 			return false;
 		}
 
-		public override WorldWind.Renderable.RenderableObject GetLayer()
+		internal override WorldWind.Renderable.RenderableObject GetLayer()
 		{
 			return m_oRenderable;
 		}
 
-		public override string GetURI()
+		internal override string GetURI()
 		{
 			return URLProtocolName + m_strInitFilename.Replace(Path.DirectorySeparatorChar, '/');
 		}
 
-		public override string GetCachePath()
+		internal override string GetCachePath()
 		{
 			// --- KML layers don't cache anything ---
 			return String.Empty;
@@ -160,17 +160,17 @@ namespace Dapple.KML
 		}
 
 		// Never called.
-		public override void GetOMMetadata(out string szDownloadType, out string szServerURL, out string szLayerId)
+		internal override void GetOMMetadata(out string szDownloadType, out string szServerURL, out string szLayerId)
 		{
 			throw new Exception("KMLLayerBuilder.GetOMMetadata should never get called.");
 		}
 
-		public override object CloneSpecific()
+		internal override object CloneSpecific()
 		{
 			return new KMLLayerBuilder(this);
 		}
 
-		public void GoToLookAt(WorldWindow oTarget)
+		internal void GoToLookAt(WorldWindow oTarget)
 		{
 			KMLLookAt oView = m_oSourceFile.Document.View as KMLLookAt;
 			if (oView != null)

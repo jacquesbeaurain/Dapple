@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 namespace Dapple
 {
-   public partial class Splash : WorldWind.Splash
+   internal partial class Splash : WorldWind.Splash
    {
-      public Splash()
+      internal Splash()
       {
          InitializeComponent();
       }

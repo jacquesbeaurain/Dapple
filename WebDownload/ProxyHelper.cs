@@ -36,14 +36,14 @@ namespace WorldWind.Net
 			struct WINHTTP_AUTOPROXY_OPTIONS 
 		{ 
 			[MarshalAs(UnmanagedType.U4)] 
-			public int dwFlags; 
+			internal int dwFlags; 
 			[MarshalAs(UnmanagedType.U4)] 
-			public int dwAutoDetectFlags; 
-			public string lpszAutoConfigUrl; 
-			public IntPtr lpvReserved; 
+			internal int dwAutoDetectFlags; 
+			internal string lpszAutoConfigUrl; 
+			internal IntPtr lpvReserved; 
 			[MarshalAs(UnmanagedType.U4)] 
-			public int dwReserved; 
-			public bool fAutoLoginIfChallenged; 
+			internal int dwReserved; 
+			internal bool fAutoLoginIfChallenged; 
 		} 
 
 		/// <summary>
@@ -53,9 +53,9 @@ namespace WorldWind.Net
 			struct WINHTTP_PROXY_INFO 
 		{ 
 			[MarshalAs(UnmanagedType.U4)] 
-			public int dwAccessType; 
-			public IntPtr pwszProxy;
-			public IntPtr pwszProxyBypass;
+			internal int dwAccessType; 
+			internal IntPtr pwszProxy;
+			internal IntPtr pwszProxyBypass;
 		} 
 
 		// Win32 Function declarations

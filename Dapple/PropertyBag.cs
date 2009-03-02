@@ -11,7 +11,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF THIS
  *  SOFTWARE.
  * 
- *  Public types defined in this file:
+ *  internal types defined in this file:
  *  ----------------------------------
  *  namespace Flobbster.Windows.Forms
  *     class PropertySpec
@@ -33,7 +33,7 @@ namespace Flobbster.Windows.Forms
 	/// <summary>
 	/// Represents a single property in a PropertySpec.
 	/// </summary>
-	public class PropertySpec
+	internal class PropertySpec
 	{
 		private Attribute[] attributes;
 		private string category;
@@ -49,14 +49,14 @@ namespace Flobbster.Windows.Forms
 		/// </summary>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">The fully qualified name of the type of the property.</param>
-		public PropertySpec(string name, string type) : this(name, type, null, null, null) { }
+		internal PropertySpec(string name, string type) : this(name, type, null, null, null) { }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
-		public PropertySpec(string name, Type type) :
+		internal PropertySpec(string name, Type type) :
 			this(name, type.AssemblyQualifiedName, null, null, null) { }
 
 		/// <summary>
@@ -66,7 +66,7 @@ namespace Flobbster.Windows.Forms
 		/// <param name="type">The fully qualified name of the type of the property.</param>
 		/// <param name="category">The category under which the property is displayed in the
 		/// property grid.</param>
-		public PropertySpec(string name, string type, string category) : this(name, type, category, null, null) { }
+		internal PropertySpec(string name, string type, string category) : this(name, type, category, null, null) { }
 
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
@@ -74,7 +74,7 @@ namespace Flobbster.Windows.Forms
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		/// <param name="category"></param>
-		public PropertySpec(string name, Type type, string category) :
+		internal PropertySpec(string name, Type type, string category) :
 			this(name, type.AssemblyQualifiedName, category, null, null) { }
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace Flobbster.Windows.Forms
 		/// property grid.</param>
 		/// <param name="description">A string that is displayed in the help area of the
 		/// property grid.</param>
-		public PropertySpec(string name, string type, string category, string description) :
+		internal PropertySpec(string name, string type, string category, string description) :
 			this(name, type, category, description, null) { }
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace Flobbster.Windows.Forms
 		/// property grid.</param>
 		/// <param name="description">A string that is displayed in the help area of the
 		/// property grid.</param>
-		public PropertySpec(string name, Type type, string category, string description) :
+		internal PropertySpec(string name, Type type, string category, string description) :
 			this(name, type.AssemblyQualifiedName, category, description, null) { }
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace Flobbster.Windows.Forms
 		/// property grid.</param>
 		/// <param name="defaultValue">The default value of the property, or null if there is
 		/// no default value.</param>
-		public PropertySpec(string name, string type, string category, string description, object defaultValue)
+		internal PropertySpec(string name, string type, string category, string description, object defaultValue)
 		{
 			this.name = name;
 			this.type = type;
@@ -133,7 +133,7 @@ namespace Flobbster.Windows.Forms
 		/// property grid.</param>
 		/// <param name="defaultValue">The default value of the property, or null if there is
 		/// no default value.</param>
-		public PropertySpec(string name, Type type, string category, string description, object defaultValue) :
+		internal PropertySpec(string name, Type type, string category, string description, object defaultValue) :
 			this(name, type.AssemblyQualifiedName, category, description, defaultValue) { }
 
 		/// <summary>
@@ -151,7 +151,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The fully qualified name of the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, string type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, string type, string category, string description, object defaultValue,
 			string editor, string typeConverter) : this(name, type, category, description, defaultValue)
 		{
 			this.editor = editor;
@@ -173,7 +173,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The fully qualified name of the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, Type type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, Type type, string category, string description, object defaultValue,
 			string editor, string typeConverter) :
 			this(name, type.AssemblyQualifiedName, category, description, defaultValue, editor, typeConverter) { }
 
@@ -192,7 +192,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The fully qualified name of the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, string type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, string type, string category, string description, object defaultValue,
 			Type editor, string typeConverter) :
 			this(name, type, category, description, defaultValue, editor.AssemblyQualifiedName,
 			typeConverter) { }
@@ -212,7 +212,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The fully qualified name of the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, Type type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, Type type, string category, string description, object defaultValue,
 			Type editor, string typeConverter) : 
 			this(name, type.AssemblyQualifiedName, category, description, defaultValue,
 			editor.AssemblyQualifiedName, typeConverter) { }
@@ -232,7 +232,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The Type that represents the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, string type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, string type, string category, string description, object defaultValue,
 			string editor, Type typeConverter) :
 			this(name, type, category, description, defaultValue, editor, typeConverter.AssemblyQualifiedName) { }
 
@@ -251,7 +251,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The Type that represents the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, Type type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, Type type, string category, string description, object defaultValue,
 			string editor, Type typeConverter) :
 			this(name, type.AssemblyQualifiedName, category, description, defaultValue, editor,
 			typeConverter.AssemblyQualifiedName) { }
@@ -271,7 +271,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The Type that represents the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, string type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, string type, string category, string description, object defaultValue,
 			Type editor, Type typeConverter) :
 			this(name, type, category, description, defaultValue, editor.AssemblyQualifiedName,
 			typeConverter.AssemblyQualifiedName) { }
@@ -291,7 +291,7 @@ namespace Flobbster.Windows.Forms
 		/// property.  This type must derive from UITypeEditor.</param>
 		/// <param name="typeConverter">The Type that represents the type of the type
 		/// converter for this property.  This type must derive from TypeConverter.</param>
-		public PropertySpec(string name, Type type, string category, string description, object defaultValue,
+		internal PropertySpec(string name, Type type, string category, string description, object defaultValue,
 			Type editor, Type typeConverter) :
 			this(name, type.AssemblyQualifiedName, category, description, defaultValue,
 			editor.AssemblyQualifiedName, typeConverter.AssemblyQualifiedName) { }
@@ -301,7 +301,7 @@ namespace Flobbster.Windows.Forms
 		/// be used to specify attributes beyond those supported intrinsically by the
 		/// PropertySpec class, such as ReadOnly and Browsable.
 		/// </summary>
-		public Attribute[] Attributes
+		internal Attribute[] Attributes
 		{
 			get { return attributes; }
 			set { attributes = value; }
@@ -310,7 +310,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets or sets the category name of this property.
 		/// </summary>
-		public string Category
+		internal string Category
 		{
 			get { return category; }
 			set { category = value; }
@@ -320,7 +320,7 @@ namespace Flobbster.Windows.Forms
 		/// Gets or sets the fully qualified name of the type converter
 		/// type for this property.
 		/// </summary>
-		public string ConverterTypeName
+		internal string ConverterTypeName
 		{
 			get { return typeConverter; }
 			set { typeConverter = value; }
@@ -329,7 +329,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets or sets the default value of this property.
 		/// </summary>
-		public object DefaultValue
+		internal object DefaultValue
 		{
 			get { return defaultValue; }
 			set { defaultValue = value; }
@@ -338,7 +338,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets or sets the help text description of this property.
 		/// </summary>
-		public string Description
+		internal string Description
 		{
 			get { return description; }
 			set { description = value; }
@@ -348,7 +348,7 @@ namespace Flobbster.Windows.Forms
 		/// Gets or sets the fully qualified name of the editor type for
 		/// this property.
 		/// </summary>
-		public string EditorTypeName
+		internal string EditorTypeName
 		{
 			get { return editor; }
 			set { editor = value; }
@@ -357,7 +357,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets or sets the name of this property.
 		/// </summary>
-		public string Name
+		internal string Name
 		{
 			get { return name; }
 			set { name = value; }
@@ -367,7 +367,7 @@ namespace Flobbster.Windows.Forms
 		/// Gets or sets the fully qualfied name of the type of this
 		/// property.
 		/// </summary>
-		public string TypeName
+		internal string TypeName
 		{
 			get { return type; }
 			set { type = value; }
@@ -377,7 +377,7 @@ namespace Flobbster.Windows.Forms
 	/// <summary>
 	/// Provides data for the GetValue and SetValue events of the PropertyBag class.
 	/// </summary>
-	public class PropertySpecEventArgs : EventArgs
+	internal class PropertySpecEventArgs : EventArgs
 	{
 		private PropertySpec property;
 		private object val;
@@ -388,7 +388,7 @@ namespace Flobbster.Windows.Forms
 		/// <param name="property">The PropertySpec that represents the property whose
 		/// value is being requested or set.</param>
 		/// <param name="val">The current value of the property.</param>
-		public PropertySpecEventArgs(PropertySpec property, object val)
+		internal PropertySpecEventArgs(PropertySpec property, object val)
 		{
 			this.property = property;
 			this.val = val;
@@ -398,7 +398,7 @@ namespace Flobbster.Windows.Forms
 		/// Gets the PropertySpec that represents the property whose value is being
 		/// requested or set.
 		/// </summary>
-		public PropertySpec Property
+		internal PropertySpec Property
 		{
 			get { return property; }
 		}
@@ -406,7 +406,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets or sets the current value of the property.
 		/// </summary>
-		public object Value
+		internal object Value
 		{
 			get { return val; }
 			set { val = value; }
@@ -418,21 +418,21 @@ namespace Flobbster.Windows.Forms
 	/// PropertyGrid to provide functionality beyond that of the simple reflection
 	/// normally used to query an object's properties.
 	/// </summary>
-	public class PropertyBag : ICustomTypeDescriptor
+	internal class PropertyBag : ICustomTypeDescriptor
 	{
 		#region PropertySpecCollection class definition
 		/// <summary>
 		/// Encapsulates a collection of PropertySpec objects.
 		/// </summary>
 		[Serializable]
-		public class PropertySpecCollection : IList
+		internal class PropertySpecCollection : IList
 		{
 			private ArrayList innerArray;
 			
 			/// <summary>
 			/// Initializes a new instance of the PropertySpecCollection class.
 			/// </summary>
-			public PropertySpecCollection()
+			internal PropertySpecCollection()
 			{
 				innerArray = new ArrayList();
 			}
@@ -497,7 +497,7 @@ namespace Flobbster.Windows.Forms
 			/// <value>
 			/// The element at the specified index.
 			/// </value>
-			public PropertySpec this[int index]
+			internal PropertySpec this[int index]
 			{
 				get { return (PropertySpec)innerArray[index]; }
 				set { innerArray[index] = value; }
@@ -508,7 +508,7 @@ namespace Flobbster.Windows.Forms
 			/// </summary>
 			/// <param name="value">The PropertySpec to be added to the end of the PropertySpecCollection.</param>
 			/// <returns>The PropertySpecCollection index at which the value has been added.</returns>
-			public int Add(PropertySpec value)
+			internal int Add(PropertySpec value)
 			{
 				int index = innerArray.Add(value);
 
@@ -520,7 +520,7 @@ namespace Flobbster.Windows.Forms
 			/// </summary>
 			/// <param name="array">The PropertySpec array whose elements should be added to the end of the
 			/// PropertySpecCollection.</param>
-			public void AddRange(PropertySpec[] array)
+			internal void AddRange(PropertySpec[] array)
 			{
 				innerArray.AddRange(array);
 			}
@@ -539,7 +539,7 @@ namespace Flobbster.Windows.Forms
 			/// <param name="item">The PropertySpec to locate in the PropertySpecCollection. The element to locate
 			/// can be a null reference (Nothing in Visual Basic).</param>
 			/// <returns>true if item is found in the PropertySpecCollection; otherwise, false.</returns>
-			public bool Contains(PropertySpec item)
+			internal bool Contains(PropertySpec item)
 			{
 				return innerArray.Contains(item);
 			}
@@ -549,7 +549,7 @@ namespace Flobbster.Windows.Forms
 			/// </summary>
 			/// <param name="name">The name of the PropertySpec to locate in the PropertySpecCollection.</param>
 			/// <returns>true if item is found in the PropertySpecCollection; otherwise, false.</returns>
-			public bool Contains(string name)
+			internal bool Contains(string name)
 			{
 				foreach(PropertySpec spec in innerArray)
 					if(spec.Name == name)
@@ -564,7 +564,7 @@ namespace Flobbster.Windows.Forms
 			/// </summary>
 			/// <param name="array">The one-dimensional Array that is the destination of the elements copied
 			/// from PropertySpecCollection. The Array must have zero-based indexing.</param>
-			public void CopyTo(PropertySpec[] array)
+			internal void CopyTo(PropertySpec[] array)
 			{
 				innerArray.CopyTo(array);
 			}
@@ -575,7 +575,7 @@ namespace Flobbster.Windows.Forms
 			/// <param name="array">The one-dimensional Array that is the destination of the elements copied
 			/// from the collection.</param>
 			/// <param name="index">The zero-based index in array at which copying begins.</param>
-			public void CopyTo(PropertySpec[] array, int index)
+			internal void CopyTo(PropertySpec[] array, int index)
 			{
 				innerArray.CopyTo(array, index);
 			}
@@ -596,7 +596,7 @@ namespace Flobbster.Windows.Forms
 			/// <param name="value">The PropertySpec to locate in the PropertySpecCollection.</param>
 			/// <returns>The zero-based index of the first occurrence of value within the entire PropertySpecCollection,
 			/// if found; otherwise, -1.</returns>
-			public int IndexOf(PropertySpec value)
+			internal int IndexOf(PropertySpec value)
 			{
 				return innerArray.IndexOf(value);
 			}
@@ -608,7 +608,7 @@ namespace Flobbster.Windows.Forms
 			/// <param name="name">The name of the PropertySpec to locate in the PropertySpecCollection.</param>
 			/// <returns>The zero-based index of the first occurrence of value within the entire PropertySpecCollection,
 			/// if found; otherwise, -1.</returns>
-			public int IndexOf(string name)
+			internal int IndexOf(string name)
 			{
 				int i = 0;
 
@@ -628,7 +628,7 @@ namespace Flobbster.Windows.Forms
 			/// </summary>
 			/// <param name="index">The zero-based index at which value should be inserted.</param>
 			/// <param name="value">The PropertySpec to insert.</param>
-			public void Insert(int index, PropertySpec value)
+			internal void Insert(int index, PropertySpec value)
 			{
 				innerArray.Insert(index, value);
 			}
@@ -637,7 +637,7 @@ namespace Flobbster.Windows.Forms
 			/// Removes the first occurrence of a specific object from the PropertySpecCollection.
 			/// </summary>
 			/// <param name="obj">The PropertySpec to remove from the PropertySpecCollection.</param>
-			public void Remove(PropertySpec obj)
+			internal void Remove(PropertySpec obj)
 			{
 				innerArray.Remove(obj);
 			}
@@ -646,7 +646,7 @@ namespace Flobbster.Windows.Forms
 			/// Removes the property with the specified name from the PropertySpecCollection.
 			/// </summary>
 			/// <param name="name">The name of the PropertySpec to remove from the PropertySpecCollection.</param>
-			public void Remove(string name)
+			internal void Remove(string name)
 			{
 				int index = IndexOf(name);
 				RemoveAt(index);
@@ -665,7 +665,7 @@ namespace Flobbster.Windows.Forms
 			/// Copies the elements of the PropertySpecCollection to a new PropertySpec array.
 			/// </summary>
 			/// <returns>A PropertySpec array containing copies of the elements of the PropertySpecCollection.</returns>
-			public PropertySpec[] ToArray()
+			internal PropertySpec[] ToArray()
 			{
 				return (PropertySpec[])innerArray.ToArray(typeof(PropertySpec));
 			}
@@ -742,7 +742,7 @@ namespace Flobbster.Windows.Forms
 			private PropertyBag bag;
 			private PropertySpec item;
 
-			public PropertySpecDescriptor(PropertySpec item, PropertyBag bag, string name, Attribute[] attrs) :
+			internal PropertySpecDescriptor(PropertySpec item, PropertyBag bag, string name, Attribute[] attrs) :
 				base(name, attrs)
 			{
 				this.bag = bag;
@@ -814,7 +814,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertyBag class.
 		/// </summary>
-		public PropertyBag()
+		internal PropertyBag()
 		{
 			defaultProperty = null;
 			properties = new PropertySpecCollection();
@@ -823,7 +823,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets or sets the name of the default property in the collection.
 		/// </summary>
-		public string DefaultProperty
+		internal string DefaultProperty
 		{
 			get { return defaultProperty; }
 			set { defaultProperty = value; }
@@ -832,7 +832,7 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Gets the collection of properties contained within this PropertyBag.
 		/// </summary>
-		public PropertySpecCollection Properties
+		internal PropertySpecCollection Properties
 		{
 			get { return properties; }
 		}
@@ -840,12 +840,12 @@ namespace Flobbster.Windows.Forms
 		/// <summary>
 		/// Occurs when a PropertyGrid requests the value of a property.
 		/// </summary>
-		public event EventHandler<PropertySpecEventArgs> GetValue;
+		internal event EventHandler<PropertySpecEventArgs> GetValue;
 
 		/// <summary>
 		/// Occurs when the user changes the value of a property in a PropertyGrid.
 		/// </summary>
-		public event EventHandler<PropertySpecEventArgs> SetValue;
+		internal event EventHandler<PropertySpecEventArgs> SetValue;
 
 		/// <summary>
 		/// Raises the GetValue event.
@@ -997,14 +997,14 @@ namespace Flobbster.Windows.Forms
 	/// An extension of PropertyBag that manages a table of property values, in
 	/// addition to firing events when property values are requested or set.
 	/// </summary>
-	public class PropertyTable : PropertyBag
+	internal class PropertyTable : PropertyBag
 	{
 		private Hashtable propValues;
 
 		/// <summary>
 		/// Initializes a new instance of the PropertyTable class.
 		/// </summary>
-		public PropertyTable()
+		internal PropertyTable()
 		{
 			propValues = new Hashtable();
 		}
@@ -1013,7 +1013,7 @@ namespace Flobbster.Windows.Forms
 		/// Gets or sets the value of the property with the specified name.
 		/// <p>In C#, this property is the indexer of the PropertyTable class.</p>
 		/// </summary>
-		public object this[string key]
+		internal object this[string key]
 		{
 			get { return propValues[key]; }
 			set { propValues[key] = value; }

@@ -22,7 +22,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// A unique key identifying this request
 		/// </summary>
-		public abstract string Key
+		internal abstract string Key
 		{
 			get;
 		}
@@ -30,7 +30,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// The object that created this request
 		/// </summary>
-		public object Owner
+		internal object Owner
 		{
 			get
 			{
@@ -45,7 +45,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Value (0-1) indicating how far the download has progressed.
 		/// </summary>
-		public abstract float Progress
+		internal abstract float Progress
 		{
 			get;
 		}
@@ -53,7 +53,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Whether the request is currently being downloaded
 		/// </summary>
-		public abstract bool IsDownloading
+		internal abstract bool IsDownloading
 		{
 			get;
 		}
@@ -61,14 +61,14 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Starts processing this request
 		/// </summary>
-		public abstract void Start();
+		internal abstract void Start();
 
 		/// <summary>
 		/// Calculates the score of this request.  Used to prioritize downloads.  
 		/// Override in derived class to allow prioritization.
 		/// </summary>
 		/// <returns>Relative score or float.MinValue if request is no longer of interest.</returns>
-		public virtual float CalculateScore()
+		protected internal virtual float CalculateScore()
 		{
 			return 0;
 		}
@@ -76,7 +76,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Derived classes should call this method to signal processing complete.
 		/// </summary>
-		public virtual void OnComplete()
+		internal virtual void OnComplete()
 		{
 			Queue.OnComplete(this);
 		}

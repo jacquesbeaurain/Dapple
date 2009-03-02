@@ -43,15 +43,15 @@ namespace Utility
 			/// <summary>
 			/// First message in the range reserved for this DLL
 			/// </summary>
-			public int firstMessage;
+			internal int firstMessage;
 			/// <summary>
 			/// Last message in the range reserved for this DLL
 			/// </summary>
-			public int lastMessage;
+			internal int lastMessage;
 			/// <summary>
 			/// The name of the DLL, e.g. "WINHTTP.DLL"
 			/// </summary>
-			public string dllName;
+			internal string dllName;
 
 			/// <summary>
 			/// Describes a DLL that can be searched for error messages
@@ -59,7 +59,7 @@ namespace Utility
 			/// <param name="first">First error number in the range</param>
 			/// <param name="last">Last error number in the range</param>
 			/// <param name="dll">File name of the associated dll, e.g. WINHTTP.DLL</param>
-			public DllDescriptor(int first, int last, string dll) 
+			internal DllDescriptor(int first, int last, string dll) 
 			{
 				firstMessage = first;
 				lastMessage = last;

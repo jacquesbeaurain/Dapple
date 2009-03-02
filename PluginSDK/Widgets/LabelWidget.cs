@@ -54,7 +54,7 @@ namespace WorldWind.NewWidgets
 	/// <summary>
 	/// Summary description for TextLabel.
 	/// </summary>
-	public class LabelWidget : IWidget
+	internal class LabelWidget : IWidget
 	{
 		string m_Text = "";
 		System.Drawing.Point m_location = new System.Drawing.Point(0,0);
@@ -79,13 +79,13 @@ namespace WorldWind.NewWidgets
 
 		protected bool m_isInitialized = false;
 
-		public LabelWidget()
+		internal LabelWidget()
 		{
 			m_location.X = m_borderWidth;
 			m_location.Y = m_borderWidth;
 		}
 
-		public LabelWidget(string text)
+		internal LabelWidget(string text)
 		{
 			Text = text;
 			m_location.X = m_borderWidth;
@@ -104,7 +104,7 @@ namespace WorldWind.NewWidgets
 				m_name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -115,7 +115,7 @@ namespace WorldWind.NewWidgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -128,31 +128,31 @@ namespace WorldWind.NewWidgets
 			}
 		}
 
-		public DrawTextFormat Format
+		internal DrawTextFormat Format
 		{
 			get { return m_Format; }
 			set { m_Format = value; }
 		}
 
-		public bool ClearOnRender
+		internal bool ClearOnRender
 		{
 			get { return m_clearOnRender; }
 			set { m_clearOnRender = value; }
 		}
 
-		public bool AutoSize
+		internal bool AutoSize
 		{
 			get { return m_autoSize; }
 			set { m_autoSize = value; }
 		}
 
-		public bool UseParentWidth
+		internal bool UseParentWidth
 		{
 			get { return m_useParentWidth; }
 			set { m_useParentWidth = value; }
 		}
 
-		public bool UseParentHeight
+		internal bool UseParentHeight
 		{
 			get { return m_useParentHeight; }
 			set { m_useParentHeight = value; }
@@ -281,7 +281,7 @@ namespace WorldWind.NewWidgets
 			}
 		}
 
-		public void ComputeAutoSize (DrawArgs drawArgs)
+		internal void ComputeAutoSize (DrawArgs drawArgs)
 		{
 			Microsoft.DirectX.Direct3D.Font font = drawArgs.defaultDrawingFont;
 			if(font==null)
@@ -313,7 +313,7 @@ namespace WorldWind.NewWidgets
 				m_size.Height += m_borderWidth;
 			}
 		}
-			
+
 		public void Initialize(DrawArgs drawArgs)
 		{
 			if (m_autoSize)

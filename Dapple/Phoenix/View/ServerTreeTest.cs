@@ -9,11 +9,11 @@ using Dapple.LayerGeneration;
 
 namespace NewServerTree.View
 {
-	public partial class ServerTreeTest : Form
+	internal partial class ServerTreeTest : Form
 	{
 		DappleModel m_oModel;
 
-		public ServerTreeTest()
+		internal ServerTreeTest()
 		{
 			InitializeComponent();
 
@@ -23,7 +23,7 @@ namespace NewServerTree.View
 			serverTree2.Attach(m_oModel);
 		}
 
-		public static void Main()
+		internal static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

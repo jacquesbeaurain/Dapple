@@ -3,11 +3,11 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	public class VERootModelNode : ModelNode
+	internal class VERootModelNode : ModelNode
 	{
 		#region Constructors
 
-		public VERootModelNode(DappleModel oModel)
+		internal VERootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			AddChildSilently(new VELayerModelNode(m_oModel, VELayerModelNode.VELayerType.Map));
@@ -22,13 +22,13 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override String DisplayText
+		internal override String DisplayText
 		{
 			get { return "Virtual Earth"; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.VERoot; }
 		}
@@ -40,7 +40,7 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		public void SaveToView(dappleview.serversType oServers)
+		internal void SaveToView(dappleview.serversType oServers)
 		{
 			dappleview.builderentryType oVEEntry = oServers.Newbuilderentry();
 			dappleview.virtualearthType oVEType = oVEEntry.Newvirtualearth();
@@ -67,11 +67,11 @@ namespace NewServerTree
 	}
 
 
-	public class VELayerModelNode : LayerModelNode
+	internal class VELayerModelNode : LayerModelNode
 	{
 		#region Enums
 
-		public enum VELayerType
+		internal enum VELayerType
 		{
 			Map,
 			Hybrid,
@@ -106,7 +106,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public VELayerModelNode(DappleModel oModel, VELayerType eLayerType)
+		internal VELayerModelNode(DappleModel oModel, VELayerType eLayerType)
 			: base(oModel)
 		{
 			m_eLayerType = eLayerType;
@@ -120,12 +120,12 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get
 			{
@@ -144,7 +144,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.VELayer; }
 		}
@@ -155,7 +155,7 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder()
+		internal override Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder()
 		{
 			return new Dapple.LayerGeneration.VEQuadLayerBuilder(DisplayText, Convert(m_eLayerType), Dapple.MainForm.WorldWindowSingleton, true, null);
 		}

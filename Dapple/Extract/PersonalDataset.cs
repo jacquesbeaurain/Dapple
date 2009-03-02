@@ -11,15 +11,15 @@ using System.IO;
 
 namespace Dapple.Extract
 {
-	public partial class PersonalDataset : DownloadOptions
+	internal partial class PersonalDataset : DownloadOptions
 	{
-		public PersonalDataset(DAPQuadLayerBuilder oDAPLayer)
+		internal PersonalDataset(DAPQuadLayerBuilder oDAPLayer)
 			:base(oDAPLayer)
 		{
 			InitializeComponent();
 		}
 
-		public override DownloadOptions.ExtractSaveResult Save(XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override DownloadOptions.ExtractSaveResult Save(XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
 		{
 			bool blFileExists;
 			String strFilename = String.Empty;

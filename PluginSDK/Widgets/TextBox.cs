@@ -7,7 +7,7 @@ namespace WorldWind.NewWidgets
 	/// <summary>
 	/// Summary description for TextLabel.
 	/// </summary>
-	public class TextBox : IWidget, IInteractive
+	internal class TextBox : IWidget, IInteractive
 	{
 		string m_Text = "";
 		System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
@@ -44,7 +44,7 @@ namespace WorldWind.NewWidgets
 
         #endregion
 
-		public TextBox()
+		internal TextBox()
 		{
 			
 		}
@@ -61,7 +61,7 @@ namespace WorldWind.NewWidgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -72,7 +72,7 @@ namespace WorldWind.NewWidgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -204,7 +204,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Size of widget in pixels
         /// </summary>
-        public System.Drawing.Size WidgetSize
+		  public System.Drawing.Size WidgetSize
         {
             get { return m_Size; }
             set { m_Size = value; }
@@ -214,7 +214,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for height calculations - HACK until we do real layout
         /// </summary>
-        public bool CountHeight
+		  public bool CountHeight
         {
             get { return m_countHeight; }
             set { m_countHeight = value; }
@@ -224,14 +224,14 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for width calculations - HACK until we do real layout
         /// </summary>
-        public bool CountWidth
+		  public bool CountWidth
         {
             get { return m_countWidth; }
             set { m_countWidth = value; }
         }
 
 
-        public void Initialize(DrawArgs drawArgs)
+		  public void Initialize(DrawArgs drawArgs)
         {
         }
 
@@ -547,7 +547,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Action to perform when the left mouse button is clicked
         /// </summary>
-        public MouseClickAction LeftClickAction
+		public MouseClickAction LeftClickAction
         {
             get { return m_leftClickAction; }
             set { m_leftClickAction = value; }
@@ -557,7 +557,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Action to perform when the right mouse button is clicked
         /// </summary>
-        public MouseClickAction RightClickAction
+		public MouseClickAction RightClickAction
         {
             get { return m_rightClickAction; }
             set { m_rightClickAction = value; }

@@ -12,12 +12,12 @@ using Dapple;
 
 namespace Dapple.LayerGeneration
 {
-   public class GeorefImageLayerBuilder : LayerBuilder
+   internal class GeorefImageLayerBuilder : LayerBuilder
    {
       #region Statics
 
-      public static readonly string URLProtocolName = "gxtif:///";
-      public static readonly string CacheSubDir = "Local Image Cache";
+      internal static readonly string URLProtocolName = "gxtif:///";
+      internal static readonly string CacheSubDir = "Local Image Cache";
 
       #endregion
 
@@ -34,7 +34,7 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public GeorefImageLayerBuilder(string strDisplayName, string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
+      internal GeorefImageLayerBuilder(string strDisplayName, string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
          : base(strDisplayName.Length > 0 ? strDisplayName : Path.GetFileName(strFileName), oWorldWindow, parent)
       {
          if (strFileName == null) throw new ArgumentNullException("strFileName");
@@ -44,7 +44,7 @@ namespace Dapple.LayerGeneration
 			m_blMissingFile = !File.Exists(m_strFileName);
       }
 
-      public GeorefImageLayerBuilder(string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
+      internal GeorefImageLayerBuilder(string strFileName, bool bTmp, WorldWindow oWorldWindow, IBuilder parent)
          : base(Path.GetFileName(strFileName), oWorldWindow, parent)
       {
          if (strFileName == null) throw new ArgumentNullException("strFileName");
@@ -61,7 +61,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -90,7 +90,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -120,7 +120,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get
 			{
@@ -140,7 +140,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("GeoTIFF")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The filename of the GeoTIFF")]
-		public string FileName
+		internal string FileName
 		{
 			get { return m_strFileName; }
 		}
@@ -152,7 +152,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return "georef_image"; }
 		}
@@ -167,14 +167,14 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          iBytesRead = 0;
          iTotalBytes = 0;
          return false;
       }
 
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          if (m_blnIsChanged)
          {
@@ -210,12 +210,12 @@ namespace Dapple.LayerGeneration
          return m_Layer;
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          return URLProtocolName + m_strFileName.Replace(Path.DirectorySeparatorChar, '/');
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_strFileName.GetHashCode().ToString());
       }
@@ -232,12 +232,12 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          return new GeorefImageLayerBuilder(m_strFileName, m_bIsTmp, m_oWorldWindow, m_Parent);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is GeorefImageLayerBuilder)) return false;
          GeorefImageLayerBuilder castObj = obj as GeorefImageLayerBuilder;
@@ -253,14 +253,14 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region Other Public Methods
+      #region Other internal Methods
 
       /// <summary>
       /// Obtain geographic extents from GeoTIF file
       /// </summary>
       /// <param name="strFile"></param>
       /// <returns>null if not WGS84 or other failure</returns>
-      public static GeographicBoundingBox GetExtentsFromGeotif(string strFile)
+      internal static GeographicBoundingBox GetExtentsFromGeotif(string strFile)
       {
          string strTemp = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -344,7 +344,7 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="strFile"></param>
       /// <returns>empty null if not WGS84 or other failure</returns>
-      public static string GetGeorefInfoFromGeotif(string strFile)
+      internal static string GetGeorefInfoFromGeotif(string strFile)
       {
          string strTemp = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
          string strReturn = "";
@@ -399,7 +399,7 @@ namespace Dapple.LayerGeneration
          return strReturn;
       }
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "file";
          szServerURL = String.Empty;

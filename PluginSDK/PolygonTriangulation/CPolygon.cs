@@ -5,12 +5,12 @@ namespace GeometryUtility
 	/// <summary>
 	/// Summary description for CPolygon.
 	/// </summary>
-	public class CPolygon
+	internal class CPolygon
 	{
 		
 		private CPoint2D[] m_aVertices;
 
-		public CPoint2D   this[int index] 
+		internal CPoint2D   this[int index] 
 		{
 			set
 			{
@@ -22,12 +22,12 @@ namespace GeometryUtility
 			}
 		}
 		
-		public CPolygon()
+		internal CPolygon()
 		{
 		
 		}
 
-		public CPolygon(CPoint2D[] points)
+		internal CPolygon(CPoint2D[] points)
 		{
 			int nNumOfPoitns=points.Length;
 			try
@@ -59,7 +59,7 @@ namespace GeometryUtility
 		 If the given point is not a polygon vertex, 
 		 it will return -1 
 		 ***********************************/
-		public int VertexIndex(CPoint2D vertex)
+		internal int VertexIndex(CPoint2D vertex)
 		{
 			int nIndex=-1;
 
@@ -79,7 +79,7 @@ namespace GeometryUtility
 		 If the given point is not a polygon vertex, 
 		 it will return null; 
 		 ***********************************/
-		public CPoint2D PreviousPoint(CPoint2D vertex)
+		internal CPoint2D PreviousPoint(CPoint2D vertex)
 		{
 			int nIndex;
 			
@@ -105,7 +105,7 @@ namespace GeometryUtility
 			 If the given point is not a polygon vertex, 
 			 it will return null; 
 		***************************************/
-		public CPoint2D NextPoint(CPoint2D vertex)
+		internal CPoint2D NextPoint(CPoint2D vertex)
 		{
 			CPoint2D nextPt=new CPoint2D();
 
@@ -137,7 +137,7 @@ namespace GeometryUtility
 		ref: www.swin.edu.au/astronomy/pbourke/
 			geometry/polyarea/
 		*******************************************/
-		public double PolygonArea()
+		internal double PolygonArea()
 		{
 			double dblArea=0;
 			int nNumOfVertices=m_aVertices.Length;
@@ -170,7 +170,7 @@ namespace GeometryUtility
 		If dblArea>0 : polygon in clock wise to the user 
 		If dblArea<0: polygon in count clock wise to the user 		
 		*******************************************/
-		public static double PolygonArea(CPoint2D[] points)
+		internal static double PolygonArea(CPoint2D[] points)
 		{
 			double dblArea=0;
 			int nNumOfPts=points.Length;
@@ -192,7 +192,7 @@ namespace GeometryUtility
 			-----------------------------------------------------------
 			The out polygon is in count clock-wise direction
 		************************************************/
-		public VertexType PolygonVertexType(CPoint2D vertex)
+		internal VertexType PolygonVertexType(CPoint2D vertex)
 		{
 			VertexType vertexType=VertexType.ErrorPoint;
 
@@ -224,7 +224,7 @@ namespace GeometryUtility
 		reference: www.swin.edu.au/astronomy/pbourke
 		/geometry/lineline2d
 		*********************************************/
-		public bool Diagonal(CPoint2D vertex1, CPoint2D vertex2)
+		internal bool Diagonal(CPoint2D vertex1, CPoint2D vertex2)
 		{
 			bool bDiagonal=false;
 			int nNumOfVertices=m_aVertices.Length;
@@ -269,7 +269,7 @@ namespace GeometryUtility
 		Ref: www.swin.edu.au/astronomy/pbourke
 		/geometry/clockwise/index.html
 		********************************************/
-		public PolygonType GetPolygonType()
+		internal PolygonType GetPolygonType()
 		{
 			int nNumOfVertices=m_aVertices.Length;
 			bool bSignChanged=false;
@@ -313,7 +313,7 @@ namespace GeometryUtility
 		PrincipalVertex: a vertex pi of polygon P is a principal vertex if the
 		diagonal pi-1, pi+1 intersects the boundary of P only at pi-1 and pi+1.
 		*********************************************************/
-		public bool PrincipalVertex(CPoint2D vertex)
+		internal bool PrincipalVertex(CPoint2D vertex)
 		{
 			bool bPrincipal=false;
 			if (PolygonVertex(vertex)) //valid vertex
@@ -330,7 +330,7 @@ namespace GeometryUtility
 		/*********************************************
         To check whether a given point is a CPolygon Vertex
 		**********************************************/
-		public bool PolygonVertex(CPoint2D point)
+		internal bool PolygonVertex(CPoint2D point)
 		{
 			bool bVertex=false;
 			int nIndex=VertexIndex(point);
@@ -345,7 +345,7 @@ namespace GeometryUtility
 		To reverse polygon vertices to different direction:
 		clock-wise <------->count-clock-wise
 		******************************************************/
-		public void ReverseVerticesDirection()
+		internal void ReverseVerticesDirection()
 		{
 			int nVertices=m_aVertices.Length;
 			CPoint2D[] aTempPts=new CPoint2D[nVertices];
@@ -365,7 +365,7 @@ namespace GeometryUtility
 		Ref: www.swin.edu.au/astronomy/pbourke/
 		geometry/clockwise/index.html
 		*****************************************/
-		public PolygonDirection VerticesDirection()
+		internal PolygonDirection VerticesDirection()
 		{
 			int nCount=0, j=0, k=0;
 			int nVertices=m_aVertices.Length;
@@ -403,7 +403,7 @@ namespace GeometryUtility
 
 		Restriction: the polygon is not self intersecting
 		*****************************************/
-		public static PolygonDirection PointsDirection(
+		internal static PolygonDirection PointsDirection(
 			CPoint2D[] points)
 		{
 			int nCount=0, j=0, k=0;
@@ -441,7 +441,7 @@ namespace GeometryUtility
 		/*****************************************************
 		To reverse points to different direction (order) :
 		******************************************************/
-		public static void ReversePointsDirection(
+		internal static void ReversePointsDirection(
 			CPoint2D[] points)
 		{
 			int nVertices=points.Length;

@@ -6,7 +6,7 @@ using System.Web;
 namespace Utility
 {
 	// TODO: Delete this class.  System.Uri provides the same functionality.
-   public static class URI
+	public static class URI
    {
       static string StripSchemeFromURI(string strScheme, string strURI)
       {
@@ -17,7 +17,7 @@ namespace Utility
          return strURI.Replace(strPre, "");
       }
 
-      public static string HostFromURI(string strScheme, string strURI)
+      internal static string HostFromURI(string strScheme, string strURI)
       {
          string strHost = StripSchemeFromURI(strScheme, strURI);
 
@@ -30,7 +30,7 @@ namespace Utility
          return strHost;
       }
 
-      public static string PathFromURI(string strScheme, string strURI)
+      internal static string PathFromURI(string strScheme, string strURI)
       {
          string strPath = StripSchemeFromURI(strScheme, strURI);
 
@@ -45,7 +45,7 @@ namespace Utility
          return strPath;
       }
 
-      public static string QueryFromURI(string strScheme, string strURI)
+      internal static string QueryFromURI(string strScheme, string strURI)
       {
          string strQuery = StripSchemeFromURI(strScheme, strURI);
 
@@ -55,14 +55,14 @@ namespace Utility
             return String.Empty;
       }
 
-      static public NameValueCollection ParseURI(string strScheme, string strURI, ref string strHost, ref string strPath)
+      public static NameValueCollection ParseURI(string strScheme, string strURI, ref string strHost, ref string strPath)
       {
          strHost = HostFromURI(strScheme, strURI);
          strPath = PathFromURI(strScheme, strURI);
          return HttpUtility.ParseQueryString(QueryFromURI(strScheme, strURI));
       }
 
-      public static string CreateURI(string strScheme, string strHost, string strPath, NameValueCollection queryColl)
+		public static string CreateURI(string strScheme, string strHost, string strPath, NameValueCollection queryColl)
       {
          bool bFirst = true;
          string strURI = strScheme + "://" + strHost + "/";

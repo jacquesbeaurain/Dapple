@@ -15,7 +15,7 @@ namespace Geosoft.OpenGX.UtilityForms
    /// </summary>
    [ToolboxItem(true)]
    [ToolboxBitmap(typeof(LabelControl), "LabelControl.bmp")]
-   public partial class LabelControl : Label
+	public partial class LabelControl : Label
    {
       #region Members
       private PictureBox m_pictureBox;
@@ -26,7 +26,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// <summary>
       /// 	<para>Initializes an instance of the <see cref="LabelControl"/> class.</para>
       /// </summary>
-      public LabelControl()
+		public LabelControl()
       {
          base.TextAlign = ContentAlignment.TopLeft;
          InitializeComponent();
@@ -43,7 +43,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// 	<IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
       /// </PermissionSet>
       [DefaultValue(ContentAlignment.TopLeft)]
-      public new ContentAlignment TextAlign
+      internal new ContentAlignment TextAlign
       {
          get
          {
@@ -172,7 +172,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("Set the control that this label is for")]
-      public IRequirable BuddyControl
+		public IRequirable BuddyControl
       {
          get
          {

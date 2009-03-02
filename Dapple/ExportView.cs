@@ -10,16 +10,16 @@ using Geosoft.OpenGX.UtilityForms;
 
 namespace Dapple
 {
-   public partial class ExportView : Form
+   internal partial class ExportView : Form
    {
 		private String m_szResult = null;
       private string m_strConfigDir;
 
-      public ExportView(string szConfigDir): this(szConfigDir, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
+      internal ExportView(string szConfigDir): this(szConfigDir, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
       {
       }
 
-      public ExportView(string strConfigDir, string strInitialFolder)
+      internal ExportView(string strConfigDir, string strInitialFolder)
       {
          InitializeComponent();
          m_strConfigDir = strConfigDir;
@@ -48,7 +48,7 @@ namespace Dapple
 			cFilenameControl.Filters = "GeoTIFF(*.tif)|*.tif";
       }
 
-		public String FullFileName
+		internal String FullFileName
 		{
 			get
 			{

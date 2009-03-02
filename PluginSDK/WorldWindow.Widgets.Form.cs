@@ -8,9 +8,9 @@ using WorldWind;
 
 namespace WorldWind.Widgets
 {
-    public delegate void VisibleChangedHandler(object o, bool state);
+    internal delegate void VisibleChangedHandler(object o, bool state);
 
-	public class Form : IWidget, IInteractive
+	internal class Form : IWidget, IInteractive
 	{
 		System.Drawing.Point m_Location = new System.Drawing.Point(0, 0);
 		System.Drawing.Size m_Size = new System.Drawing.Size(300, 200);
@@ -43,28 +43,28 @@ namespace WorldWind.Widgets
 		object m_Tag = null;
 		string m_Text = "";
 		
-		public Form()
+		internal Form()
 		{
 		}
 
 		#region Properties
-        public Alignment Alignment
+        internal Alignment Alignment
         {
             get { return m_alignment; }
             set { m_alignment = value; }
         }
-		public bool HideBorder
+		internal bool HideBorder
 		{
 			get{ return m_HideBorder; }
 			set{ m_HideBorder = value; }
 		}
-        public bool HideHeader
+        internal bool HideHeader
         {
             get { return m_HideHeader; }
             set { m_HideHeader = value; }
         }
 
-		public Microsoft.DirectX.Direct3D.Font TextFont
+		internal Microsoft.DirectX.Direct3D.Font TextFont
 		{
 			get
 			{
@@ -86,7 +86,7 @@ namespace WorldWind.Widgets
 				m_Name = value;
 			}
 		}
-		public bool AutoHideHeader
+		internal bool AutoHideHeader
 		{
 			get
 			{
@@ -97,7 +97,7 @@ namespace WorldWind.Widgets
 				m_AutoHideHeader = value;
 			}
 		}
-		public System.Drawing.Color HeaderColor
+		internal System.Drawing.Color HeaderColor
 		{
 			get
 			{
@@ -108,7 +108,7 @@ namespace WorldWind.Widgets
 				m_HeaderColor = value;
 			}
 		}
-		public int HeaderHeight
+		internal int HeaderHeight
 		{
 			get
 			{
@@ -119,7 +119,7 @@ namespace WorldWind.Widgets
 				m_HeaderHeight = value;
 			}
 		}
-		public System.Drawing.Color BorderColor
+		internal System.Drawing.Color BorderColor
 		{
 			get
 			{
@@ -130,7 +130,7 @@ namespace WorldWind.Widgets
 				m_BorderColor = value;
 			}
 		}
-		public System.Drawing.Color BackgroundColor
+		internal System.Drawing.Color BackgroundColor
 		{
 			get
 			{
@@ -142,7 +142,7 @@ namespace WorldWind.Widgets
 			}
 		}
 
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -687,7 +687,7 @@ namespace WorldWind.Widgets
 			return false;
 		}
 
-		public event VisibleChangedHandler OnVisibleChanged;
+		internal event VisibleChangedHandler OnVisibleChanged;
 
 		System.Drawing.Size minSize = new System.Drawing.Size(20, 20);
 
@@ -802,7 +802,7 @@ namespace WorldWind.Widgets
 		#endregion
 	}
 
-    public enum Alignment
+    internal enum Alignment
     {
         None,
         Left,

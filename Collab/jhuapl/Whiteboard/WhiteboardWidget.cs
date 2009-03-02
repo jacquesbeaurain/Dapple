@@ -67,7 +67,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// Top level treenode for the whiteboard widget
 		/// </summary>
-		public TreeNodeWidget RootWidget
+		internal TreeNodeWidget RootWidget
 		{
 			get { return m_rootWidget; }
 			set { m_rootWidget = value; }
@@ -77,7 +77,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// The treenode that holds all the drawing tools
 		/// </summary>
-		public TreeNodeWidget DrawWidget
+		internal TreeNodeWidget DrawWidget
 		{
 			get { return m_drawWidget; }
 			set { m_drawWidget = value; }
@@ -88,49 +88,49 @@ namespace Collab.jhuapl.Whiteboard
 		/// This widget enables draw lock.  Once draw lock is enabled every
 		/// mouse event triggers whatever drawing mode was last used.
 		/// </summary>
-		public TreeNodeWidget LockWidget
+		internal TreeNodeWidget LockWidget
 		{
 			get { return m_lockWidget; }
 			set { m_lockWidget = value; }
 		}
 		protected static TreeNodeWidget m_lockWidget;
 
-		public TreeNodeWidget ShapeWidget
+		internal TreeNodeWidget ShapeWidget
 		{
 			get { return m_shapeWidget; }
 			set { m_shapeWidget = value; }
 		}
 		protected static TreeNodeWidget m_shapeWidget;
 
-		public PanelWidget ShapePalette
+		internal PanelWidget ShapePalette
 		{
 			get { return m_shapePalette; }
 			set { m_shapePalette = value; }
 		}
 		protected static PanelWidget m_shapePalette;
 
-		public TreeNodeWidget ColorWidget
+		internal TreeNodeWidget ColorWidget
 		{
 			get { return m_colorWidget; }
 			set { m_colorWidget = value; }
 		}
 		protected static TreeNodeWidget m_colorWidget;
 
-		public PanelWidget ColorPalette
+		internal PanelWidget ColorPalette
 		{
 			get { return m_colorPalette; }
 			set { m_colorPalette = value; }
 		}
 		protected static PanelWidget m_colorPalette;
 
-		public TreeNodeWidget IconWidget
+		internal TreeNodeWidget IconWidget
 		{
 			get { return m_iconWidget; }
 			set { m_iconWidget = value; }
 		}
 		protected static TreeNodeWidget m_iconWidget;
 
-		public PanelWidget IconPalette
+		internal PanelWidget IconPalette
 		{
 			get { return m_iconPalette; }
 			set { m_iconPalette = value; }
@@ -148,7 +148,8 @@ namespace Collab.jhuapl.Whiteboard
 
 		protected static ButtonWidget m_freehandButton;
 
-		public WhiteboardWidget(string name) : base(name)
+		public WhiteboardWidget(string name)
+			: base(name)
 		{
 			// Probably should put this in a try catch block or move out of constructor
 			BuildForm();
@@ -318,7 +319,7 @@ namespace Collab.jhuapl.Whiteboard
 
 		#region button actions
 
-		public void PerformLock(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformLock(System.Windows.Forms.MouseEventArgs e)
 		{
 			if (m_whiteboardLayer != null)
 			{
@@ -332,7 +333,7 @@ namespace Collab.jhuapl.Whiteboard
 			JHU_Log.Write(1, "DRAW", "", "Lock Button Pressed");
 		}
 
-		public void PerformHotspot(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformHotspot(System.Windows.Forms.MouseEventArgs e)
 		{
 			if (m_whiteboardLayer != null)
 			{
@@ -343,7 +344,7 @@ namespace Collab.jhuapl.Whiteboard
 			JHU_Log.Write(1, "DRAW", "", "Hotspot Button Pressed");
 		}
 
-		public void PerformPolygon(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformPolygon(System.Windows.Forms.MouseEventArgs e)
 		{
 			if (m_whiteboardLayer != null)
 			{
@@ -354,7 +355,7 @@ namespace Collab.jhuapl.Whiteboard
 			JHU_Log.Write(1, "DRAW", "", "Polygon Button Pressed");
 		}
 
-		public void PerformPolyline(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformPolyline(System.Windows.Forms.MouseEventArgs e)
 		{
 			if (m_whiteboardLayer != null)
 			{
@@ -365,7 +366,7 @@ namespace Collab.jhuapl.Whiteboard
 			JHU_Log.Write(1, "DRAW", "", "Polyline Button Pressed");
 		}
 
-		public void PerformFreehand(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformFreehand(System.Windows.Forms.MouseEventArgs e)
 		{
 			if (m_whiteboardLayer != null)
 			{
@@ -376,7 +377,7 @@ namespace Collab.jhuapl.Whiteboard
 			JHU_Log.Write(1, "DRAW", "", "Freehand Button Pressed");
 		}
 
-		public void ResetDrawingIcons()
+		internal void ResetDrawingIcons()
 		{
 		}
 

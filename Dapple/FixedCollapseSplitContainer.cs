@@ -21,7 +21,7 @@ namespace Dapple
 
       [Browsable(true)]
       [Category("FixedCollapseSplitContainer")]
-      public bool InvertSplitterFix
+      internal bool InvertSplitterFix
       {
          set
          {

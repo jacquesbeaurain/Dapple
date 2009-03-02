@@ -65,12 +65,12 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Called to update debug window.
 		/// </summary>
-		public static DownloadCompleteHandler DebugCallback;
+		internal static DownloadCompleteHandler DebugCallback;
 
 		/// <summary>
 		/// Called when a download has ended with success or failure
 		/// </summary>
-		public static DownloadCompleteHandler DownloadEnded;
+		internal static DownloadCompleteHandler DownloadEnded;
 
 		/// <summary>
 		/// Called when download is completed.  Call Verify from event handler to throw any exception.
@@ -79,18 +79,18 @@ namespace WorldWind.Net
 
 		public DownloadType DownloadType = DownloadType.Unspecified;
 		public string ContentType;
-		public int BytesProcessed;
-		public int ContentLength;
+		internal int BytesProcessed;
+		internal int ContentLength;
 
 		// variables to allow placefinder to use gzipped requests
 		//  *default to uncompressed requests to avoid breaking other things
 		public bool Compressed = false;
-		public string ContentEncoding;
+		internal string ContentEncoding;
 
 		/// <summary>
 		/// The download start time (or MinValue if not yet started)
 		/// </summary>
-		public DateTime DownloadStartTime = DateTime.MinValue;
+		internal DateTime DownloadStartTime = DateTime.MinValue;
 
 		protected HttpWebRequest request;
 		
@@ -137,7 +137,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Whether the download is currently being processed (active).
 		/// </summary>
-		public bool IsDownloadInProgress
+		internal bool IsDownloadInProgress
 		{
 			get
 			{
@@ -159,7 +159,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Is this an XML download?
 		/// </summary>
-		public bool XML
+		internal bool XML
 		{
 			get
 			{
@@ -190,7 +190,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Download image of specified type. (handles server errors for wms type)
 		/// </summary>
-		public void BackgroundDownloadFile(DownloadType dlType)
+		internal void BackgroundDownloadFile(DownloadType dlType)
 		{
 			DownloadType = dlType;
 			BackgroundDownloadFile();
@@ -221,7 +221,7 @@ namespace WorldWind.Net
 		/// Download image of specified type. (handles server errors for WMS type)
 		/// </summary>
 		/// <param name="dlType">Type of download.</param>
-		public void BackgroundDownloadMemory(DownloadType dlType)
+		internal void BackgroundDownloadMemory(DownloadType dlType)
 		{
 			DownloadType = dlType;
 			BackgroundDownloadMemory();
@@ -239,7 +239,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Download image of specified type. (handles server errors for WMS type)
 		/// </summary>
-		public void DownloadMemory(DownloadType dlType)
+		internal void DownloadMemory(DownloadType dlType)
 		{
 			DownloadType = dlType;
 			DownloadMemory();
@@ -249,7 +249,7 @@ namespace WorldWind.Net
 		/// HTTP downloads to memory.
 		/// </summary>
 		/// <param name="progressCallback">The progress callback.</param>
-		public void DownloadMemory(DownloadProgressHandler progressCallback)
+		internal void DownloadMemory(DownloadProgressHandler progressCallback)
 		{
 			ProgressCallback += progressCallback;
 			DownloadMemory();
@@ -820,15 +820,15 @@ namespace WorldWind.Net
    /// <summary>
    /// A WebDownload with an index that's guaranteed unique because you set it yourself!
    /// </summary>
-   public class IndexedWebDownload : WebDownload
+	public class IndexedWebDownload : WebDownload
    {
       private int m_iIndexNumber;
 
-      public IndexedWebDownload(int iIndexNumber) : base() { m_iIndexNumber = iIndexNumber; }
-      public IndexedWebDownload(String strUrl, int iIndexNumber) : base(strUrl) { m_iIndexNumber = iIndexNumber; }
-      public IndexedWebDownload(String strUrl, bool bXML, int iIndexNumber) : base(strUrl, bXML) { m_iIndexNumber = iIndexNumber; }
+      internal IndexedWebDownload(int iIndexNumber) : base() { m_iIndexNumber = iIndexNumber; }
+		public IndexedWebDownload(String strUrl, int iIndexNumber) : base(strUrl) { m_iIndexNumber = iIndexNumber; }
+		public IndexedWebDownload(String strUrl, bool bXML, int iIndexNumber) : base(strUrl, bXML) { m_iIndexNumber = iIndexNumber; }
 
-      public int IndexNumber
+      internal int IndexNumber
       {
          get { return m_iIndexNumber; }
       }

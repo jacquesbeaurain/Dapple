@@ -9,7 +9,7 @@ namespace ConfigurationWizard
 	/// <summary>
 	/// Summary description for ProxyPage.
 	/// </summary>
-	public class ProxyPage : WizardPage
+	internal class ProxyPage : WizardPage
 	{
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ToolTip toolTipProxyPage;
@@ -37,7 +37,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:ConfigurationWizard.ProxyPage"/> class.
 		/// </summary>
-		public ProxyPage()
+		internal ProxyPage()
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();

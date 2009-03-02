@@ -21,7 +21,7 @@ namespace WorldWind
 		/// <param name="longitude">Longitude in decimal degrees</param>
 		/// <param name="radius">Radius (OBS: not altitude)</param>
 		/// <returns>Coordinates converted to cartesian (XYZ)</returns>
-		public static void SphericalToCartesian(
+		internal static void SphericalToCartesian(
 			double latitude,
 			double longitude,
 			double radius,
@@ -37,7 +37,7 @@ namespace WorldWind
 			v.Y = radCosLat * Math.Sin(longitude);
 			v.Z = radius * Math.Sin(latitude);
 		}
-      public static Point3d SphericalToCartesian(
+		public static Point3d SphericalToCartesian(
          double latitude,
          double longitude,
          double radius
@@ -55,7 +55,7 @@ namespace WorldWind
 		/// <param name="longitude">Longitude (Angle)</param>
 		/// <param name="radius">Radius (OBS: not altitude)</param>
 		/// <returns>Coordinates converted to cartesian (XYZ)</returns>
-      public static void SphericalToCartesian(
+      internal static void SphericalToCartesian(
 			Angle latitude,
 			Angle longitude,
 			double radius,
@@ -70,7 +70,7 @@ namespace WorldWind
 			v.Y = radCosLat * Math.Sin(lonRadians);
 			v.Z = radius * Math.Sin(latRadians);
 		}
-      public static Point3d SphericalToCartesian(
+		public static Point3d SphericalToCartesian(
          Angle latitude,
          Angle longitude,
          double radius)
@@ -84,7 +84,7 @@ namespace WorldWind
 		/// Converts position in cartesian coordinates (XYZ) to spherical (lat/lon/radius) coordinates in radians.
 		/// </summary>
 		/// <returns>Coordinates converted to spherical coordinates.  X=radius, Y=latitude (radians), Z=longitude (radians).</returns>
-      public static Point3d CartesianToSpherical(double x, double y, double z)
+		public static Point3d CartesianToSpherical(double x, double y, double z)
 		{
 			double rho = Math.Sqrt((x * x + y * y + z * z));
 			double longitude = Math.Atan2(y,x);
@@ -108,7 +108,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="radians">Angle in radians (0-2*Pi)</param>
 		/// <returns>Angle in decimal degrees (0-360)</returns>
-		public static double RadiansToDegrees(double radians)
+		internal static double RadiansToDegrees(double radians)
 		{
 			return  radians * 180.0 / Math.PI;
 		}
@@ -121,7 +121,7 @@ namespace WorldWind
 		/// <param name="latB">Latitude of point 2 (decimal degrees)</param>
 		/// <param name="lonB">Longitude of point 2 (decimal degrees)</param>
 		/// <returns>Angle in decimal degrees</returns>
-		public static double SphericalDistanceDegrees(double latA, double lonA, double latB, double lonB)
+		internal static double SphericalDistanceDegrees(double latA, double lonA, double latB, double lonB)
 		{
          double radLatA = MathEngine.DegreesToRadians(latA);
          double radLatB = MathEngine.DegreesToRadians(latB);
@@ -136,7 +136,7 @@ namespace WorldWind
 		/// Computes the angular distance between two pairs of lat/longs.
 		/// Fails for distances (on earth) smaller than approx. 2km. (returns 0)
 		/// </summary>
-		public static Angle SphericalDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
+		internal static Angle SphericalDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
 		{
 			double radLatA = latA.Radians;
 			double radLatB = latB.Radians;
@@ -152,7 +152,7 @@ namespace WorldWind
 		/// Calculates the azimuth from latA/lonA to latB/lonB
 		/// Borrowed from http://williams.best.vwh.net/avform.htm
 		/// </summary>
-		public static Angle Azimuth( Angle latA, Angle lonA, Angle latB, Angle lonB )
+		internal static Angle Azimuth( Angle latA, Angle lonA, Angle latB, Angle lonB )
 		{
 			double cosLatB = Math.Cos(latB.Radians);
 			Angle tcA = Angle.FromRadians( Math.Atan2(
@@ -172,7 +172,7 @@ namespace WorldWind
 		/// <param name="latitude">Latitude (decimal degrees)</param>
 		/// <param name="tileSize">Tile size  (decimal degrees)</param>
 		/// <returns>The tile number</returns>
-		public static int GetRowFromLatitude(double latitude, double tileSize)
+		internal static int GetRowFromLatitude(double latitude, double tileSize)
 		{
 			return (int)System.Math.Truncate((System.Math.Abs(-90.0 - latitude) % 180) / tileSize);
 		}
@@ -183,7 +183,7 @@ namespace WorldWind
 		/// <param name="latitude">Latitude (decimal degrees)</param>
 		/// <param name="tileSize">Tile size  (decimal degrees)</param>
 		/// <returns>The tile number</returns>
-		public static int GetRowFromLatitude(Angle latitude, double tileSize)
+		internal static int GetRowFromLatitude(Angle latitude, double tileSize)
 		{
 			return (int)System.Math.Truncate((System.Math.Abs(-90.0 - latitude.Degrees) % 180) / tileSize);
 		}
@@ -194,7 +194,7 @@ namespace WorldWind
 		/// <param name="longitude">Longitude (decimal degrees)</param>
 		/// <param name="tileSize">Tile size  (decimal degrees)</param>
 		/// <returns>The tile number</returns>
-		public static int GetColFromLongitude(double longitude, double tileSize)
+		internal static int GetColFromLongitude(double longitude, double tileSize)
 		{
 			return (int)System.Math.Truncate((System.Math.Abs(-180.0 - longitude) % 360) / tileSize);
 		}
@@ -205,7 +205,7 @@ namespace WorldWind
 		/// <param name="longitude">Longitude (decimal degrees)</param>
 		/// <param name="tileSize">Tile size  (decimal degrees)</param>
 		/// <returns>The tile number</returns>
-		public static int GetColFromLongitude(Angle longitude, double tileSize)
+		internal static int GetColFromLongitude(Angle longitude, double tileSize)
 		{
 			return (int)System.Math.Truncate((System.Math.Abs(-180.0 - longitude.Degrees) % 360) / tileSize);
 		}
@@ -216,7 +216,7 @@ namespace WorldWind
 		/// <param name="p">Plane</param>
 		/// <param name="v">Point (XYZ coordinates)</param>
 		/// <returns>The shortest distance between the point and the plane.</returns>
-		public static double DistancePlaneToPoint(Plane2d p, Point3d v)
+		internal static double DistancePlaneToPoint(Plane2d p, Point3d v)
 		{
 			return p.A * v.X + p.B * v.Y + p.C + v.Z + p.D;
 		}
@@ -224,7 +224,7 @@ namespace WorldWind
 		/// <summary>
 		/// Computes the hypotenuse (sqrt(x²+y²)).
 		/// </summary>
-		public static double Hypot( double x, double y )
+		internal static double Hypot( double x, double y )
 		{
 			return Math.Sqrt(x*x + y*y);
 		}

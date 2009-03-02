@@ -5,11 +5,11 @@ using System.ComponentModel;
 
 namespace Dapple.Extract
 {
-   public class Options
+   internal class Options
    {
-      public class Client
+      internal class Client
       {
-         public enum ClientType
+         internal enum ClientType
          {
 				[Description("Oasis montaj")]
             OasisMontaj,
@@ -22,20 +22,20 @@ namespace Dapple.Extract
          }
       }
 
-      public class Document
+      internal class Document
       {
-         public enum DownloadOptions
+         internal enum DownloadOptions
          {
             DownloadAndOpen,
             DownloadOnly
          }
 
-         public static string[] DownloadOptionStrings = new string[] { "Download And Open", "Download Only" };
+         internal static string[] DownloadOptionStrings = new string[] { "Download And Open", "Download Only" };
       }
 
-      public class GIS
+      internal class GIS
       {
-         public enum OMDownloadOptions
+         internal enum OMDownloadOptions
          {
             ImportIntoMap,
             SaveAsSHPImportIntoMap,
@@ -44,44 +44,44 @@ namespace Dapple.Extract
             SaveAsTAB
          }
 
-         public enum ArcDownloadOptions
+         internal enum ArcDownloadOptions
          {
             SaveAsSHP
          }
 
-         public enum MIDownloadOptions
+         internal enum MIDownloadOptions
          {
             SaveAsTAB
          }
 
-         public static string[] OMDownloadOptionStrings = new string[] { "Import into map", "Save as ArcGIS Shape file and import into map", "Save as MapInfo Tab file and import into map", "Save as ArcGIS Shape file", "Save as MapInfo tab file" };
-         public static string[] ArcDownloadOptionStrings = new string[] { "Save as ArcGIS Shape file" };
-         public static string[] MIDownloadOptionStrings = new string[] { "Save as MapInfo Tab file" };
+         internal static string[] OMDownloadOptionStrings = new string[] { "Import into map", "Save as ArcGIS Shape file and import into map", "Save as MapInfo Tab file and import into map", "Save as ArcGIS Shape file", "Save as MapInfo tab file" };
+         internal static string[] ArcDownloadOptionStrings = new string[] { "Save as ArcGIS Shape file" };
+         internal static string[] MIDownloadOptionStrings = new string[] { "Save as MapInfo Tab file" };
       }
 
-      public class ArcGIS
+      internal class ArcGIS
       {
-         public enum DownloadOptions
+         internal enum DownloadOptions
          {
             DownloadAndOpen,
             DownloadOnly
          }
 
-         public static string[] DownloadOptionStrings = new string[] { "Download And Open", "Download Only" };
+         internal static string[] DownloadOptionStrings = new string[] { "Download And Open", "Download Only" };
       }
 
-      public class Grid
+      internal class Grid
       {      
-         public enum DisplayOptions
+         internal enum DisplayOptions
          {
             ShadedColourImage,
             ColourImage,
             DoNotDisplay
          }
 
-         public static string[] DisplayOptionStrings = new string[] { "Shaded colour image", "Colour image", "Do not display" };
+         internal static string[] DisplayOptionStrings = new string[] { "Shaded colour image", "Colour image", "Do not display" };
 
-         public static string[] DownloadOptionStrings = new string[] {"Geosoft default (*.grd)",
+         internal static string[] DownloadOptionStrings = new string[] {"Geosoft default (*.grd)",
                                                                       "Geosoft DOS grid (*.grd)",
                                                                       "Geosoft BYTE grid (*.grd)",
                                                                       "Geosoft SHORT grid (*.grd)",
@@ -118,7 +118,7 @@ namespace Dapple.Extract
                                                                       "USGS UNIX (*.*)",//35
                                                                       "World Geoscience (*.h)"};
 
-         public static string[] DownloadOptionExtension = new string[] {".grd",
+         internal static string[] DownloadOptionExtension = new string[] {".grd",
                                                                         ".grd",
                                                                         ".grd",
                                                                         ".grd",
@@ -155,7 +155,7 @@ namespace Dapple.Extract
                                                                         null,//35
                                                                         ".h"};
 
-         public static string[] DownloadOptionQualifier = new string[] { "GRD",
+         internal static string[] DownloadOptionQualifier = new string[] { "GRD",
                                                                          "GRD;Type=SHORT;Comp=none",
                                                                          "GRD;Type=Byte",
                                                                          "GRD;Type=Short",
@@ -193,20 +193,20 @@ namespace Dapple.Extract
                                                                          "WGC"};
       }
 
-      public class SectionGrid
+      internal class SectionGrid
       {
-         public enum DisplayOptions
+         internal enum DisplayOptions
          {
             ColourImage,
             DoNotDisplay
          }
 
-         public static string[] DisplayOptionStrings = new string[] { "Colour image", "Do not display" };
+         internal static string[] DisplayOptionStrings = new string[] { "Colour image", "Do not display" };
       }
 
-      public class Picture
+      internal class Picture
       {
-         public enum DownloadOptions
+         internal enum DownloadOptions
          {
             PNG,
             JPG,
@@ -216,25 +216,25 @@ namespace Dapple.Extract
             Default
          }
 
-         public enum DisplayOptions
+         internal enum DisplayOptions
          {
             DownloadAndDisplay,
             DoNotDisplay
          }
          
-         public static string[] DownloadOptionStrings = new string[] { "PNG", "JPG", "TIFF", "ECW", "Native", "Default" };
-         public static string[] DisplayOptionStrings = new string[] { "Download and display", "Do not display" };
+         internal static string[] DownloadOptionStrings = new string[] { "PNG", "JPG", "TIFF", "ECW", "Native", "Default" };
+         internal static string[] DisplayOptionStrings = new string[] { "Download and display", "Do not display" };
       }
 
-      public class SectionPicture
+      internal class SectionPicture
       {
-         public enum DisplayOptions
+         internal enum DisplayOptions
          {
             ColourImage,
             DoNotDisplay
          }
 
-         public static string[] DisplayOptionStrings = new string[] { "Colour image", "Do not display" };
+         internal static string[] DisplayOptionStrings = new string[] { "Colour image", "Do not display" };
       }
    }
 }

@@ -10,7 +10,7 @@ namespace WorldWind.NewWidgets
 	/// <summary>
 	/// Summary description for PictureBox.
 	/// </summary>
-	public class PictureBox : IWidget, IInteractive
+	internal class PictureBox : IWidget, IInteractive
 	{
 		string m_Text = "";
 		byte m_Opacity = 255;
@@ -54,13 +54,13 @@ namespace WorldWind.NewWidgets
 
         #endregion
 
-		public string ClickableUrl
+		internal string ClickableUrl
 		{
 			get{ return clickableUrl; }
 			set{ clickableUrl = value; }
 		}
 
-		public double RefreshTime
+		internal double RefreshTime
 		{
 			get
 			{
@@ -73,7 +73,7 @@ namespace WorldWind.NewWidgets
 					m_RefreshTimer.Interval = value;
 			}
 		}
-		public byte Opacity
+		internal byte Opacity
 		{
 			get
 			{
@@ -85,14 +85,14 @@ namespace WorldWind.NewWidgets
 			}
 		}
 
-		public PictureBox()
+		internal PictureBox()
 		{
 			
 		}
 		
 		#region Properties
 
-		public string SaveFilePath
+		internal string SaveFilePath
 		{
 			get
 			{
@@ -104,7 +104,7 @@ namespace WorldWind.NewWidgets
 			}
 		}
 
-		public string ImageUri
+		internal string ImageUri
 		{
 			get
 			{
@@ -127,7 +127,7 @@ namespace WorldWind.NewWidgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -138,7 +138,7 @@ namespace WorldWind.NewWidgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -263,7 +263,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Location of this widget relative to the client area of the parent
         /// </summary>
-        public System.Drawing.Point Location
+		public System.Drawing.Point Location
         {
             get { return m_Location; }
             set { m_Location = value; }
@@ -272,7 +272,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Size of widget in pixels
         /// </summary>
-        public System.Drawing.Size WidgetSize
+		public System.Drawing.Size WidgetSize
         {
             get { return m_Size; }
             set { m_Size = value; }
@@ -282,7 +282,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for height calculations - HACK until we do real layout
         /// </summary>
-        public bool CountHeight
+		public bool CountHeight
         {
             get { return m_countHeight; }
             set { m_countHeight = value; }
@@ -292,7 +292,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for width calculations - HACK until we do real layout
         /// </summary>
-        public bool CountWidth
+		public bool CountWidth
         {
             get { return m_countWidth; }
             set { m_countWidth = value; }
@@ -305,19 +305,19 @@ namespace WorldWind.NewWidgets
 		bool isLoading = false;
 		Sprite m_sprite = null;
 		SurfaceDescription m_surfaceDescription;
-		public bool IsLoaded = false;
+		internal bool IsLoaded = false;
         string m_currentImageUri = null;
         bool m_isMouseInside = false;
 
-        public event System.EventHandler OnMouseEnterEvent;
-        public event System.EventHandler OnMouseLeaveEvent;
-        public event System.Windows.Forms.MouseEventHandler OnMouseUpEvent;
+        internal event System.EventHandler OnMouseEnterEvent;
+        internal event System.EventHandler OnMouseLeaveEvent;
+        internal event System.Windows.Forms.MouseEventHandler OnMouseUpEvent;
 
-        public void Initialize(DrawArgs drawArgs)
+		  public void Initialize(DrawArgs drawArgs)
         {
         }
 
-		public void Render(DrawArgs drawArgs)
+		  public void Render(DrawArgs drawArgs)
 		{
 			if(m_Visible)
 			{
@@ -527,23 +527,23 @@ namespace WorldWind.NewWidgets
             }
 		}
 
-        public bool SizeParentToImage = false;
+        internal bool SizeParentToImage = false;
 
 		#region IInteractive Members
 
-		public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)
+		  public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnKeyDown implementation
 			return false;
 		}
 
-		public bool OnKeyUp(System.Windows.Forms.KeyEventArgs e)
+		  public bool OnKeyUp(System.Windows.Forms.KeyEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnKeyUp implementation
 			return false;
 		}
 
-		public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+		  public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnKeyPress implementation
 			return false;
@@ -631,7 +631,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Action to perform when the left mouse button is clicked
         /// </summary>
-        public MouseClickAction LeftClickAction
+		public MouseClickAction LeftClickAction
         {
             get { return m_leftClickAction; }
             set { m_leftClickAction = value; }
@@ -641,7 +641,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Action to perform when the right mouse button is clicked
         /// </summary>
-        public MouseClickAction RightClickAction
+		public MouseClickAction RightClickAction
         {
             get { return m_rightClickAction; }
             set { m_rightClickAction = value; }

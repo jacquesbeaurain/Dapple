@@ -62,7 +62,7 @@ namespace WorldWind
 		/// <summary>
 		/// Set if an error is displayed.
 		/// </summary>
-		public bool HasError
+		internal bool HasError
 		{
 			get
 			{
@@ -106,7 +106,7 @@ namespace WorldWind
 		/// Display an error message on splash.  Splash will stay visible longer to alert the user.
 		/// </summary>
 		/// <param name="message">Message to display on the splash screen</param>
-		public void SetError(string message)
+		internal void SetError(string message)
 		{
 			if(hasError)
 				Wait();
@@ -156,7 +156,7 @@ namespace WorldWind
 		/// Creates the splash/about box picture with version number.
 		/// </summary>
 		/// <returns></returns>
-		public static Image GetStartupImage()
+		internal static Image GetStartupImage()
 		{
 			return Image.FromFile(Path.GetDirectoryName(Application.ExecutablePath) + "\\Data\\Icons\\Interface\\splash.png");
 		}

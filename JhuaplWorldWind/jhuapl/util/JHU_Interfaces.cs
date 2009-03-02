@@ -57,7 +57,7 @@ namespace jhuapl.util
 	/// <summary>
 	/// Interface must be implemented in order to recieve user input.
 	/// </summary>
-	public interface IInteractive
+	internal interface IInteractive
 	{
 		#region Properties
 
@@ -258,7 +258,7 @@ namespace jhuapl.util
 	/// <summary>
 	/// Data Objects stored in global geo object table
 	/// </summary>
-	public interface IGeoObject
+	internal interface IGeoObject
 	{
 		#region Properties
 

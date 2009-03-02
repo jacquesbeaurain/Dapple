@@ -8,7 +8,7 @@ namespace WorldWind.Renderable
 	/// <summary>
 	/// Summary description for PolygonLayer.
 	/// </summary>
-	public class PolygonLayer : RenderableObject
+	internal class PolygonLayer : RenderableObject
 	{
 		#region Private Members
 		World _parentWorld;
@@ -21,7 +21,7 @@ namespace WorldWind.Renderable
 		double _distanceAboveSurface;
 		#endregion
 
-		#region Public Methods
+		#region internal Methods
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.PolygonLayer"/> class.
@@ -33,7 +33,7 @@ namespace WorldWind.Renderable
 		/// <param name="distanceAboveSurface"></param>
 		/// <param name="polygonFilePath"></param>
 		/// <param name="color"></param>
-		public PolygonLayer(
+		internal PolygonLayer(
 			string name,
 			World parentWorld,
 			double minDisplayAltitude,

@@ -105,7 +105,7 @@ namespace WorldWind.NewWidgets
 			get { return "Main Frame"; }
 			set { }
 		}
-		
+
 		public WorldWind.NewWidgets.IWidget ParentWidget
 		{
 			get { return m_parentWidget; }
@@ -183,7 +183,7 @@ namespace WorldWind.NewWidgets
 			get { return m_tag; }
 			set { m_tag = value; }
 		}
-		public bool IsInitialized
+		internal bool IsInitialized
 		{
 			get { return m_Initialized;}
 			set { m_Initialized = value; }
@@ -204,7 +204,7 @@ namespace WorldWind.NewWidgets
 		{
 			get { return m_rightClickAction; }
 			set { m_rightClickAction = value; }
-		}	
+		}
 
 		public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
@@ -306,7 +306,7 @@ namespace WorldWind.NewWidgets
 			return handled;
 		}
 
-        public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+		public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
         {
             for (int index = 0; index < m_ChildWidgets.Count; index++)
             {
@@ -324,7 +324,7 @@ namespace WorldWind.NewWidgets
             return false;
         }
 
-		public bool OnMouseEnter(EventArgs e)
+		  public bool OnMouseEnter(EventArgs e)
 		{
 			bool handled = false;
 
@@ -426,13 +426,13 @@ namespace WorldWind.NewWidgets
 
 		#endregion
 
-		new public void Add(WorldWind.NewWidgets.IWidget widget)
+		new internal void Add(WorldWind.NewWidgets.IWidget widget)
 		{
 			m_ChildWidgets.Add(widget);
 			widget.ParentWidget = this;
 		}		
 		
-		new public void Remove(WorldWind.NewWidgets.IWidget widget)
+		new internal void Remove(WorldWind.NewWidgets.IWidget widget)
 		{
 			m_ChildWidgets.Remove(widget);
 		}

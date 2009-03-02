@@ -9,7 +9,7 @@ namespace Utility
       /// <summary>
       /// Latitude can be North or South of the equator
       /// </summary>
-      public enum LatitudeDirection
+      internal enum LatitudeDirection
       {
          North,
          South
@@ -17,19 +17,19 @@ namespace Utility
 
       internal class DMSConversion
       {
-         public const int RecommendedDecimals = 2;
+         internal const int RecommendedDecimals = 2;
 
-         public static double DMS2Double()
+         internal static double DMS2Double()
          {
             return 0;
          }
 
-         public static void Double2DMS(double val, out int deg, out int min, out int sec, out int ifrac)
+         internal static void Double2DMS(double val, out int deg, out int min, out int sec, out int ifrac)
          {
             Double2DMS(val, out deg, out min, out sec, out ifrac, RecommendedDecimals);
          }
 
-         public static void Double2DMS(double val, out int deg, out int min, out int sec, out int ifrac, int fracdec)
+         internal static void Double2DMS(double val, out int deg, out int min, out int sec, out int ifrac, int fracdec)
          {
             int i;
             double f, frac;
@@ -64,7 +64,7 @@ namespace Utility
       /// latitude consists of degrees, minutes, seconds and North or South
       /// </summary>
       [TypeConverter(typeof(LatitudeTypeConverter))]
-      public class Latitude
+      internal class Latitude
       {
          private int _Degrees;
          private int _Minutes;
@@ -75,7 +75,7 @@ namespace Utility
          /// <summary>
          /// degrees
          /// </summary>
-         public int Degrees
+         internal int Degrees
          {
             get
             {
@@ -90,7 +90,7 @@ namespace Utility
          /// <summary>
          /// minutes
          /// </summary>
-         public int Minutes
+         internal int Minutes
          {
             get
             {
@@ -105,7 +105,7 @@ namespace Utility
          /// <summary>
          /// seconds
          /// </summary>
-         public int Seconds
+         internal int Seconds
          {
             get
             {
@@ -120,7 +120,7 @@ namespace Utility
          /// <summary>
          /// 1/100 seconds
          /// </summary>
-         public int DecimalSeconds
+         internal int DecimalSeconds
          {
             get
             {
@@ -135,7 +135,7 @@ namespace Utility
          /// <summary>
          /// direction
          /// </summary>
-         public LatitudeDirection Direction
+         internal LatitudeDirection Direction
          {
             get
             {
@@ -155,7 +155,7 @@ namespace Utility
          /// <param name="Seconds">seconds</param>
          /// <param name="DecimalSeconds">1/100 seconds</param>
          /// <param name="Direction">direction</param>
-         public Latitude(int Degrees, int Minutes, int Seconds, int DecimalSeconds, LatitudeDirection Direction)
+         internal Latitude(int Degrees, int Minutes, int Seconds, int DecimalSeconds, LatitudeDirection Direction)
          {
             _Degrees = Degrees;
             _Minutes = Minutes;
@@ -168,7 +168,7 @@ namespace Utility
          /// creates Latitude from a double value
          /// </summary>
          /// <param name="Value">value</param>
-         public Latitude(double Value)
+         internal Latitude(double Value)
          {
             if (Value >= 0)
                _Direction = LatitudeDirection.North;
@@ -184,7 +184,7 @@ namespace Utility
          /// <summary>
          /// default constructor
          /// </summary>
-         public Latitude()
+         internal Latitude()
             : this(0, 0, 0, 0, LatitudeDirection.North)
          {
          }
@@ -203,7 +203,7 @@ namespace Utility
          /// </summary>
          /// <param name="Culture">the culture to use</param>
          /// <returns></returns>
-         public string ToString(CultureInfo Culture)
+         internal string ToString(CultureInfo Culture)
          {
             return TypeDescriptor.GetConverter(GetType()).ConvertToString(null, Culture, this);
          }
@@ -212,7 +212,7 @@ namespace Utility
       /// <summary>
       /// Longitude can be West or East of Greenwitch (Prime Meridian)
       /// </summary>
-      public enum LongitudeDirection
+      internal enum LongitudeDirection
       {
          West,
          East
@@ -222,7 +222,7 @@ namespace Utility
       /// longitude consists of degrees, minutes, seconds and West or East
       /// </summary>
       [TypeConverter(typeof(LongitudeTypeConverter))]
-      public class Longitude
+      internal class Longitude
       {
          private int _Degrees;
          private int _Minutes;
@@ -233,7 +233,7 @@ namespace Utility
          /// <summary>
          /// degrees
          /// </summary>
-         public int Degrees
+         internal int Degrees
          {
             get
             {
@@ -248,7 +248,7 @@ namespace Utility
          /// <summary>
          /// minutes
          /// </summary>
-         public int Minutes
+         internal int Minutes
          {
             get
             {
@@ -263,7 +263,7 @@ namespace Utility
          /// <summary>
          /// seconds
          /// </summary>
-         public int Seconds
+         internal int Seconds
          {
             get
             {
@@ -278,7 +278,7 @@ namespace Utility
          /// <summary>
          /// 1/100 seconds
          /// </summary>
-         public int DecimalSeconds
+         internal int DecimalSeconds
          {
             get
             {
@@ -293,7 +293,7 @@ namespace Utility
          /// <summary>
          /// direction
          /// </summary>
-         public LongitudeDirection Direction
+         internal LongitudeDirection Direction
          {
             get
             {
@@ -313,7 +313,7 @@ namespace Utility
          /// <param name="Seconds">seconds</param>
          /// <param name="DecimalSeconds">1/100 seconds</param>
          /// <param name="Direction">direction</param>
-         public Longitude(int Degrees, int Minutes, int Seconds, int DecimalSeconds, LongitudeDirection Direction)
+         internal Longitude(int Degrees, int Minutes, int Seconds, int DecimalSeconds, LongitudeDirection Direction)
          {
             _Degrees = Degrees;
             _Minutes = Minutes;
@@ -326,7 +326,7 @@ namespace Utility
          /// creates Longitude from a double value
          /// </summary>
          /// <param name="Value">value</param>
-         public Longitude(double Value)
+         internal Longitude(double Value)
          {
             if (Value >= 0)
                _Direction = LongitudeDirection.East;
@@ -342,7 +342,7 @@ namespace Utility
          /// <summary>
          /// default constructor
          /// </summary>
-         public Longitude()
+         internal Longitude()
             : this(0, 0, 0, 0, LongitudeDirection.West)
          {
          }
@@ -351,7 +351,7 @@ namespace Utility
          /// convert this type to a string using the invariant culture
          /// </summary>
          /// <returns></returns>
-         public override string ToString()
+			public override string ToString()
          {
             return ToString(CultureInfo.InvariantCulture);
          }
@@ -361,7 +361,7 @@ namespace Utility
          /// </summary>
          /// <param name="Culture">the culture to use</param>
          /// <returns></returns>
-         public string ToString(CultureInfo Culture)
+         internal string ToString(CultureInfo Culture)
          {
             return TypeDescriptor.GetConverter(GetType()).ConvertToString(null, Culture, this);
          }
@@ -371,7 +371,7 @@ namespace Utility
       /// a GPS location consists of a latitude and longitude
       /// </summary>
       [TypeConverter(typeof(GPSLocationTypeConverter))]
-      public class GPSLocation
+      internal class GPSLocation
       {
          Longitude _Longitude;
          Latitude _Latitude;
@@ -381,7 +381,7 @@ namespace Utility
          /// </summary>
          [Browsable(true)]
          [NotifyParentProperty(true)]
-         public Longitude GPSLongitude
+         internal Longitude GPSLongitude
          {
             get
             {
@@ -398,7 +398,7 @@ namespace Utility
          /// </summary>
          [Browsable(true)]
          [NotifyParentProperty(true)]
-         public Latitude GPSLatitude
+         internal Latitude GPSLatitude
          {
             get
             {
@@ -415,7 +415,7 @@ namespace Utility
          /// </summary>
          /// <param name="GPSLatitue">latitude</param>
          /// <param name="GPSLongitude">longitude</param>
-         public GPSLocation(Latitude GPSLatitue, Longitude GPSLongitude)
+         internal GPSLocation(Latitude GPSLatitue, Longitude GPSLongitude)
          {
             _Latitude = GPSLatitue;
             _Longitude = GPSLongitude;
@@ -424,7 +424,7 @@ namespace Utility
          /// <summary>
          /// def instantiation
          /// </summary>
-         public GPSLocation()
+         internal GPSLocation()
             : this(new Latitude(), new Longitude())
          {
          }
@@ -433,7 +433,7 @@ namespace Utility
          /// convert this type to a string using the invariant culture
          /// </summary>
          /// <returns></returns>
-         public override string ToString()
+			public override string ToString()
          {
             return ToString(CultureInfo.InvariantCulture);
          }
@@ -443,7 +443,7 @@ namespace Utility
          /// </summary>
          /// <param name="Culture">the culture to use</param>
          /// <returns></returns>
-         public string ToString(CultureInfo Culture)
+         internal string ToString(CultureInfo Culture)
          {
             return TypeDescriptor.GetConverter(GetType()).ConvertToString(null, Culture, this);
          }

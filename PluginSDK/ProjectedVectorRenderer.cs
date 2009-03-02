@@ -13,20 +13,20 @@ namespace WorldWind
 		double m_lzts = 36.0;
 		List<Polygon> m_polygons = new List<Polygon>();
 		List<LineString> m_lineStrings = new List<LineString>();
-		public System.DateTime LastUpdate = System.DateTime.Now;
+		internal System.DateTime LastUpdate = System.DateTime.Now;
 		private GeographicBoundingBox m_oBounds = GeographicBoundingBox.NullBox();
 
-		public Polygon[] Polygons
+		internal Polygon[] Polygons
 		{
 			get { return m_polygons.ToArray(); }
 		}
 
-		public LineString[] LineStrings
+		internal LineString[] LineStrings
 		{
 			get { return m_lineStrings.ToArray(); }
 		}
 
-		public GeographicBoundingBox Bounds
+		internal GeographicBoundingBox Bounds
 		{
 			get { return m_oBounds; }
 		}

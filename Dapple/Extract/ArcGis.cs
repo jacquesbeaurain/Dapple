@@ -11,13 +11,13 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the options for downloading the selected document
    /// </summary>
-   public partial class ArcGIS : DownloadOptions
+   internal partial class ArcGIS : DownloadOptions
    {      
       /// <summary>
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public ArcGIS(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal ArcGIS(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
@@ -28,7 +28,7 @@ namespace Dapple.Extract
          cbDownload.SelectedIndex = 0;
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return (Options.ArcGIS.DownloadOptions)cbDownload.SelectedIndex != Options.ArcGIS.DownloadOptions.DownloadOnly; }
 		}
@@ -40,7 +40,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
 			ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
@@ -57,7 +57,7 @@ namespace Dapple.Extract
 			return result;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFolderName = System.IO.Path.Combine(szExtractDirectory, tbFilename.Text);
 			if (System.IO.Directory.Exists(szFolderName))

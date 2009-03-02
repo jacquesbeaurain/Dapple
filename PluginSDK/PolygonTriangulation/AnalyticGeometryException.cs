@@ -5,37 +5,37 @@ namespace GeometryUtility
 	/// <summary>
 	/// Summary description for NoValidReturnException.
 	/// </summary>
-	public class NonValidReturnException: ApplicationException
+	internal class NonValidReturnException: ApplicationException
 	{
-		public NonValidReturnException():base()
+		internal NonValidReturnException():base()
 		{
 		
 		}
-		public NonValidReturnException(string msg)
+		internal NonValidReturnException(string msg)
 			:base(msg)
 		{
 			string errMsg="\nThere is no valid return value available!";
 			throw new NonValidReturnException(errMsg);
 		}
-		public NonValidReturnException(string msg,
+		internal NonValidReturnException(string msg,
 			Exception inner): base(msg, inner)
 		{
 		
 		}
 	}
 
-	public class InvalidInputGeometryDataException: ApplicationException
+	internal class InvalidInputGeometryDataException: ApplicationException
 	{
-		public InvalidInputGeometryDataException():base()
+		internal InvalidInputGeometryDataException():base()
 		{
 		
 		}
-		public InvalidInputGeometryDataException(string msg)
+		internal InvalidInputGeometryDataException(string msg)
 			:base(msg)
 		{
 
 		}
-		public InvalidInputGeometryDataException(string msg,
+		internal InvalidInputGeometryDataException(string msg,
 			Exception inner): base(msg, inner)
 		{
 		

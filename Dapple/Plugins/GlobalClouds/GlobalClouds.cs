@@ -40,19 +40,19 @@ namespace Murris.Plugins
 	/// <summary>
 	/// The plugin (main class)
 	/// </summary>
-	public class GlobalClouds : WorldWind.PluginEngine.Plugin
+	internal class GlobalClouds : WorldWind.PluginEngine.Plugin
 	{
 		//private WorldWind.WindowsControlMenuButton m_ToolbarItem;
 		//private Control control = new Control();
 		//private EventHandler evhand;
-		public GlobalCloudsLayer layer;
+		internal GlobalCloudsLayer layer;
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
-		public static string LayerName = "GlobalClouds";
+		internal static string LayerName = "GlobalClouds";
 		private String m_szCachePath = String.Empty;
 
-		public GlobalClouds(String szCachePath)
+		internal GlobalClouds(String szCachePath)
 		{
 			m_szCachePath = szCachePath;
 		}
@@ -114,31 +114,31 @@ namespace Murris.Plugins
 	/// <summary>
 	/// GlobalCloudsLayer
 	/// </summary>
-	public class GlobalCloudsLayer : RenderableObject
+	internal class GlobalCloudsLayer : RenderableObject
 	{
 		static string version = "0.6";
 		string settingsFileName = "GlobalClouds.ini";
-		public const String serverListFileName = "GlobalCloudsServers.txt";
+		internal const String serverListFileName = "GlobalCloudsServers.txt";
 		String pluginPath;
 		String cachePath;
-		public World world;
-		public DrawArgs drawArgs;
+		internal World world;
+		internal DrawArgs drawArgs;
 		Mesh layerMesh;
 		Texture texture = null;
 		Form pDialog;
 
 		// current GlobalClouds bitmap
-		public string textureFileName = "";
+		internal string textureFileName = "";
 
-		public string latestFileName = "";
-		public DateTime latestTime = DateTime.MinValue;
-		public int historyDays = 10;					// How many days to keep cloud maps
-		public int refreshHours = 3;					// How often to refresh cloud map
+		internal string latestFileName = "";
+		internal DateTime latestTime = DateTime.MinValue;
+		internal int historyDays = 10;					// How many days to keep cloud maps
+		internal int refreshHours = 3;					// How often to refresh cloud map
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public GlobalCloudsLayer(string LayerName, string pluginPath, string _cachePath, WorldWindow worldWindow)
+		internal GlobalCloudsLayer(string LayerName, string pluginPath, string _cachePath, WorldWindow worldWindow)
 			: base(LayerName)
 		{
 			this.pluginPath = pluginPath;
@@ -156,7 +156,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Find which cloud map is the latest and at what date/time
 		/// </summary>
-		public void FindLatest()
+		internal void FindLatest()
 		{
 			DirectoryInfo di = new DirectoryInfo(cachePath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.png");
@@ -187,7 +187,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Delete cloud maps older than historyDays
 		/// </summary>
-		public void CleanupHistory()
+		internal void CleanupHistory()
 		{
 			DateTime oldest = DateTime.Now.AddDays(-historyDays);
 			DirectoryInfo di = new DirectoryInfo(cachePath);
@@ -211,7 +211,7 @@ namespace Murris.Plugins
 		/// Delete .jpg cloud maps
 		/// </summary>
 		//[System.Security.Permissions.FileIOPermission(System.Security.Permissions.SecurityAction.Deny, Write="D:\\")]
-		public void CleanupJpg()
+		internal void CleanupJpg()
 		{
 			DirectoryInfo di = new DirectoryInfo(cachePath);
 			FileInfo[] imgFiles = di.GetFiles("clouds*.jpg");
@@ -224,7 +224,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Read saved settings from ini file
 		/// </summary>
-		public void ReadSettings()
+		internal void ReadSettings()
 		{
 			string line = String.Empty;
 			if (File.Exists(Path.Combine(pluginPath, settingsFileName)))
@@ -250,7 +250,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Save settings in ini file
 		/// </summary>
-		public void SaveSettings()
+		internal void SaveSettings()
 		{
 			string line = version + ";" + textureFileName;
 			try
@@ -427,7 +427,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
-		public new void OnPropertiesClick(object sender, EventArgs e)
+		internal new void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open
@@ -442,7 +442,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Properties Dialog
 		/// </summary>
-		public class propertiesDialog : System.Windows.Forms.Form
+		internal class propertiesDialog : System.Windows.Forms.Form
 		{
 			private System.Windows.Forms.Label lblTexture;
 			private System.Windows.Forms.ComboBox cboTexture;
@@ -453,7 +453,7 @@ namespace Murris.Plugins
 			private GlobalCloudsLayer layer;
 			private string savedTextureFileName;
 
-			public propertiesDialog(GlobalCloudsLayer layer)
+			internal propertiesDialog(GlobalCloudsLayer layer)
 			{
 				this.layer = layer;
 				InitializeComponent();
@@ -613,8 +613,8 @@ namespace Murris.Plugins
 		// Switching cloud maps from history
 		// ---------------------------------
 
-		public ArrayList historyList;
-		public void BuildHistoryList()
+		internal ArrayList historyList;
+		internal void BuildHistoryList()
 		{
 			historyList = new ArrayList();
 			DirectoryInfo di = new DirectoryInfo(cachePath);
@@ -627,7 +627,7 @@ namespace Murris.Plugins
 		}
 
 
-		public void GotoPrevious()
+		internal void GotoPrevious()
 		{
 			if (historyList == null) BuildHistoryList();
 			int i = historyList.IndexOf(textureFileName);
@@ -640,7 +640,7 @@ namespace Murris.Plugins
 			}
 		}
 
-		public void GotoNext()
+		internal void GotoNext()
 		{
 			if (historyList == null) BuildHistoryList();
 			int i = historyList.IndexOf(textureFileName);
@@ -657,8 +657,8 @@ namespace Murris.Plugins
 		// Downloading new cloud maps
 		// --------------------------
 
-		public bool isDownloading = false;
-		public float ProgressPercent;
+		internal bool isDownloading = false;
+		internal float ProgressPercent;
 		WebDownload download;
 		WorldWind.VisualControl.ProgressBar progressBar;
 		int downloadProgressColor = Color.FromArgb(180, 200, 200, 200).ToArgb();
@@ -667,7 +667,7 @@ namespace Murris.Plugins
 		int retryDelaySeconds = 60;
 		DateTime lastDownloadTime = DateTime.MinValue;
 
-		public virtual void StartDownload(string filePath, string fileName) // Asynch download here
+		internal virtual void StartDownload(string filePath, string fileName) // Asynch download here
 		{
 			string url = GetServerUrl();
 			download = new WebDownload(url);
@@ -679,7 +679,7 @@ namespace Murris.Plugins
 		}
 
 		// Read server list and pick one
-		public string GetServerUrl()
+		internal string GetServerUrl()
 		{
 			Random r = new Random();
 			ArrayList serverList = new ArrayList();
@@ -755,7 +755,7 @@ namespace Murris.Plugins
 		}
 
 		// Return a date formated as YYYYMMDD-HHMM
-		public string DateTimeStamp(DateTime d)
+		internal string DateTimeStamp(DateTime d)
 		{
 			return d.Year.ToString() + d.Month.ToString("d2") + d.Day.ToString("d2") + "-" + d.Hour.ToString("d2") + d.Minute.ToString("d2");
 

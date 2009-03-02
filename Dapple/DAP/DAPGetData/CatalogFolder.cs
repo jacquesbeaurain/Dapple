@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
-   public class CatalogFolder
+   internal class CatalogFolder
    {
       #region Member Variables
       protected SortedList m_oSubFolders = new SortedList();
@@ -19,7 +19,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the folder name
       /// </summary>
-      public string Name
+      internal string Name
       {
          get { return m_strName; }
       }
@@ -27,7 +27,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the folder hierarchy for this node
       /// </summary>
-      public string Hierarchy
+      internal string Hierarchy
       {
          get { return m_strHierarchy; }
       }
@@ -35,7 +35,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the timestamp
       /// </summary>
-      public int Timestamp
+      internal int Timestamp
       {
          get { return m_iTimestamp; }
       }
@@ -43,7 +43,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the configuration edition
       /// </summary>
-      public string ConfigurationEdition
+      internal string ConfigurationEdition
       {
          get { return m_strConfigurationEdition; }
       }
@@ -51,7 +51,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get a list of the subfolders
       /// </summary>
-      public ICollection Folders
+      internal ICollection Folders
       {
          get { return m_oSubFolders.Values; }
       }
@@ -62,7 +62,7 @@ namespace Geosoft.GX.DAPGetData
       /// Default constructor
       /// </summary>
       /// <param name="oFolderNode"></param>
-      public CatalogFolder(System.Xml.XmlNode oFolderNode, string strHierarchy)
+      internal CatalogFolder(System.Xml.XmlNode oFolderNode, string strHierarchy)
       {
          System.Xml.XmlNode oAttr;
 
@@ -95,7 +95,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strName"></param>
       /// <returns></returns>
-      public CatalogFolder GetFolder(string strName)
+      internal CatalogFolder GetFolder(string strName)
       {
          return (CatalogFolder)m_oSubFolders[strName];
       }
@@ -104,7 +104,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the hash code for this folder
       /// </summary>
       /// <returns></returns>
-      public override int GetHashCode()
+		public override int GetHashCode()
       {
          return m_strHierarchy.GetHashCode();
       }
@@ -116,7 +116,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="oDocument"></param>
       /// <returns></returns>
-      public static CatalogFolder Parse(System.Xml.XmlDocument oDocument, out string strConfigurationEdition)
+      internal static CatalogFolder Parse(System.Xml.XmlDocument oDocument, out string strConfigurationEdition)
       {
          CatalogFolder oFolder = null;
          System.Xml.XmlNode oGeosoftXmlNode;

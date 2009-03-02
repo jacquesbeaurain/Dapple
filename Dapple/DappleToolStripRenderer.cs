@@ -8,9 +8,9 @@ namespace Dapple
 {
    // Invert the gradient and use square instead of rounded toolstrips to improve appearances better for all themes
 
-   public class DappleToolStripColorTable : ProfessionalColorTable
+   internal class DappleToolStripColorTable : ProfessionalColorTable
    {
-      public override Color ToolStripGradientBegin
+		public override Color ToolStripGradientBegin
       {
          get
          {
@@ -18,7 +18,7 @@ namespace Dapple
          }
       }
 
-      public override Color ToolStripGradientEnd
+		public override Color ToolStripGradientEnd
       {
          get
          {
@@ -27,9 +27,9 @@ namespace Dapple
       }
    }
 
-   public class DappleToolStripRenderer : ToolStripProfessionalRenderer
+   internal class DappleToolStripRenderer : ToolStripProfessionalRenderer
    {
-      public DappleToolStripRenderer()
+      internal DappleToolStripRenderer()
          : base(new DappleToolStripColorTable())
       {
          // This class will make things look weird with rounded edges
@@ -57,9 +57,9 @@ namespace Dapple
       }
    }
 
-   public class BorderlessToolStripRenderer : ToolStripSystemRenderer
+   internal class BorderlessToolStripRenderer : ToolStripSystemRenderer
    {
-      public BorderlessToolStripRenderer() : base()
+      internal BorderlessToolStripRenderer() : base()
       {
       }
 

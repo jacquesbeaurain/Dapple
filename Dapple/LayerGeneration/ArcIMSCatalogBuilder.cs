@@ -13,24 +13,24 @@ using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
-	public class ArcIMSCatalogBuilder : BuilderDirectory
+	internal class ArcIMSCatalogBuilder : BuilderDirectory
 	{
 		#region Constants
-		public const string CATALOG_CACHE = "ArcIMS Catalog Cache";
+		internal const string CATALOG_CACHE = "ArcIMS Catalog Cache";
 		#endregion
 
 		private Dictionary<ArcIMSCatalogDownload, ServerBuilder> m_oCatalogDownloadsInProgress = new Dictionary<ArcIMSCatalogDownload, ServerBuilder>();
 		private System.Collections.Hashtable m_oServers = new System.Collections.Hashtable();
 		private int m_iIndexGenerator = 0;
 
-		public MethodInvoker LoadFinished = null;
+		internal MethodInvoker LoadFinished = null;
 
-		public ArcIMSCatalogBuilder(String strName, WorldWindow oWorldWindow, IBuilder parent)
+		internal ArcIMSCatalogBuilder(String strName, WorldWindow oWorldWindow, IBuilder parent)
 			: base(strName, parent, false)
 		{
 		}
 
-		public BuilderDirectory AddServer(ArcIMSServerUri oUri, bool blEnabled)
+		internal BuilderDirectory AddServer(ArcIMSServerUri oUri, bool blEnabled)
 		{
 			// create the cache directory
 			String savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
@@ -68,7 +68,7 @@ namespace Dapple.LayerGeneration
 			download.BackgroundDownloadFile();
 		}
 
-		public bool ContainsServer(ArcIMSServerUri oUri)
+		internal bool ContainsServer(ArcIMSServerUri oUri)
 		{
 			foreach (ArcIMSServerBuilder builder in m_colSublist)
 			{
@@ -78,7 +78,7 @@ namespace Dapple.LayerGeneration
 			return false;
 		}
 
-		public void UncacheServer(ArcIMSServerUri oUri)
+		internal void UncacheServer(ArcIMSServerUri oUri)
 		{
 			m_oServers.Remove(oUri);
 
@@ -92,7 +92,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public ArrayList GetServers()
+		internal ArrayList GetServers()
 		{
 			ArrayList result = new ArrayList();
 
@@ -105,7 +105,7 @@ namespace Dapple.LayerGeneration
 			return result;
 		}
 
-		public void cancelDownloads()
+		internal void cancelDownloads()
 		{
 			lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
 			{
@@ -218,7 +218,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public ArcIMSServerBuilder GetServer(ArcIMSServerUri oUri)
+		internal ArcIMSServerBuilder GetServer(ArcIMSServerUri oUri)
 		{
 			foreach (ArcIMSServerBuilder iter in m_colSublist)
 			{
@@ -243,26 +243,26 @@ namespace Dapple.LayerGeneration
 	}
 
 
-	public class ArcIMSServerBuilder : ServerBuilder
+	internal class ArcIMSServerBuilder : ServerBuilder
 	{
 		string m_strCatalogPathname;
 		bool m_blLoadingPending = true;
 
-		public ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname, bool blEnabled)
+		internal ArcIMSServerBuilder(IBuilder parent, ArcIMSServerUri oUri, string strCatalogPathname, bool blEnabled)
 			: base(oUri.ServerTreeDisplayName, parent, oUri, blEnabled)
 		{
 			m_strCatalogPathname = strCatalogPathname;
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool LoadingPending
+		internal bool LoadingPending
 		{
 			get { return m_blLoadingPending; }
 			set { m_blLoadingPending = value; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public string CatalogFilename
+		internal string CatalogFilename
 		{
 			get
 			{
@@ -292,7 +292,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override System.Drawing.Icon Icon
+		internal override System.Drawing.Icon Icon
 		{
 			get { return Dapple.Properties.Resources.arcims; }
 		}
@@ -302,7 +302,7 @@ namespace Dapple.LayerGeneration
 			((ArcIMSCatalogBuilder)Parent).Enable(this);
 		}		
 
-		public bool HasUnloadedServices
+		internal bool HasUnloadedServices
 		{
 			get
 			{
@@ -325,7 +325,7 @@ namespace Dapple.LayerGeneration
 	}
 
 
-	public class ArcIMSServiceBuilder : AsyncBuilder
+	internal class ArcIMSServiceBuilder : AsyncBuilder
 	{
 		private String m_szName;
 		private Object m_oLock = new Object();
@@ -333,7 +333,7 @@ namespace Dapple.LayerGeneration
 		private MethodInvoker LoadFinished;
 		private CultureInfo m_oCultureInfo;
 
-		public ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, MethodInvoker hLoadFinished, CultureInfo oInfo)
+		internal ArcIMSServiceBuilder(ArcIMSServerBuilder hServer, String szName, MethodInvoker hLoadFinished, CultureInfo oInfo)
 			: base(szName, hServer, hServer.Uri, true)
 		{
 			m_szName = szName;
@@ -341,7 +341,7 @@ namespace Dapple.LayerGeneration
 			m_oCultureInfo = oInfo;
 		}
 
-		public CultureInfo CultureInfo
+		internal CultureInfo CultureInfo
 		{
 			get { return m_oCultureInfo; }
 		}
@@ -511,7 +511,7 @@ namespace Dapple.LayerGeneration
 			return result;*/
 		}
 
-		public override System.Drawing.Icon Icon
+		internal override System.Drawing.Icon Icon
 		{
 			get { return Dapple.Properties.Resources.nasa; }
 		}
@@ -524,7 +524,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, string strSearch)
+		internal override void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, string strSearch)
 		{
 			if (IsLoading)
 			{

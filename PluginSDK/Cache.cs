@@ -11,11 +11,11 @@ namespace WorldWind
 	public class Cache : IDisposable
 	{
 		// default value for maximum Cache size is 2 Gigabytes
-		public long CacheUpperLimit = 2L * 1024L * 1024L * 1024L;		  
+		internal long CacheUpperLimit = 2L * 1024L * 1024L * 1024L;		  
 		// default value for size where Cache cleanup stops is 1.5 Gigabytes(75% of max size)
-		public long CacheLowerLimit = 1536L * 1024L * 1024L;
+		internal long CacheLowerLimit = 1536L * 1024L * 1024L;
 		public string CacheDirectory;
-		public TimeSpan CleanupFrequency;
+		internal TimeSpan CleanupFrequency;
 		Timer m_timer;
 
 		/// <summary>
@@ -24,7 +24,7 @@ namespace WorldWind
 		/// <param name="cacheDirectory">Location of the cache files.</param>
 		/// <param name="cleanupFrequencyInterval">Frequency of cache cleanup.</param>
 		/// <param name="totalRunTime">Total duration application has been running so far.</param>
-		public Cache(
+		internal Cache(
 			string cacheDirectory,
 			TimeSpan cleanupFrequencyInterval,
 			TimeSpan totalRunTime)
@@ -122,7 +122,7 @@ namespace WorldWind
 			}
 		}
 
-		public static ArrayList GetDirectoryFileInfoList(DirectoryInfo inDir)
+		internal static ArrayList GetDirectoryFileInfoList(DirectoryInfo inDir)
 		{
 			ArrayList returnList = new ArrayList();
 			foreach(DirectoryInfo subDir in inDir.GetDirectories())
@@ -136,7 +136,7 @@ namespace WorldWind
 			return returnList;
 		}
 
-		public static long GetDirectorySize(DirectoryInfo inDir)
+		internal static long GetDirectorySize(DirectoryInfo inDir)
 		{
 			long returnBytes = 0;
 			foreach(DirectoryInfo subDir in inDir.GetDirectories())

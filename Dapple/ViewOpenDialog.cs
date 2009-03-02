@@ -11,7 +11,7 @@ using Geosoft.OpenGX.UtilityForms;
 
 namespace Dapple
 {
-   public partial class ViewOpenDialog : Form
+   internal partial class ViewOpenDialog : Form
    {
       #region Private Members
       private string m_strConfigDir;
@@ -21,7 +21,7 @@ namespace Dapple
       #endregion
 
       #region Constructor
-      public ViewOpenDialog(string strConfigDir)
+      internal ViewOpenDialog(string strConfigDir)
       {
          InitializeComponent();
          this.Icon = new System.Drawing.Icon(@"app.ico");
@@ -67,7 +67,7 @@ namespace Dapple
       #endregion
 
       #region Properties
-      public string ViewFile
+      internal string ViewFile
       {
          get
          {

@@ -4,14 +4,14 @@ using System.Text;
 
 namespace WorldWind
 {
-   public class GeographicQuad
+	public class GeographicQuad
    {
-      public double X1, Y1; // lower left
-      public double X2, Y2; // lower right
-      public double X3, Y3; // upper right
-      public double X4, Y4; // upper left
+		public double X1, Y1; // lower left
+		public double X2, Y2; // lower right
+		public double X3, Y3; // upper right
+		public double X4, Y4; // upper left
 
-      public GeographicQuad(double _X1, double _Y1, double _X2, double _Y2, double _X3, double _Y3, double _X4, double _Y4)
+		public GeographicQuad(double _X1, double _Y1, double _X2, double _Y2, double _X3, double _Y3, double _X4, double _Y4)
       {
          X1 = _X1; Y1 = _Y1;
          X2 = _X2; Y2 = _Y2;
@@ -26,8 +26,8 @@ namespace WorldWind
 		public double South;
 		public double West;
 		public double East;
-		public double MinimumAltitude;
-		public double MaximumAltitude;
+		internal double MinimumAltitude;
+		internal double MaximumAltitude;
 
 		public GeographicBoundingBox()
 			: this(90.0, -90.0, -180.0, 180.0, 0.0, 0.0)
@@ -39,7 +39,7 @@ namespace WorldWind
 		{
 		}
 
-		public GeographicBoundingBox(double north, double south, double west, double east, double minAltitude, double maxAltitude)
+		internal GeographicBoundingBox(double north, double south, double west, double east, double minAltitude, double maxAltitude)
 		{
 			North = north;
 			South = south;
@@ -112,7 +112,7 @@ namespace WorldWind
 			get { return North - South; }
 		}
 
-		public double Height
+		internal double Height
 		{
 			get { return MaximumAltitude - MinimumAltitude; }
 		}
@@ -201,7 +201,7 @@ namespace WorldWind
 		}
 
 		#endregion
-		public bool Contains(Point3d p)
+		internal bool Contains(Point3d p)
 		{
 			if (North < p.Y ||
 				 South > p.Y ||

@@ -9,7 +9,7 @@ namespace WorldWind.Camera
    /// <summary>
    /// Camera base class (simple camera)
    /// </summary>
-   public class CameraBase
+	public class CameraBase
    {
       protected short _terrainElevation;
       protected short _terrainElevationUnderCamera;   // right under the camera
@@ -25,7 +25,7 @@ namespace WorldWind.Camera
       //protected Quaternion _orientation;
       protected Quaternion4d m_Orientation;
 
-      public const double dEpsilonTestValue = 1e-5;
+      internal const double dEpsilonTestValue = 1e-5;
 
       protected Frustum _viewFrustum = new Frustum();
       protected Angle _fov = World.Settings.cameraFov;
@@ -47,21 +47,21 @@ namespace WorldWind.Camera
 
       protected int lastStepZoomTickCount;
       static Point3d cameraUpVector = new Point3d(0, 0, 1);
-      public Point3d ReferenceCenter = new Point3d(0, 0, 0);
+		public Point3d ReferenceCenter = new Point3d(0, 0, 0);
 
       // Camera Reset variables
       static int lastResetTime; // Used by Reset() to keep track type of reset.
       const int DoubleTapDelay = 3000; // Double tap max time (ms)
 
       // Camera changed callback
-      public event System.EventHandler CameraChanged;
+		public event System.EventHandler CameraChanged;
 
       /// <summary>
       /// Initializes a new instance of the <see cref= "T:WorldWind.Camera.CameraBase"/> class.
       /// </summary>
       /// <param name="targetPosition"></param>
       /// <param name="radius">Planet's radius in meters</param>
-      public CameraBase(Point3d targetPosition, double radius)
+      internal CameraBase(Point3d targetPosition, double radius)
       {
          this._worldRadius = radius;
          this._distance = 2 * _worldRadius;
@@ -71,7 +71,7 @@ namespace WorldWind.Camera
          this.m_Orientation = Quaternion4d.RotationYawPitchRoll(0, 0, 0);
       }
 
-      public Viewport Viewport
+		public Viewport Viewport
       {
          get
          {
@@ -79,7 +79,7 @@ namespace WorldWind.Camera
          }
       }
 
-      public Matrix4d ViewMatrix
+		public Matrix4d ViewMatrix
       {
          get
          {
@@ -87,14 +87,14 @@ namespace WorldWind.Camera
          }
       }
 
-      public Matrix4d ProjectionMatrix
+		public Matrix4d ProjectionMatrix
       {
          get
          {
             return m_ProjectionMatrix;
          }
       }
-      public Matrix4d WorldMatrix
+		public Matrix4d WorldMatrix
       {
          get
          {
@@ -102,23 +102,23 @@ namespace WorldWind.Camera
          }
       }
 
-      public bool IsPointGoto
+      internal bool IsPointGoto
       {
          get { return World.Settings.cameraIsPointGoto; }
          set { World.Settings.cameraIsPointGoto = value; }
       }
 
-      public virtual Angle Latitude
+		public virtual Angle Latitude
       {
          get { return this._latitude; }
       }
 
-      public virtual Angle Longitude
+		public virtual Angle Longitude
       {
          get { return this._longitude; }
       }
 
-      public virtual Angle Tilt
+		public virtual Angle Tilt
       {
          get { return _tilt; }
          set
@@ -133,7 +133,7 @@ namespace WorldWind.Camera
          }
       }
 
-      public virtual Angle Bank
+		public virtual Angle Bank
       {
          get { return _bank; }
          set
@@ -145,13 +145,13 @@ namespace WorldWind.Camera
          }
       }
 
-      public virtual Angle Heading
+		public virtual Angle Heading
       {
          get { return this._heading; }
          set { this._heading = value; }
       }
 
-      public virtual Quaternion4d CurrentOrientation
+		public virtual Quaternion4d CurrentOrientation
       {
          //	get { return this._orientation; }	
          //	set { this._orientation = value; }
@@ -162,7 +162,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Altitude above sea level (meters)
       /// </summary>
-      public virtual double Altitude
+		public virtual double Altitude
       {
          get { return this._altitude; }
          set
@@ -174,7 +174,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Altitude above terrain (meters)
       /// </summary>
-      public virtual double AltitudeAboveTerrain
+		public virtual double AltitudeAboveTerrain
       {
          get { return this._altitude - _terrainElevation; }
       }
@@ -182,7 +182,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Slerp percentage (will just be supported in certain derivatives)
       /// </summary>
-      public virtual double SlerpPercentage
+		public virtual double SlerpPercentage
       {
          set
          {
@@ -193,7 +193,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Target altitude above sea level (meters) (after travel)
       /// </summary>
-      public virtual double TargetAltitude
+      internal virtual double TargetAltitude
       {
          get { return this._altitude; }
          set
@@ -207,12 +207,12 @@ namespace WorldWind.Camera
          }
       }
 
-      public virtual short TerrainElevation
+		public virtual short TerrainElevation
       {
          get { return this._terrainElevation; }
          set { this._terrainElevation = value; }
       }
-      public virtual short TerrainElevationUnderCamera
+      internal virtual short TerrainElevationUnderCamera
       {
          get { return this._terrainElevationUnderCamera; }
          set { this._terrainElevationUnderCamera = value; }
@@ -220,7 +220,7 @@ namespace WorldWind.Camera
 
       private DateTime lastElevationUpdate = System.DateTime.Now;
 
-      public void UpdateTerrainElevation(TerrainAccessor terrainAccessor)
+		public void UpdateTerrainElevation(TerrainAccessor terrainAccessor)
       {
          // Update camera terrain elevation
          if (terrainAccessor != null)
@@ -259,7 +259,7 @@ namespace WorldWind.Camera
          }
       }
 
-      public virtual Angle ViewRange
+		public virtual Angle ViewRange
       {
          get
          {
@@ -270,7 +270,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Angle from horizon - center earth - horizon in opposite directon
       /// </summary>
-      public virtual Angle TrueViewRange
+		public virtual Angle TrueViewRange
       {
          get
          {
@@ -281,7 +281,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Camera position (World XYZ coordinates)
       /// </summary>
-      public virtual Point3d Position
+		public virtual Point3d Position
       {
          get { return this._position; }
       }
@@ -289,20 +289,20 @@ namespace WorldWind.Camera
       /// <summary>
       /// The planet's radius in meters
       /// </summary>
-      public virtual double WorldRadius
+		public virtual double WorldRadius
       {
          get { return this._worldRadius; }
          set { this._worldRadius = value; }
       }
 
-      public Point3d EyeDiff = Point3d.Empty;
+      internal Point3d EyeDiff = Point3d.Empty;
 
-      public float curCameraElevation = 0;
+      internal float curCameraElevation = 0;
       float targetCameraElevation = 0;
 
-      public static Point3d LookFrom = new Point3d();
-      public static Point3d relCameraPos = new Point3d();
-      public virtual void ComputeAbsoluteMatrices()
+      internal static Point3d LookFrom = new Point3d();
+      internal static Point3d relCameraPos = new Point3d();
+      internal virtual void ComputeAbsoluteMatrices()
       {
          m_absoluteWorldMatrix = Matrix4d.Identity;
 
@@ -332,7 +332,7 @@ namespace WorldWind.Camera
          m_absoluteViewMatrix *= Matrix4d.RotationZ(this._bank.Radians);
       }
 
-      public virtual void ComputeViewMatrix()
+      internal virtual void ComputeViewMatrix()
       {
          // Compute camera elevation
          if (World.Settings.ElevateCameraLookatPoint)
@@ -427,7 +427,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Field of view (degrees)
       /// </summary>
-      public virtual Angle Fov
+		public virtual Angle Fov
       {
          get { return this._fov; }
          set
@@ -443,7 +443,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Distance to target position on ground.
       /// </summary>
-      public virtual double Distance
+		public virtual double Distance
       {
          get
          {
@@ -460,7 +460,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Distance to target position on ground (after traveling to target)
       /// </summary>
-      public virtual double TargetDistance
+		public virtual double TargetDistance
       {
          get
          {
@@ -477,12 +477,12 @@ namespace WorldWind.Camera
          }
       }
 
-      public virtual Frustum ViewFrustum
+		public virtual Frustum ViewFrustum
       {
          get { return this._viewFrustum; }
       }
 
-      public virtual void Update(Device device)
+		public virtual void Update(Device device)
       {
          viewPort = device.Viewport;
 
@@ -547,7 +547,7 @@ namespace WorldWind.Camera
       /// Resets the camera settings
       /// Two consecutive resets closer than DoubleTapDelay ms apart performs a full reset.
       /// </summary>
-      public virtual void Reset()
+		public virtual void Reset()
       {
          Fov = World.Settings.cameraFov;
 
@@ -579,7 +579,7 @@ namespace WorldWind.Camera
       /// <param name="heading">Heading in decimal degrees</param>
       /// <param name="_altitude">Altitude in meters</param>
       /// <param name="tilt">Tilt in decimal degrees</param>
-      public virtual void PointGoto(double lat, double lon)
+      internal virtual void PointGoto(double lat, double lon)
       {
          if (!World.Settings.cameraIsPointGoto)
             return;
@@ -595,7 +595,7 @@ namespace WorldWind.Camera
       /// <param name="heading">Heading in decimal degrees</param>
       /// <param name="_altitude">Altitude in meters</param>
       /// <param name="tilt">Tilt in decimal degrees</param>
-      public virtual void PointGoto(Angle lat, Angle lon)
+		public virtual void PointGoto(Angle lat, Angle lon)
       {
          if (!World.Settings.cameraIsPointGoto)
             return;
@@ -611,7 +611,7 @@ namespace WorldWind.Camera
       /// <param name="heading">Heading in decimal degrees</param>
       /// <param name="_altitude">Altitude in meters</param>
       /// <param name="tilt">Tilt in decimal degrees</param>
-      public virtual void SetPosition(double lat, double lon)
+      internal virtual void SetPosition(double lat, double lon)
       {
          SetPosition(lat, lon, 0, double.NaN, 0, 0);
       }
@@ -624,7 +624,7 @@ namespace WorldWind.Camera
       /// <param name="heading">Heading in decimal degrees</param>
       /// <param name="_altitude">Altitude above ground level in meters</param>
       /// <param name="tilt">Tilt in decimal degrees</param>
-      public virtual void SetPosition(double lat, double lon, double heading, double _altitude, double tilt)
+		public virtual void SetPosition(double lat, double lon, double heading, double _altitude, double tilt)
       {
          SetPosition(lat, lon, heading, _altitude, tilt, 0);
       }
@@ -638,7 +638,7 @@ namespace WorldWind.Camera
       /// <param name="_altitude">Altitude above ground level in meters</param>
       /// <param name="tilt">Tilt in decimal degrees</param>
       /// <param name="bank">Camera bank (roll) in decimal degrees</param>
-      public virtual void SetPosition(double lat, double lon, double heading, double _altitude, double tilt, double bank)
+		public virtual void SetPosition(double lat, double lon, double heading, double _altitude, double tilt, double bank)
       {
          if (double.IsNaN(lat)) lat = this._latitude.Degrees;
          if (double.IsNaN(lon)) lon = this._longitude.Degrees;
@@ -681,17 +681,17 @@ namespace WorldWind.Camera
       Matrix4d m_absoluteWorldMatrix = Matrix4d.Identity;
       Matrix4d m_absoluteProjectionMatrix = Matrix4d.Identity;
 
-      public Matrix4d AbsoluteViewMatrix
+      internal Matrix4d AbsoluteViewMatrix
       {
          get { return m_absoluteViewMatrix; }
       }
 
-      public Matrix4d AbsoluteWorldMatrix
+      internal Matrix4d AbsoluteWorldMatrix
       {
          get { return m_absoluteWorldMatrix; }
       }
 
-      public Matrix4d AbsoluteProjectionMatrix
+      internal Matrix4d AbsoluteProjectionMatrix
       {
          get { return m_absoluteProjectionMatrix; }
       }
@@ -699,7 +699,7 @@ namespace WorldWind.Camera
       /// <summary>
       /// Calculates latitude/longitude for given screen coordinate.
       /// </summary>
-      public virtual void PickingRayIntersection(
+		public virtual void PickingRayIntersection(
          int screenX,
          int screenY,
 			out Angle latitude,
@@ -757,7 +757,7 @@ namespace WorldWind.Camera
       /// Calculates latitude/longitude for given screen coordinate.
       /// Cast a ray to the terrain geometry (Patrick Murris - march 2007)
       /// </summary>
-      public virtual void PickingRayIntersectionWithTerrain(
+		public virtual void PickingRayIntersectionWithTerrain(
           int screenX,
           int screenY,
             out Angle latitude,
@@ -790,7 +790,7 @@ namespace WorldWind.Camera
          m_ProjectionMatrix = Matrix4d.PerspectiveFovRH(_fov.Radians, aspectRatio, zNear, tangentalDistance);
       }
 
-      public virtual void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)
+		public virtual void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)
       {
          //	this._orientation *= MathEngine.EulerToQuaternion(yaw.Radians, pitch.Radians, roll.Radians);
          //	Vector3 v = MathEngine.QuaternionToEuler(this._orientation);
@@ -818,7 +818,7 @@ namespace WorldWind.Camera
       /// Digital zoom (keyboard/mouse wheel style)
       /// </summary>
       /// <param name="ticks">Positive value for zoom in, negative for zoom out.</param>
-      public virtual void ZoomStepped(double ticks)
+		public virtual void ZoomStepped(double ticks)
       {
          int currentTickCount = Environment.TickCount;
 
@@ -853,7 +853,7 @@ namespace WorldWind.Camera
       /// Zoom camera in/out (distance) 
       /// </summary>
       /// <param name="percent">Positive value = zoom in, negative=out</param>
-      public virtual void Zoom(double percent)
+		public virtual void Zoom(double percent)
       {
          if (percent > 0)
             TargetDistance /= 1.0f + percent;
@@ -866,7 +866,7 @@ namespace WorldWind.Camera
       /// </summary>
       /// <param name="lat">Latitude offset</param>
       /// <param name="lon">Longitude offset</param>
-      public virtual void Pan(Angle lat, Angle lon)
+		public virtual void Pan(Angle lat, Angle lon)
       {
          if (Angle.IsNaN(lat)) lat = this._latitude;
          if (Angle.IsNaN(lon)) lon = this._longitude;
@@ -941,13 +941,13 @@ namespace WorldWind.Camera
       /// </summary>
       /// <param name="point">Point in world space</param>
       /// <returns>Point in screen space</returns>
-      public Point3d Project(Point3d point)
+		public Point3d Project(Point3d point)
       {
          point.Project(viewPort, m_ProjectionMatrix, m_ViewMatrix, m_WorldMatrix);
          return point;
       }
 
-      public override string ToString()
+		public override string ToString()
       {
          string res = string.Format(CultureInfo.InvariantCulture,
             "Altitude: {6:f0}m\nView Range: {0}\nHeading: {1}\nTilt: {2}\nFOV: {7}\nPosition: ({3}, {4} @ {5:f0}m)",
@@ -960,7 +960,7 @@ namespace WorldWind.Camera
       /// Gets the visible bounding box for the application in degrees.
       /// </summary>
       /// <returns>An array of Angles in minx.miny,maxx, maxy order</returns>
-      public static Angle[] getViewBoundingBox()
+      internal static Angle[] getViewBoundingBox()
       {
          /// TODO: Correct the ViewRange for non-square windows. Is is accurate horizontally
          /// but not vertically.

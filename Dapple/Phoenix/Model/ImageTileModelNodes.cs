@@ -4,11 +4,11 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	public class ImageTileSetRootModelNode : ModelNode
+	internal class ImageTileSetRootModelNode : ModelNode
 	{
 		#region Constructors
 
-		public ImageTileSetRootModelNode(DappleModel oModel)
+		internal ImageTileSetRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
@@ -20,18 +20,18 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool ShowAllChildren
+		internal override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
 		}
 
-		public override String DisplayText
+		internal override String DisplayText
 		{
 			get { return "Image Tile Servers"; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.TileRoot; }
 		}
@@ -41,7 +41,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public ImageTileSetModelNode GetImageTileSet(String strName)
+		internal ImageTileSetModelNode GetImageTileSet(String strName)
 		{
 			foreach (ImageTileSetModelNode oTileSet in this.UnfilteredChildren)
 			{
@@ -56,7 +56,7 @@ namespace NewServerTree
 			return oNewSet;
 		}
 
-		public void SaveToView(dappleview.serversType oServers)
+		internal void SaveToView(dappleview.serversType oServers)
 		{
 			dappleview.builderentryType oImageEntry = oServers.Newbuilderentry();
 			dappleview.builderdirectoryType oImageDir = oImageEntry.Newbuilderdirectory();
@@ -86,7 +86,7 @@ namespace NewServerTree
 	}
 
 
-	public class ImageTileSetModelNode : ModelNode
+	internal class ImageTileSetModelNode : ModelNode
 	{
 		#region Member Variables
 
@@ -97,7 +97,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ImageTileSetModelNode(DappleModel oModel, String strName)
+		internal ImageTileSetModelNode(DappleModel oModel, String strName)
 			: base(oModel)
 		{
 			m_strName = strName;
@@ -110,18 +110,18 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_strName; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.TileSet; }
 		}
 
-		public String Name
+		internal String Name
 		{
 			get { return m_strName; }
 		}
@@ -131,12 +131,12 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public void AddLayer(ImageTileLayerModelNode oNewLayer)
+		internal void AddLayer(ImageTileLayerModelNode oNewLayer)
 		{
 			AddChild(oNewLayer);
 		}
 
-		public void SaveToView(dappleview.builderdirectoryType oDir)
+		internal void SaveToView(dappleview.builderdirectoryType oDir)
 		{
 			dappleview.builderentryType oSetEntry = oDir.Newbuilderentry();
 			dappleview.tileserversetType oSet = oSetEntry.Newtileserverset();
@@ -167,7 +167,7 @@ namespace NewServerTree
 	}
 
 
-	public class ImageTileLayerModelNode : LayerModelNode
+	internal class ImageTileLayerModelNode : LayerModelNode
 	{
 		#region Memeber Variables
 
@@ -186,7 +186,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ImageTileLayerModelNode(DappleModel oModel, String strName, Uri oUri, String strExtension, double dLZTS, String strDataset, int iLevels, GeographicBoundingBox oBounds, int iDistanceAboveSurface, int iTextureSize)
+		internal ImageTileLayerModelNode(DappleModel oModel, String strName, Uri oUri, String strExtension, double dLZTS, String strDataset, int iLevels, GeographicBoundingBox oBounds, int iDistanceAboveSurface, int iTextureSize)
 			: base(oModel)
 		{
 			m_strName = strName;
@@ -208,18 +208,18 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_strName; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.TileLayer; }
 		}
@@ -231,7 +231,7 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		public void SaveToView(dappleview.tilelayersType oSet)
+		internal void SaveToView(dappleview.tilelayersType oSet)
 		{
 			dappleview.tilelayerType oData = oSet.Newtilelayer();
 
@@ -257,7 +257,7 @@ namespace NewServerTree
 		#endregion
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder()
+		internal override Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder()
 		{
 			return new Dapple.LayerGeneration.NltQuadLayerBuilder(
 				m_strName,

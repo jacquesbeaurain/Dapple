@@ -13,9 +13,9 @@ namespace WorldWind
 		static System.Timers.Timer m_timer = null;
 		static float m_interval = 15;
 
-        public static event System.Timers.ElapsedEventHandler Elapsed;
+        internal static event System.Timers.ElapsedEventHandler Elapsed;
 
-		public static System.DateTime CurrentTimeUtc
+		  public static System.DateTime CurrentTimeUtc
 		{
 			get
 			{
@@ -27,7 +27,7 @@ namespace WorldWind
 			}
 		}
 
-		public static bool Enabled
+		internal static bool Enabled
 		{
 			get{ return m_enabled; }
 			set
@@ -46,7 +46,7 @@ namespace WorldWind
 			}
 		}
 
-		public static float TimeMultiplier
+		internal static float TimeMultiplier
 		{
 			get{ return m_timeMultiplier; }
 			set{ m_timeMultiplier = value; }
@@ -63,7 +63,7 @@ namespace WorldWind
 			m_timer.Start();
 		}
 
-		public static void Stop()
+		internal static void Stop()
 		{
 			m_enabled = false;
 			if(m_timer != null)

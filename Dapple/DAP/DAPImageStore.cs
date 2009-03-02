@@ -12,7 +12,7 @@ namespace Dapple.DAP
 	/// <summary>
 	/// Summary description for DAPImageStore.
 	/// </summary>
-	public class DAPImageStore : ImageStore
+	internal class DAPImageStore : ImageStore
 	{
 		#region Private Members
 
@@ -24,7 +24,7 @@ namespace Dapple.DAP
 
 		#region Properties
 
-       public Geosoft.GX.DAPGetData.Server Server
+       internal Geosoft.GX.DAPGetData.Server Server
        {
            get
            {
@@ -32,7 +32,7 @@ namespace Dapple.DAP
            }
        }
 
-      public DataSet DataSet
+      internal DataSet DataSet
       {
          get
          {
@@ -62,7 +62,7 @@ namespace Dapple.DAP
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:DAPImageStore"/> class.
 		/// </summary>
-      public DAPImageStore(DataSet oDataSet,
+      internal DAPImageStore(DataSet oDataSet,
          Geosoft.GX.DAPGetData.Server server)
       {
          m_oDataSet = oDataSet;

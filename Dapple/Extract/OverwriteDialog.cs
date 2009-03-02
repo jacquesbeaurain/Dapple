@@ -8,16 +8,16 @@ using System.Windows.Forms;
 
 namespace Dapple.Extract
 {
-	public partial class OverwriteDialog : Form
+	internal partial class OverwriteDialog : Form
 	{
-		public OverwriteDialog(String szMessage, Form hOwner)
+		internal OverwriteDialog(String szMessage, Form hOwner)
 		{
 			InitializeComponent();
 			label1.Text = szMessage;
 			this.Owner = hOwner;
 		}
 
-		public OverwriteDialog() : this("The specified file already exists! Overwrite?", null)
+		internal OverwriteDialog() : this("The specified file already exists! Overwrite?", null)
 		{
 		}
 

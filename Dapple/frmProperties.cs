@@ -11,19 +11,19 @@ using System.Collections;
 
 namespace Dapple
 {
-   public partial class frmProperties : Form
+   internal partial class frmProperties : Form
    {
       object m_Object = null;
       Hashtable m_propetyTable = new Hashtable();
       Hashtable m_isChangableTable = new Hashtable();
       PropertyBag bag;
 
-      public frmProperties()
+      internal frmProperties()
       {
          InitializeComponent();
       }
 
-      public object SetObject
+      internal object SetObject
       {
          get
          {
@@ -134,7 +134,7 @@ namespace Dapple
       /// Display a frmProperties for an Object.
       /// </summary>
       /// <param name="oTarget"></param>
-      public static void DisplayForm(Object oTarget)
+      internal static void DisplayForm(Object oTarget)
       {
          frmProperties oBob = new frmProperties();
          oBob.SetObject = oTarget;

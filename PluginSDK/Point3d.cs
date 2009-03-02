@@ -7,17 +7,17 @@ namespace WorldWind
    /// <summary>
 	/// Summary description for Vector3d.
 	/// </summary>
-   public struct Point3d
+	public struct Point3d
    {
-      public double X, Y, Z;
+		public double X, Y, Z;
       // constructors
 
-      public Point3d(double xi, double yi, double zi)	// x,y,z constructor
+		public Point3d(double xi, double yi, double zi)	// x,y,z constructor
       {
          X = xi; Y = yi; Z = zi;
       }
 
-      public static Point3d Empty
+		public static Point3d Empty
       {
          get
          {
@@ -25,7 +25,7 @@ namespace WorldWind
          }
       }
 
-      public Microsoft.DirectX.Vector3 Vector3
+		public Microsoft.DirectX.Vector3 Vector3
       {
          get 
          {
@@ -33,7 +33,7 @@ namespace WorldWind
          }
       }
 
-      public Microsoft.DirectX.Vector4 Vector4
+      internal Microsoft.DirectX.Vector4 Vector4
       {
          get
          {
@@ -41,7 +41,7 @@ namespace WorldWind
          }
       }
 
-      public void MultiplyMatrix(Matrix4d m, ref double w)
+      internal void MultiplyMatrix(Matrix4d m, ref double w)
       {
          double wprev = w;
          w = this.X * m[0, 3] + this.Y * m[1, 3] + this.Z * m[2, 3] + wprev * m[3, 3];
@@ -50,7 +50,7 @@ namespace WorldWind
             this.X * m[0, 2] + this.Y * m[1, 2] + this.Z * m[2, 2] + wprev * m[3, 2]);
       }
 
-      public void TransformCoordinate(Matrix4d m)
+      internal void TransformCoordinate(Matrix4d m)
       {
          double w = this.X * m[0, 3] + this.Y * m[1, 3] + this.Z * m[2, 3] + m[3, 3];
          this = new Point3d(this.X * m[0, 0] + this.Y * m[1, 0] + this.Z * m[2, 0] + m[3, 0],
@@ -58,7 +58,7 @@ namespace WorldWind
             this.X * m[0, 2] + this.Y * m[1, 2] + this.Z * m[2, 2] + m[3, 2]);
       }
       
-      public void Unproject(object viewport, Matrix4d projection, Matrix4d view, Matrix4d world)
+      internal void Unproject(object viewport, Matrix4d projection, Matrix4d view, Matrix4d world)
       {
          //Microsoft.DirectX.Vector3 test = ConvertDX.FromVector3d(this);
          //test.Unproject(viewport, ConvertDX.FromMatrix4d(projection), ConvertDX.FromMatrix4d(view), ConvertDX.FromMatrix4d(world));
@@ -82,7 +82,7 @@ namespace WorldWind
          this.Z /= w;
       }
 
-      public void Project(object viewport, Matrix4d projection, Matrix4d view, Matrix4d world)
+      internal void Project(object viewport, Matrix4d projection, Matrix4d view, Matrix4d world)
       {
          //Microsoft.DirectX.Vector3 test = ConvertDX.FromVector3d(this);
          //test.Project(viewport, ConvertDX.FromMatrix4d(projection), ConvertDX.FromMatrix4d(view), ConvertDX.FromMatrix4d(world));
@@ -107,14 +107,14 @@ namespace WorldWind
       }
 
       // Override the Object.GetHashCode() method:
-      public override int GetHashCode()
+		public override int GetHashCode()
       {
          return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
       }
 
 
       // Override the Object.Equals(object o) method:
-      public override bool Equals(object o)
+		public override bool Equals(object o)
       {
          try
          {
@@ -128,14 +128,14 @@ namespace WorldWind
 
       
 
-      public static Angle GetAngle(Point3d p1, Point3d p2)
+      internal static Angle GetAngle(Point3d p1, Point3d p2)
       {
          Angle returnAngle = new Angle();
          returnAngle.Radians = Math.Acos(Point3d.dot(p1, p2) / (p1.Length * p2.Length));
          return returnAngle;
       }
 
-      public double Length
+		public double Length
       {
          get
          {
@@ -143,7 +143,7 @@ namespace WorldWind
          }
       }
 
-      public double LengthSq
+		public double LengthSq
       {
          get
          {
@@ -151,89 +151,89 @@ namespace WorldWind
          }
       }
 
-		public static Point3d normalize(Point3d v) // normalization
+		internal static Point3d normalize(Point3d v) // normalization
 		{
 			double n = v.Length;
 			return new Point3d(v.X / n, v.Y / n, v.Z / n);
 		}
 
-      public void normalize() // normalization
+		public void normalize() // normalization
       {
          double n = Length;
          this.X /= n; this.Y /= n; this.Z /= n;
       }
 
-      public void scale(double scale) // normalization
+      internal void scale(double scale) // normalization
       {
          this.X *= scale; this.Y *= scale; this.Z *= scale;
       }
 
-      public static Point3d operator +(Point3d P1, Point3d P2)	// addition 2
+		public static Point3d operator +(Point3d P1, Point3d P2)	// addition 2
       {
          return new Point3d(P1.X + P2.X, P1.Y + P2.Y, P1.Z + P2.Z);
       }
 
-      public static Point3d operator -(Point3d P1, Point3d P2)	// subtraction 2
+		public static Point3d operator -(Point3d P1, Point3d P2)	// subtraction 2
       {
          return new Point3d(P1.X - P2.X, P1.Y - P2.Y, P1.Z - P2.Z);
       }
 
-      public static Point3d operator *(Point3d P, double k)	// multiply by real 2
+		public static Point3d operator *(Point3d P, double k)	// multiply by real 2
       {
          return new Point3d(P.X * k, P.Y * k, P.Z * k);
       }
 
-      public static Point3d operator *(double k, Point3d P)	// and its reverse order!
+		public static Point3d operator *(double k, Point3d P)	// and its reverse order!
       {
          return new Point3d(P.X * k, P.Y * k, P.Z * k);
       }
 
-      public static Point3d operator /(Point3d P, double k)	// divide by real 2
+		public static Point3d operator /(Point3d P, double k)	// divide by real 2
       {
          return new Point3d(P.X / k, P.Y / k, P.Z / k);
       }
 
-      public static Point3d operator -(Point3d P)	// negation
+		public static Point3d operator -(Point3d P)	// negation
       {
          return new Point3d(-P.X, -P.Y, -P.Z);
       }
 
 
-      public static Point3d cross(Point3d P1, Point3d P2) // cross product
+		public static Point3d cross(Point3d P1, Point3d P2) // cross product
       {
          return P1 * P2;
       }
 
       // Normal direction corresponds to a right handed traverse of ordered points.
-      public static Point3d unit_normal(Point3d P0, Point3d P1, Point3d P2)
+      internal static Point3d unit_normal(Point3d P0, Point3d P1, Point3d P2)
       {
          Point3d p = (P1 - P0) * (P2 - P0);
          double l = p.Length;
          return new Point3d(p.X / l, p.Y / l, p.Z / l);
       }
 
-      public static bool operator ==(Point3d P1, Point3d P2) // equal?
+		public static bool operator ==(Point3d P1, Point3d P2) // equal?
       {
          return (P1.X == P2.X && P1.Y == P2.Y && P1.Z == P2.Z);
       }
 
-      public static bool operator !=(Point3d P1, Point3d P2) // equal?
+		public static bool operator !=(Point3d P1, Point3d P2) // equal?
       {
          return (P1.X != P2.X || P1.Y != P2.Y || P1.Z != P2.Z);
       }
 
-      public static double dot(Point3d P1, Point3d P2) // inner product 2
+      internal static double dot(Point3d P1, Point3d P2) // inner product 2
       {
          return (P1.X * P2.X + P1.Y * P2.Y + P1.Z * P2.Z);
       }
 
-      public static Point3d operator *(Point3d P1, Point3d P2)
+		public static Point3d operator *(Point3d P1, Point3d P2)
       {
          return new Point3d(P1.Y * P2.Z - P1.Z * P2.Y,
             P1.Z * P2.X - P1.X * P2.Z, P1.X * P2.Y - P1.Y * P2.X);
       }
 
-      public override string ToString()
+		public override string ToString()
       {
          return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
       }

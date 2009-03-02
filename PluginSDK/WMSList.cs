@@ -17,7 +17,7 @@ using WorldWind.Net.Wms;
 
 namespace WorldWind
 {
-   public class WMSList
+	public class WMSList
    {
       #region Private Members
       WMSLayer[] _layers;
@@ -27,8 +27,8 @@ namespace WorldWind
       string _name;
       #endregion
 
-      #region Public Methods
-      public WMSList(string serverGetCapabilitiesUrl, string capabilitiesFilePath)
+      #region internal Methods
+		public WMSList(string serverGetCapabilitiesUrl, string capabilitiesFilePath)
       {
          bool bConvert = false;
 
@@ -99,7 +99,7 @@ namespace WorldWind
          return;
       }
 
-      public static string[] GetDatesFromDateTimeString(string dateTimeString)
+      internal static string[] GetDatesFromDateTimeString(string dateTimeString)
       {
          System.Collections.ArrayList dates = new ArrayList();
          string[] parsedTimeValues = dateTimeString.Split(',');
@@ -131,7 +131,7 @@ namespace WorldWind
          return returnDates;
       }
 
-      public static string[] GetTimeValuesFromTimePeriodString(string timePeriodString)
+      internal static string[] GetTimeValuesFromTimePeriodString(string timePeriodString)
       {
          string temp = "";
          int numYears = 0;
@@ -232,7 +232,7 @@ namespace WorldWind
       /// </summary>
       /// <param name="wmsDate">Input WMS date string.</param>
       /// <returns>Time converted to DateTime or DateTime.MinValue if date string is incorrect format.</returns>
-      public static DateTime GetDateTimeFromWMSDate(string wmsDate)
+      internal static DateTime GetDateTimeFromWMSDate(string wmsDate)
       {
          // result = UTC (not local)
          DateTime result = DateTime.ParseExact(wmsDate,
@@ -610,7 +610,7 @@ namespace WorldWind
       #endregion
 
       #region Properties
-      public WMSLayer[] Layers
+		public WMSLayer[] Layers
       {
          get
          {
@@ -621,7 +621,7 @@ namespace WorldWind
             this._layers = value;
          }
       }
-      public string Name
+		public string Name
       {
          get
          {
@@ -632,7 +632,7 @@ namespace WorldWind
             this._name = value;
          }
       }
-      public string ServerGetCapabilitiesUrl
+		public string ServerGetCapabilitiesUrl
       {
          get
          {
@@ -643,7 +643,7 @@ namespace WorldWind
             this._serverGetCapabilitiesUrl = value;
          }
       }
-      public string ServerGetMapUrl
+		public string ServerGetMapUrl
       {
          get
          {
@@ -654,7 +654,7 @@ namespace WorldWind
             this._serverGetMapUrl = value;
          }
       }
-      public string Version
+		public string Version
       {
          get
          {

@@ -11,7 +11,7 @@ namespace Dapple.CustomControls
    /// <summary>
    /// Another Jana tab view, this time using LinkLabels.
    /// </summary>
-   public partial class JanaLinkTab : UserControl
+   internal partial class JanaLinkTab : UserControl
    {
       #region Statics
 
@@ -29,7 +29,7 @@ namespace Dapple.CustomControls
 
       #region Constructor
 
-      public JanaLinkTab()
+      internal JanaLinkTab()
       {
          for (int count = 0; count < NUM_PAGES; count++)
          {
@@ -108,7 +108,7 @@ namespace Dapple.CustomControls
 
       #region Public Methods
 
-      public void SetPage(int iPage, Control oControl)
+      internal void SetPage(int iPage, Control oControl)
       {
          this.SuspendLayout();
 
@@ -127,7 +127,7 @@ namespace Dapple.CustomControls
          this.ResumeLayout();
       }
 
-      public void SetText(int iLinkIndex, String szText)
+      internal void SetText(int iLinkIndex, String szText)
       {
          m_cLinks[iLinkIndex].Text = szText;
          m_cLinks[iLinkIndex].Size = m_cLinks[iLinkIndex].PreferredSize;

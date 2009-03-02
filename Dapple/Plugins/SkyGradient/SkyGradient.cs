@@ -32,12 +32,12 @@ namespace Murris.Plugins
 	/// <summary>
 	/// The plugin (main class)
 	/// </summary>
-	public class SkyGradient : WorldWind.PluginEngine.Plugin
+	internal class SkyGradient : WorldWind.PluginEngine.Plugin
 	{
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
-		public static string LayerName = "Sky Gradient";
+		internal static string LayerName = "Sky Gradient";
 
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
@@ -65,7 +65,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Find a layer indice with part of its name
 		/// </summary>
-		public int FindLayerIndice(string name)
+		internal int FindLayerIndice(string name)
 		{
 			string s = "";
 			for (int i = 0; i < ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Count; i++)
@@ -81,14 +81,14 @@ namespace Murris.Plugins
 	/// <summary>
 	/// SkyGradient dome
 	/// </summary>
-	public class SkyGradientLayer : RenderableObject
+	internal class SkyGradientLayer : RenderableObject
 	{
-		public string version = "0.5b";
-		public string pluginName;
+		internal string version = "0.5b";
+		internal string pluginName;
 		string settingsFileName;
 		string pluginPath;
-		public World world;
-		public DrawArgs drawArgs;
+		internal World world;
+		internal DrawArgs drawArgs;
 		Mesh mesh;
 		double lastAltitude;
 		Color savedSkyColor;
@@ -100,12 +100,12 @@ namespace Murris.Plugins
 		bool useFog = false;                                            // Use fog effect
 		double nearFactor = 2.0;                                        // Fog coefs
 		double farFactor = 1.1;
-		public string presetFileName;           // preset file (will overide defaults)
+		internal string presetFileName;           // preset file (will overide defaults)
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public SkyGradientLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
+		internal SkyGradientLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
 			: base(LayerName)
 		{
 			this.pluginPath = pluginPath;
@@ -120,7 +120,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Read saved settings from ini file
 		/// </summary>
-		public void ReadSettings()
+		internal void ReadSettings()
 		{
 			string line = "";
 			try
@@ -142,7 +142,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Read presets file
 		/// </summary>
-		public void ReadPresets()
+		internal void ReadPresets()
 		{
 			string line = "";
 			try
@@ -164,7 +164,7 @@ namespace Murris.Plugins
 			}
 		}
 
-		public Color ColorFromPreset(string s)
+		internal Color ColorFromPreset(string s)
 		{
 			string[] values = s.Split(' ');
 			return Color.FromArgb(
@@ -177,7 +177,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Save settings in ini file
 		/// </summary>
-		public void SaveSettings()
+		internal void SaveSettings()
 		{
 			string line = version + ";" + presetFileName + ";" + IsOn.ToString() + ";" + useFog.ToString();
 			try
@@ -192,7 +192,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Save settings in preset file
 		/// </summary>
-		public void SavePresets()
+		internal void SavePresets()
 		{
 			string line = version + ";"
 					  + thickness.ToString() + ";"
@@ -312,7 +312,7 @@ namespace Murris.Plugins
 		}
 
 		// Recenter world projection in WW 1.4
-		public void Recenter(DrawArgs drawArgs)
+		internal void Recenter(DrawArgs drawArgs)
 		{
 			drawArgs.device.Transform.World *= Matrix.Translation(
 					  (float)-drawArgs.WorldCamera.ReferenceCenter.X,
@@ -402,7 +402,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Properties Dialog
 		/// </summary>
-		public class propertiesDialog : System.Windows.Forms.Form
+		internal class propertiesDialog : System.Windows.Forms.Form
 		{
 			private System.Windows.Forms.Label lblTexture;
 			private System.Windows.Forms.ComboBox cboFiles;
@@ -410,7 +410,7 @@ namespace Murris.Plugins
 			private System.Windows.Forms.Button btnCancel;
 			private SkyGradientLayer layer;
 
-			public propertiesDialog(SkyGradientLayer layer)
+			internal propertiesDialog(SkyGradientLayer layer)
 			{
 				this.layer = layer;
 				InitializeComponent();

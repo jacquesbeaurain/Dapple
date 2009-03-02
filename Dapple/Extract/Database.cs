@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the options for downloading a database
    /// </summary>
-   public partial class Database : DownloadOptions
+   internal partial class Database : DownloadOptions
    {
       #region Constants
       private readonly string DATABASE_EXT = ".gdb";
@@ -21,14 +21,14 @@ namespace Dapple.Extract
       /// Constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public Database(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal Database(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
          tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, DATABASE_EXT);
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return true; }
 		}
@@ -40,7 +40,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
@@ -52,7 +52,7 @@ namespace Dapple.Extract
 			return result;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, DATABASE_EXT));
 			if (System.IO.File.Exists(szFilename))

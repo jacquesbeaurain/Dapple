@@ -5,44 +5,44 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for Point3d.
 	/// </summary>
-	public class Point2d
+	internal class Point2d
 	{
-		public double X, Y;
+		internal double X, Y;
 		// constructors
 
-		public Point2d()
+		internal Point2d()
 		{
 
 		}
 
-		public Point2d (double xi, double yi)	// x,y constructor
+		internal Point2d (double xi, double yi)	// x,y constructor
 		{
 			X = xi; Y = yi;
 		}
-		public Point2d (Point2d P) // copy constructor
+		internal Point2d (Point2d P) // copy constructor
 		{
 			X = P.X;
 			Y = P.Y;
 		}
 
 		// other operators
-		public double norm()	// L2 norm
+		internal double norm()	// L2 norm
 		{
 			return Math.Sqrt(norm2());
 		}
 
-		public double norm2() // squared L2 norm
+		internal double norm2() // squared L2 norm
 		{
 			return X*X + Y*Y;
 		}
 
-		public Point2d normalize() // normalization
+		internal Point2d normalize() // normalization
 		{
 			double n = norm();
 			return new Point2d(X / n, Y / n);
 		}
 
-		public double Length
+		internal double Length
 		{
 			get
 			{
@@ -106,29 +106,29 @@ namespace WorldWind
 			return (P1.X != P2.X || P1.Y != P2.Y);
 		}
 
-		public static double dot(Point2d P1, Point2d P2) // inner product 2
+		internal static double dot(Point2d P1, Point2d P2) // inner product 2
 		{
 			return (P1.X * P2.X + P1.Y * P2.Y);
 		}
 //	TODO: implement this...
-	//	public static Point2d operator *(Point2d P1, Point2d P2)
+	//	internal static Point2d operator *(Point2d P1, Point2d P2)
 	//	{
 	//		return new Point2d (P1.Y * P2.Z - P1.Z * P2.Y,
 	//			P1.Z * P2.X - P1.X * P2.Z, P1.X * P2.Y - P1.Y * P2.X);
 	//	}
 
-		public static Point2d operator - ( Point2d P)	// negation
+		public static Point2d operator -(Point2d P)	// negation
 		{
 			return new Point2d (-P.X, -P.Y);
 		}
 
-	//	public static Point3d cross(Point2d P1, Point2d P2) // cross product
+	//	internal static Point3d cross(Point2d P1, Point2d P2) // cross product
 	//	{
 	//		return P1 * P2;
 	//	}
 
 		// Normal direction corresponds to a right handed traverse of ordered points.
-	//	public Point2d unit_normal (Point2d P0, Point2d P1, Point2d P2)
+	//	internal Point2d unit_normal (Point2d P0, Point2d P1, Point2d P2)
 	//	{
 	//		Point2d p = (P1 - P0) * (P2 - P0);
 	//		double l = p.norm ();

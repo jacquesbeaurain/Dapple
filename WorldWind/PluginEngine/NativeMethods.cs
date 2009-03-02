@@ -14,38 +14,38 @@ namespace WorldWind.PluginEngine
 		}
 
 		[DllImport("User32.dll",CharSet = CharSet.Auto)]
-		public static extern long SetWindowLong(IntPtr hwnd, int nIndex, long dwNewLong);
+		internal static extern long SetWindowLong(IntPtr hwnd, int nIndex, long dwNewLong);
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct RECT
+		internal struct RECT
 		{
-			public int left;
-			public int top;
-			public int right;
-			public int bottom;
+			internal int left;
+			internal int top;
+			internal int right;
+			internal int bottom;
 		}
 
 		[StructLayout(LayoutKind.Sequential,CharSet=CharSet.Auto)]
-		public struct DRAWITEMSTRUCT
+		internal struct DRAWITEMSTRUCT
 		{
-			public int ctrlType;
-			public int ctrlID;
-			public int itemID;
-			public int itemAction;
-			public int itemState;
-			public IntPtr hwnd;
-			public IntPtr hdc;
-			public RECT rcItem;
-			public IntPtr itemData;
+			internal int ctrlType;
+			internal int ctrlID;
+			internal int itemID;
+			internal int itemAction;
+			internal int itemState;
+			internal IntPtr hwnd;
+			internal IntPtr hdc;
+			internal RECT rcItem;
+			internal IntPtr itemData;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public struct LVHITTESTINFO 
+		internal struct LVHITTESTINFO 
 		{ 
-			public Point pt; 
-			public int flags; 
-			public int iItem; 
-			public int iSubItem;
+			internal Point pt; 
+			internal int flags; 
+			internal int iItem; 
+			internal int iSubItem;
 		}
 	}
 }

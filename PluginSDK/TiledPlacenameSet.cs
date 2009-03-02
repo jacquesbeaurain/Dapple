@@ -12,7 +12,7 @@ namespace WorldWind.Renderable
 	/// Placename Layer that uses a Directory of xml files and extract place names 
 	/// based on current lat/lon/viewrange
 	/// </summary>
-	public class TiledPlacenameSet : RenderableObject
+	internal class TiledPlacenameSet : RenderableObject
 	{
 		protected World m_parentWorld;
 
@@ -45,16 +45,16 @@ namespace WorldWind.Renderable
 		protected static int IconWidth = 48;
 		protected static int IconHeight = 48;
 
-		public WorldWindPlacename[] PlaceNames
+		internal WorldWindPlacename[] PlaceNames
 		{
 			get { return m_placeNames; }
 		}
 
-		public int Color
+		internal int Color
 		{
 			get { return m_color; }
 		}
-		public FontDescription FontDescription
+		internal FontDescription FontDescription
 		{
 			get { return m_fontDescription; }
 		}
@@ -71,7 +71,7 @@ namespace WorldWind.Renderable
 		/// <param name="fontDescription"></param>
 		/// <param name="color"></param>
 		/// <param name="iconFilePath"></param>
-		public TiledPlacenameSet(
+		internal TiledPlacenameSet(
 			string name,
 			World parentWorld,
 			double altitude,
@@ -429,10 +429,10 @@ namespace WorldWind.Renderable
 		}
 	}
 
-	public class WorldWindPlacenameList
+	internal class WorldWindPlacenameList
 	{
-		public ArrayList m_placenameFiles = new ArrayList();
-		public WorldWindPlacenameList()
+		internal ArrayList m_placenameFiles = new ArrayList();
+		internal WorldWindPlacenameList()
 		{
 			WorldWindPlacenameFile rootPlacenameFile = new WorldWindPlacenameFile();
 			rootPlacenameFile.dataFilename = "0000_0000.wwp";
@@ -443,7 +443,7 @@ namespace WorldWind.Renderable
 			m_placenameFiles.Add(rootPlacenameFile);
 		}
 
-		public void SavePlacenameList(string filename)
+		internal void SavePlacenameList(string filename)
 		{
 			if (!Directory.Exists(Path.GetDirectoryName(filename)))
 			{
@@ -494,7 +494,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public void AddPlacename(string name, float lat, float lon, Hashtable metaData)
+		internal void AddPlacename(string name, float lat, float lon, Hashtable metaData)
 		{
 			WorldWindPlacenameFile p = null;
 			foreach (WorldWindPlacenameFile tempFile in m_placenameFiles)
@@ -524,20 +524,20 @@ namespace WorldWind.Renderable
 		}
 	}
 
-	public class WorldWindPlacenameFile
+	internal class WorldWindPlacenameFile
 	{
-		public string dataFilename;
-		public float north;
-		public float south;
-		public float west;
-		public float east;
-		public ArrayList m_placeNames = new ArrayList();
+		internal string dataFilename;
+		internal float north;
+		internal float south;
+		internal float west;
+		internal float east;
+		internal ArrayList m_placeNames = new ArrayList();
 
-		public WorldWindPlacenameFile()
+		internal WorldWindPlacenameFile()
 		{
 		}
 
-		public void AddPlacename(string name, float lat, float lon)
+		internal void AddPlacename(string name, float lat, float lon)
 		{
 			WorldWindPlacename newPlacename;
 			newPlacename.Name = name;
@@ -549,7 +549,7 @@ namespace WorldWind.Renderable
 			m_placeNames.Add(newPlacename);
 		}
 
-		public void AddPlacename(string name, float lat, float lon, Hashtable metaData)
+		internal void AddPlacename(string name, float lat, float lon, Hashtable metaData)
 		{
 			WorldWindPlacename newPlacename;
 			newPlacename.Name = name;
@@ -561,7 +561,7 @@ namespace WorldWind.Renderable
 			m_placeNames.Add(newPlacename);
 		}
 
-		public WorldWindPlacenameFile[] SplitPlacenameFiles()
+		internal WorldWindPlacenameFile[] SplitPlacenameFiles()
 		{
 			//split
 			WorldWindPlacenameFile northWest = new WorldWindPlacenameFile();
@@ -624,24 +624,24 @@ namespace WorldWind.Renderable
 		}
 
 
-		public static int GetRowFromLatitude(float latitude, float tileSize)
+		internal static int GetRowFromLatitude(float latitude, float tileSize)
 		{
 			return (int)System.Math.Round((System.Math.Abs(-90.0 - latitude) % 180) / tileSize);
 		}
 
-		public static int GetColFromLongitude(float longitude, float tileSize)
+		internal static int GetColFromLongitude(float longitude, float tileSize)
 		{
 			return (int)System.Math.Round((System.Math.Abs(-180.0 - longitude) % 360) / tileSize);
 		}
 	}
 
-	public struct WorldWindPlacename
+	internal struct WorldWindPlacename
 	{
-		public string ID;
-		public string Name;
-		public float Lat;
-		public float Lon;
-		public Point3d cartesianPoint;
-		public Hashtable metaData;
+		internal string ID;
+		internal string Name;
+		internal float Lat;
+		internal float Lon;
+		internal Point3d cartesianPoint;
+		internal Hashtable metaData;
 	}
 }

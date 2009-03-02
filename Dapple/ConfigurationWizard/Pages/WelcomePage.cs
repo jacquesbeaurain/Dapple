@@ -6,7 +6,7 @@ namespace ConfigurationWizard
 	/// <summary>
 	/// Summary description for WelcomePage.
 	/// </summary>
-	public class WelcomePage : WizardPage
+	internal class WelcomePage : WizardPage
 	{
       private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label label1;
@@ -58,7 +58,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:ConfigurationWizard.WelcomePage"/> class.
 		/// </summary>
-		public WelcomePage()
+		internal WelcomePage()
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();

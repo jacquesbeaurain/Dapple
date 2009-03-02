@@ -29,16 +29,16 @@ namespace Dapple.LayerGeneration
 
       #region Static
 
-      public static readonly string URLProtocolName = "gxarcims://";
-      public static readonly string CacheSubDir = "ArcIMSImages";
-		public static readonly double DefaultMinScale = 0.0;
-		public static readonly double DefaultMaxScale = 1.0;
+      internal static readonly string URLProtocolName = "gxarcims://";
+      internal static readonly string CacheSubDir = "ArcIMSImages";
+		internal static readonly double DefaultMinScale = 0.0;
+		internal static readonly double DefaultMaxScale = 1.0;
 
       #endregion
 
       #region Constructor
 
-      public ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
+      internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
          :base(szLayerTitle, oWorldWindow, oParent)
       {
 			m_oServerUri = oServerUri;
@@ -99,7 +99,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -128,7 +128,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -158,7 +158,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get { return m_oEnvelope; }
 		}
@@ -166,7 +166,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public string ServerURL
+		internal string ServerURL
 		{
 			get { return m_oServerUri.ToBaseUri(); }
 		}	
@@ -178,7 +178,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return "arcims"; }
 		}
@@ -190,13 +190,13 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool LayerFromSupportedServer
+		internal override bool LayerFromSupportedServer
 		{
 			get { return true; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool ServerIsInHomeView
+		internal override bool ServerIsInHomeView
 		{
 			get
 			{
@@ -208,7 +208,7 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+      internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_oQuadTileSet != null)
             return m_oQuadTileSet.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -220,7 +220,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          if (m_blnIsChanged)
          {
@@ -244,7 +244,7 @@ namespace Dapple.LayerGeneration
          return m_oQuadTileSet;
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
 			return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
 				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
@@ -270,7 +270,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
 			return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), this.LayerCacheFolder);
       }
@@ -283,12 +283,12 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
 			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent as ArcIMSServiceBuilder, m_dMinScale, m_dMaxScale, m_oCultureInfo);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is ArcIMSQuadLayerBuilder)) return false;
          ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
@@ -306,7 +306,7 @@ namespace Dapple.LayerGeneration
 
       #region Private Members
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "arcims";
 			szServerURL = m_oServerUri.ToBaseUri();

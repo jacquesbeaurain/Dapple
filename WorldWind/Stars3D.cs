@@ -33,7 +33,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
-		public static string LayerName = "5 - Stars 3D";
+		internal static string LayerName = "5 - Stars 3D";
 
 		/// <summary>
 		/// Plugin entry point - All plugins must implement this function
@@ -58,12 +58,12 @@ namespace Stars3D.Plugin
 	/// <summary>
 	/// Sky dome
 	/// </summary>
-	public class Stars3DLayer : RenderableObject
+	internal class Stars3DLayer : RenderableObject
 	{
 		static string version = "1.1";
 		string settingsFileName = "Stars3D.ini";
 		string pluginPath;
-		public DrawArgs drawArgs;
+		internal DrawArgs drawArgs;
 		Form pDialog;
 		private VertexBuffer StarListVB = null;
 		private int StarCount = 0;
@@ -74,15 +74,15 @@ namespace Stars3D.Plugin
 		private int refWidth;
 		private double sphereRadius;
 		private Texture texture;
-		public string textureFileName = "Flare.png";
+		internal string textureFileName = "Flare.png";
 
 		// default star catalog
-		public string catalogFileName = "Hipparcos_Stars_Mag6x5044.tsv";
+		internal string catalogFileName = "Hipparcos_Stars_Mag6x5044.tsv";
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow)
+		internal Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow)
 			: base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\stars3d\");
@@ -95,7 +95,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Read saved settings from ini file
 		/// </summary>
-		public void ReadSettings()
+		internal void ReadSettings()
 		{
 			string line = "";
 			try
@@ -117,7 +117,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Save settings in ini file
 		/// </summary>
-		public void SaveSettings()
+		internal void SaveSettings()
 		{
 			string line = version + ";" + catalogFileName + ";" + showFlares.ToString();
 			try
@@ -495,7 +495,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
-		public new void OnPropertiesClick(object sender, EventArgs e)
+		internal new void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open
@@ -510,7 +510,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Properties Dialog
 		/// </summary>
-		public class propertiesDialog : System.Windows.Forms.Form
+		internal class propertiesDialog : System.Windows.Forms.Form
 		{
 			private System.Windows.Forms.Label lblTexture;
 			private System.Windows.Forms.ComboBox cboTexture;
@@ -520,7 +520,7 @@ namespace Stars3D.Plugin
 			private System.Windows.Forms.Button btnCancel;
 			private Stars3DLayer layer;
 
-			public propertiesDialog(Stars3DLayer layer)
+			internal propertiesDialog(Stars3DLayer layer)
 			{
 				InitializeComponent();
 				//this.Icon = WorldWind.PluginEngine.Plugin.Icon;

@@ -25,7 +25,7 @@ namespace WorldWind
 	/// <summary>
 	/// Formats urls for images stored in NLT-style
 	/// </summary>
-	public class VEImageStore : ImageStore
+	internal class VEImageStore : ImageStore
 	{
 		private static byte[] noTileMD5Hash = { 0xc1, 0x32, 0x69, 0x48, 0x1c, 0x73, 0xde, 0x6e, 0x18, 0x58, 0x9f, 0x9f, 0xbc, 0x3b, 0xdf, 0x7e };
 
@@ -46,7 +46,7 @@ namespace WorldWind
 		/// Initializes a new instance of the <see cref= "T:Dapple.Plugins.VirtualEarth"/> class.
 		/// </summary>
 		/// <param name="mapType"></param>
-		public VEImageStore(VirtualEarthMapType mapType, double dLayerRadius)
+		internal VEImageStore(VirtualEarthMapType mapType, double dLayerRadius)
 		{
 			string dataset;
 
@@ -128,7 +128,7 @@ namespace WorldWind
 		/// <summary>
 		/// If the mesh should be reprojected an image store should return a projection to use here
 		/// </summary>
-		public override Projection Projection
+		internal override Projection Projection
 		{
 			get
 			{
@@ -158,7 +158,7 @@ namespace WorldWind
 		/// <summary>
 		/// This can be used by mesh calculation to calculate projected meshes for tiles
 		/// </summary>
-		public override void GetProjectionCorners(IGeoSpatialDownloadTile tile, out UV ul, out UV ur, out UV ll, out UV lr)
+		internal override void GetProjectionCorners(IGeoSpatialDownloadTile tile, out UV ul, out UV ur, out UV ll, out UV lr)
 		{
 			//handle the diff projection
 			//We start the VE QuadTileSet at level 3 (8x8 tiles at 45x22.5 degrees) 
@@ -186,7 +186,7 @@ namespace WorldWind
 		}
 
 
-		public bool IsValidTile(string strFile)
+		internal bool IsValidTile(string strFile)
 		{
 			bool bBadTile = false;
 

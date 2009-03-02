@@ -57,7 +57,7 @@ namespace jhuapl.util
 	/// <summary>
 	/// Various image manipulation functions.  Evidently not in 1.2 because plugin fails to load there.
 	/// </summary>
-	public sealed class JHU_ImageHelper
+	internal sealed class JHU_ImageHelper
 	{
 		/// <summary>
 		/// Static class
@@ -70,7 +70,7 @@ namespace jhuapl.util
 		/// Tests based on file extension whether the image format is supported by GDI+ image loader.
 		/// </summary>
 		/// <param name="imageFileName">Full path or just filename incl. extension.</param>
-		public static bool IsGdiSupportedImageFormat(string imageFileName)
+		internal static bool IsGdiSupportedImageFormat(string imageFileName)
 		{
 			string extension = Path.GetExtension(imageFileName).ToLower();
 			const string GdiSupportedExtensions = ".bmp.gif.jpg.jpeg.png.gif.tif";
@@ -82,7 +82,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="device">Initialized Direct3D device</param>
 		/// <param name="textureFileName">Path/filename to the image file</param>
-		public static Texture LoadTexture( Device device, string textureFileName )
+		internal static Texture LoadTexture( Device device, string textureFileName )
 		{
 			return LoadTexture(device, textureFileName, 0);
 		}
@@ -92,7 +92,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="device">Initialized Direct3D device</param>
 		/// <param name="textureFileName">Path/filename to the image file</param>
-		public static Texture LoadTexture( Device device, string textureFileName, int transparentColor )
+		internal static Texture LoadTexture( Device device, string textureFileName, int transparentColor )
 		{
 			try
 			{
@@ -110,7 +110,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="device">Initialized Direct3D device</param>
 		/// <param name="textureFileName">Stream containing the image file</param>
-		public  static Texture LoadTexture( Device device, Stream textureStream )
+		internal  static Texture LoadTexture( Device device, Stream textureStream )
 		{
 			return LoadTexture(device, textureStream, 0);
 		}
@@ -120,7 +120,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="device">Initialized Direct3D device</param>
 		/// <param name="textureFileName">Stream containing the image file</param>
-		public  static Texture LoadTexture( Device device, Stream textureStream, int transparentColor )
+		internal  static Texture LoadTexture( Device device, Stream textureStream, int transparentColor )
 		{
 			try
 			{
@@ -152,7 +152,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Loads image from file. Returns dummy image on load fail.
 		/// </summary>
-		public static Image LoadImage( string bitmapFileName )
+		internal static Image LoadImage( string bitmapFileName )
 		{
 			try
 			{
@@ -169,7 +169,7 @@ namespace jhuapl.util
 		/// Loads a custom mouse cursor from file
 		/// </summary>
 		/// <param name="relativePath">Path and filename of the .cur file relative to Data\Icons\Interface</param>
-		public static Cursor LoadCursor( string relativePath )
+		internal static Cursor LoadCursor( string relativePath )
 		{
 			string fullPath = Path.Combine("Data\\Icons\\Interface", relativePath );
 			try
@@ -188,7 +188,7 @@ namespace jhuapl.util
 		/// Loads an icon texture from a file
 		/// </summary>
 		/// <param name="relativePath">Path and filename relative to Data\Icons, absolute paths also valid.</param>
-		public static Texture LoadIconTexture( Device device, string relativePath )
+		internal static Texture LoadIconTexture( Device device, string relativePath )
 		{
 			try
 			{
@@ -214,7 +214,7 @@ namespace jhuapl.util
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="device">Initialized Direct3D device.</param>
-		public static void ConvertToDxt1(string originalImagePath, string outputDdsPath, Device device, bool eraseOriginal)
+		internal static void ConvertToDxt1(string originalImagePath, string outputDdsPath, Device device, bool eraseOriginal)
 		{
 			ConvertToDds(originalImagePath, outputDdsPath, Format.Dxt1, device, eraseOriginal);
 		}
@@ -225,7 +225,7 @@ namespace jhuapl.util
 		/// <param name="originalImageStream">Stream containing a bitmap.</param>
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="device">Initialized Direct3D device.</param>
-		public static void ConvertToDxt1(Stream originalImageStream, string outputDdsPath, Device device)
+		internal static void ConvertToDxt1(Stream originalImageStream, string outputDdsPath, Device device)
 		{
 			ConvertToDds(originalImageStream,outputDdsPath,Format.Dxt1,device);
 		}
@@ -236,7 +236,7 @@ namespace jhuapl.util
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="device">Initialized Direct3D device.</param>
-		public static void ConvertToDxt3(string originalImagePath, string outputDdsPath, Device device, bool eraseOriginal)
+		internal static void ConvertToDxt3(string originalImagePath, string outputDdsPath, Device device, bool eraseOriginal)
 		{
 			ConvertToDds(originalImagePath, outputDdsPath, Format.Dxt3, device, eraseOriginal);
 		}
@@ -247,7 +247,7 @@ namespace jhuapl.util
 		/// <param name="originalImageStream">Stream containing a bitmap.</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="device">Initialized Direct3D device.</param>
-		public static void ConvertToDxt3(Stream originalImageStream, string outputDdsPath, Device device)
+		internal static void ConvertToDxt3(Stream originalImageStream, string outputDdsPath, Device device)
 		{
 			ConvertToDds(originalImageStream,outputDdsPath,Format.Dxt3,device);
 		}
@@ -259,7 +259,7 @@ namespace jhuapl.util
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="format">DirectX format of file.</param>
 		/// <param name="device">Initialized Direct3D device.</param>
-		public static void ConvertToDds(string originalImagePath, string outputDdsPath, Format format, Device device, bool eraseOriginal)
+		internal static void ConvertToDds(string originalImagePath, string outputDdsPath, Format format, Device device, bool eraseOriginal)
 		{
 			try
 			{
@@ -287,7 +287,7 @@ namespace jhuapl.util
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="format">DirectX format of file.</param>
 		/// <param name="device">Initialized Direct3D device.</param>
-		public static void ConvertToDds(Stream originalImageStream, string outputDdsPath, Format format, Device device)
+		internal static void ConvertToDds(Stream originalImageStream, string outputDdsPath, Format format, Device device)
 		{
 			try
 			{

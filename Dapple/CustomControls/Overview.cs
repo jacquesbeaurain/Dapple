@@ -9,7 +9,7 @@ using WorldWind;
 
 namespace Dapple.CustomControls
 {
-	public partial class Overview : UserControl
+	internal partial class Overview : UserControl
 	{
 		#region Member Variables
 
@@ -19,14 +19,14 @@ namespace Dapple.CustomControls
 
 		#region Events
 
-		public delegate void AOISelectedDelegate(Object sender, GeographicBoundingBox bounds);
-		public event AOISelectedDelegate AOISelected;
+		internal delegate void AOISelectedDelegate(Object sender, GeographicBoundingBox bounds);
+		internal event AOISelectedDelegate AOISelected;
 
 		#endregion
 
 		#region Constructor
 
-		public Overview()
+		internal Overview()
 		{
 			InitializeComponent();
 
@@ -40,7 +40,7 @@ namespace Dapple.CustomControls
 
 		#region Public Methods
 
-		public void SetAOIList(List<KeyValuePair<String, GeographicBoundingBox>> oNewList)
+		internal void SetAOIList(List<KeyValuePair<String, GeographicBoundingBox>> oNewList)
 		{
 			c_cbAOIs.BeginUpdate();
 			c_cbAOIs.Items.Clear();
@@ -54,7 +54,7 @@ namespace Dapple.CustomControls
 			c_cbAOIs.EndUpdate();
 		}
 
-		public void StartRenderTimer()
+		internal void StartRenderTimer()
 		{
 			c_Overview.StartTimer();
 		}

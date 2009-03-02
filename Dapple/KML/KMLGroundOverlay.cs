@@ -16,7 +16,7 @@ namespace Dapple.KML
 		private GeographicBoundingBox m_oLastAoI, m_oLayerAoI;
 		private DateTime m_oLastAoIChangeTime;
 
-		public KMLGroundOverlayRenderable(KMLGroundOverlay oSource, String strKMLDirectory)
+		internal KMLGroundOverlayRenderable(KMLGroundOverlay oSource, String strKMLDirectory)
 			: base(oSource.Name)
 		{
 			m_oGroundOverlay = oSource;

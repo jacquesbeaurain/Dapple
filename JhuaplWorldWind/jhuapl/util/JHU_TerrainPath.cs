@@ -82,7 +82,7 @@ namespace jhuapl.util
 		double _minDisplayAltitude, _maxDisplayAltitude;
 
 		int lineColor;
-		public CustomVertex.PositionColored[] linePoints;
+		internal CustomVertex.PositionColored[] linePoints;
 
 		#region JHU Changes
 		//		Vector3[] sphericalCoordinates = new Vector3[0]; // x = lat, y = lon, z = height
@@ -153,7 +153,7 @@ namespace jhuapl.util
 		/// <param name="heightAboveSurface"></param>
 		/// <param name="lineColor"></param>
 		/// <param name="terrainAccessor"></param>
-		public JHU_TerrainPath(
+		internal JHU_TerrainPath(
 			string name,
 			World parentWorld,
          double minDisplayAltitude,
@@ -199,7 +199,7 @@ namespace jhuapl.util
 			this.isInitialized = true;
 		}
 
-		public void Load(DrawArgs drawArgs)
+		internal void Load(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -331,7 +331,7 @@ namespace jhuapl.util
 			this.isInitialized = false;
 		}
 
-		public void SaveToFile(string fileName)
+		internal void SaveToFile(string fileName)
 		{
 			using (BinaryWriter output = new BinaryWriter(new FileStream(fileName, FileMode.Create)))
 			{

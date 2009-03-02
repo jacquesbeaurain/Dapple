@@ -20,10 +20,10 @@ namespace MWA.Progress
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public delegate void SetTextInvoker(String text);
-		public delegate void IncrementInvoker( int val );
-		public delegate void StepToInvoker( int val );
-		public delegate void RangeInvoker( int minimum, int maximum );
+		internal delegate void SetTextInvoker(String text);
+		internal delegate void IncrementInvoker( int val );
+		internal delegate void StepToInvoker( int val );
+		internal delegate void RangeInvoker( int minimum, int maximum );
 
 		private String titleRoot = "";
 		private System.Threading.ManualResetEvent initEvent = new System.Threading.ManualResetEvent(false);
@@ -32,7 +32,7 @@ namespace MWA.Progress
 		private Object m_oResult = null;
 		private Exception m_oException = null;
 
-		public ProgressWindow() : this(true, true)
+		internal ProgressWindow() : this(true, true)
 		{
 		}
 
@@ -69,7 +69,7 @@ namespace MWA.Progress
 		/// </summary>
 		/// <param name="minimum">The minimum value in the progress range (e.g. 0)</param>
 		/// <param name="maximum">The maximum value in the progress range (e.g. 100)</param>
-		public void Begin( int minimum, int maximum )
+		public void Begin(int minimum, int maximum)
 		{
 			initEvent.WaitOne();
 			Invoke( new RangeInvoker( DoBegin ), new object[] { minimum, maximum } );
@@ -91,7 +91,7 @@ namespace MWA.Progress
 		/// <param name="minimum">The minimum value in the progress range (e.g. 0)</param>
 		/// <param name="maximum">The maximum value in the progress range (e.g. 100)</param>
 		/// <remarks>You must have called one of the Begin() methods prior to this call.</remarks>
-		public void SetRange( int minimum, int maximum )
+		public void SetRange(int minimum, int maximum)
 		{
 			initEvent.WaitOne();
 			Invoke( new RangeInvoker( DoSetRange ), new object[] { minimum, maximum } );
@@ -101,7 +101,7 @@ namespace MWA.Progress
 		/// Call this method from the worker thread to update the progress text.
 		/// </summary>
 		/// <param name="text">The progress text to display</param>
-		public void SetText( String text )
+		public void SetText(String text)
 		{
 			if (InvokeRequired)
 			{
@@ -117,7 +117,7 @@ namespace MWA.Progress
 		/// Call this method from the worker thread to increase the progress counter by a specified value.
 		/// </summary>
 		/// <param name="val">The amount by which to increment the progress indicator</param>
-		public void Increment( int val )
+		public void Increment(int val)
 		{
 			Invoke( new IncrementInvoker( DoIncrement ), new object[] { val } );
 		}
@@ -126,7 +126,7 @@ namespace MWA.Progress
 		/// Call this method from the worker thread to step the progress meter to a particular value.
 		/// </summary>
 		/// <param name="val"></param>
-		public void StepTo( int val )
+		public void StepTo(int val)
 		{
 			if (InvokeRequired)
 			{

@@ -12,17 +12,17 @@ namespace Dapple.CustomControls
    /// <summary>
    /// A toolstrip masquerading as a selection of tabs.
    /// </summary>
-   public partial class TabToolStrip : ToolStrip
+   internal partial class TabToolStrip : ToolStrip
    {
       #region Delegates
 
-      public delegate void TabToolbarButtonDelegate(int iIndex);
+      internal delegate void TabToolbarButtonDelegate(int iIndex);
 
       #endregion
 
       #region Events
 
-      public event TabToolbarButtonDelegate ButtonPressed;
+      internal event TabToolbarButtonDelegate ButtonPressed;
 
       #endregion
 
@@ -34,12 +34,12 @@ namespace Dapple.CustomControls
 
       #region Constructors
 
-      public TabToolStrip()
+      internal TabToolStrip()
          : this(2)
       {
       }
 
-      public TabToolStrip(int iNumButtons)
+      internal TabToolStrip(int iNumButtons)
       {
          if (iNumButtons < 1) throw new ArgumentException("Need to specify at least one button");
 
@@ -98,17 +98,17 @@ namespace Dapple.CustomControls
 
       #region Public Members
 
-      public void SetImage(int iButtonIndex, Image oImage)
+      internal void SetImage(int iButtonIndex, Image oImage)
       {
          m_aButtons[iButtonIndex].Image = oImage;
       }
 
-      public void SetToolTip(int iButtonIndex, String szToolTipText)
+      internal void SetToolTip(int iButtonIndex, String szToolTipText)
       {
          m_aButtons[iButtonIndex].ToolTipText = szToolTipText;
       }
 
-		public void SetNameAndText(int iPageIndex, string szName)
+		internal void SetNameAndText(int iPageIndex, string szName)
 		{
 			m_aButtons[iPageIndex].Name = szName;
 			m_aButtons[iPageIndex].Text = szName;
@@ -117,9 +117,9 @@ namespace Dapple.CustomControls
       #endregion
 	}
 
-   public class TabToolBarRenderer : ToolStripProfessionalRenderer
+   internal class TabToolBarRenderer : ToolStripProfessionalRenderer
    {
-      public TabToolBarRenderer()
+      internal TabToolBarRenderer()
          : base()
       {
          this.RoundedEdges = false;

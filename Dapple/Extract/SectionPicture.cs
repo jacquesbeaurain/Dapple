@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the download options for the grid
    /// </summary>
-   public partial class SectionPicture : DownloadOptions
+   internal partial class SectionPicture : DownloadOptions
    {
       #region Constants
       private readonly string TIF_EXT = ".tif";
@@ -20,17 +20,17 @@ namespace Dapple.Extract
       /// <summary>
       /// Control where the resolution can be changed
       /// </summary>
-      public override bool ResolutionEnabled
+      internal override bool ResolutionEnabled
       {
          set { oResolution.Enabled = value; }
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return ((Options.SectionPicture.DisplayOptions)cbDisplayOptions.SelectedIndex) != Options.SectionPicture.DisplayOptions.DoNotDisplay; }
 		}
 
-		public override ErrorProvider ErrorProvider
+		internal override ErrorProvider ErrorProvider
 		{
 			get
 			{
@@ -47,7 +47,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public SectionPicture(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal SectionPicture(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
@@ -63,7 +63,7 @@ namespace Dapple.Extract
       /// <summary>
       /// Set the default resolution
       /// </summary>
-      public override void SetDefaultResolution()
+      internal override void SetDefaultResolution()
       {
          double dXOrigin, dYOrigin, dXCellSize, dYCellSize;
          int iSizeX, iSizeY;
@@ -74,7 +74,7 @@ namespace Dapple.Extract
          oResolution.Setup(false, strCoordinateSystem, dXOrigin, dYOrigin, iSizeX, iSizeY, dXCellSize, dYCellSize);         
       }
 
-      public override void SetNativeResolution()
+      internal override void SetNativeResolution()
       {
          oResolution.SetNativeResolution();
       }
@@ -86,7 +86,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          // --- cannot reproject section data --- 
 			ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, DownloadSettings.DownloadCoordinateSystem.Native);
@@ -107,7 +107,7 @@ namespace Dapple.Extract
 			return result;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, TIF_EXT));
 			if (System.IO.File.Exists(szFilename))

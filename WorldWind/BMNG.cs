@@ -10,7 +10,7 @@ namespace NASA.Plugins
    /// <summary>
    /// Summary description for BMNG.
    /// </summary>
-   public class BMNG : System.Windows.Forms.Form
+   internal class BMNG : System.Windows.Forms.Form
    {
       private System.Windows.Forms.ComboBox comboBoxBmngVersion;
       private System.Windows.Forms.TrackBar trackBarMonth;
@@ -30,8 +30,8 @@ namespace NASA.Plugins
       WorldWind.Renderable.RenderableObjectList[,] m_RenderableLayers = new WorldWind.Renderable.RenderableObjectList[3, 12];
       WorldWind.Renderable.ImageLayer[,] m_ImageLayers = new WorldWind.Renderable.ImageLayer[3, 12];
       WorldWind.Renderable.QuadTileSet[,] m_QuadTileLayers = new WorldWind.Renderable.QuadTileSet[3, 12];
-      public WorldWind.WorldWindow m_WorldWindow = null;
-      public MenuItem m_MenuItem;
+      internal WorldWind.WorldWindow m_WorldWindow = null;
+      internal MenuItem m_MenuItem;
 
       private Timer timer;
       /// <summary>
@@ -52,7 +52,7 @@ namespace NASA.Plugins
       private System.Windows.Forms.Label label14;
       string m_BmngBaseImageUrl = "http://worldwind28.arc.nasa.gov/public/";
 
-      public BMNG(WorldWind.WorldWindow worldWindow, MenuItem menuItem)
+      internal BMNG(WorldWind.WorldWindow worldWindow, MenuItem menuItem)
       {
          //
          // Required for Windows Form Designer support
@@ -679,13 +679,13 @@ namespace NASA.Plugins
       }
    }
 
-   public class BmngLoader : WorldWind.PluginEngine.Plugin
+   internal class BmngLoader : WorldWind.PluginEngine.Plugin
    {
       BMNG m_BmngForm = null;
       MenuItem m_MenuItem;
       WorldWind.WindowsControlMenuButton m_ToolbarItem;
 
-      public BMNG BMNGForm 
+      internal BMNG BMNGForm 
       {
          get
          {
@@ -693,7 +693,7 @@ namespace NASA.Plugins
          }
       }
 
-      public override void Load()
+		public override void Load()
       {
          if (ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("Earth") >= 0)
          {
@@ -715,7 +715,7 @@ namespace NASA.Plugins
          }
       }
 
-      public override void Unload()
+		public override void Unload()
       {
          if (m_BmngForm != null)
          {

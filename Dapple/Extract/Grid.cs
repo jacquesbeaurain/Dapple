@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the download options for the grid
    /// </summary>
-   public partial class Grid : DownloadOptions
+   internal partial class Grid : DownloadOptions
    {
       #region Constants
       private readonly string GRD_EXT = ".grd";      
@@ -20,12 +20,12 @@ namespace Dapple.Extract
       /// <summary>
       /// Control where the resolution can be changed
       /// </summary>
-      public override bool ResolutionEnabled
+      internal override bool ResolutionEnabled
       {
          set { oResolution.Enabled = value; }
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return (Options.Grid.DisplayOptions)cbDisplayOptions.SelectedIndex != Options.Grid.DisplayOptions.DoNotDisplay; }
 		}
@@ -34,7 +34,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public Grid(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal Grid(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
@@ -50,7 +50,7 @@ namespace Dapple.Extract
          SetDefaultResolution();
       }
 
-		public override ErrorProvider ErrorProvider
+		internal override ErrorProvider ErrorProvider
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace Dapple.Extract
       /// <summary>
       /// Set the default resolution
       /// </summary>
-      public override void SetDefaultResolution()
+      internal override void SetDefaultResolution()
       {
          double dXOrigin, dYOrigin, dXCellSize, dYCellSize;
          int iSizeX, iSizeY;
@@ -77,7 +77,7 @@ namespace Dapple.Extract
          oResolution.Setup(false, strCoordinateSystem, dXOrigin, dYOrigin, iSizeX, iSizeY, dXCellSize, dYCellSize);         
       }
 
-      public override void SetNativeResolution()
+      internal override void SetNativeResolution()
       {
          oResolution.SetNativeResolution();
       }
@@ -89,7 +89,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
@@ -130,7 +130,7 @@ namespace Dapple.Extract
          tbFilename.Text = System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[iIndex]);
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, Options.Grid.DownloadOptionExtension[cbDownloadOptions.SelectedIndex]));
 			if (System.IO.File.Exists(szFilename))

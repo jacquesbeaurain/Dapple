@@ -13,10 +13,10 @@ using Resources = global::Dapple.Properties.Resources;
 
 namespace Geosoft.GX.DAPGetData
 {
-   public class ServerTree : TreeView
+   internal class ServerTree : TreeView
 	{
 		#region Enums
-		public enum SearchModeEnum
+		internal enum SearchModeEnum
       {
          All,
          Name,
@@ -24,18 +24,18 @@ namespace Geosoft.GX.DAPGetData
          Keywords
       }
 
-      public struct AsyncRequest
+      internal struct AsyncRequest
       {
-         public bool m_bValid;
-         public AsyncRequestType m_eType;
-         public object m_oParam1;
-         public object m_oParam2;
-         public object m_oParam3;
-         public object m_oParam4;
-         public object m_oParam5;
+         internal bool m_bValid;
+         internal AsyncRequestType m_eType;
+         internal object m_oParam1;
+         internal object m_oParam2;
+         internal object m_oParam3;
+         internal object m_oParam4;
+         internal object m_oParam5;
       }
 
-      public enum AsyncRequestType
+      internal enum AsyncRequestType
       {
          FilterChanged,
          GetCatalogHierarchy,
@@ -96,9 +96,9 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Only in here for designer support
       /// </summary>
-      public ServerTree() : this(null, String.Empty) { }
+      internal ServerTree() : this(null, String.Empty) { }
 
-      public ServerTree(ImageList oImageList, string strCacheDir)
+      internal ServerTree(ImageList oImageList, string strCacheDir)
       {
          m_strCacheDir = strCacheDir;
          m_oServerList = new ServerList(m_strCacheDir);
@@ -168,7 +168,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Define the select server event
       /// </summary>
-      public event ServerCachedChangedHandler ServerCacheChanged;
+      internal event ServerCachedChangedHandler ServerCacheChanged;
 
       /// <summary>
       /// Invoke the delegatae registered with the select server event
@@ -184,7 +184,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Define the select server event
       /// </summary>
-      public event ServerSelectHandler ServerSelect;
+      internal event ServerSelectHandler ServerSelect;
 
       /// <summary>
       /// Invoke the delegatae registered with the select server event
@@ -205,7 +205,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Define the server login event
       /// </summary>
-      public event ServerLoggedInHandler ServerLoggedIn;
+      internal event ServerLoggedInHandler ServerLoggedIn;
 
       /// <summary>
       /// Invoke the delegatae registered with the select server event
@@ -222,7 +222,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Define the dataset selected event
       /// </summary>
-      public event DataSetSelectedHandler DataSetSelected;
+      internal event DataSetSelectedHandler DataSetSelected;
 
       /// <summary>
       /// Invoke the delegatae registered with the Click event
@@ -242,7 +242,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Context menu to display on RMB
       /// </summary>
-      /*public ContextMenuStrip RMBContextMenuStrip
+      /*internal ContextMenuStrip RMBContextMenuStrip
       {
          get { return m_oContextMenuStrip; }
          set { m_oContextMenuStrip = value; }
@@ -251,7 +251,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the current server
       /// </summary>
-      public Server CurServer
+      internal Server CurServer
       {
          get { return m_oCurServer; }
       }
@@ -259,7 +259,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the server list
       /// </summary>
-      public SortedList<string, Server> ServerList
+      internal SortedList<string, Server> ServerList
       {
          get { return m_oValidServerList; }
       }
@@ -267,7 +267,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the full server list
       /// </summary>
-      public SortedList<string, Server> FullServerList
+      internal SortedList<string, Server> FullServerList
       {
          get { return m_oFullServerList; }
       }
@@ -275,7 +275,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// The currently selected DAP dataset (or null)
       /// </summary>
-      public DataSet SelectedDAPDataset
+      internal DataSet SelectedDAPDataset
       {
          get
          {
@@ -289,7 +289,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// The root node collection to use where DAP servers are kept
       /// </summary>
-      public TreeNodeCollection DAPRootNodes
+      internal TreeNodeCollection DAPRootNodes
       {
          get
          {
@@ -303,7 +303,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Display checkboxes next to datasets for selection support
       /// </summary>
-      public bool SupportDatasetSelection
+      internal bool SupportDatasetSelection
       {
          get
          {
@@ -321,7 +321,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Handle the control creation event
       /// </summary>
-      public void Load()
+      internal void Load()
       {
          m_oAsyncThread1 = new System.Threading.Thread(new System.Threading.ThreadStart(SendAsyncRequest));
          m_oAsyncThread1.Start();
@@ -333,7 +333,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Save server list to CSV
       /// </summary>
-      public void SaveServerList()
+      internal void SaveServerList()
       {
          m_oServerList.Save();
       }
@@ -409,7 +409,7 @@ namespace Geosoft.GX.DAPGetData
       /// Remove the server from the list
       /// </summary>
       /// <param name="oServer">Server to remove</param>
-      public void RemoveServer(Server oServer)
+      internal void RemoveServer(Server oServer)
       {
          if (m_oValidServerList.ContainsKey(oServer.Url))
             m_oValidServerList.Remove(oServer.Url);
@@ -428,7 +428,7 @@ namespace Geosoft.GX.DAPGetData
       /// Enable a server
       /// </summary>
       /// <param name="oServer"></param>
-      public void EnableServer(Server oServer)
+      internal void EnableServer(Server oServer)
       {
          if (!m_oValidServerList.ContainsKey(oServer.Url))
          {
@@ -442,7 +442,7 @@ namespace Geosoft.GX.DAPGetData
       /// Disable a server
       /// </summary>
       /// <param name="oServer"></param>
-      public void DisableServer(Server oServer)
+      internal void DisableServer(Server oServer)
       {
          Int32 iIndex = m_oValidServerList.IndexOfKey(oServer.Url);
 
@@ -458,7 +458,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Update the dataset count list
       /// </summary>
-      public void UpdateCounts()
+      internal void UpdateCounts()
       {
          if (this.InvokeRequired)
             this.BeginInvoke(new MethodInvoker(this.RefreshTreeNodeText));
@@ -469,7 +469,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Populate the list of servers
       /// </summary>
-      public void PopulateServerList()
+      internal void PopulateServerList()
       {
          string strServerUrl = string.Empty;
          Server oSelectServer;
@@ -545,7 +545,7 @@ namespace Geosoft.GX.DAPGetData
       /// Set the selected server
       /// </summary>
       /// <param name="oServer"></param>
-      public void SelectServer(Server oServer)
+      internal void SelectServer(Server oServer)
       {
          if (m_oCurServer != oServer)
          {
@@ -567,7 +567,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Update the contents of the tree, as a result has been (de)selected from a different screen
       /// </summary>
-      public void UpdateResults(DataSet hDataSet, bool bAdded)
+      internal void UpdateResults(DataSet hDataSet, bool bAdded)
       {
          if (bAdded)
          {
@@ -583,7 +583,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Clear the list of selected datasets
       /// </summary>
-      public void ClearSelectedDatasets()
+      internal void ClearSelectedDatasets()
       {
          m_hSelectedDataSets.Clear();
          RefreshResults();
@@ -592,7 +592,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Invalidate drawing area until we get the results back
       /// </summary>
-      public void SetupCatalog(BoundingBox searchExtents)
+      internal void SetupCatalog(BoundingBox searchExtents)
       {
          if (m_oCurServer.MajorVersion < 6 || (m_oCurServer.MajorVersion == 6 && m_oCurServer.MinorVersion < 3))
             m_bEntireCatalogMode = true;
@@ -608,7 +608,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Refresh the catalog based on the new aoi
       /// </summary>
-      public virtual void AsyncFilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
+      internal virtual void AsyncFilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
       {
          m_eMode = eMode;
          m_bAOIFilter = bAOIFilter;
@@ -620,7 +620,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Refresh the catalog based on the new aoi
       /// </summary>
-      public void FilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
+      internal void FilterChanged(SearchModeEnum eMode, BoundingBox searchExtents, string strSearch, bool bAOIFilter, bool bTextFilter)
       {
          bool bChanged = false;
 
@@ -650,13 +650,13 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
-      public void ReenableServer(Server oServer)
+      internal void ReenableServer(Server oServer)
       {
          oServer.Status = Server.ServerStatus.OnLine;
          if (!m_oValidServerList.ContainsKey(oServer.Url))
             m_oValidServerList.Add(oServer.Url, oServer);
       }
-      public void NoResponseError(Server oServer)
+      internal void NoResponseError(Server oServer)
       {
          Int32 iIndex = m_oValidServerList.IndexOfKey(oServer.Url);
 
@@ -672,7 +672,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the catalog hierarchy
       /// </summary>
-      public void GetCatalogHierarchy()
+      internal void GetCatalogHierarchy()
       {
          string strConfigurationEdition = string.Empty;
 
@@ -780,7 +780,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the list of datasets for a particular path
       /// </summary>
       /// <param name="strHierarchy"></param>
-      public void GetDatasetList(string strHierarchy, int iTimestamp)
+      internal void GetDatasetList(string strHierarchy, int iTimestamp)
       {
          if (!m_oCacheManager.bGetDatasetList(m_oCurServer, strHierarchy, iTimestamp, m_oCatalogBoundingBox, m_bAOIFilter, m_bTextFilter, m_strSearchString))
          {
@@ -806,7 +806,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the dataset counts for this server
       /// </summary>
       /// <param name="oServer"></param>
-      public void GetDatasetCount(Server oServer)
+      internal void GetDatasetCount(Server oServer)
       {
          if (!m_bAOIFilter && !m_bTextFilter)
             oServer.GetDatasetCount(null, null);
@@ -823,7 +823,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-      public bool Login(BoundingBox searchExtents)
+      internal bool Login(BoundingBox searchExtents)
       {
          bool bRet = true;
 
@@ -863,7 +863,7 @@ namespace Geosoft.GX.DAPGetData
       /// Enqueue a request onto the queue
       /// </summary>
       /// <param name="eRequest"></param>
-      public void EnqueueRequest(AsyncRequestType eRequest)
+      internal void EnqueueRequest(AsyncRequestType eRequest)
       {
          AsyncRequest oRequest = new AsyncRequest();
          oRequest.m_bValid = true;
@@ -882,7 +882,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="eRequest"></param>
       /// <param name="oParam1"></param>
       /// <param name="oParam2"></param>
-      public void EnqueueRequest(AsyncRequestType eRequest, object oParam1, object oParam2)
+      internal void EnqueueRequest(AsyncRequestType eRequest, object oParam1, object oParam2)
       {
          AsyncRequest oRequest = new AsyncRequest();
          oRequest.m_bValid = true;
@@ -904,7 +904,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="oParam3"></param>
       /// <param name="oParam4"></param>
       /// <param name="oParam5"></param>
-      public void EnqueueRequest(AsyncRequestType eRequest, object oParam1, object oParam2, object oParam3, object oParam4, object oParam5)
+      internal void EnqueueRequest(AsyncRequestType eRequest, object oParam1, object oParam2, object oParam3, object oParam4, object oParam5)
       {
          AsyncRequest oRequest = new AsyncRequest();
          oRequest.m_bValid = true;
@@ -1353,7 +1353,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="iSelectedImageIndex"></param>
       /// <param name="eState"></param>      
       /// <returns></returns>
-      public virtual System.Windows.Forms.TreeNode Add(System.Windows.Forms.TreeNode hParent, string strNodeText, int iImageIndex, int iSelectedImageIndex)
+      internal virtual System.Windows.Forms.TreeNode Add(System.Windows.Forms.TreeNode hParent, string strNodeText, int iImageIndex, int iSelectedImageIndex)
       {
          System.Windows.Forms.TreeNode hNode;
 

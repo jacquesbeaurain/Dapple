@@ -13,11 +13,11 @@ using WorldWind.Net;
 
 namespace Dapple.DAP
 {
-   public class DAPDownloadRequest : GeoSpatialDownloadRequest
+   internal class DAPDownloadRequest : GeoSpatialDownloadRequest
    {
 		DAPImageStore m_DapImageStore;
 
-		public DAPDownloadRequest(IGeoSpatialDownloadTile tile, DAPImageStore imageStore, string localFilePath)
+		internal DAPDownloadRequest(IGeoSpatialDownloadTile tile, DAPImageStore imageStore, string localFilePath)
          : base(tile, imageStore, localFilePath, "")
       {
 			m_DapImageStore = imageStore;
@@ -167,12 +167,12 @@ namespace Dapple.DAP
 		}
    }
 
-   public class DapDownload : WorldWind.Net.WebDownload
+   internal class DapDownload : WorldWind.Net.WebDownload
    {
       private Geosoft.Dap.Common.BoundingBox m_hBB;
 		private DAPImageStore m_oImageStore;
 
-		public DapDownload(string imagePath, Geosoft.Dap.Common.BoundingBox hBB, DAPImageStore imageStore)
+		internal DapDownload(string imagePath, Geosoft.Dap.Common.BoundingBox hBB, DAPImageStore imageStore)
          : base()
       {
          m_hBB = hBB;
@@ -261,12 +261,12 @@ namespace Dapple.DAP
 		}
    }
 
-   public class DapTileDownload : WorldWind.Net.WebDownload
+   internal class DapTileDownload : WorldWind.Net.WebDownload
    {
       private IGeoSpatialDownloadTile m_oTile;
       private DAPImageStore m_oImageStore;
 
-      public DapTileDownload(string imagePath, IGeoSpatialDownloadTile oTile, DAPImageStore imageStore)
+      internal DapTileDownload(string imagePath, IGeoSpatialDownloadTile oTile, DAPImageStore imageStore)
          : base()
       {
          m_oTile = oTile;

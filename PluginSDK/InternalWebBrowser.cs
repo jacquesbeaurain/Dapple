@@ -10,13 +10,13 @@ using WorldWind;
 
 namespace WorldWind
 {
-	public delegate void BrowserCloseDelegate();
-	public delegate void BrowserNavigatedDelegate();
+	internal delegate void BrowserCloseDelegate();
+	internal delegate void BrowserNavigatedDelegate();
 
 	/// <summary>
 	/// Internal Web Browser panel with url bar and simple navigation buttons
 	/// </summary>
-	public class InternalWebBrowserPanel : Panel
+	internal class InternalWebBrowserPanel : Panel
 	{
 		private WebBrowser webBrowser;
 		private ToolStrip webBrowserToolStrip;
@@ -28,35 +28,35 @@ namespace WorldWind
 		private ToolStripButton webBrowserStop;
 		private Splitter splitter;
 		
-		public InternalWebBrowserPanel()
+		internal InternalWebBrowserPanel()
 		{
 			InitializeComponent();
 		}
 
-		public InternalWebBrowserPanel(string startUrl)
+		internal InternalWebBrowserPanel(string startUrl)
 		{
 			InitializeComponent();
 			this.NavigateTo(startUrl);
 		}
 
-		#region Public Methods
-		public void NavigateTo(string targetUrl)
+		#region internal Methods
+		internal void NavigateTo(string targetUrl)
 		{
 			webBrowser.Navigate(targetUrl);
 			OnNavigate(targetUrl);
 		}
-		public bool IsTyping()
+		internal bool IsTyping()
 		{
 			return webBrowserURL.Focused;
 		}
 		#endregion
 
 		#region Events
-		public delegate void BrowserCloseHandler();
-		public delegate void BrowserNavigateHandler(string url);
+		internal delegate void BrowserCloseHandler();
+		internal delegate void BrowserNavigateHandler(string url);
 
-		public event BrowserNavigateHandler Navigate;
-		public event BrowserCloseHandler Close;
+		internal event BrowserNavigateHandler Navigate;
+		internal event BrowserCloseHandler Close;
 
 		protected void OnNavigate(string url)
 		{
@@ -247,7 +247,7 @@ namespace WorldWind
 		}
 		#endregion
 
-		public class BrowserEventArgs : EventArgs
+		internal class BrowserEventArgs : EventArgs
 		{
 		}
 

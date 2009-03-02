@@ -62,17 +62,17 @@ namespace jhuapl.util
 	/// </summary>
 	public class JHU_IconTexture : IDisposable
 	{
-		public Texture Texture;
-		public int Width;
-		public int Height;
-		public int ReferenceCount;
+		internal Texture Texture;
+		internal int Width;
+		internal int Height;
+		internal int ReferenceCount;
 
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.IconTexture"/> class 
 		/// from a texture file on disk.
 		/// </summary>
-		public JHU_IconTexture(Device device, string textureFileName)
+		internal JHU_IconTexture(Device device, string textureFileName)
 		{
 			if(JHU_ImageHelper.IsGdiSupportedImageFormat(textureFileName))
 			{
@@ -98,7 +98,7 @@ namespace jhuapl.util
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.IconTexture"/> class 
 		/// from a bitmap.
 		/// </summary>
-		public JHU_IconTexture(Device device, Bitmap image)
+		internal JHU_IconTexture(Device device, Bitmap image)
 		{
 			LoadImage(device, image);
 		}

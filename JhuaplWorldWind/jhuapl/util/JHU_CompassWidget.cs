@@ -153,7 +153,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public JHU_CompassWidget()
+		internal JHU_CompassWidget()
 		{
 			m_textures = JHU_Globals.getInstance().Textures;
 
@@ -169,7 +169,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Filename of button graphic
 		/// </summary>
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -334,7 +334,7 @@ namespace jhuapl.util
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			object key = null;
 

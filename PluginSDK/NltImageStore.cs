@@ -7,7 +7,7 @@ namespace WorldWind
 	/// <summary>
 	/// Formats urls for images stored in NLT-style
 	/// </summary>
-    public class NltImageStore : ImageStore
+	public class NltImageStore : ImageStore
     {
         #region Private Members
 
@@ -17,7 +17,7 @@ namespace WorldWind
 
         #endregion
 
-        public override bool IsDownloadableLayer
+		  public override bool IsDownloadableLayer
         {
             get
             {
@@ -30,7 +30,7 @@ namespace WorldWind
         /// </summary>
         /// <param name="dataSetName"></param>
         /// <param name="serverUri"></param>
-        public NltImageStore(
+		  public NltImageStore(
             string dataSetName,
             string serverUri)
         {
@@ -39,7 +39,7 @@ namespace WorldWind
             m_formatString = "{0}?T={1}&L={2}&X={3}&Y={4}";
         }
 
-        public NltImageStore(
+        internal NltImageStore(
             string dataSetName,
             string serverUri,
             string formatString)
@@ -57,7 +57,7 @@ namespace WorldWind
 					 tile.West, tile.South, tile.East, tile.North);
         }
 
-       public string ServerUri
+       internal string ServerUri
        {
           get
           {
@@ -65,7 +65,7 @@ namespace WorldWind
           }
        }
 
-       public string DatasetName
+       internal string DatasetName
        {
           get
           {

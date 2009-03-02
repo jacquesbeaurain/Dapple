@@ -24,7 +24,7 @@ namespace WorldWind.Renderable
 	/// </summary>
 	public class KMLIcon : Icon
     {
-        public new string Description
+        internal new string Description
         {
             get
             {
@@ -37,13 +37,13 @@ namespace WorldWind.Renderable
             }
         }
 
-        public string NormalIcon;
+        internal string NormalIcon;
 
-        public bool HasBeenUpdated = true;
+        internal bool HasBeenUpdated = true;
 
-        public bool IsDescriptionVisible = false;
+        internal bool IsDescriptionVisible = false;
 
-        public KMLDialog DescriptionBubble;
+        internal KMLDialog DescriptionBubble;
 
         /// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class  
@@ -53,7 +53,7 @@ namespace WorldWind.Renderable
 		/// <param name="longitude">Longitude in decimal degrees.</param>
         /// <param name="normalicon"></param>
         /// <param name="heightAboveSurface">Altitude</param>
-        public KMLIcon(string name, double latitude, double longitude, string normalicon, double heightAboveSurface)
+		  public KMLIcon(string name, double latitude, double longitude, string normalicon, double heightAboveSurface)
             : base(name, latitude, longitude, heightAboveSurface)
 		{
 			NormalIcon = normalicon;
@@ -66,7 +66,7 @@ namespace WorldWind.Renderable
         /// <summary>
         /// Disposes the icon (when disabled)
         /// </summary>
-        public override void Dispose()
+		  public override void Dispose()
         {
             // Nothing to dispose
             // Ashish Datta - make sure the description bubble is destroyed and not visisble.
@@ -124,7 +124,7 @@ namespace WorldWind.Renderable
             }
         }
 
-        public override void NoRender(DrawArgs drawArgs)
+        internal override void NoRender(DrawArgs drawArgs)
         {
             base.NoRender(drawArgs);
 

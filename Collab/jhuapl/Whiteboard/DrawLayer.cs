@@ -80,7 +80,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// Freehand = Add points starting on mouse down until mouse up.'
 		/// Disabled = This draw layer is read-only.
 		/// </summary>
-		public enum DrawMode
+		internal enum DrawMode
 		{
 			None,
 			Hotspot,
@@ -167,7 +167,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// Determines if the draw layer is writeable.  True = writeable, False = Read only.
 		/// </summary>
-		public bool Writeable
+		internal bool Writeable
 		{
 			get
 			{
@@ -198,7 +198,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// Determines if the draw layer stays in a draw mode when the current shape is complete.
 		/// True = keep drawing, False = go back to the none state when current drawing complete.
 		/// </summary>
-		public bool DrawLock
+		internal bool DrawLock
 		{
 			get
 			{
@@ -215,7 +215,7 @@ namespace Collab.jhuapl.Whiteboard
         /// The specified drawing mode.  Used when locks is enabled to reset the current
         /// draw mode for the next shape.
         /// </summary>
-		public DrawMode DrawingMode
+		internal DrawMode DrawingMode
 		{
 			get
 			{
@@ -264,7 +264,7 @@ namespace Collab.jhuapl.Whiteboard
         /// <summary>
         /// Whther or not the mouse is currently in drag mode for drawlayers
         /// </summary>
-        public bool MouseDragMode
+        internal bool MouseDragMode
         {
             get { return m_mouseDragMode; }
             set { m_mouseDragMode = value; }
@@ -280,7 +280,8 @@ namespace Collab.jhuapl.Whiteboard
 		/// <param name="drawArgs">The drawing args from the parent application.  Primarily used
 		/// for getting the terrain accessor when outside the UI thread.</param>
 		/// <param name="name">The name of this drawing layer</param>
-		public DrawLayer(string name) : base (name)
+		  public DrawLayer(string name)
+			  : base(name)
 		{
 			// initialize colors
 			for(int i = 0; i < m_guideLine.Length; i++)
@@ -293,7 +294,7 @@ namespace Collab.jhuapl.Whiteboard
 			// m_drawArgs = JHU_Globals.getInstance().WorldWindow.DrawArgs;
 
 		}
-	
+
 		public override void Dispose()
 		{
 			this.isInitialized = false;
@@ -323,7 +324,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// Stops any drawing in progress and reset the drawmode to none.
 		/// </summary>
-		public void StopDrawing()
+		internal void StopDrawing()
 		{
 			switch (m_currDrawMode)
 			{
@@ -404,7 +405,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// Sets up drawing of a hotspot (icon) on the layer.  Pops up a dialog asking for 
 		/// hotspot bitmap, name, description and URL.
 		/// </summary>
-		public void DrawHotspot()
+		internal void DrawHotspot()
 		{
 			StopDrawing();
 			m_drawMode = DrawMode.Hotspot;
@@ -414,7 +415,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// Sets up drawing of a incident (icon) on the layer.  Pops up a dialog asking for 
 		/// incident bitmap, name, description and URL.
 		/// </summary>
-		public void DrawIncident()
+		internal void DrawIncident()
 		{
 			StopDrawing();
 			m_drawMode = DrawMode.Incident;
@@ -424,7 +425,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// Sets up drawing of a text box on the layer.  Pops up a dialog asking for text to 
 		/// insert.
 		/// </summary>
-		public void DrawPostIt()
+		internal void DrawPostIt()
 		{
 			StopDrawing();
 			m_drawMode = DrawMode.PostIt;
@@ -433,7 +434,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// Sets up drawing of a polyline.
 		/// </summary>
-		public void DrawPolyline()
+		internal void DrawPolyline()
 		{
 			StopDrawing();
 			m_drawMode = DrawMode.Polyline;
@@ -442,7 +443,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// Sets up drawing of a polygon
 		/// </summary>
-		public void DrawPolygon()
+		internal void DrawPolygon()
 		{
 			StopDrawing();
 			m_drawMode = DrawMode.Polygon;
@@ -451,7 +452,7 @@ namespace Collab.jhuapl.Whiteboard
 		/// <summary>
 		/// Sets up drawing of a freehand shape.
 		/// </summary>
-		public void DrawFreehand()
+		internal void DrawFreehand()
 		{
 			StopDrawing();
 			m_drawMode = DrawMode.Freehand;
@@ -1242,12 +1243,12 @@ namespace Collab.jhuapl.Whiteboard
 				}
 			}
 		}
-	
+
 		public override bool PerformSelectionAction(DrawArgs drawArgs)
 		{
             return base.PerformSelectionAction(drawArgs);
 		}
-	
+
 		public override void Update(DrawArgs drawArgs)
 		{
 			// if we aren't initialized go ahead and init
@@ -1256,7 +1257,7 @@ namespace Collab.jhuapl.Whiteboard
 
 			base.Update(drawArgs);
 		}
-	
+
 		public override void Initialize(DrawArgs drawArgs)
 		{
 			base.Initialize(drawArgs);
@@ -1267,13 +1268,13 @@ namespace Collab.jhuapl.Whiteboard
 		#endregion
 
 		#region Communication Methods
-		public void SendPath(DrawMode mode, LineFeature path)
+		internal void SendPath(DrawMode mode, LineFeature path)
 		{
 			// SavePathAsXML(mode, path);
 			// Send somewhere
 		}
 
-		public void SendHotspot(Hotspot hotspot)
+		internal void SendHotspot(Hotspot hotspot)
 		{
 			// SaveHotspotAsXML(hotspot)
 			// Send somewhere
@@ -1283,7 +1284,7 @@ namespace Collab.jhuapl.Whiteboard
 
 		#region XML Support Methods
 
-		public string SavePathAsXML(DrawMode type, LineFeature path)
+		internal string SavePathAsXML(DrawMode type, LineFeature path)
 		{
 			string result; 
 			try
@@ -1332,7 +1333,7 @@ namespace Collab.jhuapl.Whiteboard
 			return result;
 		}
 
-		public string SaveHotspotAsXML(Hotspot hotspot)
+		internal string SaveHotspotAsXML(Hotspot hotspot)
 		{
 			string result; 
 			try
@@ -1381,7 +1382,7 @@ namespace Collab.jhuapl.Whiteboard
 			return result;
 		}
 
-		public string SaveTrackAsXML(WorldWind.Renderable.Icon track)
+		internal string SaveTrackAsXML(WorldWind.Renderable.Icon track)
 		{
 			string result; 
 			try
@@ -1426,7 +1427,7 @@ namespace Collab.jhuapl.Whiteboard
 		}
 
 
-		public LineFeature LoadLineFromXML (CollabObj ds)
+		internal LineFeature LoadLineFromXML (CollabObj ds)
 		{
 			string name; 
 			string type;
@@ -1480,7 +1481,7 @@ namespace Collab.jhuapl.Whiteboard
 		}
 
 
-		public Hotspot LoadHotspotFromXML (CollabObj ds)
+		internal Hotspot LoadHotspotFromXML (CollabObj ds)
 		{
 			string name; 
 			string type;
@@ -1533,7 +1534,7 @@ namespace Collab.jhuapl.Whiteboard
 		}
 //
 //
-//		public CS_TrackData LoadTrackFromXML (CollabObj ds)
+//		internal CS_TrackData LoadTrackFromXML (CollabObj ds)
 //		{
 //			string name; 
 //			string type;

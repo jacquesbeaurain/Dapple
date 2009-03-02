@@ -398,7 +398,7 @@ namespace WorldWind
 			}
 		}
 
-		public double ViewRange
+		internal double ViewRange
 		{
 			get
 			{
@@ -420,7 +420,7 @@ namespace WorldWind
 			}
 		}
 
-		public string Caption
+		internal string Caption
 		{
 			get
 			{
@@ -485,7 +485,7 @@ namespace WorldWind
 		/// If the camera's height is above this value, the entire half of the world is visible.  Below this value, the top and bottom of the globe
 		/// is clipped by the window.
 		/// </summary>
-		public double HeightThreshold
+		internal double HeightThreshold
 		{
 			get
 			{
@@ -498,7 +498,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="dDistance">Height above the earth's surface.</param>
 		/// <returns>Latitude viewing angle, in degrees.</returns>
-		public double LatitudeVisibleAngleFromCameraHeight(double dDistance)
+		internal double LatitudeVisibleAngleFromCameraHeight(double dDistance)
 		{
 			if (dDistance >= HeightThreshold) return 180 - drawArgs.WorldCamera.Fov.Degrees;
 			if (dDistance <= 0) return 0.0;
@@ -523,7 +523,7 @@ namespace WorldWind
 			return 180 - Math.Acos((Math.Pow(X, 2) - Math.Pow(dDistance + dRadius, 2) - Math.Pow(dRadius, 2)) / (2 * (dDistance + dRadius) * dRadius)) * Rad2Deg;
 		}
 
-		public double CameraHeightFromVisibleAngles(double dLatArc, double dLonArc, double dLat)
+		internal double CameraHeightFromVisibleAngles(double dLatArc, double dLonArc, double dLat)
 		{
 			return Math.Max(CameraHeightFromLatitudeVisibleAngle(dLatArc), CameraHeightFromLatitudeVisibleAngle(dLonArc * Math.Cos(dLat) * (double)this.Height / (double)this.Width));
 		}
@@ -536,7 +536,7 @@ namespace WorldWind
 		/// </remarks>
 		/// <param name="dLatArc"></param>
 		/// <returns></returns>
-		public double CameraHeightFromLatitudeVisibleAngle(double dLatArc)
+		internal double CameraHeightFromLatitudeVisibleAngle(double dLatArc)
 		{
 			if (dLatArc > 180.0 - drawArgs.WorldCamera.Fov.Degrees) return HeightThreshold + 10000;
 			if (dLatArc <= 0.0) return 0.0;
@@ -602,7 +602,7 @@ namespace WorldWind
 		const double HVangle = 22.21; // Horizontal view angle
 		const double Deg2Rad = Math.PI / 180.0;
 		const double Rad2Deg = 180 / Math.PI;
-		public GeographicQuad GetViewBox(bool bForceRayIntersectionTest)
+		internal GeographicQuad GetViewBox(bool bForceRayIntersectionTest)
 		{
 			// Known Variables
 			double dAlt = this.drawArgs.WorldCamera.Distance; // distance to target position on ground
@@ -754,7 +754,7 @@ namespace WorldWind
 		/// <summary>
 		/// Go to worldwind URI
 		/// </summary>
-		public void Goto(WorldWind.Net.WorldWindUri uri)
+		internal void Goto(WorldWind.Net.WorldWindUri uri)
 		{
 			GotoLatLon(
 				uri.Latitude.Degrees, uri.Longitude.Degrees, uri.Direction.Degrees,
@@ -792,7 +792,7 @@ namespace WorldWind
 				this.drawArgs.WorldCamera.Tilt.Degrees);
 		}
 
-		public void GotoLatLonAltitude(double latitude, double longitude, double altitude)
+		internal void GotoLatLonAltitude(double latitude, double longitude, double altitude)
 		{
 			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude,
@@ -807,13 +807,13 @@ namespace WorldWind
 			this.GotoLatLonHeadingAltitude(latitude, longitude, heading, altitude);
 		}
 
-		public void GotoLatLonViewRange(double latitude, double longitude, double perpendicularViewRange)
+		internal void GotoLatLonViewRange(double latitude, double longitude, double perpendicularViewRange)
 		{
 			double altitude = m_World.EquatorialRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
 			this.GotoLatLonHeadingAltitude(latitude, longitude, this.drawArgs.WorldCamera.Heading.Degrees, altitude);
 		}
 
-		public void GotoLatLonHeadingAltitude(double latitude, double longitude, double heading, double altitude)
+		internal void GotoLatLonHeadingAltitude(double latitude, double longitude, double heading, double altitude)
 		{
 			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude,
@@ -869,7 +869,7 @@ namespace WorldWind
 		/// The world render loop.  
 		/// Borrowed from FlightGear and Tom Miller's blog
 		/// </summary>
-		public void OnApplicationIdle(object sender, EventArgs e)
+		internal void OnApplicationIdle(object sender, EventArgs e)
 		{
 			// Sleep will always overshoot by a bit so under-sleep by
 			// 2ms in the hopes of never oversleeping.
@@ -923,7 +923,7 @@ namespace WorldWind
 			}
 		}
 
-		public void ClearDevice()
+		internal void ClearDevice()
 		{
 			m_Device3d.Clear(ClearFlags.Target, 0, 0, 0);
 		}
@@ -1285,7 +1285,7 @@ namespace WorldWind
 
 		#region Event handlers
 
-		public void HandleMouseWheel(MouseEventArgs e)
+		internal void HandleMouseWheel(MouseEventArgs e)
 		{
 			OnMouseWheel(e);
 		}
@@ -1413,7 +1413,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="e"></param>
 		/// <returns>Returns true if the key is handled.</returns>
-		public bool HandleKeyDown(KeyEventArgs e)
+		internal bool HandleKeyDown(KeyEventArgs e)
 		{
 
 			bool handled = this.m_RootWidget.OnKeyDown(e);
@@ -1564,7 +1564,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="e"></param>
 		/// <returns>Returns true if the key is handled.</returns>
-		public bool HandleKeyUp(KeyEventArgs e)
+		internal bool HandleKeyUp(KeyEventArgs e)
 		{
 			bool handled = m_RootWidget.OnKeyUp(e);
 			if (handled)
@@ -2232,7 +2232,7 @@ namespace WorldWind
 			}
 		}
 
-		public void KillD3DAndWorkerThread()
+		internal void KillD3DAndWorkerThread()
 		{
 			if (m_WorkerThread != null)
 			{

@@ -17,7 +17,7 @@ namespace WorldWind.PluginEngine
 	/// <summary>
 	/// Loads plug-in scripts, compiles and executes them
 	/// </summary>
-	public class PluginCompiler
+	internal class PluginCompiler
 	{
 		MainApplication worldWind;
 		const string LogCategory = "PLUG";
@@ -27,7 +27,7 @@ namespace WorldWind.PluginEngine
 		StringCollection m_worldWindReferencesList = new StringCollection();
 		string m_pluginRootDirectory;
 
-		public string PluginRootDirectory
+		internal string PluginRootDirectory
 		{
 			get
 			{
@@ -51,7 +51,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The list of discovered plugins.
 		/// </summary>
-		public ArrayList Plugins
+		internal ArrayList Plugins
 		{
 			get
 			{
@@ -64,7 +64,7 @@ namespace WorldWind.PluginEngine
 		/// </summary>
 		/// <param name="worldWind"></param>
 		/// <param name="pluginDirectory"></param>
-		public PluginCompiler( MainApplication worldWind, string pluginDirectory )
+		internal PluginCompiler( MainApplication worldWind, string pluginDirectory )
 		{
 			this.worldWind = worldWind;
 
@@ -105,7 +105,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Adds a compiler to the list of available codeDomProviders
 		/// </summary>
-		public void AddCodeProvider( CodeDomProvider cdp )
+		internal void AddCodeProvider( CodeDomProvider cdp )
 		{
 			// Add leading dot since that's what Path.GetExtension uses
 			codeDomProviders.Add("."+cdp.FileExtension, cdp);
@@ -114,7 +114,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Scan for plugins inside an assembly.
 		/// </summary>
-		public void FindPlugins( Assembly assembly )
+		internal void FindPlugins( Assembly assembly )
 		{
 			foreach( Type t in assembly.GetTypes() )
 			{
@@ -145,7 +145,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Build/update the list of available plugins.
 		/// </summary>
-		public void FindPlugins()
+		internal void FindPlugins()
 		{
 			if(!Directory.Exists(m_pluginRootDirectory))
 				return;
@@ -191,7 +191,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Loads the plugins that are set for load on world wind startup.
 		/// </summary>
-		public void LoadStartupPlugins()
+		internal void LoadStartupPlugins()
 		{
 			foreach(PluginInfo pi in m_plugins)
 			{
@@ -224,7 +224,7 @@ namespace WorldWind.PluginEngine
 		/// Determine if a file extension is that of a compilable plugin.
 		/// </summary>
 		/// <param name="fullPath">File extension to check.</param>
-		public bool HasCompiler(string fileExtension)
+		internal bool HasCompiler(string fileExtension)
 		{
 			CodeDomProvider cdp = (CodeDomProvider)codeDomProviders[fileExtension];
 			return cdp != null;
@@ -233,7 +233,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Determine if a file extension is that of a pre-compiled plugin.
 		/// </summary>
-		static public bool IsPreCompiled(string fileExtension)
+		static internal bool IsPreCompiled(string fileExtension)
 		{
 			return fileExtension==".dll";
 		}
@@ -241,7 +241,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Load a plugin
 		/// </summary>
-		public void Load(PluginInfo pi)
+		internal void Load(PluginInfo pi)
 		{
 			if(pi.Plugin == null)
 			{
@@ -274,7 +274,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Unload a plugin if it's loaded.
 		/// </summary>
-		public void Unload(PluginInfo pi)
+		internal void Unload(PluginInfo pi)
 		{
 			if(!pi.IsCurrentlyLoaded)
 				return;
@@ -285,7 +285,7 @@ namespace WorldWind.PluginEngine
 		/// Uninstall/delete a plugin.
 		/// </summary>
 		/// <param name="pi"></param>
-		public void Uninstall(PluginInfo pi)
+		internal void Uninstall(PluginInfo pi)
 		{
 			// Unload the plugin
 			Unload(pi);
@@ -298,7 +298,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Shut down plugins
 		/// </summary>
-		public void Dispose()
+		internal void Dispose()
 		{
 			foreach(PluginInfo pi in m_plugins)
 			{

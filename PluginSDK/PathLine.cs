@@ -11,9 +11,9 @@ namespace WorldWind.Renderable
 	/// <summary>
 	/// Summary description for PathLine.
 	/// </summary>
-	public class PathLine : RenderableObject
+	internal class PathLine : RenderableObject
 	{
-		public CustomVertex.PositionColored[] linePoints;
+		internal CustomVertex.PositionColored[] linePoints;
 		BoundingBox boundingBox;
 		float heightAboveSurface;
 		string terrainFileName;
@@ -36,7 +36,7 @@ namespace WorldWind.Renderable
 		/// <param name="terrainfileName"></param>
 		/// <param name="heightAboveSurface"></param>
 		/// <param name="lineColor"></param>        
-		public PathLine(string name, World parentWorld, string terrainfileName, float heightAboveSurface, 
+		internal PathLine(string name, World parentWorld, string terrainfileName, float heightAboveSurface, 
 			System.Drawing.Color lineColor) 
 			: base(name, parentWorld.Position, Quaternion4d.RotationYawPitchRoll(0, 0, 0)) 
 		{
@@ -88,7 +88,7 @@ namespace WorldWind.Renderable
 		}
 
 
-      public bool EnableLighting
+      internal bool EnableLighting
       {
          get { return m_enableLighting; }
          set { m_enableLighting = value; }
@@ -99,7 +99,7 @@ namespace WorldWind.Renderable
 			this.isInitialized = true;
 		}
 
-		public void Load(DrawArgs drawArgs)
+		internal void Load(DrawArgs drawArgs)
 		{
 			this.linePoints = new CustomVertex.PositionColored[0];
 			if(this.terrainFileName == null)
@@ -153,7 +153,7 @@ namespace WorldWind.Renderable
 			this.linePoints = new CustomVertex.PositionColored[0];
 		}
 
-		public void SaveToFile(string fileName)
+		internal void SaveToFile(string fileName)
 		{
 			if(!Directory.Exists(Path.GetDirectoryName(fileName)))
 				Directory.CreateDirectory(Path.GetDirectoryName(fileName));
@@ -210,7 +210,7 @@ namespace WorldWind.Renderable
 
 		float verticalExaggeration = 1.0f;
 
-		public void AddPointToPath(float latitude, float longitude, bool terrainMapped, float heightAboveSurface)
+		internal void AddPointToPath(float latitude, float longitude, bool terrainMapped, float heightAboveSurface)
 		{
 
 /*			if(terrainMapped)
@@ -301,7 +301,7 @@ namespace WorldWind.Renderable
 		
 		//TODO: Improve rendering code to segment spherical coordinates 
 		//which are too far apart to follow curvature
-      public Point3d[] BuildSegment(Angle startLatitude, Angle startLongitude, Angle endLatitude, Angle endLongitude, float heightAboveSurface)
+      internal Point3d[] BuildSegment(Angle startLatitude, Angle startLongitude, Angle endLatitude, Angle endLongitude, float heightAboveSurface)
 		{		
 			//check how far the point being added is from the last point
 			Angle angularDistance = World.ApproxAngularDistance(

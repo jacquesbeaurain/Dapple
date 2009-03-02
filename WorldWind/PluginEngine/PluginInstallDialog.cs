@@ -12,7 +12,7 @@ namespace WorldWind.PluginEngine
 	/// <summary>
 	/// Ask user for plugin file path/url, then download and install.
 	/// </summary>
-	public class PluginInstallDialog : System.Windows.Forms.Form
+	internal class PluginInstallDialog : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button buttonInstall;
@@ -31,7 +31,7 @@ namespace WorldWind.PluginEngine
 		/// Initializes a new instance of the <see cref= "T:WorldWind.PluginEngine.PluginInstallDialog"/> class.
 		/// </summary>
 		/// <param name="compiler"></param>
-		public PluginInstallDialog(PluginCompiler compiler)
+		internal PluginInstallDialog(PluginCompiler compiler)
 		{
 			//
 			// Required for Windows Form Designer support

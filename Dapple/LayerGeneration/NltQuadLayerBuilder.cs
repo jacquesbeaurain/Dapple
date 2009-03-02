@@ -9,13 +9,13 @@ using System.Xml;
 
 namespace Dapple.LayerGeneration
 {
-   public class NltQuadLayerBuilder : LayerBuilder
+   internal class NltQuadLayerBuilder : LayerBuilder
 	{
 		#region Statics
 
-		public static readonly string URLProtocolName = "gxtile://";
+		internal static readonly string URLProtocolName = "gxtile://";
 
-		public static readonly string CacheSubDir = "Images";
+		internal static readonly string CacheSubDir = "Images";
 
 		#endregion
 
@@ -34,7 +34,7 @@ namespace Dapple.LayerGeneration
 		private string m_strImageExt;
       private string m_strWorldName;
 
-		public int m_iTextureSizePixels;
+		internal int m_iTextureSizePixels;
 
 		private int m_iLevels;
 		private double m_dLevelZeroTileSizeDegrees;
@@ -43,7 +43,7 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public NltQuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
+      internal NltQuadLayerBuilder(string name, int height, bool isTerrainMapped, GeographicBoundingBox boundary,
 		   double levelZeroTileSize, int levels, int textureSize, string serverURL, string dataSetName, string imageExtension,
 		   byte opacity, WorldWindow worldWindow, IBuilder parent)
          :base(name, worldWindow, parent)
@@ -68,7 +68,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -97,7 +97,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -129,7 +129,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.ReadOnly(true)]
 		[System.ComponentModel.Description("The tile size, in degrees, of the topmost level")]
-		public double LevelZeroTileSize
+		internal double LevelZeroTileSize
 		{
 			get
 			{
@@ -140,7 +140,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The number of tile levels in this data layer")]
-		public int Levels
+		internal int Levels
 		{
 			get { return m_iLevels; }
 		}
@@ -148,7 +148,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get { return m_hBoundary; }
 		}
@@ -156,7 +156,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public String ServerURL
+		internal String ServerURL
 		{
 			get { return m_strServerUrl; }
 		}
@@ -164,7 +164,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("NLT")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public String DatasetName
+		internal String DatasetName
 		{
 			get { return m_strDatasetName; }
 		}
@@ -176,7 +176,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return "tile"; }
 		}
@@ -191,7 +191,7 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_oQuadTileSet != null)
             return m_oQuadTileSet.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -203,12 +203,12 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          return GetQuadLayer();
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          string formatString = "{0}?datasetname={1}&name={2}&height={3}&north={4}&east={5}&south={6}&west={7}&size={8}&levels={9}&lvl0tilesize={10}&terrainMapped={11}&imgfileext={12}";
 
@@ -228,7 +228,7 @@ namespace Dapple.LayerGeneration
             m_strImageExt);
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          return String.Format("{0}{1}{4}{1}{2}{1}{3}", m_strCacheRoot, Path.DirectorySeparatorChar, CacheSubDir, GetBuilderPathString(this), m_strWorldName);
       }
@@ -241,12 +241,12 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          return new NltQuadLayerBuilder(m_szTreeNodeText, distAboveSurface, terrainMapped, m_hBoundary, m_dLevelZeroTileSizeDegrees, m_iLevels, m_iTextureSizePixels, m_strServerUrl, m_strDatasetName, m_strImageExt, Opacity, m_oWorldWindow, m_Parent);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is NltQuadLayerBuilder)) return false;
          NltQuadLayerBuilder castObj = obj as NltQuadLayerBuilder;
@@ -312,7 +312,7 @@ namespace Dapple.LayerGeneration
       
 		#region Public Methods
 
-		public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+		internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "tile";
          szServerURL = m_strServerUrl;

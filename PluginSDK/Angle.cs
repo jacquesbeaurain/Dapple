@@ -39,12 +39,12 @@ namespace WorldWind
 		/// <summary>
 		/// Minimum value for angle
 		/// </summary>
-		public static readonly Angle MinValue = Angle.FromRadians(double.MinValue);
+		internal static readonly Angle MinValue = Angle.FromRadians(double.MinValue);
 
 		/// <summary>
 		/// Maximum value for angle
 		/// </summary>
-		public static readonly Angle MaxValue = Angle.FromRadians(double.MaxValue);
+		internal static readonly Angle MaxValue = Angle.FromRadians(double.MaxValue);
 
 		/// <summary>
 		/// Angle containing Not a Number
@@ -61,7 +61,7 @@ namespace WorldWind
 		/// <summary>
 		/// Returns the absolute value of the specified angle
 		/// </summary>
-		public static Angle Abs( Angle a )
+		internal static Angle Abs( Angle a )
 		{
 			return Angle.FromRadians(Math.Abs(a.Radians));
 		}
@@ -81,12 +81,14 @@ namespace WorldWind
 			Angle a = (Angle)obj;
 			return Math.Abs(Radians - a.Radians) < Single.Epsilon;
 		}
-	
-		public static bool operator ==(Angle a, Angle b) {
+
+		public static bool operator ==(Angle a, Angle b)
+		{
 			return Math.Abs(a.Radians - b.Radians) < Single.Epsilon;
 		}
 
-		public static bool operator !=(Angle a, Angle b) {
+		public static bool operator !=(Angle a, Angle b)
+		{
 			return Math.Abs(a.Radians - b.Radians) > Single.Epsilon;
 		}
 
@@ -140,7 +142,7 @@ namespace WorldWind
 		/// <summary>
 		/// Normalizes the angle so it is between 0° and 360°.
 		/// </summary>
-		public void Normalize()
+		internal void Normalize()
 		{
 			if(Radians>Math.PI*2)
 				Radians -= Math.PI*2;
@@ -152,7 +154,7 @@ namespace WorldWind
 		/// Converts degrees to degrees/minutes/seconds
 		/// </summary>
 		/// <returns>String on format dd°mm'ss.sss"</returns>
-		public string ToStringDms()
+		internal string ToStringDms()
 		{
 			double decimalDegrees = this.Degrees;
 			double d = Math.Abs(decimalDegrees);

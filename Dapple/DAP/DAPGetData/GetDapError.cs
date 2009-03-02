@@ -8,11 +8,11 @@ namespace Geosoft.GX.DAPGetData
    /// <summary>
    /// Singleton class for logging errors
    /// </summary>
-   public class GetDapError : ErrorLogger
+   internal class GetDapError : ErrorLogger
    {
       protected static GetDapError m_hError = null;
 
-      public GetDapError(string strFileName) : base(strFileName)
+      internal GetDapError(string strFileName) : base(strFileName)
       {
          if (m_hError != null)
             throw new ApplicationException("GetDapError has already been constructed");
@@ -20,7 +20,7 @@ namespace Geosoft.GX.DAPGetData
       }
 
       #region Public Access
-      public static GetDapError Instance
+      internal static GetDapError Instance
       {
          get
          {

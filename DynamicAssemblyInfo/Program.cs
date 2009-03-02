@@ -23,7 +23,7 @@ namespace DynamicAssemblyInfo
 	{
 		static readonly DateTime DappleEpoch = new DateTime(2008, 9, 1);
 
-		public static int Main(String[] args)
+		internal static int Main(String[] args)
 		{
 			// --- Check input ---
 

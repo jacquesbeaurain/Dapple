@@ -16,7 +16,7 @@ namespace WorldWind.Net
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Net.WebDownloadRequest"/> class.
 		/// </summary>
 		/// <param name="owner">The object owning this request.</param>
-		public WebDownloadRequest(object owner, bool bXML) : 
+		internal WebDownloadRequest(object owner, bool bXML) : 
          base(owner)
 		{
 			download = new WebDownload("", bXML);
@@ -27,7 +27,7 @@ namespace WorldWind.Net
 		/// </summary>
 		/// <param name="owner">The object owning this request.</param>
 		/// <param name="url">The URL to download from.</param>
-      public WebDownloadRequest(object owner, string url, bool bXML)
+		public WebDownloadRequest(object owner, string url, bool bXML)
          : base(owner)
 		{
          download = new WebDownload(url, bXML);
@@ -55,7 +55,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Value (0-1) indicating how far the download has progressed.
 		/// </summary>
-		public override float Progress
+		internal override float Progress
 		{
 			get
 			{
@@ -73,7 +73,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// A unique key identifying this request
 		/// </summary>
-		public override string Key
+		internal override string Key
 		{
 			get
 			{
@@ -86,7 +86,7 @@ namespace WorldWind.Net
 		/// <summary>
 		/// Whether the request is currently being downloaded
 		/// </summary>
-		public override bool IsDownloading
+		internal override bool IsDownloading
 		{
 			get
 			{
@@ -96,7 +96,7 @@ namespace WorldWind.Net
 			}
 		}
 
-		public override void Start()
+		internal override void Start()
 		{
 			download.CompleteCallback += new DownloadCompleteHandler(InternalDownloadComplete);
 			if(download.SavedFilePath!=null && download.SavedFilePath.Length > 0)
@@ -110,7 +110,7 @@ namespace WorldWind.Net
 		/// Override in derived class to allow prioritization.
 		/// </summary>
 		/// <returns>Relative score or float.MinValue if request is no longer of interest.</returns>
-		public override float CalculateScore()
+		protected internal override float CalculateScore()
 		{
 			return 0;
 		}

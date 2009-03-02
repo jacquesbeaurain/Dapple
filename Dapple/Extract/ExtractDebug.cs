@@ -10,16 +10,16 @@ using System.IO;
 
 namespace Dapple.Extract
 {
-	public partial class ExtractDebug : Form
+	internal partial class ExtractDebug : Form
 	{
 		private XmlDocument m_oExtractDoc;
 		private readonly string m_strFilename = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(Path.GetRandomFileName(), ".xml"));
 
-		public ExtractDebug() : this(null)
+		internal ExtractDebug() : this(null)
 		{
 		}
 
-		public ExtractDebug(XmlDocument oExtractDoc)
+		internal ExtractDebug(XmlDocument oExtractDoc)
 		{
 			InitializeComponent();
 			m_oExtractDoc = oExtractDoc;

@@ -50,7 +50,7 @@ namespace NewServerTree
 
 		#region Properties
 
-		public static string FullPath
+		internal static string FullPath
 		{
 			get
 			{
@@ -71,7 +71,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public static void CreateDefault()
+		internal static void CreateDefault()
 		{
 			if (!File.Exists(HomeView.FullPath))
 			{
@@ -79,32 +79,32 @@ namespace NewServerTree
 			}
 		}
 
-		public static void AddServer(ServerUri oUri)
+		internal static void AddServer(ServerUri oUri)
 		{
 			ExecuteUpdate(new UpdateDelegate(Branch_AddServer), oUri);
 		}
 
-		public static void SetServerEnabled(ServerUri oUri, bool blEnabled)
+		internal static void SetServerEnabled(ServerUri oUri, bool blEnabled)
 		{
 			ExecuteUpdate(new UpdateDelegate(Branch_SetServerEnabled), new Object[] { oUri, blEnabled });
 		}
 
-		public static void RemoveServer(ServerUri oUri)
+		internal static void RemoveServer(ServerUri oUri)
 		{
 			ExecuteUpdate(new UpdateDelegate(Branch_RemoveServer), oUri);
 		}
 
-		public static void SetFavourite(ServerUri oUri)
+		internal static void SetFavourite(ServerUri oUri)
 		{
 			ExecuteUpdate(new UpdateDelegate(Branch_SetFavourite), oUri);
 		}
 
-		public static void ClearFavourite()
+		internal static void ClearFavourite()
 		{
 			ExecuteUpdate(new UpdateDelegate(Branch_SetFavourite), null);
 		}
 
-		public static bool ContainsServer(ServerUri oUri)
+		internal static bool ContainsServer(ServerUri oUri)
 		{
 			return ExecuteQuery(new QueryDelegate(Branch_ContainsServer), oUri);
 		}

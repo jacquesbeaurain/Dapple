@@ -9,9 +9,9 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for SurfaceRenderer.
 	/// </summary>
-	public class WorldSurfaceRenderer
+	internal class WorldSurfaceRenderer
 	{
-		public const int RenderSurfaceSize = 256;
+		internal const int RenderSurfaceSize = 256;
 		
 		#region Private Members
 		RenderToSurface m_Rts = null;
@@ -30,7 +30,7 @@ namespace WorldWind
 		/// Gets the surface images.
 		/// </summary>
 		/// <value></value>
-		public System.Collections.ArrayList SurfaceImages
+		internal System.Collections.ArrayList SurfaceImages
 		{
 			get
 			{
@@ -42,7 +42,7 @@ namespace WorldWind
 		/// Gets the distance above sea level in meters.
 		/// </summary>
 		/// <value></value>
-		public double DistanceAboveSeaLevel
+		internal double DistanceAboveSeaLevel
 		{
 			get
 			{
@@ -54,7 +54,7 @@ namespace WorldWind
 		/// Gets the samples per tile.  Also can be considered the Vertex Density or Mesh Density of each SurfaceTile
 		/// </summary>
 		/// <value></value>
-		public uint SamplesPerTile
+		internal uint SamplesPerTile
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace WorldWind
 		/// Gets the parent world.
 		/// </summary>
 		/// <value></value>
-		public WorldWind.World ParentWorld
+		internal WorldWind.World ParentWorld
 		{
 			get
 			{
@@ -76,7 +76,7 @@ namespace WorldWind
 		
 		#endregion
 
-		public WorldSurfaceRenderer(
+		internal WorldSurfaceRenderer(
 			uint samplesPerTile,
 			double distanceAboveSeaLevel,
 			WorldWind.World parentWorld
@@ -105,9 +105,9 @@ namespace WorldWind
 			}
 		}
 
-		public System.DateTime LastChange = System.DateTime.Now;
+		internal System.DateTime LastChange = System.DateTime.Now;
 
-		public void AddSurfaceImage(SurfaceImage surfaceImage)
+		internal void AddSurfaceImage(SurfaceImage surfaceImage)
 		{
 			if(surfaceImage.ImageTexture != null)
 			{
@@ -128,7 +128,7 @@ namespace WorldWind
 			}
 		}
 
-		public RenderToSurface RenderToSurface
+		internal RenderToSurface RenderToSurface
 		{
 			get
 			{
@@ -152,7 +152,7 @@ namespace WorldWind
 				DepthFormat.D16);
 		}
 
-		public void RemoveSurfaceImage(string imageResource)
+		internal void RemoveSurfaceImage(string imageResource)
 		{
 			try
 			{
@@ -181,9 +181,9 @@ namespace WorldWind
 			}
 		}
 
-		public int NumberTilesUpdated = 0;
+		internal int NumberTilesUpdated = 0;
 
-		public void Dispose()
+		internal void Dispose()
 		{
 			m_Initialized = false;
 			if(m_Device != null)
@@ -202,7 +202,7 @@ namespace WorldWind
 			}
 		}
 
-		public void Initialize(DrawArgs drawArgs)
+		internal void Initialize(DrawArgs drawArgs)
 		{
 		//	drawArgs.device.DeviceReset += new EventHandler(OnDeviceReset);
 		//	OnDeviceReset(drawArgs.device, null);
@@ -213,7 +213,7 @@ namespace WorldWind
 			m_Initialized = true;
 		}
 
-		public void Update(DrawArgs drawArgs)
+		internal void Update(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -236,7 +236,7 @@ namespace WorldWind
 			}
 		}	
 
-		public void RenderSurfaceImages(DrawArgs drawArgs)
+		internal void RenderSurfaceImages(DrawArgs drawArgs)
 		{
 			if(this.m_Rts == null)
 			{

@@ -9,7 +9,7 @@ namespace WorldWind.Terrain
 	/// <summary>
 	/// Base class for geo-spatial download requests
 	/// </summary>
-	public abstract class GeoSpatialDownloadRequest : WebDownloadRequest
+	internal abstract class GeoSpatialDownloadRequest : WebDownloadRequest
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Net.GeoSpatialDownloadRequest"/> class.
@@ -32,7 +32,7 @@ namespace WorldWind.Terrain
 		/// <summary>
 		/// Western bound of current request (decimal degrees)
 		/// </summary>
-		public abstract float West
+		internal abstract float West
 		{
 			get;
 		}
@@ -40,7 +40,7 @@ namespace WorldWind.Terrain
 		/// <summary>
 		/// Eastern bound of current request (decimal degrees)
 		/// </summary>
-		public abstract float East
+		internal abstract float East
 		{
 			get;
 		}
@@ -48,7 +48,7 @@ namespace WorldWind.Terrain
 		/// <summary>
 		/// Northern bound of current request (decimal degrees)
 		/// </summary>
-		public abstract float North
+		internal abstract float North
 		{
 			get;
 		}
@@ -56,7 +56,7 @@ namespace WorldWind.Terrain
 		/// <summary>
 		/// Southern bound of current request (decimal degrees)
 		/// </summary>
-		public abstract float South
+		internal abstract float South
 		{
 			get;
 		}
@@ -64,7 +64,7 @@ namespace WorldWind.Terrain
 		/// <summary>
 		/// Color used to identify this layer (download info)
 		/// </summary>
-		public abstract int Color
+		internal abstract int Color
 		{
 			get;
 		}

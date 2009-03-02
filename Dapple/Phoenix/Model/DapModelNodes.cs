@@ -13,11 +13,11 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	public class DapServerRootModelNode : ModelNode, IContextModelNode
+	internal class DapServerRootModelNode : ModelNode, IContextModelNode
 	{
 		#region Statics
 
-		public static readonly string DAPSecureToken;
+		internal static readonly string DAPSecureToken;
 
 		static DapServerRootModelNode()
 		{
@@ -46,7 +46,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DapServerRootModelNode(DappleModel oModel)
+		internal DapServerRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
@@ -58,23 +58,23 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool ShowAllChildren
+		internal override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
 		}
 
-		public override String DisplayText
+		internal override String DisplayText
 		{
 			get { return "DAP Servers"; }
 		}
 
-		public override string Annotation
+		internal override string Annotation
 		{
 			get { return String.Format("[{0}]", FilteredChildren.Length); }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.DapRoot; }
 		}
@@ -105,7 +105,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public DapServerModelNode GetServer(DapServerUri oUri)
+		internal DapServerModelNode GetServer(DapServerUri oUri)
 		{
 			foreach (DapServerModelNode oServer in UnfilteredChildren)
 			{
@@ -118,7 +118,7 @@ namespace NewServerTree
 			return null;
 		}
 
-		public DapServerModelNode AddServer(DapServerUri oUri, bool blEnabled)
+		internal DapServerModelNode AddServer(DapServerUri oUri, bool blEnabled)
 		{
 			DapServerModelNode result = new DapServerModelNode(m_oModel, oUri, blEnabled);
 			AddChild(result);
@@ -129,7 +129,7 @@ namespace NewServerTree
 			return result;
 		}
 
-		public void SearchFilterChanged()
+		internal void SearchFilterChanged()
 		{
 			foreach (DapServerModelNode oServer in UnfilteredChildren)
 			{
@@ -137,7 +137,7 @@ namespace NewServerTree
 			}
 		}
 
-		public ServerModelNode SetFavouriteServer(String strUri)
+		internal ServerModelNode SetFavouriteServer(String strUri)
 		{
 			ServerModelNode result = null;
 
@@ -154,7 +154,7 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		public void SaveToView(dappleview.serversType oServers)
+		internal void SaveToView(dappleview.serversType oServers)
 		{
 			dappleview.builderentryType oDAPBuilder = oServers.Newbuilderentry();
 			dappleview.builderdirectoryType oDAPDir = oDAPBuilder.Newbuilderdirectory();
@@ -193,7 +193,7 @@ namespace NewServerTree
 	}
 
 
-	public class DapServerModelNode : ServerModelNode, IFilterableModelNode
+	internal class DapServerModelNode : ServerModelNode, IFilterableModelNode
 	{
 		#region Constants
 
@@ -204,7 +204,7 @@ namespace NewServerTree
 
 		#region Statics
 
-		public static CatalogCacheManager s_oCCM = new CatalogCacheManager(null, Dapple.MainForm.Settings.CachePath);
+		internal static CatalogCacheManager s_oCCM = new CatalogCacheManager(null, Dapple.MainForm.Settings.CachePath);
 
 		#endregion
 
@@ -222,7 +222,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DapServerModelNode(DappleModel oModel, DapServerUri oUri, bool blEnabled)
+		internal DapServerModelNode(DappleModel oModel, DapServerUri oUri, bool blEnabled)
 			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
@@ -234,7 +234,7 @@ namespace NewServerTree
 
 		#region Properites
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get
 			{
@@ -242,7 +242,7 @@ namespace NewServerTree
 			}
 		}
 
-		public override string Annotation
+		internal override string Annotation
 		{
 			get
 			{
@@ -272,7 +272,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return IconKeys.DapRoot; }
 		}
@@ -280,12 +280,12 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		public override ServerUri Uri
+		internal override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
 
-		public Server Server
+		internal Server Server
 		{
 			get { return m_oServer; }
 		}
@@ -293,7 +293,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		public override ServerModelNode.ServerType Type
+		internal override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.DAP; }
 		}
@@ -338,7 +338,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public void SearchFilterChanged()
+		internal void SearchFilterChanged()
 		{
 			if (this.Enabled)
 			{
@@ -348,7 +348,7 @@ namespace NewServerTree
 		}
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override List<LayerBuilder> GetBuildersInternal()
+		internal override List<LayerBuilder> GetBuildersInternal()
 		{
 			this.WaitForLoad();
 
@@ -369,7 +369,7 @@ namespace NewServerTree
 			return result;
 		}
 
-		public override void AddToHomeView()
+		internal override void AddToHomeView()
 		{
 			if (!HomeView.ContainsServer(m_oUri))
 			{
@@ -440,7 +440,7 @@ namespace NewServerTree
 	}
 
 
-	public class PersonalDapServerModelNode : DapServerModelNode
+	internal class PersonalDapServerModelNode : DapServerModelNode
 	{
 		#region Statics
 
@@ -451,7 +451,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public PersonalDapServerModelNode(DappleModel oModel)
+		internal PersonalDapServerModelNode(DappleModel oModel)
 			: base(oModel, new DapServerUri("http://localhost:10205/"), true)
 		{
 		}
@@ -462,12 +462,12 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.PersonalDAPServer; }
 		}
 
-		public static bool PersonalDapRunning
+		internal static bool PersonalDapRunning
 		{
 			get
 			{
@@ -503,7 +503,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return IconKeys.PersonalDAPServer; }
 		}
@@ -519,12 +519,12 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public override void AddToHomeView()
+		internal override void AddToHomeView()
 		{
 			// --- This space intentionally left blank ---
 		}
 
-		public static void DisableDesktopCataloger()
+		internal static void DisableDesktopCataloger()
 		{
 			s_blDisabled = true;
 		}
@@ -533,7 +533,7 @@ namespace NewServerTree
 	}
 
 
-	public class DapDirectoryModelNode : ModelNode
+	internal class DapDirectoryModelNode : ModelNode
 	{
 		#region Member Variables
 
@@ -544,7 +544,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DapDirectoryModelNode(DappleModel oModel, CatalogFolder oFolder)
+		internal DapDirectoryModelNode(DappleModel oModel, CatalogFolder oFolder)
 			: base(oModel)
 		{
 			m_oFolder = oFolder;
@@ -560,13 +560,13 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_oFolder.Name; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get
 			{
@@ -619,7 +619,7 @@ namespace NewServerTree
 	}
 
 
-	public class DapDatasetModelNode : LayerModelNode
+	internal class DapDatasetModelNode : LayerModelNode
 	{
 		#region Member Variables
 
@@ -630,7 +630,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DapDatasetModelNode(DappleModel oModel, DataSet oDataSet)
+		internal DapDatasetModelNode(DappleModel oModel, DataSet oDataSet)
 			: base(oModel)
 		{
 			m_oDataSet = oDataSet;
@@ -644,18 +644,18 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_oDataSet.Title; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.DapLayerPrefix + m_oDataSet.Type.ToLowerInvariant(); }
 		}
@@ -666,7 +666,7 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override LayerBuilder ConvertToLayerBuilder()
+		internal override LayerBuilder ConvertToLayerBuilder()
 		{
 			return new DAPQuadLayerBuilder(m_oDataSet, Dapple.MainForm.WorldWindowSingleton, GetServer().Server, null);
 		}
@@ -698,7 +698,7 @@ namespace NewServerTree
 	}
 
 
-	public class DapBrowserMapModelNode : LayerModelNode, IFilterableModelNode
+	internal class DapBrowserMapModelNode : LayerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -709,7 +709,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DapBrowserMapModelNode(DappleModel oModel, Server oData)
+		internal DapBrowserMapModelNode(DappleModel oModel, Server oData)
 			: base(oModel)
 		{
 			m_oData = oData;
@@ -721,18 +721,18 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return "Browser Map"; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.DapBrowserMapLayer; }
 		}
@@ -761,7 +761,7 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override LayerBuilder ConvertToLayerBuilder()
+		internal override LayerBuilder ConvertToLayerBuilder()
 		{
 			return new DAPBrowserMapBuilder(Dapple.MainForm.WorldWindowSingleton, m_oData, null);
 		}

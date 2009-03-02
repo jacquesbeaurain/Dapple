@@ -91,7 +91,7 @@ namespace WorldWind.Net.Wms
 
 		#region Properties
 
-		public virtual TimeSpan CacheExpirationTime
+		internal virtual TimeSpan CacheExpirationTime
 		{
 			get
 			{
@@ -103,7 +103,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string ServerGetMapUrl
+		internal virtual string ServerGetMapUrl
 		{
 			get
 			{
@@ -115,7 +115,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string SRS
+		internal virtual string SRS
 		{
 			get
 			{
@@ -127,7 +127,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string CRS
+		internal virtual string CRS
 		{
 			get
 			{
@@ -140,7 +140,7 @@ namespace WorldWind.Net.Wms
 		}
 
 
-		public virtual string WMSLayerName
+		internal virtual string WMSLayerName
 		{
 			get
 			{
@@ -152,7 +152,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string WMSLayerStyle
+		internal virtual string WMSLayerStyle
 		{
 			get
 			{
@@ -164,7 +164,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string ImageFormat
+		internal virtual string ImageFormat
 		{
 			get
 			{
@@ -176,7 +176,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string Version
+		internal virtual string Version
 		{
 			get
 			{
@@ -207,7 +207,7 @@ namespace WorldWind.Net.Wms
 	/// <summary>
 	/// Calculates URLs for WMS layers.
 	/// </summary>
-	public class WmsImageStore : ImageStore
+	internal class WmsImageStore : ImageStore
 	{
 		#region Private Members
 
@@ -230,7 +230,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string ServerGetMapUrl
+		internal virtual string ServerGetMapUrl
 		{
 			get
 			{
@@ -242,7 +242,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string WMSLayerName
+		internal virtual string WMSLayerName
 		{
 			get
 			{
@@ -254,7 +254,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string WMSLayerStyle
+		internal virtual string WMSLayerStyle
 		{
 			get
 			{
@@ -266,7 +266,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string ImageFormat
+		internal virtual string ImageFormat
 		{
 			get
 			{
@@ -278,7 +278,7 @@ namespace WorldWind.Net.Wms
 			}
 		}
 
-		public virtual string Version
+		internal virtual string Version
 		{
 			get
 			{

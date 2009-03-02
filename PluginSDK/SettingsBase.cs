@@ -21,7 +21,7 @@ namespace WorldWind.Configuration
 
 		private string m_formatVersion; // Version of application that created file
 		[Browsable(false)]
-		public string FormatVersion 
+		internal string FormatVersion 
 		{
 			get { return m_formatVersion; }
 			set { m_formatVersion = value; }
@@ -38,7 +38,7 @@ namespace WorldWind.Configuration
 
 
 		// get the default location, given type of location
-		public static string DefaultLocation(LocationType locationType)
+		internal static string DefaultLocation(LocationType locationType)
 		{
 			string directory;
 
@@ -71,7 +71,7 @@ namespace WorldWind.Configuration
 		// Always add the ".xml" file extension.
 		// If ToString is not overridden, the default filename will be the
 		// class name.
-		public string DefaultName()
+		internal string DefaultName()
 		{
 			return String.Format("{0}.xml", this.ToString());
 		}
@@ -80,7 +80,7 @@ namespace WorldWind.Configuration
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Configuration.SettingsBase"/> class.
 		/// A default constructor is required for serialization.
 		/// </summary>
-		public SettingsBase()
+		internal SettingsBase()
 		{
 			// experimental: store app version
 			m_formatVersion = Application.ProductVersion;
@@ -89,7 +89,7 @@ namespace WorldWind.Configuration
 
 		// Save settings to XML file given specifically by name
 		// Note: the FileName property will stay unchanged
-		public virtual void Save(string fileName) 
+		internal virtual void Save(string fileName) 
 		{
 			XmlSerializer ser = null;
 
@@ -121,7 +121,7 @@ namespace WorldWind.Configuration
 		}
 
 		// load settings from a given file (full path and name)
-		public static SettingsBase Load(SettingsBase defaultSettings, string fileName) 
+		internal static SettingsBase Load(SettingsBase defaultSettings, string fileName) 
 		{
 			// remember where we loaded from for a later save
 			defaultSettings.m_fileName = fileName;
@@ -162,7 +162,7 @@ namespace WorldWind.Configuration
 
 
 		// Load settings from specified location using specified name
-		public static SettingsBase Load(SettingsBase defaultSettings, LocationType locationType, string name)
+		internal static SettingsBase Load(SettingsBase defaultSettings, LocationType locationType, string name)
 		{
 			string fileName = Path.Combine(DefaultLocation(locationType), name);
 			return Load(defaultSettings, fileName);
@@ -175,12 +175,12 @@ namespace WorldWind.Configuration
 		}
 
 		// load settings from default file
-		public static SettingsBase Load(SettingsBase defaultSettings) 
+		internal static SettingsBase Load(SettingsBase defaultSettings) 
 		{
 			return Load(defaultSettings, LocationType.User);
 		}
 
-		public string SettingsFilePath
+		internal string SettingsFilePath
 		{
 			get
 			{

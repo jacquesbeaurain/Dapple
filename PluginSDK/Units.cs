@@ -4,15 +4,15 @@ using System.Text;
 
 namespace WorldWind
 {
-    public enum Units
+	public enum Units
     {
         English,
         Metric
     }
 
-    public static class ConvertUnits
+    internal static class ConvertUnits
     {
-        public static string GetDisplayString(double distance)
+        internal static string GetDisplayString(double distance)
         {
             if (World.Settings.DisplayUnits == Units.Metric)
             {
@@ -43,7 +43,7 @@ namespace WorldWind
             }
         }
 
-        public static string GetAreaDisplayString(double area)
+        internal static string GetAreaDisplayString(double area)
         {
             if (World.Settings.DisplayUnits == Units.Metric)
             {

@@ -10,7 +10,7 @@ using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
-   public class WMSQuadLayerBuilder : LayerBuilder 
+   internal class WMSQuadLayerBuilder : LayerBuilder 
 	{
 		#region Private Members
 
@@ -27,17 +27,17 @@ namespace Dapple.LayerGeneration
 
 		#region Static
 
-		public static readonly string URLProtocolName = "gxwms://";
+		internal static readonly string URLProtocolName = "gxwms://";
 
-		public static readonly string TypeName = "WMSQuadLayer";
+		internal static readonly string TypeName = "WMSQuadLayer";
 
-		public static readonly string CacheSubDir = "WMSImages";
+		internal static readonly string CacheSubDir = "WMSImages";
 
 		#endregion
 
       #region Constructor
 
-      public WMSQuadLayerBuilder(WMSLayer layer, WorldWindow worldWindow, WMSServerBuilder server, IBuilder parent)
+      internal WMSQuadLayerBuilder(WMSLayer layer, WorldWindow worldWindow, WMSServerBuilder server, IBuilder parent)
          :base(layer.Title, worldWindow, parent)
 		{
 			m_Server = server;
@@ -78,7 +78,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether Dapple can display legend(s) for this data layer")]
-		public override bool SupportsLegend
+		internal override bool SupportsLegend
 		{
 			get
 			{
@@ -89,7 +89,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -118,7 +118,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -170,7 +170,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get { return m_hBoundary; }
 		}
@@ -178,7 +178,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public string ServerURL
+		internal string ServerURL
 		{
 			get { return Layer.ParentWMSList.ServerGetCapabilitiesUrl; }
 		}
@@ -186,7 +186,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("WMS")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The name used to access this data layer on the WMS server")]
-		public String Name
+		internal String Name
 		{
 			get { return m_wmsLayer.Name; }
 		}
@@ -198,7 +198,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return "wms"; }
 		}
@@ -210,7 +210,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public WMSLayer Layer
+		internal WMSLayer Layer
 		{
 			get { return m_wmsLayer; }
 		}
@@ -222,13 +222,13 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool LayerFromSupportedServer
+		internal override bool LayerFromSupportedServer
 		{
 			get { return true; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool ServerIsInHomeView
+		internal override bool ServerIsInHomeView
 		{
 			get
 			{
@@ -240,7 +240,7 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+      internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_oQuadTileSet != null)
             return m_oQuadTileSet.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -252,7 +252,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          if (m_blnIsChanged)
          {
@@ -303,7 +303,7 @@ namespace Dapple.LayerGeneration
          return m_oQuadTileSet;
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          String result = m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl;
          if (!result.Contains("?")) result += "?";
@@ -312,7 +312,7 @@ namespace Dapple.LayerGeneration
          return result;
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          WMSServerUri temp = new WMSServerUri(m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl);
          return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), temp.ToCacheDirectory()), Utility.StringHash.GetBase64HashForPath(m_wmsLayer.Name));
@@ -326,12 +326,12 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          return new WMSQuadLayerBuilder(m_wmsLayer, m_oWorldWindow, m_Server, m_Parent);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is WMSQuadLayerBuilder)) return false;
          WMSQuadLayerBuilder castObj = obj as WMSQuadLayerBuilder;
@@ -376,7 +376,7 @@ namespace Dapple.LayerGeneration
             return null;
       }
 
-      public override string[] GetLegendURLs()
+      internal override string[] GetLegendURLs()
       {
          if (m_wmsLayer.HasLegend)
          {
@@ -446,7 +446,7 @@ namespace Dapple.LayerGeneration
 				oParentNode.RemoveChild(oNode);
 		}
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "wms";
          szServerURL = m_Server.Uri.ToBaseUri();
@@ -455,9 +455,9 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region Other Public Methods
+      #region Other internal Methods
 
-      public static WMSLayer GetLayer(String strDesiredLayerName, WMSLayer[] oSearchRoot)
+      internal static WMSLayer GetLayer(String strDesiredLayerName, WMSLayer[] oSearchRoot)
       {
          if (oSearchRoot == null) return null;
 
@@ -471,7 +471,7 @@ namespace Dapple.LayerGeneration
          return null;
       }
 
-      public static WMSLayer FindLayer(string layerName, WMSLayer list)
+      internal static WMSLayer FindLayer(string layerName, WMSLayer list)
       {
          foreach (WMSLayer layer in list.ChildLayers)
          {

@@ -11,7 +11,7 @@ using Geosoft.OpenGX.UtilityForms;
 
 namespace Dapple
 {
-   public partial class SaveViewForm : Form
+   internal partial class SaveViewForm : Form
    {
       #region Private Members
       Image m_imgPreview = null;
@@ -23,7 +23,7 @@ namespace Dapple
       #endregion
 
       #region Constructor
-      public SaveViewForm(string strConfigDir, Image preview)
+      internal SaveViewForm(string strConfigDir, Image preview)
       {
          InitializeComponent();
          m_strConfigDir = strConfigDir;
@@ -83,7 +83,7 @@ namespace Dapple
 
       #region Properties
 
-      public string OutputPath
+      internal string OutputPath
       {
          get
          {
@@ -91,7 +91,7 @@ namespace Dapple
          }
       }
 
-      public string Notes
+      internal string Notes
       {
          get
          {

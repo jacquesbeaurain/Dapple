@@ -1615,11 +1615,11 @@ namespace WorldWind.KMLReader
 		class Style
 		{
 			#region Public members
-			public BalloonStyle BalloonStyle = null;
-			public IconStyle IconStyle = null;
-			public LabelStyle LabelStyle = null;
-			public LineStyle LineStyle = null;
-			public PolyStyle PolyStyle = null;
+			internal BalloonStyle BalloonStyle = null;
+			internal IconStyle IconStyle = null;
+			internal LabelStyle LabelStyle = null;
+			internal LineStyle LineStyle = null;
+			internal PolyStyle PolyStyle = null;
 
 			internal string NormalIcon
 			{
@@ -1673,7 +1673,7 @@ namespace WorldWind.KMLReader
 			/// Convert a hex string to a .NET Color object.
 			/// </summary>
 			/// <param name="hexColor">a hex string: "FFFFFF", "#000000"</param>
-			public static Color HexToColor(string hexColor)
+			internal static Color HexToColor(string hexColor)
 			{
 				string hc = ExtractHexDigits(hexColor);
 				if (hc.Length != 8)
@@ -1740,7 +1740,7 @@ namespace WorldWind.KMLReader
 			/// <param name="lat">Latitude</param>
 			/// <param name="lon">Longitude</param>
 			/// <param name="alt">Altitude</param>
-			public LLA(float lat, float lon, float alt)
+			internal LLA(float lat, float lon, float alt)
 			{
 				this.lat = lat;
 				this.lon = lon;
@@ -1750,22 +1750,22 @@ namespace WorldWind.KMLReader
 
 		class BalloonStyle
 		{
-			public string id = null;
-			public TextElement Text = null;
-			public ColorElement TextColor = null;
-			public ColorElement Color = null;
+			internal string id = null;
+			internal TextElement Text = null;
+			internal ColorElement TextColor = null;
+			internal ColorElement Color = null;
 		}
 
 		class IconStyle
 		{
-			public string id = null;
-			public ColorElement Color = new ColorElement(System.Drawing.Color.White.ToArgb());
-			public ColorMode ColorMode = ColorMode.Normal;
-			public DecimalElement Heading = null;
-			public DecimalElement Scale = new DecimalElement(1.0);
-			public IconElement Icon = null;
+			internal string id = null;
+			internal ColorElement Color = new ColorElement(System.Drawing.Color.White.ToArgb());
+			internal ColorMode ColorMode = ColorMode.Normal;
+			internal DecimalElement Heading = null;
+			internal DecimalElement Scale = new DecimalElement(1.0);
+			internal IconElement Icon = null;
 
-			public IconStyle(IconElement icon)
+			internal IconStyle(IconElement icon)
 			{
 				Icon = icon;
 			}
@@ -1773,49 +1773,49 @@ namespace WorldWind.KMLReader
 
 		class LabelStyle
 		{
-			public string id = null;
-			public ColorElement Color = new ColorElement(System.Drawing.Color.White.ToArgb());
-			public ColorMode ColorMode = ColorMode.Normal;
-			public DecimalElement Scale = new DecimalElement(1.0);
+			internal string id = null;
+			internal ColorElement Color = new ColorElement(System.Drawing.Color.White.ToArgb());
+			internal ColorMode ColorMode = ColorMode.Normal;
+			internal DecimalElement Scale = new DecimalElement(1.0);
 		}
 
 		class LineStyle
 		{
-			public string id = null;
-			public ColorElement Color = new ColorElement(System.Drawing.Color.Gray.ToArgb());
-			public ColorMode ColorMode = ColorMode.Normal;
-			public DecimalElement Width = new DecimalElement(1);
+			internal string id = null;
+			internal ColorElement Color = new ColorElement(System.Drawing.Color.Gray.ToArgb());
+			internal ColorMode ColorMode = ColorMode.Normal;
+			internal DecimalElement Width = new DecimalElement(1);
 		}
 
 		class PolyStyle
 		{
-			public string id = null;
-			public ColorElement Color = new ColorElement(System.Drawing.Color.DarkGray.ToArgb());
-			public ColorMode ColorMode = ColorMode.Normal;
-			public bool Fill = true;
-			public bool Outline = true;
+			internal string id = null;
+			internal ColorElement Color = new ColorElement(System.Drawing.Color.DarkGray.ToArgb());
+			internal ColorMode ColorMode = ColorMode.Normal;
+			internal bool Fill = true;
+			internal bool Outline = true;
 		}
 
 		class IconElement
 		{
-			public string href = null;
-			public IntegerElement x = null;
-			public IntegerElement y = null;
-			public IntegerElement w = null;
-			public IntegerElement h = null;
+			internal string href = null;
+			internal IntegerElement x = null;
+			internal IntegerElement y = null;
+			internal IntegerElement w = null;
+			internal IntegerElement h = null;
 		}
 
 		class TextElement
 		{
-			public string Text = null;
-			public ColorElement TextColor = null;
+			internal string Text = null;
+			internal ColorElement TextColor = null;
 		}
 
 		class ColorElement
 		{
-			public int Color = System.Drawing.Color.Black.ToArgb();
+			internal int Color = System.Drawing.Color.Black.ToArgb();
 
-			public ColorElement(int color)
+			internal ColorElement(int color)
 			{
 				Color = color;
 			}
@@ -1823,9 +1823,9 @@ namespace WorldWind.KMLReader
 
 		class IntegerElement
 		{
-			public int Value = 0;
+			internal int Value = 0;
 
-			public IntegerElement(int v)
+			internal IntegerElement(int v)
 			{
 				Value = v;
 			}
@@ -1833,9 +1833,9 @@ namespace WorldWind.KMLReader
 
 		class DecimalElement
 		{
-			public double Value = 0;
+			internal double Value = 0;
 
-			public DecimalElement(double d)
+			internal DecimalElement(double d)
 			{
 				Value = d;
 			}

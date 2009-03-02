@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the hyxz options
    /// </summary>
-   public partial class HyperXYZ : DownloadOptions
+   internal partial class HyperXYZ : DownloadOptions
    {
       #region Constants
       private readonly string DATABASE_EXT = ".gdb";
@@ -23,14 +23,14 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public HyperXYZ(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal HyperXYZ(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
 			tbFilename.Text = System.IO.Path.ChangeExtension(oDAPbuilder.Title, ExtensionForHXYZ);
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return true; }
 		}
@@ -49,7 +49,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
 			// --- Always download point data in its native projection when in ArcMap ---
 			if (MainForm.Client == Options.Client.ClientType.ArcMAP)
@@ -65,7 +65,7 @@ namespace Dapple.Extract
 			return result;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, ExtensionForHXYZ));
 			if (System.IO.File.Exists(szFilename))

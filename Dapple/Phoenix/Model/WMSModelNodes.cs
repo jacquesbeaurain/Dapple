@@ -10,11 +10,11 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	public class WMSRootModelNode : ModelNode, IContextModelNode
+	internal class WMSRootModelNode : ModelNode, IContextModelNode
 	{
 		#region Constructors
 
-		public WMSRootModelNode(DappleModel oModel)
+		internal WMSRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
@@ -36,23 +36,23 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool ShowAllChildren
+		internal override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
 		}
 
-		public override String DisplayText
+		internal override String DisplayText
 		{
 			get { return "WMS Servers"; }
 		}
 
-		public override string Annotation
+		internal override string Annotation
 		{
 			get { return String.Format("[{0}]", FilteredChildren.Length); }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.WMSRoot; }
 		}
@@ -73,7 +73,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public WMSServerModelNode GetServer(WMSServerUri oUri)
+		internal WMSServerModelNode GetServer(WMSServerUri oUri)
 		{
 			foreach (WMSServerModelNode oServer in UnfilteredChildren)
 			{
@@ -86,7 +86,7 @@ namespace NewServerTree
 			return null;
 		}
 
-		public WMSServerModelNode AddServer(WMSServerUri oUri, bool blEnabled)
+		internal WMSServerModelNode AddServer(WMSServerUri oUri, bool blEnabled)
 		{
 			WMSServerModelNode result = new WMSServerModelNode(m_oModel, oUri, blEnabled);
 			AddChild(result);
@@ -97,7 +97,7 @@ namespace NewServerTree
 			return result;
 		}
 
-		public ServerModelNode SetFavouriteServer(String strUri)
+		internal ServerModelNode SetFavouriteServer(String strUri)
 		{
 			ServerModelNode result = null;
 
@@ -118,7 +118,7 @@ namespace NewServerTree
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static int SortWMSChildNodes(ModelNode first, ModelNode second)
+		internal static int SortWMSChildNodes(ModelNode first, ModelNode second)
 		{
 			if (first is WMSFolderModelNode)
 			{
@@ -158,7 +158,7 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		public void SaveToView(dappleview.builderdirectoryType oWMSDir)
+		internal void SaveToView(dappleview.builderdirectoryType oWMSDir)
 		{
 			foreach (WMSServerModelNode oChild in UnfilteredChildren)
 			{
@@ -189,7 +189,7 @@ namespace NewServerTree
 	}
 
 
-	public class WMSServerModelNode : ServerModelNode, IFilterableModelNode
+	internal class WMSServerModelNode : ServerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -201,7 +201,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public WMSServerModelNode(DappleModel oModel, WMSServerUri oUri, bool blEnabled)
+		internal WMSServerModelNode(DappleModel oModel, WMSServerUri oUri, bool blEnabled)
 			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
@@ -213,7 +213,7 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get
 			{
@@ -221,7 +221,7 @@ namespace NewServerTree
 			}
 		}
 
-		public override string Annotation
+		internal override string Annotation
 		{
 			get
 			{
@@ -251,7 +251,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return IconKeys.WMSRoot; }
 		}
@@ -259,7 +259,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		public override ServerUri Uri
+		internal override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
@@ -267,7 +267,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		public override ServerModelNode.ServerType Type
+		internal override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.WMS; }
 		}
@@ -303,7 +303,7 @@ namespace NewServerTree
 			}
 		}
 
-		public String CapabilitiesFilename
+		internal String CapabilitiesFilename
 		{
 			get
 			{
@@ -316,7 +316,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public WMSLayerModelNode GetLayer(String strLayerName)
+		internal WMSLayerModelNode GetLayer(String strLayerName)
 		{
 			foreach (ModelNode oChild in UnfilteredChildren)
 			{
@@ -338,7 +338,7 @@ namespace NewServerTree
 		}
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override List<LayerBuilder> GetBuildersInternal()
+		internal override List<LayerBuilder> GetBuildersInternal()
 		{
 			List<LayerBuilder> result = new List<LayerBuilder>();
 
@@ -357,7 +357,7 @@ namespace NewServerTree
 			return result;
 		}
 
-		public override void AddToHomeView()
+		internal override void AddToHomeView()
 		{
 			if (!HomeView.ContainsServer(m_oUri))
 			{
@@ -401,7 +401,7 @@ namespace NewServerTree
 	}
 
 
-	public class WMSFolderModelNode : ModelNode, IFilterableModelNode
+	internal class WMSFolderModelNode : ModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -412,7 +412,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public WMSFolderModelNode(DappleModel oModel, WMSLayer oData)
+		internal WMSFolderModelNode(DappleModel oModel, WMSLayer oData)
 			: base(oModel)
 		{
 			m_oData = oData;
@@ -437,13 +437,13 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_oData.Title; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get
 			{
@@ -491,7 +491,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public WMSLayerModelNode GetLayer(String strLayerName)
+		internal WMSLayerModelNode GetLayer(String strLayerName)
 		{
 			foreach (ModelNode oChild in UnfilteredChildren)
 			{
@@ -513,7 +513,7 @@ namespace NewServerTree
 		}
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public List<LayerBuilder> GetBuilders()
+		internal List<LayerBuilder> GetBuilders()
 		{
 			List<LayerBuilder> result = new List<LayerBuilder>();
 
@@ -545,7 +545,7 @@ namespace NewServerTree
 	}
 
 
-	public class WMSLayerModelNode : LayerModelNode, IContextModelNode, IFilterableModelNode
+	internal class WMSLayerModelNode : LayerModelNode, IContextModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -559,7 +559,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public WMSLayerModelNode(DappleModel oModel, WMSLayer oData)
+		internal WMSLayerModelNode(DappleModel oModel, WMSLayer oData)
 			: base(oModel)
 		{
 			m_oData = oData;
@@ -576,18 +576,18 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_oData.Title; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.WMSLayer; }
 		}
@@ -638,7 +638,7 @@ namespace NewServerTree
 			}
 		}
 
-		public WMSLayer LayerData
+		internal WMSLayer LayerData
 		{
 			get { return m_oData; }
 		}
@@ -673,7 +673,7 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override LayerBuilder ConvertToLayerBuilder()
+		internal override LayerBuilder ConvertToLayerBuilder()
 		{
 			WMSServerModelNode oSMN = GetServer();
 			WMSServerBuilder oServer = new WMSServerBuilder(null, oSMN.Uri as WMSServerUri, oSMN.CapabilitiesFilename, true);

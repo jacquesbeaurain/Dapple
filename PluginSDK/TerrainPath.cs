@@ -14,7 +14,7 @@ namespace WorldWind.Renderable
 	/// Class used to create and render a terrain following path
 	/// TODO: Re-Implement terrain mapping based on new TerrainAccessor functionality
 	/// </summary>
-	public class TerrainPath : RenderableObject
+	internal class TerrainPath : RenderableObject
 	{
 		float north;
 		float south;
@@ -29,7 +29,7 @@ namespace WorldWind.Renderable
 		float heightAboveSurface;
 		string terrainFileName;
 		//bool terrainMapped;
-		public bool isLoaded;
+		internal bool isLoaded;
 		Point3d lastUpdatedPosition;
 		float verticalExaggeration = 1.0f;
 
@@ -37,28 +37,28 @@ namespace WorldWind.Renderable
 		bool m_enableLighting = false;
 
 		int lineColor;
-		public CustomVertex.PositionColored[] linePoints;
+		internal CustomVertex.PositionColored[] linePoints;
 
 		List <Vector3> sphericalCoordinates = new List <Vector3>(); // x = lat, y = lon, z = height
         bool m_needsUpdate = false;
 
-		public int LineColor
+		internal int LineColor
 		{
 			get { return lineColor; }
 		}
 
-		public bool EnableLighting
+		internal bool EnableLighting
 		{
 			get { return m_enableLighting; }
 			set { m_enableLighting = value; }
 		}
 
-		public Vector3[] SphericalCoordinates
+		internal Vector3[] SphericalCoordinates
 		{
 			get{ return sphericalCoordinates.ToArray(); }
 		}
 
-        public List<Vector3> SphericalCoordinatesList
+        internal List<Vector3> SphericalCoordinatesList
         {
             get { return sphericalCoordinates; }
         }
@@ -74,7 +74,7 @@ namespace WorldWind.Renderable
 		/// <param name="heightAboveSurface"></param>
 		/// <param name="lineColor"></param>
 		/// <param name="terrainAccessor"></param>
-		public TerrainPath(
+		internal TerrainPath(
 			string name,
 			World parentWorld,
 			double minDisplayAltitude,
@@ -113,7 +113,7 @@ namespace WorldWind.Renderable
 		/// <param name="heightAboveSurface"></param>
 		/// <param name="lineColor"></param>
 		/// <param name="terrainAccessor"></param>
-		public TerrainPath(
+		internal TerrainPath(
 			string name,
 			World parentWorld, 
 			double minDisplayAltitude, 
@@ -165,7 +165,7 @@ namespace WorldWind.Renderable
         /// <param name="x">Lat</param>
         /// <param name="y">Lon</param>
         /// <param name="z">Alt</param>
-        public void Add(float x, float y, float z)
+        internal void Add(float x, float y, float z)
         {
             Vector3 item = new Vector3(x, y, z);
             sphericalCoordinates.Add(item);
@@ -199,7 +199,7 @@ namespace WorldWind.Renderable
             this.isInitialized = false;
             this.m_needsUpdate = true;
         }
-		public List<Vector3> GetSphericalCoordinates()
+		internal List<Vector3> GetSphericalCoordinates()
 		{
 			float n = 0;
 			float s = 0;
@@ -209,7 +209,7 @@ namespace WorldWind.Renderable
 			return GetSphericalCoordinates(ref n, ref s, ref w, ref e);
 		}
 
-		public List<Vector3> GetSphericalCoordinates(ref float northExtent, ref float southExtent, ref float westExtent, ref float eastExtent)
+		internal List<Vector3> GetSphericalCoordinates(ref float northExtent, ref float southExtent, ref float westExtent, ref float eastExtent)
 		{
 			if (this._dataArchiveReader == null)
 			{
@@ -307,7 +307,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public void Load()
+		internal void Load()
 		{
 			try
 			{
@@ -338,7 +338,7 @@ namespace WorldWind.Renderable
 			this.linePoints = null;
 		}
 
-		public void SaveToFile(string fileName)
+		internal void SaveToFile(string fileName)
 		{
 			using (BinaryWriter output = new BinaryWriter(new FileStream(fileName, FileMode.Create)))
 			{

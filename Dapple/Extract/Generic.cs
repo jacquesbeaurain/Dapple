@@ -11,19 +11,19 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the options for download acquire datasets
    /// </summary>
-   public partial class Generic : DownloadOptions
+   internal partial class Generic : DownloadOptions
    {
       /// <summary>
       /// Constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public Generic(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal Generic(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return true; }
 		}
@@ -35,7 +35,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          return base.Save(oDatasetElement, strDestFolder, eCS);         
       }

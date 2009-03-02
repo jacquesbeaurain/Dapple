@@ -5,7 +5,7 @@ using Microsoft.DirectX.Direct3D;
 
 namespace WorldWind
 {
-	public class SurfaceImage : IComparable
+	internal class SurfaceImage : IComparable
 	{
 		#region Private Members
 		string m_ImageFilePath;
@@ -17,10 +17,10 @@ namespace WorldWind
 		bool m_Enabled = true;
 		WorldWind.Renderable.RenderableObject m_ParentRenderable;
 
-		public System.DateTime LastUpdate = System.DateTime.Now;
+		internal System.DateTime LastUpdate = System.DateTime.Now;
 		#endregion
 
-		public byte Opacity = 255;
+		internal byte Opacity = 255;
 
 		#region Properties
 		/// <summary>
@@ -30,7 +30,7 @@ namespace WorldWind
 		/// <value>
 		/// 	<c>true</c> if enabled; otherwise, <c>false</c>.
 		/// </value>
-		public bool Enabled
+		internal bool Enabled
 		{
 			get
 			{
@@ -42,28 +42,28 @@ namespace WorldWind
 				m_Enabled = value;
 			}
 		}
-		public double North
+		internal double North
 		{
 			get
 			{
 				return m_North;
 			}
 		}
-		public double South
+		internal double South
 		{
 			get
 			{
 				return m_South;
 			}
 		}
-		public double West
+		internal double West
 		{
 			get
 			{
 				return m_West;
 			}
 		}
-		public double East
+		internal double East
 		{
 			get
 			{
@@ -71,21 +71,21 @@ namespace WorldWind
 			}
 		}
 
-		public string ImageFilePath
+		internal string ImageFilePath
 		{
 			get
 			{
 				return m_ImageFilePath;
 			}
 		}
-		public WorldWind.Renderable.RenderableObject ParentRenderable
+		internal WorldWind.Renderable.RenderableObject ParentRenderable
 		{
 			get
 			{
 				return m_ParentRenderable;
 			}
 		}
-		public Texture ImageTexture
+		internal Texture ImageTexture
 		{
 			get
 			{
@@ -98,7 +98,7 @@ namespace WorldWind
 		}
 		#endregion
 	
-		public SurfaceImage(
+		internal SurfaceImage(
 			string imageFilePath,
 			double north,
 			double south,
@@ -116,7 +116,7 @@ namespace WorldWind
 			m_Texture = texture;
 		}
 
-		public void Dispose()
+		internal void Dispose()
 		{
 		/*	if(m_Texture != null && !m_Texture.Disposed)
 			{
@@ -125,7 +125,7 @@ namespace WorldWind
 			}*/
 		}
 
-		public Vector2 GetTextureCoordinate(double latitude, double longitude)
+		internal Vector2 GetTextureCoordinate(double latitude, double longitude)
 		{
 			double deltaLat = m_North - latitude;
 			double deltaLon = longitude - m_West;

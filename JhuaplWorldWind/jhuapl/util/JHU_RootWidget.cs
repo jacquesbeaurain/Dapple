@@ -58,7 +58,7 @@ namespace jhuapl.util
 		System.Windows.Forms.Control m_ParentControl;
 		bool m_Initialized = false;
 
-		public JHU_RootWidget(System.Windows.Forms.Control parentControl) 
+		internal JHU_RootWidget(System.Windows.Forms.Control parentControl) 
 		{
 			m_ParentControl = parentControl;
 		}
@@ -104,7 +104,7 @@ namespace jhuapl.util
 			get { return "Main Frame"; }
 			set { }
 		}
-		
+
 		public jhuapl.util.IWidget ParentWidget
 		{
 			get { return m_parentWidget; }
@@ -179,7 +179,7 @@ namespace jhuapl.util
 			get { return m_tag; }
 			set { m_tag = value; }
 		}
-		public bool IsInitialized
+		internal bool IsInitialized
 		{
 			get { return m_Initialized;}
 			set { m_Initialized = value; }
@@ -200,7 +200,7 @@ namespace jhuapl.util
 		{
 			get { return m_rightClickAction; }
 			set { m_rightClickAction = value; }
-		}	
+		}
 
 		public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
@@ -404,13 +404,13 @@ namespace jhuapl.util
 
 		#endregion
 
-		new public void Add(jhuapl.util.IWidget widget)
+		new internal void Add(jhuapl.util.IWidget widget)
 		{
 			m_ChildWidgets.Add(widget);
 			widget.ParentWidget = this;
 		}		
 		
-		new public void Remove(jhuapl.util.IWidget widget)
+		new internal void Remove(jhuapl.util.IWidget widget)
 		{
 			m_ChildWidgets.Remove(widget);
 		}

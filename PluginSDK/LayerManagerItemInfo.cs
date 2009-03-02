@@ -9,7 +9,7 @@ namespace WorldWind.Menu
 	/// <summary>
 	/// Summary description for LayerManagerItemInfo.
 	/// </summary>
-	public class LayerManagerItemInfo : System.Windows.Forms.Form
+	internal class LayerManagerItemInfo : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.ListView listView1;
 		private System.Windows.Forms.ColumnHeader columnHeaderCategory;
@@ -23,7 +23,7 @@ namespace WorldWind.Menu
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Menu.LayerManagerItemInfo"/> class.
 		/// </summary>
 		/// <param name="itemHash"></param>
-		public LayerManagerItemInfo(System.Collections.Hashtable itemHash)
+		internal LayerManagerItemInfo(System.Collections.Hashtable itemHash)
 		{
 			//
 			// Required for Windows Form Designer support

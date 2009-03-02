@@ -14,7 +14,7 @@ namespace WorldWind
 		void SetWmsImage(WmsDescriptor imageA, WmsDescriptor imageB, double alpha);
 	}
 
-	public sealed class OnScreenMessage
+	internal sealed class OnScreenMessage
 	{
 		private String message;
 		private double x;
@@ -23,7 +23,7 @@ namespace WorldWind
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.OnScreenMessage"/> class.
 		/// </summary>
-		public OnScreenMessage() {}
+		internal OnScreenMessage() {}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.OnScreenMessage"/> class.
@@ -31,26 +31,26 @@ namespace WorldWind
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="message"></param>
-		public OnScreenMessage(double x, double y, String message)
+		internal OnScreenMessage(double x, double y, String message)
 		{
 			this.x = x;
 			this.y = y;
 			this.message = message;
 		}
 
-		public String Message
+		internal String Message
 		{
 			get {return this.message;}
 			set {this.message = value;}
 		}
 		
-		public double X
+		internal double X
 		{
 			get {return this.x;}
 			set {this.x = value;}
 		}
 		
-		public double Y
+		internal double Y
 		{
 			get {return this.y;}
 			set {this.y = value;}
@@ -64,9 +64,9 @@ namespace WorldWind
 		private String name;
 		private double opacity;
 
-		public LayerDescriptor() {}
+		internal LayerDescriptor() {}
 
-		public LayerDescriptor(String category, String name, double opacity)
+		internal LayerDescriptor(String category, String name, double opacity)
 		{
 			this.category = category;
 			this.name = name;
@@ -100,9 +100,9 @@ namespace WorldWind.Net.Wms
 		private System.Uri url;
 		private double opacity;
 
-		public WmsDescriptor() {}
+		internal WmsDescriptor() {}
 
-		public WmsDescriptor(System.Uri url, double opacity)
+		internal WmsDescriptor(System.Uri url, double opacity)
 		{
 			this.url = url;
 			this.opacity = opacity;

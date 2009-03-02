@@ -10,7 +10,7 @@ namespace ConfigurationWizard
 	/// Summary description for TabPage.
 	/// </summary>
 //	[System.ComponentModel.Designer(typeof(WizardPageDesigner))]
-	public class WizardPage : System.Windows.Forms.UserControl
+	internal class WizardPage : System.Windows.Forms.UserControl
 	{
 		private System.Windows.Forms.Panel panel1;
 		private string _title;
@@ -26,21 +26,21 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:ConfigurationWizard.WizardPage"/> class.
 		/// </summary>
-		public WizardPage()
+		internal WizardPage()
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
 		}
 
 		[Browsable(true)]
-		public string Title
+		internal string Title
 		{
 			get { return _title; }
 			set { _title = value; }
 		}
 
 		[Browsable(true)]
-		public string SubTitle
+		internal string SubTitle
 		{
 			get {return _subTitle;}
 			set {_subTitle = value;}

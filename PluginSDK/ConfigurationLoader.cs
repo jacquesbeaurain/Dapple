@@ -18,12 +18,12 @@ namespace WorldWind
 	/// </summary>
 	public class ConfigurationLoader
 	{
-		public static double ParseDouble(string s)
+		internal static double ParseDouble(string s)
 		{
 			return double.Parse(s, CultureInfo.InvariantCulture);
 		}
 
-		public static void XMLValidationCallback(object sender, ValidationEventArgs args)
+		internal static void XMLValidationCallback(object sender, ValidationEventArgs args)
 		{
 			string file = "(unknown)";
 			XmlReader reader = sender as XmlReader;
@@ -43,7 +43,7 @@ namespace WorldWind
 			}
 		}
 
-		public static World Load(string filename, Cache cache, string worldXmlDescriptorSchema, string layerSetSchema)
+		internal static World Load(string filename, Cache cache, string worldXmlDescriptorSchema, string layerSetSchema)
 		{
 			Log.Write(Log.Levels.Debug, "CONF", "Loading " + filename);
 
@@ -130,7 +130,7 @@ namespace WorldWind
 			return null;
 		}
 
-		public static World Load(string filename, Cache cache)
+		internal static World Load(string filename, Cache cache)
 		{
 			return Load(filename, cache, null, null);
 		}
@@ -179,12 +179,12 @@ namespace WorldWind
 
 		}
 
-		public static RenderableObjectList getRenderableFromLayerFile(string layerFile, World parentWorld, Cache cache)
+		internal static RenderableObjectList getRenderableFromLayerFile(string layerFile, World parentWorld, Cache cache)
 		{
 			return getRenderableFromLayerFile(layerFile, parentWorld, cache, true);
 		}
 
-		public static RenderableObjectList getRenderableFromLayerFile(string layerFile, World parentWorld, Cache cache, bool enableRefresh)
+		internal static RenderableObjectList getRenderableFromLayerFile(string layerFile, World parentWorld, Cache cache, bool enableRefresh)
 		{
 			return getRenderableFromLayerFile(layerFile, parentWorld, cache, enableRefresh, null);
 		}
@@ -477,7 +477,7 @@ namespace WorldWind
 
 
 
-		public static bool IsLayerOn(RenderableObject ro)
+		internal static bool IsLayerOn(RenderableObject ro)
 		{
 			string path = getRenderablePathString(ro);
 			foreach (string s in World.Settings.loadedLayers)
@@ -1033,7 +1033,7 @@ namespace WorldWind
 			}
 		}
 
-		public static string GetRenderablePathString(RenderableObject renderable)
+		internal static string GetRenderablePathString(RenderableObject renderable)
 		{
 			return getRenderablePathString(renderable);
 		}

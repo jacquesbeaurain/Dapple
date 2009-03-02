@@ -21,7 +21,7 @@ using Microsoft.DirectX.Direct3D;
 namespace WorldWind.Renderable
 {
 
-    public class Bar3D : RenderableObject
+    internal class Bar3D : RenderableObject
     {
 
         double m_distanceAboveSurface = 0;
@@ -56,7 +56,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double Latitude
+        internal double Latitude
         {
 
             get { return m_latitude; }
@@ -74,7 +74,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double Longitude
+        internal double Longitude
         {
 
             get { return m_longitude; }
@@ -92,7 +92,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double DistanceAboveSurface
+        internal double DistanceAboveSurface
         {
 
             get { return m_distanceAboveSurface; }
@@ -110,7 +110,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double Height
+        internal double Height
         {
 
             get { return m_height; }
@@ -121,7 +121,7 @@ namespace WorldWind.Renderable
 
 
 
-        public bool UseScaling
+        internal bool UseScaling
         {
 
             get { return m_useScaling; }
@@ -132,7 +132,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double ScalarMinimum
+        internal double ScalarMinimum
         {
 
             get { return m_scalarMinimum; }
@@ -143,7 +143,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double ScalarMaximum
+        internal double ScalarMaximum
         {
 
             get { return m_scalarMaximum; }
@@ -154,7 +154,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double ScalarValue
+        internal double ScalarValue
         {
 
             get { return m_targetScalar; }
@@ -165,7 +165,7 @@ namespace WorldWind.Renderable
 
 
 
-        public float ScaleX
+        internal float ScaleX
         {
 
             get { return m_scaleX; }
@@ -176,7 +176,7 @@ namespace WorldWind.Renderable
 
 
 
-        public float ScaleY
+        internal float ScaleY
         {
 
             get { return m_scaleY; }
@@ -187,7 +187,7 @@ namespace WorldWind.Renderable
 
 
 
-        public Bar3D(
+        internal Bar3D(
 
             string name,
 
@@ -239,7 +239,7 @@ namespace WorldWind.Renderable
 
 
 
-        public override void Initialize(DrawArgs drawArgs)
+		  public override void Initialize(DrawArgs drawArgs)
         {
 
             isInitialized = true;
@@ -248,7 +248,7 @@ namespace WorldWind.Renderable
 
 
 
-        public override void Update(DrawArgs drawArgs)
+		  public override void Update(DrawArgs drawArgs)
         {
 
             if (!isInitialized)
@@ -259,7 +259,7 @@ namespace WorldWind.Renderable
 
 
 
-        public override void Render(DrawArgs drawArgs)
+		  public override void Render(DrawArgs drawArgs)
         {
 
             RenderBar(drawArgs);
@@ -270,7 +270,7 @@ namespace WorldWind.Renderable
 
 
 
-        public override void Dispose()
+		  public override void Dispose()
         {
 
 
@@ -279,7 +279,7 @@ namespace WorldWind.Renderable
 
 
 
-        public override bool PerformSelectionAction(DrawArgs drawArgs)
+		  public override bool PerformSelectionAction(DrawArgs drawArgs)
         {
 
             return false;
@@ -288,7 +288,7 @@ namespace WorldWind.Renderable
 
 
 
-        public double RenderedHeight = 0;
+        internal double RenderedHeight = 0;
 
 
 

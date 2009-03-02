@@ -39,7 +39,7 @@ using Utility;
 namespace bNb.Plugins_GD
 {
 	#region VEPROJECTTILESLAYER
-	public class VeReprojectTilesLayer : RenderableObject
+	internal class VeReprojectTilesLayer : RenderableObject
 	{
 		private Projection proj;
 		private WorldWindow parentApplication;
@@ -50,7 +50,7 @@ namespace bNb.Plugins_GD
 		private static double earthCircum; //40075016.685578488
 		private static double earthHalfCirc; //20037508.
 
-		public const int pixelsPerTile = 256;
+		internal const int pixelsPerTile = 256;
 		private int prevRow = -1;
 		private int prevCol = -1;
 		private int prevLvl = -1;
@@ -63,7 +63,7 @@ namespace bNb.Plugins_GD
 		private string imageExtension;
 		private string cacheDirectory;
 
-		public VeReprojectTilesLayer(string name, WorldWindow parentApplication, string datasetName, string imageExtension, int startZoomLevel, string cache)
+		internal VeReprojectTilesLayer(string name, WorldWindow parentApplication, string datasetName, string imageExtension, int startZoomLevel, string cache)
 			: base(name)
 		{
 			this.name = name;
@@ -119,7 +119,7 @@ namespace bNb.Plugins_GD
 		}
 
 
-		public string GetLocalLiveLink()
+		internal string GetLocalLiveLink()
 		{
 			//http://local.live.com/default.aspx?v=2&cp=43.057723~-88.404224&style=r&lvl=12
 			string lat = parentApplication.DrawArgs.WorldCamera.Latitude.Degrees.ToString("###.#####");
@@ -128,7 +128,7 @@ namespace bNb.Plugins_GD
 			return link;
 		}
 
-		public void RemoveAllTiles()
+		internal void RemoveAllTiles()
 		{
 			lock (veTiles.SyncRoot)
 			{
@@ -142,7 +142,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public void ForceRefresh()
+		internal void ForceRefresh()
 		{
 			prevRow = -1;
 			prevCol = -1;
@@ -282,7 +282,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		internal bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
 		{
 			iBytesRead = 0;
 			iTotalBytes = 0;
@@ -424,7 +424,7 @@ namespace bNb.Plugins_GD
 			return d * Math.PI / 180.0;
 		}
 
-		public double GetLevelDegrees(int level)
+		internal double GetLevelDegrees(int level)
 		{
 			double metersPerPixel = MetersPerPixel(level);
 			double arcDistance = metersPerPixel * pixelsPerTile;
@@ -433,7 +433,7 @@ namespace bNb.Plugins_GD
 			return tileRange;
 		}
 
-		public int GetZoomLevelByTrueViewRange(double trueViewRange)
+		internal int GetZoomLevelByTrueViewRange(double trueViewRange)
 		{
 			int maxLevel = 3;
 			int minLevel = 19;
@@ -456,7 +456,7 @@ namespace bNb.Plugins_GD
 			return retLevel;
 		}
 
-		public int GetZoomLevelByArcDistance(double arcDistance)
+		internal int GetZoomLevelByArcDistance(double arcDistance)
 		{
 			//arcDistance in meters
 			int totalLevels = 24;
@@ -545,7 +545,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public void GetViewPort(DrawArgs drawArgs, out double lat1, out double lon1, out double lat2, out double lon2)
+		internal void GetViewPort(DrawArgs drawArgs, out double lat1, out double lon1, out double lat2, out double lon2)
 		{
 			double halfViewRange = drawArgs.WorldCamera.TrueViewRange.Degrees / 2;
 			double lat = drawArgs.WorldCamera.Latitude.Degrees;
@@ -557,7 +557,7 @@ namespace bNb.Plugins_GD
 		}
 
 		private ArrayList pushPins = null;
-		public ArrayList PushPins
+		internal ArrayList PushPins
 		{
 			get { return pushPins; }
 			set { pushPins = value; }
@@ -592,7 +592,7 @@ namespace bNb.Plugins_GD
 			return false;
 		}
 
-      public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+		public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
       {
          lock (veTiles)
          {
@@ -621,7 +621,7 @@ namespace bNb.Plugins_GD
          }
       }
 
-      public override void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
+		public override void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
       {
          foreach (VeTile oTile in veTiles)
          {
@@ -645,7 +645,7 @@ namespace bNb.Plugins_GD
 	/// This class stores virtual earth settings
 	/// </summary>
 	[Serializable]
-	public class VESettings
+	internal class VESettings
 	{
 		/// <summary>
 		/// Layer Zoom Level
@@ -669,7 +669,7 @@ namespace bNb.Plugins_GD
 		private bool debug = false;
 
 
-		public int ZoomLevel
+		internal int ZoomLevel
 		{
 			get
 			{
@@ -681,7 +681,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool LayerOn
+		internal bool LayerOn
 		{
 			get
 			{
@@ -693,7 +693,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool Terrain
+		internal bool Terrain
 		{
 			get
 			{
@@ -705,7 +705,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool Road
+		internal bool Road
 		{
 			get
 			{
@@ -717,7 +717,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool Aerial
+		internal bool Aerial
 		{
 			get
 			{
@@ -729,7 +729,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool Hybrid
+		internal bool Hybrid
 		{
 			get
 			{
@@ -741,7 +741,7 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		public bool Debug
+		internal bool Debug
 		{
 			get
 			{
@@ -757,7 +757,7 @@ namespace bNb.Plugins_GD
 		/// returns default values if the file doesn't exist or an error occurs
 		/// </summary>
 		/// <returns>The persisted settings from the file</returns>
-		public static VESettings LoadSettingsFromFile(string filename)
+		internal static VESettings LoadSettingsFromFile(string filename)
 		{
 			VESettings settings;
 			XmlSerializer xs = new XmlSerializer(typeof(VESettings));
@@ -801,7 +801,7 @@ namespace bNb.Plugins_GD
 		/// </summary>
 		/// <param name="file">The filename to use for saving</param>
 		/// <param name="settings">The instance of the Settings class to persist</param>
-		public static void SaveSettingsToFile(string file, VESettings settings)
+		internal static void SaveSettingsToFile(string file, VESettings settings)
 		{
 			FileStream fs = null;
 			XmlSerializer xs = new XmlSerializer(typeof(VESettings));
@@ -821,7 +821,7 @@ namespace bNb.Plugins_GD
 	#endregion
 
 	#region VETILE
-	public class VeTile : IDisposable
+	internal class VeTile : IDisposable
 	{
 		//Whether a download is currently in progress
 		private bool m_blDownloading = false;
@@ -832,7 +832,7 @@ namespace bNb.Plugins_GD
 		private MD5 md5Hasher;
 		private static byte[] noTileMD5Hash = { 0xc1, 0x32, 0x69, 0x48, 0x1c, 0x73, 0xde, 0x6e, 0x18, 0x58, 0x9f, 0x9f, 0xbc, 0x3b, 0xdf, 0x7e };
 
-		public Boolean DownloadInProgress
+		internal Boolean DownloadInProgress
 		{
 			get
 			{
@@ -843,7 +843,7 @@ namespace bNb.Plugins_GD
 		/// <summary>
 		/// Coordinates at upper left edge of image
 		/// </summary>
-		public UV UL
+		internal UV UL
 		{
 			get { return m_ul; }
 			set { m_ul = value; }
@@ -852,7 +852,7 @@ namespace bNb.Plugins_GD
 		/// <summary>
 		/// Coordinates at upper right edge of image
 		/// </summary>
-		public UV UR
+		internal UV UR
 		{
 			get { return m_ur; }
 			set { m_ur = value; }
@@ -861,7 +861,7 @@ namespace bNb.Plugins_GD
 		/// <summary>
 		/// Coordinates at lower left edge of image
 		/// </summary>
-		public UV LL
+		internal UV LL
 		{
 			get { return m_ll; }
 			set { m_ll = value; }
@@ -870,7 +870,7 @@ namespace bNb.Plugins_GD
 		/// <summary>
 		/// Coordinates at lower right edge of image
 		/// </summary>
-		public UV LR
+		internal UV LR
 		{
 			get { return m_lr; }
 			set { m_lr = value; }
@@ -879,7 +879,7 @@ namespace bNb.Plugins_GD
 		//store the Vertical Exaggeration for when the mesh was created
 		//so when the VerticalExaggeration setting changes, it know which meshes to recreate
 		private float vertEx;
-		public float VertEx
+		internal float VertEx
 		{
 			get { return vertEx; }
 		}
@@ -888,7 +888,7 @@ namespace bNb.Plugins_GD
 		private static double _layerRadius;
 		private static TerrainAccessor _terrainAccessor;
 
-		public static void Init(Projection proj, TerrainAccessor terrainAccessor, double layerRadius)
+		internal static void Init(Projection proj, TerrainAccessor terrainAccessor, double layerRadius)
 		{
 			_proj = proj;
 			_terrainAccessor = terrainAccessor;
@@ -897,13 +897,13 @@ namespace bNb.Plugins_GD
 
 		//flag for if the tile should be disposed
 		private bool isNeeded = true;
-		public bool IsNeeded
+		internal bool IsNeeded
 		{
 			get { return isNeeded; }
 			set { isNeeded = value; }
 		}
 
-		public bool IsEqual(int row, int col, int level)
+		internal bool IsEqual(int row, int col, int level)
 		{
 			bool retVal = false;
 			if (this.row == row && this.col == col && this.level == level)
@@ -917,11 +917,11 @@ namespace bNb.Plugins_GD
 		private int col;
 		private int level;
 
-      public int Row { get { return row; } }
-      public int Col { get { return col; } }
-      public int Level { get { return level; } }
+      internal int Row { get { return row; } }
+      internal int Col { get { return col; } }
+      internal int Level { get { return level; } }
 
-		public VeTile(int row, int col, int level, MD5 _md5Hasher)
+		internal VeTile(int row, int col, int level, MD5 _md5Hasher)
 		{
 			this.md5Hasher = _md5Hasher;
 			this.row = row;
@@ -930,7 +930,7 @@ namespace bNb.Plugins_GD
 		}
 
 		private Texture texture = null;
-		public Texture Texture
+		internal Texture Texture
 		{
 			get { return texture; }
 			set { texture = value; }
@@ -938,12 +938,12 @@ namespace bNb.Plugins_GD
 
 		private ArrayList alMetaData = new ArrayList();
 		private WebDownload download;
-		public int iDownloadPos = 0;
-		public int iDownloadTotal = 2048;
+		internal int iDownloadPos = 0;
+		internal int iDownloadTotal = 2048;
 		private string textureName;
 		private DrawArgs drawArgs;
 
-		public void GetTexture(DrawArgs drawArgs, int pixelsPerTile, string _datasetName, string imageExtension, string _cacheDirectory)
+		internal void GetTexture(DrawArgs drawArgs, int pixelsPerTile, string _datasetName, string imageExtension, string _cacheDirectory)
 		{
 			this.drawArgs = drawArgs;
 			string _imageExtension = imageExtension;
@@ -1090,13 +1090,13 @@ namespace bNb.Plugins_GD
 
 		}
 
-		public void AddMetaData(string metadata)
+		internal void AddMetaData(string metadata)
 		{
 			alMetaData.Add(metadata);
 		}
 
 		//for generating the debug bitmap
-		public Bitmap DecorateBitmap(Bitmap b, System.Drawing.Font font, Brush brush, ArrayList alMetadata)
+		internal Bitmap DecorateBitmap(Bitmap b, System.Drawing.Font font, Brush brush, ArrayList alMetadata)
 		{
 			if (alMetadata.Count > 0)
 			{
@@ -1151,7 +1151,7 @@ namespace bNb.Plugins_GD
 			return quad;
 		}
 
-		public string CreateLevelDir(int level, string cacheDirectoryRoot)
+		internal string CreateLevelDir(int level, string cacheDirectoryRoot)
 		{
 			string levelDir = null;
 			//VirtualEarth.m_WorldWindow.Cache.CacheDirectory
@@ -1168,7 +1168,7 @@ namespace bNb.Plugins_GD
 			return levelDir;
 		}
 
-		public string CreateMapTypeDir(string levelDir, string mapType)
+		internal string CreateMapTypeDir(string levelDir, string mapType)
 		{
 			string mapTypeDir = levelDir + @"\" + mapType;
 			if (Directory.Exists(mapTypeDir) == false)
@@ -1178,7 +1178,7 @@ namespace bNb.Plugins_GD
 			return mapTypeDir;
 		}
 
-		public string CreateRowDir(string mapTypeDir, int row)
+		internal string CreateRowDir(string mapTypeDir, int row)
 		{
 			string rowDir = mapTypeDir + @"\" + row.ToString("0000");
 			if (Directory.Exists(rowDir) == false)
@@ -1188,31 +1188,31 @@ namespace bNb.Plugins_GD
 			return rowDir;
 		}
 
-		public string GetTextureName(string rowDir, int row, int col, string textureExtension)
+		internal string GetTextureName(string rowDir, int row, int col, string textureExtension)
 		{
 			string textureName = rowDir + @"\" + row.ToString("0000") + "_" + col.ToString("0000") + "." + textureExtension;
 			return textureName;
 		}
 
-		public void SaveBitmap(Bitmap b, string rowDir, int row, int col, string imageExtension, System.Drawing.Imaging.ImageFormat format)
+		internal void SaveBitmap(Bitmap b, string rowDir, int row, int col, string imageExtension, System.Drawing.Imaging.ImageFormat format)
 		{
 			string bmpName = rowDir + @"\" + row.ToString("0000") + "_" + col.ToString("0000") + "." + imageExtension;
 			b.Save(bmpName, format);
 			//b.Save(bmpName); //, format
 		}
 
-		public void Reproject()
+		internal void Reproject()
 		{
 			//TODO refactor from the VeLayer class
 		}
 
 		protected CustomVertex.PositionNormalTextured[] vertices;
-		public CustomVertex.PositionNormalTextured[] Vertices
+		internal CustomVertex.PositionNormalTextured[] Vertices
 		{
 			get { return vertices; }
 		}
 		protected short[] indices;
-		public short[] Indices
+		internal short[] Indices
 		{
 			get { return indices; }
 		}
@@ -1223,13 +1223,13 @@ namespace bNb.Plugins_GD
 		private double West;
 		private double East;
 
-      public double MinX { get { return West; } }
-      public double MaxX { get { return East; } }
-      public double MinY { get { return South; } }
-      public double MaxY { get { return North; } }
+      internal double MinX { get { return West; } }
+      internal double MaxX { get { return East; } }
+      internal double MinY { get { return South; } }
+      internal double MaxY { get { return North; } }
 
 		//NOTE this is a mix from Mashi's Reproject and WW for terrain
-		public void CreateMesh(byte opacity, float verticalExaggeration)
+		internal void CreateMesh(byte opacity, float verticalExaggeration)
 		{
 			this.vertEx = verticalExaggeration;
 			
@@ -1426,7 +1426,7 @@ namespace bNb.Plugins_GD
 
 		CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
 
-		public static int Render(DrawArgs drawArgs, bool disableZbuffer, ArrayList alVeTiles, int zoomLevel, ushort usOpacity)
+		internal static int Render(DrawArgs drawArgs, bool disableZbuffer, ArrayList alVeTiles, int zoomLevel, ushort usOpacity)
 		{
 			int tileDrawn = 0;
          int iOldTextureFactor = 0;
@@ -1541,7 +1541,7 @@ namespace bNb.Plugins_GD
 			return tileDrawn;
 		}
 
-		public void CreateDownloadRectangle(DrawArgs drawArgs, int color)
+		internal void CreateDownloadRectangle(DrawArgs drawArgs, int color)
 		{
 			// Render terrain download rectangle
 			Point3d northWestV = MathEngine.SphericalToCartesian((float)North, (float)West, _layerRadius);
@@ -1575,7 +1575,7 @@ namespace bNb.Plugins_GD
 			downloadRectangle[4].Color = color;
 		}
 
-		public void RenderDownloadRectangle(DrawArgs drawArgs)
+		internal void RenderDownloadRectangle(DrawArgs drawArgs)
 		{
 
 			// camera jitter fix

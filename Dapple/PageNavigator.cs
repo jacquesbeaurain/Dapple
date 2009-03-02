@@ -9,25 +9,25 @@ using System.Threading;
 
 namespace Dapple
 {
-   public partial class PageNavigator : UserControl
+   internal partial class PageNavigator : UserControl
    {
       #region Events
 
       /// <summary>
       /// Invoked when the back button is pressed.
       /// </summary>
-      public event EventHandler PageBack;
+      internal event EventHandler PageBack;
 
       /// <summary>
       /// Invoked when the forward button is pressed.
       /// </summary>
-      public event EventHandler PageForward;
+      internal event EventHandler PageForward;
 
       #endregion
 
       #region Constructors
 
-      public PageNavigator()
+      internal PageNavigator()
       {
          InitializeComponent();
       }
@@ -50,19 +50,19 @@ namespace Dapple
 
       #region Display methods
 
-      public void SetState(int iPage, int iNumResults)
+      internal void SetState(int iPage, int iNumResults)
       {
          int iNumPages = PagesFromResults(iNumResults);
          SetState(String.Format("Results {0}-{1} of {2}", iPage * ResultsPerPage + 1, Math.Min((iPage + 1) * PageNavigator.ResultsPerPage, iNumResults), iNumResults), iPage > 0, iPage < iNumPages - 1);
       }
 
-      public void SetState(String szMessage)
+      internal void SetState(String szMessage)
       {
          SetState(szMessage, false, false);
       }
 
       private delegate void SetStateDelegate(String szMessage, bool blCanBack, bool blCanForward);
-      public void SetState(String szMessage, bool blCanBack, bool blCanForward)
+      internal void SetState(String szMessage, bool blCanBack, bool blCanForward)
       {
          if (InvokeRequired)
          {
@@ -80,9 +80,9 @@ namespace Dapple
 
       #region Statics
 
-      public static int ResultsPerPage = 10;
+      internal static int ResultsPerPage = 10;
 
-      public static int PagesFromResults(int iNumResults)
+      internal static int PagesFromResults(int iNumResults)
       {
          int result = iNumResults / ResultsPerPage;
          if (iNumResults % ResultsPerPage != 0) result++;

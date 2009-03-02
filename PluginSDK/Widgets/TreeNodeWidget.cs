@@ -56,22 +56,22 @@ using System.Runtime.InteropServices;
 
 namespace WorldWind.NewWidgets
 {
-    public delegate void CheckStateChangedHandler(object o, bool state);
+    internal delegate void CheckStateChangedHandler(object o, bool state);
 
 	/// <summary>
 	/// Summary description for TextLabel.
 	/// </summary>
-	public abstract class TreeNodeWidget : WidgetCollection, IWidget, IInteractive
+	 public abstract class TreeNodeWidget : WidgetCollection, IWidget, IInteractive
 	{
-		public const int NODE_OFFSET = 5;
+		internal const int NODE_OFFSET = 5;
 
-		public const int NODE_HEIGHT = 20;
+		internal const int NODE_HEIGHT = 20;
 
-		public const int NODE_INDENT = 15;
+		internal const int NODE_INDENT = 15;
 
-		public const int NODE_ARROW_SIZE = 15;
+		internal const int NODE_ARROW_SIZE = 15;
 
-		public const int NODE_CHECKBOX_SIZE = 15;
+		internal const int NODE_CHECKBOX_SIZE = 15;
 
 		protected const int DEFAULT_OPACITY = 150;
 
@@ -168,7 +168,7 @@ namespace WorldWind.NewWidgets
 
 		#region Properties
 
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -215,7 +215,7 @@ namespace WorldWind.NewWidgets
 			}
 		}
 
-		public WorldWind.Renderable.RenderableObject RenderableObject
+		internal WorldWind.Renderable.RenderableObject RenderableObject
 		{
 			get { return m_renderableObject; }
 			set 
@@ -267,7 +267,7 @@ namespace WorldWind.NewWidgets
 			}
 		}
 
-		
+
 		public System.Drawing.Point ClientLocation
 		{
 			get { return this.AbsoluteLocation; }
@@ -377,9 +377,9 @@ namespace WorldWind.NewWidgets
 
 		#endregion IWidget Properties
 
-        public event CheckStateChangedHandler OnCheckStateChanged;
+        internal event CheckStateChangedHandler OnCheckStateChanged;
 
-		public TreeNodeWidget()
+		  public TreeNodeWidget()
 		{
 			m_location.X = 0;
 			m_location.Y = 0;
@@ -389,12 +389,12 @@ namespace WorldWind.NewWidgets
 			m_isInitialized = false;
 		}
 
-		public TreeNodeWidget(string name) : this()
+		internal TreeNodeWidget(string name) : this()
 		{
 			m_name = name;
 		}
 
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			// Initialize fonts
             if (m_drawingFont == null)
@@ -476,14 +476,14 @@ namespace WorldWind.NewWidgets
 		}	
 
 		protected MouseClickAction m_checkClickAction;
-		public MouseClickAction CheckClickAction
+		internal MouseClickAction CheckClickAction
 		{
 			get { return m_checkClickAction; }
 			set { m_checkClickAction = value; }
 		}
 
 		protected MouseClickAction m_expandClickAction;
-		public MouseClickAction ExpandClickAction
+		internal MouseClickAction ExpandClickAction
 		{
 			get { return m_expandClickAction; }
 			set { m_expandClickAction = value; }
@@ -727,13 +727,13 @@ namespace WorldWind.NewWidgets
 
 		#region IWidgetCollection methods
 
-		new public void Add(IWidget widget)
+		new internal void Add(IWidget widget)
 		{
 			m_subNodes.Add(widget);
 			widget.ParentWidget = this;
 		}
 
-		new public void Remove(IWidget widget)
+		new internal void Remove(IWidget widget)
 		{
 			m_subNodes.Remove(widget);
 		}
@@ -747,6 +747,6 @@ namespace WorldWind.NewWidgets
 		/// <param name="xOffset">The offset from the left based on how deep this node is nested</param>
 		/// <param name="yOffset">The offset from the top based on how many treenodes are above this one</param>
 		/// <returns>Total pixels consumed by this widget and its children</returns>
-		public abstract int Render(DrawArgs drawArgs, int xOffset, int yOffset);
+		internal abstract int Render(DrawArgs drawArgs, int xOffset, int yOffset);
 	}
 }

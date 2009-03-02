@@ -5,7 +5,7 @@ using System.Text;
 namespace Geosoft.GX.DAPGetData
 {
    [Serializable]
-   public class FolderDatasetList
+   internal class FolderDatasetList
    {
       #region Member Variables
       protected string m_strKey;
@@ -14,24 +14,24 @@ namespace Geosoft.GX.DAPGetData
       #endregion
 
       #region Properties
-      public string Key
+      internal string Key
       {
          get { return m_strKey; }
       }
 
-      public int Timestamp
+      internal int Timestamp
       {
          get { return m_iTimestamp; }
       }
 
-      public ICollection Datasets
+      internal ICollection Datasets
       {
          get { return m_oDatasets; }
       }
       #endregion
 
       #region Constructor
-      public FolderDatasetList(string strKey, int iTimestamp, ArrayList oList)
+      internal FolderDatasetList(string strKey, int iTimestamp, ArrayList oList)
       {
          m_strKey = strKey;
          m_iTimestamp = iTimestamp;
@@ -44,7 +44,7 @@ namespace Geosoft.GX.DAPGetData
       }
       #endregion
 
-      public static FolderDatasetList Parse(Server oServer, string strKey, int iTimestamp, System.Xml.XmlDocument oCatalog, out string strEdition)
+      internal static FolderDatasetList Parse(Server oServer, string strKey, int iTimestamp, System.Xml.XmlDocument oCatalog, out string strEdition)
       {
          strEdition = string.Empty;
          ArrayList oList = new ArrayList();
@@ -76,7 +76,7 @@ namespace Geosoft.GX.DAPGetData
 
       private class DatasetCompare : IComparer
       {
-         public int Compare(object ds1, object ds2)
+			public int Compare(object ds1, object ds2)
          {
             return string.Compare(((Geosoft.Dap.Common.DataSet)ds1).Title, ((Geosoft.Dap.Common.DataSet)ds2).Title, true);
          }
@@ -85,7 +85,7 @@ namespace Geosoft.GX.DAPGetData
 
    sealed class FolderDatasetListDeserializationBinder : System.Runtime.Serialization.SerializationBinder
    {
-      public override Type BindToType(string assemblyName, string typeName)
+		public override Type BindToType(string assemblyName, string typeName)
       {
          if (assemblyName.ToLower().Contains("dapxmlclient")) {
             Geosoft.Dap.Common.DataSet oD = new Geosoft.Dap.Common.DataSet();

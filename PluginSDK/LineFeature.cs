@@ -47,12 +47,12 @@ namespace WorldWind
 		/// <summary>
 		/// Boolean indicating whether or not the line needs rebuilding.
 		/// </summary>
-		public bool NeedsUpdate = true;
+		internal bool NeedsUpdate = true;
 
 		/// <summary>
 		/// Whether line should be extruded
 		/// </summary>
-		public bool Extrude
+		internal bool Extrude
 		{
 			get { return m_extrude; }
 			set
@@ -66,7 +66,7 @@ namespace WorldWind
 		/// <summary>
 		/// Whether extrusion should be upwards
 		/// </summary>
-		public bool ExtrudeUpwards
+		internal bool ExtrudeUpwards
 		{
 			get { return m_extrudeUpwards; }
 			set
@@ -80,7 +80,7 @@ namespace WorldWind
 		/// <summary>
 		/// Distance to extrude
 		/// </summary>
-		public double ExtrudeHeight
+		internal double ExtrudeHeight
 		{
 			get { return m_extrudeHeight; }
 			set
@@ -94,7 +94,7 @@ namespace WorldWind
 		/// <summary>
 		/// Whether line should be extruded to the ground (completely overrides other extrusion options)
 		/// </summary>
-		public bool ExtrudeToGround
+		internal bool ExtrudeToGround
 		{
 			get { return m_extrudeToGround; }
 			set
@@ -106,13 +106,13 @@ namespace WorldWind
 			}
 		}
 
-		public AltitudeMode AltitudeMode
+		internal AltitudeMode AltitudeMode
 		{
 			get { return m_altitudeMode; }
 			set { m_altitudeMode = value; }
 		}
 
-		public bool EnableLighting
+		internal bool EnableLighting
 		{
 			get { return m_enableLighting; }
 			set { m_enableLighting = value; }
@@ -138,7 +138,7 @@ namespace WorldWind
 			}
 		}
 
-		public double DistanceAboveSurface
+		internal double DistanceAboveSurface
 		{
 			get { return m_distanceAboveSurface; }
 			set
@@ -151,7 +151,7 @@ namespace WorldWind
 			}
 		}
 
-		public System.Drawing.Color PolygonColor
+		internal System.Drawing.Color PolygonColor
 		{
 			get { return m_polygonColor; }
 			set
@@ -165,7 +165,7 @@ namespace WorldWind
 			}
 		}
 
-		public bool Outline
+		internal bool Outline
 		{
 			get { return m_outline; }
 			set
@@ -247,7 +247,7 @@ namespace WorldWind
 			RenderPriority = WorldWind.Renderable.RenderPriority.LinePaths;
 		}
 
-		public LineFeature(string name, World parentWorld, Point3d[] points, string imageUri)
+		internal LineFeature(string name, World parentWorld, Point3d[] points, string imageUri)
 			: base(name, parentWorld)
 		{
 			m_points = points;
@@ -317,7 +317,7 @@ namespace WorldWind
 		/// <param name="x">Lon</param>
 		/// <param name="y">Lat</param>
 		/// <param name="z">Alt (meters)</param>
-		public void AddPoint(double x, double y, double z)
+		internal void AddPoint(double x, double y, double z)
 		{
 			Point3d point = new Point3d(x, y, z);
 			//TODO:Divide into subsegments if too far
@@ -365,7 +365,7 @@ namespace WorldWind
 		/// Adds a point to the line at the end of the line.
 		/// </summary>
 		/// <param name="point">The Point3d object to add.</param>
-		public void AddPoint(Point3d point)
+		internal void AddPoint(Point3d point)
 		{
 			// if the array is too small grow it.
 			if (m_numPoints >= m_points.LongLength)

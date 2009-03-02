@@ -8,14 +8,14 @@ using System.Windows.Forms;
 
 namespace Dapple.Extract
 {
-	public partial class DownloadOptions : UserControl
+	internal partial class DownloadOptions : UserControl
 	{
 		#region Enums
 
 		/// <summary>
 		/// The result of attempting to extract a dataset.
 		/// </summary>
-		public enum ExtractSaveResult
+		internal enum ExtractSaveResult
 		{
 			/// <summary>
 			/// Save was successful, tell DappleGetData to download the item.
@@ -31,7 +31,7 @@ namespace Dapple.Extract
 			Cancel
 		};
 
-		public enum DuplicateFileCheckResult
+		internal enum DuplicateFileCheckResult
 		{
 			Yes,
 			YesAndStopAsking,
@@ -52,7 +52,7 @@ namespace Dapple.Extract
       /// <summary>
       /// Get the curent viewed area of interest
       /// </summary>
-      public WorldWind.GeographicBoundingBox ViewedAoi
+      internal WorldWind.GeographicBoundingBox ViewedAoi
       {
          get { return m_oViewedAoi; }
       }
@@ -60,12 +60,12 @@ namespace Dapple.Extract
       /// <summary>
       /// Get the thick client open map area of interest
       /// </summary>
-      public WorldWind.GeographicBoundingBox MapAoi
+      internal WorldWind.GeographicBoundingBox MapAoi
       {
          get { return m_oMapAoi; }
       }
 
-      public virtual bool ResolutionEnabled
+      internal virtual bool ResolutionEnabled
       {
          set { }
       }
@@ -73,7 +73,7 @@ namespace Dapple.Extract
 		/// <summary>
 		/// If this is false, the download XML will set blNewMap to false always.
 		/// </summary>
-		public virtual bool OpenInMap
+		internal virtual bool OpenInMap
 		{
 			get { return true; }
 		}
@@ -82,13 +82,13 @@ namespace Dapple.Extract
 		[Description("The ErrorProvider used to notify users of errors.")]
 		[Browsable(true)]
 		[Category("Behavior")]
-		public virtual ErrorProvider ErrorProvider
+		internal virtual ErrorProvider ErrorProvider
 		{
 			get { return m_oErrorProvider; }
 			set { m_oErrorProvider = value; }
 		}
 
-		public virtual DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal virtual DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			return DuplicateFileCheckResult.Yes;
 		}
@@ -119,7 +119,7 @@ namespace Dapple.Extract
       /// </summary>
       /// <param name="oMainForm"></param>
       /// <param name="oDAPLayer"></param>
-      public DownloadOptions(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPLayer) : this()
+      internal DownloadOptions(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPLayer) : this()
       {
          m_oDAPLayer = oDAPLayer;
          m_oViewedAoi = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
@@ -136,7 +136,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-      public virtual ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+      internal virtual ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          double dMaxX, dMinX, dMaxY, dMinY;
          double dProjMinX, dProjMinY, dProjMaxX, dProjMaxY;
@@ -330,11 +330,11 @@ namespace Dapple.Extract
 			return ExtractSaveResult.Extract;
       }
 
-      public virtual void SetDefaultResolution()
+      internal virtual void SetDefaultResolution()
       {
       }
 
-      public virtual void SetNativeResolution()
+      internal virtual void SetNativeResolution()
       {
       }
       #endregion

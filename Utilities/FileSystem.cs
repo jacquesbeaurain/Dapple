@@ -8,22 +8,22 @@ using MWA.Progress;
 
 namespace Utility
 {
-   public class FileSystem
+	public class FileSystem
    {
       class ProgressInfo
       {
-         public ProgressWindow progress;
-         public string strOrigFolder;
-         public string strFolder;
-         public long lTotalSize;
-         public long lCounter;
+         internal ProgressWindow progress;
+         internal string strOrigFolder;
+         internal string strFolder;
+         internal long lTotalSize;
+         internal long lCounter;
 
-         public ProgressInfo()
+         internal ProgressInfo()
          {
          }
       }
 
-      public static void DeleteFolderGUI(IWin32Window parent, string strFolder, string strTitle)
+		public static void DeleteFolderGUI(IWin32Window parent, string strFolder, string strTitle)
       {
 			if (!Directory.Exists(strFolder)) return;
 
@@ -127,7 +127,7 @@ namespace Utility
          }
       }
 
-      public static void SizeFolderContentsRecursive(string strFolder, ref long lSize)
+      internal static void SizeFolderContentsRecursive(string strFolder, ref long lSize)
       {
          DirectoryInfo di = new DirectoryInfo(strFolder);
          FileInfo[] fis = di.GetFiles();

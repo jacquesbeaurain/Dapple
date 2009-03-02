@@ -11,13 +11,13 @@ namespace Dapple.Extract
    /// <summary>
    /// Gather the extract parameters for downloading the selected datasets
    /// </summary>
-   public partial class DatasetDisclaimer : Form
+   internal partial class DatasetDisclaimer : Form
    {      
       #region Properties
       /// <summary>
       /// Return a value indicating if we have any disclaimers
       /// </summary>
-      public bool HasDisclaimer
+      internal bool HasDisclaimer
       {
          get { return (lvDatasets.Items.Count > 0); }
       }
@@ -27,7 +27,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oLayersToDownload"></param>
-      public DatasetDisclaimer(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload, System.Xml.XmlDocument oDownload)
+      internal DatasetDisclaimer(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload, System.Xml.XmlDocument oDownload)
       {
          InitializeComponent();
 

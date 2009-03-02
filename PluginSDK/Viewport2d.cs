@@ -4,16 +4,16 @@ using System.Text;
 
 namespace WorldWind
 {
-   public struct Viewport2d
+   internal struct Viewport2d
    {
-      public int Height;
-      public double MaxZ;
-      public double MinZ;
-      public int Width;
-      public int X;
-      public int Y;
+      internal int Height;
+      internal double MaxZ;
+      internal double MinZ;
+      internal int Width;
+      internal int X;
+      internal int Y;
 
-      public Viewport2d(int height, double maxZ, double minZ, int width, int x, int y) 
+      internal Viewport2d(int height, double maxZ, double minZ, int width, int x, int y) 
       {
          Height = height; 
          MaxZ = maxZ; 

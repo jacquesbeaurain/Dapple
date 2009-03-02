@@ -4,7 +4,7 @@ using WorldWind.Menu;
 namespace WorldWind
 {
 	
-	public class WindowsControlMenuButton : MenuButton
+	internal class WindowsControlMenuButton : MenuButton
 	{
 		System.Windows.Forms.Control _control;
 		
@@ -14,7 +14,7 @@ namespace WorldWind
 		/// <param name="name"></param>
 		/// <param name="iconFilePath"></param>
 		/// <param name="control"></param>
-		public WindowsControlMenuButton(
+		internal WindowsControlMenuButton(
 			string name,
 			string iconFilePath,
 			System.Windows.Forms.Control control) : base(iconFilePath)

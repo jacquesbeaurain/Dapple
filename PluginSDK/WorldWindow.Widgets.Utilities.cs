@@ -9,7 +9,7 @@ namespace WorldWind.Widgets
 	/// <summary>
 	/// Interface must be implemented in order to recieve user input.  Can be used by IRenderables and IWidgets.
 	/// </summary>
-	public interface IInteractive
+	internal interface IInteractive
 	{
 		#region Methods
 		bool OnKeyDown(KeyEventArgs e);
@@ -78,11 +78,11 @@ namespace WorldWind.Widgets
 
 	}
 
-	public sealed class Utilities
+	internal sealed class Utilities
 		{
 			private Utilities(){}
 
-			public static void DrawLine(Vector2[] linePoints, int color, Device device)
+			internal static void DrawLine(Vector2[] linePoints, int color, Device device)
 			{
 				CustomVertex.TransformedColored[] lineVerts = new CustomVertex.TransformedColored[linePoints.Length];
 
@@ -101,7 +101,7 @@ namespace WorldWind.Widgets
 				device.DrawUserPrimitives(PrimitiveType.LineStrip, lineVerts.Length - 1, lineVerts);
 			}
 
-			public static void DrawBox(int ulx, int uly, int width, int height, float z, int color, Device device)
+			internal static void DrawBox(int ulx, int uly, int width, int height, float z, int color, Device device)
 			{
 				CustomVertex.TransformedColored[] verts = new CustomVertex.TransformedColored[4];
 				verts[0].X = (float)ulx;
@@ -129,7 +129,7 @@ namespace WorldWind.Widgets
 				device.DrawUserPrimitives(PrimitiveType.TriangleStrip, verts.Length - 2, verts);
 			}
 
-			public static void DrawSector(double startAngle, double endAngle, int centerX, int centerY, int radius, float z, int color, Device device)
+			internal static void DrawSector(double startAngle, double endAngle, int centerX, int centerY, int radius, float z, int color, Device device)
 			{
 				int prec = 7;
 

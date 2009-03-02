@@ -212,7 +212,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Foreground color
 		/// </summary>
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get { return m_ForeColor; }
 			set { m_ForeColor = value; }
@@ -373,7 +373,7 @@ namespace WorldWind.NewWidgets
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			object key = null;
 
@@ -593,7 +593,7 @@ namespace WorldWind.NewWidgets
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+		public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
         {
             return false;
         }

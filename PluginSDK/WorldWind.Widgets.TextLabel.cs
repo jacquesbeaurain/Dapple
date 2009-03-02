@@ -7,7 +7,7 @@ namespace WorldWind.Widgets
 	/// <summary>
 	/// Summary description for TextLabel.
 	/// </summary>
-	public class TextLabel : IWidget
+	internal class TextLabel : IWidget
 	{
 		string m_Text = "";
 		System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
@@ -19,7 +19,7 @@ namespace WorldWind.Widgets
 		System.Drawing.Color m_ForeColor = System.Drawing.Color.White;
 		string m_Name = "";
 
-		public TextLabel()
+		internal TextLabel()
 		{
 			
 		}
@@ -36,7 +36,7 @@ namespace WorldWind.Widgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -47,7 +47,7 @@ namespace WorldWind.Widgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{

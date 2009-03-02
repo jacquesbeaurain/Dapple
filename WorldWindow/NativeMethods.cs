@@ -7,7 +7,7 @@ namespace WorldWind.Interop
 	/// <summary>
 	/// Interop methods for WorldWindow namespace
 	/// </summary>
-	public sealed class NativeMethods
+	internal sealed class NativeMethods
 	{
 		private NativeMethods()
 		{
@@ -17,14 +17,14 @@ namespace WorldWind.Interop
 		/// Contains message information from a thread's message queue.
 		/// </summary>
 		[StructLayout(LayoutKind.Sequential)]
-		public struct Message
+		internal struct Message
 		{
-			public IntPtr hWnd;
-			public uint msg;
-			public IntPtr wParam;
-			public IntPtr lParam;
-			public uint time;
-			public System.Drawing.Point p;
+			internal IntPtr hWnd;
+			internal uint msg;
+			internal IntPtr wParam;
+			internal IntPtr lParam;
+			internal uint time;
+			internal System.Drawing.Point p;
 		}
 
 		/// <summary>
@@ -34,6 +34,6 @@ namespace WorldWind.Interop
 		/// </summary>
 		[System.Security.SuppressUnmanagedCodeSecurity] // We won't use this maliciously
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
-		public static extern bool PeekMessage(out Message msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, uint flags);
+		internal static extern bool PeekMessage(out Message msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, uint flags);
 	}
 }

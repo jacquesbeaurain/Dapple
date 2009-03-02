@@ -11,9 +11,9 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the options for download acquire datasets
    /// </summary>
-   public partial class Disabled : DownloadOptions
+   internal partial class Disabled : DownloadOptions
    {
-      public Disabled(String szReason)
+      internal Disabled(String szReason)
 			:base(null)
 		{
 			InitializeComponent();
@@ -21,7 +21,7 @@ namespace Dapple.Extract
 			lNoOptions.Text = szReason;
 		}
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return false; }
 		}
@@ -33,7 +33,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
 			return ExtractSaveResult.Ignore;         
       }

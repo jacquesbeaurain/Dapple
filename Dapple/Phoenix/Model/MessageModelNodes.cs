@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	public abstract class MessageModelNode : ModelNode, IAnnotationModelNode
+	internal abstract class MessageModelNode : ModelNode, IAnnotationModelNode
 	{
 		#region Member Variables
 
@@ -14,7 +14,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public MessageModelNode(DappleModel oModel, String strMessage)
+		internal MessageModelNode(DappleModel oModel, String strMessage)
 			: base(oModel)
 		{
 			m_strMessage = strMessage;
@@ -28,12 +28,12 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_strMessage; }
 		}
@@ -52,11 +52,11 @@ namespace NewServerTree
 	}
 
 
-	public class LoadingModelNode : MessageModelNode
+	internal class LoadingModelNode : MessageModelNode
 	{
 		#region Constructors
 
-		public LoadingModelNode(DappleModel oModel)
+		internal LoadingModelNode(DappleModel oModel)
 			: base(oModel, "Loading...")
 		{
 		}
@@ -67,7 +67,7 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.LoadingMessage; }
 		}
@@ -76,7 +76,7 @@ namespace NewServerTree
 	}
 
 
-	public class ErrorModelNode : MessageModelNode
+	internal class ErrorModelNode : MessageModelNode
 	{
 		#region Member Variables
 
@@ -87,7 +87,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ErrorModelNode(DappleModel oModel, String strMessage, String strAdditionalInfo)
+		internal ErrorModelNode(DappleModel oModel, String strMessage, String strAdditionalInfo)
 			: base(oModel, strMessage)
 		{
 			m_strAdditionalInfo = strAdditionalInfo;
@@ -99,13 +99,13 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.ErrorMessage; }
 		}
 
 		[Browsable(false)]
-		public string AdditionalInfo
+		internal string AdditionalInfo
 		{
 			get { return m_strAdditionalInfo; }
 		}
@@ -114,11 +114,11 @@ namespace NewServerTree
 	}
 
 
-	public class InformationModelNode : MessageModelNode
+	internal class InformationModelNode : MessageModelNode
 	{
 		#region Constructors
 
-		public InformationModelNode(DappleModel oModel, String strMessage)
+		internal InformationModelNode(DappleModel oModel, String strMessage)
 			:base(oModel, strMessage)
 		{
 
@@ -130,7 +130,7 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.InfoMessage; }
 		}

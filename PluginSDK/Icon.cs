@@ -131,7 +131,7 @@ namespace WorldWind.Renderable
 		/// The cartesian coordinates of this icon.  
 		/// Used to be settable but never actually updated the position of the icon.
 		/// </summary>
-		public Point3d PositionD
+		internal Point3d PositionD
 		{
 			get { return m_positionD; }
 		}
@@ -140,7 +140,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Icon bitmap path. (Overrides Image)
 		/// </summary>
-		public string TextureFileName
+		internal string TextureFileName
 		{
 			get { return m_textureFileName; }
 			set
@@ -155,7 +155,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// The icon's texture
 		/// </summary>
-		public IconTexture IconTexture
+		internal IconTexture IconTexture
 		{
 			get { return m_iconTexture; }
 		}
@@ -228,7 +228,7 @@ namespace WorldWind.Renderable
 		/// 
 		/// TODO: Name is not always unique...determine if this is a problem since it may be used as a key in things.
 		/// </summary>
-		public object Id
+		internal object Id
 		{
 			get { return m_id; }
 			set { m_id = value; }
@@ -240,7 +240,7 @@ namespace WorldWind.Renderable
 		/// 
 		/// TODO:  Should this be in RO?
 		/// </summary>
-		public object Tag
+		internal object Tag
 		{
 			get { return m_tag; }
 			set { m_tag = value; }
@@ -260,7 +260,7 @@ namespace WorldWind.Renderable
         /// <summary>
         /// True if altitude is in AGL, False if ASL.  Default is AGL.
         /// </summary>
-        public bool IsAGL
+        internal bool IsAGL
         {
             get { return m_isAGL; }
             set { m_isAGL = value; }
@@ -271,7 +271,7 @@ namespace WorldWind.Renderable
         /// True if Vertical Exaggeration should be used in computing altitude.  
         /// Default is true.
         /// </summary>
-        public bool UseVE
+        internal bool UseVE
         {
             get { return m_useVE; }
             set { m_useVE = value; }
@@ -283,7 +283,7 @@ namespace WorldWind.Renderable
         /// If set then a VE of 0 forces altitude to 0 since its multiplied.  Ignored if UseVE is false.
         /// Default is true.
         /// </summary>
-        public bool UseZeroVE
+        internal bool UseZeroVE
         {
             get { return m_useZeroVE; }
             set { m_useZeroVE = value; }
@@ -293,7 +293,7 @@ namespace WorldWind.Renderable
         /// <summary>
         /// Whether or not this will change color on mouseover (default = true)
         /// </summary>
-        public bool AlwaysHighlight
+        internal bool AlwaysHighlight
         {
             get
             {
@@ -309,7 +309,7 @@ namespace WorldWind.Renderable
         /// <summary>
         /// Whether or not this will change color on mouseover (default = true)
         /// </summary>
-        public bool DisableMouseoverHighlight
+        internal bool DisableMouseoverHighlight
         {
             get
             {
@@ -322,7 +322,7 @@ namespace WorldWind.Renderable
         }
         protected bool m_disableMouseoverHighlight = false;
 
-        public bool OnClickZoomTo
+        internal bool OnClickZoomTo
         {
             get { return m_onClickZoomTo; }
             set { m_onClickZoomTo = value; }
@@ -331,17 +331,17 @@ namespace WorldWind.Renderable
         protected bool m_onClickZoomTo = true;
 		#endregion
 
-		public double OnClickZoomAltitude = double.NaN;
-		public double OnClickZoomHeading = double.NaN;
-		public double OnClickZoomTilt = double.NaN;
-		public string SaveFilePath = null;
-		public System.DateTime LastRefresh = System.DateTime.MinValue;
-		public System.TimeSpan RefreshInterval = System.TimeSpan.MaxValue;
+		  public double OnClickZoomAltitude = double.NaN;
+		  public double OnClickZoomHeading = double.NaN;
+		  public double OnClickZoomTilt = double.NaN;
+		internal string SaveFilePath = null;
+		internal System.DateTime LastRefresh = System.DateTime.MinValue;
+		internal System.TimeSpan RefreshInterval = System.TimeSpan.MaxValue;
 
 		System.Collections.ArrayList overlays = new ArrayList();
 
 		//not a good way to handle this
-		public void OverlayOnOpen(object o, EventArgs e)
+		internal void OverlayOnOpen(object o, EventArgs e)
 		{
 			System.Windows.Forms.MenuItem mi = (System.Windows.Forms.MenuItem)o;
 
@@ -358,7 +358,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public ScreenOverlay[] Overlays
+		internal ScreenOverlay[] Overlays
 		{
 			get
 			{
@@ -373,13 +373,13 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public void AddOverlay(ScreenOverlay overlay)
+		internal void AddOverlay(ScreenOverlay overlay)
 		{
 			if (overlay != null)
 				overlays.Add(overlay);
 		}
 
-		public void RemoveOverlay(ScreenOverlay overlay)
+		internal void RemoveOverlay(ScreenOverlay overlay)
 		{
 			for (int i = 0; i < overlays.Count; i++)
 			{
@@ -394,7 +394,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Longer description of icon (addition to name)
 		/// </summary>
-		//public string Description;
+		//internal string Description;
 
 		/// <summary>
 		/// Icon image.  Leave TextureFileName=null if using Image.  
@@ -428,27 +428,27 @@ namespace WorldWind.Renderable
 		/// <summary>
 		///  Icon X scaling computed by dividing icon width by texture width
 		/// </summary>
-		public float XScale;
+		internal float XScale;
 
 		/// <summary>
 		///  Icon Y scaling computed by dividing icon height by texture height 
 		/// </summary>
-		public float YScale;
+		internal float YScale;
 
 		/// <summary>
 		/// The maximum distance (meters) the icon will be visible from
 		/// </summary>
-		public double MaximumDisplayDistance = double.MaxValue;
+		internal double MaximumDisplayDistance = double.MaxValue;
 
 		/// <summary>
 		/// The minimum distance (meters) the icon will be visible from
 		/// </summary>
-		public double MinimumDisplayDistance;
+		internal double MinimumDisplayDistance;
 
 		/// <summary>
 		/// Bounding box centered at (0,0) used to calculate whether mouse is over icon/label
 		/// </summary>
-		public Rectangle SelectionRectangle;
+		internal Rectangle SelectionRectangle;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
@@ -456,7 +456,7 @@ namespace WorldWind.Renderable
 		/// <param name="name">Name of the icon</param>
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
-		public Icon(string name,
+		internal Icon(string name,
 			double latitude,
 			double longitude)
 			: base(name)
@@ -494,7 +494,7 @@ namespace WorldWind.Renderable
 		/// <param name="width"></param>
 		/// <param name="height"></param>
 		/// <param name="actionURL"></param>
-		public Icon(string name,
+		internal Icon(string name,
 		 string description,
 			double latitude, 
 			double longitude, 
@@ -525,7 +525,7 @@ namespace WorldWind.Renderable
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
 		[Obsolete]
-		public Icon(string name,
+		internal Icon(string name,
 			double latitude, 
 			double longitude,
 			double heightAboveSurface, 
@@ -546,7 +546,7 @@ namespace WorldWind.Renderable
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
 		[Obsolete]
-		public Icon(string name,
+		internal Icon(string name,
 			string description,
 			double latitude, 
 			double longitude, 
@@ -584,7 +584,7 @@ namespace WorldWind.Renderable
 		/// <param name="height"></param>
 		/// <param name="actionURL"></param>
 		[Obsolete]
-		public Icon(string name,
+		internal Icon(string name,
 			string description,
 			double latitude, 
 			double longitude, 
@@ -616,7 +616,7 @@ namespace WorldWind.Renderable
 		/// </summary>
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
-		public virtual void SetPosition(double latitude, double longitude)
+		internal virtual void SetPosition(double latitude, double longitude)
 		{
 			m_latitude = latitude;
 			m_longitude = longitude;
@@ -631,7 +631,7 @@ namespace WorldWind.Renderable
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="altitude">The icon altitude above sea level.</param>
-		public virtual void SetPosition(double latitude, double longitude, double altitude)
+		internal virtual void SetPosition(double latitude, double longitude, double altitude)
 		{
 			m_latitude = latitude;
 			m_longitude = longitude;
@@ -815,7 +815,7 @@ namespace WorldWind.Renderable
 		/// Adds a new context menu item to this icon.
 		/// </summary>
 		/// <param name="newItem">The menu item to add</param>
-		public void AddContextMenuItem(MenuItem newItem)
+		internal void AddContextMenuItem(MenuItem newItem)
 		{
 			if (m_contextMenu == null)
 			{
@@ -1046,7 +1046,7 @@ namespace WorldWind.Renderable
 		/// <param name="sprite">The sprite to use for drawing</param>
 		/// <param name="projectedPoint">Where we are</param>
 		/// <param name="isMouseOver">Whether we should render as a mouseover icon</param>
-		public virtual void FastRender(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, bool isMouseOver, List<Rectangle> labelRectangles)
+		internal virtual void FastRender(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, bool isMouseOver, List<Rectangle> labelRectangles)
 		{
 			// Check icons for within "visual" range
 			double distanceToIcon = (this.Position - drawArgs.WorldCamera.Position).Length;
@@ -1095,7 +1095,7 @@ namespace WorldWind.Renderable
 		/// Renders the overlays for this icon
 		/// </summary>
 		/// <param name="drawArgs"></param>
-		public virtual void RenderOverlay(DrawArgs drawArgs)
+		internal virtual void RenderOverlay(DrawArgs drawArgs)
 		{
 			if (overlays != null)
 			{
@@ -1341,7 +1341,7 @@ namespace WorldWind.Renderable
 		/// <param name="sprite"></param>
 		/// <param name="projectedPoint"></param>
 		/// <param name="color"></param>
-		public virtual void PreRender(DrawArgs drawArgs)
+		internal virtual void PreRender(DrawArgs drawArgs)
 		{
 			RenderOverlay(drawArgs);
 		}
@@ -1353,7 +1353,7 @@ namespace WorldWind.Renderable
 		/// <param name="sprite"></param>
 		/// <param name="projectedPoint"></param>
 		/// <param name="color"></param>
-		public virtual void PostRender(DrawArgs drawArgs)
+		internal virtual void PostRender(DrawArgs drawArgs)
 		{
 		}
 
@@ -1361,7 +1361,7 @@ namespace WorldWind.Renderable
 		/// Do this if we don't actually get rendered (not in view, too far, etc)
 		/// </summary>
 		/// <param name="drawArgs"></param>
-		public virtual void NoRender(DrawArgs drawArgs)
+		internal virtual void NoRender(DrawArgs drawArgs)
 		{
 		}
 

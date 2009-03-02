@@ -52,7 +52,7 @@ namespace Collab.jhuapl.Whiteboard
 	/// <summary>
 	/// Summary description for HotspotForm.
 	/// </summary>
-	public partial class HotspotForm : Form
+	internal partial class HotspotForm : Form
 	{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -61,7 +61,7 @@ namespace Collab.jhuapl.Whiteboard
 		private System.Windows.Forms.TextBox name;
 		private System.Windows.Forms.TextBox description;
 
-		public HotspotForm()
+		internal HotspotForm()
 		{
 			InitializeComponent();
 		}
@@ -79,25 +79,25 @@ namespace Collab.jhuapl.Whiteboard
 			this.Hide();
 		}
 
-		public string HotspotName
+		internal string HotspotName
 		{
 			get { return name.Text; }
 			set { name.Text = value; }
 		}
 
-		public string Description
+		internal string Description
 		{
 			get { return description.Text; }
 			set { description.Text = value; }
 		}
 
-        public bool SaveCameraAngle
+        internal bool SaveCameraAngle
         {
             get { return cameraAngleCheckBox.Checked; }
             set { cameraAngleCheckBox.Checked = value; }
         }
 
-        public string URL
+        internal string URL
         {
             get { return urlTextBox.Text; }
             set { urlTextBox.Text = value; }

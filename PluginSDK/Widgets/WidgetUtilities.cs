@@ -48,11 +48,11 @@ using Microsoft.DirectX.Direct3D;
 
 namespace WorldWind.NewWidgets
 {
-	public sealed class WidgetUtilities
+	internal sealed class WidgetUtilities
 	{
 		private WidgetUtilities(){}
 
-		public static void DrawLine(Vector2[] linePoints, int color, Device device)
+		internal static void DrawLine(Vector2[] linePoints, int color, Device device)
 		{
 			CustomVertex.TransformedColored[] lineVerts = new CustomVertex.TransformedColored[linePoints.Length];
 
@@ -71,7 +71,7 @@ namespace WorldWind.NewWidgets
 			device.DrawUserPrimitives(PrimitiveType.LineStrip, lineVerts.Length - 1, lineVerts);
 		}
 
-		public static void DrawBox(int ulx, int uly, int width, int height, float z, int color, Device device)
+		internal static void DrawBox(int ulx, int uly, int width, int height, float z, int color, Device device)
 		{
 			CustomVertex.TransformedColored[] verts = new CustomVertex.TransformedColored[4];
 			verts[0].X = (float)ulx;
@@ -99,7 +99,7 @@ namespace WorldWind.NewWidgets
 			device.DrawUserPrimitives(PrimitiveType.TriangleStrip, verts.Length - 2, verts);
 		}
 
-		public static void DrawSector(double startdeg, double enddeg, int centerX, int centerY, int radius, float z, int color, Device device)
+		internal static void DrawSector(double startdeg, double enddeg, int centerX, int centerY, int radius, float z, int color, Device device)
 		{
 			int prec = 7;
 
@@ -123,7 +123,7 @@ namespace WorldWind.NewWidgets
 			device.DrawUserPrimitives(PrimitiveType.TriangleFan, verts.Length - 2, verts);
 		}
 
-		public static string Degrees2DMS(double decimalDegrees, char pos, char neg)
+		internal static string Degrees2DMS(double decimalDegrees, char pos, char neg)
 		{
 			char dir = pos;
  

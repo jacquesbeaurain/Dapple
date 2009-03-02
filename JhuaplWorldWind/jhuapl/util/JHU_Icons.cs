@@ -58,7 +58,7 @@ namespace jhuapl.util
 	/// <summary>
 	/// Holds a collection of icons
 	/// </summary>
-	public class JHU_Icons : WorldWind.Renderable.RenderableObjectList
+	internal class JHU_Icons : WorldWind.Renderable.RenderableObjectList
 	{
 		protected Sprite m_sprite;
 
@@ -77,7 +77,7 @@ namespace jhuapl.util
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icons"/> class 
 		/// </summary>
 		/// <param name="name"></param>
-		public JHU_Icons(string name) : base(name) 
+		internal JHU_Icons(string name) : base(name) 
 		{
 			m_mouseOver = true;
 			isInitialized = false;
@@ -88,7 +88,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Adds an icon to this layer. Deprecated.
 		/// </summary>
-		public void AddIcon(JHU_Icon icon)
+		internal void AddIcon(JHU_Icon icon)
 		{
 			this.Add(icon);
 		}
@@ -226,7 +226,7 @@ namespace jhuapl.util
 			return false;
 		}
 
-		public bool PerformRMBAction(MouseEventArgs e)
+		internal bool PerformRMBAction(MouseEventArgs e)
 		{
 			int closestIconDistanceSquared = int.MaxValue;
 			JHU_Icon closestIcon = null;
@@ -412,7 +412,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="e"></param>
 		/// <returns></returns>
-		public void OnMouseUp(object sender, MouseEventArgs e)
+		internal void OnMouseUp(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Right)
 			{

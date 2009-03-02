@@ -5,16 +5,16 @@ using Dapple.LayerGeneration;
 
 namespace Dapple
 {
-   public partial class AddWMS : Form
+   internal partial class AddWMS : Form
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      public AddWMS()
+      internal AddWMS()
       {
          InitializeComponent();
       }
 
-      public string WmsURL
+      internal string WmsURL
       {
          get
          {

@@ -8,18 +8,18 @@ using Utility;
 
 namespace WorldWind.PluginEngine
 {
-   public class MainApplication : Form
+	public class MainApplication : Form
    {
       // The value of Release should be set in constructor
-      public static string Release;
-      public static string CurrentSettingsDirectory;
-      public static WorldWindSettings Settings = new WorldWindSettings();
-      public static readonly string DirectoryPath = Path.GetDirectoryName(Application.ExecutablePath);
+		public static string Release;
+		public static string CurrentSettingsDirectory;
+		public static WorldWindSettings Settings = new WorldWindSettings();
+		public static readonly string DirectoryPath = Path.GetDirectoryName(Application.ExecutablePath);
 
       /// <summary>
       /// MainApplication's System.Windows.Forms.Form
       /// </summary>
-      public virtual System.Windows.Forms.Form Form
+		public virtual System.Windows.Forms.Form Form
       {
 			get
 			{
@@ -30,7 +30,7 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// MainApplication's globe window
       /// </summary>
-      public virtual WorldWindow WorldWindow
+		public virtual WorldWindow WorldWindow
       {
 			get
 			{
@@ -41,7 +41,7 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// The splash screen dialog.
       /// </summary>
-      public virtual Splash SplashScreen
+		public virtual Splash SplashScreen
       {
 			get
 			{
@@ -52,7 +52,7 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// MainApplication's main menu (drop-down)
       /// </summary>
-      public virtual MainMenu MainMenu
+      internal virtual MainMenu MainMenu
       {
 			get
 			{
@@ -63,7 +63,7 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// MainApplication's Tools menu (drop-down)
       /// </summary>
-      public virtual MenuItem ToolsMenu
+      internal virtual MenuItem ToolsMenu
       {
 			get
 			{
@@ -74,7 +74,7 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// MainApplication's View menu (drop-down)
       /// </summary>
-      public virtual MenuItem ViewMenu
+      internal virtual MenuItem ViewMenu
       {
 			get
 			{
@@ -85,7 +85,7 @@ namespace WorldWind.PluginEngine
       /// <summary>
       /// MainApplication's Plugins menu (drop-down)
       /// </summary>
-      public virtual MenuItem PluginsMenu
+      internal virtual MenuItem PluginsMenu
       {
 			get
 			{

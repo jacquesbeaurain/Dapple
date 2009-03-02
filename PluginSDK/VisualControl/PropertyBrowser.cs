@@ -9,7 +9,7 @@ namespace WorldWind.VisualControl
 	/// <summary>
 	/// Property browser/settings dialog to modify parameters in the main class.
 	/// </summary>
-	public class PropertyBrowser : System.Windows.Forms.Form
+	internal class PropertyBrowser : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.PropertyGrid propertyGrid;
 		/// <summary>
@@ -21,7 +21,7 @@ namespace WorldWind.VisualControl
 		/// Initializes a new instance of the <see cref= "T:WorldWind.VisualControl.PropertyBrowser"/> class.
 		/// </summary>
 		/// <param name="selected">The object to retrieve browsable properties from.</param>
-		public PropertyBrowser( object selected)
+		internal PropertyBrowser( object selected)
 		{
 			//
 			// Required for Windows Form Designer support

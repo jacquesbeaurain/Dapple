@@ -57,7 +57,7 @@ namespace WorldWind.NewWidgets
 	/// <summary>
 	/// Interface must be implemented in order to recieve user input.
 	/// </summary>
-	public interface IInteractive
+	internal interface IInteractive
 	{
 		#region Properties
 

@@ -11,7 +11,7 @@ namespace ConfigurationWizard
 	/// <summary>
 	/// The Configuration Wizard
 	/// </summary>
-	public class Wizard : System.Windows.Forms.Form
+	internal class Wizard : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.Button buttonNext;
 		private System.Windows.Forms.Button buttonBack;
@@ -38,7 +38,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// The bitmap to be displayed on the upper part of the wizard form.
 		/// </summary>
-		public Image HeadingBitmap
+		internal Image HeadingBitmap
 		{
 			get { return headingBitmap; }
 			set { headingBitmap = value; }
@@ -47,7 +47,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// The list of WizardPage derived pages.
 		/// </summary>
-		public ArrayList WizardPages
+		internal ArrayList WizardPages
 		{
 			get { return wizardPages; }
 			set { wizardPages = value; }
@@ -56,7 +56,7 @@ namespace ConfigurationWizard
 		/// <summary>
 		/// Message displayed to user when he closes the wizard before it is finished.
 		/// </summary>
-		public string AbortMessage
+		internal string AbortMessage
 		{
 			get { return abortMsg; }
 			set { abortMsg = value; }
@@ -72,7 +72,7 @@ namespace ConfigurationWizard
 		/// Initializes settings, message and pages.
 		/// </summary>
       /// <param name="settings">The WorldWindSettingsComponent to use</param>
-      public Wizard(WorldWindSettings settings)
+      internal Wizard(WorldWindSettings settings)
 		{
 			//
 			// Required for Windows Form Designer support
@@ -95,7 +95,7 @@ namespace ConfigurationWizard
 		/// Adds a page to the wizard
 		/// </summary>
 		/// <param name="page">The page to add</param>
-		public void AddPage( WizardPage page )
+		internal void AddPage( WizardPage page )
 		{
 			this.WizardPages.Add( page );
 		}
@@ -104,7 +104,7 @@ namespace ConfigurationWizard
 		/// Moves to a specific page
 		/// </summary>
 		/// <param name="pageindex">The index of the page to move to</param>
-		public void GotoPage( int pageindex )
+		internal void GotoPage( int pageindex )
 		{
 			if (currentPageIndex == pageindex)
 				return;

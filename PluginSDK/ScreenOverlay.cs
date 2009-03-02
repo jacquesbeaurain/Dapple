@@ -2,13 +2,13 @@ using System;
 
 namespace WorldWind.Renderable
 {
-	public enum ScreenAlignment
+	internal enum ScreenAlignment
 	{
 		Left,
 		Right
 	}
 
-    public enum ScreenUnits
+    internal enum ScreenUnits
     {
         Pixels,
         Fraction
@@ -17,7 +17,7 @@ namespace WorldWind.Renderable
 	/// <summary>
 	/// Summary description for ScreenOverlay.
 	/// </summary>
-	public class ScreenOverlay : WorldWind.Renderable.RenderableObject
+	internal class ScreenOverlay : WorldWind.Renderable.RenderableObject
 	{
 		WorldWind.Widgets.Form overlay = null;
 
@@ -27,12 +27,12 @@ namespace WorldWind.Renderable
         float m_Width = 0;
         float m_Height = 0;
 		bool m_ShowHeader = true;
-        public ScreenUnits OffsetXUnits = ScreenUnits.Pixels;
-        public ScreenUnits OffsetYUnits = ScreenUnits.Pixels;
-        public ScreenUnits SizeXUnits = ScreenUnits.Pixels;
-        public ScreenUnits SizeYUnits = ScreenUnits.Pixels;
-        public ScreenUnits PositionXUnits = ScreenUnits.Pixels;
-        public ScreenUnits PositionYUnits = ScreenUnits.Pixels;
+        internal ScreenUnits OffsetXUnits = ScreenUnits.Pixels;
+        internal ScreenUnits OffsetYUnits = ScreenUnits.Pixels;
+        internal ScreenUnits SizeXUnits = ScreenUnits.Pixels;
+        internal ScreenUnits SizeYUnits = ScreenUnits.Pixels;
+        internal ScreenUnits PositionXUnits = ScreenUnits.Pixels;
+        internal ScreenUnits PositionYUnits = ScreenUnits.Pixels;
 
         float m_StartX = 0;
         float m_StartY = 0;
@@ -43,7 +43,7 @@ namespace WorldWind.Renderable
 		System.Drawing.Color m_BorderColor = System.Drawing.Color.White;
         float m_offsetX = 0;
         float m_offsetY = 0;
-		public System.Drawing.Color BorderColor
+		internal System.Drawing.Color BorderColor
 		{
 			get{ return (overlay == null ? m_BorderColor : overlay.BorderColor); }
 			set
@@ -54,19 +54,19 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public float OffsetX
+        internal float OffsetX
         {
             get { return m_offsetX; }
             set { m_offsetX = value; }
         }
 
-        public float OffsetY
+        internal float OffsetY
         {
             get { return m_offsetY; }
             set { m_offsetY = value; }
         }
 		
-		public bool HideBorder
+		internal bool HideBorder
 		{
 			get{ return (overlay == null ? m_HideBorder : overlay.HideBorder); }
 			set
@@ -77,7 +77,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public string ClickableUrl
+		internal string ClickableUrl
 		{
 			get
 			{
@@ -91,13 +91,13 @@ namespace WorldWind.Renderable
 			}
 		}
 		
-		public ScreenAlignment Alignment
+		internal ScreenAlignment Alignment
 		{
 			get{ return alignment; }
 			set{ alignment = value; }
 		}
 
-		public double RefreshTimeSec
+		internal double RefreshTimeSec
 		{
 			get
 			{
@@ -109,13 +109,13 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public bool ShowHeader
+		internal bool ShowHeader
 		{
 			get{ return m_ShowHeader; }
 			set{ m_ShowHeader = value; }
 		}
 
-		public string SaveFilePath
+		internal string SaveFilePath
 		{
 			get
 			{
@@ -127,7 +127,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public float Width
+        internal float Width
 		{
 			get
 			{
@@ -139,7 +139,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public float Height
+        internal float Height
 		{
 			get
 			{
@@ -151,7 +151,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public ScreenOverlay(string name, float startX, float startY, string imageUri)
+        internal ScreenOverlay(string name, float startX, float startY, string imageUri)
             : base(name)
 		{
 			m_StartX = startX;
@@ -209,7 +209,7 @@ namespace WorldWind.Renderable
             }	
         }
 
-		public override void Dispose()
+		  public override void Dispose()
 		{
 			if(overlay != null)
 			{

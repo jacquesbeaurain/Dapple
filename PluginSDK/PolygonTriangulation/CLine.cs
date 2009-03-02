@@ -17,7 +17,7 @@ namespace GeometryUtility
 	///</summary>
 	
 	//a Line in 2D coordinate system: ax+by+c=0
-	public class CLine
+	internal class CLine
 	{
 		//line: ax+by+c=0;
 		protected double a; 
@@ -64,12 +64,12 @@ namespace GeometryUtility
 		}
 	
 		
-		public CLine(Double angleInRad, CPoint2D point)
+		internal CLine(Double angleInRad, CPoint2D point)
 		{
 			Initialize(angleInRad, point);
 		}
 		
-		public CLine(CPoint2D point1, CPoint2D point2)
+		internal CLine(CPoint2D point1, CPoint2D point2)
 		{			
 			try
 			{
@@ -105,7 +105,7 @@ namespace GeometryUtility
 			}
 		}
 
-		public CLine(CLine copiedLine)
+		internal CLine(CLine copiedLine)
 		{
 			this.a=copiedLine.a; 
 			this.b=copiedLine.b;
@@ -113,7 +113,7 @@ namespace GeometryUtility
 		}
 
 		/*** calculate the distance from a given point to the line ***/ 
-		public double GetDistance(CPoint2D point)
+		internal double GetDistance(CPoint2D point)
 		{
 			double x0=point.X;
 			double y0=point.Y;
@@ -125,7 +125,7 @@ namespace GeometryUtility
 		}
 
 		/*** point(x, y) in the line, based on y, calculate x ***/ 
-		public double GetX(double y)
+		internal double GetX(double y)
 		{
 			//if the line is a horizontal line (a=0), it will return a NaN:
 			double x;
@@ -149,7 +149,7 @@ namespace GeometryUtility
 		}
 		
 		/*** point(x, y) in the line, based on x, calculate y ***/ 
-		public double GetY(double x)
+		internal double GetY(double x)
 		{
 			//if the line is a vertical line, it will return a NaN:
 			double y;
@@ -171,7 +171,7 @@ namespace GeometryUtility
 		}
 		
 		/*** is it a vertical line:***/
-		public bool VerticalLine()
+		internal bool VerticalLine()
 		{
 			if (Math.Abs(b-0)<ConstantValue.SmallValue)
 				return true;
@@ -180,7 +180,7 @@ namespace GeometryUtility
 		}
 		
 		/*** is it a horizontal line:***/
-		public bool HorizontalLine()
+		internal bool HorizontalLine()
 		{
 			if (Math.Abs(a-0)<ConstantValue.SmallValue)
 				return true;
@@ -189,7 +189,7 @@ namespace GeometryUtility
 		}
 
 		/*** calculate line angle in radian: ***/
-		public double GetLineAngle()
+		internal double GetLineAngle()
 		{
 			if (b==0)
 			{
@@ -202,7 +202,7 @@ namespace GeometryUtility
 			}			
 		}
 
-		public bool Parallel(CLine line)
+		internal bool Parallel(CLine line)
 		{
 			bool bParallel=false;
 			if (this.a/this.b==line.a/line.b)
@@ -215,7 +215,7 @@ namespace GeometryUtility
 		 Calculate intersection point of two lines
 		 if two lines are parallel, return null
 		 * ************************************/
-		public CPoint2D IntersecctionWith(CLine line)
+		internal CPoint2D IntersecctionWith(CLine line)
 		{
 			CPoint2D point=new CPoint2D();
 			double a1=this.a;
@@ -235,14 +235,14 @@ namespace GeometryUtility
   		}
 	}
 
-	public class CLineSegment : CLine
+	internal class CLineSegment : CLine
 	{
 		//line: ax+by+c=0, with start point and end point
 		//direction from start point ->end point
 		private CPoint2D m_startPoint;
 		private CPoint2D m_endPoint;
 
-		public CPoint2D StartPoint
+		internal CPoint2D StartPoint
 		{
 			get
 			{
@@ -250,7 +250,7 @@ namespace GeometryUtility
 			}
 		}
 
-		public CPoint2D EndPoint
+		internal CPoint2D EndPoint
 		{
 			get
 			{
@@ -258,7 +258,7 @@ namespace GeometryUtility
 			}
 		}
 
-		public CLineSegment(CPoint2D startPoint, CPoint2D endPoint)
+		internal CLineSegment(CPoint2D startPoint, CPoint2D endPoint)
 			: base(startPoint,endPoint)
 		{
 			this.m_startPoint=startPoint;
@@ -266,7 +266,7 @@ namespace GeometryUtility
 		}
 
 		/*** chagne the line's direction ***/
-		public void ChangeLineDirection()
+		internal void ChangeLineDirection()
 		{
 			CPoint2D tempPt;
 			tempPt=this.m_startPoint;
@@ -275,7 +275,7 @@ namespace GeometryUtility
 		}
 
 		/*** To calculate the line segment length:   ***/
-		public double GetLineSegmentLength()
+		internal double GetLineSegmentLength()
 		{
 			double d=(m_endPoint.X-m_startPoint.X)	*(m_endPoint.X-m_startPoint.X);
 			d += (m_endPoint.Y-m_startPoint.Y)	*(m_endPoint.Y-m_startPoint.Y);
@@ -292,7 +292,7 @@ namespace GeometryUtility
 			 0: point in the line segment or in the line segment 's extension
 			 1: point at right of the line (or below the line if the line is horizontal)    
 		 ***********************************************************/
-		public int GetPointLocation(CPoint2D point)
+		internal int GetPointLocation(CPoint2D point)
 		{
 			double Ax, Ay, Bx, By, Cx, Cy;
 			Bx=m_endPoint.X;
@@ -333,31 +333,31 @@ namespace GeometryUtility
 		}
 
 		/***Get the minimum x value of the points in the line***/
-		public double GetXmin()
+		internal double GetXmin()
 		{
 			return Math.Min(m_startPoint.X, m_endPoint.X);
 		}
 
 		/***Get the maximum  x value of the points in the line***/
-		public double GetXmax()
+		internal double GetXmax()
 		{
 			return Math.Max(m_startPoint.X, m_endPoint.X);
 		}
 
 		/***Get the minimum y value of the points in the line***/
-		public double GetYmin()
+		internal double GetYmin()
 		{
 			return Math.Min(m_startPoint.Y, m_endPoint.Y);
 		}
 
 		/***Get the maximum y value of the points in the line***/
-		public double GetYmax()
+		internal double GetYmax()
 		{
 			return Math.Max(m_startPoint.Y, m_endPoint.Y);
 		}
 
 		/***Check whether this line is in a longer line***/
-		public bool InLine(CLineSegment longerLineSegment)
+		internal bool InLine(CLineSegment longerLineSegment)
 		{
 			bool bInLine=false;
 			if ((m_startPoint.InLine(longerLineSegment)) &&
@@ -371,7 +371,7 @@ namespace GeometryUtility
 		 * If the offset direction is along the x-axis or y-axis, 
 		 * Parameter is true, other wise it is false
 		 * ***********************************************/
-		public CLineSegment OffsetLine(double distance, bool rightOrDown)
+		internal CLineSegment OffsetLine(double distance, bool rightOrDown)
 		{
 			//offset a line with a given distance, generate a new line
 			//rightOrDown=true means offset to x incress direction,
@@ -460,7 +460,7 @@ namespace GeometryUtility
 		/********************************************************
 		To check whether 2 lines segments have an intersection
 		*********************************************************/
-		public  bool IntersectedWith(CLineSegment line)
+		internal  bool IntersectedWith(CLineSegment line)
 		{
 			double x1=this.m_startPoint.X;
 			double y1=this.m_startPoint.Y;

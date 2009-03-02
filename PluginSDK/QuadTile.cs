@@ -29,8 +29,8 @@ namespace WorldWind.Renderable
 			SouthEast
 		}
 
-		public double LatitudeSpan;
-		public double LongitudeSpan;
+		internal double LatitudeSpan;
+		internal double LongitudeSpan;
 
 		private QuadTileSet quadTileSet;
 		private Angle centerLatitude;
@@ -42,13 +42,13 @@ namespace WorldWind.Renderable
 		private double south;
 
 		// These are the projected coordinate extents for the tile (for image storesa containing projections
-		public UV UL, UR, LL, LR;
+		internal UV UL, UR, LL, LR;
 
 		private int row;
 		private int col;
 
-		public bool isInitialized;
-		public BoundingBox BoundingBox;
+		internal bool isInitialized;
+		internal BoundingBox BoundingBox;
 
 		private List<GeoSpatialDownloadRequest> downloadRequests;
 
@@ -96,13 +96,13 @@ namespace WorldWind.Renderable
 
 		internal class CacheEntry
 		{
-			public CustomVertex.PositionNormalTextured[] northWestVertices;
-			public CustomVertex.PositionNormalTextured[] southWestVertices;
-			public CustomVertex.PositionNormalTextured[] northEastVertices;
-			public CustomVertex.PositionNormalTextured[] southEastVertices;
-			public short[] vertexIndexes;
+			internal CustomVertex.PositionNormalTextured[] northWestVertices;
+			internal CustomVertex.PositionNormalTextured[] southWestVertices;
+			internal CustomVertex.PositionNormalTextured[] northEastVertices;
+			internal CustomVertex.PositionNormalTextured[] southEastVertices;
+			internal short[] vertexIndexes;
 
-			public DateTime EntryTime;
+			internal DateTime EntryTime;
 		}
 
 		// End New Cache
@@ -116,7 +116,7 @@ namespace WorldWind.Renderable
 		/// <param name="_east"></param>
 		/// <param name="_level"></param>
 		/// <param name="quadTileSet"></param>
-		public QuadTile(double _south, double _north, double _west, double _east, int _level, QuadTileSet quadTileSet)
+		internal QuadTile(double _south, double _north, double _west, double _east, int _level, QuadTileSet quadTileSet)
 		{
 			this.south = _south;
 			this.north = _north;
@@ -161,13 +161,13 @@ namespace WorldWind.Renderable
 			quadTileSet.ImageStores[0].GetProjectionCorners(this, out UL, out UR, out LL, out LR);
 		}
 
-        public override string ToString()
+		public override string ToString()
         {
             return String.Format("QuadTile:Set={0} Level={1} X={2} Y={3} NS EW={4},{5}  {6},{7}",
                 quadTileSet.Name, Level, Col, Row, North, South, East, West);
         }
 
-		public virtual void ResetCache()
+		internal virtual void ResetCache()
 		{
 			m_isResetingCache = true;
 			this.isInitialized = false;
@@ -221,7 +221,7 @@ namespace WorldWind.Renderable
 			return child;
 		}
 
-		public virtual void ComputeChildren(DrawArgs drawArgs)
+		internal virtual void ComputeChildren(DrawArgs drawArgs)
 		{
 			if (level + 1 >= quadTileSet.ImageStores[0].LevelCount)
 				return;
@@ -340,7 +340,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Updates this layer (background)
 		/// </summary>
-		public virtual void Update(DrawArgs drawArgs)
+		internal virtual void Update(DrawArgs drawArgs)
 		{
 			if (m_isResetingCache)
 				return;
@@ -447,7 +447,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Builds flat or terrain mesh for current tile
 		/// </summary>
-		//public virtual void CreateTileMesh()
+		//internal virtual void CreateTileMesh()
 		//{
 		//    verticalExaggeration = World.Settings.VerticalExaggeration;
 		//    m_CurrentOpacity = quadTileSet.Opacity;
@@ -457,7 +457,7 @@ namespace WorldWind.Renderable
 		//    else
 		//        CreateFlatMesh();
 		//}
-		public virtual void CreateTileMesh()
+		internal virtual void CreateTileMesh()
 		{
 			lock (((System.Collections.ICollection)VerticeCache).SyncRoot)
 			{
@@ -1189,7 +1189,7 @@ namespace WorldWind.Renderable
 		private string imageFilePath = null;
 		private int textureSizePixels = -1;
 
-		public virtual bool Render(DrawArgs drawArgs)
+		internal virtual bool Render(DrawArgs drawArgs)
 		{
 			m_CurrentOpacity = quadTileSet.Opacity;
 			try
@@ -1311,7 +1311,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Render a rectangle around an image tile in the specified color
 		/// </summary>
-		public void RenderDownloadRectangle(DrawArgs drawArgs, int color, Point3d referenceCenter)
+		internal void RenderDownloadRectangle(DrawArgs drawArgs, int color, Point3d referenceCenter)
 		{
 			CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
 
@@ -1647,7 +1647,7 @@ namespace WorldWind.Renderable
 				Log.Write(ex);
 			}
 		}
-		public void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
+		internal void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
 		{
 			if (isInitialized)
 			{
@@ -1670,7 +1670,7 @@ namespace WorldWind.Renderable
 				southEastChild.InitExportInfo(drawArgs, info);
 		}
 
-		public void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
+		internal void ExportProcess(DrawArgs drawArgs, RenderableObject.ExportInfo expInfo)
 		{
 			try
 			{

@@ -10,7 +10,7 @@ namespace Geosoft.GX.DAPGetData
 	/// <summary>
 	/// Hold a collection of catalogs
 	/// </summary>
-	public class CatalogCollection
+	internal class CatalogCollection
 	{
       #region Member Variables
       protected Hashtable m_hCatalogList;
@@ -18,7 +18,7 @@ namespace Geosoft.GX.DAPGetData
       #endregion
       
       #region Constructor
-      public CatalogCollection(Server oServer)
+      internal CatalogCollection(Server oServer)
       {
          m_oServer = oServer;
          m_hCatalogList = new Hashtable();
@@ -32,7 +32,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="hBoundingBox"></param>
       /// <param name="strCatalogEdition"></param>
       /// <returns></returns>
-      public Catalog GetCatalog(BoundingBox hBoundingBox, string strKeywords)
+      internal Catalog GetCatalog(BoundingBox hBoundingBox, string strKeywords)
       {
          CatalogHash hHash = new CatalogHash(hBoundingBox, strKeywords);
          Catalog     hRetCatalog = null;
@@ -100,7 +100,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Clear all the catalogs from memory
       /// </summary>
-      public void Clear()
+      internal void Clear()
       {
          m_hCatalogList.Clear();
       }
@@ -110,7 +110,7 @@ namespace Geosoft.GX.DAPGetData
    /// <summary>
    /// Class to calculate the hash for each catalog, based on its bounding box and keywords
    /// </summary>
-   public class CatalogHash
+   internal class CatalogHash
    {
       protected BoundingBox   m_hBox;
       protected string        m_strKeywords;
@@ -120,7 +120,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="hBox"></param>
       /// <param name="strKeywords"></param>
-      public CatalogHash(BoundingBox hBox, string strKeywords)
+      internal CatalogHash(BoundingBox hBox, string strKeywords)
       {
          m_hBox = hBox;
          m_strKeywords = strKeywords;
@@ -130,7 +130,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the hash code
       /// </summary>
       /// <returns></returns>
-      public override int GetHashCode()
+		public override int GetHashCode()
       {
          if (m_hBox == null)
             return m_strKeywords.GetHashCode();
@@ -143,7 +143,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="obj"></param>
       /// <returns></returns>
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (obj.GetType() != typeof(CatalogHash))
             return false;

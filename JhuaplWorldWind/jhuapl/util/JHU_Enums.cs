@@ -48,7 +48,7 @@ namespace jhuapl.util
 	/// <summary>
 	/// Summary description for JHU_Enums.
 	/// </summary>
-	public class JHU_Enums
+	internal class JHU_Enums
 	{
 		/// <summary>
 		/// MIL-STD 2525B Affiliation - 1 char (pos 2)
@@ -59,7 +59,7 @@ namespace jhuapl.util
 		/// AKA Link Identity Type
 		/// 
 		/// </summary>
-		public enum Affiliations
+		internal enum Affiliations
 		{
 			PENDING,
 			UNKNOWN,
@@ -86,7 +86,7 @@ namespace jhuapl.util
 		/// AKA Link Environment Category
 		/// 
 		/// </summary>
-		public enum BattleDimensions
+		internal enum BattleDimensions
 		{
 			UNKNOWN,
 			SPACE,
@@ -102,7 +102,7 @@ namespace jhuapl.util
 		/// Widget Anchor Styles.  Same values as Forms AnchorStyles
 		/// </summary>
 		[Flags]
-		public enum AnchorStyles
+		internal enum AnchorStyles
 		{
 			None = 0x0000,
 			Top = 0x0001,
@@ -114,7 +114,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Default constructor - does nada
 		/// </summary>
-		public JHU_Enums()
+		internal JHU_Enums()
 		{
 		}
 	}

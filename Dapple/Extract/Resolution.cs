@@ -8,10 +8,10 @@ using System.Windows.Forms;
 
 namespace Dapple.Extract
 {
-   public partial class Resolution : UserControl
+   internal partial class Resolution : UserControl
    {
-      //public static string WGS_84 = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
-		public static string WGS_84 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><projection type=\"GEOGRAPHIC\" name=\"WGS 84\" ellipsoid=\"WGS 84\" datum=\"WGS 84\" datumtrf=\"WGS 84\" datumtrf_description=\"[WGS 84] World\" radius=\"6378137\" eccentricity=\"0.081819190842621486\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:geo=\"http://www.geosoft.com/schema/geo\"><geo:units name=\"dega\" unit_scale=\"1\"></geo:units></projection>";
+      //internal static string WGS_84 = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
+		internal static string WGS_84 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><projection type=\"GEOGRAPHIC\" name=\"WGS 84\" ellipsoid=\"WGS 84\" datum=\"WGS 84\" datumtrf=\"WGS 84\" datumtrf_description=\"[WGS 84] World\" radius=\"6378137\" eccentricity=\"0.081819190842621486\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:geo=\"http://www.geosoft.com/schema/geo\"><geo:units name=\"dega\" unit_scale=\"1\"></geo:units></projection>";
       private DownloadOptions m_oDownloadOptions;
       
       private string m_strDatasetProjection;
@@ -56,7 +56,7 @@ namespace Dapple.Extract
          get { return m_dResolution; }
       }
 
-      public double ResolutionValueSpecific(DownloadSettings.DownloadCoordinateSystem eCS)
+      internal double ResolutionValueSpecific(DownloadSettings.DownloadCoordinateSystem eCS)
       {
          if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap)
          {
@@ -72,19 +72,19 @@ namespace Dapple.Extract
 		[Description("The ErrorProvider used to notify users of errors.")]
 		[Browsable(true)]
 		[Category("Behavior")]
-		public ErrorProvider ErrorProvider
+		internal ErrorProvider ErrorProvider
 		{
 			get { return m_oErrorProvider; }
 			set { m_oErrorProvider = value; }
 		}
       #endregion
 
-      public Resolution()
+      internal Resolution()
       {
          InitializeComponent();
       }
 
-      public void SetDownloadOptions(DownloadOptions oOptions)
+      internal void SetDownloadOptions(DownloadOptions oOptions)
       {
          m_oDownloadOptions = oOptions;
       }
@@ -97,7 +97,7 @@ namespace Dapple.Extract
       /// <param name="iSizeY"></param>
       /// <param name="dXCellSize"></param>
       /// <param name="dYCellSize"></param>
-      public void Setup(bool bPicture, string strCoordinateSystem, double dXOrigin, double dYOrigin, int iSizeX, int iSizeY, double dXCellSize, double dYCellSize)
+      internal void Setup(bool bPicture, string strCoordinateSystem, double dXOrigin, double dYOrigin, int iSizeX, int iSizeY, double dXCellSize, double dYCellSize)
       {         
          double               dConv = 1;
          bool bLatLong;
@@ -190,7 +190,7 @@ namespace Dapple.Extract
       /// <param name="iSizeY"></param>
       /// <param name="dXCellSize"></param>
       /// <param name="dYCellSize"></param>
-      public void Setup(string strCoordinateSystem, double dMinX, double dMinY, double dMaxX, double dMaxY, SortedList<double, int> oResolutions, SortedList<double, int> oXDimension, SortedList<double, int> oYDimension, SortedList<double, int> oZDimension)
+      internal void Setup(string strCoordinateSystem, double dMinX, double dMinY, double dMaxX, double dMaxY, SortedList<double, int> oResolutions, SortedList<double, int> oXDimension, SortedList<double, int> oYDimension, SortedList<double, int> oZDimension)
       {
          m_bVoxel = true;
          m_strDatasetProjection = strCoordinateSystem;
@@ -209,7 +209,7 @@ namespace Dapple.Extract
       /// <param name="iSizeY"></param>
       /// <param name="dXCellSize"></param>
       /// <param name="dYCellSize"></param>
-      public void Setup(string strCoordinateSystem, double dMinX, double dMinY, double dMaxX, double dMaxY, SortedList<double, int> oResolutions)
+      internal void Setup(string strCoordinateSystem, double dMinX, double dMinY, double dMaxX, double dMaxY, SortedList<double, int> oResolutions)
       {         
          m_bMap = true;
          m_strDatasetProjection = strCoordinateSystem;
@@ -219,7 +219,7 @@ namespace Dapple.Extract
       /// <summary>
       /// Set the native resolution for this dataset
       /// </summary>
-      public void SetNativeResolution()
+      internal void SetNativeResolution()
       {
          tbResolution.Value = 0;
          tbResolution_Scroll(this, new EventArgs());

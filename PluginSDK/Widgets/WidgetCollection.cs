@@ -52,7 +52,7 @@ namespace WorldWind.NewWidgets
 	{
 		System.Collections.ArrayList m_ChildWidgets = new System.Collections.ArrayList();
 		
-		public WidgetCollection()
+		internal WidgetCollection()
 		{
 		}
 

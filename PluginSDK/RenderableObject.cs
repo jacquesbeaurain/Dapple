@@ -27,8 +27,8 @@ namespace WorldWind.Renderable
 
 		public RenderableObjectList ParentList;
 
-		public string dbfPath = "";
-		public bool dbfIsInZip = false;
+		internal string dbfPath = "";
+		internal bool dbfIsInZip = false;
 		
 
 		protected string name;
@@ -80,14 +80,14 @@ namespace WorldWind.Renderable
 			this.position = position;
 			this.orientation = orientation;
 		}
-		
+
 		public abstract void Initialize(DrawArgs drawArgs);
 
 		public abstract void Update(DrawArgs drawArgs);
 
 		public abstract void Render(DrawArgs drawArgs);
 
-      public virtual bool Initialized
+		public virtual bool Initialized
 		{	
 			get
 			{
@@ -99,7 +99,7 @@ namespace WorldWind.Renderable
 		/// The planet this layer is a part of.
 		/// </summary>
 		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public virtual World World
+		internal virtual World World
 		{
 			get
 			{
@@ -110,7 +110,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Path to a Thumbnail image(e.g. for use as a Toolbar button).
 		/// </summary>
-		public virtual string Thumbnail
+		internal virtual string Thumbnail
 		{
 			get
 			{
@@ -125,7 +125,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// The image referenced by Thumbnail. 
 		/// </summary>
-		public virtual Image ThumbnailImage
+		internal virtual Image ThumbnailImage
 		{
 			get
 			{
@@ -148,7 +148,7 @@ namespace WorldWind.Renderable
 		/// Path for an icon for the object, such as an image to be used in the Active Layer window.
 		/// This can be different than the Thumbnail(e.g. an ImageLayer can have an IconImage, and no Thumbnail).
 		/// </summary>
-		public string IconImagePath
+		internal string IconImagePath
 		{
 			get
 			{
@@ -163,7 +163,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// The icon image referenced by IconImagePath. 
 		/// </summary>
-		public Image IconImage
+		internal Image IconImage
 		{
 			get
 			{
@@ -254,7 +254,7 @@ namespace WorldWind.Renderable
 		/// Fills the context menu with menu items specific to the layer.
 		/// </summary>
 		/// <param name="menu">Pre-initialized context menu.</param>
-		public virtual void BuildContextMenu( ContextMenu menu )
+		public virtual void BuildContextMenu(ContextMenu menu)
 		{
 			menu.MenuItems.Add("Goto", new EventHandler(OnGotoClick));
 			menu.MenuItems.Add("Properties...", new EventHandler(OnPropertiesClick));
@@ -327,7 +327,7 @@ namespace WorldWind.Renderable
 		}
 
 		[Browsable(false)]
-		public virtual Hashtable MetaData
+		internal virtual Hashtable MetaData
 		{
 			get
 			{
@@ -393,7 +393,7 @@ namespace WorldWind.Renderable
 		/// Object rotation (Quaternion)
 		/// </summary>
 		[Browsable(false)]
-		public virtual Quaternion4d Orientation
+		internal virtual Quaternion4d Orientation
 		{
 			get
 			{
@@ -527,28 +527,28 @@ namespace WorldWind.Renderable
 
 		#endregion
 
-      public class ExportInfo
+		public class ExportInfo
       {
-         public double dMinLat = double.MaxValue;
+			public double dMinLat = double.MaxValue;
          public double dMaxLat = double.MinValue;
-         public double dMinLon = double.MaxValue;
-         public double dMaxLon = double.MinValue;
+			public double dMinLon = double.MaxValue;
+			public double dMaxLon = double.MinValue;
 
-         public int iPixelsX = -1;
-         public int iPixelsY = -1;
+			public int iPixelsX = -1;
+			public int iPixelsY = -1;
 
-         public Graphics gr;
+			public Graphics gr;
 
-         public ExportInfo()
+			public ExportInfo()
          {
          }
       }
-      
-      public virtual void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
+
+		public virtual void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
       {
       }
-      
-      public virtual void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
+
+		public virtual void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
       {
       }
 	}

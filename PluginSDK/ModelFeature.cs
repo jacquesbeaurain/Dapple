@@ -16,9 +16,9 @@ namespace WorldWind.Renderable
     /// This class Loads and Renders at a specific lat,lon,alt a given
     /// Model(ie Textured Mesh) in Direct X or Other supported Format
     /// </summary>
-    public class ModelFeature : WorldWind.Renderable.RenderableObject
+    internal class ModelFeature : WorldWind.Renderable.RenderableObject
     {
-        #region Public Variables
+        #region internal Variables
         #endregion
 
         #region Private Variables
@@ -46,13 +46,13 @@ namespace WorldWind.Renderable
 
         protected class MeshElem
         {
-            public Mesh mesh;
-            public Texture[] meshTextures;            // Textures for the mesh
-            public Material[] meshMaterials;
+            internal Mesh mesh;
+            internal Texture[] meshTextures;            // Textures for the mesh
+            internal Material[] meshMaterials;
         }
 
         #region Accessor Methods
-        public string RefreshURL
+        internal string RefreshURL
         {
             set { m_refreshurl = value; }
         }
@@ -63,7 +63,7 @@ namespace WorldWind.Renderable
         /// Gets/sets model latitude
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Latitude of model")]
-        public float Latitude
+        internal float Latitude
         {
             get { return m_latitude; }
             set { m_latitude = value; }
@@ -73,7 +73,7 @@ namespace WorldWind.Renderable
         /// Gets/sets model longitude
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Longitude of model")]
-        public float Longitude
+        internal float Longitude
         {
             get { return m_longitude; }
             set { m_longitude = value; }
@@ -83,7 +83,7 @@ namespace WorldWind.Renderable
         /// Gets/sets model altitude
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Altitude of model")]
-        public float Altitude
+        internal float Altitude
         {
             get { return m_altitude; }
             set
@@ -97,7 +97,7 @@ namespace WorldWind.Renderable
         /// Gets/sets model scale
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Scale of model")]
-        public float Scale
+        internal float Scale
         {
             get { return m_scale; }
             set { m_scale = value; }
@@ -107,7 +107,7 @@ namespace WorldWind.Renderable
         /// Gets/sets X rotation
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Rotation about model X-axis")]
-        public float RotX
+        internal float RotX
         {
             get { return m_rotx; }
             set { m_rotx = value; }
@@ -117,7 +117,7 @@ namespace WorldWind.Renderable
         /// Gets/sets Y rotation
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Rotation about model Y-axis")]
-        public float RotY
+        internal float RotY
         {
             get { return m_roty; }
             set { m_roty = value; }
@@ -127,7 +127,7 @@ namespace WorldWind.Renderable
         /// Gets/sets Z rotation
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Rotation about model Z-axis")]
-        public float RotZ
+        internal float RotZ
         {
             get { return m_rotz; }
             set { m_rotz = value; }
@@ -137,7 +137,7 @@ namespace WorldWind.Renderable
         /// Gets/sets whether altitude obeys vert. exaggeration value from settings
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Whether model altitude scales with vertical exaggeration")]
-        public bool IsVertExaggerable
+        internal bool IsVertExaggerable
         {
             get { return m_isVertExaggerable; }
             set { m_isVertExaggerable = value; }
@@ -147,7 +147,7 @@ namespace WorldWind.Renderable
         /// Gets/sets whether model altitude is relative to ground
         /// </summary>
         [CategoryAttribute("Model"), DescriptionAttribute("Whether model altitude is relative to ground")]
-        public bool IsElevationRelativeToGround
+        internal bool IsElevationRelativeToGround
         {
             get { return m_isElevationRelativeToGround; }
             set { m_isElevationRelativeToGround = value; }
@@ -157,7 +157,7 @@ namespace WorldWind.Renderable
         /// Gets/sets altitude mode
         /// </summary>
         [CategoryAttribute("Model")]
-        public AltitudeMode AltitudeMode
+        internal AltitudeMode AltitudeMode
         {
             get { return m_altitudeMode; }
             set
@@ -182,7 +182,7 @@ namespace WorldWind.Renderable
         #endregion
 
 
-        public ModelFeature(string name, World parentWorld, string fileName, float Latitude,
+        internal ModelFeature(string name, World parentWorld, string fileName, float Latitude,
             float Longitude, float Altitude, float Scale, float rotX, float rotY, float rotZ)
             : base(name, parentWorld)
         {
@@ -208,7 +208,7 @@ namespace WorldWind.Renderable
             return camera.ViewFrustum.ContainsPoint(worldXyz);
         }
 
-        public override void Render(DrawArgs drawArgs)
+		  public override void Render(DrawArgs drawArgs)
         {
             if (errorMsg != null)
             {
@@ -296,7 +296,7 @@ namespace WorldWind.Renderable
         /// RenderableObject abstract member (needed) 
         /// OBS: Worker thread (don't update UI directly from this thread)
         /// </summary>
-        public override void Initialize(DrawArgs drawArgs)
+		  public override void Initialize(DrawArgs drawArgs)
         {
             if (!IsVisible(drawArgs.WorldCamera))
                 return;
@@ -567,7 +567,7 @@ namespace WorldWind.Renderable
         /// OBS: Worker thread (d
         /// on't update UI directly from this thread)
         /// </summary>
-        public override void Update(DrawArgs drawArgs)
+		  public override void Update(DrawArgs drawArgs)
         {
             if (!isInitialized)
                 Initialize(drawArgs);
@@ -616,7 +616,7 @@ namespace WorldWind.Renderable
         /// RenderableObject abstract member (needed)
         /// OBS: Worker thread (don't update UI directly from this thread)
         /// </summary>
-        public override void Dispose()
+		  public override void Dispose()
         {
             isInitialized = false;
             if (meshElems != null)
@@ -639,7 +639,7 @@ namespace WorldWind.Renderable
         /// RenderableObject abstract member (needed)
         /// Called from UI thread = UI code safe in this function
         /// </summary>
-        public override bool PerformSelectionAction(DrawArgs drawArgs)
+		  public override bool PerformSelectionAction(DrawArgs drawArgs)
         {
             // Note: The following assignment to m is
             // to match the assignment to 

@@ -10,7 +10,7 @@ namespace WorldWind.Renderable
 	/// <summary>
 	/// Summary description for ShapeLayer.
 	/// </summary>
-	public class ShapeLayer : RenderableObject
+	internal class ShapeLayer : RenderableObject
 	{
 		#region Private Members
 		string _masterFilePath;
@@ -32,7 +32,7 @@ namespace WorldWind.Renderable
 		double _scalarMax;
 		#endregion
 
-		#region Public Methods
+		#region internal Methods
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.ShapeLayer"/> class.
@@ -48,7 +48,7 @@ namespace WorldWind.Renderable
 		/// <param name="scalarKey"></param>
 		/// <param name="showBoundaries"></param>
 		/// <param name="showFilledPolygons"></param>
-		public ShapeLayer(
+		internal ShapeLayer(
 			string name,
 			World parentWorld,
 			double Altitude,
@@ -383,7 +383,7 @@ namespace WorldWind.Renderable
 
 		#region Properties
 
-		public string ID
+		internal string ID
 		{
 			get
 			{
@@ -395,7 +395,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public string PolygonFile
+		internal string PolygonFile
 		{
 			get
 			{
@@ -407,7 +407,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public string BoundaryFile
+		internal string BoundaryFile
 		{
 			get
 			{
@@ -419,7 +419,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public string Name
+		internal string Name
 		{
 			get
 			{
@@ -431,7 +431,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public double North
+		internal double North
 		{
 			get
 			{
@@ -443,7 +443,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public double South
+		internal double South
 		{
 			get
 			{
@@ -455,7 +455,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public double East
+		internal double East
 		{
 			get
 			{
@@ -467,7 +467,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public double West
+		internal double West
 		{
 			get
 			{
@@ -479,7 +479,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public System.Collections.Hashtable MetaData
+		internal System.Collections.Hashtable MetaData
 		{
 			get
 			{
@@ -491,7 +491,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public System.Collections.Hashtable ScalarData
+		internal System.Collections.Hashtable ScalarData
 		{
 			get
 			{
@@ -504,7 +504,7 @@ namespace WorldWind.Renderable
 		}
 		#endregion
 
-		#region Public Methods
+		#region internal Methods
 
 		#endregion
 	}
@@ -516,7 +516,7 @@ namespace WorldWind.Renderable
 		#endregion
 
 		#region Properties
-		public ShapeRecord[] ShapeRecords
+		internal ShapeRecord[] ShapeRecords
 		{
 			get
 			{
@@ -529,8 +529,8 @@ namespace WorldWind.Renderable
 		}
 		#endregion
 
-		#region Public Methods
-		public static ShapeIndex FromFile(string indexFilePath)
+		#region internal Methods
+		internal static ShapeIndex FromFile(string indexFilePath)
 		{
 			try
 			{
@@ -587,7 +587,7 @@ namespace WorldWind.Renderable
 			return null;
 		}
 
-		public void Save(string indexFilePath)
+		internal void Save(string indexFilePath)
 		{
 			if(this._shapeRecords == null)
 				return;

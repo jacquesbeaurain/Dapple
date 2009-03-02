@@ -61,7 +61,7 @@ namespace WorldWind.NewWidgets
 	/// Inspired by CompassRose written by Patrick Murris.
 	/// http://www.worldwindcentral.com/wiki/Add-on:Compass_Rose
 	/// </summary>
-	public class CompassWidget : IWidget
+	internal class CompassWidget : IWidget
 	{
 		#region IWidget support variables
 
@@ -150,7 +150,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public CompassWidget()
+		internal CompassWidget()
 		{
 			m_location.X = 5;
 			m_location.Y = 100;
@@ -164,7 +164,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Filename of button graphic
 		/// </summary>
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -329,7 +329,7 @@ namespace WorldWind.NewWidgets
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			object key = null;
 

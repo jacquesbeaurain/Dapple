@@ -17,90 +17,90 @@ namespace NewServerTree
 {
 	#region Event Args
 
-	public class NodeLoadEventArgs : EventArgs
+	internal class NodeLoadEventArgs : EventArgs
 	{
 		private ModelNode m_oNode;
 
-		public NodeLoadEventArgs(ModelNode oNode)
+		internal NodeLoadEventArgs(ModelNode oNode)
 		{
 			m_oNode = oNode;
 		}
 
-		public ModelNode Node
+		internal ModelNode Node
 		{
 			get { return m_oNode; }
 		}
 	}
 
-	public class NodeAddedEventArgs : EventArgs
+	internal class NodeAddedEventArgs : EventArgs
 	{
 		private ModelNode m_oParentNode;
 		private ModelNode m_oChildNode;
 
-		public NodeAddedEventArgs(ModelNode parent, ModelNode child)
+		internal NodeAddedEventArgs(ModelNode parent, ModelNode child)
 		{
 			m_oParentNode = parent;
 			m_oChildNode = child;
 		}
 
-		public ModelNode Parent
+		internal ModelNode Parent
 		{
 			get { return m_oParentNode; }
 		}
 
-		public ModelNode Child
+		internal ModelNode Child
 		{
 			get { return m_oChildNode; }
 		}
 	}
 
-	public class NodeRemovedEventArgs : EventArgs
+	internal class NodeRemovedEventArgs : EventArgs
 	{
 		private ModelNode m_oParentNode;
 		private ModelNode m_oChildNode;
 
-		public NodeRemovedEventArgs(ModelNode parent, ModelNode child)
+		internal NodeRemovedEventArgs(ModelNode parent, ModelNode child)
 		{
 			m_oParentNode = parent;
 			m_oChildNode = child;
 		}
 
-		public ModelNode Parent
+		internal ModelNode Parent
 		{
 			get { return m_oParentNode; }
 		}
 
-		public ModelNode Child
+		internal ModelNode Child
 		{
 			get { return m_oChildNode; }
 		}
 	}
 
-	public class NodeDisplayUpdatedEventArgs : EventArgs
+	internal class NodeDisplayUpdatedEventArgs : EventArgs
 	{
 		private ModelNode m_oNode;
 
-		public NodeDisplayUpdatedEventArgs(ModelNode oNode)
+		internal NodeDisplayUpdatedEventArgs(ModelNode oNode)
 		{
 			m_oNode = oNode;
 		}
 
-		public ModelNode Node
+		internal ModelNode Node
 		{
 			get { return m_oNode; }
 		}
 	}
 
-	public class NodeUnloadedEventArgs : EventArgs
+	internal class NodeUnloadedEventArgs : EventArgs
 	{
 		private ModelNode m_oNode;
 
-		public NodeUnloadedEventArgs(ModelNode oNode)
+		internal NodeUnloadedEventArgs(ModelNode oNode)
 		{
 			m_oNode = oNode;
 		}
 
-		public ModelNode Node
+		internal ModelNode Node
 		{
 			get { return m_oNode; }
 		}
@@ -108,7 +108,7 @@ namespace NewServerTree
 
 	#endregion
 
-	public class DappleModel
+	internal class DappleModel
 	{
 		#region Member Variables
 
@@ -125,7 +125,7 @@ namespace NewServerTree
 
 		#region Events
 
-		public event EventHandler SelectedNodeChanged;
+		internal event EventHandler SelectedNodeChanged;
 		protected void OnSelectedNodeChanged(EventArgs e)
 		{
 			if (SelectedNodeChanged != null)
@@ -134,7 +134,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler<NodeLoadEventArgs> NodeLoaded;
+		internal event EventHandler<NodeLoadEventArgs> NodeLoaded;
 		protected void OnNodeLoaded(NodeLoadEventArgs e)
 		{
 			if (NodeLoaded != null)
@@ -143,7 +143,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler<NodeAddedEventArgs> NodeAdded;
+		internal event EventHandler<NodeAddedEventArgs> NodeAdded;
 		protected void OnNodeAdded(NodeAddedEventArgs e)
 		{
 			if (NodeAdded != null)
@@ -152,7 +152,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler<NodeRemovedEventArgs> NodeRemoved;
+		internal event EventHandler<NodeRemovedEventArgs> NodeRemoved;
 		protected void OnNodeRemoved(NodeRemovedEventArgs e)
 		{
 			if (NodeRemoved != null)
@@ -161,7 +161,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler<NodeDisplayUpdatedEventArgs> NodeDisplayUpdated;
+		internal event EventHandler<NodeDisplayUpdatedEventArgs> NodeDisplayUpdated;
 		protected void OnNodeDisplayUpdated(NodeDisplayUpdatedEventArgs e)
 		{
 			if (NodeDisplayUpdated != null)
@@ -170,7 +170,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler<NodeUnloadedEventArgs> NodeUnloaded;
+		internal event EventHandler<NodeUnloadedEventArgs> NodeUnloaded;
 		protected void OnNodeUnloaded(NodeUnloadedEventArgs e)
 		{
 			if (NodeUnloaded != null)
@@ -179,7 +179,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler Loaded;
+		internal event EventHandler Loaded;
 		protected void OnLoaded(EventArgs e)
 		{
 			if (Loaded != null)
@@ -188,7 +188,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler SearchFilterChanged;
+		internal event EventHandler SearchFilterChanged;
 		protected void OnSearchFilterChanged(EventArgs e)
 		{
 			if (SearchFilterChanged != null)
@@ -197,7 +197,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler FavouriteServerChanged;
+		internal event EventHandler FavouriteServerChanged;
 		protected void OnFavouriteServerChanged(EventArgs e)
 		{
 			if (FavouriteServerChanged != null)
@@ -206,7 +206,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler ServerToggled;
+		internal event EventHandler ServerToggled;
 		protected void OnServerToggled(EventArgs e)
 		{
 			if (ServerToggled != null)
@@ -215,7 +215,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler ServerAdded;
+		internal event EventHandler ServerAdded;
 		protected void OnServerAdded(EventArgs e)
 		{
 			if (ServerAdded != null)
@@ -229,7 +229,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public DappleModel(LayerList oTarget)
+		internal DappleModel(LayerList oTarget)
 		{
 			m_oViewedDatasets = new ViewedDatasetsModel(oTarget);
 			m_oRootNode = new AvailableServersModelNode(this);
@@ -241,7 +241,7 @@ namespace NewServerTree
 
 		#region Properties
 
-		public ModelNode SelectedNode
+		internal ModelNode SelectedNode
 		{
 			get { return m_oSelectedNode; }
 			set
@@ -261,7 +261,7 @@ namespace NewServerTree
 		/// server is currently selected, for example, if the current ModelNode
 		/// is one of the root nodes.
 		/// </summary>
-		public ServerModelNode SelectedServer
+		internal ServerModelNode SelectedServer
 		{
 			get
 			{
@@ -276,7 +276,7 @@ namespace NewServerTree
 			}
 		}
 
-		public PersonalDapServerModelNode PersonalDapServer
+		internal PersonalDapServerModelNode PersonalDapServer
 		{
 			get
 			{
@@ -284,27 +284,27 @@ namespace NewServerTree
 			}
 		}
 
-		public bool SearchKeywordSet
+		internal bool SearchKeywordSet
 		{
 			get { return !String.IsNullOrEmpty(m_strSearchKeyword); }
 		}
 
-		public String SearchKeyword
+		internal String SearchKeyword
 		{
 			get { return m_strSearchKeyword; }
 		}
 
-		public bool SearchBoundsSet
+		internal bool SearchBoundsSet
 		{
 			get { return m_oSearchBounds != null; }
 		}
 
-		public GeographicBoundingBox SearchBounds_Geo
+		internal GeographicBoundingBox SearchBounds_Geo
 		{
 			get { return m_oSearchBounds; }
 		}
 
-		public Geosoft.Dap.Common.BoundingBox SearchBounds_DAP
+		internal Geosoft.Dap.Common.BoundingBox SearchBounds_DAP
 		{
 			get
 			{
@@ -317,17 +317,17 @@ namespace NewServerTree
 			}
 		}
 
-		public bool SearchFilterSet
+		internal bool SearchFilterSet
 		{
 			get { return SearchKeywordSet || SearchBoundsSet; }
 		}
 
-		public ViewedDatasetsModel ViewedDatasets
+		internal ViewedDatasetsModel ViewedDatasets
 		{
 			get { return m_oViewedDatasets; }
 		}
 
-		public List<ServerModelNode> ListableServers
+		internal List<ServerModelNode> ListableServers
 		{
 			get
 			{
@@ -364,7 +364,7 @@ namespace NewServerTree
 
 		#region Saving and Loading old Dapple Views
 
-		public void SaveToView(Dapple.DappleView oView)
+		internal void SaveToView(Dapple.DappleView oView)
 		{
 			m_oRootNode.SaveToView(oView);
 
@@ -374,7 +374,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void LoadFromView(Dapple.DappleView oSource)
+		internal void LoadFromView(Dapple.DappleView oSource)
 		{
 			lock (m_oLock)
 			{
@@ -511,7 +511,7 @@ namespace NewServerTree
 
 		#region Adding Servers
 
-		public void AddArcIMSServer()
+		internal void AddArcIMSServer()
 		{
 			AddArcIMS oDialog = new AddArcIMS();
 
@@ -522,7 +522,7 @@ namespace NewServerTree
 			}
 		}
 
-		public ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
+		internal ServerModelNode AddArcIMSServer(ArcIMSServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
 		{
 			lock (m_oLock)
 			{
@@ -557,7 +557,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void AddWMSServer()
+		internal void AddWMSServer()
 		{
 			AddWMS oDialog = new AddWMS();
 
@@ -568,7 +568,7 @@ namespace NewServerTree
 			}
 		}
 
-		public ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
+		internal ServerModelNode AddWMSServer(WMSServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
 		{
 			lock (m_oLock)
 			{
@@ -603,7 +603,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void AddDAPServer()
+		internal void AddDAPServer()
 		{
 			AddDAP oDialog = new AddDAP();
 
@@ -614,7 +614,7 @@ namespace NewServerTree
 			}
 		}
 
-		public ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
+		internal ServerModelNode AddDAPServer(DapServerUri oUri, bool blEnabled, bool blUpdateHomeView, bool blSubmitToDappleSearch)
 		{
 			lock (m_oLock)
 			{
@@ -656,7 +656,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void AddImageTileLayer(String strTileSetName, ImageTileLayerModelNode oLayer)
+		internal void AddImageTileLayer(String strTileSetName, ImageTileLayerModelNode oLayer)
 		{
 			lock (m_oLock)
 			{
@@ -670,7 +670,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void SetSearchFilter(String strKeyword, GeographicBoundingBox oBounds)
+		internal void SetSearchFilter(String strKeyword, GeographicBoundingBox oBounds)
 		{
 			lock (m_oLock)
 			{
@@ -693,7 +693,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void SetFavouriteServer(ServerModelNode oServer, bool blUpdateHomeView)
+		internal void SetFavouriteServer(ServerModelNode oServer, bool blUpdateHomeView)
 		{
 			lock (m_oLock)
 			{
@@ -713,7 +713,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void ToggleServer(ServerModelNode oServer, bool blUpdateHomeView)
+		internal void ToggleServer(ServerModelNode oServer, bool blUpdateHomeView)
 		{
 			lock (m_oLock)
 			{
@@ -729,7 +729,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void RemoveServer(ServerModelNode oServer, bool blUpdateHomeView)
+		internal void RemoveServer(ServerModelNode oServer, bool blUpdateHomeView)
 		{
 			lock (m_oLock)
 			{
@@ -749,7 +749,7 @@ namespace NewServerTree
 
 		#endregion
 
-		public void DoWithLock(MethodInvoker oOperation)
+		internal void DoWithLock(MethodInvoker oOperation)
 		{
 			lock (m_oLock)
 			{
@@ -757,7 +757,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void DoWithLock(WaitCallback oOperation, Object oParam)
+		internal void DoWithLock(WaitCallback oOperation, Object oParam)
 		{
 			lock (m_oLock)
 			{
@@ -765,7 +765,7 @@ namespace NewServerTree
 			}
 		}
 
-		public void ModelNodeLoaded(ModelNode oLoadedNode)
+		internal void ModelNodeLoaded(ModelNode oLoadedNode)
 		{
 			bool blVisible = false;
 			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
@@ -780,7 +780,7 @@ namespace NewServerTree
 			if (blVisible) OnNodeLoaded(new NodeLoadEventArgs(oLoadedNode));
 		}
 
-		public void ModelNodeAdded(ModelNode oParentNode, ModelNode oChildNode)
+		internal void ModelNodeAdded(ModelNode oParentNode, ModelNode oChildNode)
 		{
 			bool blVisible = false;
 			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
@@ -795,7 +795,7 @@ namespace NewServerTree
 			if (blVisible) OnNodeAdded(new NodeAddedEventArgs(oParentNode, oChildNode));
 		}
 
-		public void ModelNodeRemoved(ModelNode oParentNode, ModelNode oChildNode)
+		internal void ModelNodeRemoved(ModelNode oParentNode, ModelNode oChildNode)
 		{
 			if (IsSelectedOrAncestor(oChildNode))
 			{
@@ -805,7 +805,7 @@ namespace NewServerTree
 			OnNodeRemoved(new NodeRemovedEventArgs(oParentNode, oChildNode));
 		}
 
-		public void ModelNodeDisplayUpdated(ModelNode oUpdatedNode)
+		internal void ModelNodeDisplayUpdated(ModelNode oUpdatedNode)
 		{
 			bool blVisible = false;
 			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
@@ -820,7 +820,7 @@ namespace NewServerTree
 			if (blVisible) OnNodeDisplayUpdated(new NodeDisplayUpdatedEventArgs(oUpdatedNode));
 		}
 
-		public void ModelNodeUnloaded(ModelNode oNode)
+		internal void ModelNodeUnloaded(ModelNode oNode)
 		{
 			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
 			{
@@ -838,7 +838,7 @@ namespace NewServerTree
 			}
 		}
 
-		public bool IsSelectedOrAncestor(ModelNode oNode)
+		internal bool IsSelectedOrAncestor(ModelNode oNode)
 		{
 			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
 			{
@@ -888,7 +888,7 @@ namespace NewServerTree
 
 			#region Constructor
 
-			public DappleSearchAddServerDownload(String strUrl, NewServerTree.ServerModelNode.ServerType eType)
+			internal DappleSearchAddServerDownload(String strUrl, NewServerTree.ServerModelNode.ServerType eType)
 			{
 				m_strNewServerUrl = strUrl;
 				m_eType = eType;
@@ -947,18 +947,18 @@ namespace NewServerTree
 	/// This is currently a proxy for converting ModelNodes to LayerBuilders
 	/// to isolate the model from the rest of the system. 
 	/// </remarks>
-	public class ViewedDatasetsModel
+	internal class ViewedDatasetsModel
 	{
 		#region Member Variables
 
-		public LayerList m_oLayerList;
+		internal LayerList m_oLayerList;
 
 		#endregion
 
 
 		#region Events
 
-		public event EventHandler LayersRemoved;
+		internal event EventHandler LayersRemoved;
 		protected void OnLayersRemoved(EventArgs e)
 		{
 			if (LayersRemoved != null)
@@ -967,7 +967,7 @@ namespace NewServerTree
 			}
 		}
 
-		public event EventHandler LayersAdded;
+		internal event EventHandler LayersAdded;
 		protected void OnLayersAdded(EventArgs e)
 		{
 			if (LayersAdded != null)
@@ -981,7 +981,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ViewedDatasetsModel(LayerList oTarget)
+		internal ViewedDatasetsModel(LayerList oTarget)
 		{
 			m_oLayerList = oTarget;
 		}
@@ -991,7 +991,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public void Add(LayerModelNode oNewLayer)
+		internal void Add(LayerModelNode oNewLayer)
 		{
 #pragma warning disable 618
 			m_oLayerList.AddLayer(oNewLayer.ConvertToLayerBuilder());
@@ -999,14 +999,14 @@ namespace NewServerTree
 			OnLayersAdded(EventArgs.Empty);
 		}
 
-		public bool Contains(LayerModelNode oLayer)
+		internal bool Contains(LayerModelNode oLayer)
 		{
 #pragma warning disable 618
 			return m_oLayerList.AllLayers.Contains(oLayer.ConvertToLayerBuilder());
 #pragma warning restore 618
 		}
 
-		public void Remove(List<LayerModelNode> oLayersToRemove)
+		internal void Remove(List<LayerModelNode> oLayersToRemove)
 		{
 			OnLayersRemoved(EventArgs.Empty);
 		}

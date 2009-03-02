@@ -47,19 +47,19 @@ namespace WorldWind
 			}
 		}
 
-		public bool AlphaKeyEnabled
+		internal bool AlphaKeyEnabled
 		{
 			get { return m_alphaKeyEnabled; }
 			set { m_alphaKeyEnabled = value; }
 		}
 
-		public bool ColorKeyEnabled
+		internal bool ColorKeyEnabled
 		{
 			get { return m_colorKeyEnabled; }
 			set { m_colorKeyEnabled = value; }
 		}
 
-		public int ColorKey
+		internal int ColorKey
 		{
 			get
 			{
@@ -71,7 +71,7 @@ namespace WorldWind
 			}
 		}
 
-		public int AlphaKeyMin
+		internal int AlphaKeyMin
 		{
 			get
 			{
@@ -83,7 +83,7 @@ namespace WorldWind
 			}
 		}
 
-		public int AlphaKeyMax
+		internal int AlphaKeyMax
 		{
 			get
 			{
@@ -114,7 +114,7 @@ namespace WorldWind
 		/// <summary>
 		/// Server Logo path for Downloadable layers
 		/// </summary>
-		public string ServerLogo
+		internal string ServerLogo
 		{
 			get
 			{
@@ -144,7 +144,7 @@ namespace WorldWind
 		/// <summary>
 		/// If the mesh should be reprojected an image store should return a projection to use here
 		/// </summary>
-		public virtual Projection Projection
+		internal virtual Projection Projection
 		{
 			get
 			{
@@ -155,7 +155,7 @@ namespace WorldWind
 		/// <summary>
 		/// This can be used by mesh calculation to calculate projected meshes for tiles
 		/// </summary>
-		public virtual void GetProjectionCorners(IGeoSpatialDownloadTile tile, out UV ul, out UV ur, out UV ll, out UV lr)
+		internal virtual void GetProjectionCorners(IGeoSpatialDownloadTile tile, out UV ul, out UV ur, out UV ll, out UV lr)
 		{
 			// For normal quad tiles this is equal to the geographic coordinates
 			ul = new UV(tile.West, tile.North);
@@ -229,7 +229,7 @@ namespace WorldWind
 		/// Default texture to be used (always ocean?)
 		/// Can be either file or url
 		/// </summary>
-		public string DuplicateTexturePath
+		internal string DuplicateTexturePath
 		{
 			get
 			{
@@ -251,7 +251,7 @@ namespace WorldWind
 
 		#endregion
 
-		public virtual string GetLocalPath(IGeoSpatialDownloadTile tile)
+		internal virtual string GetLocalPath(IGeoSpatialDownloadTile tile)
 		{
 			if (tile.Level >= m_levelCount)
 				throw new ArgumentException(string.Format("Level {0} not available.",
@@ -317,14 +317,14 @@ namespace WorldWind
 		/// Deletes the cached copy of the tile.
 		/// </summary>
 		/// <param name="tile"></param>
-		public virtual void DeleteLocalCopy(IGeoSpatialDownloadTile tile)
+		internal virtual void DeleteLocalCopy(IGeoSpatialDownloadTile tile)
 		{
 			string filename = GetLocalPath(tile);
 			if (File.Exists(filename))
 				File.Delete(filename);
 		}
 
-		public Texture LoadFile(IGeoSpatialDownloadTile tile)
+		internal Texture LoadFile(IGeoSpatialDownloadTile tile)
 		{
 			string filePath = GetLocalPath(tile);
 			tile.ImageFilePath = filePath;

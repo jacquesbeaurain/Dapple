@@ -11,7 +11,7 @@ namespace Dapple.CustomControls
    /// <summary>
    /// A tab pane that doesn't look like a tab pane, just for Jana.
    /// </summary>
-   public partial class JanaTab : UserControl
+   internal partial class JanaTab : UserControl
    {
       #region Statics
 
@@ -21,8 +21,8 @@ namespace Dapple.CustomControls
 
 		#region Events
 
-		public delegate void PageChangedDelegate(int iPage);
-		public event PageChangedDelegate PageChanged;
+		internal delegate void PageChangedDelegate(int iPage);
+		internal event PageChangedDelegate PageChanged;
 
 		#endregion
 
@@ -35,7 +35,7 @@ namespace Dapple.CustomControls
 
       #region Constructor
 
-      public JanaTab()
+      internal JanaTab()
       {
          InitializeComponent();
 
@@ -46,7 +46,7 @@ namespace Dapple.CustomControls
 
       #region Properties
 
-      public int SelectedIndex
+      internal int SelectedIndex
       {
          get
          {
@@ -79,7 +79,7 @@ namespace Dapple.CustomControls
 
       #region Public Methods
 
-      public void SetPage(int iPage, Control oControl)
+      internal void SetPage(int iPage, Control oControl)
       {
          this.SuspendLayout();
 
@@ -97,17 +97,17 @@ namespace Dapple.CustomControls
          this.ResumeLayout();
       }
 
-      public void SetImage(int iPageIndex, Image oValue)
+      internal void SetImage(int iPageIndex, Image oValue)
       {
          cTabToolbar.SetImage(iPageIndex, oValue);
       }
 
-      public void SetToolTip(int iPageIndex, String szToolTipText)
+      internal void SetToolTip(int iPageIndex, String szToolTipText)
       {
          cTabToolbar.SetToolTip(iPageIndex, szToolTipText);
       }
 
-		public void SetNameAndText(int iPageIndex, String szName)
+		internal void SetNameAndText(int iPageIndex, String szName)
 		{
 			cTabToolbar.SetNameAndText(iPageIndex, szName);
 		}

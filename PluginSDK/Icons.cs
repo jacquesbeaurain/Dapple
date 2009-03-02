@@ -54,7 +54,8 @@ namespace WorldWind.Renderable
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icons"/> class 
 		/// </summary>
 		/// <param name="name">The name of the icons layer</param>
-		public Icons(string name) : base(name) 
+		public Icons(string name)
+			: base(name) 
 		{
             m_mouseOver = true;
             isInitialized = false;
@@ -72,7 +73,7 @@ namespace WorldWind.Renderable
         /// <param name="refreshInterval"></param>
         /// <param name="parentWorld"></param>
         /// <param name="cache"></param>
-		public Icons(string name, 
+		internal Icons(string name, 
 			string dataSource, 
 			TimeSpan refreshInterval,
 			World parentWorld,
@@ -89,7 +90,7 @@ namespace WorldWind.Renderable
         /// </summary>
         /// <param name="icon">The icon to add to this Icons layer.  Deprecateed.  Use Add(ro).</param>
         [Obsolete]
-        public virtual void AddIcon(Icon icon)
+        internal virtual void AddIcon(Icon icon)
 		{
 			Add(icon);
 		}
@@ -101,7 +102,7 @@ namespace WorldWind.Renderable
         /// Add a child object to this layer.
         /// </summary>
         /// <param name="ro">The renderable object to add to this layer</param>
-		public override void Add(RenderableObject ro)
+		  public override void Add(RenderableObject ro)
 		{
             ro.ParentList = this;
 
@@ -187,7 +188,7 @@ namespace WorldWind.Renderable
             }
         }
 
-		public override void Dispose()
+		  public override void Dispose()
 		{
 
             try
@@ -235,7 +236,7 @@ namespace WorldWind.Renderable
             }
 		}
 
-		public override byte Opacity
+		  public override byte Opacity
 		{
 			get
 			{

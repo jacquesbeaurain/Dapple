@@ -42,7 +42,7 @@ namespace WorldWind
 			}
 		}
 
-		public System.Drawing.Color BackgroundColor
+		internal System.Drawing.Color BackgroundColor
 		{
 			get
 			{
@@ -54,7 +54,7 @@ namespace WorldWind
 			}
 		}
 
-		public System.Drawing.Color LineColor
+		internal System.Drawing.Color LineColor
 		{
 			get
 			{

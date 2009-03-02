@@ -10,8 +10,8 @@ namespace WorldWind
 	/// </summary>
 	public class BoundingBox
 	{
-      public readonly Point3d[] corners = new Point3d[8];
-      public readonly BoundingSphere boundsphere = new BoundingSphere(new Point3d(0.0,0.0,0.0), 0.0);
+      internal readonly Point3d[] corners = new Point3d[8];
+      internal readonly BoundingSphere boundsphere = new BoundingSphere(new Point3d(0.0,0.0,0.0), 0.0);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.BoundingSphere"/> class.
@@ -24,11 +24,11 @@ namespace WorldWind
 		/// <param name="v5"></param>
 		/// <param name="v6"></param>
 		/// <param name="v7"></param>
-		public BoundingBox(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
+		internal BoundingBox(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
 		{
          Update(v0, v1, v2, v3, v4, v5, v6, v7);
 		}
-      public void Update(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
+      internal void Update(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
       {
          this.corners[0] = v0;
          this.corners[1] = v1;
@@ -52,11 +52,11 @@ namespace WorldWind
 		/// <param name="east"></param>
 		/// <param name="radius1"></param>
 		/// <param name="radius2"></param>
-		public BoundingBox( double south, double north, double west, double east, double radius1, double radius2) 
+		public BoundingBox(double south, double north, double west, double east, double radius1, double radius2) 
 		{
          Update(south, north, west, east, radius1, radius2);
 		}
-      public void Update(double south, double north, double west, double east, double radius1, double radius2)
+      internal void Update(double south, double north, double west, double east, double radius1, double radius2)
       {
          double scale = radius2 / radius1;
          MathEngine.SphericalToCartesian(south, west, radius1, ref this.corners[0]);
@@ -75,7 +75,7 @@ namespace WorldWind
          ComputeBoundSphere();
       }
 
-      public void ComputeBoundSphere()
+      internal void ComputeBoundSphere()
       {
          this.boundsphere.Center.X = 0.0;
          this.boundsphere.Center.Y = 0.0;
@@ -99,7 +99,7 @@ namespace WorldWind
 		/// <summary>
 		/// Calculate the screen area (pixels) covered by the bottom of the bounding box.
 		/// </summary>
-		public double CalcRelativeScreenArea(CameraBase camera)
+		internal double CalcRelativeScreenArea(CameraBase camera)
 		{
 			Point3d a = camera.Project(corners[0]);
 			Point3d b = camera.Project(corners[2]);
@@ -116,7 +116,7 @@ namespace WorldWind
 			return tri1SqArea + tri2SqArea; 
 		}
 
-      public override string ToString()
+		public override string ToString()
       {
          return String.Format("corner(0):\n{0}\ncorner(1):\n{1}\ncorner(2):\n{2}\ncorner(3):\n{3}\ncorner(4):\n{4}\ncorner(5):\n{5}\ncorner(6):\n{6}\ncorner(7):\n{7}\n",
             corners[0], corners[1], corners[2], corners[3], corners[4], corners[5], corners[6], corners[7]);

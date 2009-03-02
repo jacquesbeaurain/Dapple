@@ -11,7 +11,7 @@ namespace NewServerTree
 	/// <summary>
 	/// The current load status of a ModelNode.
 	/// </summary>
-	public enum LoadState
+	internal enum LoadState
 	{
 		Unloaded,
 		Loading,
@@ -23,7 +23,7 @@ namespace NewServerTree
 	/// <summary>
 	/// The root of the ModelNode inheritance hierarchy.
 	/// </summary>
-	public abstract class ModelNode : IComparable<ModelNode>
+	internal abstract class ModelNode : IComparable<ModelNode>
 	{
 		#region Constants
 
@@ -31,7 +31,7 @@ namespace NewServerTree
 		/// Set to true to enable some ModelNodes to always display all of their children when
 		/// open, regardless of whether they are the selected node or not.
 		/// </summary>
-		public const bool UseShowAllChildren = false;
+		internal const bool UseShowAllChildren = false;
 
 		protected const string ErrLoadedLeafNode = "Tried to load a leaf ModelNode";
 		protected const string ErrLoadedBadNode = "Tried to load a ModelNode that doesn't load asynchronously";
@@ -70,7 +70,7 @@ namespace NewServerTree
 
 		#region Constructor
 
-		public ModelNode(DappleModel oModel)
+		internal ModelNode(DappleModel oModel)
 		{
 			m_oModel = oModel;
 		}
@@ -84,7 +84,7 @@ namespace NewServerTree
 		/// Get the parent ModelNode of this ModelNode.
 		/// </summary>
 		[Browsable(false)]
-		public ModelNode Parent
+		internal ModelNode Parent
 		{
 			get { return m_oParent; }
 		}
@@ -94,7 +94,7 @@ namespace NewServerTree
 		/// ServerTree when selected).
 		/// </summary>
 		[Browsable(false)]
-		public virtual bool IsLeaf
+		internal virtual bool IsLeaf
 		{
 			get { return false; }
 		}
@@ -103,7 +103,7 @@ namespace NewServerTree
 		/// Whether to disallow pruning of this ModelNode's child nodes in the ServerTree.
 		/// </summary>
 		[Browsable(false)]
-		public virtual bool ShowAllChildren
+		internal virtual bool ShowAllChildren
 		{
 			get { return false; }
 		}
@@ -111,12 +111,12 @@ namespace NewServerTree
 		/// <summary>
 		/// Get a String describing this ModelNode.
 		/// </summary>
-		public abstract String DisplayText { get; }
+		internal abstract String DisplayText { get; }
 
 		/// <summary>
 		/// Get a String annotating this ModelNode (such as the number of datasets in a server).
 		/// </summary>
-		public virtual String Annotation
+		internal virtual String Annotation
 		{
 			get { return String.Empty; }
 		}
@@ -125,7 +125,7 @@ namespace NewServerTree
 		/// The ImageKey of the TreeNode for this ModelNode.
 		/// </summary>
 		[Browsable(false)]
-		public abstract String IconKey { get; }
+		internal abstract String IconKey { get; }
 
 		#endregion
 
@@ -143,14 +143,14 @@ namespace NewServerTree
 			private int m_iLoadSync;
 			private LoadDelegate m_oDelegate;
 
-			public AsyncContext(int iSyncNumber, LoadDelegate oDelegate)
+			internal AsyncContext(int iSyncNumber, LoadDelegate oDelegate)
 			{
 				m_iLoadSync = iSyncNumber;
 				m_oDelegate = oDelegate;
 			}
 
-			public int SyncNumber { get { return m_iLoadSync; } }
-			public LoadDelegate LoadDelegate { get { return m_oDelegate; } }
+			internal int SyncNumber { get { return m_iLoadSync; } }
+			internal LoadDelegate LoadDelegate { get { return m_oDelegate; } }
 		}
 
 		/// <summary>
@@ -163,7 +163,7 @@ namespace NewServerTree
 		/// <returns>A list of ModelNodes to add to this ModelNode.</returns>
 		protected abstract ModelNode[] Load();
 
-		public void UnloadSilently()
+		internal void UnloadSilently()
 		{
 			m_oModel.DoWithLock(new MethodInvoker(_UnloadInModelLock));
 		}
@@ -171,7 +171,7 @@ namespace NewServerTree
 		/// <summary>
 		/// Unloads this ModelNode: its children are cleared, and its LoadState is reset to Unloaded.
 		/// </summary>
-		public void Unload()
+		internal void Unload()
 		{
 			UnloadSilently();
 			OnUnloaded();
@@ -196,7 +196,7 @@ namespace NewServerTree
 		/// <summary>
 		/// Loads this ModelNode asynchronously.
 		/// </summary>
-		public void BeginLoad()
+		internal void BeginLoad()
 		{
 			lock (m_oAsyncLock)
 			{
@@ -247,7 +247,7 @@ namespace NewServerTree
 			m_eStatus = LoadState.LoadSuccessful;
 		}
 
-		public void WaitForLoad()
+		internal void WaitForLoad()
 		{
 			if (m_oCurrentAsyncResult != null)
 			{
@@ -263,7 +263,7 @@ namespace NewServerTree
 		/// Gets the child ModelNodes of this ModelNode.
 		/// </summary>
 		[Browsable(false)]
-		public virtual ModelNode[] UnfilteredChildren
+		internal virtual ModelNode[] UnfilteredChildren
 		{
 			get
 			{
@@ -291,7 +291,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public ModelNode[] FilteredChildren
+		internal ModelNode[] FilteredChildren
 		{
 			get
 			{
@@ -318,7 +318,7 @@ namespace NewServerTree
 		/// The current LoadState of this ModelNode.
 		/// </summary>
 		[Browsable(false)]
-		public LoadState LoadState
+		internal LoadState LoadState
 		{
 			get { return m_eStatus; }
 		}
@@ -338,7 +338,7 @@ namespace NewServerTree
 		/// </summary>
 		/// <param name="oChild"></param>
 		/// <returns></returns>
-		public int GetIndex(ModelNode oChild)
+		internal int GetIndex(ModelNode oChild)
 		{
 			#region // Input checking
 			if (!m_oChildren.Contains(oChild)) throw new ArgumentException("The specified node is not a child of this node.");
@@ -347,7 +347,7 @@ namespace NewServerTree
 			return m_oChildren.IndexOf(oChild);
 		}
 
-		public void ClearSilently()
+		internal void ClearSilently()
 		{
 			m_oModel.DoWithLock(new MethodInvoker(_ClearSilentlyInModelLock));
 		}
@@ -357,7 +357,7 @@ namespace NewServerTree
 			m_oChildren.Clear();
 		}
 
-		public void RemoveChild(ModelNode oChild)
+		internal void RemoveChild(ModelNode oChild)
 		{
 			if (!m_oChildren.Contains(oChild)) throw new ArgumentException("Invalid child node");
 
@@ -409,11 +409,11 @@ namespace NewServerTree
 	/// <summary>
 	/// A ModelNode representing a layer that can appear on the globe.
 	/// </summary>
-	public abstract class LayerModelNode : ModelNode, IContextModelNode
+	internal abstract class LayerModelNode : ModelNode, IContextModelNode
 	{
 		#region Constructors
 
-		public LayerModelNode(DappleModel oModel)
+		internal LayerModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 		}
@@ -445,7 +445,7 @@ namespace NewServerTree
 			}
 		}
 
-		public bool Visible
+		internal bool Visible
 		{
 			get
 			{
@@ -459,9 +459,9 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public abstract Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder();
+		internal abstract Dapple.LayerGeneration.LayerBuilder ConvertToLayerBuilder();
 
-		public void AddToVisibleLayers()
+		internal void AddToVisibleLayers()
 		{
 			m_oModel.ViewedDatasets.Add(this);
 		}
@@ -470,7 +470,7 @@ namespace NewServerTree
 		/// Takes a LayerBuilder, adds its server to the server tree and home view, and returns it.
 		/// </summary>
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public static ServerModelNode AddServerToHomeView(DappleModel oModel, LayerBuilder oLayer)
+		internal static ServerModelNode AddServerToHomeView(DappleModel oModel, LayerBuilder oLayer)
 		{
 			const bool Enabled = true;
 			const bool DontAddToHomeViewYet = false;
@@ -512,11 +512,11 @@ namespace NewServerTree
 	/// <summary>
 	/// A ModelNode representing a server.
 	/// </summary>
-	public abstract class ServerModelNode : ModelNode, IContextModelNode
+	internal abstract class ServerModelNode : ModelNode, IContextModelNode
 	{
 		#region Enums
 
-		public enum ServerType
+		internal enum ServerType
 		{
 			DAP,
 			WMS,
@@ -543,7 +543,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ServerModelNode(DappleModel oModel, bool blEnabled)
+		internal ServerModelNode(DappleModel oModel, bool blEnabled)
 			: base(oModel)
 		{
 			m_blEnabled = blEnabled;
@@ -593,7 +593,7 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override ModelNode[] UnfilteredChildren
+		internal override ModelNode[] UnfilteredChildren
 		{
 			get
 			{
@@ -610,7 +610,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get
 			{
@@ -630,7 +630,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public abstract string ServerTypeIconKey { get; }
+		internal abstract string ServerTypeIconKey { get; }
 
 		[Browsable(false)]
 		public virtual ToolStripMenuItem[] MenuItems
@@ -654,7 +654,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("Whether this server is currently enabled.")]
-		public bool Enabled
+		internal bool Enabled
 		{
 			get { return m_blEnabled; }
 		}
@@ -662,7 +662,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("Whether this server is your current favourite server.")]
-		public bool Favourite
+		internal bool Favourite
 		{
 			get { return m_blFavourite; }
 		}
@@ -670,30 +670,30 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		public abstract ServerUri Uri { get; }
+		internal abstract ServerUri Uri { get; }
 
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		public abstract ServerType Type { get; }
+		internal abstract ServerType Type { get; }
 
 		#endregion
 
 
 		#region Public Methods
 
-		public void ViewProperties()
+		internal void ViewProperties()
 		{
 			Dapple.frmProperties.DisplayForm(this);
 		}
 
-		public bool UpdateFavouriteStatus(String strUri)
+		internal bool UpdateFavouriteStatus(String strUri)
 		{
 			m_blFavourite = Uri.ToString().Equals(strUri);
 			return m_blFavourite;
 		}
 
-		public void ToggleEnabled()
+		internal void ToggleEnabled()
 		{
 			if (m_blEnabled == false)
 			{
@@ -707,13 +707,13 @@ namespace NewServerTree
 			}
 		}
 
-		public void RefreshServer()
+		internal void RefreshServer()
 		{
 			Unload();
 		}
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public List<LayerBuilder> GetBuilders()
+		internal List<LayerBuilder> GetBuilders()
 		{
 			if (m_blEnabled)
 			{
@@ -726,10 +726,10 @@ namespace NewServerTree
 		}
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		abstract public List<LayerBuilder> GetBuildersInternal();
+		abstract internal List<LayerBuilder> GetBuildersInternal();
 
 
-		public abstract void AddToHomeView();
+		internal abstract void AddToHomeView();
 
 		#endregion
 	}
@@ -738,7 +738,7 @@ namespace NewServerTree
 	/// <summary>
 	/// Interface implemented by modelNodes that the user shouldn't be able to select in the ServerTree.
 	/// </summary>
-	public interface IAnnotationModelNode
+	internal interface IAnnotationModelNode
 	{
 	}
 
@@ -746,7 +746,7 @@ namespace NewServerTree
 	/// <summary>
 	/// Interface implemented by ModelNodes that have popup menus.
 	/// </summary>
-	public interface IContextModelNode
+	internal interface IContextModelNode
 	{
 		[Browsable(false)]
 		ToolStripMenuItem[] MenuItems { get; }
@@ -757,7 +757,7 @@ namespace NewServerTree
 	/// Interface implemented by filterable ModelNodes: those ModelNodes that have
 	/// some/all of their children removed based on the current search filter.
 	/// </summary>
-	public interface IFilterableModelNode
+	internal interface IFilterableModelNode
 	{
 		int FilteredChildCount { get; }
 		bool PassesFilter { get; }

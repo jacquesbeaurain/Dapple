@@ -16,7 +16,7 @@ namespace WorldWind
 	/// 
 
 	//TODO: Upper and lower random color limits, line "caps" styles
-	public class ShapeFileLayer : Renderable.RenderableObject
+	internal class ShapeFileLayer : Renderable.RenderableObject
 	{
 		int m_NumberRootTilesHigh = 5;
 		ShapeTileArgs m_ShapeTileArgs;
@@ -47,7 +47,7 @@ namespace WorldWind
 
 		byte m_IconOpacity = 255;
 
-		public double North
+		internal double North
 		{
 			get
 			{
@@ -55,7 +55,7 @@ namespace WorldWind
 			}
 		}
 
-		public double South
+		internal double South
 		{
 			get
 			{
@@ -63,7 +63,7 @@ namespace WorldWind
 			}
 		}
 
-		public double East
+		internal double East
 		{
 			get
 			{
@@ -71,7 +71,7 @@ namespace WorldWind
 			}
 		}
 
-		public double West
+		internal double West
 		{
 			get
 			{
@@ -79,7 +79,7 @@ namespace WorldWind
 			}
 		}
 
-		public double MinAltitude
+		internal double MinAltitude
 		{
 			get
 			{
@@ -87,7 +87,7 @@ namespace WorldWind
 			}
 		}
 
-		public double MaxAltitude
+		internal double MaxAltitude
 		{
 			get
 			{
@@ -95,7 +95,7 @@ namespace WorldWind
 			}
 		}
 
-		public ShapeFileLayer(
+		internal ShapeFileLayer(
 			string id,
 			World parentWorld,
 			string shapeFilePath,
@@ -1326,31 +1326,31 @@ namespace WorldWind
 	}
 
 
-	public class ExtendedZipInputStream
+	internal class ExtendedZipInputStream
 	{
 		private ZipInputStream zis;
 
-		public ExtendedZipInputStream(System.IO.Stream baseInputStream)
+		internal ExtendedZipInputStream(System.IO.Stream baseInputStream)
 		{
 			zis = new ZipInputStream(baseInputStream);
 		}
 
-		public ICSharpCode.SharpZipLib.Zip.ZipEntry GetNextEntry()
+		internal ICSharpCode.SharpZipLib.Zip.ZipEntry GetNextEntry()
 		{
 			return zis.GetNextEntry();
 		}
 
-		public byte ReadByte()
+		internal byte ReadByte()
 		{
 			return (byte)zis.ReadByte();
 		}
 
-		public int ReadByteAsInt()
+		internal int ReadByteAsInt()
 		{
 			return zis.ReadByte();
 		}
 
-		public Int32 ReadInt32()
+		internal Int32 ReadInt32()
 		{
 			byte[] temp = new byte[4];
 			for (int i = 0; i < 4; i++)
@@ -1358,7 +1358,7 @@ namespace WorldWind
 			return BitConverter.ToInt32(temp, 0);
 		}
 
-		public Int16 ReadInt16()
+		internal Int16 ReadInt16()
 		{
 			byte[] temp = new byte[2];
 			for (int i = 0; i < 2; i++)
@@ -1366,7 +1366,7 @@ namespace WorldWind
 			return BitConverter.ToInt16(temp, 0);
 		}
 
-		public double ReadDouble()
+		internal double ReadDouble()
 		{
 			byte[] temp = new byte[8];
 			for (int i = 0; i < 8; i++)
@@ -1374,18 +1374,18 @@ namespace WorldWind
 			return BitConverter.ToDouble(temp, 0);
 		}
 
-		public byte[] ReadBytes(int count)
+		internal byte[] ReadBytes(int count)
 		{
 			byte[] temp = new byte[count];
 			for (int i = 0; i < count; i++)
 				temp[i] = (byte)zis.ReadByte();
 			return temp;
 		}
-		public char ReadChar()
+		internal char ReadChar()
 		{
 			return (char)zis.ReadByte();
 		}
-		public char[] ReadChars(int count)
+		internal char[] ReadChars(int count)
 		{
 			char[] temp = new char[count];
 			for (int i = 0; i < count; i++)
@@ -1394,20 +1394,20 @@ namespace WorldWind
 			return temp;
 		}
 
-		public void Close()
+		internal void Close()
 		{
 			zis.Close();
 		}
 	}
 
 
-	public class ShapeTileArgs
+	internal class ShapeTileArgs
 	{
-		public static float TileDrawDistance = 2.5f;
-		public static float TileSpreadFactor = 2.0f;
-		public System.Collections.Hashtable ColorAssignments = new Hashtable();
-		public ShapeFileLayer ParentShapeFileLayer;
-		public double LayerRadius;
+		internal static float TileDrawDistance = 2.5f;
+		internal static float TileSpreadFactor = 2.0f;
+		internal System.Collections.Hashtable ColorAssignments = new Hashtable();
+		internal ShapeFileLayer ParentShapeFileLayer;
+		internal double LayerRadius;
 
 		bool m_ScaleColors = false;
 		bool m_ShowLabels = false;
@@ -1429,7 +1429,7 @@ namespace WorldWind
 		World m_ParentWorld;
 		Size m_TilePixelSize;
 
-		public string[] ActiveDataValues
+		internal string[] ActiveDataValues
 		{
 			get
 			{
@@ -1437,7 +1437,7 @@ namespace WorldWind
 			}
 		}
 
-		public bool ScaleColors
+		internal bool ScaleColors
 		{
 			get
 			{
@@ -1445,14 +1445,14 @@ namespace WorldWind
 			}
 		}
 
-		public ShapeFillStyle ShapeFillStyle
+		internal ShapeFillStyle ShapeFillStyle
 		{
 			get
 			{
 				return m_ShapeFillStyle;
 			}
 		}
-		public bool IsPolyLine
+		internal bool IsPolyLine
 		{
 			get
 			{
@@ -1463,56 +1463,56 @@ namespace WorldWind
 				m_IsPolyLine = value;
 			}
 		}
-		public float LineWidth
+		internal float LineWidth
 		{
 			get
 			{
 				return m_LineWidth;
 			}
 		}
-		public bool OutlinePolygons
+		internal bool OutlinePolygons
 		{
 			get
 			{
 				return m_OutlinePolygons;
 			}
 		}
-		public System.Drawing.Color PolygonColor
+		internal System.Drawing.Color PolygonColor
 		{
 			get
 			{
 				return m_PolygonColor;
 			}
 		}
-		public System.Drawing.Color LineColor
+		internal System.Drawing.Color LineColor
 		{
 			get
 			{
 				return m_LineColor;
 			}
 		}
-		public System.Drawing.Color LabelColor
+		internal System.Drawing.Color LabelColor
 		{
 			get
 			{
 				return m_LabelColor;
 			}
 		}
-		public string[] NoDataValues
+		internal string[] NoDataValues
 		{
 			get
 			{
 				return m_NoDataValues;
 			}
 		}
-		public bool PolygonFill
+		internal bool PolygonFill
 		{
 			get
 			{
 				return m_PolygonFill;
 			}
 		}
-		public bool UseScalar
+		internal bool UseScalar
 		{
 			get
 			{
@@ -1523,7 +1523,7 @@ namespace WorldWind
 				m_UseScalar = value;
 			}
 		}
-		public double ScaleMin
+		internal double ScaleMin
 		{
 			get
 			{
@@ -1534,7 +1534,7 @@ namespace WorldWind
 				m_ScaleMin = value;
 			}
 		}
-		public double ScaleMax
+		internal double ScaleMax
 		{
 			get
 			{
@@ -1545,7 +1545,7 @@ namespace WorldWind
 				m_ScaleMax = value;
 			}
 		}
-		public string DataKey
+		internal string DataKey
 		{
 			get
 			{
@@ -1556,7 +1556,7 @@ namespace WorldWind
 				m_DataKey = value;
 			}
 		}
-		public System.Collections.ArrayList ShapeRecords
+		internal System.Collections.ArrayList ShapeRecords
 		{
 			get
 			{
@@ -1567,21 +1567,21 @@ namespace WorldWind
 				m_ShapeRecords = value;
 			}
 		}
-		public World ParentWorld
+		internal World ParentWorld
 		{
 			get
 			{
 				return m_ParentWorld;
 			}
 		}
-		public Size TilePixelSize
+		internal Size TilePixelSize
 		{
 			get
 			{
 				return m_TilePixelSize;
 			}
 		}
-		public bool ShowLabels
+		internal bool ShowLabels
 		{
 			get
 			{
@@ -1589,7 +1589,7 @@ namespace WorldWind
 			}
 		}
 
-		public ShapeTileArgs(
+		internal ShapeTileArgs(
 			World parentWorld,
 			Size tilePixelSize,
 			double layerRadius,
@@ -1637,7 +1637,7 @@ namespace WorldWind
 	/// Polygon shape types can be filled with any of these styles, which are the same as the HatchStyles in the GDI .NET framework.
 	/// The exception is the "Solid" style, signifies a "solid" fill style (no hatching).
 	/// </summary>
-	public enum ShapeFillStyle
+	internal enum ShapeFillStyle
 	{
 		Solid,
 		BackwardDiagonal,
@@ -1696,7 +1696,7 @@ namespace WorldWind
 		ZigZag
 	}
 
-	public class ShapeTile
+	internal class ShapeTile
 	{
 		bool m_Initialized = false;
 		bool m_Initializing = false;
@@ -1711,12 +1711,12 @@ namespace WorldWind
 		Renderable.ImageLayer m_SwImageLayer;
 		Renderable.ImageLayer m_SeImageLayer;
 
-		public GeographicBoundingBox m_GeoBB;
+		internal GeographicBoundingBox m_GeoBB;
 
-		public BoundingBox BoundingBox;
+		internal BoundingBox BoundingBox;
 
 
-		public ShapeTile(
+		internal ShapeTile(
 			GeographicBoundingBox geoBB,
 			ShapeTileArgs shapeTileArgs
 			)
@@ -1728,7 +1728,7 @@ namespace WorldWind
 				(float)m_ShapeTileArgs.LayerRadius, (float)m_ShapeTileArgs.LayerRadius + 300000f);
 		}
 
-		public void Dispose()
+		internal void Dispose()
 		{
 			m_Initialized = false;
 			m_Disposing = true;
@@ -1787,7 +1787,7 @@ namespace WorldWind
 			}
 		}
 
-		public static System.Drawing.Drawing2D.HatchStyle getGDIHatchStyle(WorldWind.ShapeFillStyle shapeFillStyle)
+		internal static System.Drawing.Drawing2D.HatchStyle getGDIHatchStyle(WorldWind.ShapeFillStyle shapeFillStyle)
 		{
 			if (shapeFillStyle == WorldWind.ShapeFillStyle.BackwardDiagonal)
 			{
@@ -2069,7 +2069,7 @@ namespace WorldWind
 		}
 
 
-		public byte Opacity
+		internal byte Opacity
 		{
 			get
 			{
@@ -2309,7 +2309,7 @@ namespace WorldWind
 
 		Stream m_ImageStream;
 
-		public void Initialize(DrawArgs drawArgs)
+		internal void Initialize(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -2545,7 +2545,7 @@ namespace WorldWind
 		ShapeTile m_SouthWestChild;
 		ShapeTile m_SouthEastChild;
 
-		public virtual void ComputeChildren(DrawArgs drawArgs)
+		internal virtual void ComputeChildren(DrawArgs drawArgs)
 		{
 
 			float tileSize = (float)(0.5 * (m_GeoBB.North - m_GeoBB.South));
@@ -2582,7 +2582,7 @@ namespace WorldWind
 			}
 		}
 
-		public void Update(DrawArgs drawArgs)
+		internal void Update(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -2701,7 +2701,7 @@ namespace WorldWind
 			}
 		}
 
-		public void Render(DrawArgs drawArgs)
+		internal void Render(DrawArgs drawArgs)
 		{
 			if (m_Initialized)
 			{
@@ -2745,48 +2745,48 @@ namespace WorldWind
 		}
 	}
 
-	public class Shapefile_Polygon
+	internal class Shapefile_Polygon
 	{
-		public GeographicBoundingBox BoundingBox = new GeographicBoundingBox();
-		public int NumParts;
-		public int NumPoints;
-		public int[] Parts;
-		public Shapefile_Point[] Points;
+		internal GeographicBoundingBox BoundingBox = new GeographicBoundingBox();
+		internal int NumParts;
+		internal int NumPoints;
+		internal int[] Parts;
+		internal Shapefile_Point[] Points;
 	}
 
-	public class Shapefile_PolyLine
+	internal class Shapefile_PolyLine
 	{
-		public GeographicBoundingBox BoundingBox = new GeographicBoundingBox();
-		public int NumParts;
-		public int NumPoints;
-		public int[] Parts;
-		public Shapefile_Point[] Points;
+		internal GeographicBoundingBox BoundingBox = new GeographicBoundingBox();
+		internal int NumParts;
+		internal int NumPoints;
+		internal int[] Parts;
+		internal Shapefile_Point[] Points;
 	}
 
-	public class Shapefile_Null
+	internal class Shapefile_Null
 	{
 
 	}
 
-	public class Shapefile_Point
+	internal class Shapefile_Point
 	{
-		public double X;
-		public double Y;
-		public object Tag = null;
+		internal double X;
+		internal double Y;
+		internal object Tag = null;
 	}
 
-	public class Shapefile_MultiPoint
+	internal class Shapefile_MultiPoint
 	{
-		public GeographicBoundingBox BoundingBox = new GeographicBoundingBox();
-		public int NumPoints;
-		public Shapefile_Point[] Points;
+		internal GeographicBoundingBox BoundingBox = new GeographicBoundingBox();
+		internal int NumPoints;
+		internal Shapefile_Point[] Points;
 	}
 
 	struct DBF_Field_Header
 	{
-		public string FieldName;
-		public char FieldType;
-		public byte FieldLength;
+		internal string FieldName;
+		internal char FieldType;
+		internal byte FieldLength;
 	}
 
 	class ShapeRecord
@@ -2802,7 +2802,7 @@ namespace WorldWind
 		#endregion
 
 		#region Properties
-		public string ID
+		internal string ID
 		{
 			get
 			{
@@ -2813,7 +2813,7 @@ namespace WorldWind
 				m_Id = value;
 			}
 		}
-		public Shapefile_Null Null
+		internal Shapefile_Null Null
 		{
 			get
 			{
@@ -2824,7 +2824,7 @@ namespace WorldWind
 				m_Null = value;
 			}
 		}
-		public Shapefile_Point Point
+		internal Shapefile_Point Point
 		{
 			get
 			{
@@ -2835,7 +2835,7 @@ namespace WorldWind
 				m_Point = value;
 			}
 		}
-		public Shapefile_MultiPoint MultiPoint
+		internal Shapefile_MultiPoint MultiPoint
 		{
 			get
 			{
@@ -2846,7 +2846,7 @@ namespace WorldWind
 				m_MultiPoint = value;
 			}
 		}
-		public Shapefile_PolyLine PolyLine
+		internal Shapefile_PolyLine PolyLine
 		{
 			get
 			{
@@ -2858,7 +2858,7 @@ namespace WorldWind
 			}
 		}
 
-		public Shapefile_Polygon Polygon
+		internal Shapefile_Polygon Polygon
 		{
 			get
 			{
@@ -2870,7 +2870,7 @@ namespace WorldWind
 			}
 		}
 
-		public object Value
+		internal object Value
 		{
 			get
 			{

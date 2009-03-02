@@ -13,7 +13,7 @@ using NewServerTree;
 
 namespace Dapple
 {
-	public partial class ServerList : UserControl
+	internal partial class ServerList : UserControl
 	{
 		#region Constants
 
@@ -38,8 +38,8 @@ namespace Dapple
 
 		private LayerList m_hLayerList;
 
-		public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
-		public event EventHandler LayerSelectionChanged;
+		internal event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
+		internal event EventHandler LayerSelectionChanged;
 
 		#endregion
 
@@ -49,7 +49,7 @@ namespace Dapple
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public ServerList()
+		internal ServerList()
 		{
 			InitializeComponent();
 
@@ -75,7 +75,7 @@ namespace Dapple
 		/// <summary>
 		/// Whether any of the layers in the layer list are selected.
 		/// </summary>
-		public Boolean HasLayersSelected
+		internal Boolean HasLayersSelected
 		{
 			get
 			{
@@ -86,7 +86,7 @@ namespace Dapple
 		/// <summary>
 		/// A List of the selected layers.
 		/// </summary>
-		public List<LayerBuilder> SelectedLayers
+		internal List<LayerBuilder> SelectedLayers
 		{
 			get
 			{
@@ -104,7 +104,7 @@ namespace Dapple
 		/// <summary>
 		/// The layer list that this will add to on an 'add' action.
 		/// </summary>
-		public LayerList LayerList
+		internal LayerList LayerList
 		{
 			set
 			{
@@ -130,7 +130,7 @@ namespace Dapple
 		/// </summary>
 		/// <param name="strKeywords">The keywords to search for.</param>
 		/// <param name="oBounds">The bounding box to search for.</param>
-		public void setSearchCriteria(String strKeywords, GeographicBoundingBox oBounds)
+		internal void setSearchCriteria(String strKeywords, GeographicBoundingBox oBounds)
 		{
 			bool blBoundsEqual = false;
 			if (oBounds == null && m_oSearchBox == null) blBoundsEqual = true;
@@ -150,7 +150,7 @@ namespace Dapple
 		/// <summary>
 		/// Makes the text color of those layers that have been added to the layer list green.
 		/// </summary>
-		public void UpdateActiveLayers()
+		internal void UpdateActiveLayers()
 		{
 			c_lvLayers.SuspendLayout();
 
@@ -178,7 +178,7 @@ namespace Dapple
 		/// <summary>
 		/// Clear the current search and execute it again.
 		/// </summary>
-		public void ReSearch()
+		internal void ReSearch()
 		{
 			if (c_cbServers.SelectedIndex == -1)
 			{
@@ -270,7 +270,7 @@ namespace Dapple
 
 		#region Attach and Unattach
 
-		public void Attach(DappleModel oModel)
+		internal void Attach(DappleModel oModel)
 		{
 			if (m_oModel != null) MuteModel();
 			m_oModel = oModel;
@@ -641,10 +641,10 @@ namespace Dapple
 
 		private class InitLayerListDatapack
 		{
-			public int cookie;
-			public GetBuildersDelegate caller;
+			internal int cookie;
+			internal GetBuildersDelegate caller;
 
-			public InitLayerListDatapack(int c, GetBuildersDelegate m)
+			internal InitLayerListDatapack(int c, GetBuildersDelegate m)
 			{
 				cookie = c;
 				caller = m;

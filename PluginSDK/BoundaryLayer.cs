@@ -6,7 +6,7 @@ using WorldWind;
 
 namespace WorldWind.Renderable
 {
-	public class BoundaryLayer : RenderableObject
+	internal class BoundaryLayer : RenderableObject
 	{
 		#region Private Members
 		World _parentWorld;
@@ -18,7 +18,7 @@ namespace WorldWind.Renderable
 		CustomVertex.PositionColored[] vertices;
 		#endregion
 
-		#region Public Methods
+		#region internal Methods
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.BoundaryLayer"/> class.
@@ -30,7 +30,7 @@ namespace WorldWind.Renderable
 		/// <param name="maxDisplayAltitude"></param>
 		/// <param name="boundaryFilePath"></param>
 		/// <param name="color"></param>
-		public BoundaryLayer(
+		internal BoundaryLayer(
 			string name,
 			World parentWorld,
 			double distanceAboveSurface,

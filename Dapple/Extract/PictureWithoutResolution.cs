@@ -14,7 +14,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the download options for a picture that does not have a known resolution
    /// </summary>
-   public partial class PictureWithoutResolution : DownloadOptions
+   internal partial class PictureWithoutResolution : DownloadOptions
    {
       #region Constants
       private readonly string TIF_EXT = ".tif";            
@@ -24,7 +24,7 @@ namespace Dapple.Extract
       private Dapple.LayerGeneration.LayerBuilder m_oNonDapBuilder;
       #endregion
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return (Options.Picture.DisplayOptions)cbDisplayOptions.SelectedIndex != Options.Picture.DisplayOptions.DoNotDisplay; }
 		}
@@ -33,7 +33,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public PictureWithoutResolution(Dapple.LayerGeneration.LayerBuilder oBuilder)
+      internal PictureWithoutResolution(Dapple.LayerGeneration.LayerBuilder oBuilder)
          : base(oBuilder as Dapple.LayerGeneration.DAPQuadLayerBuilder)
       {
          InitializeComponent();
@@ -50,7 +50,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public PictureWithoutResolution(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal PictureWithoutResolution(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : this(oDAPbuilder as Dapple.LayerGeneration.LayerBuilder)
       {         
       }
@@ -62,7 +62,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          System.Xml.XmlAttribute oAttr = oDatasetElement.OwnerDocument.CreateAttribute("type");
          oAttr.Value = "geotiff";
@@ -188,7 +188,7 @@ namespace Dapple.Extract
 			return ExtractSaveResult.Extract;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, TIF_EXT));
 			if (System.IO.File.Exists(szFilename))

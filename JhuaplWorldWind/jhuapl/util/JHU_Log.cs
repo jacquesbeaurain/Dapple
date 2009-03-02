@@ -76,7 +76,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Severity - not currently used
 		/// </summary>
-		public enum Severity
+		internal enum Severity
 		{
 			UNK,
 			SUCC,
@@ -86,13 +86,13 @@ namespace jhuapl.util
 			FAIL
 		}
 
-		public static int LogLevel
+		internal static int LogLevel
 		{
 			get { return m_logLevel; }
 			set { m_logLevel = value; }
 		}
 
-		public static string LogPath
+		internal static string LogPath
 		{
 			get
 			{
@@ -104,7 +104,7 @@ namespace jhuapl.util
 			set { m_logPath = value; }
 		}
 
-		public static bool AutoIndent
+		internal static bool AutoIndent
 		{
 			get { return m_autoIndent; }
 			set { m_autoIndent = value; }
@@ -126,7 +126,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// If there was an open log file it closes it. 
 		/// </summary>
-		public static void Close()
+		internal static void Close()
 		{
 			if (m_logWriter != null)
 			{
@@ -139,7 +139,7 @@ namespace jhuapl.util
 		/// Opens a new log file.  Closes any old ones.
 		/// </summary>
 		/// <returns>if the open was successful.</returns>
-		public static bool Open()
+		internal static bool Open()
 		{
 			bool status = true;
 			lock (typeof(JHU_Log))
@@ -191,7 +191,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="name">The name of the file to open.  A timestamp and .csv suffix is always appended</param>
 		/// <returns>if the open was successful.</returns>
-		public static bool Open(string name)
+		internal static bool Open(string name)
 		{
 			m_logFileName = name; 
 
@@ -210,7 +210,7 @@ namespace jhuapl.util
 		/// <param name="alt">The altitude for this log item</param>
 		/// <param name="name">The name of the object most relevant to his log message</param>
 		/// <param name="message">The actual log messages to be written.</param>
-		public static void Write(int level, string category, double lat, double lon, double alt, string name, string message )
+		public static void Write(int level, string category, double lat, double lon, double alt, string name, string message)
 		{
 			if (level <= m_logLevel)
 			{
@@ -259,7 +259,7 @@ namespace jhuapl.util
 		/// Logs a message to theCollabSpace log as an UNK category and 0 level and no LLA.
 		/// </summary>
 		/// <param name="message">The actual log messages to be written.</param>
-		public static void Write( string message )
+		internal static void Write( string message )
 		{
 			Write( 0, "UNK", 0.0, 0.0, 0.0, "UNK", message );
 		}
@@ -272,7 +272,7 @@ namespace jhuapl.util
 		/// <param name="category">1 to 4 character long tag for categorizing the log entries.
 		/// If the category is longer than 4 characters it will be clipped.</param>
 		/// <param name="message">The actual log messages to be written.</param>
-		public static void Write( int level, string category, string name, string message )
+		public static void Write(int level, string category, string name, string message)
 		{
 			Write( level, category, 0.0, 0.0, 0.0, name, message );
 		}

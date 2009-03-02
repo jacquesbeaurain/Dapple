@@ -9,27 +9,27 @@ namespace GeometryUtility
 	
 	//To define some constant Values 
 	//used for local judgment 
-	public struct ConstantValue
+	internal struct ConstantValue
 	{
 		internal const  double SmallValue=double.Epsilon;
 		internal const double BigValue=double.MaxValue;
 	}
 	
-	public enum VertexType
+	internal enum VertexType
 	{
 		ErrorPoint,
 		ConvexPoint,
 		ConcavePoint		
 	}
 
-	public enum PolygonType
+	internal enum PolygonType
 	{
 		Unknown,
 		Convex, 
 		Concave	
 	}
 
-	public enum PolygonDirection
+	internal enum PolygonDirection
 	{
 		Unknown,
 		Clockwise,

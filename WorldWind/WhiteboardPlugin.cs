@@ -69,14 +69,14 @@ namespace jhuapl.sample
 	/// <summary>
 	/// 
 	/// </summary>
-	public class WhiteboardPlugin : WorldWind.PluginEngine.Plugin
+	internal class WhiteboardPlugin : WorldWind.PluginEngine.Plugin
 	{
 		protected WhiteboardMenuButton m_menuButton;
 		
 		/// <summary>
 		/// This is the whiteboard form widget displayed on the worldwind window
 		/// </summary>
-		public WhiteboardWidget WbForm
+		internal WhiteboardWidget WbForm
 		{
 			get { return m_whiteboardForm; }
 		}
@@ -85,7 +85,7 @@ namespace jhuapl.sample
 		/// <summary>
 		/// This is the layer holding all whiteboard drawing elements
 		/// </summary>
-		public DrawLayer WbLayer
+		internal DrawLayer WbLayer
 		{
 			get { return m_whiteboardLayer; }
 		}
@@ -94,24 +94,24 @@ namespace jhuapl.sample
 		/// <summary>
 		/// The whiteboard menu item
 		/// </summary>
-		public System.Windows.Forms.MenuItem WbMenu
+		internal System.Windows.Forms.MenuItem WbMenu
 		{
 			get { return m_wbMenuItem; }
 		}
 		protected System.Windows.Forms.MenuItem m_wbMenuItem;
 
 
-		public System.Windows.Forms.MenuItem InfoMenu
+		internal System.Windows.Forms.MenuItem InfoMenu
 		{
 			get { return m_infoMenuItem; }
 		}
 		protected System.Windows.Forms.MenuItem m_infoMenuItem;
 
 
-		public WhiteboardPlugin()
+		internal WhiteboardPlugin()
 		{
 		}
-	
+
 		public override void Load()
 		{
 			JHU_Globals.Initialize(ParentApplication.WorldWindow);
@@ -150,7 +150,7 @@ namespace jhuapl.sample
 
 			base.Load ();
 		}
-	
+
 		public override void Unload()
 		{
 			// Reset the bottom for the Layer Manager
@@ -189,7 +189,7 @@ namespace jhuapl.sample
 	/// <summary>
 	/// 
 	/// </summary>
-	public class WhiteboardMenuButton : MenuButton
+	internal class WhiteboardMenuButton : MenuButton
 	{
 		#region Private Members
 
@@ -202,7 +202,7 @@ namespace jhuapl.sample
 
 		#endregion
 
-		public WhiteboardMenuButton(string buttonIconPath, WhiteboardPlugin plugin) : base(buttonIconPath)
+		internal WhiteboardMenuButton(string buttonIconPath, WhiteboardPlugin plugin) : base(buttonIconPath)
 		{
 			m_plugin = plugin;
 			m_rootWidget = JHU_Globals.getInstance().RootWidget;

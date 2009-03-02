@@ -27,7 +27,7 @@ namespace WorldWind
 		/// Tests based on file extension whether the image format is supported by GDI+ image loader.
 		/// </summary>
 		/// <param name="imageFileName">Full path or just filename incl. extension.</param>
-		public static bool IsGdiSupportedImageFormat(string imageFileName)
+		internal static bool IsGdiSupportedImageFormat(string imageFileName)
 		{
 			string extension = Path.GetExtension(imageFileName).ToLower();
 			const string GdiSupportedExtensions = ".bmp.gif.jpg.jpeg.png.gif.tif";
@@ -49,7 +49,7 @@ namespace WorldWind
 		/// <param name="textureFileName">Path/filename to the image file</param>
 		/// <param name="colorKey">Transparent color. Any pixels in the image with this color will be made transparent.</param>
 		/// <param name="textureFormat">Desired pixel format of the returned texture.</param>
-		public static Texture LoadTexture(string textureFileName, int colorKey, Format textureFormat)
+		internal static Texture LoadTexture(string textureFileName, int colorKey, Format textureFormat)
 		{
 			try
 			{
@@ -62,7 +62,7 @@ namespace WorldWind
 			}
 		}
 
-		public static void CreateAlphaPngFromBrightness(string srcFilePath, string destinationPngFilePath)
+		internal static void CreateAlphaPngFromBrightness(string srcFilePath, string destinationPngFilePath)
 		{
 			Bitmap image = (Bitmap)Image.FromFile(srcFilePath);
 
@@ -118,7 +118,7 @@ namespace WorldWind
 		/// <param name="transparentRangeDarkColor">Color for start of transparent range.</param>
 		/// <param name="transparentRangeBrightColor">Color for end of transparent range.</param>
 		/// <returns></returns>
-		public static Texture LoadTexture(string textureFileName, int transparentRangeDarkColor, int transparentRangeBrightColor)
+		internal static Texture LoadTexture(string textureFileName, int transparentRangeDarkColor, int transparentRangeBrightColor)
 		{
             Bitmap image;
 
@@ -196,7 +196,7 @@ namespace WorldWind
 		/// Creates a texture from a data stream.
 		/// </summary>
 		/// <param name="textureFileName">Stream containing the image file</param>
-		public static Texture LoadTexture(Stream textureStream)
+		internal static Texture LoadTexture(Stream textureStream)
 		{
 			return LoadTexture(textureStream, 0, World.Settings.TextureFormat);
 		}
@@ -247,7 +247,7 @@ namespace WorldWind
 		/// <summary>
 		/// Loads image from file. Returns dummy image on load fail.
 		/// </summary>
-		public static Image LoadImage(string bitmapFileName)
+		internal static Image LoadImage(string bitmapFileName)
 		{
 			try
 			{
@@ -264,7 +264,7 @@ namespace WorldWind
 		/// Loads a custom mouse cursor from file
 		/// </summary>
 		/// <param name="relativePath">Path and filename of the .cur file relative to Data\Icons\Interface</param>
-		public static Cursor LoadCursor(string relativePath)
+		internal static Cursor LoadCursor(string relativePath)
 		{
 			string fullPath = Path.Combine("Data\\Icons\\Interface", relativePath);
 			try
@@ -283,7 +283,7 @@ namespace WorldWind
 		/// Loads an icon texture from a file
 		/// </summary>
 		/// <param name="relativePath">Path and filename relative to Data\Icons</param>
-		public static Texture LoadIconTexture(string relativePath)
+		internal static Texture LoadIconTexture(string relativePath)
 		{
 			try
 			{
@@ -306,7 +306,7 @@ namespace WorldWind
 		/// Tries it's best to locate an image file specified using relative path.
 		/// </summary>
 		/// <param name="relativePath"></param>
-		public static string FindResource(string relativePath)
+		internal static string FindResource(string relativePath)
 		{
 			if(File.Exists(relativePath))
 				return relativePath;
@@ -329,7 +329,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
-		public static void ConvertToDxt1(string originalImagePath, string outputDdsPath, bool eraseOriginal)
+		internal static void ConvertToDxt1(string originalImagePath, string outputDdsPath, bool eraseOriginal)
 		{
 			ConvertToDds(originalImagePath, outputDdsPath, Format.Dxt1, eraseOriginal);
 		}
@@ -339,7 +339,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="originalImageStream">Stream containing a bitmap.</param>
 		/// <param name="originalImagePath">Input file (any supported format).</param>
-		public static void ConvertToDxt1(Stream originalImageStream, string outputDdsPath)
+		internal static void ConvertToDxt1(Stream originalImageStream, string outputDdsPath)
 		{
 			ConvertToDds(originalImageStream, outputDdsPath, Format.Dxt1);
 		}
@@ -349,7 +349,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
-		public static void ConvertToDxt3(string originalImagePath, string outputDdsPath, bool eraseOriginal)
+		internal static void ConvertToDxt3(string originalImagePath, string outputDdsPath, bool eraseOriginal)
 		{
 			ConvertToDds(originalImagePath, outputDdsPath, Format.Dxt3, eraseOriginal);
 		}
@@ -359,7 +359,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="originalImageStream">Stream containing a bitmap.</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
-		public static void ConvertToDxt3(Stream originalImageStream, string outputDdsPath)
+		internal static void ConvertToDxt3(Stream originalImageStream, string outputDdsPath)
 		{
 			ConvertToDds(originalImageStream, outputDdsPath, Format.Dxt3);
 		}
@@ -370,7 +370,7 @@ namespace WorldWind
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="format">DirectX format of file.</param>
-		public static void ConvertToDds(string originalImagePath, string outputDdsPath, Format format, bool eraseOriginal)
+		internal static void ConvertToDds(string originalImagePath, string outputDdsPath, Format format, bool eraseOriginal)
 		{
 			try
 			{
@@ -397,7 +397,7 @@ namespace WorldWind
 		/// <param name="originalImagePath">Input file (any supported format).</param>
 		/// <param name="outputDdsPath">Output file to be created.</param>
 		/// <param name="format">DirectX format of file.</param>
-		public static void ConvertToDds(Stream originalImageStream, string outputDdsPath, Format format)
+		internal static void ConvertToDds(Stream originalImageStream, string outputDdsPath, Format format)
 		{
 			try
 			{

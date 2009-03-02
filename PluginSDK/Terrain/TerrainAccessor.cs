@@ -5,7 +5,7 @@ namespace WorldWind.Terrain
    /// <summary>
    /// Terrain (elevation) interface
    /// </summary>
-   public abstract class TerrainAccessor : IDisposable
+	public abstract class TerrainAccessor : IDisposable
    {
         private bool isOn = true;
       protected string m_name;
@@ -18,7 +18,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Terrain model name
       /// </summary>
-      public string Name
+      internal string Name
       {
          get
          {
@@ -33,7 +33,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// North boundary
       /// </summary>
-      public double North
+      internal double North
       {
          get
          {
@@ -48,7 +48,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// South boundary
       /// </summary>
-      public double South
+      internal double South
       {
          get
          {
@@ -63,7 +63,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// West boundary
       /// </summary>
-      public double West
+      internal double West
       {
          get
          {
@@ -78,7 +78,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// East boundary
       /// </summary>
-      public double East
+      internal double East
       {
          get
          {
@@ -94,7 +94,7 @@ namespace WorldWind.Terrain
         /// Hide/Show this object.
         /// </summary>
         [System.ComponentModel.Description("This layer's enabled status.")]
-        public virtual bool IsOn
+        internal virtual bool IsOn
         {
             get { return this.isOn; }
             set
@@ -110,7 +110,7 @@ namespace WorldWind.Terrain
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <param name="targetSamplesPerDegree"></param>
       /// <returns>Returns 0 if the tile is not available on disk.</returns>
-      public abstract float GetElevationAt(double latitude, double longitude, double targetSamplesPerDegree);
+		  public abstract float GetElevationAt(double latitude, double longitude, double targetSamplesPerDegree);
 
       /// <summary>
       /// Get terrain elevation at specified location.  
@@ -118,7 +118,7 @@ namespace WorldWind.Terrain
       /// <param name="latitude">Latitude in decimal degrees.</param>
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <returns>Returns 0 if the tile is not available on disk.</returns>
-      public virtual float GetElevationAt(double latitude, double longitude)
+		  public virtual float GetElevationAt(double latitude, double longitude)
       {
          return GetElevationAt(latitude, longitude, 0);
       }
@@ -130,7 +130,7 @@ namespace WorldWind.Terrain
       /// <param name="latitude">Latitude in decimal degrees.</param>
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <returns>Returns 0 if the tile is not available in cache.</returns>
-      public virtual float GetCachedElevationAt(double latitude, double longitude)
+      internal virtual float GetCachedElevationAt(double latitude, double longitude)
       {
          return 0f;
       }
@@ -143,7 +143,7 @@ namespace WorldWind.Terrain
       /// <param name="west">West edge in decimal degrees.</param>
       /// <param name="east">East edge in decimal degrees.</param>
       /// <param name="samples"></param>
-      public virtual TerrainTile GetElevationArray(double north, double south, double west, double east, int samples)
+      internal virtual TerrainTile GetElevationArray(double north, double south, double west, double east, int samples)
       {
          TerrainTile res = null;
          res = new TerrainTile(null);
@@ -175,7 +175,7 @@ namespace WorldWind.Terrain
          return res;
       }
 
-      public virtual void Dispose()
+		public virtual void Dispose()
       {
       }
 
@@ -184,7 +184,7 @@ namespace WorldWind.Terrain
       /// subsets for runtime addition of terrain layers
       /// </summary>
       /// <param name="highressubset"></param>
-      public void AddHigherResolutionSubset(TerrainAccessor newhighressubset)
+      internal void AddHigherResolutionSubset(TerrainAccessor newhighressubset)
       {
          //need to lock array here
          if (m_higherResolutionSubsets == null)

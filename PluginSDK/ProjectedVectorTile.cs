@@ -8,18 +8,18 @@ using Utility;
 
 namespace WorldWind
 {
-	public class ProjectedVectorTile
+	internal class ProjectedVectorTile
 	{
 		private static int TileSize = 256;
-		public static string CachePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Cache");
+		internal static string CachePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Cache");
 		bool m_Initialized = false;
 		bool m_Initializing = false;
 		bool m_Disposing = false;
 		byte m_bOpacity = 255;
 
-		public int Level = 0;
-		public int Row = 0;
-		public int Col = 0;
+		internal int Level = 0;
+		internal int Row = 0;
+		internal int Col = 0;
 
 		ProjectedVectorRenderer m_parentProjectedLayer = null;
 		
@@ -28,10 +28,10 @@ namespace WorldWind
 		Renderable.ImageLayer m_SwImageLayer;
 		Renderable.ImageLayer m_SeImageLayer;
 
-		public GeographicBoundingBox m_geographicBoundingBox = null;
-		public BoundingBox BoundingBox;
+		internal GeographicBoundingBox m_geographicBoundingBox = null;
+		internal BoundingBox BoundingBox;
 		
-		public ProjectedVectorTile(
+		internal ProjectedVectorTile(
 			GeographicBoundingBox geographicBoundingBox,
 			ProjectedVectorRenderer parentLayer
 			)
@@ -43,7 +43,7 @@ namespace WorldWind
 				(float)(parentLayer.World.EquatorialRadius + geographicBoundingBox.MinimumAltitude), (float)(parentLayer.World.EquatorialRadius + geographicBoundingBox.MaximumAltitude + 300000f));
 		}
 
-		public byte Opacity
+		internal byte Opacity
 		{
 			get
 			{
@@ -73,7 +73,7 @@ namespace WorldWind
 			}
 		}
 
-		public void Dispose()
+		internal void Dispose()
 		{
 			m_Initialized = false;
 			m_Disposing = true;
@@ -127,7 +127,7 @@ namespace WorldWind
 			}
 		}
 
-		public static System.Drawing.Drawing2D.HatchStyle getGDIHatchStyle(WorldWind.ShapeFillStyle shapeFillStyle)
+		internal static System.Drawing.Drawing2D.HatchStyle getGDIHatchStyle(WorldWind.ShapeFillStyle shapeFillStyle)
 		{
 			if(shapeFillStyle == WorldWind.ShapeFillStyle.BackwardDiagonal)
 			{
@@ -481,7 +481,7 @@ namespace WorldWind
 			return result;
 		}
 		
-		public void Initialize(DrawArgs drawArgs)
+		internal void Initialize(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -755,7 +755,7 @@ namespace WorldWind
 			}
 		}
 
-		public virtual void ComputeChildren(DrawArgs drawArgs)
+		internal virtual void ComputeChildren(DrawArgs drawArgs)
 		{
 			float tileSize = (float)(0.5*(m_geographicBoundingBox.North - m_geographicBoundingBox.South));
 			//TODO: Stop children computation at some lower level
@@ -807,7 +807,7 @@ namespace WorldWind
 			}
 		}
 
-		public void Update(DrawArgs drawArgs)
+		internal void Update(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -929,7 +929,7 @@ namespace WorldWind
 			}
 		}
 
-		public void Render(DrawArgs drawArgs)
+		internal void Render(DrawArgs drawArgs)
 		{
 			try
 			{

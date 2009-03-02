@@ -7,7 +7,7 @@ namespace WorldWind.Widgets
 	/// <summary>
 	/// Summary description for TextLabel.
 	/// </summary>
-	public class TextBox : IWidget, IInteractive
+	internal class TextBox : IWidget, IInteractive
 	{
 		string m_Text = "";
 		System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
@@ -20,7 +20,7 @@ namespace WorldWind.Widgets
 		string m_Name = "";
 		System.Drawing.Point m_LastMouseClickPosition = System.Drawing.Point.Empty;
 
-		public TextBox()
+		internal TextBox()
 		{
 			
 		}
@@ -37,7 +37,7 @@ namespace WorldWind.Widgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -48,7 +48,7 @@ namespace WorldWind.Widgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{

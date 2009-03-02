@@ -19,25 +19,25 @@ using NewServerTree;
 
 namespace Dapple
 {
-   public partial class LayerList : UserControl
+   internal partial class LayerList : UserControl
    {
       #region Delegates
 
       /// <summary>
       /// Called when this control invokes a 'go to' operation.
       /// </summary>
-      public delegate void GoToHandler(LayerBuilder oBuilder);
+      internal delegate void GoToHandler(LayerBuilder oBuilder);
 
       /// <summary>
       /// Occurrs when a layer is added or removed to the list.
       /// </summary>
-      public delegate void ActiveLayersChangedHandler();
+      internal delegate void ActiveLayersChangedHandler();
 
       #endregion
 
 		#region Events
 
-		public event EventHandler LayerSelectionChanged;
+		internal event EventHandler LayerSelectionChanged;
 
 		#endregion
 
@@ -76,9 +76,9 @@ namespace Dapple
 
       private TransparencyDriver m_oTransparencyDriver = new TransparencyDriver();
 
-      public event GoToHandler GoTo;
-      public event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
-      public event ActiveLayersChangedHandler ActiveLayersChanged;
+      internal event GoToHandler GoTo;
+      internal event Dapple.MainForm.ViewMetadataHandler ViewMetadata;
+      internal event ActiveLayersChangedHandler ActiveLayersChanged;
 
 		bool m_bClearDropHint = false;
 		Point m_ptDropHint1, m_ptDropHint2;
@@ -93,9 +93,9 @@ namespace Dapple
 
       #region Constructors
 
-      public LayerList() : this(false) { }
+      internal LayerList() : this(false) { }
 
-      public LayerList(bool blIsOMMode)
+      internal LayerList(bool blIsOMMode)
       {
          InitializeComponent();
          OMFeaturesEnabled = blIsOMMode;
@@ -105,7 +105,7 @@ namespace Dapple
 
       #region Properties
 
-      public List<LayerBuilder> SelectedLayers
+      internal List<LayerBuilder> SelectedLayers
       {
          get
          {
@@ -118,7 +118,7 @@ namespace Dapple
          }
       }
 
-      public List<LayerBuilder> AllLayers
+      internal List<LayerBuilder> AllLayers
       {
          get
          {
@@ -128,7 +128,7 @@ namespace Dapple
          }
       }
 
-      public List<LayerBuilder> ExtractLayers
+      internal List<LayerBuilder> ExtractLayers
       {
          get
          {
@@ -142,7 +142,7 @@ namespace Dapple
          }
       }
 
-      public ImageList ImageList
+      internal ImageList ImageList
       {
          set
          {
@@ -151,7 +151,7 @@ namespace Dapple
          }
       }
 
-      public bool OMFeaturesEnabled
+      internal bool OMFeaturesEnabled
       {
          set
          {
@@ -162,7 +162,7 @@ namespace Dapple
       /// <summary>
       /// Whether a delete operation should be allowed to commence (disallows deletion of the base layer).
       /// </summary>
-      public bool RemoveAllowed
+      internal bool RemoveAllowed
       {
          get
          {
@@ -170,7 +170,7 @@ namespace Dapple
          }
       }
 
-      public bool DownloadsInProgress
+      internal bool DownloadsInProgress
       {
          get
          {
@@ -189,17 +189,17 @@ namespace Dapple
 
       #region Public Members
 
-		public void Attach(DappleModel oModel)
+		internal void Attach(DappleModel oModel)
 		{
 			m_oModel = oModel;
 		}
 
-      public void AddLayers(List<LayerBuilder> oLayers)
+      internal void AddLayers(List<LayerBuilder> oLayers)
       {
          AddLayers(oLayers, 0);
       }
 
-      public void AddLayers(List<LayerBuilder> oLayers, int iInsertIndex)
+      internal void AddLayers(List<LayerBuilder> oLayers, int iInsertIndex)
       {
          for (int count = oLayers.Count - 1; count >= 0; count--)
          {
@@ -228,7 +228,7 @@ namespace Dapple
          c_lvLayers.EndUpdate();
       }
 
-      public void SetBaseLayer(LayerBuilder oBaseLayer)
+      internal void SetBaseLayer(LayerBuilder oBaseLayer)
       {
          // TODO: remove an existing base layer, if necessary.
          m_hBaseLayer = oBaseLayer;
@@ -236,7 +236,7 @@ namespace Dapple
          AddLayerToGlobe(oBaseLayer);
       }
 
-      public void AddLayer(LayerBuilder oLayer)
+      internal void AddLayer(LayerBuilder oLayer)
       {
          AddLayer(oLayer, 0);
       }
@@ -905,7 +905,7 @@ namespace Dapple
       /// <summary>
       /// Remove selected layers in the layer list.
       /// </summary>
-      public void CmdRemoveSelectedLayers()
+      internal void CmdRemoveSelectedLayers()
       {
          if (c_lvLayers.SelectedIndices.Count == 0) return;
 
@@ -983,7 +983,7 @@ namespace Dapple
       /// Remove a GeoTiff from the active layers.
       /// </summary>
       /// <param name="szFilename">The filename of the GeoTiff to remove.</param>
-      public void CmdRemoveGeoTiff(String szFilename)
+      internal void CmdRemoveGeoTiff(String szFilename)
       {
          c_lvLayers.BeginUpdate();
          m_blSupressSelectedChanged = true;
@@ -1018,7 +1018,7 @@ namespace Dapple
       /// <summary>
       /// Open the download dialog.
       /// </summary>
-      public void CmdExtractVisibleLayers()
+      internal void CmdExtractVisibleLayers()
       {
 			// --- Dataset extraction will operate in testing mode, but ensure that you don't try to extract
 			// --- a dataset that needs to be fully downloaded
@@ -1113,7 +1113,7 @@ namespace Dapple
       /// </summary>
       /// <param name="view">The view to load from.</param>
       /// <returns>True if one or more of the layers is in an old/improper format.</returns>
-      public bool CmdLoadFromView(DappleView view, NewServerTree.DappleModel oModel)
+      internal bool CmdLoadFromView(DappleView view, NewServerTree.DappleModel oModel)
       {
          bool blIncompleteLoad = false;
 
@@ -1165,11 +1165,11 @@ namespace Dapple
 
       private class ExportEntry
       {
-         public LayerBuilder Container;
-         public RenderableObject RO;
-         public RenderableObject.ExportInfo Info;
+         internal LayerBuilder Container;
+         internal RenderableObject RO;
+         internal RenderableObject.ExportInfo Info;
 
-         public ExportEntry(LayerBuilder container, RenderableObject ro, RenderableObject.ExportInfo expInfo)
+         internal ExportEntry(LayerBuilder container, RenderableObject ro, RenderableObject.ExportInfo expInfo)
          {
             Container = container;
             RO = ro;
@@ -1180,7 +1180,7 @@ namespace Dapple
       /// <summary>
       /// Extracts all the currently selected datasets (including blue marble).
       /// </summary>
-      public void CmdTakeSnapshot()
+      internal void CmdTakeSnapshot()
       {
          string szGeoTiff = null;
          List<ExportEntry> aExportList = new List<ExportEntry>();
@@ -1520,14 +1520,14 @@ namespace Dapple
          private List<byte> m_aOriginalOpacities;
          private byte m_bReferenceValue;
 
-         public TransparencyDriver()
+         internal TransparencyDriver()
          {
             m_aBuilders = new List<LayerBuilder>();
             m_aOriginalOpacities = new List<byte>();
             m_bReferenceValue = 128;
          }
 
-         public byte ReferenceValue
+         internal byte ReferenceValue
          {
             get
             {
@@ -1535,7 +1535,7 @@ namespace Dapple
             }
          }
 
-         public void SetBuilders(List<LayerBuilder> oBuilders)
+         internal void SetBuilders(List<LayerBuilder> oBuilders)
          {
             m_aBuilders.Clear();
             m_aBuilders.AddRange(oBuilders);
@@ -1557,7 +1557,7 @@ namespace Dapple
             m_bReferenceValue = (byte)(((int)bMinOpacity + (int)bMaxOpacity) / 2);
          }
 
-         public void OpacityChanged(byte bNewValue)
+         internal void OpacityChanged(byte bNewValue)
          {
             ApplyTransparencies(bNewValue);
          }

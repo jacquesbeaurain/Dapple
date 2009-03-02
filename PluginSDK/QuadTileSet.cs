@@ -20,7 +20,7 @@ namespace WorldWind.Renderable
    /// terrain rendering.
    /// Relies on an Update thread to refresh the "tiles" based on lat/lon/view range
    /// </summary>
-   public class QuadTileSet : RenderableObject, IGeoSpatialDownloadTileSet
+	public class QuadTileSet : RenderableObject, IGeoSpatialDownloadTileSet
    {
       #region Private Members
 
@@ -48,7 +48,7 @@ namespace WorldWind.Renderable
       // If this value equals CurrentFrameStartTicks the Z buffer needs to be cleared
       protected static long lastRenderTime;
 
-      //public static int MaxConcurrentDownloads = 3;
+      //internal static int MaxConcurrentDownloads = 3;
       protected double m_layerRadius;
       protected bool m_alwaysRenderBaseTiles;
       protected float m_tileDrawSpread;
@@ -79,22 +79,22 @@ namespace WorldWind.Renderable
 
       #endregion
 
-      #region public members
+      #region internal members
 
       /// <summary>
       /// Texture showing download in progress
       /// </summary>
-      public static Texture DownloadInProgressTexture;
+      internal static Texture DownloadInProgressTexture;
 
       /// <summary>
       /// Texture showing queued download
       /// </summary>
-      public static Texture DownloadQueuedTexture;
+      internal static Texture DownloadQueuedTexture;
 
       /// <summary>
       /// Texture showing terrain download in progress
       /// </summary>
-      public static Texture DownloadTerrainTexture;
+      internal static Texture DownloadTerrainTexture;
 
 
       private int colorKey;
@@ -104,7 +104,7 @@ namespace WorldWind.Renderable
       /// If a color range is to be transparent this specifies the brightest transparent color.
       /// The darkest transparent color is set using ColorKey.
       /// </summary>
-      public int ColorKey
+		public int ColorKey
       {
          get
          {
@@ -119,7 +119,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// default: 100% transparent black = transparent
       /// </summary>
-      public int ColorKeyMax
+		public int ColorKeyMax
       {
          get
          {
@@ -137,19 +137,19 @@ namespace WorldWind.Renderable
       bool m_renderGrayscale = false;
       float m_grayscaleBrightness = 0.0f;
 
-      public float GrayscaleBrightness
+      internal float GrayscaleBrightness
       {
          get { return m_grayscaleBrightness; }
          set { m_grayscaleBrightness = value; }
       }
 
-      public bool RenderGrayscale
+      internal bool RenderGrayscale
       {
          get { return m_renderGrayscale; }
          set { m_renderGrayscale = value; }
       }
 
-      public bool RenderStruts
+      internal bool RenderStruts
       {
          get { return m_RenderStruts; }
          set { m_RenderStruts = value; }
@@ -167,7 +167,7 @@ namespace WorldWind.Renderable
       /// <param name="east"></param>
       /// <param name="terrainAccessor"></param>
       /// <param name="imageAccessor"></param>
-      public QuadTileSet(
+		public QuadTileSet(
          string name,
          World parentWorld,
          double distanceAboveSurface,
@@ -202,13 +202,13 @@ namespace WorldWind.Renderable
 				m_renderPriority = RenderPriority.TerrainMappedImages;
       }
 
-      #region Public properties
+      #region internal properties
 
       /// <summary>
       /// If images in cache are older than expration time a refresh
       /// from server will be attempted.
       /// </summary>
-      public TimeSpan CacheExpirationTime
+		public TimeSpan CacheExpirationTime
       {
          get
          {
@@ -223,7 +223,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Path to a thumbnail image (e.g. for use as a download indicator).
       /// </summary>
-      public virtual string ServerLogoFilePath
+		public virtual string ServerLogoFilePath
       {
          get
          {
@@ -235,7 +235,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public bool RenderFileNames
+      internal bool RenderFileNames
       {
          get
          {
@@ -250,7 +250,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// The image referenced by ServerLogoFilePath.
       /// </summary>
-      public virtual Image ServerLogoImage
+      internal virtual Image ServerLogoImage
       {
          get
          {
@@ -272,7 +272,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Path to a thumbnail image (or download indicator if none available)
       /// </summary>
-      public override Image ThumbnailImage
+      internal override Image ThumbnailImage
       {
          get
          {
@@ -286,7 +286,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Source blend when rendering non-opaque layer
       /// </summary>
-      public Blend SourceBlend
+      internal Blend SourceBlend
       {
          get
          {
@@ -301,7 +301,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Destination blend when rendering non-opaque layer
       /// </summary>
-      public Blend DestinationBlend
+      internal Blend DestinationBlend
       {
          get
          {
@@ -327,7 +327,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// West bound for this QuadTileSet
       /// </summary>
-      public double West
+		public double West
       {
          get
          {
@@ -338,7 +338,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// South bound for this QuadTileSet
       /// </summary>
-      public double South
+		public double South
       {
          get
          {
@@ -349,7 +349,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// East bound for this QuadTileSet
       /// </summary>
-      public double East
+		public double East
       {
          get
          {
@@ -360,7 +360,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Controls if images are rendered using ColorKey (transparent areas)
       /// </summary>
-      public bool EnableColorKeying
+      internal bool EnableColorKeying
       {
          get
          {
@@ -372,7 +372,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public DateTime ConnectionWaitStart
+      internal DateTime ConnectionWaitStart
       {
          get
          {
@@ -380,7 +380,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public bool IsConnectionWaiting
+      internal bool IsConnectionWaiting
       {
          get
          {
@@ -388,7 +388,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public double LayerRadius
+      internal double LayerRadius
       {
          get
          {
@@ -400,7 +400,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public bool AlwaysRenderBaseTiles
+		public bool AlwaysRenderBaseTiles
       {
          get
          {
@@ -412,7 +412,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public float TileDrawSpread
+      internal float TileDrawSpread
       {
          get
          {
@@ -424,7 +424,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public float TileDrawDistance
+      internal float TileDrawDistance
       {
          get
          {
@@ -436,7 +436,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public bool IsDownloadingElevation
+      internal bool IsDownloadingElevation
       {
          get
          {
@@ -448,7 +448,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public int NumberRetries
+		public int NumberRetries
       {
          get
          {
@@ -463,13 +463,13 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Controls rendering (flat or terrain mapped)
       /// </summary>
-      public bool TerrainMapped
+      internal bool TerrainMapped
       {
          get { return m_terrainMapped; }
          set { m_terrainMapped = value; }
       }
 
-      public ImageStore[] ImageStores
+      internal ImageStore[] ImageStores
       {
          get
          {
@@ -485,7 +485,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Tiles in the request for download queue
       /// </summary>
-      public Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
+		public Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
       {
          get
          {
@@ -496,7 +496,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// The camera controlling the layers update logic
       /// </summary>
-      public CameraBase Camera
+		public CameraBase Camera
       {
          get
          {
@@ -511,7 +511,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Path to the effect used to render this tileset; if null, use fixed function pipeline
       /// </summary>
-      public string EffectPath
+      internal string EffectPath
       {
          get
          {
@@ -530,7 +530,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// The effect used to render this tileset.
       /// </summary>
-      public Effect Effect
+      internal Effect Effect
       {
          get
          {
@@ -542,7 +542,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public bool EffectEnabled
+      internal bool EffectEnabled
       {
          get
          {
@@ -556,7 +556,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public Dictionary<string, EffectHandle> EffectParameters
+      internal Dictionary<string, EffectHandle> EffectParameters
       {
          get
          {
@@ -566,7 +566,7 @@ namespace WorldWind.Renderable
 
       #endregion
 
-      override public void Initialize(DrawArgs drawArgs)
+      public override void Initialize(DrawArgs drawArgs)
       {
          Camera = DrawArgs.Camera;
 
@@ -608,7 +608,7 @@ namespace WorldWind.Renderable
             m_effectHandles = new Dictionary<string, EffectHandle>();
       }
 
-      public override bool PerformSelectionAction(DrawArgs drawArgs)
+		public override bool PerformSelectionAction(DrawArgs drawArgs)
       {
          return false;
       }
@@ -935,7 +935,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public void RenderDownloadProgress(DrawArgs drawArgs, GeoSpatialDownloadRequest request, int offset)
+      internal void RenderDownloadProgress(DrawArgs drawArgs, GeoSpatialDownloadRequest request, int offset)
       {
          int halfIconHeight = 24;
          int halfIconWidth = 24;
@@ -1017,7 +1017,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-      public virtual void ResetCacheForCurrentView(WorldWind.Camera.CameraBase camera)
+      internal virtual void ResetCacheForCurrentView(WorldWind.Camera.CameraBase camera)
       {
          //					  if (!ImageStore.IsDownloadableLayer)
          //							  return;
@@ -1041,7 +1041,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public void ClearDownloadRequests()
+      internal void ClearDownloadRequests()
       {
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
          {
@@ -1049,7 +1049,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public virtual void AddToDownloadQueue(CameraBase camera, GeoSpatialDownloadRequest newRequest)
+		public virtual void AddToDownloadQueue(CameraBase camera, GeoSpatialDownloadRequest newRequest)
       {
          IGeoSpatialDownloadTile key = newRequest.Tile;
          key.WaitingForDownload = true;
@@ -1093,7 +1093,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Removes a request from the download queue.
       /// </summary>
-      public virtual void RemoveFromDownloadQueue(GeoSpatialDownloadRequest removeRequest, bool serviceQueue)
+		public virtual void RemoveFromDownloadQueue(GeoSpatialDownloadRequest removeRequest, bool serviceQueue)
       {
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
          {
@@ -1116,7 +1116,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Starts downloads when there are threads available
       /// </summary>
-      public virtual void ServiceDownloadQueue()
+		public virtual void ServiceDownloadQueue()
       {
          if (m_downloadRequests.Count > 0)
             Log.Write(Log.Levels.Verbose, "QTS", "ServiceDownloadQueue: " + m_downloadRequests.Count + " requests waiting");
@@ -1177,7 +1177,7 @@ namespace WorldWind.Renderable
       /// <summary>
       /// Finds the "best" tile from queue
       /// </summary>
-      public virtual GeoSpatialDownloadRequest GetClosestDownloadRequest()
+      internal virtual GeoSpatialDownloadRequest GetClosestDownloadRequest()
       {
          GeoSpatialDownloadRequest closestRequest = null;
 			double smallestDist = double.MaxValue;
@@ -1242,7 +1242,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		public bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          bool bIsDownloading = false;
 
@@ -1273,7 +1273,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
+		public override void ExportProcess(DrawArgs drawArgs, ExportInfo expInfo)
       {
          //Update(drawArgs);
          lock (((System.Collections.IDictionary)m_topmostTiles).SyncRoot)

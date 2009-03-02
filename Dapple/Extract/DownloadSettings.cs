@@ -14,9 +14,9 @@ namespace Dapple.Extract
    /// <summary>
    /// Gather the extract parameters for downloading the selected datasets
    /// </summary>
-   public partial class DownloadSettings : Form
+   internal partial class DownloadSettings : Form
    {
-      public enum DownloadCoordinateSystem
+      internal enum DownloadCoordinateSystem
       {
          Native,
          OriginalMap
@@ -33,7 +33,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oLayersToDownload"></param>
-      public DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload)
+      internal DownloadSettings(List<Dapple.LayerGeneration.LayerBuilder> oLayersToDownload)
       {
          InitializeComponent();
 
@@ -458,9 +458,9 @@ namespace Dapple.Extract
 			this.ResumeLayout(true);
 		}
 
-		public string ExtractXML { get; private set; }
+		internal string ExtractXML { get; private set; }
 
-		public bool DoDownload(XmlDocument oExtractDoc)
+		internal bool DoDownload(XmlDocument oExtractDoc)
 		{
 			ExtractXML = oExtractDoc.OuterXml;
 			ProgressWindow oProgress = new ProgressWindow(false, false);
@@ -511,7 +511,7 @@ namespace Dapple.Extract
 			}
 		}
 
-		public bool LayersDownloaded
+		internal bool LayersDownloaded
 		{
 			get { return m_blLayersDownloaded; }
 		}

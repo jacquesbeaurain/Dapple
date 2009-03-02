@@ -15,7 +15,8 @@ namespace Geosoft.DotNetTools.Common
       /// <summary>
       /// 	<para>Initializes an instance of the <see cref="Queue"/> class.</para>
       /// </summary>
-		public Queue() : base()
+		public Queue()
+			: base()
 		{			
 		}
 
@@ -23,7 +24,7 @@ namespace Geosoft.DotNetTools.Common
       /// Enque an object onto the queue
       /// </summary>
       /// <param name="obj"></param>
-      public override void Enqueue(object obj)
+		public override void Enqueue(object obj)
       {
          lock (base.SyncRoot)
          {
@@ -36,7 +37,7 @@ namespace Geosoft.DotNetTools.Common
       /// Dequeue an object from the queue when one is pushed on
       /// </summary>
       /// <returns></returns>
-      public override object Dequeue()
+		public override object Dequeue()
       {
          if (m_hSemaphore.Wait()) 
          {
@@ -53,7 +54,7 @@ namespace Geosoft.DotNetTools.Common
       /// </summary>
       /// <param name="iTimeout"></param>
       /// <returns></returns>
-      public object Dequeue(int iTimeout)
+      internal object Dequeue(int iTimeout)
       {
          if (m_hSemaphore.Wait(iTimeout)) 
          {

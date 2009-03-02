@@ -6,7 +6,7 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for ImageTileService.
 	/// </summary>
-	public class ImageTileService
+	internal class ImageTileService
 	{
 		#region Private Members
 		TimeSpan _cacheExpirationTime = TimeSpan.MaxValue;
@@ -17,7 +17,7 @@ namespace WorldWind
 
 		#region Properties
 
-		public TimeSpan CacheExpirationTime
+		internal TimeSpan CacheExpirationTime
 		{
 			get
 			{
@@ -25,7 +25,7 @@ namespace WorldWind
 			}								   
 		}
 
-      public string DataSetName
+      internal string DataSetName
       {
          get
          {
@@ -33,14 +33,14 @@ namespace WorldWind
          }
       }
 
-      public string ServerURI
+      internal string ServerURI
       {
          get
          {
             return this._serverUri;
          }
       }
-		public string ServerLogoPath
+		internal string ServerLogoPath
 		{
 			get
 			{
@@ -60,7 +60,7 @@ namespace WorldWind
 		/// <param name="serverUri"></param>
 		/// <param name="serverLogoPath"></param>
 		/// <param name="cacheExpirationTime"></param>
-		public ImageTileService(
+		internal ImageTileService(
 			string datasetName,
 			string serverUri,
 			string serverLogoPath,
@@ -77,7 +77,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="datasetName"></param>
 		/// <param name="serverUri"></param>
-		public ImageTileService(
+		internal ImageTileService(
 			string datasetName,
 			string serverUri,
 			string serverLogoPath)
@@ -87,7 +87,7 @@ namespace WorldWind
 			this._serverLogoPath = serverLogoPath;
 		}
 
-		public virtual string GetImageTileServiceUri(int level, int row, int col)
+		internal virtual string GetImageTileServiceUri(int level, int row, int col)
 		{
 			return String.Format(CultureInfo.InvariantCulture, "{0}?T={1}&L={2}&X={3}&Y={4}", this._serverUri, this._datasetName, level, col, row);
 		}

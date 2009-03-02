@@ -13,7 +13,7 @@ namespace WorldWind.DataSource
     /// A generic class for asynchronous, caching local and remote file access.
     /// Replaces WebDownload etc.
     /// </summary>
-    public class DataStore
+	public class DataStore
     {
         #region Members
         /// <summary>
@@ -40,12 +40,12 @@ namespace WorldWind.DataSource
 
         #region Properties
 
-        static public ArrayList ActiveRequests
+        static internal ArrayList ActiveRequests
         {
             get { return m_activeRequests; }
         }
 
-        static public ArrayList PendingRequests
+        static internal ArrayList PendingRequests
         {
             get { return m_pendingRequests; }
         }
@@ -53,7 +53,7 @@ namespace WorldWind.DataSource
         /// <summary>
         /// The number of currently pending (inactive) requests
         /// </summary>
-        static public int PendingRequestCount
+        public static int PendingRequestCount
         {
             get
             {
@@ -64,7 +64,7 @@ namespace WorldWind.DataSource
         /// <summary>
         /// The number of currently active (downloading) requests
         /// </summary>
-        static public int ActiveRequestCount
+        public static int ActiveRequestCount
         {
             get
             {
@@ -79,7 +79,7 @@ namespace WorldWind.DataSource
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        static public DataRequest Request(DataRequestDescriptor request)
+        static internal DataRequest Request(DataRequestDescriptor request)
         {
             // TODO: actually parse the request and differentiate between different DataRequest types
             DataRequestHTTP drd = new DataRequestHTTP(request);
@@ -117,7 +117,7 @@ namespace WorldWind.DataSource
         /// <summary>
         /// Handle pending and active data requests. Call this function regularly from the background worker thread.
         /// </summary>
-        static public void Update()
+		  public static void Update()
         {
 #if VERBOSE
             if(PendingRequestCount > 0 || ActiveRequestCount > 0)

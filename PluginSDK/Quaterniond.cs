@@ -4,12 +4,12 @@ namespace WorldWind
 {
 	public struct Quaternion4d
 	{
-		public double X;
-		public double Y;
-		public double Z;
-		public double W;
+		internal double X;
+		internal double Y;
+		internal double Z;
+		internal double W;
 
-		public Quaternion4d(double x, double y, double z, double w)
+		internal Quaternion4d(double x, double y, double z, double w)
 		{
 			X = x;
 			Y = y;
@@ -17,7 +17,7 @@ namespace WorldWind
 			W = w;
 		}
 
-      public static Quaternion4d Identity
+		public static Quaternion4d Identity
       {
          get
          {
@@ -29,7 +29,7 @@ namespace WorldWind
       /// Get the hash code
       /// </summary>
       /// <returns></returns>
-      public override int GetHashCode()
+		public override int GetHashCode()
       {
          return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode() ^ W.GetHashCode();
       }
@@ -39,7 +39,7 @@ namespace WorldWind
       /// </summary>
       /// <param name="obj"></param>
       /// <returns></returns>
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (obj.GetType() != typeof(Quaternion4d))
             return false;
@@ -84,17 +84,17 @@ namespace WorldWind
 			return new Point3d(x, y, z);
 		}
 
-		public static Quaternion4d operator+(Quaternion4d a, Quaternion4d b)
+		public static Quaternion4d operator +(Quaternion4d a, Quaternion4d b)
 		{
 			return new Quaternion4d(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
 		}
 
-		public static Quaternion4d operator-(Quaternion4d a, Quaternion4d b)
+		public static Quaternion4d operator -(Quaternion4d a, Quaternion4d b)
 		{
 			return new Quaternion4d( a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
 		}
 
-		public static Quaternion4d operator*(Quaternion4d a, Quaternion4d b)
+		public static Quaternion4d operator *(Quaternion4d a, Quaternion4d b)
 		{
 			return new Quaternion4d(
 					a.W * b.X + a.X * b.W + a.Y * b.Z - a.Z * b.Y,
@@ -103,18 +103,18 @@ namespace WorldWind
 					a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z);
 		}
 
-		public static Quaternion4d operator*(double s, Quaternion4d q)
+		public static Quaternion4d operator *(double s, Quaternion4d q)
 		{
 			return new Quaternion4d(s * q.X, s * q.Y, s * q.Z, s * q.W);
 		}
 
-		public static Quaternion4d operator*(Quaternion4d q, double s)
+		public static Quaternion4d operator *(Quaternion4d q, double s)
 		{
 			return new Quaternion4d(s * q.X, s * q.Y, s * q.Z, s * q.W);
 		}
 
 		// equivalent to multiplying by the quaternion (0, v)
-		public static Quaternion4d operator*(Point3d v, Quaternion4d q)
+		public static Quaternion4d operator *(Point3d v, Quaternion4d q)
 		{
 			return new Quaternion4d(
 					 v.X * q.W + v.Y * q.Z - v.Z * q.Y,
@@ -123,48 +123,48 @@ namespace WorldWind
 					-v.X * q.X - v.Y * q.Y - v.Z * q.Z);
 		}
 
-		public static Quaternion4d operator/(Quaternion4d q, double s)
+		public static Quaternion4d operator /(Quaternion4d q, double s)
 		{
 			return q * (1 / s);
 		}
 
 		// conjugate operator
-		public Quaternion4d Conjugate()
+		internal Quaternion4d Conjugate()
 		{
 			return new Quaternion4d( -X, -Y, -Z, W);
 		}
 
-		public static double Norm(Quaternion4d q)
+		internal static double Norm(Quaternion4d q)
 		{
 			return q.X * q.X + q.Y * q.Y + q.Z * q.Z + q.W * q.W;
 		}
 
-		public static double Abs(Quaternion4d q)
+		internal static double Abs(Quaternion4d q)
 		{
 			return Math.Sqrt(Norm(q));
 		}
 
-		public static Quaternion4d operator/(Quaternion4d a, Quaternion4d b)
+		public static Quaternion4d operator /(Quaternion4d a, Quaternion4d b)
 		{
 			return a * (b.Conjugate() / Abs(b));
 		}
 
-		public static bool operator==(Quaternion4d a, Quaternion4d b)
+		public static bool operator ==(Quaternion4d a, Quaternion4d b)
 		{
 			return a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W;
 		}
 
-		public static bool operator!=(Quaternion4d a, Quaternion4d b)
+		public static bool operator !=(Quaternion4d a, Quaternion4d b)
 		{
 			return a.X != b.X || a.Y != b.Y || a.Z != b.Z || a.W != b.W;
 		}
 
-		public static double Dot(Quaternion4d a, Quaternion4d b)
+		internal static double Dot(Quaternion4d a, Quaternion4d b)
 		{
 			return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
 		}
 
-		public void Normalize()
+		internal void Normalize()
 		{
 			double L = Length;
 
@@ -174,7 +174,7 @@ namespace WorldWind
 			W = W / L;
 		}
 
-		public double Length
+		internal double Length
 		{
          get
          {
@@ -183,7 +183,7 @@ namespace WorldWind
          }
 		}
 
-      public double LengthSq
+      internal double LengthSq
       {
          get
          {
@@ -191,7 +191,7 @@ namespace WorldWind
          }
       }
 		
-		public static Quaternion4d Slerp(Quaternion4d q0, Quaternion4d q1, double t)
+		internal static Quaternion4d Slerp(Quaternion4d q0, Quaternion4d q1, double t)
 		{
 			double cosom = q0.X * q1.X + q0.Y * q1.Y + q0.Z * q1.Z + q0.W * q1.W;
 			double tmp0, tmp1, tmp2, tmp3;
@@ -239,12 +239,12 @@ namespace WorldWind
 			return q;
 		}
 
-		public Quaternion4d Ln() 
+		internal Quaternion4d Ln() 
 		{
 			return Ln(this);
 		}
 
-		public static Quaternion4d Ln(Quaternion4d q)
+		internal static Quaternion4d Ln(Quaternion4d q)
 		{
 			double t = 0;
  
@@ -265,7 +265,7 @@ namespace WorldWind
 		}
 
 		//the below functions have not been certified to work properly
-		public static Quaternion4d Exp(Quaternion4d q)
+		internal static Quaternion4d Exp(Quaternion4d q)
 		{
 			double sinom;
 			double om = Math.Sqrt(q.X * q.X + q.Y * q.Y + q.Z * q.Z);
@@ -283,12 +283,12 @@ namespace WorldWind
 			return q;
 		}
 		
-		public Quaternion4d Exp()
+		internal Quaternion4d Exp()
 		{
 			return Ln(this);
 		}
 		
-		public static Quaternion4d Squad(
+		internal static Quaternion4d Squad(
 			Quaternion4d q1,
 			Quaternion4d a,
 			Quaternion4d b,
@@ -299,7 +299,7 @@ namespace WorldWind
 				Slerp(q1, c, t), Slerp(a, b, t), 2 * t * (1.0 - t));
 		}
 
-		public static void SquadSetup(
+		internal static void SquadSetup(
 			ref Quaternion4d outA,
 			ref Quaternion4d outB,
 			ref Quaternion4d outC,
@@ -325,7 +325,7 @@ namespace WorldWind
 
 		}
 
-      public bool EpsilonTest(Quaternion4d q)
+      internal bool EpsilonTest(Quaternion4d q)
       {
          if (Math.Abs(q.X - this.X) < Camera.CameraBase.dEpsilonTestValue &&
              Math.Abs(q.Y - this.Y) < Camera.CameraBase.dEpsilonTestValue &&

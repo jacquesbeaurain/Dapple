@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the options for this gis dataset
    /// </summary>
-   public partial class GIS : DownloadOptions
+   internal partial class GIS : DownloadOptions
    {
       #region Constants
       private readonly string MAP_EXT = ".map";
@@ -28,7 +28,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public GIS(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal GIS(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
@@ -57,7 +57,7 @@ namespace Dapple.Extract
          ConfigureDialog();
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return cbOptions.SelectedIndex == SAVE_AS_MAP || cbOptions.SelectedIndex == SAVE_AS_SHP_IMPORT || cbOptions.SelectedIndex == SAVE_AS_TAB_IMPORT; }
 		}
@@ -69,7 +69,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
@@ -154,7 +154,7 @@ namespace Dapple.Extract
 			}
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(string szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(string szExtractDirectory, Form hExtractForm)
 		{
 			if (cbOptions.SelectedIndex == SAVE_AS_MAP)
 			{

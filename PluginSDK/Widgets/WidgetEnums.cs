@@ -66,7 +66,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Default constructor - does nada
 		/// </summary>
-		public WidgetEnums()
+		internal WidgetEnums()
 		{
 		}
 	}

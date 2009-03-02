@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WorldWind.NewWidgets
 {
-    public class Scrollbar : IWidget
+    internal class Scrollbar : IWidget
     {
         System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
 		System.Drawing.Size m_Size = new System.Drawing.Size(0,20);
@@ -15,10 +15,10 @@ namespace WorldWind.NewWidgets
 		System.Drawing.Color m_ForeColor = System.Drawing.Color.White;
 		string m_Name = "";
 
-        public bool Outline = true;
-        public double Value = 0;
-        public double Minimum = 0;
-        public double Maximum = 1;
+        internal bool Outline = true;
+        internal double Value = 0;
+        internal double Minimum = 0;
+        internal double Maximum = 1;
 
         /// <summary>
         /// CountHeight property value
@@ -30,13 +30,13 @@ namespace WorldWind.NewWidgets
         /// </summary>
         protected bool m_countWidth = true;
 
-        public Scrollbar()
+        internal Scrollbar()
 		{
 			
 		}
 		
 		#region Properties
-		public string Name
+		  public string Name
 		{
 			get
 			{
@@ -47,7 +47,7 @@ namespace WorldWind.NewWidgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -171,7 +171,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Location of this widget relative to the client area of the parent
         /// </summary>
-        public System.Drawing.Point Location
+		public System.Drawing.Point Location
         {
             get { return m_Location; }
             set { m_Location = value; }
@@ -180,7 +180,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Size of widget in pixels
         /// </summary>
-        public System.Drawing.Size WidgetSize
+		public System.Drawing.Size WidgetSize
         {
             get { return m_Size; }
             set { m_Size = value; }
@@ -190,7 +190,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for height calculations - HACK until we do real layout
         /// </summary>
-        public bool CountHeight
+		public bool CountHeight
         {
             get { return m_countHeight; }
             set { m_countHeight = value; }
@@ -200,19 +200,19 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for width calculations - HACK until we do real layout
         /// </summary>
-        public bool CountWidth
+		public bool CountWidth
         {
             get { return m_countWidth; }
             set { m_countWidth = value; }
         }
 
-        public void Initialize(DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
         {
         }
 
         Microsoft.DirectX.Vector2[] m_outlinePoints = new Microsoft.DirectX.Vector2[5];
 
-		public void Render(DrawArgs drawArgs)
+		  public void Render(DrawArgs drawArgs)
         {
             if(m_Visible)
 			{

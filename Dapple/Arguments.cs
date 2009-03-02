@@ -50,7 +50,7 @@ using System.Text.RegularExpressions;
 ///        }
 /// </code>
 /// </example>
-public class CommandLineArguments
+internal class CommandLineArguments
 {
    private StringDictionary namedParameters =
        new StringDictionary();
@@ -62,7 +62,7 @@ public class CommandLineArguments
    /// command lines.
    /// </summary>
    /// <param name="args">The command line to parse.</param>
-   public CommandLineArguments(string[] args)
+   internal CommandLineArguments(string[] args)
    {
       Regex splitter = new Regex(@"^-{1,2}|^/|=|:",
           RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -157,7 +157,7 @@ public class CommandLineArguments
    /// <returns>
    /// The parameter or <c>null</c> if it can not be found.
    /// </returns>
-   public string this[string name]
+   internal string this[string name]
    {
       get { return (namedParameters[name]); }
    }
@@ -176,7 +176,7 @@ public class CommandLineArguments
    /// Primarily used to retrieve filenames which extension has been
    /// associated to the application.
    /// </remarks>
-   public string this[int index]
+   internal string this[int index]
    {
       get
       {

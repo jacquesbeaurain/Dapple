@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 namespace ConfigurationWizard
 {
-   public partial class DappleSearchPage : WizardPage
+   internal partial class DappleSearchPage : WizardPage
    {
-      public DappleSearchPage()
+      internal DappleSearchPage()
       {
          InitializeComponent();
       }

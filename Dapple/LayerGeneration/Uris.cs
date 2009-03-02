@@ -16,13 +16,13 @@ namespace Dapple.LayerGeneration
 	/// <summary>
 	/// Class for dealing with URIs referring to a server's major HTTP entryway.
 	/// </summary>
-	public abstract class ServerUri : Uri
+	internal abstract class ServerUri : Uri
 	{
-		public ServerUri(String strValue)
+		internal ServerUri(String strValue)
 			: base(strValue)
 		{ }
 
-		public ServerUri(UriBuilder oValue)
+		internal ServerUri(UriBuilder oValue)
 			: base(oValue.Uri.ToString())
 		{ }
 
@@ -30,7 +30,7 @@ namespace Dapple.LayerGeneration
 		/// Get a cache directory for this Uri (host and path, minus query and scheme.
 		/// </summary>
 		/// <returns></returns>
-		public virtual String ToCacheDirectory()
+		internal virtual String ToCacheDirectory()
 		{
 			String result = base.Host + base.AbsolutePath + base.Query;
 
@@ -42,12 +42,12 @@ namespace Dapple.LayerGeneration
 			return result;
 		}
 
-		public String ToBaseUri()
+		internal String ToBaseUri()
 		{
 			return base.ToString();
 		}
 
-		public String ServerTreeDisplayName
+		internal String ServerTreeDisplayName
 		{
 			get
 			{
@@ -76,14 +76,14 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class WMSServerUri : ServerUri
+	internal class WMSServerUri : ServerUri
 	{
-		public WMSServerUri(String strValue)
+		internal WMSServerUri(String strValue)
 			: base(GetFilteredUriBuilder(strValue))
 		{
 		}
 
-		public static UriBuilder GetFilteredUriBuilder(String strValue)
+		internal static UriBuilder GetFilteredUriBuilder(String strValue)
 		{
 			UriBuilder oBuilder = new UriBuilder(strValue);
 			// --- Remove the service, version, and request query variables ---
@@ -112,7 +112,7 @@ namespace Dapple.LayerGeneration
 			return oBuilder;
 		}
 
-		public String ToCapabilitiesUri()
+		internal String ToCapabilitiesUri()
 		{
 			return base.ToString()
 				+ (base.ToString().IndexOf("?") > 0 ? "&" : "?")
@@ -120,9 +120,9 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class ArcIMSServerUri : ServerUri
+	internal class ArcIMSServerUri : ServerUri
 	{
-		public ArcIMSServerUri(String strValue)
+		internal ArcIMSServerUri(String strValue)
 			: base(strValue)
 		{ }
 
@@ -130,7 +130,7 @@ namespace Dapple.LayerGeneration
 		/// Get a cache directory for this Uri (host and path, minus query and scheme.
 		/// </summary>
 		/// <returns></returns>
-		public override String ToCacheDirectory()
+		internal override String ToCacheDirectory()
 		{
 			String result = base.Host;
 
@@ -144,21 +144,21 @@ namespace Dapple.LayerGeneration
 			return result;
 		}
 
-		public String ToCatalogUri()
+		internal String ToCatalogUri()
 		{
 			return base.ToString()
 				+ (base.ToString().IndexOf("?") > 0 ? "&" : "?")
 				+ "ServiceName=catalog&ClientVersion=9.0";
 		}
 
-		public String ToServiceUri(String serviceName)
+		internal String ToServiceUri(String serviceName)
 		{
 			return base.ToString()
 				+ (base.ToString().IndexOf("?") > 0 ? "&" : "?")
 				+ "ServiceName=" + serviceName + "&ClientVersion=9.0";
 		}
 
-		public ArcIMSLayerUri ToLayerUri(String strServiceName, GeographicBoundingBox oBox)
+		internal ArcIMSLayerUri ToLayerUri(String strServiceName, GeographicBoundingBox oBox)
 		{
 			String strUri = base.ToString()
 				+ (base.ToString().IndexOf("?") > 0 ? "&" : "?")
@@ -172,21 +172,21 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class TileServerUri : ServerUri
+	internal class TileServerUri : ServerUri
 	{
-		public TileServerUri(String strUri) : base(strUri) { }
+		internal TileServerUri(String strUri) : base(strUri) { }
 	}
 
-	public class VEServerUri : ServerUri
+	internal class VEServerUri : ServerUri
 	{
-		public VEServerUri(String strUri) : base(strUri) { }
+		internal VEServerUri(String strUri) : base(strUri) { }
 	}
 
-	public class DapServerUri : ServerUri
+	internal class DapServerUri : ServerUri
 	{
-		public DapServerUri(String strUri) : base(strUri) { }
+		internal DapServerUri(String strUri) : base(strUri) { }
 
-		public bool IsForPersonalDAP
+		internal bool IsForPersonalDAP
 		{
 			get
 			{
@@ -197,25 +197,25 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class GeoTiffFileUri : ServerUri
+	internal class GeoTiffFileUri : ServerUri
 	{
-		public GeoTiffFileUri(String strUri) : base(strUri) { }
+		internal GeoTiffFileUri(String strUri) : base(strUri) { }
 	}
 
-	public class KeyholeFileUri : ServerUri
+	internal class KeyholeFileUri : ServerUri
 	{
-		public KeyholeFileUri(String strUri) : base(strUri) { }
+		internal KeyholeFileUri(String strUri) : base(strUri) { }
 	}
 
 	/// <summary>
 	/// Class for dealing with internal layer URIs.  Parses necessary informaion and removes it from the Server URI.
 	/// </summary>
-	public abstract class LayerUri
+	internal abstract class LayerUri
 	{
 		protected ServerUri m_oServer;
 		protected Hashtable m_oTokens;
 
-		public LayerUri(String strUri)
+		internal LayerUri(String strUri)
 		{
 			// This hack is needed because old .dapple views had WMS URIs that were missing the ?
 			if (strUri.Contains("&") && !strUri.Contains("?"))
@@ -285,7 +285,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public abstract bool IsValid { get; }
+		internal abstract bool IsValid { get; }
 
 		protected bool AllTokensPresent
 		{
@@ -299,7 +299,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public static LayerUri create(String strUri)
+		internal static LayerUri create(String strUri)
 		{
 			if (strUri.StartsWith("gxarcims")) return new ArcIMSLayerUri(strUri);
 			if (strUri.StartsWith("gxwms")) return new WMSLayerUri(strUri);
@@ -312,14 +312,14 @@ namespace Dapple.LayerGeneration
 			throw new ArgumentException("Unknown layer uri " + strUri);
 		}
 
-		public String getAttribute(String strKey)
+		internal String getAttribute(String strKey)
 		{
 			return m_oTokens[strKey.ToLower()] as String;
 		}
 
 		protected abstract string LayerScheme { get; }
 
-		public abstract String LayerType { get; }
+		internal abstract String LayerType { get; }
 
 		protected abstract List<String> AdditionalUriTokens { get; }
 
@@ -327,12 +327,12 @@ namespace Dapple.LayerGeneration
 
 		protected abstract ServerUri getServerUri(UriBuilder oBuilder);
 
-		public abstract LayerBuilder getBuilder(DappleModel oModel);
+		internal abstract LayerBuilder getBuilder(DappleModel oModel);
 
 
 	}
 
-	public class ArcIMSLayerUri : LayerUri
+	internal class ArcIMSLayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          "servicename",
@@ -346,7 +346,7 @@ namespace Dapple.LayerGeneration
          "maxscale"
          });
 
-		public ArcIMSLayerUri(String strUri) : base(strUri) { }
+		internal ArcIMSLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
@@ -371,17 +371,17 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "ArcIMS"; }
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
 			double dMinScale, dMaxScale;
@@ -406,7 +406,7 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class WMSLayerUri : LayerUri
+	internal class WMSLayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          "layer"
@@ -416,14 +416,14 @@ namespace Dapple.LayerGeneration
 			"pixelsize"
 		});
 
-		public WMSLayerUri(String strUri) : base(strUri) { }
+		internal WMSLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
 			get { return "gxwms"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "WMS"; }
 		}
@@ -446,12 +446,12 @@ namespace Dapple.LayerGeneration
 			return new WMSServerUri(oBuilder.Uri.ToString());
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			WMSServerModelNode oServer = oModel.AddWMSServer(m_oServer as WMSServerUri, true, false, false) as WMSServerModelNode;
 			oServer.WaitForLoad();
@@ -464,7 +464,7 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class TileLayerUri : LayerUri
+	internal class TileLayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          "datasetname",
@@ -481,14 +481,14 @@ namespace Dapple.LayerGeneration
          "imgfileext"
          });
 
-		public TileLayerUri(String strUri) : base(strUri) { }
+		internal TileLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
 			get { return "gxtile"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "Tile"; }
 		}
@@ -511,12 +511,12 @@ namespace Dapple.LayerGeneration
 			return new TileServerUri(oBuilder.Uri.ToString());
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
 			bool blTerrainMapped;
@@ -550,18 +550,18 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class VELayerUri : LayerUri
+	internal class VELayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
 
-		public VELayerUri(String strUri) : base(strUri) { }
+		internal VELayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
 			get { return "gxve"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "Virtual Earth"; }
 		}
@@ -584,7 +584,7 @@ namespace Dapple.LayerGeneration
 			return new VEServerUri(oBuilder.Uri.ToString());
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get
 			{
@@ -596,7 +596,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			if (String.Compare(m_oServer.Host, VirtualEarthMapType.road.ToString(), true) == 0)
 				return new VEQuadLayerBuilder("Virtual Earth Map", VirtualEarthMapType.road, MainForm.WorldWindowSingleton, true, null);
@@ -609,7 +609,7 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class DapLayerUri : LayerUri
+	internal class DapLayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          "datasetname",
@@ -627,14 +627,14 @@ namespace Dapple.LayerGeneration
          "lvl0tilesize"
          });
 
-		public DapLayerUri(String strUri) : base(strUri) { }
+		internal DapLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
 			get { return "gxdap"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "Dap"; }
 		}
@@ -657,12 +657,12 @@ namespace Dapple.LayerGeneration
 			return new DapServerUri(oBuilder.Uri.ToString());
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			DataSet hDataSet = new DataSet();
 			hDataSet.Name = getAttribute("datasetname");
@@ -695,19 +695,19 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class BrowserMapLayerUri : LayerUri
+	internal class BrowserMapLayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
          });
 
-		public BrowserMapLayerUri(String strUri) : base(strUri) { }
+		internal BrowserMapLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
 			get { return "gxdapbm"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "DAP browser map"; }
 		}
@@ -730,12 +730,12 @@ namespace Dapple.LayerGeneration
 			return new DapServerUri(oBuilder.Uri.ToString());
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get { return AllTokensPresent; }
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			DapServerModelNode oServerMN = oModel.AddDAPServer(m_oServer as DapServerUri, true, false, false) as DapServerModelNode;
 			oServerMN.WaitForLoad();
@@ -746,18 +746,18 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class GeoTifLayerUri : LayerUri
+	internal class GeoTifLayerUri : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
 
-		public GeoTifLayerUri(String strUri) : base(strUri) { }
+		internal GeoTifLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
 		{
 			get { return "gxtif"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "GeoTiff"; }
 		}
@@ -780,7 +780,7 @@ namespace Dapple.LayerGeneration
 			return new GeoTiffFileUri(oBuilder.Uri.ToString());
 		}
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get
 			{
@@ -788,19 +788,19 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			return new GeorefImageLayerBuilder(m_oServer.LocalPath, false, MainForm.WorldWindowSingleton, null);
 		}
 	}
 
-	public class KeyholeLayerURI : LayerUri
+	internal class KeyholeLayerURI : LayerUri
 	{
 		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
 
-		public KeyholeLayerURI(String strUri) : base(strUri) { }
+		internal KeyholeLayerURI(String strUri) : base(strUri) { }
 
-		public override bool IsValid
+		internal override bool IsValid
 		{
 			get { return true; }
 		}
@@ -810,7 +810,7 @@ namespace Dapple.LayerGeneration
 			get { return "gxkml"; }
 		}
 
-		public override string LayerType
+		internal override string LayerType
 		{
 			get { return "KML"; }
 		}
@@ -830,7 +830,7 @@ namespace Dapple.LayerGeneration
 			return new KeyholeFileUri(oBuilder.Uri.ToString());
 		}
 
-		public override LayerBuilder getBuilder(DappleModel oModel)
+		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			return new KML.KMLLayerBuilder(m_oServer.LocalPath, MainForm.WorldWindowSingleton, null);
 		}

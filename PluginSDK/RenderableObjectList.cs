@@ -25,27 +25,27 @@ namespace WorldWind.Renderable
 		public bool ShowOnlyOneLayer;
 
 		protected bool m_blSortChildrenOnAdd = true;
-		public bool SortChildrenOnAdd
+		internal bool SortChildrenOnAdd
 		{
 			get { return m_blSortChildrenOnAdd; }
 			set { m_blSortChildrenOnAdd = value; }
 		}
 
 		protected bool m_blAllowDuplicateNames = false;
-		public bool AllowDuplicateNames
+		internal bool AllowDuplicateNames
 		{
 			get { return m_blAllowDuplicateNames; }
 			set { m_blAllowDuplicateNames = value; }
 		}
 		
 		private bool m_disableExpansion = false;
-		public bool DisableExpansion
+		internal bool DisableExpansion
 		{
 			get{ return m_disableExpansion; }
 			set{ m_disableExpansion = value; }
 		}
 
-		public System.Timers.Timer RefreshTimer
+		internal System.Timers.Timer RefreshTimer
 		{
 			get
 			{
@@ -56,12 +56,13 @@ namespace WorldWind.Renderable
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.RenderableObjectList"/> class.
 		/// </summary>
 		/// <param name="name"></param>
-		public RenderableObjectList(string name) : base(name, new Point3d(0,0,0), new Quaternion4d())
+		public RenderableObjectList(string name)
+			: base(name, new Point3d(0, 0, 0), new Quaternion4d())
 		{
 			this.isSelectable = true;
 		}
 
-		public RenderableObjectList(
+		internal RenderableObjectList(
 			string name, 
 			string dataSource, 
 			TimeSpan refreshInterval,
@@ -84,7 +85,7 @@ namespace WorldWind.Renderable
 			m_RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_RefreshTimer_Elapsed);
 		}
 
-		public void StartRefreshTimer()
+		internal void StartRefreshTimer()
 		{
 			if(m_RefreshTimer != null)
 			{
@@ -158,7 +159,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public override void BuildContextMenu(ContextMenu menu)
+		public override void BuildContextMenu(ContextMenu menu)
         {
             menu.MenuItems.Add("Check all children", new EventHandler(OnCheckAllChildrenClick));
             menu.MenuItems.Add("Uncheck all children", new EventHandler(OnUncheckAllChildrenClick));
@@ -167,7 +168,7 @@ namespace WorldWind.Renderable
             base.BuildContextMenu(menu);
         }
 
-		public virtual void TurnOffAllChildren()
+		internal virtual void TurnOffAllChildren()
 		{
             foreach (RenderableObject ro in this.m_children)
             {
@@ -182,7 +183,7 @@ namespace WorldWind.Renderable
 
 		}
 
-        public virtual void TurnOnAllChildren()
+        internal virtual void TurnOnAllChildren()
         {
             foreach (RenderableObject ro in this.m_children)
             {
@@ -219,7 +220,7 @@ namespace WorldWind.Renderable
 		/// List containing the children layers
 		/// </summary>
 		[Browsable(false)]
-		public virtual ArrayList ChildObjects
+		  public virtual ArrayList ChildObjects
 		{
 			get
 			{
@@ -587,7 +588,7 @@ namespace WorldWind.Renderable
 
 		}
 
-      public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
+		public override void InitExportInfo(DrawArgs drawArgs, ExportInfo info)
       {
          foreach (RenderableObject oRO in this.ChildObjects)
          {
@@ -596,7 +597,7 @@ namespace WorldWind.Renderable
          }
       }
 
-      public override void ExportProcess(DrawArgs drawArgs, ExportInfo info)
+		public override void ExportProcess(DrawArgs drawArgs, ExportInfo info)
       {
          foreach (RenderableObject oRO in this.ChildObjects)
          {

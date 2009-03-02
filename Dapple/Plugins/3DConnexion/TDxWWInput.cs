@@ -13,7 +13,7 @@
 // 1.0.3  07/03/09 code cleaning; TDxInput wrapper completed; smaller bugfixes;
 //----------------------------------------------------------------------------
 //
-// This file is in the Public Domain, and comes with no warranty. 
+// This file is in the internal Domain, and comes with no warranty. 
 //
 
 using System;
@@ -41,7 +41,7 @@ namespace ThreeDconnexion.Plugin
     /// <summary>
     /// interface of the Plugin used by the Plugin dialog
     /// </summary>
-    public interface I3DxPlugin
+    internal interface I3DxPlugin
     {
         void SetObjectMode();
         void SetCameraMode();
@@ -51,7 +51,7 @@ namespace ThreeDconnexion.Plugin
     /// <summary>
     /// The dialog form of the 3Dconnexion Plugin.
     /// </summary>
-    public class CTDxWWWInputDialog : Form
+    internal class CTDxWWWInputDialog : Form
     {
         ///<value>the plugin interface, used to set the behaviour of the plugin</value>
         I3DxPlugin m_IPlugin = null;
@@ -64,7 +64,7 @@ namespace ThreeDconnexion.Plugin
 
 
         //constructor/destructor
-        public CTDxWWWInputDialog(ref I3DxPlugin ThePlugin_p)
+        internal CTDxWWWInputDialog(ref I3DxPlugin ThePlugin_p)
             : base()
         {
             InitializeComponent();
@@ -176,7 +176,7 @@ namespace ThreeDconnexion.Plugin
     /// <summary>
     /// The 3DConnexion Plugin for WorldWind 
     /// </summary>
-    public class TDxWWInput : WorldWind.PluginEngine.Plugin, I3DxPlugin
+    internal class TDxWWInput : WorldWind.PluginEngine.Plugin, I3DxPlugin
     {
         private enum AxisMapping
         {
@@ -207,11 +207,11 @@ namespace ThreeDconnexion.Plugin
         static double m_dDeltaHeight = 0;
         static private Stopwatch m_stopWatch;  //check event interval of the input device
 
-        public TDxWWInput()
+        internal TDxWWInput()
         {
         }
 
-        public override void Load()
+		  public override void Load()
         {
             base.Load();
 
@@ -246,7 +246,7 @@ namespace ThreeDconnexion.Plugin
             }
         }
 
-        public override void Unload()
+		  public override void Unload()
         {
             if (m_TheInputDevice != null)
                 m_TheInputDevice.Disconnect();
@@ -287,7 +287,7 @@ namespace ThreeDconnexion.Plugin
         }
 
         #region I3DxPlugin implementation
-        public void SetObjectMode()
+		  public void SetObjectMode()
         {
             if (m_TheSensor != null)
             {
@@ -300,7 +300,7 @@ namespace ThreeDconnexion.Plugin
             }
         }//SetObjectMode
 
-        public void SetCameraMode()
+		  public void SetCameraMode()
         {
             if (m_TheSensor != null)
             {
@@ -313,7 +313,7 @@ namespace ThreeDconnexion.Plugin
             }
         }//SetHelicopterMode
 
-        public void GetMode(out int nAxisSet, out bool bDynamic_p)
+		  public void GetMode(out int nAxisSet, out bool bDynamic_p)
         {
             nAxisSet = (int)m_AxisMode; //TODO: remove cast replace parameter with enum
             bDynamic_p = false;
@@ -677,15 +677,15 @@ namespace ThreeDconnexion.Plugin
         /// <summary>
         /// typedefs of the delegates used for Event- handling  
         /// </summary>
-        public delegate void TDxSensorInputEvent();
-        public delegate void TDxKeyboardEvent(Int32 nKey_p);
+        internal delegate void TDxSensorInputEvent();
+        internal delegate void TDxKeyboardEvent(Int32 nKey_p);
 
         #region COM- Class- Interfaces
 
         /// <summary>
         /// Interface of the Translation Com- class, 
         /// </summary>
-        public interface I3DxVector
+        internal interface I3DxVector
         {
             double X
             {
@@ -710,7 +710,7 @@ namespace ThreeDconnexion.Plugin
         /// Interface of the Rotation Com- class, 
         /// 4 dim "Vector": 1 unit-vector with 3dim and the rotation angle in arbitrary units; 
         /// </summary>
-        public interface I3DxRotation
+        internal interface I3DxRotation
         {
             double X
             {
@@ -740,7 +740,7 @@ namespace ThreeDconnexion.Plugin
         /// <summary>
         /// Interface of the Sensor Com- class, acts as event source
         /// </summary>
-        public interface I3DxSensor
+        internal interface I3DxSensor
         {
             I3DxVector Translation
             {
@@ -763,7 +763,7 @@ namespace ThreeDconnexion.Plugin
         /// <summary>
         /// Interface of the Keyboard (Keyboard from the 3Dconnexion Device) Com- class; 
         /// </summary>
-        public interface I3DxKeyboard
+        internal interface I3DxKeyboard
         {
             Int32 NumOfKeys
             {
@@ -784,35 +784,35 @@ namespace ThreeDconnexion.Plugin
 
         #endregion
 
-        #region internal Wrapper Classes
+        #region Public Wrapper Classes
 
         /// <summary>
         /// wrapper class for the Com-Co class TDxInput.Vector3D
         /// </summary>
         internal sealed class C3DxVector : I3DxVector
         {
-            public C3DxVector(ref double X_p, ref double Y_p, ref double Z_p)
+            internal C3DxVector(ref double X_p, ref double Y_p, ref double Z_p)
             {
                 m_nX = X_p;
                 m_nY = Y_p;
                 m_nZ = Z_p;
             }
 
-            public C3DxVector()
+            internal C3DxVector()
             {
                 m_nX = 0.0;
                 m_nY = 0.0;
                 m_nZ = 0.0;
             }
 
-            public C3DxVector(ref C3DxVector rCopy_p)
+            internal C3DxVector(ref C3DxVector rCopy_p)
             {
                 m_nX = rCopy_p.m_nX;
                 m_nY = rCopy_p.m_nY;
                 m_nZ = rCopy_p.m_nZ;
             }
 
-            public double X
+				public double X
             {
                 get
                 {
@@ -825,7 +825,7 @@ namespace ThreeDconnexion.Plugin
             }
             double m_nX;
 
-            public double Y
+				public double Y
             {
                 get
                 {
@@ -838,7 +838,7 @@ namespace ThreeDconnexion.Plugin
             }
             double m_nY;
 
-            public double Z
+				public double Z
             {
                 get
                 {
@@ -851,7 +851,7 @@ namespace ThreeDconnexion.Plugin
             }
             double m_nZ;
 
-            public static C3DxVector operator *(C3DxVector oVector_p, double dScalar_p)
+				public static C3DxVector operator *(C3DxVector oVector_p, double dScalar_p)
             {
                 C3DxVector oReturn = new C3DxVector(ref oVector_p);
                 oReturn.m_nX *= dScalar_p;
@@ -860,7 +860,7 @@ namespace ThreeDconnexion.Plugin
                 return (oReturn);
             }
 
-            public static C3DxVector operator *(double dScalar_p, C3DxVector oVector_p)
+				public static C3DxVector operator *(double dScalar_p, C3DxVector oVector_p)
             {
                 return (oVector_p * dScalar_p);
             }
@@ -872,7 +872,7 @@ namespace ThreeDconnexion.Plugin
         /// </summary>
         internal sealed class C3DxRotation : I3DxRotation
         {
-            public C3DxRotation(C3DxRotation rCopy_p)
+            internal C3DxRotation(C3DxRotation rCopy_p)
             {
                 m_dX = rCopy_p.m_dX;
                 m_dY = rCopy_p.m_dY;
@@ -880,7 +880,7 @@ namespace ThreeDconnexion.Plugin
                 m_dAng = rCopy_p.m_dAng;
             }
 
-            public C3DxRotation()
+            internal C3DxRotation()
             {
                 m_dX = 0.0;
                 m_dY = 0.0;
@@ -888,7 +888,7 @@ namespace ThreeDconnexion.Plugin
                 m_dAng = 0.0;
             }
 
-            public double X
+				public double X
             {
                 get
                 {
@@ -901,7 +901,7 @@ namespace ThreeDconnexion.Plugin
             }
             double m_dX;
 
-            public double Y
+				public double Y
             {
                 get
                 {
@@ -914,7 +914,7 @@ namespace ThreeDconnexion.Plugin
             }
             double m_dY;
 
-            public double Z
+				public double Z
             {
                 get
                 {
@@ -927,7 +927,7 @@ namespace ThreeDconnexion.Plugin
             }
             double m_dZ;
 
-            public double Angle
+				public double Angle
             {
                 get
                 {
@@ -940,14 +940,14 @@ namespace ThreeDconnexion.Plugin
             }
             double m_dAng;
 
-            public static C3DxRotation operator *(C3DxRotation oAngleAxis_p, double dScalar_p)
+				public static C3DxRotation operator *(C3DxRotation oAngleAxis_p, double dScalar_p)
             {
                 C3DxRotation oReturn = new C3DxRotation(oAngleAxis_p);
                 oReturn.m_dAng *= dScalar_p;
                 return (oReturn);
             }
 
-            public static C3DxRotation operator *(double dScalar_p, C3DxRotation oAngleAxis_p)
+				public static C3DxRotation operator *(double dScalar_p, C3DxRotation oAngleAxis_p)
             {
                 return (oAngleAxis_p * dScalar_p);
             }
@@ -979,7 +979,7 @@ namespace ThreeDconnexion.Plugin
             /// <summary>
             /// wrapper internal Event handler, which updates the attributes
             /// </summary>
-            static public void UpdateData()
+            static internal void UpdateData()
             {
                 UpdateVector();
                 UpdateAngleAxis();
@@ -990,7 +990,7 @@ namespace ThreeDconnexion.Plugin
             /// constructor
             /// </summary>
             /// <param name="r3DxComSensor_p"></param>
-            public C3DxSensor(ref object r3DxComSensor_p)
+            internal C3DxSensor(ref object r3DxComSensor_p)
             {
                 m_oComSensor = r3DxComSensor_p;
 
@@ -1024,7 +1024,7 @@ namespace ThreeDconnexion.Plugin
                 SensorInput += new TDxSensorInputEvent(UpdateData);
             }
 
-            public event TDxSensorInputEvent SensorInput
+				public event TDxSensorInputEvent SensorInput
             {
                 add
                 {
@@ -1084,7 +1084,7 @@ namespace ThreeDconnexion.Plugin
                 while (Marshal.ReleaseComObject(AngleAxis) > 0) ;
             }
 
-            public I3DxVector Translation
+				public I3DxVector Translation
             {
                 get
                 {
@@ -1094,7 +1094,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public I3DxRotation Rotation
+				public I3DxRotation Rotation
             {
                 get
                 {
@@ -1104,7 +1104,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public double Period
+				public double Period
             {
                 get
                 {
@@ -1129,7 +1129,7 @@ namespace ThreeDconnexion.Plugin
             /// constructor
             /// </summary>
             /// <param name="r3DxComSensor_p"></param>
-            public C3DxKeyboard(ref object r3DxComKeyboard_p)
+            internal C3DxKeyboard(ref object r3DxComKeyboard_p)
             {
                 m_oComKeyboard = r3DxComKeyboard_p;
                 m_tyComKeyboard = m_oComKeyboard.GetType();
@@ -1137,7 +1137,7 @@ namespace ThreeDconnexion.Plugin
 
             }
 
-            public Int32 NumOfKeys
+				public Int32 NumOfKeys
             {
                 get
                 {
@@ -1153,7 +1153,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public Int32 NumOfProgKeys
+				public Int32 NumOfProgKeys
             {
                 get
                 {
@@ -1169,7 +1169,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public string GetKeyLabel(Int32 nKey_p)
+				public string GetKeyLabel(Int32 nKey_p)
             {
                 string sReturn = "";
                 /* TODO implementation at Driver??
@@ -1182,12 +1182,12 @@ namespace ThreeDconnexion.Plugin
                 */
                 return sReturn;
             }
-            public string GetKeyName(Int32 nKey_p)
+				public string GetKeyName(Int32 nKey_p)
             {
                 return nKey_p.ToString();
             }
 
-            public event TDxKeyboardEvent KeyboardEventUP
+				public event TDxKeyboardEvent KeyboardEventUP
             {
                 add
                 {
@@ -1273,7 +1273,7 @@ namespace ThreeDconnexion.Plugin
         /// <summary>
         /// wrapper class for the COM - CSimpleDeviceClass
         /// </summary>
-        public class TDxDeviceWrapper
+        internal class TDxDeviceWrapper
         {
             private enum RegKind
             {
@@ -1298,13 +1298,13 @@ namespace ThreeDconnexion.Plugin
 
             private class ConversionEventHandler : ITypeLibImporterNotifySink
             {
-                public void ReportEvent(ImporterEventKind eventKind, int eventCode, string eventMsg)
+					public void ReportEvent(ImporterEventKind eventKind, int eventCode, string eventMsg)
                 {
                     // handle warning event here...
                     Console.WriteLine(eventMsg);
                 }
 
-                public Assembly ResolveRef(object typeLib)
+					public Assembly ResolveRef(object typeLib)
                 {
                     // resolve reference here and return a correct assembly...
                     Console.WriteLine("resolve refernce");
@@ -1312,7 +1312,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public TDxDeviceWrapper()
+            internal TDxDeviceWrapper()
             {
                 m_blInitializationSuccessful = InitializeTDxInputWrapper();
             }
@@ -1385,7 +1385,7 @@ namespace ThreeDconnexion.Plugin
             }//constructor
 
 
-            public void Connect()
+            internal void Connect()
             {
                 if (m_OSimpleDevice == null)
                 {
@@ -1401,7 +1401,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public void Disconnect()
+            internal void Disconnect()
             {
                 if (m_OSimpleDevice != null)
                 {
@@ -1411,7 +1411,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-				public bool InitializationSuccessful
+				internal bool InitializationSuccessful
 				{
 					get { return m_blInitializationSuccessful; }
 				}
@@ -1420,7 +1420,7 @@ namespace ThreeDconnexion.Plugin
             /// <summary>
             /// Property "Sensor"; implemented as Singelton
             /// </summary>
-            public I3DxSensor Sensor
+            internal I3DxSensor Sensor
             {
                 get
                 {
@@ -1439,7 +1439,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public I3DxKeyboard Keyboard
+            internal I3DxKeyboard Keyboard
             {
                 get
                 {
@@ -1458,7 +1458,7 @@ namespace ThreeDconnexion.Plugin
                 }
             }
 
-            public void Release()
+            internal void Release()
             {
                 Marshal.ReleaseComObject(m_OKeyboard);
                 m_C3dxKeyboard = null;

@@ -18,12 +18,12 @@ using WorldWind.PluginEngine;
 
 namespace Dapple.LayerGeneration
 {
-   public class VEQuadLayerBuilder : LayerBuilder
+   internal class VEQuadLayerBuilder : LayerBuilder
    {
       #region Statics
 
-      public static readonly string URLProtocolName = "gxve://";
-		public static readonly string CacheSubDir = "VEImages";
+      internal static readonly string URLProtocolName = "gxve://";
+		internal static readonly string CacheSubDir = "VEImages";
 
       #endregion
 
@@ -41,7 +41,7 @@ namespace Dapple.LayerGeneration
 
       #region Constructor
 
-      public VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, WorldWindow oWorldWindow, bool isOn, IBuilder parent)
+      internal VEQuadLayerBuilder(string name, VirtualEarthMapType mapType, WorldWindow oWorldWindow, bool isOn, IBuilder parent)
          :base(name, oWorldWindow, parent)
 		{
 			m_mapType = mapType;
@@ -54,7 +54,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -83,7 +83,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -117,7 +117,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get
 			{
@@ -128,7 +128,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("VE")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Which virtual earth data layer this is")]
-		public String Type
+		internal String Type
 		{
 			get { return m_mapType.ToString(); }
 		}
@@ -140,7 +140,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return "live"; }
 		}
@@ -155,7 +155,7 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+      internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_oVEQTS != null)
             return m_oVEQTS.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -167,7 +167,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          if (m_blnIsChanged)
          {
@@ -212,12 +212,12 @@ namespace Dapple.LayerGeneration
          return m_oVEQTS;
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          return URLProtocolName + m_mapType.ToString();
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_mapType.ToString());
       }
@@ -230,12 +230,12 @@ namespace Dapple.LayerGeneration
          m_blnIsChanged = true;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          return new VEQuadLayerBuilder(m_szTreeNodeText, m_mapType, m_oWorldWindow, m_IsOn, m_Parent);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is VEQuadLayerBuilder)) return false;
          VEQuadLayerBuilder castObj = obj as VEQuadLayerBuilder;
@@ -249,7 +249,7 @@ namespace Dapple.LayerGeneration
 			return m_mapType.ToString().GetHashCode() ^ "VELAYER".GetHashCode();
 		}
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "ve";
          szServerURL = m_mapType.ToString()[0] + "0.ortho.tiles.virtualearth.net/tiles/";

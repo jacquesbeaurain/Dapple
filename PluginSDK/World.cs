@@ -35,14 +35,14 @@ namespace WorldWind
 		#endregion
 
 		#region Properties
-		public WorldSurfaceRenderer WorldSurfaceRenderer
+		internal WorldSurfaceRenderer WorldSurfaceRenderer
 		{
 			get
 			{
 				return m_WorldSurfaceRenderer;
 			}
 		}
-		/*		public string DataDirectory
+		/*		internal string DataDirectory
 				{
 					get
 					{
@@ -57,7 +57,7 @@ namespace WorldWind
 		/// <summary>
 		/// Whether this world is planet Earth.
 		/// </summary>
-		public bool IsEarth
+		internal bool IsEarth
 		{
 			get
 			{
@@ -68,7 +68,7 @@ namespace WorldWind
 		#endregion
 
 		ProjectedVectorRenderer m_projectedVectorRenderer = null;
-		public ProjectedVectorRenderer ProjectedVectorRenderer
+		internal ProjectedVectorRenderer ProjectedVectorRenderer
 		{
 			get { return m_projectedVectorRenderer; }
 		}
@@ -110,7 +110,7 @@ namespace WorldWind
 			m_outerSphere.Init((float)equatorialRadius * 1.025f, 75, 75);
 		}
 
-		public AtmosphericScatteringSphere m_outerSphere = null;
+		internal AtmosphericScatteringSphere m_outerSphere = null;
 		public void SetLayerOpacity(string category, string name, float opacity)
 		{
 			this.setLayerOpacity(this._renderableObjects, category, name, opacity);
@@ -600,7 +600,7 @@ namespace WorldWind
 		/// <summary>
 		/// Computes the distance between two pairs of lat/longs in meters.
 		/// </summary>
-		public double ApproxDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
+		internal double ApproxDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
 		{
 			double distance = equatorialRadius * ApproxAngularDistance(latA, lonA, latB, lonB).Radians;
 			return distance;
@@ -659,18 +659,18 @@ namespace WorldWind
 		}
 	}
 
-	public class AtmosphericScatteringSphere
+	internal class AtmosphericScatteringSphere
 	{
-		public float m_radius;
+		internal float m_radius;
 		protected int m_numberSlices;
 		protected int m_numberSections;
 
-		public static float m_fInnerRadius = 0;
-		public static float m_fOuterRadius = 0;
-		public static int TilesHigh = 4;
-		public static int TilesWide = 8;
+		internal static float m_fInnerRadius = 0;
+		internal static float m_fOuterRadius = 0;
+		internal static int TilesHigh = 4;
+		internal static int TilesWide = 8;
 
-		public void Init(float radius, int slices, int sections)
+		internal void Init(float radius, int slices, int sections)
 		{
 			try
 			{
@@ -746,16 +746,16 @@ namespace WorldWind
 			}
 		}
 
-		public void Dispose()
+		internal void Dispose()
 		{
 			active = false;
 		}
 
 		class MeshSubset
 		{
-			public CustomVertex.PositionColored[] Vertices = null;
-			public CustomVertex.PositionColored[] HigherResolutionVertices = null;
-			public BoundingBox BoundingBox = null;
+			internal CustomVertex.PositionColored[] Vertices = null;
+			internal CustomVertex.PositionColored[] HigherResolutionVertices = null;
+			internal BoundingBox BoundingBox = null;
 		}
 		System.Collections.Generic.List<MeshSubset> m_meshList = new System.Collections.Generic.List<MeshSubset>();
 
@@ -831,7 +831,7 @@ namespace WorldWind
 			catch
 			{ }
 		}
-		public void Update(DrawArgs drawArgs)
+		internal void Update(DrawArgs drawArgs)
 		{
 
 
@@ -918,7 +918,7 @@ namespace WorldWind
 		float[] fAttenuation = new float[3];
 		Point3d vCamera = new Point3d();
 
-		public void SetColor(ref CustomVertex.PositionColored pVertex, DrawArgs drawArgs)
+		internal void SetColor(ref CustomVertex.PositionColored pVertex, DrawArgs drawArgs)
 		{
 			vPos.X = pVertex.X;
 			vPos.Y = pVertex.Y;
@@ -1383,7 +1383,7 @@ namespace WorldWind
 		static Effect skyFromSpaceEffect = null;
 		static Effect skyFromAtmosphere = null;
 
-		public void Render(DrawArgs drawArgs)
+		internal void Render(DrawArgs drawArgs)
 		{
 			try
 			{

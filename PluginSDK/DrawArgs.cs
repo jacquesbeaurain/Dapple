@@ -18,31 +18,31 @@ namespace WorldWind
 	public class DrawArgs : IDisposable
 	{
 		public Device device;
-		public System.Windows.Forms.Control parentControl;
-		public static System.Windows.Forms.Control ParentControl = null;
+		internal System.Windows.Forms.Control parentControl;
+		internal static System.Windows.Forms.Control ParentControl = null;
 		public int numBoundaryPointsTotal;
 		public int numBoundaryPointsRendered;
 		public int numBoundariesDrawn;
 		public Font defaultDrawingFont;
-		public System.Drawing.Font defaultSubTitleFont;
-		public Font defaultSubTitleDrawingFont;
-		public Font toolbarFont;
+		internal System.Drawing.Font defaultSubTitleFont;
+		internal Font defaultSubTitleDrawingFont;
+		internal Font toolbarFont;
 		public int screenWidth;
 		public int screenHeight;
 		public static System.Drawing.Point LastMousePosition;
 		public int numberTilesDrawn;
-		public System.Drawing.Point CurrentMousePosition;
+		internal System.Drawing.Point CurrentMousePosition;
 		public string UpperLeftCornerText = "";
 		CameraBase m_WorldCamera;
-		public World m_CurrentWorld = null;
+		internal World m_CurrentWorld = null;
 		public static bool IsLeftMouseButtonDown = false;
 		public static bool IsRightMouseButtonDown = false;
-		public static DownloadQueue DownloadQueue = new DownloadQueue();
-        public static WorldWind.Widgets.RootWidget RootWidget = null;
-        public static WorldWind.NewWidgets.RootWidget NewRootWidget = null;
-        public int TexturesLoadedThisFrame = 0;
+		internal static DownloadQueue DownloadQueue = new DownloadQueue();
+		public static WorldWind.Widgets.RootWidget RootWidget = null;
+		  public static WorldWind.NewWidgets.RootWidget NewRootWidget = null;
+        internal int TexturesLoadedThisFrame = 0;
 		private static System.Drawing.Bitmap bitmap;
-		public static System.Drawing.Graphics Graphics = null;
+		internal static System.Drawing.Graphics Graphics = null;
 
 		public bool RenderWireFrame = false;
 
@@ -50,12 +50,12 @@ namespace WorldWind
         /// Table of all icon textures
         /// </summary>
         protected static Hashtable m_textures= new Hashtable();
-        public static Hashtable Textures
+        internal static Hashtable Textures
         {
             get { return m_textures; }
         }
 
-		public static CameraBase Camera = null;
+		  public static CameraBase Camera = null;
 		public CameraBase WorldCamera
 		{
 			get
@@ -69,8 +69,8 @@ namespace WorldWind
 			}
 		}
 
-        public static World CurrentWorldStatic = null;
-		public World CurrentWorld
+        internal static World CurrentWorldStatic = null;
+		  public World CurrentWorld
 		{
 			get
 			{
@@ -91,7 +91,7 @@ namespace WorldWind
 		/// <summary>
 		/// Seconds elapsed between start of previous frame and start of current frame.
 		/// </summary>
-		public static float LastFrameSecondsElapsed;
+		internal static float LastFrameSecondsElapsed;
 
 		static CursorType mouseCursor;
 		static CursorType lastCursor;
@@ -107,7 +107,7 @@ namespace WorldWind
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="parentForm"></param>
-		public DrawArgs( Device device, System.Windows.Forms.Control parentForm )
+		public DrawArgs(Device device, System.Windows.Forms.Control parentForm)
 		{
 			this.parentControl = parentForm;
 			DrawArgs.ParentControl = parentForm;
@@ -170,7 +170,7 @@ namespace WorldWind
 		/// <summary>
 		/// Creates a font.
 		/// </summary>
-		public Font CreateFont( string familyName, float emSize )
+		public Font CreateFont(string familyName, float emSize)
 		{
 			return CreateFont( familyName, emSize, System.Drawing.FontStyle.Regular );
 		}
@@ -178,7 +178,7 @@ namespace WorldWind
 		/// <summary>
 		/// Creates a font.
 		/// </summary>
-		public Font CreateFont( string familyName, float emSize, System.Drawing.FontStyle style )
+		internal Font CreateFont( string familyName, float emSize, System.Drawing.FontStyle style )
 		{
 			try
 			{
@@ -206,7 +206,7 @@ namespace WorldWind
 		/// <summary>
 		/// Creates a font.
 		/// </summary>
-		public Font CreateFont( FontDescription description )
+		internal Font CreateFont( FontDescription description )
 		{
 			try
 			{
@@ -289,7 +289,7 @@ namespace WorldWind
 		/// <summary>
 		/// Returns the time elapsed since last frame render operation started.
 		/// </summary>
-		public static float SecondsSinceLastFrame
+		internal static float SecondsSinceLastFrame
 		{
 			get
 			{
@@ -300,7 +300,7 @@ namespace WorldWind
 			}
 		}
 
-		public bool Repaint
+		internal bool Repaint
 		{
 			get
 			{

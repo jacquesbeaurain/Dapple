@@ -17,25 +17,25 @@ using Dapple.DAP;
 
 namespace Dapple.LayerGeneration
 {
-   public class DAPQuadLayerBuilder : LayerBuilder
+   internal class DAPQuadLayerBuilder : LayerBuilder
 	{
 		#region Static
 
-		public static readonly string URISchemeName = "gxdap";
-		public static readonly string CacheSubDir = "DAPImages";
-		public static readonly string StylesheetCacheSubDir = "DAP Stylesheets";
+		internal static readonly string URISchemeName = "gxdap";
+		internal static readonly string CacheSubDir = "DAPImages";
+		internal static readonly string StylesheetCacheSubDir = "DAP Stylesheets";
 
-      public const int DAP_TILE_SIZE = 256;
-      public const double DAP_TILE_LZTS = 22.5;
+      internal const int DAP_TILE_SIZE = 256;
+      internal const double DAP_TILE_LZTS = 22.5;
 
 		#endregion
 
       #region Member variables
 
       private QuadTileSet m_layer;
-		public int m_iHeight;
-		public int m_iTextureSizePixels;
-		public DataSet m_hDataSet;
+		internal int m_iHeight;
+		internal int m_iTextureSizePixels;
+		internal DataSet m_hDataSet;
 		private Server m_oServer;
 		private int m_iLevels;
 		private double m_dLevelZeroTileSizeDegrees;
@@ -45,13 +45,13 @@ namespace Dapple.LayerGeneration
 
 		#region Constructors
 
-		public DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent)
+		internal DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent)
 			:
 		   this(dataSet, worldWindow,  server, parent, 0, 256, 0, 0)
 		{
 		}
 
-		public DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent, int height, int size, double lvl0tilesize, int levels)
+		internal DAPQuadLayerBuilder(DataSet dataSet, WorldWindow worldWindow, Server server, IBuilder parent, int height, int size, double lvl0tilesize, int levels)
          :base(dataSet.Title, worldWindow, parent)
 		{
 			m_hDataSet = dataSet;
@@ -97,7 +97,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
 		{
 			get
 			{
@@ -126,7 +126,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public override bool Visible
+		internal override bool Visible
 		{
 			get
 			{
@@ -175,7 +175,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override GeographicBoundingBox Extents
+		internal override GeographicBoundingBox Extents
 		{
 			get
 			{
@@ -196,7 +196,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		public string ServerURL
+		internal string ServerURL
 		{
 			get
 			{
@@ -207,7 +207,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("DAP")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The dataset name used to access this data layer on the DAP server")]
-		public string DatasetName
+		internal string DatasetName
 		{
 			get
 			{
@@ -218,7 +218,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("DAP")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The DAP type of this data layer")]
-		public string DAPType
+		internal string DAPType
 		{
 			get
 			{
@@ -229,7 +229,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("DAP")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The location on your hard drive of this dataset, for datasets which are hosted on your Personal DAP server")]
-		public string LocalFilename
+		internal string LocalFilename
 		{
 			get
 			{
@@ -260,7 +260,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get
 			{
@@ -318,7 +318,7 @@ namespace Dapple.LayerGeneration
 		/// <summary>
 		/// The name of the stylesheet, as found in the server's GetStylesheets response.
 		/// </summary>
-		public String StyleSheetID
+		internal String StyleSheetID
 		{
 			get
 			{
@@ -327,25 +327,25 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public int ServerMajorVersion
+		internal int ServerMajorVersion
 		{
 			get { return m_oServer.MajorVersion; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool LayerFromSupportedServer
+		internal override bool LayerFromSupportedServer
 		{
 			get { return true; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool IsFromPersonalDapServer
+		internal bool IsFromPersonalDapServer
 		{
 			get { return m_oServer.IsPersonal; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override bool ServerIsInHomeView
+		internal override bool ServerIsInHomeView
 		{
 			get
 			{
@@ -357,7 +357,7 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-      public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+      internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          if (m_layer != null)
             return m_layer.bIsDownloading(out iBytesRead, out iTotalBytes);
@@ -369,12 +369,12 @@ namespace Dapple.LayerGeneration
          }
       }
       
-      public override RenderableObject GetLayer()
+      internal override RenderableObject GetLayer()
       {
          return GetQuadTileSet();
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          NameValueCollection queryColl = new NameValueCollection();
 
@@ -399,7 +399,7 @@ namespace Dapple.LayerGeneration
          return Utility.URI.CreateURI(URISchemeName, strHost, strPath, queryColl);
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), m_hDataSet.GetHashCode().ToString());
       }
@@ -416,7 +416,7 @@ namespace Dapple.LayerGeneration
          m_layer = null;
       }
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          DataSet hDSCopy = new DataSet();
          hDSCopy.Edition = m_hDataSet.Edition;
@@ -430,7 +430,7 @@ namespace Dapple.LayerGeneration
          return new DAPQuadLayerBuilder(hDSCopy, m_oWorldWindow, m_oServer, m_Parent, m_iHeight, m_iTextureSizePixels, this.LevelZeroTileSize, m_iLevels);
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is DAPQuadLayerBuilder)) return false;
          DAPQuadLayerBuilder castObj = obj as DAPQuadLayerBuilder;
@@ -550,7 +550,7 @@ namespace Dapple.LayerGeneration
       }
 
       // Note: in practice this will never get called, as DAP layers use a separate metadata handling process.
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "dap";
          szServerURL = m_oServer.Url;

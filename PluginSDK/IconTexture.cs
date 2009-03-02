@@ -17,9 +17,9 @@ namespace WorldWind.Renderable
 	public class IconTexture : IDisposable
 	{
 		public Texture Texture;
-		public int Width;
-		public int Height;
-        public int ReferenceCount = 0;
+		internal int Width;
+		internal int Height;
+        internal int ReferenceCount = 0;
 
         /// <summary>
         /// Base Save path for any downloaded images.  Set to CachePath\IconTextures by default.
@@ -27,13 +27,13 @@ namespace WorldWind.Renderable
         /// TODO: Should make this directory settable.
         /// TODO: Should have some mechanism to clear the cache out.
         /// </summary>
-        public static string BaseSavePath = Path.GetDirectoryName(Application.ExecutablePath) + @"\Cache\IconTextures";
+        internal static string BaseSavePath = Path.GetDirectoryName(Application.ExecutablePath) + @"\Cache\IconTextures";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.IconTexture"/> class 
 		/// from a texture file on disk.
 		/// </summary>
-		public IconTexture(Device device, string textureFileName)
+		internal IconTexture(Device device, string textureFileName)
 		{
             UpdateTexture(device, textureFileName);
 		}
@@ -42,7 +42,7 @@ namespace WorldWind.Renderable
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.IconTexture"/> class 
 		/// from a bitmap.
 		/// </summary>
-		public IconTexture(Device device, Bitmap image)
+		internal IconTexture(Device device, Bitmap image)
 		{
 			LoadImage(device, image);
 		}
@@ -67,7 +67,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public void UpdateTexture(Device device, string textureFileName)
+        internal void UpdateTexture(Device device, string textureFileName)
         {
             if ((textureFileName != null) && textureFileName.Length > 0)
             {
@@ -126,7 +126,7 @@ namespace WorldWind.Renderable
 
 		#region IDisposable Members
 
-		public void Dispose()
+		  public void Dispose()
 		{
 			if(Texture!=null)
 			{

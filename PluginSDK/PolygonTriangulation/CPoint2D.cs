@@ -7,23 +7,23 @@ namespace GeometryUtility
 	/// </summary>
 	
 	//A point in Coordinate System
-	public class CPoint2D
+	internal class CPoint2D
 	{
 		private double m_dCoordinate_X;
 		private double m_dCoordinate_Y;
 
-		public CPoint2D()
+		internal CPoint2D()
 		{
 		
 		}
 		
-		public CPoint2D(double xCoordinate, double yCoordinate)
+		internal CPoint2D(double xCoordinate, double yCoordinate)
 		{
 			m_dCoordinate_X=xCoordinate;
 			m_dCoordinate_Y=yCoordinate;
 		}
 
-		public double X
+		internal double X
 		{
 			set
 			{
@@ -35,7 +35,7 @@ namespace GeometryUtility
 			}
 		}
 
-		public double Y
+		internal double Y
 		{
 			set
 			{
@@ -47,7 +47,7 @@ namespace GeometryUtility
 			}
 		}
 
-		public static bool SamePoints(CPoint2D Point1,
+		internal static bool SamePoints(CPoint2D Point1,
 			CPoint2D Point2)
 		{
 		
@@ -63,7 +63,7 @@ namespace GeometryUtility
 				return false;
 		}
 		
-		public bool EqualsPoint(CPoint2D newPoint)
+		internal bool EqualsPoint(CPoint2D newPoint)
 		{
 		
 			double dDeff_X=
@@ -80,7 +80,7 @@ namespace GeometryUtility
 		}
 
 		/***To check whether the point is in a line segment***/
-		public bool InLine(CLineSegment lineSegment)
+		internal bool InLine(CLineSegment lineSegment)
 		{
 			bool bInline=false;
 
@@ -110,14 +110,14 @@ namespace GeometryUtility
 		}
 
 		/*** Distance between two points***/
-		public double DistanceTo(CPoint2D point)
+		internal double DistanceTo(CPoint2D point)
 		{
 			return Math.Sqrt((point.X-this.X)*(point.X-this.X) 
 				+ (point.Y-this.Y)*(point.Y-this.Y));
 
 		}
 
-		public bool PointInsidePolygon(CPoint2D[] polygonVertices)
+		internal bool PointInsidePolygon(CPoint2D[] polygonVertices)
 		{
 			if (polygonVertices.Length<3) //not a valid polygon
 				return false;
@@ -160,7 +160,7 @@ namespace GeometryUtility
 		}
 
 		/*********** Sort points from Xmin->Xmax ******/
-		public static void SortPointsByX(CPoint2D[] points)
+		internal static void SortPointsByX(CPoint2D[] points)
 		{
 			if (points.Length>1)
 			{
@@ -181,7 +181,7 @@ namespace GeometryUtility
 		}
 
 		/*********** Sort points from Ymin->Ymax ******/
-		public static void SortPointsByY(CPoint2D[] points)
+		internal static void SortPointsByY(CPoint2D[] points)
 		{
 			if (points.Length>1)
 			{

@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set the options for downloading the selected document
    /// </summary>
-   public partial class Document : DownloadOptions
+   internal partial class Document : DownloadOptions
    {
 		private String m_szExtension;
 
@@ -19,7 +19,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public Document(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal Document(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
@@ -32,7 +32,7 @@ namespace Dapple.Extract
          cbDownload.SelectedIndex = 0;
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return (Options.Document.DownloadOptions)cbDownload.SelectedIndex != Options.Document.DownloadOptions.DownloadOnly; }
 		}
@@ -44,7 +44,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
@@ -60,7 +60,7 @@ namespace Dapple.Extract
 			return result;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), m_szExtension));
 			if (System.IO.File.Exists(szFilename))

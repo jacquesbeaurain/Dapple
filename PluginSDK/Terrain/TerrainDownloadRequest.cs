@@ -14,9 +14,9 @@ namespace WorldWind.Terrain
    /// <summary>
    /// Terrain tile download request
    /// </summary>
-   public class TerrainDownloadRequest : GeoSpatialDownloadRequest
+   internal class TerrainDownloadRequest : GeoSpatialDownloadRequest
    {
-      public TerrainTile TerrainTile;
+      internal TerrainTile TerrainTile;
 
       const string ContentTypeZip = "application/zip";
       const string ContentType7z = "application/x-7z-compressed";
@@ -30,7 +30,7 @@ namespace WorldWind.Terrain
       /// <param name="row"></param>
       /// <param name="col"></param>
       /// <param name="targetLevel"></param>
-      public TerrainDownloadRequest(TerrainTile tile, TerrainTileService owner, int row, int col, int targetLevel)
+      internal TerrainDownloadRequest(TerrainTile tile, TerrainTileService owner, int row, int col, int targetLevel)
          : base(owner)
       {
          TerrainTile = tile;
@@ -44,7 +44,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Western bound of current request (decimal degrees)
       /// </summary>
-      public override float West
+      internal override float West
       {
          get
          {
@@ -55,7 +55,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Eastern bound of current request (decimal degrees)
       /// </summary>
-      public override float East
+      internal override float East
       {
          get
          {
@@ -66,7 +66,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Northern bound of current request (decimal degrees)
       /// </summary>
-      public override float North
+      internal override float North
       {
          get
          {
@@ -77,7 +77,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Southern bound of current request (decimal degrees)
       /// </summary>
-      public override float South
+      internal override float South
       {
          get
          {
@@ -88,7 +88,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Terrain request color
       /// </summary>
-      public override int Color
+      internal override int Color
       {
          get
          {
@@ -201,7 +201,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Download tile in foreground
       /// </summary>
-      public void DownloadInForeground()
+      internal void DownloadInForeground()
       {
          try
          {
@@ -241,7 +241,7 @@ namespace WorldWind.Terrain
       /// <summary>
       /// Calculates the relative importance of this download.
       /// </summary>
-      public override float CalculateScore()
+      protected override float CalculateScore()
       {
          return 0;
       }

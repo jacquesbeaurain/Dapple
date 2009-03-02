@@ -13,7 +13,7 @@ namespace Geosoft.GX.DAPGetData
    /// <summary>
    /// Store a list of all the servers
    /// </summary>
-   public class ServerList
+   internal class ServerList
    {
       #region Member Variables
       protected string m_strCSV;
@@ -27,7 +27,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the list of servers
       /// </summary>
-      public ArrayList Servers
+      internal ArrayList Servers
       {
          get { return new ArrayList(m_oServerList); }
          set { m_oServerList = new ArrayList(value); }
@@ -39,7 +39,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Default constructor
       /// </summary>
-      public ServerList()
+      internal ServerList()
       {         
          m_oServerList = new ArrayList();         
       }      
@@ -47,7 +47,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Default constructor
       /// </summary>
-      public ServerList(string cacheDir)
+      internal ServerList(string cacheDir)
       {
          m_oServerList = new ArrayList();
 
@@ -58,7 +58,7 @@ namespace Geosoft.GX.DAPGetData
 
       #region Public Methods
 #if !DAPPLE
-      public void Load(string strSecureToken)
+      internal void Load(string strSecureToken)
       {
          string strDir = string.Empty;
 
@@ -126,12 +126,12 @@ namespace Geosoft.GX.DAPGetData
 
       protected class ServerUpgradeInfo
       {
-         public string Name;
-         public int iMajorVersion;
-         public int iMinorVersion;
-         public Server.ServerStatus eStatus;
+         internal string Name;
+         internal int iMajorVersion;
+         internal int iMinorVersion;
+         internal Server.ServerStatus eStatus;
 
-         public ServerUpgradeInfo(string _Name, int _iMajorVersion, int _iMinorVersion, Server.ServerStatus _eStatus)
+         internal ServerUpgradeInfo(string _Name, int _iMajorVersion, int _iMinorVersion, Server.ServerStatus _eStatus)
          {
             Name = _Name;
             iMajorVersion = _iMajorVersion;
@@ -261,7 +261,7 @@ namespace Geosoft.GX.DAPGetData
       /// Save the list of servers to xml
       /// </summary>
       /// <returns></returns>
-      public void Save()
+      internal void Save()
       {
          XmlDocument oDoc;
          XmlElement oRoot;
@@ -288,7 +288,7 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentNullException">
       /// 	<para>The argument <paramref name="oServer"/> is <langword name="null"/>.</para>
       /// </exception>
-      public bool AddServer(Server oServer)
+      internal bool AddServer(Server oServer)
       {
          if (oServer == null) throw new ArgumentNullException("oServer");
 
@@ -314,7 +314,7 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentNullException">
       /// 	<para>The argument <paramref name="oServer"/> is <langword name="null"/>.</para>
       /// </exception>
-      public bool RemoveServer(Server oServer)
+      internal bool RemoveServer(Server oServer)
       {
          bool bRemoved = false;
 
@@ -337,7 +337,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Clear the list
       /// </summary>
-      public void Clear()
+      internal void Clear()
       {
          m_oServerList.Clear();
       }
@@ -352,7 +352,7 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentNullException">
       /// 	<para>The argument <paramref name="strUrl"/> is <langword name="null"/>.</para>
       /// </exception>
-      public Server FindServer(string strUrl)
+      internal Server FindServer(string strUrl)
       {
          if (strUrl == null) throw new ArgumentNullException("strUrl");
 

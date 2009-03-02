@@ -18,17 +18,17 @@ namespace Utility
 		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
 			internal struct DATA_BLOB 
 		{
-			public int cbData;
-			public IntPtr pbData;
+			internal int cbData;
+			internal IntPtr pbData;
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
 			internal struct CRYPTPROTECT_PROMPTSTRUCT 
 		{
-			public int cbSize;
-			public int dwPromptFlags;
-			public IntPtr hwndApp;
-			public String szPrompt;
+			internal int cbSize;
+			internal int dwPromptFlags;
+			internal IntPtr hwndApp;
+			internal String szPrompt;
 		}
 
 		// Win32 Function declarations
@@ -60,7 +60,7 @@ namespace Utility
 		/// this enum is used to control whether a user-specific or machine-specific
 		/// location is used to store sensitive data.
 		/// </summary>
-		public enum Store {USE_MACHINE_STORE = 1, USE_USER_STORE};
+		public enum Store { USE_MACHINE_STORE = 1, USE_USER_STORE };
 		private Store store;
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace Utility
 		/// <param name="plainText">The byte data to be encoded</param>
 		/// <param name="optionalEntropy">Additional entropy, recommended for machine-specific case</param>
 		/// <returns>Returns a byte array with the encoded data</returns>
-		public byte[] Encrypt(byte[] plainText, byte[] optionalEntropy) 
+		internal byte[] Encrypt(byte[] plainText, byte[] optionalEntropy) 
 		{
 			bool retVal = false;
 
@@ -183,7 +183,7 @@ namespace Utility
 		/// <param name="cipherText">Data to be decoded</param>
 		/// <param name="optionalEntropy">Additional entropy, recommended for machine-specific case</param>
 		/// <returns>Returns a byte array with the encoded data</returns>
-		public byte[] Decrypt(byte[] cipherText, byte[] optionalEntropy) 
+		internal byte[] Decrypt(byte[] cipherText, byte[] optionalEntropy) 
 		{
 			bool retVal = false;
 
@@ -283,7 +283,7 @@ namespace Utility
 		/// </summary>
 		/// <param name="plainText">The string to be encoded</param>
 		/// <returns>The resulting encoded string</returns>
-		public string EncryptStringToBase64(string plainText) 
+		internal string EncryptStringToBase64(string plainText) 
 		{
 			byte [] theBytes = unienc.GetBytes(plainText);
 
@@ -304,7 +304,7 @@ namespace Utility
 		/// </summary>
 		/// <param name="cypherText">The encoded data</param>
 		/// <returns>The original string</returns>
-		public string DecryptBase64AsString(string cypherText) 
+		internal string DecryptBase64AsString(string cypherText) 
 		{
 			byte [] theBytes = System.Convert.FromBase64String(cypherText);
 

@@ -20,13 +20,13 @@ namespace Mapack
 	///   of simultaneous linear equations.
 	///   This will fail if <see cref="FullRank"/> returns <see langword="false"/>.
 	/// </remarks>
-	public class QrDecomposition
+	internal class QrDecomposition
 	{
 		private Matrix QR;
 		private double[] Rdiag;
 
 		/// <summary>Construct a QR decomposition.</summary>	
-		public QrDecomposition(Matrix value)
+		internal QrDecomposition(Matrix value)
 		{
 			if (value == null)
 			{
@@ -91,7 +91,7 @@ namespace Mapack
 		/// <returns>A matrix that minimized the two norm of <c>Q * R * X - B</c>.</returns>
 		/// <exception cref="T:System.ArgumentException">Matrix row dimensions must be the same.</exception>
 		/// <exception cref="T:System.InvalidOperationException">Matrix is rank deficient.</exception>
-		public Matrix Solve(Matrix value)
+		internal Matrix Solve(Matrix value)
 		{
 			if (value == null)
 			{
@@ -158,7 +158,7 @@ namespace Mapack
 
 		/// <summary>Shows if the matrix <c>A</c> is of full rank.</summary>
 		/// <value>The value is <see langword="true"/> if <c>R</c>, and hence <c>A</c>, has full rank.</value>
-		public bool FullRank
+		internal bool FullRank
 		{
 			get
 			{
@@ -176,7 +176,7 @@ namespace Mapack
 		}
 	
 		/// <summary>Returns the upper triangular factor <c>R</c>.</summary>
-		public Matrix UpperTriangularFactor
+		internal Matrix UpperTriangularFactor
 		{
 			get
 			{
@@ -208,7 +208,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the orthogonal factor <c>Q</c>.</summary>
-		public Matrix OrthogonalFactor
+		internal Matrix OrthogonalFactor
 		{
 			get
 			{

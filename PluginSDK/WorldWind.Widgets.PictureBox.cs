@@ -10,7 +10,7 @@ namespace WorldWind.Widgets
 	/// <summary>
 	/// Summary description for PictureBox.
 	/// </summary>
-	public class PictureBox : IWidget, IInteractive
+	internal class PictureBox : IWidget, IInteractive
 	{
 		string m_Text = "";
 		byte m_Opacity = 255;
@@ -30,15 +30,15 @@ namespace WorldWind.Widgets
 		string m_ImageUri = null;
 		string clickableUrl = null;
 
-        public bool LoadAsUncompressed = false;
+        internal bool LoadAsUncompressed = false;
 
-		public string ClickableUrl
+		internal string ClickableUrl
 		{
 			get{ return clickableUrl; }
 			set{ clickableUrl = value; }
 		}
 
-		public double RefreshTime
+		internal double RefreshTime
 		{
 			get
 			{
@@ -51,7 +51,7 @@ namespace WorldWind.Widgets
 					m_RefreshTimer.Interval = value;
 			}
 		}
-		public byte Opacity
+		internal byte Opacity
 		{
 			get
 			{
@@ -63,14 +63,14 @@ namespace WorldWind.Widgets
 			}
 		}
 
-		public PictureBox()
+		internal PictureBox()
 		{
 			
 		}
 		
 		#region Properties
 
-		public string SaveFilePath
+		internal string SaveFilePath
 		{
 			get
 			{
@@ -82,7 +82,7 @@ namespace WorldWind.Widgets
 			}
 		}
 
-		public string ImageUri
+		internal string ImageUri
 		{
 			get
 			{
@@ -105,7 +105,7 @@ namespace WorldWind.Widgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -116,7 +116,7 @@ namespace WorldWind.Widgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -240,15 +240,15 @@ namespace WorldWind.Widgets
 		bool isLoading = false;
 		Sprite m_sprite = null;
 		SurfaceDescription m_surfaceDescription;
-		public bool IsLoaded = false;
+		internal bool IsLoaded = false;
         string m_currentImageUri = null;
         bool m_isMouseInside = false;
 
-        public event System.EventHandler OnMouseEnterEvent;
-        public event System.EventHandler OnMouseLeaveEvent;
-        public event System.Windows.Forms.MouseEventHandler OnMouseUpEvent;
+        internal event System.EventHandler OnMouseEnterEvent;
+        internal event System.EventHandler OnMouseLeaveEvent;
+        internal event System.Windows.Forms.MouseEventHandler OnMouseUpEvent;
 
-		public void Render(DrawArgs drawArgs)
+		  public void Render(DrawArgs drawArgs)
 		{
 			if(m_Visible)
 			{
@@ -451,46 +451,46 @@ namespace WorldWind.Widgets
             }
 		}
 
-        public bool SizeParentToImage = false;
+        internal bool SizeParentToImage = false;
 		#region IInteractive Members
 
-		public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)
+		  public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnKeyDown implementation
 			return false;
 		}
 
-		public bool OnKeyUp(System.Windows.Forms.KeyEventArgs e)
+		  public bool OnKeyUp(System.Windows.Forms.KeyEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnKeyUp implementation
 			return false;
 		}
 
-		public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+		  public bool OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnKeyPress implementation
 			return false;
 		}
 
-		public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
+		  public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnMouseDown implementation
 			return false;
 		}
 
-		public bool OnMouseEnter(EventArgs e)
+		  public bool OnMouseEnter(EventArgs e)
 		{
 			// TODO:  Add PictureBox.OnMouseEnter implementation
 			return false;
 		}
 
-		public bool OnMouseLeave(EventArgs e)
+		  public bool OnMouseLeave(EventArgs e)
 		{
 			// TODO:  Add PictureBox.OnMouseLeave implementation
 			return false;
 		}
 
-		public bool OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+		  public bool OnMouseMove(System.Windows.Forms.MouseEventArgs e)
 		{
 			// TODO:  Add PictureBox.OnMouseMove implementation
 			return false;

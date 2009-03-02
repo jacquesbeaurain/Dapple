@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace Dapple.LayerGeneration
 {
-	public interface IBuilder : ICloneable
+	internal interface IBuilder : ICloneable
 	{
 		string Title
 		{
@@ -56,10 +56,10 @@ namespace Dapple.LayerGeneration
       TreeNode[] getChildTreeNodes();
 	}
 
-	public delegate void LayerLoadedCallback(IBuilder builder);
-	public delegate void BuilderChangedHandler(LayerBuilder sender, BuilderChangeType changeType);
+	internal delegate void LayerLoadedCallback(IBuilder builder);
+	internal delegate void BuilderChangedHandler(LayerBuilder sender, BuilderChangeType changeType);
 
-	public enum BuilderChangeType
+	internal enum BuilderChangeType
 	{
 		LoadedSync,
 		LoadedASync,
@@ -72,7 +72,7 @@ namespace Dapple.LayerGeneration
 	}
 
 
-	public abstract class LayerBuilder : IBuilder
+	internal abstract class LayerBuilder : IBuilder
 	{
 		#region Member Variables
 
@@ -103,7 +103,7 @@ namespace Dapple.LayerGeneration
 
 		#region Constructor
 
-		public LayerBuilder(String szTreeNodeText, WorldWindow oWorldWindow, IBuilder oParent)
+		internal LayerBuilder(String szTreeNodeText, WorldWindow oWorldWindow, IBuilder oParent)
       {
          m_szTreeNodeText = szTreeNodeText;
          m_Parent = oParent;
@@ -128,7 +128,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether Dapple can display legend(s) for this data layer")]
-		public virtual bool SupportsLegend
+		internal virtual bool SupportsLegend
 		{
 			get
 			{
@@ -139,7 +139,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public abstract byte Opacity
+		internal abstract byte Opacity
 		{
 			get;
 			set;
@@ -148,7 +148,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		public abstract bool Visible
+		internal abstract bool Visible
 		{
 			get;
 			set;
@@ -168,7 +168,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public abstract GeographicBoundingBox Extents
+		internal abstract GeographicBoundingBox Extents
 		{
 			get;
 		}
@@ -176,7 +176,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(false)] // Don't make this browsable until views have been reinstated.
 		[System.ComponentModel.Description("Indicates that this data layer will not be saved to views")]
-		public bool Temporary
+		internal bool Temporary
 		{
 			get { return m_bTemporary; }
 			set { m_bTemporary = value; }
@@ -198,7 +198,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public abstract string ServerTypeIconKey
+		internal abstract string ServerTypeIconKey
 		{
 			get;
 		}
@@ -219,7 +219,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool Failed
+		internal bool Failed
 		{
 			get
 			{
@@ -228,7 +228,7 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool IsAdded
+		internal bool IsAdded
 		{
 			get
 			{
@@ -249,7 +249,7 @@ namespace Dapple.LayerGeneration
 		/// Whether the layer's server was loaded on-demand, 
 		/// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public virtual bool ServerIsInHomeView
+		internal virtual bool ServerIsInHomeView
 		{
 			get
 			{
@@ -261,7 +261,7 @@ namespace Dapple.LayerGeneration
 		/// Whether the layer is from a server type that can apper in the server tree.
 		/// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public virtual bool LayerFromSupportedServer
+		internal virtual bool LayerFromSupportedServer
 		{
 			get
 			{
@@ -273,21 +273,21 @@ namespace Dapple.LayerGeneration
 
 		#region Public Methods
 
-		public abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
+		internal abstract bool bIsDownloading(out int iBytesRead, out int iTotalBytes);
 
 		public virtual XmlNode GetMetaData(XmlDocument oDoc)
 		{
 			return null;
 		}
 
-		public virtual string[] GetLegendURLs()
+		internal virtual string[] GetLegendURLs()
 		{
 			return null;
 		}
 
-		public abstract RenderableObject GetLayer();
+		internal abstract RenderableObject GetLayer();
 
-		public bool exportToGeoTiff(String szFilename)
+		internal bool exportToGeoTiff(String szFilename)
 		{
 			if (!GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(this.Extents)) return false;
 			String szTempMetaFilename = String.Empty;
@@ -396,14 +396,14 @@ namespace Dapple.LayerGeneration
 			return true;
 		}
 
-		public abstract string GetURI();
+		internal abstract string GetURI();
 
-		public abstract string GetCachePath();
+		internal abstract string GetCachePath();
 
 		/// <summary>
 		/// Asynchronous addition of layer
 		/// </summary>
-		public void AsyncAddLayer()
+		internal void AsyncAddLayer()
 		{
 			m_blnFailed = false;
 			if (!m_blnIsLoading)
@@ -426,7 +426,7 @@ namespace Dapple.LayerGeneration
 		/// <summary>
 		/// Synchronous addition of layer
 		/// </summary>
-		public void SyncAddLayer(bool forceload)
+		internal void SyncAddLayer(bool forceload)
 		{
 			if (forceload || !m_blnIsLoading)
 			{
@@ -445,7 +445,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public void RefreshLayer()
+		internal void RefreshLayer()
 		{
 			lock (m_lockObject)
 			{
@@ -462,7 +462,7 @@ namespace Dapple.LayerGeneration
 			AsyncAddLayer();
 		}
 
-		public void PushBackInRenderOrder()
+		internal void PushBackInRenderOrder()
 		{
 			lock (m_lockObject)
 			{
@@ -477,7 +477,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public bool RemoveLayer()
+		internal bool RemoveLayer()
 		{
 			bool bRemoved = false;
 			bool bReturn = false;
@@ -520,16 +520,16 @@ namespace Dapple.LayerGeneration
 
 		protected abstract void CleanUpLayer(bool bFinal);
 
-      public abstract override bool Equals(object obj);
+		public abstract override bool Equals(object obj);
 
 		public abstract override int GetHashCode();
 
-      public abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
+      internal abstract void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId);
 
 		/// <summary>
 		/// Add this server's URL to the home view.
 		/// </summary>
-		public virtual void AddServerToHomeView(MainForm oMainForm)
+		internal virtual void AddServerToHomeView(MainForm oMainForm)
 		{
 		}
 
@@ -590,7 +590,7 @@ namespace Dapple.LayerGeneration
 
 		#region ICloneable Members
 
-      public object Clone()
+		public object Clone()
       {
          LayerBuilder result = CloneSpecific() as LayerBuilder;
          result.m_bOpacity = this.m_bOpacity;
@@ -600,13 +600,13 @@ namespace Dapple.LayerGeneration
          return result;
       }
 
-		public abstract object CloneSpecific();
+		internal abstract object CloneSpecific();
 
 		#endregion
 
       #region IBuilder Members
 
-      public TreeNode[] getChildTreeNodes()
+		public TreeNode[] getChildTreeNodes()
       {
          return new TreeNode[0];
       }

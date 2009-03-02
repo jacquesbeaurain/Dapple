@@ -6,7 +6,7 @@ namespace PolygonCuttingEar
 	/// <summary>
 	/// Summary description for Class1.
 	/// </summary>
-	public class CPolygonShape
+	internal class CPolygonShape
 	{
 		private CPoint2D[] m_aInputVertices;
 		private CPoint2D[] m_aUpdatedPolygonVertices;
@@ -15,7 +15,7 @@ namespace PolygonCuttingEar
 			=new System.Collections.ArrayList();
 		private  CPoint2D[][] m_aPolygons;
 
-		public int NumberOfPolygons
+		internal int NumberOfPolygons
 		{
 			get
 			{
@@ -23,7 +23,7 @@ namespace PolygonCuttingEar
 			}
 		}
 
-		public CPoint2D[] Polygons(int index)
+		internal CPoint2D[] Polygons(int index)
 		{
 			if (index< m_aPolygons.Length)
 				return m_aPolygons[index];
@@ -31,7 +31,7 @@ namespace PolygonCuttingEar
 				return null;
 		}
 
-		public CPolygonShape(CPoint2D[] vertices)
+		internal CPolygonShape(CPoint2D[] vertices)
 		{
 			int nVertices=vertices.Length;
 			if (nVertices<3)
@@ -246,7 +246,7 @@ namespace PolygonCuttingEar
 		/*******************************************************
 		To cut an ear from polygon to make ears and an updated polygon:
 		*******************************************************/
-		public void CutEar()
+		internal void CutEar()
 		{
 			CPolygon polygon=new CPolygon(m_aUpdatedPolygonVertices);
 			bool bFinish=false;

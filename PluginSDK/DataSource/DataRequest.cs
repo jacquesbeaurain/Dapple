@@ -17,7 +17,7 @@ namespace WorldWind.DataSource
     /// <param name="drd">The Data Request Descriptor that should be located in the cache</param>
     /// <returns>A stream prepared to read the cached data, or null if the request was not found
     /// in the cache (or was too old).</returns>
-    public delegate Stream CacheCallback(DataRequestDescriptor drd);
+    internal delegate Stream CacheCallback(DataRequestDescriptor drd);
 
     /// <summary>
     /// Callback function to be called upon completion of the data request - either from cache
@@ -25,7 +25,7 @@ namespace WorldWind.DataSource
     /// thread!
     /// </summary>
     /// <param name="drd">The complete data request</param>
-    public delegate void CompletionCallback(DataRequest dr);
+    internal delegate void CompletionCallback(DataRequest dr);
 
     /// <summary>
     /// Callback function to return current download priority of the request. Priority should be
@@ -33,9 +33,9 @@ namespace WorldWind.DataSource
     /// are removed from the download queue.
     /// </summary>
     /// <returns>Download priority. Negative = remove from queue; 0-100 = lowest to highest priority.</returns>
-    public delegate float PriorityCallback();
+    internal delegate float PriorityCallback();
 
-    public enum DataRequestState
+	 public enum DataRequestState
     {
         Queued,
         NoCache,
@@ -49,42 +49,42 @@ namespace WorldWind.DataSource
     /// <summary>
     /// The descriptor for new data requests.
     /// </summary>
-    public struct DataRequestDescriptor
+	 public struct DataRequestDescriptor
     {
         /// <summary>
         /// The URL to load (in the future, this will also allow piping from external applications).
         /// Must not be null.
         /// </summary>
-        public string Source;
+        internal string Source;
         /// <summary>
         /// Relative path to cache the data in (%WW_HOME/Cache/ will be automatically prefixed). Can be null
         /// if no caching should be performed (eg. for file access).
         /// </summary>
-        public string CacheLocation;
+        internal string CacheLocation;
         /// <summary>
         /// Maximum age of the cached file. Can be used to override the default for frequently updated data.
         /// </summary>
-        public TimeSpan? MaxCacheAge;
+        internal TimeSpan? MaxCacheAge;
 
         /// <summary>
         /// A human readable description of what this data request is for.
         /// </summary>
-        public string Description;
+        internal string Description;
 
-        public int BasePriority;
+        internal int BasePriority;
 
-        public CacheCallback CacheCallback;
+        internal CacheCallback CacheCallback;
 
-        public CompletionCallback CompletionCallback;
+        internal CompletionCallback CompletionCallback;
 
-        public PriorityCallback PriorityCallback;
+        internal PriorityCallback PriorityCallback;
 
-        public DataRequestDescriptor(string source, string cacheLocation, CacheCallback callback) : this(source, cacheLocation)
+        internal DataRequestDescriptor(string source, string cacheLocation, CacheCallback callback) : this(source, cacheLocation)
         {
             CacheCallback = callback;
         }
 
-        public DataRequestDescriptor(string source, string cacheLocation)
+        internal DataRequestDescriptor(string source, string cacheLocation)
         {
             this.Source = source;
             this.CacheLocation = cacheLocation;
@@ -101,7 +101,7 @@ namespace WorldWind.DataSource
     /// <summary>
     /// A 'handle' to the current state of a data request. May be polled from other threads.
     /// </summary>
-    public abstract class DataRequest : IComparable
+	 public abstract class DataRequest : IComparable
     {
         #region Members
         protected Object m_lock;
@@ -115,22 +115,22 @@ namespace WorldWind.DataSource
         #endregion
 
         #region Properties
-        public DataRequestDescriptor RequestDescriptor { get { return m_request; } }
-        public NameValueCollection Headers
+        internal DataRequestDescriptor RequestDescriptor { get { return m_request; } }
+        internal NameValueCollection Headers
         {
             get
             {
                 return m_headers;
             }
         }
-        public String Source
+        internal String Source
         {
             get
             {
                 return m_request.Source;
             }
         }
-        public DataRequestState State
+        internal DataRequestState State
         {
             get
             {
@@ -141,40 +141,40 @@ namespace WorldWind.DataSource
                 m_state = value;
             }
         }
-        public Stream Stream
+        internal Stream Stream
         {
             get
             {
                 return m_contentStream;
             }
         }
-        public string CacheLocation
+        internal string CacheLocation
         {
             get
             {
                 return m_request.CacheLocation;
             }
         }
-        public bool CacheHit
+        internal bool CacheHit
         {
             get
             {
                 return m_cacheHit;
             }
         }
-        public float Priority
+        internal float Priority
         {
             get
             {
                 return m_priority;
             }
         }
-        public DateTime NextTry
+        internal DateTime NextTry
         {
             get { return m_nextTry; }
             set { m_nextTry = value; }
         }
-        abstract public float Progress
+        abstract internal float Progress
         {
             get;
         }
@@ -189,12 +189,12 @@ namespace WorldWind.DataSource
 
 
         #region Static Properties
-        static public int CacheHits { get { return m_cacheHits; } }
-        static public int TotalRequests { get { return m_totalRequests; } }
-        static public int TotalBytes { get { return m_totalBytes; } }
+        public static int CacheHits { get { return m_cacheHits; } }
+        public static int TotalRequests { get { return m_totalRequests; } }
+        public static int TotalBytes { get { return m_totalBytes; } }
         #endregion
 
-        public DataRequest(DataRequestDescriptor request)
+        internal DataRequest(DataRequestDescriptor request)
         {
             m_lock = new Object();
             m_request = request;
@@ -207,7 +207,7 @@ namespace WorldWind.DataSource
             m_nextTry = DateTime.Now;
         }
 
-        public void UpdatePriority()
+        internal void UpdatePriority()
         {
             // postponed?
             if (m_nextTry > DateTime.Now)
@@ -222,12 +222,12 @@ namespace WorldWind.DataSource
                 m_priority = 50;
         }
 
-        public void Cancel()
+        internal void Cancel()
         {
             this.State = DataRequestState.Cancelled;
         }
 
-        public abstract void Start();
+        internal abstract void Start();
 
         /// <summary>
         /// Try to fulfill the request from cache, if a cache directory has been set.
@@ -235,7 +235,7 @@ namespace WorldWind.DataSource
         /// and the state is set to finished.
         /// </summary>
         /// <returns>True if the request could be served from the cache.</returns>
-        public bool TryCache()
+        internal bool TryCache()
         {
             try
             {
@@ -268,7 +268,7 @@ namespace WorldWind.DataSource
 
         #region IComparable Members
 
-        public int CompareTo(object obj)
+		  public int CompareTo(object obj)
         {
             DataRequest dr = obj as DataRequest;
             if(dr == null)

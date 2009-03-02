@@ -58,11 +58,11 @@ namespace Collab.jhuapl.Whiteboard
 	/// <summary>
 	/// A hotspot is a point of interest placed on the whiteboard
 	/// </summary>
-	public class Hotspot : WorldWind.Renderable.Icon
+	internal class Hotspot : WorldWind.Renderable.Icon
 	{
 		Color m_color;
 
-		public Hotspot(
+		internal Hotspot(
 			string id,
 			double lat,
 			double lon,
@@ -209,7 +209,7 @@ namespace Collab.jhuapl.Whiteboard
             return bitmap;
         }
 
-		public override string ToString()
+		  public override string ToString()
 		{
 			// build long description from values
 			string retString = "Hotspot:" +

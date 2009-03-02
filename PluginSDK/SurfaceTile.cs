@@ -7,7 +7,7 @@ using Utility;
 
 namespace WorldWind
 {
-	public class SurfaceTile : IDisposable
+	internal class SurfaceTile : IDisposable
 	{
 		#region Private Members
 		int m_Level;
@@ -54,7 +54,7 @@ namespace WorldWind
 		/// <param name="east">East. (in degrees)</param>
 		/// <param name="level">Level.</param>
 		/// <param name="parentWorldSurfaceRenderer">Parent world surface renderer.</param>
-		public SurfaceTile(double north, double south, double west, double east, int level,
+		internal SurfaceTile(double north, double south, double west, double east, int level,
 			WorldSurfaceRenderer parentWorldSurfaceRenderer)
 		{
 			m_North = north;
@@ -125,7 +125,7 @@ namespace WorldWind
 		/// Gets the render texture.
 		/// </summary>
 		/// <value></value>
-		public Texture RenderTexture
+		internal Texture RenderTexture
 		{
 			get
 			{
@@ -168,7 +168,7 @@ namespace WorldWind
 		/// Initializes the specified draw args.
 		/// </summary>
 		/// <param name="drawArgs">DrawArgs.</param>
-		public void Initialize(DrawArgs drawArgs)
+		internal void Initialize(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -217,7 +217,7 @@ namespace WorldWind
 		/// Updates the render surface.
 		/// </summary>
 		/// <param name="drawArgs">Draw args.</param>
-		public void UpdateRenderSurface(DrawArgs drawArgs)
+		internal void UpdateRenderSurface(DrawArgs drawArgs)
 		{
 			if(m_RenderTexture == null)
 			{
@@ -837,7 +837,7 @@ namespace WorldWind
 		/// Updates the specified draw args.
 		/// </summary>
 		/// <param name="drawArgs">Draw args.</param>
-		public void Update(DrawArgs drawArgs)
+		internal void Update(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -1018,7 +1018,7 @@ namespace WorldWind
 		/// <returns>
 		/// 	<c>true</c> if the surface tile is renderable; otherwise, <c>false</c>.
 		/// </returns>
-		public bool IsRenderable(DrawArgs drawArgs)
+		internal bool IsRenderable(DrawArgs drawArgs)
 		{
 			double _centerLat = 0.5*(m_North + m_South);
 			double _centerLon = 0.5*(m_East + m_West);
@@ -1094,13 +1094,13 @@ namespace WorldWind
 		}
 
 		int m_FramesSinceLastUpdate = 0;
-		public static int SurfaceTileRefreshHz = 35;
+		internal static int SurfaceTileRefreshHz = 35;
 
 		/// <summary>
 		/// Renders the surface tile.
 		/// </summary>
 		/// <param name="drawArgs">Draw args.</param>
-		public void Render(DrawArgs drawArgs)
+		internal void Render(DrawArgs drawArgs)
 		{
 			try
 			{
@@ -1258,12 +1258,12 @@ namespace WorldWind
 
 	class DynamicTexture : System.IDisposable
 	{		
-		public CustomVertex.PositionNormalTextured[] nwVerts;
-		public CustomVertex.PositionNormalTextured[] neVerts;
-		public CustomVertex.PositionNormalTextured[] swVerts;
-		public CustomVertex.PositionNormalTextured[] seVerts;
+		internal CustomVertex.PositionNormalTextured[] nwVerts;
+		internal CustomVertex.PositionNormalTextured[] neVerts;
+		internal CustomVertex.PositionNormalTextured[] swVerts;
+		internal CustomVertex.PositionNormalTextured[] seVerts;
 
-		public DynamicTexture()
+		internal DynamicTexture()
 		{
 		}
 		

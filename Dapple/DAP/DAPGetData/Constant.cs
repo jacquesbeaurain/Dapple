@@ -5,9 +5,9 @@ namespace Geosoft.GX.DAPGetData
    /// <summary>
    /// Summary description for Constant.
    /// </summary>
-   public class Constant
+   internal class Constant
    {
-      public Constant()
+      internal Constant()
       {
       }
 
@@ -18,7 +18,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="hSrcBB"></param>
       /// <param name="hDestCS"></param>
       /// <returns></returns>
-      static public bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipSrcIPJ, Geosoft.GXNet.CIPJ ipDestIPJ)
+      static internal bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipSrcIPJ, Geosoft.GXNet.CIPJ ipDestIPJ)
       {
          Geosoft.GXNet.CPJ    hPJ = null;
 
@@ -102,7 +102,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="hSrcBB"></param>
       /// <param name="hDestCS"></param>
       /// <returns></returns>
-      static public bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipDestIPJ)
+      static internal bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipDestIPJ)
       {
          Geosoft.GXNet.CIPJ ipSrcIPJ = null;
 
@@ -126,7 +126,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="hSrcBB"></param>
       /// <param name="hDestCS"></param>
       /// <returns></returns>
-      static public bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipSrcIPJ, Geosoft.Dap.Common.CoordinateSystem hDestCS)
+      static internal bool Reproject(Geosoft.Dap.Common.BoundingBox hSrcBB, Geosoft.GXNet.CIPJ ipSrcIPJ, Geosoft.Dap.Common.CoordinateSystem hDestCS)
       {
          Geosoft.GXNet.CIPJ hDestIPJ = null;
 
@@ -151,7 +151,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="hSrcBB"></param>
       /// <param name="hDestCS"></param>
       /// <returns></returns>
-      static public bool Reproject(Geosoft.Dap.Common.BoundingBox  hSrcBB, Geosoft.Dap.Common.CoordinateSystem hDestCS)
+      static internal bool Reproject(Geosoft.Dap.Common.BoundingBox  hSrcBB, Geosoft.Dap.Common.CoordinateSystem hDestCS)
       {
 #if !DAPPLE
          Geosoft.GXNet.CIPJ   hSrcIPJ = null; 
@@ -192,7 +192,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="dMaxZ"></param>
       /// <param name="hIPJ"></param>
       /// <returns></returns>
-      static public Geosoft.Dap.Common.BoundingBox SetCoordinateSystem(double dMinX, double dMinY, double dMinZ, double dMaxX, double dMaxY, double dMaxZ, Geosoft.GXNet.CIPJ hIPJ)
+      static internal Geosoft.Dap.Common.BoundingBox SetCoordinateSystem(double dMinX, double dMinY, double dMinZ, double dMaxX, double dMaxY, double dMaxZ, Geosoft.GXNet.CIPJ hIPJ)
       {
          Geosoft.Dap.Common.BoundingBox   hBoundingBox = null;
          string                           strProjectionName = string.Empty;
@@ -221,7 +221,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="dMin"></param>
       /// <param name="dMax"></param>
       /// <returns></returns>
-      static public bool IsValidBoundingBox(Geosoft.Dap.Common.BoundingBox oBox)
+      static internal bool IsValidBoundingBox(Geosoft.Dap.Common.BoundingBox oBox)
       {
          if (oBox.MinX < oBox.MaxX && oBox.MinY < oBox.MaxY)
             return true;
@@ -233,7 +233,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUrl"></param>
       /// <returns></returns>
-      static public string StripQualifiers(string strPath)
+      static internal string StripQualifiers(string strPath)
       {
          int iIndex = strPath.LastIndexOf("(");
          int iDotIndex = strPath.LastIndexOf(".");
@@ -248,7 +248,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="strUrl"></param>
       /// <returns></returns>
-      static public string StripExtension(string strPath)
+      static internal string StripExtension(string strPath)
       {
          int iDotIndex = strPath.LastIndexOf(".");
 
@@ -280,7 +280,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="szUrl"></param>
       /// <returns></returns>
-      static public string MakeUrl(string szUrl)
+      static internal string MakeUrl(string szUrl)
       {
          szUrl = StripGeosoftEnding(szUrl);
          return szUrl + "/DAP"; 
@@ -291,7 +291,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="d"></param>
       /// <returns></returns>
-      static public string FormatCoordinate(double d)
+      static internal string FormatCoordinate(double d)
       {
          return d.ToString("f2");
       }
@@ -302,7 +302,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="iWidth"></param>
       /// <param name="iHeight"></param>
-      static public void SetSizeInSettingsMeta(Int32 iWidth, Int32 iHeight)
+      static internal void SetSizeInSettingsMeta(Int32 iWidth, Int32 iHeight)
       {
          Geosoft.GXNet.CMETA  hMeta = null;
          Int32                iDapClass;
@@ -345,7 +345,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="iWidth"></param>
       /// <param name="iHeight"></param>
-      static public void GetSizeInSettingsMeta(out Int32 iWidth, out Int32 iHeight)
+      static internal void GetSizeInSettingsMeta(out Int32 iWidth, out Int32 iHeight)
       {
          Geosoft.GXNet.CMETA  hMeta = null;
          Int32                iDapClass;
@@ -388,7 +388,7 @@ namespace Geosoft.GX.DAPGetData
       /// Set the current result view of this dialog in the ap meta settings
       /// </summary>
       /// <param name="bView"></param>
-      static public void SetResultViewInSettingsMeta(bool bView)
+      static internal void SetResultViewInSettingsMeta(bool bView)
       {
          Geosoft.GXNet.CMETA  hMeta = null;
          Int32                iDapClass;
@@ -428,7 +428,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the result view of the dialog from the meta settings
       /// </summary>
       /// <param name="bView"></param>
-      static public void GetResultViewInSettingsMeta(out bool bView)
+      static internal void GetResultViewInSettingsMeta(out bool bView)
       {
          Geosoft.GXNet.CMETA  hMeta = null;
          Int32                iDapClass;
@@ -471,7 +471,7 @@ namespace Geosoft.GX.DAPGetData
       /// Set the current selected dap server in the ap meta settings
       /// </summary>
       /// <param name="bView"></param>
-      static public void SetSelectedServerInSettingsMeta(string szUrl)
+      static internal void SetSelectedServerInSettingsMeta(string szUrl)
       {
          Geosoft.GXNet.CMETA  hMeta = null;
          Int32                iDapClass;
@@ -510,7 +510,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the selected server from the meta settings
       /// </summary>
       /// <param name="bView"></param>
-      static public void GetSelectedServerInSettingsMeta(out string szUrl)
+      static internal void GetSelectedServerInSettingsMeta(out string szUrl)
       {
          Geosoft.GXNet.CMETA  hMeta = null;
          Int32                iDapClass;
@@ -546,22 +546,22 @@ namespace Geosoft.GX.DAPGetData
       }
 #endif
 
-      public class Xml
+      internal class Xml
       {
-         public class Tag
+         internal class Tag
          {
-            public static string Geosoft_Xml = "geosoft_xml";
-            public static string Server = "server";
+            internal static string Geosoft_Xml = "geosoft_xml";
+            internal static string Server = "server";
          }
 
-         public class Attr
+         internal class Attr
          {
-            public static string Name = "name";
-            public static string Url = "url";
-            public static string Status = "status";
-            public static string Major_Version = "major_version";
-            public static string Minor_Version = "minor_version";
-            public static string CacheVersion = "cache_version";
+            internal static string Name = "name";
+            internal static string Url = "url";
+            internal static string Status = "status";
+            internal static string Major_Version = "major_version";
+            internal static string Minor_Version = "minor_version";
+            internal static string CacheVersion = "cache_version";
          }
       }
 

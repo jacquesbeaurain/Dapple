@@ -7,9 +7,9 @@ using System.IO;
 
 namespace Dapple.KML
 {
-	public static class KMLCreation
+	internal static class KMLCreation
 	{
-		public static RenderableObject CreateKMLLayer(KMLFile oSource, World oWorld, out GeographicBoundingBox oBounds)
+		internal static RenderableObject CreateKMLLayer(KMLFile oSource, World oWorld, out GeographicBoundingBox oBounds)
 		{
 			oBounds = GeographicBoundingBox.NullBox();
 			RenderableObject result = Construct(Path.GetDirectoryName(oSource.Filename), oSource.Document, oWorld, oBounds, null, null);
@@ -165,7 +165,7 @@ namespace Dapple.KML
 
 	class KMLRenderableObjectList : RenderableObjectList
 	{
-		public KMLRenderableObjectList(String strName)
+		internal KMLRenderableObjectList(String strName)
 			: base(strName)
 		{
 			m_blAllowDuplicateNames = true;

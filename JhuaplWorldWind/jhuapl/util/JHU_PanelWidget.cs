@@ -63,7 +63,7 @@ namespace jhuapl.util
 	/// 
 	/// Panels cannot be closed, resized or moved (dragged).
 	/// </summary>
-	public class JHU_PanelWidget : JHU_WidgetCollection, jhuapl.util.IWidget, jhuapl.util.IInteractive
+	internal class JHU_PanelWidget : JHU_WidgetCollection, jhuapl.util.IWidget, jhuapl.util.IInteractive
 	{
 		#region Protected Members
 
@@ -224,42 +224,42 @@ namespace jhuapl.util
 		/// <summary>
 		/// The text to render when the body is hidden
 		/// </summary>
-		public string Text = "";
+		internal string Text = "";
 
 		/// <summary>
 		/// Whether or not to ever render the header
 		/// </summary>
-		public bool HeaderEnabled = true;
+		internal bool HeaderEnabled = true;
 
 		#endregion 
 
 		#region Properties
 
-		public Microsoft.DirectX.Direct3D.Font TextFont
+		internal Microsoft.DirectX.Direct3D.Font TextFont
 		{
 			get { return m_TextFont; }
 			set { m_TextFont = value; }
 		}
 
-		public System.Drawing.Color HeaderColor
+		internal System.Drawing.Color HeaderColor
 		{
 			get { return m_HeaderColor; }
 			set { m_HeaderColor = value; }
 		}
 
-		public int HeaderHeight
+		internal int HeaderHeight
 		{
 			get { return m_headerHeight; }
 			set { m_headerHeight = value; }
 		}
 
-		public System.Drawing.Color BorderColor
+		internal System.Drawing.Color BorderColor
 		{
 			get { return m_BorderColor; }
 			set { m_BorderColor = value; }
 		}
 
-		public System.Drawing.Color BackgroundColor
+		internal System.Drawing.Color BackgroundColor
 		{
 			get { return m_BackgroundColor; }
 			set { m_BackgroundColor = value; }
@@ -269,7 +269,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// The top edge of this widget.
 		/// </summary>
-		public int Top
+		internal int Top
 		{
 			get
 			{
@@ -284,7 +284,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// The bottom edge of this widget
 		/// </summary>
-		public int Bottom
+		internal int Bottom
 		{
 			get 
 			{
@@ -299,7 +299,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// The left edge of this widget
 		/// </summary>
-		public int Left
+		internal int Left
 		{
 			get
 			{
@@ -311,7 +311,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// The right edge of this widget
 		/// </summary>
-		public int Right
+		internal int Right
 		{
 			get
 			{
@@ -323,7 +323,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Location within the form of where the client area is
 		/// </summary>
-		public System.Drawing.Point BodyLocation
+		internal System.Drawing.Point BodyLocation
 		{
 			get
 			{
@@ -343,7 +343,7 @@ namespace jhuapl.util
 		/// Form Widget Constructor
 		/// </summary>
 		/// <param name="name">Name of this form.  Name is displayed in header.</param>
-		public JHU_PanelWidget(string name)
+		internal JHU_PanelWidget(string name)
 		{
 			m_name = name;
 		}
@@ -352,7 +352,7 @@ namespace jhuapl.util
 		/// Adds a new child widget
 		/// </summary>
 		/// <param name="widget">The widget to be added</param>
-		new public void Add(jhuapl.util.IWidget widget)
+		new internal void Add(jhuapl.util.IWidget widget)
 		{
 			m_ChildWidgets.Add(widget);
 			widget.ParentWidget = this;
@@ -362,7 +362,7 @@ namespace jhuapl.util
 		/// Removes a child widget
 		/// </summary>
 		/// <param name="widget">The widget to be removed</param>
-		new public void Remove(jhuapl.util.IWidget widget)
+		new internal void Remove(jhuapl.util.IWidget widget)
 		{
 			m_ChildWidgets.Remove(widget);
 		}
@@ -370,7 +370,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Try to clean up everything.
 		/// </summary>
-		public void Dispose()
+		internal void Dispose()
 		{
 			if(m_ChildWidgets != null)
 			{

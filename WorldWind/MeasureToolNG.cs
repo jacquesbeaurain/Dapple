@@ -165,7 +165,7 @@ namespace MeasureToolNewgen.Plugins
             this.PerformLayout();
         }
 
-        public MeasureWinResult(MeasureToolNG plugin)
+        internal MeasureWinResult(MeasureToolNG plugin)
         {
             this.plugin = plugin;
 
@@ -197,13 +197,13 @@ namespace MeasureToolNewgen.Plugins
         }
 
         #region Update Methods
-        public void LengthText(string text)
+        internal void LengthText(string text)
         {
             measureResult.Text = text;
         }
 
         //TODO: Make a better graph style
-        /*public void CreateGraph(ArrayList elevProfile)
+        /*internal void CreateGraph(ArrayList elevProfile)
         {
             if (elevProfile != null)
             {
@@ -269,10 +269,10 @@ namespace MeasureToolNewgen.Plugins
     /// <summary>
     /// Planimetric Measure Tool plug-in
     /// </summary>
-    public class MeasureToolNG : WorldWind.PluginEngine.Plugin
+    internal class MeasureToolNG : WorldWind.PluginEngine.Plugin
     {
         //MenuItem menuItem;
-        public MeasureToolLayer layer;
+        internal MeasureToolLayer layer;
         MeasureAreaLayer arealayer;
         MeasureWinResult resultwindow;
         TerrainGraphForm tg;
@@ -280,7 +280,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Plugin entry point 
         /// </summary>
-        public override void Load()
+        internal override void Load()
         {
             World curworld = ParentApplication.WorldWindow.CurrentWorld;
             layer = new MeasureToolLayer(curworld,
@@ -326,7 +326,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Unload our plugin
         /// </summary>
-        public override void Unload()
+        internal override void Unload()
         {
             //if (menuItem != null)
             {
@@ -352,7 +352,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Remove all the line segments
         /// </summary>
-        public void ClearLines()
+        internal void ClearLines()
         {
             layer.Points = new Point3d[0];
             layer.NeedsUpdate = true;
@@ -396,7 +396,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Plot Terrrain Cross Section graph
         /// </summary>
-        public void PlotTerrain()
+        internal void PlotTerrain()
         {
             ArrayList profile = layer.ElevationProfile();
             if (profile != null)
@@ -411,7 +411,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Turn plugin on and off
         /// </summary>
-        public void ChangePluginStatus()
+        internal void ChangePluginStatus()
         {
             layer.IsOn = !layer.IsOn;
             //menuItem.Checked = layer.IsOn;
@@ -420,7 +420,7 @@ namespace MeasureToolNewgen.Plugins
     }
 
     #region Delegates
-    public delegate void LineAddHandler(string LengthText);
+    internal delegate void LineAddHandler(string LengthText);
     #endregion
 
     /// <summary>
@@ -440,9 +440,9 @@ namespace MeasureToolNewgen.Plugins
     ///     * Right Click completes the measurement
     ///     * Second right click clears points and restarts measurements
     /// </summary>
-    public class MeasureToolLayer : LineFeature
+    internal class MeasureToolLayer : LineFeature
     {
-        public enum MeasureState
+        internal enum MeasureState
         {
             Idle,
             Measuring,
@@ -450,7 +450,7 @@ namespace MeasureToolNewgen.Plugins
         }
 
         #region Public Delegate Variables
-        public LineAddHandler LineAdd;
+        internal LineAddHandler LineAdd;
         #endregion
 
         #region Private Variables
@@ -467,7 +467,7 @@ namespace MeasureToolNewgen.Plugins
 
         #region Accessor Methods
 
-        public override bool IsOn
+        internal override bool IsOn
         {
             get { return base.IsOn; }
             set
@@ -493,7 +493,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Get and sets length based on great circle calculation
         /// </summary>
-        public double GCLength
+        internal double GCLength
         {
             get { return gclength; }
             set { gclength = value; }
@@ -502,7 +502,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Gets and sets length based on following terrain
         /// </summary>
-        public double TerrainLength
+        internal double TerrainLength
         {
             //return great circle length for now...
             get { return GCLength; }
@@ -511,13 +511,13 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Gets the Point3d array of nodes for the linefeature
         /// </summary>
-        public ArrayList Nodes
+        internal ArrayList Nodes
         {
             get { return m_nodes; }
             set { m_nodes = value; }
         }
 
-        public MeasureMode MeasureMode
+        internal MeasureMode MeasureMode
         {
             get { return World.Settings.MeasureMode; }
             set { World.Settings.MeasureMode = value; }
@@ -525,7 +525,7 @@ namespace MeasureToolNewgen.Plugins
 
         #endregion
 
-        public MeasureToolLayer(World world, DrawArgs drawArgs)
+        internal MeasureToolLayer(World world, DrawArgs drawArgs)
             : base("Measure Tool", world, new Point3d[0], Color.Red)
         {
             m_drawArgs = drawArgs;
@@ -534,7 +534,7 @@ namespace MeasureToolNewgen.Plugins
             this.LineWidth = 5f;
         }
 
-        public override void Render(DrawArgs drawArgs)
+        internal override void Render(DrawArgs drawArgs)
         {
             if (DrawArgs.MouseCursor == CursorType.Arrow)
                 // Use our cursor when the mouse isn't over other elements requiring different cursor
@@ -549,7 +549,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MouseMove(object sender, MouseEventArgs e)
+        internal void MouseMove(object sender, MouseEventArgs e)
         {
             // Implementation of dynamic generation of line segments for a 
             // preview as the mouse moves
@@ -608,7 +608,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MouseDown(object sender, MouseEventArgs e)
+        internal void MouseDown(object sender, MouseEventArgs e)
         {
             if (!isOn)
                 return;
@@ -620,7 +620,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MouseUp(object sender, MouseEventArgs e)
+        internal void MouseUp(object sender, MouseEventArgs e)
         {
             if (!isOn)
                 return;
@@ -758,7 +758,7 @@ namespace MeasureToolNewgen.Plugins
             return accumulatedlength;
         }
 
-        public ArrayList ElevationProfile()
+        internal ArrayList ElevationProfile()
         {
             World world = this.m_world;
 
@@ -864,7 +864,7 @@ namespace MeasureToolNewgen.Plugins
         private bool isPointGotoEnabled;
         #endregion
 
-        public enum MeasureState
+        internal enum MeasureState
         {
             Idle,
             Measuring,
@@ -875,7 +875,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Access measurement polygon nodes
         /// </summary>
-        public ArrayList Nodes
+        internal ArrayList Nodes
         {
             get { return m_nodes; }
             set { m_nodes = value; }
@@ -884,7 +884,7 @@ namespace MeasureToolNewgen.Plugins
         /// <summary>
         /// Overridden ison method to disable point to go
         /// </summary>
-        public override bool IsOn
+        internal override bool IsOn
         {
             get { return base.IsOn; }
             set
@@ -914,7 +914,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="world"></param>
         /// <param name="drawArgs"></param>
-        public MeasureAreaLayer(World world, DrawArgs drawArgs, LinearRing outerRing)
+        internal MeasureAreaLayer(World world, DrawArgs drawArgs, LinearRing outerRing)
             : base("Measure Area", world, outerRing, null, Color.Red)
         {
             m_drawArgs = drawArgs;
@@ -929,7 +929,7 @@ namespace MeasureToolNewgen.Plugins
         /// Allow changing of mouse cursor during rendering
         /// </summary>
         /// <param name="drawArgs"></param>
-        public override void Render(DrawArgs drawArgs)
+        internal override void Render(DrawArgs drawArgs)
         {
             if (DrawArgs.MouseCursor == CursorType.Arrow)
                 // Use our cursor when the mouse isn't over other elements requiring different cursor
@@ -945,7 +945,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MouseMove(object sender, MouseEventArgs e)
+        internal void MouseMove(object sender, MouseEventArgs e)
         {
             // Implementation of dynamic generation of line segments for a 
             // preview as the mouse moves
@@ -1002,7 +1002,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MouseDown(object sender, MouseEventArgs e)
+        internal void MouseDown(object sender, MouseEventArgs e)
         {
             if (!isOn)
                 return;
@@ -1014,7 +1014,7 @@ namespace MeasureToolNewgen.Plugins
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void MouseUp(object sender, MouseEventArgs e)
+        internal void MouseUp(object sender, MouseEventArgs e)
         {
             if (!isOn)
                 return;
@@ -1143,7 +1143,7 @@ namespace MeasureToolNewgen.Plugins
         /// 2.Refinements using ellipsoid and terrain
         /// </summary>
         /// <returns></returns>
-        public double CalcArea()
+        internal double CalcArea()
         {
             //TODO:Implement Sphere based calculation
             //TODO:Implement Ellipsoid based calculation(use grass)
@@ -1316,7 +1316,7 @@ namespace MeasureToolNewgen.Plugins
         private WorldWind.NewWidgets.TextLabel measureLabel = null;
         private WorldWind.NewWidgets.TextLabel measureResult = null;
 
-        public MeasureResult()
+        internal MeasureResult()
             : base("Measurement Results")
         {
             //Populate Widget
@@ -1352,7 +1352,7 @@ namespace MeasureToolNewgen.Plugins
         }
 
         #region update Method
-        public void LengthText(string text)
+        internal void LengthText(string text)
         {
             measureResult.Text = text;
         }
@@ -1458,7 +1458,7 @@ namespace MeasureToolNewgen.Plugins
         private ZedGraph.ZedGraphControl zedGraphControl1;
         private ArrayList elevProfile;
 
-        public TerrainGraphForm(ArrayList profile)
+        internal TerrainGraphForm(ArrayList profile)
         {
             this.elevProfile = profile;
             InitializeComponent();

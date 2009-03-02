@@ -4,7 +4,7 @@ using Microsoft.DirectX.Direct3D;
 
 namespace WorldWind.NewWidgets
 {
-    public enum Alignment
+    internal enum Alignment
     {
         Left,
         Center,
@@ -14,7 +14,7 @@ namespace WorldWind.NewWidgets
 	/// <summary>
 	/// Summary description for TextLabel.
 	/// </summary>
-	public class TextLabel : IWidget
+	internal class TextLabel : IWidget
 	{
 		string m_Text = "";
 		System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
@@ -28,8 +28,8 @@ namespace WorldWind.NewWidgets
         System.Drawing.Font m_localFont = null;
         Font m_drawingFont = null;
 
-        public Alignment Alignment = Alignment.Left;
-        public bool WordBreak = false;
+        internal Alignment Alignment = Alignment.Left;
+        internal bool WordBreak = false;
 
         /// <summary>
         /// CountHeight property value
@@ -41,13 +41,13 @@ namespace WorldWind.NewWidgets
         /// </summary>
         protected bool m_countWidth = true;
 
-		public TextLabel()
+		internal TextLabel()
 		{
 			
 		}
 		
 		#region Properties
-        public System.Drawing.Font Font
+        internal System.Drawing.Font Font
         {
             get { return m_localFont; }
             set
@@ -60,7 +60,7 @@ namespace WorldWind.NewWidgets
                 }
             }
         }
-		public string Name
+		  public string Name
 		{
 			get
 			{
@@ -71,7 +71,7 @@ namespace WorldWind.NewWidgets
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{
@@ -82,7 +82,7 @@ namespace WorldWind.NewWidgets
 				m_ForeColor = value;
 			}
 		}
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -206,7 +206,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Location of this widget relative to the client area of the parent
         /// </summary>
-        public System.Drawing.Point Location
+		public System.Drawing.Point Location
         {
             get { return m_Location; }
             set { m_Location = value; }
@@ -215,7 +215,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Size of widget in pixels
         /// </summary>
-        public System.Drawing.Size WidgetSize
+		public System.Drawing.Size WidgetSize
         {
             get { return m_Size; }
             set { m_Size = value; }
@@ -225,7 +225,7 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for height calculations - HACK until we do real layout
         /// </summary>
-        public bool CountHeight
+		public bool CountHeight
         {
             get { return m_countHeight; }
             set { m_countHeight = value; }
@@ -235,17 +235,17 @@ namespace WorldWind.NewWidgets
         /// <summary>
         /// Whether this widget should count for width calculations - HACK until we do real layout
         /// </summary>
-        public bool CountWidth
+		public bool CountWidth
         {
             get { return m_countWidth; }
             set { m_countWidth = value; }
         }
 
-        public void Initialize(DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
         {
         }
 
-		public void Render(DrawArgs drawArgs)
+		  public void Render(DrawArgs drawArgs)
 		{
 			if(m_Visible)
 			{

@@ -13,13 +13,13 @@ namespace MapTools
 	/// dgancarz@cfl.rr.com or david.gancarz@cityoforlando.net
 	/// </remarks>
  
-	public class ShapeLib
+	internal class ShapeLib
 	{
 
 		/// <summary>
 		/// Shape type enumeration
 		/// </summary>
-		public enum ShapeType
+		internal enum ShapeType
 		{
 			/// <summary>Shape with no geometric data</summary>
 			NullShape = 0,			
@@ -54,7 +54,7 @@ namespace MapTools
 		/// <summary>
 		/// Part type enumeration - everything but ShapeType.MultiPatch just uses PartType.Ring.
 		/// </summary>
-		public enum PartType
+		internal enum PartType
 		{
 			/// <summary>
 			/// Linked strip of triangles, where every vertex (after the first two) completes a new triangle.
@@ -81,44 +81,44 @@ namespace MapTools
 		/// SHPObject - represents on shape (without attributes) read from the .shp file.
 		/// </summary>
 		[StructLayout(LayoutKind.Sequential)]
-		public class SHPObject 
+		internal class SHPObject 
 		{	
 			///<summary>Shape type as a ShapeType enum</summary>	
-			public ShapeType shpType;	
+			internal ShapeType shpType;	
 			///<summary>Shape number (-1 is unknown/unassigned)</summary>	
-			public int nShapeId;	
+			internal int nShapeId;	
 			///<summary>Number of parts (0 implies single part with no info)</summary>	
-			public int nParts;	
+			internal int nParts;	
 			///<summary>Pointer to int array of part start offsets, of size nParts</summary>	
-			public IntPtr paPartStart;
+			internal IntPtr paPartStart;
 			///<summary>Pointer to PartType array (PartType.Ring if not ShapeType.MultiPatch) of size nParts</summary>	
-			public IntPtr paPartType;	
+			internal IntPtr paPartType;	
 			///<summary>Number of vertices</summary>	
-			public int nVertices;	
+			internal int nVertices;	
 			///<summary>Pointer to double array containing X coordinates</summary>	
-			public IntPtr padfX;	
+			internal IntPtr padfX;	
 			///<summary>Pointer to double array containing Y coordinates</summary>		
-			public IntPtr padfY;	
+			internal IntPtr padfY;	
 			///<summary>Pointer to double array containing Z coordinates (all zero if not provided)</summary>	
-			public IntPtr padfZ;	
+			internal IntPtr padfZ;	
 			///<summary>Pointer to double array containing Measure coordinates(all zero if not provided)</summary>	
-			public IntPtr padfM;	
+			internal IntPtr padfM;	
 			///<summary>Bounding rectangle's min X</summary>	
-			public double dfXMin;	
+			internal double dfXMin;	
 			///<summary>Bounding rectangle's min Y</summary>	
-			public double dfYMin;	
+			internal double dfYMin;	
 			///<summary>Bounding rectangle's min Z</summary>	
-			public double dfZMin;	
+			internal double dfZMin;	
 			///<summary>Bounding rectangle's min M</summary>	
-			public double dfMMin;	
+			internal double dfMMin;	
 			///<summary>Bounding rectangle's max X</summary>	
-			public double dfXMax;	
+			internal double dfXMax;	
 			///<summary>Bounding rectangle's max Y</summary>	
-			public double dfYMax;	
+			internal double dfYMax;	
 			///<summary>Bounding rectangle's max Z</summary>	
-			public double dfZMax;	
+			internal double dfZMax;	
 			///<summary>Bounding rectangle's max M</summary>	
-			public double dfMMax;
+			internal double dfMMax;
 		}
 
 		/// <summary>
@@ -134,7 +134,7 @@ namespace MapTools
 		/// and "rb+" (read/write binary) should be used.</param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr SHPOpen(string szShapeFile, string szAccess);
+		internal static extern IntPtr SHPOpen(string szShapeFile, string szAccess);
 
 		/// <summary>
 		/// The SHPCreate() function will create a new .shp and .shx file of the desired type.
@@ -145,7 +145,7 @@ namespace MapTools
 		/// It may be either ShapeType.Point, ShapeType.PolyLine, ShapeType.Polygon or ShapeType.MultiPoint.</param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr SHPCreate(string szShapeFile, ShapeType shpType);
+		internal static extern IntPtr SHPCreate(string szShapeFile, ShapeType shpType);
 
 		/// <summary>
 		/// The SHPGetInfo() function retrieves various information about shapefile as a whole. 
@@ -164,7 +164,7 @@ namespace MapTools
 		/// four entry array. This may be NULL.</param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void SHPGetInfo(IntPtr hSHP, ref int pnEntities, 
+		internal static extern void SHPGetInfo(IntPtr hSHP, ref int pnEntities, 
 			ref ShapeType pshpType,  double[] adfMinBound, double[] adfMaxBound);
 
 		/// <summary>
@@ -186,7 +186,7 @@ namespace MapTools
 		/// represented interactively deleted shapes.
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern SHPObject SHPReadObject(IntPtr hSHP, int iShape);
+		internal static extern SHPObject SHPReadObject(IntPtr hSHP, int iShape);
 
 		/// <summary>
 		/// The SHPWriteObject() call is used to write a single structure, or entity to the shapefile. 
@@ -199,7 +199,7 @@ namespace MapTools
 		/// or SHPCreateSimpleObject().</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int SHPWriteObject(IntPtr hSHP, int iShape, SHPObject psObject);
+		internal static extern int SHPWriteObject(IntPtr hSHP, int iShape, SHPObject psObject);
 
 		/// <summary>
 		/// This function should be used to deallocate the resources associated with a SHPObject 
@@ -209,7 +209,7 @@ namespace MapTools
 		/// <param name="psObject">The object to deallocate.</param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void SHPDestroyObject(SHPObject psObject);
+		internal static extern void SHPDestroyObject(SHPObject psObject);
 
 		/// <summary>
 		/// This function will recompute the extents of this shape, replacing the existing values 
@@ -221,7 +221,7 @@ namespace MapTools
 		/// <param name="psObject">An existing shape object to be updated in place.</param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void SHPComputeExtents(SHPObject psObject);
+		internal static extern void SHPComputeExtents(SHPObject psObject);
 
 		/// <summary>
 		/// The SHPCreateObject() function allows for the creation of objects (shapes). 
@@ -250,7 +250,7 @@ namespace MapTools
 		/// computes a bounding box for the SHPObject from the given vertices.
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern SHPObject SHPCreateObject(ShapeType shpType, int nShapeId,
+		internal static extern SHPObject SHPCreateObject(ShapeType shpType, int nShapeId,
 			int nParts, int[] panPartStart, PartType[] paPartType,
 			int nVertices, double[] adfX, double[] adfY,
 			double[] adfZ, double[] adfM );
@@ -275,7 +275,7 @@ namespace MapTools
 		/// object allocated with SHPCreateSimpleObject().
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern SHPObject SHPCreateSimpleObject(ShapeType shpType, int nVertices, 
+		internal static extern SHPObject SHPCreateSimpleObject(ShapeType shpType, int nVertices, 
 			double[] adfX, double[] adfY, double[] adfZ);
 
 		/// <summary>
@@ -286,7 +286,7 @@ namespace MapTools
 		/// <param name="hSHP">The handle previously returned by SHPOpen() or SHPCreate().</param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void SHPClose(IntPtr hSHP);
+		internal static extern void SHPClose(IntPtr hSHP);
 
 		/// <summary>
 		/// Translates a ShapeType.* constant into a named shape type (Point, PointZ, Polygon, etc.)
@@ -294,7 +294,7 @@ namespace MapTools
 		/// <param name="shpType">ShapeType enum</param>
 		/// <returns>string</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern string SHPTypeName(ShapeType shpType);
+		internal static extern string SHPTypeName(ShapeType shpType);
 
 		/// <summary>
 		/// Translates a PartType enum into a named part type (Ring, Inner Ring, etc.)
@@ -302,7 +302,7 @@ namespace MapTools
 		/// <param name="partType">PartType enum</param>
 		/// <returns>string</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern string SHPPartTypeName (PartType partType);
+		internal static extern string SHPPartTypeName (PartType partType);
 
 		/* -------------------------------------------------------------------- */
 		/*      Shape quadtree indexing API.                                    */
@@ -318,7 +318,7 @@ namespace MapTools
 		/// <param name="adfBoundsMax"></param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr SHPCreateTree(IntPtr hSHP, int nDimension, int nMaxDepth, 
+		internal static extern IntPtr SHPCreateTree(IntPtr hSHP, int nDimension, int nMaxDepth, 
 			double[] adfBoundsMin, double[] adfBoundsMax);
 
 		/// <summary>
@@ -327,7 +327,7 @@ namespace MapTools
 		/// <param name="hTree"></param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void SHPDestroyTree(IntPtr hTree);
+		internal static extern void SHPDestroyTree(IntPtr hTree);
 
 		/// <summary>
 		/// 
@@ -336,7 +336,7 @@ namespace MapTools
 		/// <param name="psObject"></param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int SHPTreeAddShapeId(IntPtr hTree, SHPObject psObject);
+		internal static extern int SHPTreeAddShapeId(IntPtr hTree, SHPObject psObject);
 
 		/// <summary>
 		/// 
@@ -344,7 +344,7 @@ namespace MapTools
 		/// <param name="hTree"></param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void SHPTreeTrimExtraNodes(IntPtr hTree);
+		internal static extern void SHPTreeTrimExtraNodes(IntPtr hTree);
 
 		/// <summary>
 		/// 
@@ -355,7 +355,7 @@ namespace MapTools
 		/// <param name="pnShapeCount"></param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr SHPTreeFindLikelyShapes(IntPtr hTree,	
+		internal static extern IntPtr SHPTreeFindLikelyShapes(IntPtr hTree,	
 			double[] adfBoundsMin, double[] adfBoundsMax, ref int pnShapeCount);
 		
 		/// <summary>
@@ -368,13 +368,13 @@ namespace MapTools
 		/// <param name="nDimension"></param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int SHPCheckBoundsOverlap(double[] adfBox1Min, double[] adfBox1Max, 
+		internal static extern int SHPCheckBoundsOverlap(double[] adfBox1Min, double[] adfBox1Max, 
 			double[] adfBox2Min, double[] adfBox2Max, int nDimension);
 
 		/// <summary>
 		/// xBase field type enumeration
 		/// </summary>
-		public enum DBFFieldType 
+		internal enum DBFFieldType 
 		{	
 			///<summary>String data type</summary> 
 			FTString,	
@@ -400,7 +400,7 @@ namespace MapTools
 		/// and "rb+" (read/write binary) should be used.</param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr DBFOpen (string szDBFFile, string szAccess);
+		internal static extern IntPtr DBFOpen (string szDBFFile, string szAccess);
 
 		/// <summary>
 		/// The DBFCreate() function creates a new xBase format file with the given name, 
@@ -411,7 +411,7 @@ namespace MapTools
 		/// <param name="szDBFFile">The name of the xBase (.dbf) file to create.</param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr DBFCreate (string szDBFFile);
+		internal static extern IntPtr DBFCreate (string szDBFFile);
 
 		/// <summary>
 		/// The DBFGetFieldCount() function returns the number of fields currently defined 
@@ -421,7 +421,7 @@ namespace MapTools
 		/// DBFOpen(), or DBFCreate().</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFGetFieldCount (IntPtr hDBF);
+		internal static extern int DBFGetFieldCount (IntPtr hDBF);
 
 		/// <summary>
 		/// The DBFGetRecordCount() function returns the number of records that exist on the xBase 
@@ -432,7 +432,7 @@ namespace MapTools
 		/// DBFOpen(), or DBFCreate().</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFGetRecordCount (IntPtr hDBF);
+		internal static extern int DBFGetRecordCount (IntPtr hDBF);
 
 		/// <summary>
 		/// The DBFAddField() function is used to add new fields to an existing xBase file opened with DBFOpen(), 
@@ -456,7 +456,7 @@ namespace MapTools
 		/// numbers would be formatted similarly to `123.456'.</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFAddField (IntPtr hDBF, string szFieldName, 
+		internal static extern int DBFAddField (IntPtr hDBF, string szFieldName, 
 			DBFFieldType eType, int nWidth, int nDecimals);
 
 		/// <summary>
@@ -479,7 +479,7 @@ namespace MapTools
 		/// defined for the field will be returned. This is zero for integer fields, or non-numeric fields.</param>
 		/// <returns>DBFFieldType</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern DBFFieldType DBFGetFieldInfo (IntPtr hDBF, int iField, 
+		internal static extern DBFFieldType DBFGetFieldInfo (IntPtr hDBF, int iField, 
 			StringBuilder szFieldName, ref int pnWidth, ref int pnDecimals);
 
 		/// <summary>
@@ -491,7 +491,7 @@ namespace MapTools
 		/// <param name="szFieldName">Name of the field to search for.</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFGetFieldIndex (IntPtr hDBF, string szFieldName);
+		internal static extern int DBFGetFieldIndex (IntPtr hDBF, string szFieldName);
 
 		/// <summary>
 		/// The DBFReadIntegerAttribute() will read the value of one field and return it as an integer. 
@@ -506,7 +506,7 @@ namespace MapTools
 		/// interpretable as a number.
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFReadIntegerAttribute (IntPtr hDBF, int iShape, int iField);
+		internal static extern int DBFReadIntegerAttribute (IntPtr hDBF, int iShape, int iField);
 
 		/// <summary>
 		/// The DBFReadDoubleAttribute() will read the value of one field and return it as a double. 
@@ -521,7 +521,7 @@ namespace MapTools
 		/// interpretable as a number.
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern double DBFReadDoubleAttribute (IntPtr hDBF, int iShape, int iField);
+		internal static extern double DBFReadDoubleAttribute (IntPtr hDBF, int iShape, int iField);
 
 		/// <summary>
 		/// The DBFReadStringAttribute() will read the value of one field and return it as a string. 
@@ -540,7 +540,7 @@ namespace MapTools
 		/// trailing space (ASCII 32) characters will be stripped before the string is returned.
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern string DBFReadStringAttribute (IntPtr hDBF, int iShape, int iField);
+		internal static extern string DBFReadStringAttribute (IntPtr hDBF, int iShape, int iField);
 
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi, EntryPoint="DBFReadLogicalAttribute")]
 		private static extern string _DBFReadLogicalAttribute (IntPtr hDBF, int iShape, int iField);
@@ -556,7 +556,7 @@ namespace MapTools
 		/// This can be used with FTString fields, in which case it returns TRUE if the string="T";
 		/// otherwise it returns FALSE.
 		/// </remarks>
-		public static bool DBFReadLogicalAttribute (IntPtr hDBF, int iShape, int iField)
+		internal static bool DBFReadLogicalAttribute (IntPtr hDBF, int iShape, int iField)
 		{
 			return (_DBFReadLogicalAttribute(hDBF, iShape, iField)=="T");
 		}
@@ -575,7 +575,7 @@ namespace MapTools
 		/// DBFRead*Attribute() functions.
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFIsAttributeNULL (IntPtr hDBF, int iShape, int iField);
+		internal static extern int DBFIsAttributeNULL (IntPtr hDBF, int iShape, int iField);
 
 		/// <summary>
 		/// The DBFWriteIntegerAttribute() function is used to write a value to a numeric field 
@@ -590,7 +590,7 @@ namespace MapTools
 		/// <param name="nFieldValue">The integer value that should be written.</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFWriteIntegerAttribute (IntPtr hDBF, int iShape, 
+		internal static extern int DBFWriteIntegerAttribute (IntPtr hDBF, int iShape, 
 			int iField, int nFieldValue);
 
 		/// <summary>
@@ -606,7 +606,7 @@ namespace MapTools
 		/// <param name="dFieldValue">The floating point value that should be written.</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFWriteDoubleAttribute (IntPtr hDBF, int iShape, 
+		internal static extern int DBFWriteDoubleAttribute (IntPtr hDBF, int iShape, 
 			int iField, double dFieldValue);
 
 		/// <summary>
@@ -621,7 +621,7 @@ namespace MapTools
 		/// <param name="szFieldValue">The string to be written to the field.</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFWriteStringAttribute (IntPtr hDBF, int iShape, 
+		internal static extern int DBFWriteStringAttribute (IntPtr hDBF, int iShape, 
 			int iField, string szFieldValue);
 
 		/// <summary>
@@ -635,7 +635,7 @@ namespace MapTools
 		/// <param name="iField">The field within the selected record that should be written.</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFWriteNULLAttribute (IntPtr hDBF, int iShape, int iField);
+		internal static extern int DBFWriteNULLAttribute (IntPtr hDBF, int iShape, int iField);
 
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi, EntryPoint="DBFWriteLogicalAttribute")]
 		private static extern int _DBFWriteLogicalAttribute (IntPtr hDBF, int iShape, 
@@ -651,7 +651,7 @@ namespace MapTools
 		/// <param name="iField">The field within the selected record that should be written.</param>
 		/// <param name="bFieldValue">The boolean value to be written to the field.</param>
 		/// <returns>int</returns>
-		public static int DBFWriteLogicalAttribute (IntPtr hDBF, int iShape, int iField, bool bFieldValue)
+		internal static int DBFWriteLogicalAttribute (IntPtr hDBF, int iShape, int iField, bool bFieldValue)
 		{
 			if (bFieldValue)
 				return _DBFWriteLogicalAttribute(hDBF, iShape, iField, 'T');
@@ -667,7 +667,7 @@ namespace MapTools
 		/// <param name="hEntity">The entity (record) number to be read</param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr DBFReadTuple (IntPtr hDBF, int hEntity);
+		internal static extern IntPtr DBFReadTuple (IntPtr hDBF, int hEntity);
 
 		/// <summary>
 		/// Writes an attribute record to the file.
@@ -679,7 +679,7 @@ namespace MapTools
 		/// <param name="pRawTuple">Pointer to the tuple to be written</param>
 		/// <returns>int</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern int DBFWriteTuple (IntPtr hDBF, int hEntity, IntPtr pRawTuple);
+		internal static extern int DBFWriteTuple (IntPtr hDBF, int hEntity, IntPtr pRawTuple);
 
 		/// <summary>
 		/// Copies the data structure of an xBase file to another xBase file.  
@@ -690,7 +690,7 @@ namespace MapTools
 		/// <param name="szFilename">The name of the xBase (.dbf) file to create.</param>
 		/// <returns>IntPtr</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern IntPtr DBFCloneEmpty (IntPtr hDBF, string szFilename);
+		internal static extern IntPtr DBFCloneEmpty (IntPtr hDBF, string szFilename);
 
 		/// <summary>
 		/// The DBFClose() function will close the indicated xBase file (opened with DBFOpen(), 
@@ -701,7 +701,7 @@ namespace MapTools
 		/// <param name="hDBF">The access handle for the file to be closed.</param>
 		/// <returns>void</returns>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern void DBFClose (IntPtr hDBF);
+		internal static extern void DBFClose (IntPtr hDBF);
 
 		
 		/// <summary>
@@ -723,7 +723,7 @@ namespace MapTools
 		/// </list>
 		/// </remarks>
 		[DllImport("shapelib.dll", CharSet=CharSet.Ansi)]
-		public static extern sbyte DBFGetNativeFieldType (IntPtr hDBF, int iField);
+		internal static extern sbyte DBFGetNativeFieldType (IntPtr hDBF, int iField);
 
 		/// <summary>
 		/// private constructor:  no instantiation needed or permitted

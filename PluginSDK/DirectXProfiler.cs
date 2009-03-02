@@ -13,24 +13,24 @@ namespace WorldWind
     /// blocks as Using( new ProfilerEvent() ) {} blocks, so you don't have
     /// to worry about ending an event.
     /// </summary>
-    public class DirectXProfilerEvent : IDisposable
+	public class DirectXProfilerEvent : IDisposable
     {
-        public DirectXProfilerEvent(System.Drawing.Color color, string name)
+        internal DirectXProfilerEvent(System.Drawing.Color color, string name)
         {
             DirectXProfiler.BeginEvent(color, name);
         }
 
-        public DirectXProfilerEvent(string name)
+		  public DirectXProfilerEvent(string name)
         {
             DirectXProfiler.BeginEvent(name);
         }
 
-        public DirectXProfilerEvent()
+        internal DirectXProfilerEvent()
         {
             DirectXProfiler.BeginEvent();
         }
 
-        public void Dispose()
+		  public void Dispose()
         {
             DirectXProfiler.EndEvent();
         }
@@ -40,7 +40,7 @@ namespace WorldWind
     /// Helper class with satic functions to signal the beginnings and endings
     /// of userdefined event blocks to the profiler, most likely PIX. 
     /// </summary>
-    public class DirectXProfiler
+    internal class DirectXProfiler
     {
         #region Profiler settings
 
@@ -54,7 +54,7 @@ namespace WorldWind
         /// to false for release, since there's no point in draaing your app down
         /// with profiler info calls.
         /// </summary>
-        public static bool Enabled
+        internal static bool Enabled
         {
             get { return enabled; }
             set { enabled = value; }
@@ -67,7 +67,7 @@ namespace WorldWind
         /// but as it is very costly and may be a big hit on performance you may
         /// want to disable it.
         /// </summary>
-        public static bool AddLineInfo
+        internal static bool AddLineInfo
         {
             get { return addLineInfo; }
             set { addLineInfo = value; }
@@ -78,37 +78,37 @@ namespace WorldWind
 
         #region Profiler event and marker methods
 
-        public static int BeginEvent()
+        internal static int BeginEvent()
         {
             return BeginEvent(" ");
         }
 
-        public static int BeginEvent(string name)
+        internal static int BeginEvent(string name)
         {
             return BeginEvent(System.Drawing.Color.Black, name);
         }
 
-        public static int BeginEvent(System.Drawing.Color color, string name)
+        internal static int BeginEvent(System.Drawing.Color color, string name)
         {
             return BeginEvent(unchecked((uint)color.ToArgb()), name);
         }
 
-        public static void SetMarker()
+        internal static void SetMarker()
         {
             SetMarker(" ");
         }
 
-        public static void SetMarker(string name)
+        internal static void SetMarker(string name)
         {
             SetMarker(System.Drawing.Color.Black, name);
         }
 
-        public static void SetMarker(System.Drawing.Color color, string name)
+        internal static void SetMarker(System.Drawing.Color color, string name)
         {
             SetMarker(unchecked((uint)color.ToArgb()), name);
         }
 
-        public static int BeginEvent(uint col, string name)
+        internal static int BeginEvent(uint col, string name)
         {
             if (enabled)
             {
@@ -120,7 +120,7 @@ namespace WorldWind
             }
         }
 
-        public static int EndEvent()
+        internal static int EndEvent()
         {
             if (enabled)
             {
@@ -132,7 +132,7 @@ namespace WorldWind
             }
         }
 
-        public static void SetMarker(uint col, string name)
+        internal static void SetMarker(uint col, string name)
         {
             if (enabled)
             {

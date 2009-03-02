@@ -6,7 +6,7 @@ namespace Utils.MessageBoxExLib
     /// Enumerates the kind of results that can be returned when a
     /// message box times out
     /// </summary>
-    public enum TimeoutResult
+    internal enum TimeoutResult
     {
         /// <summary>
         /// On timeout the value associated with the default button is set as the result.

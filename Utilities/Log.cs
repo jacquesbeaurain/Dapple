@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace Utility
 {
-    public class LogEventArgs : EventArgs
+    internal class LogEventArgs : EventArgs
     {
-        public int level;
-        public string category;
-        public string message;
+        internal int level;
+        internal string category;
+        internal string message;
 
-        public LogEventArgs(int _l, string _c, string _m)
+        internal LogEventArgs(int _l, string _c, string _m)
         {
             level = _l;
             category = _c;
@@ -35,7 +35,7 @@ namespace Utility
             public static readonly int Debug = 5;
             public static readonly int Verbose = 7;
         };
-        public static int Level;
+        internal static int Level;
 
 		/// <summary>
 		/// Static class (Only static members)
@@ -78,19 +78,19 @@ namespace Utility
 
 		// Return the program-specifc part of the full default directory path to be used
 		// for storing settings files, which is also where logfiles will be stored.
-		public static string DefaultSettingsDirectorySuffix() 
+		internal static string DefaultSettingsDirectorySuffix() 
 		{
 			// Application.ProductName is set by AssemblyProduct in \WorldWind\AssembyInfo.cs
 			Version ver = new Version(Application.ProductVersion);
 			return string.Format(@"\{0}\{1}\{2}.{3}.{4}.{5}", Application.CompanyName, Application.ProductName, ver.Major, ver.Minor, ver.Build, ver.Revision);
 		}
 
-        public static void Write(string category, string message)
+		public static void Write(string category, string message)
         {
             Write(Levels.Error, category, message);
         }
 
-        public static void Write(string message)
+        internal static void Write(string message)
         {
             Write(Levels.Error, message);
         }
@@ -144,7 +144,7 @@ namespace Utility
 		/// If the category is longer than 4 characters it will be clipped.</param>
 		/// <param name="message">The actual log messages to be written.</param>
 		[Conditional("DEBUG")]
-		public static void DebugWrite( string category, string message )
+		internal static void DebugWrite( string category, string message )
 		{
 			Debug.Write( category, message );
 		}
@@ -161,7 +161,7 @@ namespace Utility
 		/// Logs a message to the system log only in debug builds.
 		/// </summary>
 		[Conditional("DEBUG")]
-		public static void DebugWrite( int level, string message )
+		internal static void DebugWrite( int level, string message )
 		{
             Write(level, "", message);
 		}
@@ -170,7 +170,7 @@ namespace Utility
 		/// Writes a log of an exception.
 		/// </summary>
 		/// <param name="caught"></param>
-      public static void Write(Exception caught)
+		public static void Write(Exception caught)
       {
          try
          {
@@ -209,7 +209,7 @@ namespace Utility
 		/// Only executed in debug builds.
 		/// </summary>
 		[Conditional("DEBUG")]
-		public static void DebugWrite( Exception caught )
+		public static void DebugWrite(Exception caught)
 		{
 			try
 			{

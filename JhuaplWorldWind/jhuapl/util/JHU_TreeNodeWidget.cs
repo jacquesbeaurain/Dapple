@@ -58,15 +58,15 @@ namespace jhuapl.util
 	/// </summary>
 	public abstract class JHU_TreeNodeWidget : JHU_WidgetCollection, jhuapl.util.IWidget, jhuapl.util.IInteractive
 	{
-		public const int NODE_OFFSET = 5;
+		internal const int NODE_OFFSET = 5;
 
-		public const int NODE_HEIGHT = 20;
+		internal const int NODE_HEIGHT = 20;
 
-		public const int NODE_INDENT = 15;
+		internal const int NODE_INDENT = 15;
 
-		public const int NODE_ARROW_SIZE = 15;
+		internal const int NODE_ARROW_SIZE = 15;
 
-		public const int NODE_CHECKBOX_SIZE = 15;
+		internal const int NODE_CHECKBOX_SIZE = 15;
 
 		protected const int DEFAULT_OPACITY = 150;
 
@@ -166,7 +166,7 @@ namespace jhuapl.util
 
 		#region Properties
 
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -177,26 +177,26 @@ namespace jhuapl.util
 		}
 
 
-		public bool Expanded
+		internal bool Expanded
 		{
 			get { return m_isExpanded; }
 			set { m_isExpanded = value; }
 		}
 
 
-		public bool IsRadioButton
+		internal bool IsRadioButton
 		{
 			get { return m_isRadioButton; }
 			set { m_isRadioButton = value; }
 		}
 
-		public bool EnableCheck
+		internal bool EnableCheck
 		{
 			get { return m_enableCheck; }
 			set { m_enableCheck = value; }
 		}
 
-		public bool IsChecked
+		internal bool IsChecked
 		{
 			get
 			{
@@ -214,7 +214,7 @@ namespace jhuapl.util
 			}
 		}
 
-		public WorldWind.Renderable.RenderableObject RenderableObject
+		internal WorldWind.Renderable.RenderableObject RenderableObject
 		{
 			get { return m_renderableObject; }
 			set 
@@ -266,7 +266,7 @@ namespace jhuapl.util
 			}
 		}
 
-		
+
 		public System.Drawing.Point ClientLocation
 		{
 			get { return this.AbsoluteLocation; }
@@ -373,7 +373,7 @@ namespace jhuapl.util
 
 		#endregion IWidget Properties
 
-		public JHU_TreeNodeWidget()
+		internal JHU_TreeNodeWidget()
 		{
 			m_textures = JHU_Globals.getInstance().Textures;
 
@@ -385,12 +385,12 @@ namespace jhuapl.util
 			m_isInitialized = false;
 		}
 
-		public JHU_TreeNodeWidget(string name) : this()
+		internal JHU_TreeNodeWidget(string name) : this()
 		{
 			m_name = name;
 		}
 
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			// Initialize fonts
 			if (m_drawingFont == null)
@@ -460,14 +460,14 @@ namespace jhuapl.util
 		}	
 
 		protected MouseClickAction m_checkClickAction;
-		public MouseClickAction CheckClickAction
+		internal MouseClickAction CheckClickAction
 		{
 			get { return m_checkClickAction; }
 			set { m_checkClickAction = value; }
 		}
 
 		protected MouseClickAction m_expandClickAction;
-		public MouseClickAction ExpandClickAction
+		internal MouseClickAction ExpandClickAction
 		{
 			get { return m_expandClickAction; }
 			set { m_expandClickAction = value; }
@@ -684,13 +684,13 @@ namespace jhuapl.util
 
 		#region IWidgetCollection methods
 
-		new public void Add(jhuapl.util.IWidget widget)
+		new internal void Add(jhuapl.util.IWidget widget)
 		{
 			m_subNodes.Add(widget);
 			widget.ParentWidget = this;
 		}
 
-		new public void Remove(jhuapl.util.IWidget widget)
+		new internal void Remove(jhuapl.util.IWidget widget)
 		{
 			m_subNodes.Remove(widget);
 		}
@@ -704,6 +704,6 @@ namespace jhuapl.util
 		/// <param name="xOffset">The offset from the left based on how deep this node is nested</param>
 		/// <param name="yOffset">The offset from the top based on how many treenodes are above this one</param>
 		/// <returns>Total pixels consumed by this widget and its children</returns>
-		public abstract int Render(DrawArgs drawArgs, int xOffset, int yOffset);
+		internal abstract int Render(DrawArgs drawArgs, int xOffset, int yOffset);
 	}
 }

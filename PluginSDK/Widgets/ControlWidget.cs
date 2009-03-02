@@ -65,7 +65,7 @@ namespace WorldWind.NewWidgets
 	/// "canosso".  http://www.worldwindcentral.com/wiki/Add-on:WWKontrol
 	/// 
 	/// </summary>
-	public class ControlWidget : IWidget, IInteractive
+	internal class ControlWidget : IWidget, IInteractive
 	{
 		#region IWidget support variables
 
@@ -189,7 +189,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Filename of button graphic
 		/// </summary>
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -204,7 +204,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public ControlWidget()
+		internal ControlWidget()
 		{
 			m_location.X = 10;
 			m_location.Y = 5;
@@ -256,7 +256,7 @@ namespace WorldWind.NewWidgets
 		/// Default implementation of left click.
 		/// </summary>
 		/// <param name="e">Mouse event parameters</param>
-		public void PerformLMBAction(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformLMBAction(System.Windows.Forms.MouseEventArgs e)
 		{
 			double lon = (e.X - this.AbsoluteLocation.X)*2 - 180;
 			double lat = (e.Y - this.AbsoluteLocation.Y)*2 - 90;
@@ -424,7 +424,7 @@ namespace WorldWind.NewWidgets
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			object key = null;
 

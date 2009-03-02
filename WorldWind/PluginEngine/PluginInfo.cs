@@ -8,7 +8,7 @@ namespace WorldWind.PluginEngine
 	/// <summary>
 	/// Stores information on a plugin.
 	/// </summary>
-	public class PluginInfo
+	internal class PluginInfo
 	{
 		Plugin m_plugin;
 		string m_fullPath;
@@ -21,7 +21,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The plugin instance.
 		/// </summary>
-		public Plugin Plugin
+		internal Plugin Plugin
 		{
 			get
 			{
@@ -36,7 +36,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Directory and filename of the plugin.
 		/// </summary>
-		public string FullPath
+		internal string FullPath
 		{
 			get
 			{
@@ -51,7 +51,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The plugin ID
 		/// </summary>
-		public string ID
+		internal string ID
 		{
 			get
 			{
@@ -64,7 +64,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The plugin name (from plugin comment header "NAME" tag)
 		/// </summary>
-		public string Name
+		internal string Name
 		{
 			get
 			{
@@ -82,7 +82,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The plugin description (from plugin comment header "DESCRIPTION" tag)
 		/// </summary>
-		public string Description
+		internal string Description
 		{
 			get
 			{
@@ -100,7 +100,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The plugin developer's name (from plugin comment header "DEVELOPER" tag)
 		/// </summary>
-		public string Developer
+		internal string Developer
 		{
 			get
 			{
@@ -114,7 +114,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// The plugin web site url (from plugin comment header "WEBSITE" tag)
 		/// </summary>
-		public string WebSite
+		internal string WebSite
 		{
 			get
 			{
@@ -128,7 +128,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Comma separated list of additional libraries this plugin requires a reference to.
 		/// </summary>
-		public string References
+		internal string References
 		{
 			get
 			{
@@ -142,7 +142,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Check whether a plugin is currently loaded.
 		/// </summary>
-		public bool IsCurrentlyLoaded
+		internal bool IsCurrentlyLoaded
 		{
 			get
 			{
@@ -155,7 +155,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Set always load on application startup flag for the plugin.
 		/// </summary>
-		public bool IsLoadedAtStartup
+		internal bool IsLoadedAtStartup
 		{
 			get
 			{

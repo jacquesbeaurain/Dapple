@@ -11,7 +11,7 @@ namespace WorldWind.PluginEngine
 	/// <summary>
 	/// Plugin manager dialog.
 	/// </summary>
-	public class PluginDialog : System.Windows.Forms.Form
+	internal class PluginDialog : System.Windows.Forms.Form
 	{
 		private PluginListView listView;
 		private System.Windows.Forms.ColumnHeader columnHeader1;
@@ -33,7 +33,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// On/Off images for items.
 		/// </summary>
-		public ImageList ImageList
+		internal ImageList ImageList
 		{
 			get
 			{
@@ -45,7 +45,7 @@ namespace WorldWind.PluginEngine
 		/// Initializes a new instance of the <see cref= "T:WorldWind.PluginEngine.PluginDialog"/> class.
 		/// </summary>
 		/// <param name="compiler"></param>
-		public PluginDialog(PluginCompiler compiler)
+		internal PluginDialog(PluginCompiler compiler)
 		{
 			//
 			// Required for Windows Form Designer support
@@ -316,7 +316,7 @@ namespace WorldWind.PluginEngine
 		/// <summary>
 		/// Unload plugin and display message on failure.
 		/// </summary>
-		public void PluginUnload(PluginListItem pi)
+		internal void PluginUnload(PluginListItem pi)
 		{
 			try
 			{

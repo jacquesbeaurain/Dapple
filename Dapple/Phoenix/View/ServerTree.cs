@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace NewServerTree.View
 {
-	public partial class ServerTree : UserControl
+	internal partial class ServerTree : UserControl
 	{
 		#region Interop
 
@@ -25,43 +25,43 @@ namespace NewServerTree.View
 			/// <summary>
 			/// Specifies the size, in bytes, of this structure.
 			/// </summary>
-			public uint cbSize;
+			internal uint cbSize;
 
 			/// <summary>
 			/// Specifies the scroll bar parameters to set or retrieve.
 			/// </summary>
-			public SIF fMask;
+			internal SIF fMask;
 
 			/// <summary>
 			/// Specifies the minimum scrolling position.
 			/// </summary>
-			public int nMin;
+			internal int nMin;
 
 			/// <summary>
 			/// Specifies the maximum scrolling position.
 			/// </summary>
-			public int nMax;
+			internal int nMax;
 
 			/// <summary>
 			/// Specifies the page size.
 			/// </summary>
-			public uint nPage;
+			internal uint nPage;
 
 			/// <summary>
 			/// Specifies the position of the scroll box.
 			/// </summary>
-			public int nPos;
+			internal int nPos;
 
 			/// <summary>
 			/// Specifies the immediate position of a scroll box that the user is dragging.
 			/// </summary>
-			public int nTrackPos;
+			internal int nTrackPos;
 
 			#endregion
 
 			#region Constructors
 
-			public SCROLLINFO(SIF mask, int min, int max, uint page, int pos, int trackPos)
+			internal SCROLLINFO(SIF mask, int min, int max, uint page, int pos, int trackPos)
 			{
 				cbSize = 28;
 				fMask = mask;
@@ -198,7 +198,7 @@ namespace NewServerTree.View
 
 		#region Constructors
 
-		public ServerTree()
+		internal ServerTree()
 		{
 			InitializeComponent();
 
@@ -505,7 +505,7 @@ namespace NewServerTree.View
 
 		#region Public Methods
 
-		public void Attach(DappleModel oModel)
+		internal void Attach(DappleModel oModel)
 		{
 			if (m_oModel != null) MuteModel();
 			m_oModel = oModel;

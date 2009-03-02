@@ -15,7 +15,7 @@ namespace Dapple
    [DefaultEvent("Scroll")]
    [DefaultBindingProperty("Value")]
    [Designer("System.Windows.Forms.Design.TrackBarDesigner, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
-   public class TrackBarWithPaint : TrackBar
+   internal class TrackBarWithPaint : TrackBar
    {
 
       Bitmap internalBitmap = null;
@@ -117,7 +117,7 @@ namespace Dapple
       EditorBrowsableAttribute(EditorBrowsableState.Always),
       BrowsableAttribute(true)
       ]
-      public new event PaintEventHandler Paint
+      internal new event PaintEventHandler Paint
       {
          add { base.Paint += value; }
          remove { base.Paint -= value; }
@@ -134,39 +134,39 @@ namespace Dapple
       }
 
       [DllImport("User32.dll")]
-      public static extern int GetUpdateRect(IntPtr hwnd, ref RECT rect, bool erase);
+      internal static extern int GetUpdateRect(IntPtr hwnd, ref RECT rect, bool erase);
 
       [DllImport("User32.dll")]
-      public static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
+      internal static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
 
       [DllImport("User32.dll")]
-      public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
+      internal static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
 
       [StructLayout(LayoutKind.Sequential)]
-      public struct RECT
+      internal struct RECT
       {
-         public int left;
-         public int top;
-         public int right;
-         public int bottom;
+         internal int left;
+         internal int top;
+         internal int right;
+         internal int bottom;
       }
 
       [StructLayout(LayoutKind.Sequential)]
-      public struct PAINTSTRUCT
+      internal struct PAINTSTRUCT
       {
-         public IntPtr hdc;
-         public int fErase;
-         public RECT rcPaint;
-         public int fRestore;
-         public int fIncUpdate;
-         public int Reserved1;
-         public int Reserved2;
-         public int Reserved3;
-         public int Reserved4;
-         public int Reserved5;
-         public int Reserved6;
-         public int Reserved7;
-         public int Reserved8;
+         internal IntPtr hdc;
+         internal int fErase;
+         internal RECT rcPaint;
+         internal int fRestore;
+         internal int fIncUpdate;
+         internal int Reserved1;
+         internal int Reserved2;
+         internal int Reserved3;
+         internal int Reserved4;
+         internal int Reserved5;
+         internal int Reserved6;
+         internal int Reserved7;
+         internal int Reserved8;
       }
    }
 }

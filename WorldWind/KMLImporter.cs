@@ -36,7 +36,7 @@ namespace KMLPlugin
 	/// <summary>
 	/// Main plugin class
 	/// </summary>
-	public class KMLImporter : WorldWind.PluginEngine.Plugin
+	internal class KMLImporter : WorldWind.PluginEngine.Plugin
 	{
 		private const string version = "1.08";				// The version of this plugin
 
@@ -133,7 +133,7 @@ namespace KMLPlugin
 
 			// Some magic to provide backward compability
 			Type typecontroller = typeof(MainApplication);
-			System.Reflection.PropertyInfo finfo = typecontroller.GetProperty("CmdArgs", BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty);
+			System.Reflection.PropertyInfo finfo = typecontroller.GetProperty("CmdArgs", BindingFlags.Static | BindingFlags.internal | BindingFlags.GetProperty);
 			string[] temp = null;
 			if (finfo != null)
 			{
@@ -247,7 +247,7 @@ namespace KMLPlugin
 
 		#region KMx loading methods
 
-		public Icons KMLIcons
+		internal Icons KMLIcons
 		{
 			get
 			{
@@ -259,7 +259,7 @@ namespace KMLPlugin
 		/// Loads either a KML or KMZ file from disk
 		/// </summary>
 		/// <param name="filename"></param>
-		public void LoadDiskKM(string filename, Delegate kmlLoaded)
+		internal void LoadDiskKM(string filename, Delegate kmlLoaded)
 		{
 			m_KMLLoaded = kmlLoaded;
 			Spawn_LoadKML(filename);
@@ -768,7 +768,7 @@ namespace KMLPlugin
 	/// <summary>
 	/// Renders a message to the lower right corner
 	/// </summary>
-	public class WaitMessage : RenderableObject
+	internal class WaitMessage : RenderableObject
 	{
 		#region Private members
 		private string _Text = "Please wait, loading KML file.";

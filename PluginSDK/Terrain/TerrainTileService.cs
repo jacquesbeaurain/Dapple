@@ -11,7 +11,7 @@ namespace WorldWind.Terrain
    /// <summary>
    /// Provides elevation data (BIL format).
    /// </summary>
-   public class TerrainTileService : IDisposable
+	public class TerrainTileService : IDisposable
    {
       #region Private Members
       string m_serverUrl;
@@ -29,7 +29,7 @@ namespace WorldWind.Terrain
       #endregion
 
       #region Properties
-      public string ServerUrl
+      internal string ServerUrl
       {
          get
          {
@@ -37,7 +37,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public string DataSet
+      internal string DataSet
       {
          get
          {
@@ -45,7 +45,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public double LevelZeroTileSizeDegrees
+      internal double LevelZeroTileSizeDegrees
       {
          get
          {
@@ -53,7 +53,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public int NumberLevels
+      internal int NumberLevels
       {
          get
          {
@@ -61,7 +61,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public int SamplesPerTile
+      internal int SamplesPerTile
       {
          get
          {
@@ -69,7 +69,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public string FileExtension
+      internal string FileExtension
       {
          get
          {
@@ -77,7 +77,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public string TerrainTileDirectory
+      internal string TerrainTileDirectory
       {
          get
          {
@@ -85,7 +85,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public TimeSpan TerrainTileRetryInterval
+      internal TimeSpan TerrainTileRetryInterval
       {
          get
          {
@@ -93,7 +93,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public string DataType
+      internal string DataType
       {
          get
          {
@@ -115,7 +115,7 @@ namespace WorldWind.Terrain
       /// <param name="terrainTileDirectory"></param>
       /// <param name="terrainTileRetryInterval"></param>
       /// <param name="dataTyle">Terrain Tiles Data type</param>
-      public TerrainTileService(
+		public TerrainTileService(
          string serverUrl,
          string dataSet,
          double levelZeroTileSizeDegrees,
@@ -146,7 +146,7 @@ namespace WorldWind.Terrain
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <param name="samplesPerDegree"></param>
       /// <returns>Uninitialized terrain tile (no elevation data)</returns>
-      public TerrainTile GetTerrainTile(double latitude, double longitude, double samplesPerDegree)
+      internal TerrainTile GetTerrainTile(double latitude, double longitude, double samplesPerDegree)
       {
          TerrainTile tile = new TerrainTile(this);
 
@@ -176,18 +176,18 @@ namespace WorldWind.Terrain
       }
 
       // Hack: newer methods in MathEngine class cause problems
-      public static int GetColFromLongitude(double longitude, double tileSize)
+      internal static int GetColFromLongitude(double longitude, double tileSize)
       {
          return (int)System.Math.Floor((System.Math.Abs(-180.0 - longitude) % 360) / tileSize);
       }
 
-      public static int GetRowFromLatitude(double latitude, double tileSize)
+      internal static int GetRowFromLatitude(double latitude, double tileSize)
       {
          return (int)System.Math.Floor((System.Math.Abs(-90.0 - latitude) % 180) / tileSize);
       }
       #region IDisposable Members
 
-      public void Dispose()
+		public void Dispose()
       {
          if (DrawArgs.DownloadQueue != null)
             DrawArgs.DownloadQueue.Clear(this);
@@ -197,26 +197,26 @@ namespace WorldWind.Terrain
    }
 
 
-   public class TerrainTile : IDisposable
+   internal class TerrainTile : IDisposable
    {
-      public string TerrainTileFilePath;
-      public double TileSizeDegrees;
-      public int SamplesPerTile;
-      public double South;
-      public double North;
-      public double West;
-      public double East;
-      public int Row;
-      public int Col;
-      public int TargetLevel;
-      public TerrainTileService m_owner;
-      public bool IsInitialized;
-      public bool IsValid;
+      internal string TerrainTileFilePath;
+      internal double TileSizeDegrees;
+      internal int SamplesPerTile;
+      internal double South;
+      internal double North;
+      internal double West;
+      internal double East;
+      internal int Row;
+      internal int Col;
+      internal int TargetLevel;
+      internal TerrainTileService m_owner;
+      internal bool IsInitialized;
+      internal bool IsValid;
 
-      public float[,] ElevationData;
+      internal float[,] ElevationData;
       protected TerrainDownloadRequest request;
 
-      public TerrainTile(TerrainTileService owner)
+      internal TerrainTile(TerrainTileService owner)
       {
          m_owner = owner;
       }
@@ -224,7 +224,7 @@ namespace WorldWind.Terrain
       /// This method initializes the terrain tile add switches to
       /// Initialize floating point/int 16 tiles
       /// </summary>
-      public void Initialize()
+      internal void Initialize()
       {
          if (IsInitialized)
             return;
@@ -338,7 +338,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public float GetElevationAt(double latitude, double longitude)
+      internal float GetElevationAt(double latitude, double longitude)
       {
             if (!IsInitialized)
                 return 0;
@@ -397,7 +397,7 @@ namespace WorldWind.Terrain
       }
       #region IDisposable Members
 
-      public void Dispose()
+		public void Dispose()
       {
          if (request != null)
          {

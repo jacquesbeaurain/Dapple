@@ -7,7 +7,7 @@ using WorldWind;
 
 namespace Dapple
 {
-   public class UpdateDialog : System.Windows.Forms.Form
+   internal class UpdateDialog : System.Windows.Forms.Form
    {
       private LinkLabel linkLabelWhatNew;
       private Label labelMessage;
@@ -18,7 +18,7 @@ namespace Dapple
       /// Initializes a new instance of the <see cref= "T:WorldWind.UpdateDialog"/> class.
       /// </summary>
       /// <param name="ww"></param>
-      public UpdateDialog(string strVersion)
+      internal UpdateDialog(string strVersion)
       {
          InitializeComponent();
          Icon = new System.Drawing.Icon(@"app.ico");

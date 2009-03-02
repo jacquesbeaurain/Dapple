@@ -21,7 +21,7 @@ namespace Dapple.LayerGeneration
 
 		#region Constructors
 
-		public BlueMarbleBuilder()
+		internal BlueMarbleBuilder()
          : base("Blue Marble", MainForm.WorldWindowSingleton, null)
       {
          ImageLayer oBaseLayer = new WorldWind.Renderable.ImageLayer(
@@ -55,7 +55,7 @@ namespace Dapple.LayerGeneration
          m_hObject = oRenderableList;
       }
 
-      public BlueMarbleBuilder(RenderableObject hObject) :base("Blue Marble", MainForm.WorldWindowSingleton, null)
+      internal BlueMarbleBuilder(RenderableObject hObject) :base("Blue Marble", MainForm.WorldWindowSingleton, null)
       {
          m_hObject = hObject;
 		}
@@ -67,7 +67,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		public override byte Opacity
+		internal override byte Opacity
       {
          get
          {
@@ -82,7 +82,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-      public override bool Visible
+      internal override bool Visible
       {
          get
          {
@@ -97,47 +97,47 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		public override WorldWind.GeographicBoundingBox Extents
+		internal override WorldWind.GeographicBoundingBox Extents
 		{
 			get { return new WorldWind.GeographicBoundingBox(90, -90, -180, 180); }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-      public override bool IsChanged
+		public override bool IsChanged
       {
          get { return m_blIsChanged; }
       }
 
 		[System.ComponentModel.Browsable(false)]
-      public override string ServerTypeIconKey
+      internal override string ServerTypeIconKey
       {
          get { return "blue_marble"; }
       }
 
 		[System.ComponentModel.Browsable(false)]
-      public override string DisplayIconKey
+		public override string DisplayIconKey
       {
          get { return "blue_marble"; }
       }
 
 		#endregion
 
-		public override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
       {
          return CascadeDownloading(m_hObject, out iBytesRead, out iTotalBytes);
       }
 
-      public override WorldWind.Renderable.RenderableObject GetLayer()
+      internal override WorldWind.Renderable.RenderableObject GetLayer()
       {
          return m_hObject;
       }
 
-      public override string GetURI()
+      internal override string GetURI()
       {
          return null;
       }
 
-      public override string GetCachePath()
+      internal override string GetCachePath()
       {
          return Path.Combine(m_oWorldWindow.Cache.CacheDirectory, "BMNG");
       }
@@ -150,7 +150,7 @@ namespace Dapple.LayerGeneration
          m_blIsChanged = true;
       }
 
-      public override bool Equals(object obj)
+		public override bool Equals(object obj)
       {
          if (!(obj is BlueMarbleBuilder)) return false;
 
@@ -162,7 +162,7 @@ namespace Dapple.LayerGeneration
 			return "BLUEMARBLE".GetHashCode();
 		}
 
-      public override object CloneSpecific()
+      internal override object CloneSpecific()
       {
          return new BlueMarbleBuilder(m_hObject);
       }
@@ -213,7 +213,7 @@ namespace Dapple.LayerGeneration
          return false;
       }
 
-      public override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
       {
          szDownloadType = "tile";
          szServerURL = "http://worldwind25.arc.nasa.gov/tile/tile.aspx";

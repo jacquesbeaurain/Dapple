@@ -15,7 +15,7 @@ namespace WorldWind.Renderable
 	/// Placename Layer that uses a Directory of xml files and extract place names 
 	/// based on current lat/lon/viewrange
 	/// </summary>
-	public class TiledWFSPlacenameSet : RenderableObject
+	internal class TiledWFSPlacenameSet : RenderableObject
 	{
 
 		protected string m_name;
@@ -60,16 +60,16 @@ namespace WorldWind.Renderable
 		protected static int IconWidth = 48;
 		protected static int IconHeight = 48;
 
-		public WorldWindPlacename[] PlaceNames
+		internal WorldWindPlacename[] PlaceNames
 		{
 			get { return m_placeNames; }
 		}
 
-		public int Color
+		internal int Color
 		{
 			get { return m_defaultColor; }
 		}
-		public FontDescription FontDescription
+		internal FontDescription FontDescription
 		{
 			get { return m_fontDescription; }
 		}
@@ -87,7 +87,7 @@ namespace WorldWind.Renderable
 		/// <param name="fontDescription"></param>
 		/// <param name="color"></param>
 		/// <param name="iconFilePath"></param>
-		public TiledWFSPlacenameSet(
+		internal TiledWFSPlacenameSet(
 			string name,
 			World parentWorld,
 			double altitude,
@@ -558,14 +558,14 @@ namespace WorldWind.Renderable
 	}
 
 
-	public class WorldWindWFSPlacenameFile
+	internal class WorldWindWFSPlacenameFile
 	{
-		public string name;
-		public string wfsURL;
-		public double north = 90.0f;
-		public double south = -90.0f;
-		public double west = -180.0f;
-		public double east = 180.0f;
+		internal string name;
+		internal string wfsURL;
+		internal double north = 90.0f;
+		internal double south = -90.0f;
+		internal double west = -180.0f;
+		internal double east = 180.0f;
 		protected WorldWindPlacename[] m_placeNames = null;
 		protected string wfsBaseUrl;
 		protected string labelfield;
@@ -575,7 +575,7 @@ namespace WorldWind.Renderable
 
 		protected bool m_dlInProcess = false;
 
-		public WorldWindWFSPlacenameFile(
+		internal WorldWindWFSPlacenameFile(
 			 string name,
 				String wfsBaseUrl,
 				string typename,
@@ -601,7 +601,7 @@ namespace WorldWind.Renderable
 			this.m_cache = cache;
 		}
 
-		public bool DownloadInProgress
+		internal bool DownloadInProgress
 		{
 			get
 			{
@@ -609,7 +609,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public WorldWindPlacename[] PlaceNames
+		internal WorldWindPlacename[] PlaceNames
 		{
 			get
 			{
@@ -621,7 +621,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		/*public WorldWindWFSPlacenameFile[] SplitPlacenameFiles()
+		/*internal WorldWindWFSPlacenameFile[] SplitPlacenameFiles()
 	 {
 		 //split
 		 WorldWindWFSPlacenameFile northWest = new WorldWindWFSPlacenameFile(this.wfsBaseUrl,this.typename,this.labelfield);

@@ -7,9 +7,9 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for SunCalculator.
 	/// </summary>
-	public class SunCalculator
+	internal class SunCalculator
 	{
-		public static Point3d GetGeocentricPosition(System.DateTime utcDateTime)
+		internal static Point3d GetGeocentricPosition(System.DateTime utcDateTime)
 		{
             if (World.Settings.SunSynchedWithTime)
             {
@@ -74,7 +74,7 @@ namespace WorldWind
 
         // Compute Sun geocentric cartesian position given actual position on the globe, 
         // heading, elevation and sun distance
-        public static Point3d GetGeocentricPosition(Point3d position, Angle heading, Angle elevation, double sunDistance)
+        internal static Point3d GetGeocentricPosition(Point3d position, Angle heading, Angle elevation, double sunDistance)
         {
             // Untransformed sun pos from globe center
             Point3d sun = MathEngine.SphericalToCartesian(elevation, Angle.FromRadians(Math.PI - heading.Radians), sunDistance);

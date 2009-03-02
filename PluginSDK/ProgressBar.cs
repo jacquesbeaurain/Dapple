@@ -32,7 +32,7 @@ namespace WorldWind.VisualControl
 		/// <param name="width">Width in pixels of progress bar</param>
 		/// <param name="height">Height in pixels of progress bar</param>
 		/// <param name="color">Color of the progress bar</param>
-		public ProgressBar( float width, float height )
+		public ProgressBar(float width, float height)
 		{
 			this.width = width;
 			this.height = height;
@@ -45,7 +45,7 @@ namespace WorldWind.VisualControl
 		/// </summary>
 		/// <param name="x">Center X position of progress.</param>
 		/// <param name="y">Center Y position of progress.</param>
-		public void Initalize( float x, float y)
+		internal void Initalize( float x, float y)
 		{
 			this.x = x;
 			this.y = y;

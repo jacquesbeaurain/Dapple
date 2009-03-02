@@ -5,7 +5,7 @@ namespace Utils.MessageBoxExLib
 	/// <summary>
 	/// Standard MessageBoxEx buttons
 	/// </summary>
-	public enum MessageBoxExButtons
+	internal enum MessageBoxExButtons
 	{
 		Ok = 0,
 		Cancel = 1,

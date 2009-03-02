@@ -5,12 +5,12 @@ using Mapack;
 
 namespace WorldWind
 {
-   public class Matrix4d
+	public class Matrix4d
    {
       private Matrix m_MapackMat;
 
       #region Constructor
-      public Matrix4d(
+      internal Matrix4d(
          double _M11, double _M12, double _M13, double _M14,
          double _M21, double _M22, double _M23, double _M24,
          double _M31, double _M32, double _M33, double _M34,
@@ -33,7 +33,7 @@ namespace WorldWind
       #endregion
 
       #region Element Accessor
-      public double this[int row, int column]
+      internal double this[int row, int column]
       {
          set
          {
@@ -48,7 +48,7 @@ namespace WorldWind
       #endregion
 
       #region Math
-       public static Matrix4d Empty
+       internal static Matrix4d Empty
        {
            get
            {
@@ -60,7 +60,7 @@ namespace WorldWind
                }));
            }
        }
-      public static Matrix4d Identity
+      internal static Matrix4d Identity
       {
          get
          {
@@ -74,7 +74,7 @@ namespace WorldWind
       }
 
 
-      public static Matrix4d Invert(Matrix4d source)
+      internal static Matrix4d Invert(Matrix4d source)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.Invert(ConvertDX.FromMatrix4d(source)));
          Matrix rightHandSide = Matrix.Diagonal(4, 4, 1.0);
@@ -83,12 +83,12 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d operator *(Matrix4d left, Matrix4d right)
+		public static Matrix4d operator *(Matrix4d left, Matrix4d right)
       {
          return Matrix4d.Multiply(left, right);
       }
 
-      public static Matrix4d Multiply(Matrix4d left, Matrix4d right)
+		public static Matrix4d Multiply(Matrix4d left, Matrix4d right)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.Multiply(ConvertDX.FromMatrix4d(left), ConvertDX.FromMatrix4d(right)));
 
@@ -120,7 +120,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d Translation(double x, double y, double z)
+		public static Matrix4d Translation(double x, double y, double z)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.Translation((float)x, (float)y, (float)z));
 
@@ -134,7 +134,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d Scaling(double x, double y, double z)
+      internal static Matrix4d Scaling(double x, double y, double z)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.Scaling((float)x, (float)y, (float)z));
          Matrix4d solution = new Matrix4d(new Matrix(new double[][] 
@@ -147,7 +147,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d RotationX(double angle)
+      internal static Matrix4d RotationX(double angle)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.RotationX((float)angle));
 
@@ -164,7 +164,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d RotationY(double angle)
+		public static Matrix4d RotationY(double angle)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.RotationY((float)angle));
 
@@ -182,7 +182,7 @@ namespace WorldWind
       }
 
 
-      public static Matrix4d RotationZ(double angle)
+		public static Matrix4d RotationZ(double angle)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.RotationZ((float)angle));
 
@@ -199,7 +199,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d RotationYawPitchRoll(double yaw, double pitch, double roll)
+      internal static Matrix4d RotationYawPitchRoll(double yaw, double pitch, double roll)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.RotationYawPitchRoll((float)yaw, (float)pitch, (float)roll));
 
@@ -214,7 +214,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d LookAtRH(Point3d cameraPosition, Point3d cameraTarget, Point3d cameraUpVector)
+      internal static Matrix4d LookAtRH(Point3d cameraPosition, Point3d cameraTarget, Point3d cameraUpVector)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.LookAtRH(ConvertDX.FromVector3d(cameraPosition), ConvertDX.FromVector3d(cameraTarget), ConvertDX.FromVector3d(cameraUpVector)));
 
@@ -232,7 +232,7 @@ namespace WorldWind
          return solution;
       }
 
-      public static Matrix4d PerspectiveFovRH(double fieldOfViewY, double aspectRatio, double znearPlane, double zfarPlane)
+		public static Matrix4d PerspectiveFovRH(double fieldOfViewY, double aspectRatio, double znearPlane, double zfarPlane)
       {
          //Matrix4d test = ConvertDX.ToMatrix4d(Microsoft.DirectX.Matrix.PerspectiveFovRH((float)fieldOfViewY, (float)aspectRatio, (float)znearPlane, (float)zfarPlane));
 

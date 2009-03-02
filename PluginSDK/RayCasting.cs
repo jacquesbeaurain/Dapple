@@ -7,7 +7,7 @@ using Microsoft.DirectX.Direct3D;
 namespace WorldWind
 {
     // Ray casting class - Patrick Murris - march 2007
-    public sealed class RayCasting
+    internal sealed class RayCasting
     {
 		/// <summary>
 		/// This class has only static methods.
@@ -27,7 +27,7 @@ namespace WorldWind
         /// <param name="longitude">Out : intersection longitude</param>
         /// <param name="world">Current world</param>
         /// <returns>NaN if no intersection found</returns>
-        public static void RayIntersectionWithTerrain(
+        internal static void RayIntersectionWithTerrain(
             Point3d p1,
             Point3d p2,
             double samplingPrecision, 

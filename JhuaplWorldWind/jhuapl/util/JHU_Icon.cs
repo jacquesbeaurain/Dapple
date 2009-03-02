@@ -60,7 +60,7 @@ namespace jhuapl.util
 	/// <summary>
 	/// One icon in an icon layer
 	/// </summary>
-	public class JHU_Icon : RenderableObject
+	internal class JHU_Icon : RenderableObject
 	{
 		#region private members
 
@@ -122,7 +122,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Latitude (North/South) in decimal degrees
 		/// </summary>
-		public double Latitude
+		internal double Latitude
 		{
 			get { return m_latitude; }
 			set 
@@ -135,7 +135,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Longitude (East/West) in decimal degrees
 		/// </summary>
-		public double Longitude
+		internal double Longitude
 		{
 			get { return m_longitude; }
 			set 
@@ -148,7 +148,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// The icon altitude above sea level
 		/// </summary>
-		public double Altitude
+		internal double Altitude
 		{
 			get { return m_altitude; }
 			set 
@@ -161,9 +161,9 @@ namespace jhuapl.util
 		/// <summary>
 		/// Icon bitmap path. (Overrides Image)
 		/// </summary>
-		public string TextureFileName;
+		internal string TextureFileName;
 
-		public JHU_IconTexture m_iconTexture;
+		internal JHU_IconTexture m_iconTexture;
 
 		protected bool m_iconTexture2Show = false;
 		protected string m_iconTexture2Name;
@@ -178,34 +178,34 @@ namespace jhuapl.util
 		/// Caller is responsible for disposing the Bitmap when the layer is removed, 
 		/// either by calling Dispose on Icon or on the Image directly.
 		/// </summary>
-		public Bitmap Image;
+		internal Bitmap Image;
 
 		/// <summary>
 		/// Icon on-screen rendered width (pixels).  Defaults to icon image width.  
 		/// If source image file is not a valid GDI+ image format, width may be increased to closest power of 2.
 		/// </summary>
-		public int Width;
+		internal int Width;
 
 		/// <summary>
 		/// Icon on-screen rendered height (pixels).  Defaults to icon image height.  
 		/// If source image file is not a valid GDI+ image format, height may be increased to closest power of 2.
 		/// </summary>
-		public int Height;
+		internal int Height;
 
 		/// <summary>
 		///  Icon X scaling computed by dividing icon width by texture width
 		/// </summary>
-		public float XScale;
+		internal float XScale;
  
 		/// <summary>
 		///  Icon Y scaling computed by dividing icon height by texture height 
 		/// </summary>
-		public float YScale;
+		internal float YScale;
 
 		/// <summary>
 		/// On-Click browse to location
 		/// </summary>
-		public string URL
+		internal string URL
 		{
 			get { return m_url; }
 			set 
@@ -218,17 +218,17 @@ namespace jhuapl.util
 		/// <summary>
 		/// The maximum distance (meters) the icon will be visible from
 		/// </summary>
-		public double MaximumDisplayDistance = double.MaxValue;
+		internal double MaximumDisplayDistance = double.MaxValue;
 
 		/// <summary>
 		/// The minimum distance (meters) the icon will be visible from
 		/// </summary>
-		public double MinimumDisplayDistance;
+		internal double MinimumDisplayDistance;
 
 		/// <summary>
 		/// Bounding box centered at (0,0) used to calculate whether mouse is over icon/label
 		/// </summary>
-		public Rectangle SelectionRectangle;
+		internal Rectangle SelectionRectangle;
 
 		static int hotColor = Color.White.ToArgb();
 		static int normalColor = Color.FromArgb(200,255,255,255).ToArgb();
@@ -239,7 +239,7 @@ namespace jhuapl.util
 		const int labelWidth = 1000; // Dummy value needed for centering the text
 
 		protected Angle m_rotation = Angle.Zero;
-		public Angle Rotation
+		internal Angle Rotation
 		{
 			get { return m_rotation; }
 			set 
@@ -257,7 +257,7 @@ namespace jhuapl.util
 		}
 
 		protected bool m_isRotated;
-		public bool IsRotated
+		internal bool IsRotated
 		{
 			get { return m_isRotated; }
 			set 
@@ -269,7 +269,7 @@ namespace jhuapl.util
 		}
 
 		protected bool m_drawGroundStick;
-		public bool DrawGroundStick
+		internal bool DrawGroundStick
 		{
 			get { return m_drawGroundStick; }
 			set 
@@ -285,7 +285,7 @@ namespace jhuapl.util
 		/// <param name="name">Name of the icon</param>
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
-		public JHU_Icon(string name,
+		internal JHU_Icon(string name,
 			double latitude, 
 			double longitude) : base( name )
 
@@ -305,7 +305,7 @@ namespace jhuapl.util
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
-		public JHU_Icon(string name,
+		internal JHU_Icon(string name,
 			double latitude, 
 			double longitude,
 			double heightAboveSurface) : this( name, latitude, longitude )
@@ -320,7 +320,7 @@ namespace jhuapl.util
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
-		public JHU_Icon(string name, 
+		internal JHU_Icon(string name, 
 			string description,
 			double latitude, 
 			double longitude, 
@@ -351,7 +351,7 @@ namespace jhuapl.util
 		/// <param name="width"></param>
 		/// <param name="height"></param>
 		/// <param name="actionURL"></param>
-		public JHU_Icon(string name, 
+		internal JHU_Icon(string name, 
 			string description,
 			double latitude, 
 			double longitude, 
@@ -374,7 +374,7 @@ namespace jhuapl.util
 		/// </summary>
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
-		public void SetPosition(double latitude, double longitude)
+		internal void SetPosition(double latitude, double longitude)
 		{
 			m_latitude = (float) latitude;
 			m_longitude = (float) longitude;
@@ -389,7 +389,7 @@ namespace jhuapl.util
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="altitude">The icon altitude above sea level.</param>
-		public void SetPosition(double latitude, double longitude, double altitude)
+		internal void SetPosition(double latitude, double longitude, double altitude)
 		{
 			m_latitude = (float) latitude;
 			m_longitude = (float) longitude;
@@ -591,7 +591,7 @@ namespace jhuapl.util
 			return false;
 		}
 
-		public bool PerformRMBAction(MouseEventArgs e)
+		internal bool PerformRMBAction(MouseEventArgs e)
 		{
 			if (m_contextMenu == null)
 			{
@@ -650,7 +650,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Draw the icon
 		/// </summary>
-		public void FastRender(DrawArgs drawArgs, Sprite sprite, Vector3 projectedPoint)
+		internal void FastRender(DrawArgs drawArgs, Sprite sprite, Vector3 projectedPoint)
 		{
 			// Check icons for within "visual" range
          double distanceToIcon = (this.Position - drawArgs.WorldCamera.Position).Length;
@@ -741,7 +741,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Draw the icon
 		/// </summary>
-		public void MouseOverRender(DrawArgs drawArgs, Sprite sprite, Vector3 projectedPoint)
+		internal void MouseOverRender(DrawArgs drawArgs, Sprite sprite, Vector3 projectedPoint)
 		{
 			JHU_IconTexture iconTexture = this.GetTexture();
 
@@ -847,7 +847,7 @@ namespace jhuapl.util
 
 		#endregion
 
-		public virtual string GeneralInfo()
+		internal virtual string GeneralInfo()
 		{
 			StringBuilder outString = new StringBuilder();
 
@@ -860,7 +860,7 @@ namespace jhuapl.util
 
 		}
 
-		public virtual string DetailedInfo()
+		internal virtual string DetailedInfo()
 		{
 			StringBuilder outString = new StringBuilder();
 
@@ -869,17 +869,17 @@ namespace jhuapl.util
 			return outString.ToString();
 		}
 
-		public virtual string DescriptionInfo()
+		internal virtual string DescriptionInfo()
 		{
 			return this.Description;
 		}
 
-		public JHU_IconTexture GetTexture()
+		internal JHU_IconTexture GetTexture()
 		{
 			return m_iconTexture;
 		}
 
-		public void UpdateHookForm()
+		internal void UpdateHookForm()
 		{
 			// update hook form
 			if (m_hookForm != null)
@@ -908,7 +908,7 @@ namespace jhuapl.util
 			}
 		}
 
-		public string Degrees()
+		internal string Degrees()
 		{
 			StringBuilder retStr = new StringBuilder();
 
@@ -919,7 +919,7 @@ namespace jhuapl.util
 			return retStr.ToString();
 		}
 
-		public string DMS()
+		internal string DMS()
 		{
 			StringBuilder retStr = new StringBuilder();
 
@@ -930,7 +930,7 @@ namespace jhuapl.util
 			return retStr.ToString();
 		}
 
-		public void GoTo()
+		internal void GoTo()
 		{
 			// goto lat lon of this icon
 			m_globals.WorldWindow.GotoLatLon(m_latitude, m_longitude);
@@ -964,7 +964,7 @@ namespace jhuapl.util
 		/// Adds a new context menu item to this icon.
 		/// </summary>
 		/// <param name="newItem">The menu item to add</param>
-		public void AddContextMenuItem(MenuItem newItem)
+		internal void AddContextMenuItem(MenuItem newItem)
 		{
 			if (m_contextMenu == null)
 			{

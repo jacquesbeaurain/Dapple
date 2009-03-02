@@ -13,17 +13,17 @@ using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
-   public class ArcIMSDownloadRequest : GeoSpatialDownloadRequest
+   internal class ArcIMSDownloadRequest : GeoSpatialDownloadRequest
    {
 		protected CultureInfo m_oCultureInfo;
 
-      public ArcIMSDownloadRequest(IGeoSpatialDownloadTile oTile, ArcIMSImageStore oImageStore, string strLocalFilePath, CultureInfo oInfo)
+      internal ArcIMSDownloadRequest(IGeoSpatialDownloadTile oTile, ArcIMSImageStore oImageStore, string strLocalFilePath, CultureInfo oInfo)
          : base(oTile, oImageStore, strLocalFilePath, oImageStore.ServerUri.ToBaseUri())
       {
 			m_oCultureInfo = oInfo;
       }
 
-      public override void StartDownload()
+		public override void StartDownload()
       {
          Tile.IsDownloadingImage = true;
 
@@ -176,7 +176,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public abstract class ArcIMSDownload : IndexedWebDownload
+   internal abstract class ArcIMSDownload : IndexedWebDownload
    {
       protected ArcIMSServerUri m_oUri;
 
@@ -240,13 +240,13 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class ArcIMSImageDownload : ArcIMSDownload
+   internal class ArcIMSImageDownload : ArcIMSDownload
    {
 		protected CultureInfo m_oCultureInfo;
       private ArcIMSImageStore m_oImageStore;
       private Geosoft.Dap.Common.BoundingBox m_oEnvelope;
 
-      public ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber, CultureInfo oInfo)
+      internal ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber, CultureInfo oInfo)
          :base(oImageStore.ServerUri, iIndexNumber)
       {
 			m_oCultureInfo = oInfo;
@@ -254,7 +254,7 @@ namespace Dapple.LayerGeneration
          m_oEnvelope = oEnvelope;
       }
 
-      public double Degrees
+      internal double Degrees
       {
          get
          {
@@ -267,7 +267,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public int TextureSize
+      internal int TextureSize
       {
          get
          {
@@ -347,9 +347,9 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class ArcIMSCatalogDownload : ArcIMSDownload
+   internal class ArcIMSCatalogDownload : ArcIMSDownload
    {
-      public ArcIMSCatalogDownload(ArcIMSServerUri serverUri, int iIndexNumber)
+      internal ArcIMSCatalogDownload(ArcIMSServerUri serverUri, int iIndexNumber)
          :base(serverUri, iIndexNumber)
       {
       }
@@ -375,11 +375,11 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class ArcIMSServiceDownload : ArcIMSDownload
+   internal class ArcIMSServiceDownload : ArcIMSDownload
    {
       private String m_strServiceName;
 
-      public ArcIMSServiceDownload(ArcIMSServerUri oUri, String serviceName, int iIndexNumber)
+      internal ArcIMSServiceDownload(ArcIMSServerUri oUri, String serviceName, int iIndexNumber)
          : base(oUri, iIndexNumber)
       {
          m_strServiceName = serviceName;
@@ -415,7 +415,7 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public class ArcIMSImageStore : ImageStore
+   internal class ArcIMSImageStore : ImageStore
    {
       private String m_strServiceName;
       private String m_szLayerID;
@@ -423,7 +423,7 @@ namespace Dapple.LayerGeneration
       private int m_iTextureSize;
 		private CultureInfo m_oCultureInfo;
 
-      public ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo)
+      internal ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo)
       {
          m_oUri = oUri;
          m_strServiceName = strServiceName;
@@ -434,11 +434,11 @@ namespace Dapple.LayerGeneration
 
       #region Properties
 
-      public String ServiceName { get { return m_strServiceName; } }
-      public String LayerID { get { return m_szLayerID; } }
-      public ArcIMSServerUri ServerUri { get { return m_oUri; } }
+      internal String ServiceName { get { return m_strServiceName; } }
+      internal String LayerID { get { return m_szLayerID; } }
+      internal ArcIMSServerUri ServerUri { get { return m_oUri; } }
       public override bool IsDownloadableLayer { get { return true; } }
-      public override int TextureSizePixels
+		public override int TextureSizePixels
       {
          get
          {

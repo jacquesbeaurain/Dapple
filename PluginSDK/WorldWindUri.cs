@@ -23,19 +23,19 @@ namespace WorldWind.Net
 		private string _layer;
 		private string _rawUrl = "";
 
-		public const string Scheme = "worldwind";
+		internal const string Scheme = "worldwind";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Net.WorldWindUri"/> class.
 		/// </summary>
-		public WorldWindUri()
+		internal WorldWindUri()
 		{
 		}
 
 		/// <summary>
 		/// Construct a new worldwind uri from camera position.
 		/// </summary>
-		public WorldWindUri(string worldName, CameraBase camera )
+		internal WorldWindUri(string worldName, CameraBase camera )
 		{
 			_world = worldName;
 			_latitude=camera.Latitude;
@@ -58,7 +58,7 @@ namespace WorldWind.Net
 		/// </summary>
 		/// <param name="uriString"></param>
 		/// <returns></returns>
-		public static WorldWindUri Parse( string worldWindUri )
+		internal static WorldWindUri Parse( string worldWindUri )
 		{
 			try
 			{
@@ -143,7 +143,7 @@ namespace WorldWind.Net
 			}
 		}
 
-		public string RawUrl
+		internal string RawUrl
 		{
 			get
 			{
@@ -155,7 +155,7 @@ namespace WorldWind.Net
 			}
 		}
 
-		public string World
+		internal string World
 		{
 			get
 			{
@@ -283,7 +283,7 @@ namespace WorldWind.Net
 		/// </summary>
 		/// <param name="bEnableFiltering">Forces a reduced string to be generated, enables filtering</param>
 		/// <returns>A WW URI, filtered if bEnableFiltering is true</returns>
-		public string ToString(bool bEnableFiltering) 
+		internal string ToString(bool bEnableFiltering) 
 		{
 			StringBuilder sb = new StringBuilder( Scheme + "://goto/" );
  

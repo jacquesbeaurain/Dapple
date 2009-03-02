@@ -9,9 +9,9 @@ namespace WorldWind
 	/// </summary>
 	public class Frustum
 	{
-		public Plane2d[] planes = new Plane2d[6];
+		internal Plane2d[] planes = new Plane2d[6];
 
-		public void Update(Matrix4d m)
+		internal void Update(Matrix4d m)
 		{
 			//bottom (down) plane
 			this.planes[0] = new Plane2d(
@@ -68,7 +68,7 @@ namespace WorldWind
 		/// Test if a sphere intersects or is completely inside the frustum.
 		/// </summary>
 		/// <returns>true when the sphere intersects.</returns>
-		public bool Intersects(BoundingSphere c)
+		internal bool Intersects(BoundingSphere c)
 		{
 			foreach(Plane2d p in this.planes)
 			{
@@ -86,7 +86,7 @@ namespace WorldWind
       /// Test if a sphere intersects at least one plane in in the frustum.
       /// </summary>
       /// <returns>true when the sphere intersects.</returns>
-      public bool IntersectsOne(BoundingSphere c)
+      internal bool IntersectsOne(BoundingSphere c)
       {
          foreach (Plane2d p in this.planes)
          {
@@ -119,7 +119,7 @@ namespace WorldWind
 		/// Tests if the view frustum fully contains the bounding box.
 		/// </summary>
 		/// <returns>true when the box is complete enclosed by the frustum.</returns>
-		public bool Contains(BoundingBox bb)
+		internal bool Contains(BoundingBox bb)
 		{
          // Optimize by always checking bounding sphere first
          if (!Intersects(bb.boundsphere))
@@ -186,7 +186,7 @@ namespace WorldWind
 
 			return true;
 		}
-	
+
 		public override string ToString()
 		{
          return string.Format("Near(4):\n{0}\nFar(1):\n{1}\n", planes[4], planes[1]) +

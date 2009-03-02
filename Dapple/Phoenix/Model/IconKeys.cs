@@ -5,54 +5,54 @@ using System.Drawing;
 
 namespace NewServerTree
 {
-	public static class IconKeys
+	internal static class IconKeys
 	{
-		public static String AvailableServers = "rootnode";
+		internal static String AvailableServers = "rootnode";
 
-		public static String DapRoot = "rootnode-dap";
-		public static String TileRoot = "rootnode-tile";
-		public static String VERoot = "rootnode-ve";
-		public static String WMSRoot = "rootnode-wms";
-		public static String ArcIMSRoot = "rootnode-arcims";
+		internal static String DapRoot = "rootnode-dap";
+		internal static String TileRoot = "rootnode-tile";
+		internal static String VERoot = "rootnode-ve";
+		internal static String WMSRoot = "rootnode-wms";
+		internal static String ArcIMSRoot = "rootnode-arcims";
 
-		public static String OnlineServer = "server-online";
-		public static String OfflineServer = "server-offline";
-		public static String DisabledServer = "server-disabled";
-		public static String PersonalDAPServer = "server-personaldap";
-		public static String ArcIMSService = "folder-arcimsservice";
-		public static String TileSet = "folder-tileset";
+		internal static String OnlineServer = "server-online";
+		internal static String OfflineServer = "server-offline";
+		internal static String DisabledServer = "server-disabled";
+		internal static String PersonalDAPServer = "server-personaldap";
+		internal static String ArcIMSService = "folder-arcimsservice";
+		internal static String TileSet = "folder-tileset";
 
-		public static String OpenFolder = "folder-open";
-		public static String ClosedFolder = "folder-closed";
+		internal static String OpenFolder = "folder-open";
+		internal static String ClosedFolder = "folder-closed";
 
-		public static String ErrorMessage = "message-error";
-		public static String LoadingMessage = "message-loading";
-		public static String InfoMessage = "message-info";
+		internal static String ErrorMessage = "message-error";
+		internal static String LoadingMessage = "message-loading";
+		internal static String InfoMessage = "message-info";
 
-		public static String DapLayerPrefix = "layer-dap-"; // 13 subtypes
-		public static String DapBrowserMapLayer = "layer-dap-browsermap";
-		public static String TileLayer = "layer-tile";
-		public static String VELayer = "layer-ve";
-		public static String WMSLayer = "layer-wms";
-		public static String ArcIMSLayer = "layer-arcims";
+		internal static String DapLayerPrefix = "layer-dap-"; // 13 subtypes
+		internal static String DapBrowserMapLayer = "layer-dap-browsermap";
+		internal static String TileLayer = "layer-tile";
+		internal static String VELayer = "layer-ve";
+		internal static String WMSLayer = "layer-wms";
+		internal static String ArcIMSLayer = "layer-arcims";
 
-		public static String MissingImage = "no-image-set";
+		internal static String MissingImage = "no-image-set";
 
-		public static String AddDAPServerMenuItem = "menu-add-dap";
-		public static String AddWMSServerMenuItem = "menu-add-wms";
-		public static String AddArcIMSServerMenuItem = "menu-add-arcims";
+		internal static String AddDAPServerMenuItem = "menu-add-dap";
+		internal static String AddWMSServerMenuItem = "menu-add-wms";
+		internal static String AddArcIMSServerMenuItem = "menu-add-arcims";
 
-		public static String MakeServerFavouriteMenuItem = "menu-server-makefavourite";
-		public static String RefreshServerMenuItem = "menu-server-refresh";
-		public static String EnableServerMenuItem = "menu-server-enable";
-		public static String DisableServerMenuItem = "menu-server-disable";
-		public static String RemoveServerMenuItem = "menu-server-remove";
-		public static String ViewServerPropertiesMenuItem = "menu-server-viewproperties";
+		internal static String MakeServerFavouriteMenuItem = "menu-server-makefavourite";
+		internal static String RefreshServerMenuItem = "menu-server-refresh";
+		internal static String EnableServerMenuItem = "menu-server-enable";
+		internal static String DisableServerMenuItem = "menu-server-disable";
+		internal static String RemoveServerMenuItem = "menu-server-remove";
+		internal static String ViewServerPropertiesMenuItem = "menu-server-viewproperties";
 
-		public static String AddLayerMenuItem = "menu-layer-add";
-		public static String ViewLegendMenuItem = "menu-layer-viewlegend";
+		internal static String AddLayerMenuItem = "menu-layer-add";
+		internal static String ViewLegendMenuItem = "menu-layer-viewlegend";
 
-		public static ImageList ImageList;
+		internal static ImageList ImageList;
 
 		static IconKeys()
 		{

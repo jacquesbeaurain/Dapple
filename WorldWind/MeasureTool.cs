@@ -33,13 +33,13 @@ namespace MeasureTool.Plugins
 	/// <summary>
 	/// Planimetric Measure Tool plug-in
 	/// </summary>
-	public class MeasureTool : WorldWind.PluginEngine.Plugin
+	internal class MeasureTool : WorldWind.PluginEngine.Plugin
 	{
 //		protected MenuItem menuItem;
-		public MeasureToolLayer layer;
+		internal MeasureToolLayer layer;
 		/*
         #region Accessor Methods
-        public MenuItem MenuEntry
+        internal MenuItem MenuEntry
         {
             get
             {
@@ -51,7 +51,7 @@ namespace MeasureTool.Plugins
         /// <summary>
 		/// Plugin entry point 
 		/// </summary>
-		public override void Load() 
+		internal override void Load() 
 		{
 			layer = new MeasureToolLayer(
 				this,
@@ -74,7 +74,7 @@ namespace MeasureTool.Plugins
 		/// <summary>
 		/// Unload our plugin
 		/// </summary>
-		public override void Unload() 
+		internal override void Unload() 
 		{
 			//if(menuItem!=null)
 			{
@@ -98,9 +98,9 @@ namespace MeasureTool.Plugins
 //		}
 	}
 
-	public class MeasureToolLayer : WorldWind.Renderable.RenderableObject
+	internal class MeasureToolLayer : WorldWind.Renderable.RenderableObject
 	{
-		public enum MeasureState
+		internal enum MeasureState
 		{
 			Idle,
 			Measuring,
@@ -112,42 +112,42 @@ namespace MeasureTool.Plugins
 		/// <summary>
 		/// Tool texture path
 		/// </summary>
-		public string TexturePath;
+		internal string TexturePath;
 
 		/// <summary>
 		/// Latitude of measure start position
 		/// </summary>
-		public Angle StartLatitude;
+		internal Angle StartLatitude;
 
 		/// <summary>
 		/// Longitude of measure start position
 		/// </summary>
-		public Angle StartLongitude;
+		internal Angle StartLongitude;
 
 		/// <summary>
 		/// Latitude of measure end position
 		/// </summary>
-		public Angle EndLatitude;
+		internal Angle EndLatitude;
 
 		/// <summary>
 		/// Longitude of measure end position
 		/// </summary>
-		public Angle EndLongitude;
+		internal Angle EndLongitude;
 
 		/// <summary>
 		/// Heading to go from start to end position. (0 = north)
 		/// </summary>
-		public Angle Azimuth;
+		internal Angle Azimuth;
 
 		/// <summary>
 		/// Distance (meters) from start to end position
 		/// </summary>
-		public double Distance;
+		internal double Distance;
 
 		/// <summary>
 		/// Current state of measuring operation
 		/// </summary>
-		public MeasureState State;
+		internal MeasureState State;
 
 		/// <summary>
 		/// Multi line object; contains series of points.
@@ -187,7 +187,7 @@ namespace MeasureTool.Plugins
         /// </summary>
         /// <param name="srcPlugin"></param>
         /// <param name="drawArgs"></param>
-		public MeasureToolLayer(MeasureTool srcPlugin, DrawArgs drawArgs) : base("Measure Tool")
+		internal MeasureToolLayer(MeasureTool srcPlugin, DrawArgs drawArgs) : base("Measure Tool")
 		{
             
 		    RenderPriority = RenderPriority.Placenames;
@@ -218,14 +218,14 @@ namespace MeasureTool.Plugins
 			rect[3].Tv = 1;
 		}
 
-		public void MouseDown( object sender, MouseEventArgs e )
+		internal void MouseDown( object sender, MouseEventArgs e )
 		{
 			if(!isOn)
 				return;
 			mouseDownPoint = DrawArgs.LastMousePosition;
 		}
 
-		public void MouseUp(object sender, MouseEventArgs e )
+		internal void MouseUp(object sender, MouseEventArgs e )
 		{
 			if(!isOn)
 				return;
@@ -337,7 +337,7 @@ namespace MeasureTool.Plugins
 		}
 
 		// Double click event
-		public void MouseRightClick(object sender, MouseEventArgs e)
+		internal void MouseRightClick(object sender, MouseEventArgs e)
 		{
 			switch(State) 
 			{
@@ -351,7 +351,7 @@ namespace MeasureTool.Plugins
 			}
 		}
 
-		public void MouseMove(object sender, MouseEventArgs e)
+		internal void MouseMove(object sender, MouseEventArgs e)
 		{
 			if(!isOn)
 				return;
@@ -397,7 +397,7 @@ namespace MeasureTool.Plugins
 			this.multiline.addLine(line);
 		}
 
-		public void KeyUp(object sender, KeyEventArgs e)
+		internal void KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.KeyData == Keys.M)
 			{
@@ -427,7 +427,7 @@ namespace MeasureTool.Plugins
 		/// <summary>
 		/// Fills the context menu with menu items specific to the layer.
 		/// </summary>
-		public override void BuildContextMenu(ContextMenu menu)
+		internal override void BuildContextMenu(ContextMenu menu)
 		{
 			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
 			menu.MenuItems.Add("Save Multi-Point Line", new System.EventHandler(saveLine));
@@ -447,7 +447,7 @@ namespace MeasureTool.Plugins
 			propertiesDialog.Show();
 		}
 		
-		public override bool IsOn
+		internal override bool IsOn
 		{
 			get
 			{
@@ -473,7 +473,7 @@ namespace MeasureTool.Plugins
 			}
 		}
 
-		public override void Render(DrawArgs drawArgs)
+		internal override void Render(DrawArgs drawArgs)
 		{
 			if(!isOn)
 				return;
@@ -717,7 +717,7 @@ namespace MeasureTool.Plugins
 		/// RenderableObject abstract member (needed) 
 		/// OBS: Worker thread (don't update UI directly from this thread)
 		/// </summary>
-		public override void Initialize(DrawArgs drawArgs)
+		internal override void Initialize(DrawArgs drawArgs)
 		{
 			isInitialized = true;
 			Console.WriteLine(TexturePath);
@@ -729,7 +729,7 @@ namespace MeasureTool.Plugins
 		/// RenderableObject abstract member (needed)
 		/// OBS: Worker thread (don't update UI directly from this thread)
 		/// </summary>
-		public override void Update(DrawArgs drawArgs)
+		internal override void Update(DrawArgs drawArgs)
 		{
 			if(!isInitialized)
 				Initialize(drawArgs);
@@ -739,7 +739,7 @@ namespace MeasureTool.Plugins
 		/// RenderableObject abstract member (needed)
 		/// OBS: Worker thread (don't update UI directly from this thread)
 		/// </summary>
-		public override void Dispose()
+		internal override void Dispose()
 		{
 			isInitialized = false;
 			if(m_texture!=null)
@@ -763,7 +763,7 @@ namespace MeasureTool.Plugins
 		/// RenderableObject abstract member (needed)
 		/// Called from UI thread = UI code safe in this function
 		/// </summary>
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
+		internal override bool PerformSelectionAction(DrawArgs drawArgs)
 		{
 			return false;
 		}
@@ -852,7 +852,7 @@ namespace MeasureTool.Plugins
 		/// <summary>
 		/// Loads or downloads the bitmaps
 		/// </summary>
-		public void LoadTextures(string path)
+		internal void LoadTextures(string path)
 		{
 			Console.WriteLine(path);
 			if(File.Exists(path))
@@ -882,7 +882,7 @@ namespace MeasureTool.Plugins
 		/// Method to save a multi-point line. Will open up a dialog box.
 		/// </summary>
 		/// <param name="multiLine">The multi-point line to be saved.</param>
-		public void saveLine(object sender, EventArgs e) 
+		internal void saveLine(object sender, EventArgs e) 
 		{
 			// Boo.
 			//Console.WriteLine("We got here... yes, yay to you too.");
@@ -907,24 +907,24 @@ namespace MeasureTool.Plugins
 		internal class MeasureMultiLine:ArrayList
 		{
 			
-			public void addLine(MeasureLine line)
+			internal void addLine(MeasureLine line)
 			{
 				Add(line);
 			}
 
-			public void deleteLine()
+			internal void deleteLine()
 			{
 				RemoveAt(Count-1);
 			}
 
-			public double getLength() 
+			internal double getLength() 
 			{
 				double sum = 0.0;
 				foreach(MeasureLine line in this)
 					sum += line.Linear;
 				return sum;
 			}
-			public void Render(DrawArgs drawArgs)
+			internal void Render(DrawArgs drawArgs)
 			{
 				foreach(MeasureLine line in this)
 				{
@@ -944,14 +944,14 @@ namespace MeasureTool.Plugins
 		/// </summary>
 		internal class MeasureLine : ListViewItem
 		{
-			public Point3d WorldXyzStart;
-			public Point3d WorldXyzMid;
+			internal Point3d WorldXyzStart;
+			internal Point3d WorldXyzMid;
 
 			private double linearDistance;
 			private double groundTrack;
-			public bool IsGroundTrackValid;
-			public CustomVertex.PositionColored[] GroundTrackLine;
-			public CustomVertex.PositionColored[] LinearTrackLine;
+			internal bool IsGroundTrackValid;
+			internal CustomVertex.PositionColored[] GroundTrackLine;
+			internal CustomVertex.PositionColored[] LinearTrackLine;
 			static CustomVertex.TransformedColored[] circle = new CustomVertex.TransformedColored[8];
 			private Angle startLatitude;
 			private Angle startLongitude;
@@ -962,7 +962,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Constructor
 			/// </summary>
-			public MeasureLine(int segmentNumber)
+			internal MeasureLine(int segmentNumber)
 			{
 				SubItems.AddRange( new string[]{"","","", Units} );
 				Text = "S"+segmentNumber.ToString();
@@ -971,7 +971,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Segment starting latitude
 			/// </summary>
-			public Angle StartLatitude
+			internal Angle StartLatitude
 			{
 				get { return startLatitude; }
 				set 
@@ -984,7 +984,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Segment starting longitude
 			/// </summary>
-			public Angle StartLongitude
+			internal Angle StartLongitude
 			{
 				get { return startLongitude; }
 				set 
@@ -997,7 +997,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Segment ending latitude
 			/// </summary>
-			public Angle EndLatitude
+			internal Angle EndLatitude
 			{
 				get { return endLatitude; }
 				set 
@@ -1010,7 +1010,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Segment ending longitude
 			/// </summary>
-			public Angle EndLongitude
+			internal Angle EndLongitude
 			{
 				get { return endLongitude; }
 				set 
@@ -1023,7 +1023,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Measured linearDistance distance (as the crow flies)
 			/// </summary>
-			public double Linear
+			internal double Linear
 			{
 				get
 				{
@@ -1040,7 +1040,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Measured ground track length
 			/// </summary>
-			public double GroundTrack
+			internal double GroundTrack
 			{
 				get
 				{
@@ -1057,7 +1057,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Render the line segment
 			/// </summary>
-			public void Render(DrawArgs drawArgs)
+			internal void Render(DrawArgs drawArgs)
 			{
 				// Draw the measure line + ends
 				Point3d referenceCenter = new Point3d(
@@ -1087,7 +1087,7 @@ namespace MeasureTool.Plugins
 				drawArgs.defaultDrawingFont.DrawText(null, label, (int)labelXy.X, (int)labelXy.Y, World.Settings.MeasureLineLinearColor );
 			}
 
-			public void RenderWaypointIcon(DrawArgs drawArgs, Point3d position)
+			internal void RenderWaypointIcon(DrawArgs drawArgs, Point3d position)
 			{
 				if(!drawArgs.WorldCamera.ViewFrustum.ContainsPoint(position))
 					return;
@@ -1118,7 +1118,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Calculates the segments of the measure curve
 			/// </summary>
-			public void Calculate(World world, bool useTerrain)
+			internal void Calculate(World world, bool useTerrain)
 			{
 				Angle angularDistance = World.ApproxAngularDistance( startLatitude, startLongitude, endLatitude, endLongitude );
 				Linear = angularDistance.Radians * world.EquatorialRadius;
@@ -1156,7 +1156,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Calculate this segment's ground track distance (meters)
 			/// </summary>
-			public void CalculateElevatedPath(World world)
+			internal void CalculateElevatedPath(World world)
 			{
 				// Calculate linear path over terrain
 				Calculate(world,true);
@@ -1231,7 +1231,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Update the lat/lon column
 			/// </summary>
-			public void UpdateCoordinates()
+			internal void UpdateCoordinates()
 			{
 				IsGroundTrackValid = false; // Ground track needs recalculation
 				string posString = string.Format("P1: [{0:f5}, {1:f5}] P2: [{2:f5}, {3:f5}]",
@@ -1243,7 +1243,7 @@ namespace MeasureTool.Plugins
 			/// <summary>
 			/// Converts numeric distance (meters) to string of selected unit.
 			/// </summary>
-			public static string FormatDistance( double meters )
+			internal static string FormatDistance( double meters )
 			{
 				string res = (meters/1000).ToString("f2");
 				return res;
@@ -1307,12 +1307,12 @@ namespace MeasureTool.Plugins
 				this.ResumeLayout(false);
 			}
 
-			public MeasurePropertiesDialog()
+			internal MeasurePropertiesDialog()
 			{
 				InitializeComponent();
 			}
 
-			public MeasureMode getMeasureMode() 
+			internal MeasureMode getMeasureMode() 
 			{
 				if (lineModeButton.Checked == true) 
 					return MeasureMode.Single;
@@ -1329,7 +1329,7 @@ namespace MeasureTool.Plugins
 				this.Close();
 			}
 
-			new public void Show()
+			new internal void Show()
 			{
 				// 
 				// MeasurePropertiesDialog
@@ -1444,7 +1444,7 @@ namespace MeasureTool.Plugins
 				this.ResumeLayout(false);
 	
 			}
-			public SaveMultiLine(MeasureToolLayer layer)
+			internal SaveMultiLine(MeasureToolLayer layer)
 			{
 				InitializeComponent();
 				m_layer = layer;

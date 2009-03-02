@@ -42,7 +42,7 @@ namespace Utils.MessageBoxExLib
 		/// <summary>
 		/// Sets the icon to show in the message box
 		/// </summary>
-		public Icon CustomIcon
+		internal Icon CustomIcon
 		{
 			set{_msgBox.CustomIcon = value;}
 		}
@@ -83,7 +83,7 @@ namespace Utils.MessageBoxExLib
 		/// <summary>
 		/// Sets or Gets wether the saved response if available should be used
 		/// </summary>
-		public bool UseSavedResponse
+		internal bool UseSavedResponse
 		{
 			get{ return _useSavedResponse; }
 			set{ _useSavedResponse = value; }
@@ -93,7 +93,7 @@ namespace Utils.MessageBoxExLib
 		/// Sets or Gets wether an alert sound is played while showing the message box.
 		/// The sound played depends on the the Icon selected for the message box
 		/// </summary>
-		public bool PlayAlsertSound
+		internal bool PlayAlsertSound
 		{
 			get{ return _msgBox.PlayAlertSound; }
 			set{ _msgBox.PlayAlertSound = value; }
@@ -102,7 +102,7 @@ namespace Utils.MessageBoxExLib
         /// <summary>
         /// Sets or Gets the time in milliseconds for which the message box is displayed.
         /// </summary>
-        public int Timeout
+        internal int Timeout
         {
             get{ return _msgBox.Timeout; }
             set{ _msgBox.Timeout = value; }
@@ -111,13 +111,13 @@ namespace Utils.MessageBoxExLib
         /// <summary>
         /// Controls the result that will be returned when the message box times out.
         /// </summary>
-        public TimeoutResult TimeoutResult
+        internal TimeoutResult TimeoutResult
         {
             get{ return _msgBox.TimeoutResult; }
             set{ _msgBox.TimeoutResult = value; }
         }
 
-        public bool SaveResponse
+		  public bool SaveResponse
       {
          get
          {
@@ -131,7 +131,7 @@ namespace Utils.MessageBoxExLib
 		/// Shows the message box
 		/// </summary>
 		/// <returns></returns>
-		public string Show()
+		  public string Show()
 		{
 			return Show(null);
 		}
@@ -141,7 +141,7 @@ namespace Utils.MessageBoxExLib
 		/// </summary>
 		/// <param name="owner"></param>
 		/// <returns></returns>
-		public string Show(IWin32Window owner)
+		internal string Show(IWin32Window owner)
 		{
 			if(_useSavedResponse && this.Name != null)
 			{
@@ -178,7 +178,7 @@ namespace Utils.MessageBoxExLib
 		/// Add a custom button to the message box
 		/// </summary>
 		/// <param name="button">The button to add</param>
-		public void AddButton(MessageBoxExButton button)
+		internal void AddButton(MessageBoxExButton button)
 		{
 			if(button == null)
 				throw new ArgumentNullException("button","A null button cannot be added");
@@ -196,7 +196,7 @@ namespace Utils.MessageBoxExLib
 		/// </summary>
 		/// <param name="text">The text of the button</param>
 		/// <param name="val">The return value in case this button is clicked</param>
-		public void AddButton(string text, string val)
+		internal void AddButton(string text, string val)
 		{
 			if(text == null)
 				throw new ArgumentNullException("text","Text of a button cannot be null");
@@ -215,7 +215,7 @@ namespace Utils.MessageBoxExLib
 		/// Add a standard button to the message box
 		/// </summary>
 		/// <param name="buttons">The standard button to add</param>
-		public void AddButton(MessageBoxExButtons button)
+		internal void AddButton(MessageBoxExButtons button)
 		{
             string buttonText = MessageBoxExManager.GetLocalizedString(button.ToString());
             if(buttonText == null)

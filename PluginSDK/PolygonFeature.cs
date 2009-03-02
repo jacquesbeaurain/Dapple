@@ -18,7 +18,7 @@ namespace WorldWind
 	/// <summary>
 	/// Creates 2D or 3D polygons.  ClampedToGround polygons are drawn as tiled images using ProjectedVectorRenderer.
 	/// </summary>
-	public class PolygonFeature : WorldWind.Renderable.RenderableObject
+	internal class PolygonFeature : WorldWind.Renderable.RenderableObject
 	{
 		System.Drawing.Color m_polygonColor = System.Drawing.Color.Yellow;
 		double m_distanceAboveSurface = 0;
@@ -30,7 +30,7 @@ namespace WorldWind
 		float m_outlineWidth = 1.0f;
 		LineFeature[] m_lineFeature = null;
 		AltitudeMode m_altitudeMode = AltitudeMode.ClampedToGround;
-		public BoundingBox BoundingBox = null;
+		internal BoundingBox BoundingBox = null;
 		bool m_extrude = false;
 		bool m_fill = true;
 		LinearRing m_outerRing = null;
@@ -43,7 +43,7 @@ namespace WorldWind
 		/// <summary>
 		/// Whether polygon should be extruded
 		/// </summary>
-		public bool Extrude
+		internal bool Extrude
 		{
 			get { return m_extrude; }
 			set { m_extrude = value; }
@@ -52,7 +52,7 @@ namespace WorldWind
 		/// <summary>
 		/// Whether extrusion should be upwards
 		/// </summary>
-		public bool ExtrudeUpwards
+		internal bool ExtrudeUpwards
 		{
 			get { return m_extrudeUpwards; }
 			set { m_extrudeUpwards = value; }
@@ -61,7 +61,7 @@ namespace WorldWind
 		/// <summary>
 		/// Distance to extrude
 		/// </summary>
-		public double ExtrudeHeight
+		internal double ExtrudeHeight
 		{
 			get { return m_extrudeHeight; }
 			set { m_extrudeHeight = value; }
@@ -70,7 +70,7 @@ namespace WorldWind
 		/// <summary>
 		/// Whether polygon should be extruded to the ground (completely overrides other extrusion options)
 		/// </summary>
-		public bool ExtrudeToGround
+		internal bool ExtrudeToGround
 		{
 			get { return m_extrudeToGround; }
 			set
@@ -81,49 +81,49 @@ namespace WorldWind
 		}
 
 
-		public float OutlineWidth
+		internal float OutlineWidth
 		{
 			get { return m_outlineWidth; }
 			set { m_outlineWidth = value; }
 		}
 
-		public bool Fill
+		internal bool Fill
 		{
 			get { return m_fill; }
 			set { m_fill = value; }
 		}
 
-		public AltitudeMode AltitudeMode
+		internal AltitudeMode AltitudeMode
 		{
 			get { return m_altitudeMode; }
 			set { m_altitudeMode = value; }
 		}
 
-		public System.Drawing.Color OutlineColor
+		internal System.Drawing.Color OutlineColor
 		{
 			get { return m_outlineColor; }
 			set { m_outlineColor = value; }
 		}
 
-		public bool Outline
+		internal bool Outline
 		{
 			get { return m_outline; }
 			set { m_outline = value; }
 		}
 
-		public double DistanceAboveSurface
+		internal double DistanceAboveSurface
 		{
 			get { return m_distanceAboveSurface; }
 			set { m_distanceAboveSurface = value; }
 		}
 
-		public double MinimumDisplayAltitude
+		internal double MinimumDisplayAltitude
 		{
 			get { return m_minimumDisplayAltitude; }
 			set { m_minimumDisplayAltitude = value; }
 		}
 
-		public double MaximumDisplayAltitude
+		internal double MaximumDisplayAltitude
 		{
 			get { return m_maximumDisplayAltitude; }
 			set { m_maximumDisplayAltitude = value; }
@@ -138,7 +138,7 @@ namespace WorldWind
 		/// <summary>
 		/// Allow runtime updates of outerring
 		/// </summary>
-		public LinearRing OuterRing
+		internal LinearRing OuterRing
 		{
 			get { return m_outerRing; }
 			set
@@ -152,8 +152,8 @@ namespace WorldWind
 			}
 
 		}
-		// Public accessor to the geographic coordinates of the bounding box
-		public GeographicBoundingBox GeographicBoundingBox
+		// internal accessor to the geographic coordinates of the bounding box
+		internal GeographicBoundingBox GeographicBoundingBox
 		{
 			get { return m_geographicBoundingBox; }
 		}
@@ -166,7 +166,7 @@ namespace WorldWind
 		/// <param name="outerRing">Polygon's outer boundary</param>
 		/// <param name="innerRings">Inner Hole's</param>
 		/// <param name="polygonColor">Colour of the rendered object</param>
-		public PolygonFeature(
+		internal PolygonFeature(
 			string name,
 			World parentWorld,
 			LinearRing outerRing,

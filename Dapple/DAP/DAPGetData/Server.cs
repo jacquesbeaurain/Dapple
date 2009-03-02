@@ -10,10 +10,10 @@ namespace Geosoft.GX.DAPGetData
 	/// <summary>
 	/// Summary description for Server.
 	/// </summary>
-	public class Server
+	internal class Server
 	{
       #region Enum
-      public enum ServerStatus
+      internal enum ServerStatus
       {
          OnLine,
          OffLine,
@@ -27,7 +27,7 @@ namespace Geosoft.GX.DAPGetData
       #region Constants
       protected const string CONFIGURATION_FILE = "_configuration.xml";
       protected const string BROWSERMAP_FILE = "_browser_map.xml";
-		public const string PERSONAL_DAP_URI = "http://localhost:10205/";
+		internal const string PERSONAL_DAP_URI = "http://localhost:10205/";
       #endregion
 
       #region Member Variables
@@ -63,7 +63,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the server name
       /// </summary>
-      public string Name
+      internal string Name
       {
          get { return m_strName; }
 			set { m_strName = value; }
@@ -73,7 +73,7 @@ namespace Geosoft.GX.DAPGetData
       /// Index of server in the list
       /// </summary>
 		[System.ComponentModel.Browsable(false)]
-      public Int32 Index
+      internal Int32 Index
       {
          get { return m_iIndex; }
          set { m_iIndex = value; }
@@ -85,7 +85,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Version")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The major version number of the DAP server.")]
-		public Int32 MajorVersion
+		internal Int32 MajorVersion
       {
          get { return m_iMajorVersion; }
       }
@@ -96,7 +96,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Version")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The minor version number of the DAP server.")]
-		public Int32 MinorVersion
+		internal Int32 MinorVersion
       {
          get { return m_iMinorVersion; }
       }
@@ -107,7 +107,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The current status of the DAP server.")]
-		public ServerStatus Status
+		internal ServerStatus Status
       {
          get { return m_eStatus; }
          set { m_eStatus = value; }
@@ -119,7 +119,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The number of datasets on the DAP server which match the current search filter.")]
-		public Int32 DatasetCount
+		internal Int32 DatasetCount
       {
          get { return m_iCount; }
       }
@@ -128,7 +128,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the dap server connection
       /// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public Geosoft.Dap.Command Command
+		internal Geosoft.Dap.Command Command
       {
          get { return m_oCommand; }
       }
@@ -137,7 +137,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the server configuration
       /// </summary>
 		[System.ComponentModel.Browsable(false)]
-      public Geosoft.Dap.Configuration ServerConfiguration
+      internal Geosoft.Dap.Configuration ServerConfiguration
       {
          get { return m_oServerConfiguration; }
       }
@@ -148,7 +148,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The default extents for the DAP server.")]
-		public Geosoft.Dap.Common.BoundingBox ServerExtents
+		internal Geosoft.Dap.Common.BoundingBox ServerExtents
       {
          get { return m_oServerBoundingBox; }
       }           
@@ -157,7 +157,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the catalog cache
       /// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public Geosoft.GX.DAPGetData.CatalogCollection CatalogCollection
+		internal Geosoft.GX.DAPGetData.CatalogCollection CatalogCollection
       {
          get { return m_oCatalogs; }
       }
@@ -168,7 +168,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("URLs")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The URL of the DAP server.")]
-		public string Url
+		internal string Url
       {
          get { return m_strUrl; }
       }      
@@ -179,7 +179,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("URLs")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The meta URL of the DAP server.")]
-		public string MetaUrl
+		internal string MetaUrl
       {
          get 
          {
@@ -196,7 +196,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("URLs")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extract URL of the DAP server.")]
-		public string ExtractUrl
+		internal string ExtractUrl
       {
          get 
          { 
@@ -213,7 +213,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The directory where server files are cached.")]
-		public string CacheDir
+		internal string CacheDir
       {
          get { return m_strCacheDir; }
       }      
@@ -224,7 +224,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The catalog cache version number of the DAP server.")]
-		public string CacheVersion
+		internal string CacheVersion
       {
          get { return m_strCacheVersion; }
       }
@@ -235,7 +235,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether the DAP server is a secured server.")]
-		public bool Login
+		internal bool Login
       {
          get { return m_bLogin; }
       }
@@ -243,7 +243,7 @@ namespace Geosoft.GX.DAPGetData
 		[System.ComponentModel.Category("Misc")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether the DAP server is currently enabled.")]
-      public bool Enabled
+      internal bool Enabled
       {
          get { return m_blEnabled; }
          set
@@ -267,7 +267,7 @@ namespace Geosoft.GX.DAPGetData
       }
 
 		[System.ComponentModel.Browsable(false)]
-		public SortedList<String, String> StyleSheets
+		internal SortedList<String, String> StyleSheets
 		{
 			get
 			{
@@ -285,12 +285,12 @@ namespace Geosoft.GX.DAPGetData
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool IsPersonal
+		internal bool IsPersonal
 		{
 			get { return m_strUrl.Equals(PERSONAL_DAP_URI); }
 		}
 
-		public static String GetStyleSheetFilename(String szName, String szCRC)
+		internal static String GetStyleSheetFilename(String szName, String szCRC)
 		{
 			return String.Format("{0}[{1}].xsl", szName, szCRC);
 		}
@@ -304,9 +304,9 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="strDnsAddress">
       /// </param>
 #if !DAPPLE
-      public Server(string strDnsAddress, string strSecureToken)
+      internal Server(string strDnsAddress, string strSecureToken)
 #else
-      public Server(string strDnsAddress, string strCacheDir, string strSecureToken, bool blEnabled)
+      internal Server(string strDnsAddress, string strCacheDir, string strSecureToken, bool blEnabled)
 #endif
       {
          m_blEnabled = blEnabled;
@@ -366,7 +366,7 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentOutOfRangeException">
       /// 	<para>The argument <paramref name="oServerNode"/> is out of range.</para>
       /// </exception>
-      public Server(XmlNode oServerNode, string strSecureToken)
+      internal Server(XmlNode oServerNode, string strSecureToken)
       {
          string strEdition, strConfigEdition;
          XmlNode oAttr;
@@ -447,7 +447,7 @@ namespace Geosoft.GX.DAPGetData
       /// <exception cref="ArgumentNullException">
       /// 	<para>The argument <paramref name="oNode"/> is <langword name="null"/>.</para>
       /// </exception>
-      public void Save(XmlNode oNode)
+      internal void Save(XmlNode oNode)
       {
          XmlElement     oServerNode;
          XmlAttribute   oAttr;
@@ -487,7 +487,7 @@ namespace Geosoft.GX.DAPGetData
       /// Get the browser map
       /// </summary>
       /// <returns></returns>
-      public XmlDocument GetBrowserMap()
+      internal XmlDocument GetBrowserMap()
       {
          return m_oBrowserMap;
       }
@@ -497,7 +497,7 @@ namespace Geosoft.GX.DAPGetData
       /// </summary>
       /// <param name="hBox"></param>
       /// <returns></returns>
-      public Int32 GetDatasetCount(Geosoft.Dap.Common.BoundingBox hBox, string szKeywords)
+      internal Int32 GetDatasetCount(Geosoft.Dap.Common.BoundingBox hBox, string szKeywords)
       {
          if (!(m_blEnabled && m_blConfigured)) return 0;
 
@@ -539,7 +539,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// The configuratin has become out of date, clear the cache and get new configuration information from the server
       /// </summary>
-      public void UpdateConfiguration()
+      internal void UpdateConfiguration()
       {
 			// --- Delete the tile cache ---
 			Utility.FileSystem.DeleteFolderGUI(Dapple.MainForm.ActiveForm, Path.Combine(Path.Combine(m_strCacheRoot, Dapple.LayerGeneration.DAPQuadLayerBuilder.CacheSubDir), Utility.FileSystem.SanitizeFilename(Url.Replace("http://", ""))), "Deleting Stale Cache");
@@ -559,7 +559,7 @@ namespace Geosoft.GX.DAPGetData
 		/// <summary>
 		/// Checks if the cached config information is stale, and updates if it is.
 		/// </summary>
-		public void UpdateConfigurationIfNecessary()
+		internal void UpdateConfigurationIfNecessary()
 		{
 			String strConfigEdition, strEdition;
 
@@ -590,7 +590,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Set the server token
       /// </summary>
-      public void SetServerToken()
+      internal void SetServerToken()
       {
          if (m_eStatus == Server.ServerStatus.OnLine)
          {

@@ -41,8 +41,8 @@ namespace WorldWind.Menu
 		const int alphaStep = 30;
 		const float zoomSpeed = 1.2f;
 
-		public static float NormalSize;
-		public static float SelectedSize;
+		internal static float NormalSize;
+		internal static float SelectedSize;
 
 		#endregion
 
@@ -69,7 +69,7 @@ namespace WorldWind.Menu
 			}
 		}
 		
-		public Texture IconTexture
+		internal Texture IconTexture
 		{
 			get
 			{
@@ -77,7 +77,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-		public System.Drawing.Size IconTextureSize
+		internal System.Drawing.Size IconTextureSize
 		{
 			get
 			{
@@ -94,7 +94,7 @@ namespace WorldWind.Menu
 		public abstract bool IsPushed();
 		public abstract void SetPushed(bool isPushed);
 
-		public void InitializeTexture(Device device)
+		internal void InitializeTexture(Device device)
 		{
 			try
 			{
@@ -111,7 +111,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-		public void RenderLabel( DrawArgs drawArgs, int x, int y, int buttonHeight, bool selected )
+		internal void RenderLabel( DrawArgs drawArgs, int x, int y, int buttonHeight, bool selected )
 		{
 			if (selected)
 			{
@@ -189,12 +189,12 @@ namespace WorldWind.Menu
 				white & 0xffffff + (alpha<<24));
 		}
 
-		public float CurrentSize
+		internal float CurrentSize
 		{
 			get { return curSize; }
 		}
 
-		public void RenderEnabledIcon(Sprite sprite, DrawArgs drawArgs, float centerX, float topY, 
+		internal void RenderEnabledIcon(Sprite sprite, DrawArgs drawArgs, float centerX, float topY, 
 			bool selected )
 		{
 			float width = selected ? MenuButton.SelectedSize : width = MenuButton.NormalSize;
@@ -251,7 +251,7 @@ namespace WorldWind.Menu
 		public abstract bool OnMouseWheel(MouseEventArgs e);
 		public abstract void OnKeyUp(KeyEventArgs keyEvent);
 		public abstract void OnKeyDown(KeyEventArgs keyEvent);
-		
+
 		public virtual void Dispose()
 		{
 			if(m_iconTexture != null)
@@ -263,7 +263,7 @@ namespace WorldWind.Menu
 
 	}
 
-	public class MenuCollection : IMenu
+	internal class MenuCollection : IMenu
 	{
 		System.Collections.ArrayList _menus = new System.Collections.ArrayList();
 
@@ -335,7 +335,7 @@ namespace WorldWind.Menu
 
 		#endregion
 
-		public void AddMenu(IMenu menu)
+		internal void AddMenu(IMenu menu)
 		{
 			lock(this._menus.SyncRoot)
 			{
@@ -343,7 +343,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-		public void RemoveMenu(IMenu menu)
+		internal void RemoveMenu(IMenu menu)
 		{
 			lock(this._menus.SyncRoot)
 			{
@@ -352,24 +352,24 @@ namespace WorldWind.Menu
 		}
 	}
 
-	public abstract class SideBarMenu : IMenu
+	internal abstract class SideBarMenu : IMenu
 	{
-		public long Id;
+		internal long Id;
 
-		public readonly int Left;
-		public readonly int Top = 120;
-		public int Right = World.Settings.layerManagerWidth;
-		public int Bottom;
-		public readonly float HeightPercent = 0.9f;
+		internal readonly int Left;
+		internal readonly int Top = 120;
+		internal int Right = World.Settings.layerManagerWidth;
+		internal int Bottom;
+		internal readonly float HeightPercent = 0.9f;
 		private Vector2[] outlineVerts = new Vector2[5];
 
-		public int Width
+		internal int Width
 		{
 			get { return Right - Left; }
 			set { Right = Left + value; }
 		}
 
-		public int Height
+		internal int Height
 		{
 			get { return Bottom - Top; }
 			set { Bottom = Top + value; }
@@ -410,14 +410,14 @@ namespace WorldWind.Menu
 			MenuUtils.DrawLine(outlineVerts, World.Settings.menuOutlineColor, drawArgs.device);
 		}
 
-		public abstract void RenderContents(DrawArgs drawArgs);
+		internal abstract void RenderContents(DrawArgs drawArgs);
 		public abstract void Dispose();
 
 		#endregion
 
 	}
 
-	public class LayerManagerButton : MenuButton
+	internal class LayerManagerButton : MenuButton
 	{
 		World _parentWorld;
 		LayerManagerMenu lmm;
@@ -427,7 +427,7 @@ namespace WorldWind.Menu
 		/// </summary>
 		/// <param name="iconImagePath"></param>
 		/// <param name="parentWorld"></param>
-		public LayerManagerButton(
+		internal LayerManagerButton(
 			string iconImagePath,
 			World parentWorld)
 			: base(iconImagePath)
@@ -507,13 +507,13 @@ namespace WorldWind.Menu
 		}
 	}
 
-	public class LayerManagerMenu : SideBarMenu
+	internal class LayerManagerMenu : SideBarMenu
 	{
-		public int DialogColor = System.Drawing.Color.Gray.ToArgb();
-		public int TextColor = System.Drawing.Color.White.ToArgb();
-		public LayerMenuItem MouseOverItem;
-		public int ScrollBarSize = 20;
-		public int ItemHeight = 20;
+		internal int DialogColor = System.Drawing.Color.Gray.ToArgb();
+		internal int TextColor = System.Drawing.Color.White.ToArgb();
+		internal LayerMenuItem MouseOverItem;
+		internal int ScrollBarSize = 20;
+		internal int ItemHeight = 20;
 		World _parentWorld;
 		MenuButton _parentButton;
 		bool showScrollbar;
@@ -532,12 +532,12 @@ namespace WorldWind.Menu
 		Microsoft.DirectX.Direct3D.Font worldwinddingsFont;
 		ArrayList _itemList = new ArrayList();
 		Microsoft.DirectX.Vector2[] scrollbarLine = new Vector2[2];	
-		public ContextMenu ContextMenu;
+		internal ContextMenu ContextMenu;
 
 		/// <summary>
 		/// Client area X position of left side
 		/// </summary>
-		public int ClientLeft
+		internal int ClientLeft
 		{
 			get
 			{
@@ -548,7 +548,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Client area X position of right side
 		/// </summary>
-		public int ClientRight
+		internal int ClientRight
 		{
 			get
 			{
@@ -562,7 +562,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Client area Y position of top side
 		/// </summary>
-		public int ClientTop
+		internal int ClientTop
 		{
 			get
 			{
@@ -573,7 +573,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Client area Y position of bottom side
 		/// </summary>
-		public int ClientBottom
+		internal int ClientBottom
 		{
 			get
 			{
@@ -584,7 +584,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Client area width
 		/// </summary>
-		public int ClientWidth
+		internal int ClientWidth
 		{
 			get
 			{
@@ -598,7 +598,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Client area height
 		/// </summary>
-		public int ClientHeight
+		internal int ClientHeight
 		{
 			get
 			{
@@ -612,7 +612,7 @@ namespace WorldWind.Menu
 		/// </summary>
 		/// <param name="parentWorld"></param>
 		/// <param name="parentButton"></param>
-		public LayerManagerMenu(World parentWorld, MenuButton parentButton)
+		internal LayerManagerMenu(World parentWorld, MenuButton parentButton)
 		{
 			this._parentWorld = parentWorld;
 			this._parentButton = parentButton;			
@@ -764,7 +764,7 @@ namespace WorldWind.Menu
 		/// Displays the layer manager context menu for an item.
 		/// </summary>
 		/// <param name="ro"></param>
-		public void ShowContextMenu( int x, int y, LayerMenuItem item )
+		internal void ShowContextMenu( int x, int y, LayerMenuItem item )
 		{
 			if(ContextMenu!=null)
 			{
@@ -779,7 +779,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Calculate the number of un-collapsed items in the tree.
 		/// </summary>
-		public int GetNumberOfUncollapsedItems()
+		internal int GetNumberOfUncollapsedItems()
 		{
 			int numItems = 1;
 			foreach(LayerMenuItem subItem in _itemList)
@@ -788,7 +788,7 @@ namespace WorldWind.Menu
 			return numItems;
 		}
 
-		public int GetItemsHeight(DrawArgs drawArgs)
+		internal int GetItemsHeight(DrawArgs drawArgs)
 		{
 			int height = 20;
 			foreach(LayerMenuItem subItem in _itemList)
@@ -829,7 +829,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-		public override void RenderContents(DrawArgs drawArgs)
+		internal override void RenderContents(DrawArgs drawArgs)
 		{
 			m_DrawArgs = drawArgs;
 			try
@@ -968,7 +968,7 @@ namespace WorldWind.Menu
 		static extern int AddFontResource(string lpszFilename);
 	}
 
-		public class LayerMenuItem
+		internal class LayerMenuItem
 		{
 			RenderableObject m_renderableObject;
 			ArrayList m_subItems = new ArrayList();
@@ -985,10 +985,10 @@ namespace WorldWind.Menu
 			int itemOffColor = Color.Gray.ToArgb();
 
 			private bool isExpanded;
-			public Control ParentControl;
+			internal Control ParentControl;
 			LayerManagerMenu m_parent; // menu this item belongs in
 
-			public RenderableObject RenderableObject
+			internal RenderableObject RenderableObject
 			{
 				get
 				{
@@ -999,7 +999,7 @@ namespace WorldWind.Menu
 			/// <summary>
 			/// Calculate the number of un-collapsed items in the tree.
 			/// </summary>
-			public int GetNumberOfUncollapsedItems()
+			internal int GetNumberOfUncollapsedItems()
 			{
 				int numItems = 1;
 				if(this.isExpanded)
@@ -1011,7 +1011,7 @@ namespace WorldWind.Menu
 				return numItems;
 			}
 
-			public int GetItemsHeight(DrawArgs drawArgs)
+			internal int GetItemsHeight(DrawArgs drawArgs)
 			{
 				System.Drawing.Rectangle rect = drawArgs.defaultDrawingFont.MeasureString(
 					null,
@@ -1060,7 +1060,7 @@ namespace WorldWind.Menu
 			/// <summary>
 			/// Detect expand arrow mouse over
 			/// </summary>
-			public bool OnMouseMove(MouseEventArgs e)
+			internal bool OnMouseMove(MouseEventArgs e)
 			{
 				if(e.Y < this._y)
 					// Over 
@@ -1097,7 +1097,7 @@ namespace WorldWind.Menu
 				return false;
 			}
 
-			public bool OnMouseUp(MouseEventArgs e)
+			internal bool OnMouseUp(MouseEventArgs e)
 			{
 				if(e.Y < this._y)
 					// Above 
@@ -1178,7 +1178,7 @@ namespace WorldWind.Menu
 			/// </summary>
 			/// <param name="parent"></param>
 			/// <param name="renderableObject"></param>
-			public LayerMenuItem(LayerManagerMenu parent, RenderableObject renderableObject)
+			internal LayerMenuItem(LayerManagerMenu parent, RenderableObject renderableObject)
 			{
 				m_renderableObject = renderableObject;
 				m_parent = parent;
@@ -1218,7 +1218,7 @@ namespace WorldWind.Menu
 
 			int lastConsumedHeight = 20;
 			
-			public int Render(DrawArgs drawArgs, int x, int y, int yOffset, int width, int height, 
+			internal int Render(DrawArgs drawArgs, int x, int y, int yOffset, int width, int height, 
 				Microsoft.DirectX.Direct3D.Font drawingFont,
 				Microsoft.DirectX.Direct3D.Font wingdingsFont,
 				Microsoft.DirectX.Direct3D.Font worldwinddingsFont, 
@@ -1368,7 +1368,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-	public class LayerShortcutMenuButton : MenuButton
+	internal class LayerShortcutMenuButton : MenuButton
 	{
 		#region Private Members
 		bool _isPushed = false;
@@ -1380,7 +1380,7 @@ namespace WorldWind.Menu
 		/// </summary>
 		/// <param name="imageFilePath"></param>
 		/// <param name="ro"></param>
-		public LayerShortcutMenuButton(
+		internal LayerShortcutMenuButton(
 			string imageFilePath, WorldWind.Renderable.RenderableObject ro)
 			: base(imageFilePath)
 		{
@@ -1456,7 +1456,7 @@ namespace WorldWind.Menu
 	/// <summary>
 	/// Toolbar
 	/// </summary>
-	public class MenuBar : IMenu
+	internal class MenuBar : IMenu
 	{
 		#region Private Members
 		protected ArrayList m_toolsMenuButtons = new ArrayList();
@@ -1483,7 +1483,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Indicates whether the menu is "open". (user activity)
 		/// </summary>
-		public bool IsActive
+		internal bool IsActive
 		{
 			get
 			{
@@ -1491,7 +1491,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-		public System.Collections.ArrayList LayersMenuButtons
+		internal System.Collections.ArrayList LayersMenuButtons
 		{
 			get
 			{
@@ -1503,7 +1503,7 @@ namespace WorldWind.Menu
 			}
 		}
 
-		public System.Collections.ArrayList ToolsMenuButtons
+		internal System.Collections.ArrayList ToolsMenuButtons
 		{
 			get
 			{
@@ -1522,7 +1522,7 @@ namespace WorldWind.Menu
 		/// </summary>
 		/// <param name="anchor"></param>
 		/// <param name="iconSize"></param>
-		public MenuBar(MenuAnchor anchor, int iconSize)
+		internal MenuBar(MenuAnchor anchor, int iconSize)
 		{
 			m_anchor = anchor;
 			MenuButton.SelectedSize = iconSize;
@@ -1531,7 +1531,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Adds a tool button to the bar
 		/// </summary>
-		public void AddToolsMenuButton(MenuButton button)
+		internal void AddToolsMenuButton(MenuButton button)
 		{
 			lock(m_toolsMenuButtons.SyncRoot)
 			{
@@ -1542,7 +1542,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Adds a tool button to the bar
 		/// </summary>
-		public void AddToolsMenuButton(MenuButton button, int index)
+		internal void AddToolsMenuButton(MenuButton button, int index)
 		{
 			lock(m_toolsMenuButtons.SyncRoot)
 			{
@@ -1558,7 +1558,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Removes a layer button from the bar if it is found.
 		/// </summary>
-		public void RemoveToolsMenuButton(MenuButton button)
+		internal void RemoveToolsMenuButton(MenuButton button)
 		{
 			lock(m_toolsMenuButtons.SyncRoot)
 			{
@@ -1569,7 +1569,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Adds a layer button to the bar
 		/// </summary>
-		public void AddLayersMenuButton(MenuButton button)
+		internal void AddLayersMenuButton(MenuButton button)
 		{
 			lock(m_layersMenuButtons.SyncRoot)
 			{
@@ -1580,7 +1580,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Adds a layer button to the bar
 		/// </summary>
-		public void AddLayersMenuButton(MenuButton button, int index)
+		internal void AddLayersMenuButton(MenuButton button, int index)
 		{
 			lock(m_layersMenuButtons.SyncRoot)
 			{
@@ -1596,7 +1596,7 @@ namespace WorldWind.Menu
 		/// <summary>
 		/// Removes a layer button from the bar if it is found.
 		/// </summary>
-		public void RemoveLayersMenuButton(MenuButton button)
+		internal void RemoveLayersMenuButton(MenuButton button)
 		{
 			lock(m_layersMenuButtons.SyncRoot)
 			{
@@ -2024,7 +2024,7 @@ namespace WorldWind.Menu
 		}
 	}
 
-	public enum MenuAnchor
+	internal enum MenuAnchor
 	{
 		Top,
 		Bottom,
@@ -2083,7 +2083,7 @@ namespace WorldWind.Menu
 			device.DrawUserPrimitives(PrimitiveType.TriangleStrip, verts.Length - 2, verts);
 		}
 
-		public static void DrawSector(double startAngle, double endAngle, int centerX, int centerY, int radius, float z, int color, Device device)
+		internal static void DrawSector(double startAngle, double endAngle, int centerX, int centerY, int radius, float z, int color, Device device)
 		{
 			int prec = 7;
 

@@ -10,9 +10,9 @@ using Geosoft.GX.DAPGetData;
 
 namespace Dapple
 {
-   public partial class AddImageTile : Form
+   internal partial class AddImageTile : Form
    {
-      public enum ServerType
+      internal enum ServerType
       {
          DapServer = 2,
          WmsServer = 3,
@@ -28,7 +28,7 @@ namespace Dapple
       LayerGeneration.IBuilder m_oParent;
       string m_WmsURL;
 
-      public AddImageTile(WorldWind.WorldWindow worldWindow, LayerGeneration.IBuilder oParent)
+      internal AddImageTile(WorldWind.WorldWindow worldWindow, LayerGeneration.IBuilder oParent)
       {
          m_worldWind = worldWindow;
          m_oParent = oParent;
@@ -43,7 +43,7 @@ namespace Dapple
          tabCtl.TabPages.Add(m_tabPages[0]);
       }
 
-      public Server DapServer
+      internal Server DapServer
       {
          get
          {
@@ -51,7 +51,7 @@ namespace Dapple
          }
       }
 
-      public LayerGeneration.QuadLayerBuilder TileServer
+      internal LayerGeneration.QuadLayerBuilder TileServer
       {
          get
          {
@@ -59,7 +59,7 @@ namespace Dapple
          }
       }
 
-      public string WmsURL
+      internal string WmsURL
       {
          get
          {
@@ -136,7 +136,7 @@ namespace Dapple
          tabCtl.TabPages.Add(m_tabPages[m_intLastTab]);
       }
 
-      public DialogResult ShowDialog(IWin32Window owner, ServerType serverType)
+      internal DialogResult ShowDialog(IWin32Window owner, ServerType serverType)
       {
          m_intCurrentTab = (int)serverType;
          tabCtl.TabPages.Clear();

@@ -24,7 +24,7 @@ namespace WorldWind
 
 		System.Timers.Timer m_RenderTimer = new System.Timers.Timer(150);
 
-		public OverviewControl(System.ComponentModel.IContainer container)
+		internal OverviewControl(System.ComponentModel.IContainer container)
 		{
 			///
 			/// Required for Windows.Forms Class Composition Designer support
@@ -33,7 +33,7 @@ namespace WorldWind
 			InitializeComponent();
 		}
 
-      public OverviewControl(string miniMapFilePath, WorldWindow ww, Control parent)
+		public OverviewControl(string miniMapFilePath, WorldWindow ww, Control parent)
 		{
 			InitializeComponent();
 
@@ -86,7 +86,7 @@ namespace WorldWind
 		/// <summary>
 		/// Render the scene.
 		/// </summary>
-      public void Render(Graphics g)
+      internal void Render(Graphics g)
       {
          if (m_BackBm == null || m_BackBm.Width != Width || m_BackBm.Height != Height)
          {
@@ -109,7 +109,7 @@ namespace WorldWind
          }
       }
 
-		public Point GetPointFromCoord(double latitude, double longitude)
+		internal Point GetPointFromCoord(double latitude, double longitude)
 		{
 			Point p = new Point();
 

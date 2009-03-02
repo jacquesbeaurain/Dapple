@@ -11,9 +11,9 @@ namespace WorldWind.Terrain
    /// <summary>
    /// Reads NLT terrain/elevation data (BIL files).
    /// </summary>
-   public class NltTerrainAccessor : TerrainAccessor
+	public class NltTerrainAccessor : TerrainAccessor
    {
-      public static int CacheSize = 100;
+      internal static int CacheSize = 100;
       protected TerrainTileService m_terrainTileService;
       //protected WmsImageStore m_wmsElevationSet;
       protected Hashtable m_tileCache = new Hashtable();
@@ -21,7 +21,7 @@ namespace WorldWind.Terrain
       #region Properties
 
       /*
-      public WmsImageStore WmsElevationStore
+      internal WmsImageStore WmsElevationStore
       {
          get
          {
@@ -34,7 +34,7 @@ namespace WorldWind.Terrain
       }
        */
 
-      public TerrainAccessor this[int index]
+      internal TerrainAccessor this[int index]
       {
          get
          {
@@ -56,7 +56,7 @@ namespace WorldWind.Terrain
       /// <param name="north"></param>
       /// <param name="terrainTileService"></param>
       /// <param name="higherResolutionSubsets"></param>
-      public NltTerrainAccessor(string name, double west, double south, double east, double north,
+		public NltTerrainAccessor(string name, double west, double south, double east, double north,
          TerrainTileService terrainTileService, TerrainAccessor[] higherResolutionSubsets)
       {
          m_name = name;
@@ -75,7 +75,7 @@ namespace WorldWind.Terrain
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <param name="targetSamplesPerDegree"></param>
       /// <returns>Returns 0 if the tile is not available on disk.</returns>
-      public override float GetElevationAt(double latitude, double longitude, double targetSamplesPerDegree)
+		public override float GetElevationAt(double latitude, double longitude, double targetSamplesPerDegree)
       {
          try
          {
@@ -119,7 +119,7 @@ namespace WorldWind.Terrain
       /// <param name="latitude">Latitude in decimal degrees.</param>
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <returns>Returns NaN if no tile is available in cache.</returns>
-      public override float GetCachedElevationAt(double latitude, double longitude)
+      internal override float GetCachedElevationAt(double latitude, double longitude)
       {
          try
          {
@@ -173,7 +173,7 @@ namespace WorldWind.Terrain
       /// <param name="latitude">Latitude in decimal degrees.</param>
       /// <param name="longitude">Longitude in decimal degrees.</param>
       /// <returns>Returns 0 if the tile is not available on disk.</returns>
-      public override float GetElevationAt(double latitude, double longitude)
+		public override float GetElevationAt(double latitude, double longitude)
       {
          return GetElevationAt(latitude, longitude, m_terrainTileService.SamplesPerTile / m_terrainTileService.LevelZeroTileSizeDegrees);
       }
@@ -186,7 +186,7 @@ namespace WorldWind.Terrain
       /// <param name="west">West edge in decimal degrees.</param>
       /// <param name="east">East edge in decimal degrees.</param>
       /// <param name="samples"></param>
-      public override TerrainTile GetElevationArray(double north, double south, double west, double east,
+      internal override TerrainTile GetElevationArray(double north, double south, double west, double east,
          int samples)
       {
          TerrainTile res = null;
@@ -313,7 +313,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public class TerrainTileCacheEntry
+		public class TerrainTileCacheEntry
       {
          DateTime m_lastAccess = DateTime.Now;
          TerrainTile m_terrainTile;
@@ -322,12 +322,12 @@ namespace WorldWind.Terrain
          /// Constructor.
          /// </summary>
          /// <param name="tile">TerrainTile to be cached.</param>
-         public TerrainTileCacheEntry(TerrainTile tile)
+         internal TerrainTileCacheEntry(TerrainTile tile)
          {
             m_terrainTile = tile;
          }
 
-         public TerrainTile TerrainTile
+         internal TerrainTile TerrainTile
          {
             get
             {
@@ -339,7 +339,7 @@ namespace WorldWind.Terrain
             }
          }
 
-         public DateTime LastAccess
+         internal DateTime LastAccess
          {
             get
             {
@@ -352,7 +352,7 @@ namespace WorldWind.Terrain
          }
       }
 
-      public override void Dispose()
+		public override void Dispose()
       {
          if (m_terrainTileService != null)
          {

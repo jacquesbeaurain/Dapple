@@ -17,7 +17,7 @@ using WorldWind.Net.Wms;
 
 namespace WorldWind
 {
-   public class WMSLayer
+	public class WMSLayer
    {
       #region Private Members
       WMSList _parentWMSList;
@@ -41,13 +41,13 @@ namespace WorldWind
       #endregion
 
       #region Constructor
-      public WMSLayer()
+      internal WMSLayer()
       {
       }
       #endregion
 
-      #region Public Methods
-      public bool HasLegend
+      #region internal Methods
+		public bool HasLegend
       {
          get
          {
@@ -63,7 +63,7 @@ namespace WorldWind
 
       #region Properties
 
-      public WMSList ParentWMSList
+		public WMSList ParentWMSList
       {
          get
          {
@@ -75,7 +75,7 @@ namespace WorldWind
          }
       }
 
-      public string[] ImageFormats
+		public string[] ImageFormats
       {
          get
          {
@@ -87,7 +87,7 @@ namespace WorldWind
          }
       }
 
-      public decimal North
+		public decimal North
       {
          get
          {
@@ -99,7 +99,7 @@ namespace WorldWind
          }
       }
 
-      public decimal South
+		public decimal South
       {
          get
          {
@@ -111,7 +111,7 @@ namespace WorldWind
          }
       }
 
-      public decimal West
+		public decimal West
       {
          get
          {
@@ -123,7 +123,7 @@ namespace WorldWind
          }
       }
 
-      public decimal East
+		public decimal East
       {
          get
          {
@@ -135,7 +135,7 @@ namespace WorldWind
          }
       }
 
-      public string CRS
+		public string CRS
       {
          get
          {
@@ -147,7 +147,7 @@ namespace WorldWind
          }
       }
 
-      public string SRS
+		public string SRS
       {
          get
          {
@@ -159,7 +159,7 @@ namespace WorldWind
          }
       }
 
-      public string Name
+		public string Name
       {
          get
          {
@@ -171,7 +171,7 @@ namespace WorldWind
          }
       }
 
-      public string Title
+		public string Title
       {
          get
          {
@@ -183,7 +183,7 @@ namespace WorldWind
          }
       }
 
-      public string Description
+		public string Description
       {
          get
          {
@@ -195,7 +195,7 @@ namespace WorldWind
          }
       }
 
-      public string DefaultDate
+      internal string DefaultDate
       {
          get
          {
@@ -207,7 +207,7 @@ namespace WorldWind
          }
       }
 
-      public uint Width
+      internal uint Width
       {
          get
          {
@@ -219,7 +219,7 @@ namespace WorldWind
          }
       }
 
-      public uint Height
+      internal uint Height
       {
          get
          {
@@ -231,7 +231,7 @@ namespace WorldWind
          }
       }
 
-      public string[] Dates
+      internal string[] Dates
       {
          get
          {
@@ -243,7 +243,7 @@ namespace WorldWind
          }
       }
 
-      public WMSLayer[] ChildLayers
+		public WMSLayer[] ChildLayers
       {
          get
          {
@@ -255,7 +255,7 @@ namespace WorldWind
          }
       }
 
-      public WMSLayerStyle[] Styles
+		public WMSLayerStyle[] Styles
       {
          get
          {
@@ -270,33 +270,33 @@ namespace WorldWind
       #endregion
    }
 
-   public class WMSLayerStyle
+	public class WMSLayerStyle
    {
-      public string description;
-      public string title;
-      public string name;
-      public WMSLayerStyleLegendURL[] legendURL;
+      internal string description;
+      internal string title;
+      internal string name;
+		public WMSLayerStyleLegendURL[] legendURL;
 
-      public override string ToString()
+		public override string ToString()
       {
          return this.title;
       }
    }
 
-   public class WMSLayerStyleLegendURL
+	public class WMSLayerStyleLegendURL
    {
-      public string format;
-      public string href;
-      public int width;
-      public int height;
+      internal string format;
+		public string href;
+      internal int width;
+      internal int height;
 
-      public override string ToString()
+		public override string ToString()
       {
          return this.href;
       }
    }
 
-   public class WMSImageLayerInfo
+   internal class WMSImageLayerInfo
    {
       #region Private Members
       private float _north;
@@ -308,12 +308,12 @@ namespace WorldWind
       private string _description;
       #endregion
 
-      #region Public Methods
-      public WMSImageLayerInfo()
+      #region internal Methods
+      internal WMSImageLayerInfo()
       {
       }
 
-      public static WMSImageLayerInfo FromFile(string filePath)
+      internal static WMSImageLayerInfo FromFile(string filePath)
       {
          using (FileStream stream = File.OpenRead(filePath))
          using (BinaryReader reader = new BinaryReader(stream, System.Text.Encoding.Unicode))
@@ -333,7 +333,7 @@ namespace WorldWind
          }
       }
 
-      public void Save(string filepath)
+      internal void Save(string filepath)
       {
          using (FileStream stream = File.Open(filepath, FileMode.Create))
          using (BinaryWriter writer = new BinaryWriter(stream, System.Text.Encoding.Unicode))
@@ -350,7 +350,7 @@ namespace WorldWind
       #endregion
 
       #region Properties
-      public float North
+      internal float North
       {
          get
          {
@@ -362,7 +362,7 @@ namespace WorldWind
          }
       }
 
-      public float South
+      internal float South
       {
          get
          {
@@ -374,7 +374,7 @@ namespace WorldWind
          }
       }
 
-      public float East
+      internal float East
       {
          get
          {
@@ -386,7 +386,7 @@ namespace WorldWind
          }
       }
 
-      public float West
+      internal float West
       {
          get
          {
@@ -398,7 +398,7 @@ namespace WorldWind
          }
       }
 
-      public string Id
+      internal string Id
       {
          get
          {
@@ -410,7 +410,7 @@ namespace WorldWind
          }
       }
 
-      public string Description
+      internal string Description
       {
          get
          {
@@ -422,7 +422,7 @@ namespace WorldWind
          }
       }
 
-      public string ImageFilePath
+      internal string ImageFilePath
       {
          get
          {

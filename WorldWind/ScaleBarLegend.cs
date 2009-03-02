@@ -109,7 +109,7 @@ namespace NASA.Plugins
 		}
 	}
 
-	public class ScaleBarWidget : IWidget
+	internal class ScaleBarWidget : IWidget
 	{
 		System.Drawing.Point m_Location = new System.Drawing.Point(0, 0);
 		System.Drawing.Size m_Size = new System.Drawing.Size(0, 20);
@@ -132,13 +132,13 @@ namespace NASA.Plugins
 		/// </summary>
 		protected bool m_countWidth = true;
 
-		public ScaleBarWidget()
+		internal ScaleBarWidget()
 		{
 
 		}
 
 		#region Properties
-		public System.Drawing.Font Font
+		internal System.Drawing.Font Font
 		{
 			get { return m_localFont; }
 			set
@@ -162,7 +162,7 @@ namespace NASA.Plugins
 				m_Name = value;
 			}
 		}
-		public System.Drawing.Color ForeColor
+		internal System.Drawing.Color ForeColor
 		{
 			get
 			{

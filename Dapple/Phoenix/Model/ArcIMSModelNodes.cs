@@ -10,11 +10,11 @@ using System.IO;
 
 namespace NewServerTree
 {
-	public class ArcIMSRootModelNode : ModelNode, IContextModelNode
+	internal class ArcIMSRootModelNode : ModelNode, IContextModelNode
 	{
 		#region Constructors
 
-		public ArcIMSRootModelNode(DappleModel oModel)
+		internal ArcIMSRootModelNode(DappleModel oModel)
 			: base(oModel)
 		{
 			MarkLoaded();
@@ -36,24 +36,24 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool ShowAllChildren
+		internal override bool ShowAllChildren
 		{
 			get { return UseShowAllChildren; }
 		}
 
 
-		public override String DisplayText
+		internal override String DisplayText
 		{
 			get { return "ArcIMS Servers"; }
 		}
 
-		public override string Annotation
+		internal override string Annotation
 		{
 			get { return String.Format("[{0}]", FilteredChildren.Length); }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.ArcIMSRoot; }
 		}
@@ -74,7 +74,7 @@ namespace NewServerTree
 
 		#region Public Methods
 
-		public ArcIMSServerModelNode GetServer(ArcIMSServerUri oUri)
+		internal ArcIMSServerModelNode GetServer(ArcIMSServerUri oUri)
 		{
 			foreach (ArcIMSServerModelNode oServer in UnfilteredChildren)
 			{
@@ -87,7 +87,7 @@ namespace NewServerTree
 			return null;
 		}
 
-		public ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri, bool blEnabled)
+		internal ArcIMSServerModelNode AddServer(ArcIMSServerUri oUri, bool blEnabled)
 		{
 			ArcIMSServerModelNode result = new ArcIMSServerModelNode(m_oModel, oUri, blEnabled);
 			AddChild(result);
@@ -98,7 +98,7 @@ namespace NewServerTree
 			return result;
 		}
 
-		public ServerModelNode SetFavouriteServer(String strUri)
+		internal ServerModelNode SetFavouriteServer(String strUri)
 		{
 			ServerModelNode result = null;
 
@@ -113,7 +113,7 @@ namespace NewServerTree
 			return result;
 		}
 
-		public void SaveToView(dappleview.builderdirectoryType oArcDir)
+		internal void SaveToView(dappleview.builderdirectoryType oArcDir)
 		{
 			foreach (ArcIMSServerModelNode oChild in UnfilteredChildren)
 			{
@@ -142,7 +142,7 @@ namespace NewServerTree
 	}
 
 
-	public class ArcIMSServerModelNode : ServerModelNode, IFilterableModelNode
+	internal class ArcIMSServerModelNode : ServerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -153,7 +153,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ArcIMSServerModelNode(DappleModel oModel, ArcIMSServerUri oUri, bool blEnabled)
+		internal ArcIMSServerModelNode(DappleModel oModel, ArcIMSServerUri oUri, bool blEnabled)
 			: base(oModel, blEnabled)
 		{
 			m_oUri = oUri;
@@ -164,12 +164,12 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_oUri.ServerTreeDisplayName; }
 		}
 
-		public override string Annotation
+		internal override string Annotation
 		{
 			get
 			{
@@ -199,7 +199,7 @@ namespace NewServerTree
 		}
 
 		[Browsable(false)]
-		public override string ServerTypeIconKey
+		internal override string ServerTypeIconKey
 		{
 			get { return IconKeys.ArcIMSRoot; }
 		}
@@ -207,7 +207,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		public override ServerUri Uri
+		internal override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
@@ -215,7 +215,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		public override ServerModelNode.ServerType Type
+		internal override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.ArcIMS; }
 		}
@@ -258,7 +258,7 @@ namespace NewServerTree
 			}
 		}
 
-		public String CapabilitiesFilename
+		internal String CapabilitiesFilename
 		{
 			get
 			{
@@ -272,12 +272,12 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override List<LayerBuilder> GetBuildersInternal()
+		internal override List<LayerBuilder> GetBuildersInternal()
 		{
 			return new List<LayerBuilder>();
 		}
 
-		public override void AddToHomeView()
+		internal override void AddToHomeView()
 		{
 			if (!HomeView.ContainsServer(m_oUri))
 			{
@@ -353,7 +353,7 @@ namespace NewServerTree
 	}
 
 
-	public class ArcIMSServiceModelNode : ModelNode, IFilterableModelNode
+	internal class ArcIMSServiceModelNode : ModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -365,7 +365,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ArcIMSServiceModelNode(DappleModel oModel, String strServiceName, CultureInfo oCultureInfo)
+		internal ArcIMSServiceModelNode(DappleModel oModel, String strServiceName, CultureInfo oCultureInfo)
 			: base(oModel)
 		{
 			m_strServiceName = strServiceName;
@@ -377,13 +377,13 @@ namespace NewServerTree
 
 		#region Properties
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_strServiceName; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.ArcIMSService; }
 		}
@@ -418,12 +418,12 @@ namespace NewServerTree
 			get { return LoadState != LoadState.LoadSuccessful || FilteredChildCount > 0; }
 		}
 
-		public String ServiceName
+		internal String ServiceName
 		{
 			get { return m_strServiceName; }
 		}
 
-		public String CapabilitiesFilename
+		internal String CapabilitiesFilename
 		{
 			get
 			{
@@ -543,7 +543,7 @@ namespace NewServerTree
 	}
 
 
-	public class ArcIMSLayerModelNode : LayerModelNode, IFilterableModelNode
+	internal class ArcIMSLayerModelNode : LayerModelNode, IFilterableModelNode
 	{
 		#region Member Variables
 
@@ -557,7 +557,7 @@ namespace NewServerTree
 
 		#region Constructors
 
-		public ArcIMSLayerModelNode(DappleModel oModel, String strTitle, String strID, GeographicBoundingBox oBounds, double dMinScale, double dMaxScale, CultureInfo oCultureInfo)
+		internal ArcIMSLayerModelNode(DappleModel oModel, String strTitle, String strID, GeographicBoundingBox oBounds, double dMinScale, double dMaxScale, CultureInfo oCultureInfo)
 			: base(oModel)
 		{
 			m_strTitle = strTitle;
@@ -576,18 +576,18 @@ namespace NewServerTree
 		#region Properties
 
 		[Browsable(false)]
-		public override bool IsLeaf
+		internal override bool IsLeaf
 		{
 			get { return true; }
 		}
 
-		public override string DisplayText
+		internal override string DisplayText
 		{
 			get { return m_strTitle; }
 		}
 
 		[Browsable(false)]
-		public override string IconKey
+		internal override string IconKey
 		{
 			get { return IconKeys.ArcIMSLayer; }
 		}
@@ -628,7 +628,7 @@ namespace NewServerTree
 		#region Public Methods
 
 		[Obsolete("This should get removed with the rest of the LayerBuilder/ServerTree stuff")]
-		public override LayerBuilder ConvertToLayerBuilder()
+		internal override LayerBuilder ConvertToLayerBuilder()
 		{
 			return new ArcIMSQuadLayerBuilder(
 				(Parent.Parent as ArcIMSServerModelNode).Uri as ArcIMSServerUri,

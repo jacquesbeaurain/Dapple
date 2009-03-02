@@ -68,7 +68,7 @@ namespace WorldWind.Renderable
 		/// Gets or sets the color used for transparent areas.
 		/// </summary>
 		/// <value></value>
-		public int TransparentColor
+		internal int TransparentColor
 		{
 			get
 			{
@@ -117,7 +117,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Opacity (0..1)
 		/// </summary>
-		public float OpacityPercent
+		internal float OpacityPercent
 		{
 			get
 			{
@@ -125,7 +125,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public bool DisableZBuffer
+		internal bool DisableZBuffer
 		{
 			get
 			{
@@ -197,7 +197,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public GeographicBoundingBox Bounds
+		internal GeographicBoundingBox Bounds
 		{
 			get
 			{
@@ -208,7 +208,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Path or URL of layer legend image
 		/// </summary>
-		public string LegendImagePath
+		internal string LegendImagePath
 		{
 			get
 			{
@@ -224,19 +224,19 @@ namespace WorldWind.Renderable
 
 		float m_grayscaleBrightness = 0.0f;
 
-		public float GrayscaleBrightness
+		internal float GrayscaleBrightness
 		{
 			get { return m_grayscaleBrightness; }
 			set { m_grayscaleBrightness = value; }
 		}
 
-		public bool RenderGrayscale
+		internal bool RenderGrayscale
 		{
 			get { return m_renderGrayscale; }
 			set { m_renderGrayscale = value; }
 		}
 
-		public TimeSpan CacheExpiration
+		internal TimeSpan CacheExpiration
 		{
 			get { return cacheExpiration; }
 			set { cacheExpiration = value; }
@@ -245,7 +245,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.ImageLayer"/> class.
 		/// </summary>
-		public ImageLayer(string name, float layerRadius)
+		internal ImageLayer(string name, float layerRadius)
 			: base(name)
 		{
 			this.layerRadius = layerRadius;
@@ -282,7 +282,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public ImageLayer(
+		internal ImageLayer(
 			string name,
 			World parentWorld,
 			double distanceAboveSurface,
@@ -946,7 +946,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Switch to a different image
 		/// </summary>
-		public void UpdateTexture(string fileName)
+		internal void UpdateTexture(string fileName)
 		{
 			try
 			{
@@ -970,7 +970,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Switch to a different image
 		/// </summary>
-		public void UpdateTexture(Stream textureStream)
+		internal void UpdateTexture(Stream textureStream)
 		{
 			UpdateTexture(textureStream, 0);
 		}
@@ -978,7 +978,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Switch to a different image
 		/// </summary>
-		public void UpdateTexture(Stream textureStream, int transparentColor)
+		internal void UpdateTexture(Stream textureStream, int transparentColor)
 		{
 			try
 			{
@@ -1043,7 +1043,7 @@ namespace WorldWind.Renderable
 		/// Change opacity
 		/// </summary>
 		/// <param name="percent">0=transparent, 1=opaque</param>
-		public void UpdateOpacity(float percent)
+		internal void UpdateOpacity(float percent)
 		{
 			Debug.Assert(percent <= 1);
 			Debug.Assert(percent >= 0);
@@ -1059,7 +1059,7 @@ namespace WorldWind.Renderable
 		/// Change radius
 		/// </summary>
 		/// <param name="layerRadius">Sphere radius (meters)</param>
-		public void UpdateLayerRadius(float layerRadius)
+		internal void UpdateLayerRadius(float layerRadius)
 		{
 			this.layerRadius = layerRadius;
 

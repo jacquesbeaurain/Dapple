@@ -13,7 +13,7 @@ namespace Dapple.KML
 {
 	#region Abstract ============================================================
 
-	public abstract class KMLObject
+	internal abstract class KMLObject
 	{
 		#region Member Variables
 
@@ -29,7 +29,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLObject(XmlElement element, KMLFile source)
+		internal KMLObject(XmlElement element, KMLFile source)
 		{
 			m_oSourceFile = source;
 
@@ -57,12 +57,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public String ID
+		internal String ID
 		{
 			get { return m_strID; }
 		}
 
-		public String TargetID
+		internal String TargetID
 		{
 			get { return m_strTargetID; }
 		}
@@ -70,16 +70,16 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KMLStyleSelector : KMLObject
+	internal abstract class KMLStyleSelector : KMLObject
 	{
 		#region Constructors
 
-		public KMLStyleSelector(XmlElement element, KMLFile source)
+		internal KMLStyleSelector(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 		}
 
-		public KMLStyleSelector()
+		internal KMLStyleSelector()
 			: base()
 		{
 		}
@@ -89,15 +89,15 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public abstract KMLStyle NormalStyle { get; }
-		public abstract KMLStyle HighlightStyle { get; }
+		internal abstract KMLStyle NormalStyle { get; }
+		internal abstract KMLStyle HighlightStyle { get; }
 
 		#endregion
 
 
 		#region Static Parsers
 
-		public static List<KMLStyleSelector> GetStyleSelectors(XmlElement oElement, KMLFile oSource)
+		internal static List<KMLStyleSelector> GetStyleSelectors(XmlElement oElement, KMLFile oSource)
 		{
 			List<KMLStyleSelector> result = new List<KMLStyleSelector>();
 
@@ -122,7 +122,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KMLFeature : KMLObject
+	internal abstract class KMLFeature : KMLObject
 	{
 		#region Member Variables
 
@@ -158,7 +158,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLFeature(XmlElement element, KMLFile source)
+		internal KMLFeature(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_oInlineStyles = KMLStyleSelector.GetStyleSelectors(element, source);
@@ -220,22 +220,22 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public String Name
+		internal String Name
 		{
 			get { return m_strName; }
 		}
 
-		public bool Visibility
+		internal bool Visibility
 		{
 			get { return m_blVisibility; }
 		}
 
-		public bool Open
+		internal bool Open
 		{
 			get { return m_blOpen; }
 		}
 
-		public String Snippet
+		internal String Snippet
 		{
 			get
 			{
@@ -243,7 +243,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public String Description
+		internal String Description
 		{
 			get
 			{
@@ -251,7 +251,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLStyleSelector Style
+		internal KMLStyleSelector Style
 		{
 			get
 			{
@@ -273,17 +273,17 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLRegion Region
+		internal KMLRegion Region
 		{
 			get { return m_oRegion; }
 		}
 
-		public KLMTimePrimitive Time
+		internal KLMTimePrimitive Time
 		{
 			get { return m_oTime; }
 		}
 
-		public KMLAbstractView View
+		internal KMLAbstractView View
 		{
 			get { return m_oView; }
 		}
@@ -293,7 +293,7 @@ namespace Dapple.KML
 
 		#region Static Parsers
 
-		public static List<KMLFeature> GetFeatures(XmlElement oElement, KMLFile oSource)
+		internal static List<KMLFeature> GetFeatures(XmlElement oElement, KMLFile oSource)
 		{
 			List<KMLFeature> result = new List<KMLFeature>();
 
@@ -334,11 +334,11 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KMLContainer : KMLFeature
+	internal abstract class KMLContainer : KMLFeature
 	{
 		#region Constructors
 
-		public KMLContainer(XmlElement element, KMLFile source)
+		internal KMLContainer(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 		}
@@ -347,14 +347,14 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public abstract KMLFeature this[int i] { get; }
+		internal abstract KMLFeature this[int i] { get; }
 
-		public abstract int Count { get; }
+		internal abstract int Count { get; }
 
 		#endregion
 	}
 
-	public abstract class KMLOverlay : KMLFeature
+	internal abstract class KMLOverlay : KMLFeature
 	{
 		#region Member Variables
 
@@ -370,7 +370,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLOverlay(XmlElement element, KMLFile source)
+		internal KMLOverlay(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -398,7 +398,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public Color Color
+		internal Color Color
 		{
 			get
 			{
@@ -413,12 +413,12 @@ namespace Dapple.KML
 			}
 		}
 
-		public int DrawOrder
+		internal int DrawOrder
 		{
 			get { return m_iDrawOrder; }
 		}
 
-		public KMLIconOrLink Icon
+		internal KMLIconOrLink Icon
 		{
 			get { return m_oIcon; }
 		}
@@ -426,7 +426,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KMLGeometry : KMLObject
+	internal abstract class KMLGeometry : KMLObject
 	{
 		#region Member Variables
 
@@ -437,7 +437,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLGeometry(XmlElement element, KMLFeature owner, KMLFile source)
+		internal KMLGeometry(XmlElement element, KMLFeature owner, KMLFile source)
 			: base(element, source)
 		{
 			m_oOwner = owner;
@@ -448,12 +448,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLFeature Owner
+		internal KMLFeature Owner
 		{
 			get { return m_oOwner; }
 		}
 
-		public KMLStyleSelector Style
+		internal KMLStyleSelector Style
 		{
 			get
 			{
@@ -466,7 +466,7 @@ namespace Dapple.KML
 
 		#region Static Parsers
 
-		public static List<KMLGeometry> GetGeometries(XmlElement oElement, KMLPlacemark oOwner, KMLFile oSource)
+		internal static List<KMLGeometry> GetGeometries(XmlElement oElement, KMLPlacemark oOwner, KMLFile oSource)
 		{
 			List<KMLGeometry> result = new List<KMLGeometry>();
 
@@ -507,7 +507,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KMLColorStyle : KMLObject
+	internal abstract class KMLColorStyle : KMLObject
 	{
 		#region Member Variables
 
@@ -521,7 +521,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLColorStyle(XmlElement element, KMLFile source)
+		internal KMLColorStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -540,7 +540,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLColorStyle()
+		internal KMLColorStyle()
 			: base()
 		{
 		}
@@ -550,7 +550,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public Color Color
+		internal Color Color
 		{
 			get
 			{
@@ -565,7 +565,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLColorMode ColorMode
+		internal KMLColorMode ColorMode
 		{
 			get
 			{
@@ -585,7 +585,7 @@ namespace Dapple.KML
 
 		#region Static Parsers
 
-		public static Color ParseColor(String strColor)
+		internal static Color ParseColor(String strColor)
 		{
 			// --- This is a hack: some color tags encountered starting with '#' ---
 			strColor = strColor.Replace("#", String.Empty);
@@ -601,11 +601,11 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KLMTimePrimitive : KMLObject
+	internal abstract class KLMTimePrimitive : KMLObject
 	{
 		#region Constructors
 
-		public KLMTimePrimitive(XmlElement element, KMLFile source)
+		internal KLMTimePrimitive(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 		}
@@ -613,11 +613,11 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public abstract class KMLAbstractView : KMLObject
+	internal abstract class KMLAbstractView : KMLObject
 	{
 		#region Constructor
 
-		public KMLAbstractView(XmlElement element, KMLFile source)
+		internal KMLAbstractView(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 		}
@@ -630,27 +630,27 @@ namespace Dapple.KML
 
 	#region Enums and Structs ===================================================
 
-	public enum KMLGridOrigin
+	internal enum KMLGridOrigin
 	{
 		lowerLeft,
 		upperLeft
 	}
 
-	public enum KMLShape
+	internal enum KMLShape
 	{
 		rectangle,
 		cylinder,
 		sphere
 	}
 
-	public enum KLMRefreshMode
+	internal enum KLMRefreshMode
 	{
 		onChange,
 		onInterval,
 		onExpire
 	}
 
-	public enum KMLViewRefreshMode
+	internal enum KMLViewRefreshMode
 	{
 		never,
 		onStop,
@@ -658,33 +658,33 @@ namespace Dapple.KML
 		onRegion
 	}
 
-	public enum KMLAltitudeMode
+	internal enum KMLAltitudeMode
 	{
 		clampToGround,
 		relativeToGround,
 		absolute
 	}
 
-	public enum KMLColorMode
+	internal enum KMLColorMode
 	{
 		normal,
 		random
 	}
 
-	public enum KMLDisplayMode
+	internal enum KMLDisplayMode
 	{
 		DEFAULT,
 		HIDE
 	}
 
-	public enum KMLUnits
+	internal enum KMLUnits
 	{
 		pixels,
 		fraction,
 		insetPixels
 	}
 
-	public enum KMLListItemType
+	internal enum KMLListItemType
 	{
 		check,
 		checkOffOnly,
@@ -693,7 +693,7 @@ namespace Dapple.KML
 	}
 
 	[FlagsAttribute]
-	public enum KMLItemIconState
+	internal enum KMLItemIconState
 	{
 		none = 0,
 		open = 1 << 0,
@@ -704,7 +704,7 @@ namespace Dapple.KML
 		fetching2 = 1 << 5
 	}
 
-	public enum KMLDateTimeType
+	internal enum KMLDateTimeType
 	{
 		Year,
 		YearMonth,
@@ -713,20 +713,20 @@ namespace Dapple.KML
 	}
 
 	[DebuggerDisplay("Lat = {Latitude}  Lon = {Longitude}  Alt = {Altitude}")]
-	public struct KMLCoordinates
+	internal struct KMLCoordinates
 	{
-		public double Latitude;
-		public double Longitude;
-		public double Altitude;
+		internal double Latitude;
+		internal double Longitude;
+		internal double Altitude;
 
-		public KMLCoordinates(double dLat, double dLon, double dAlt)
+		internal KMLCoordinates(double dLat, double dLon, double dAlt)
 		{
 			Latitude = dLat;
 			Longitude = dLon;
 			Altitude = dAlt;
 		}
 
-		public KMLCoordinates(String strTuple)
+		internal KMLCoordinates(String strTuple)
 		{
 			String[] oValues = strTuple.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			if (oValues.Length < 2 || oValues.Length > 3)
@@ -747,7 +747,7 @@ namespace Dapple.KML
 		}
 	}
 
-	public struct KMLDateTime
+	internal struct KMLDateTime
 	{
 		private static Regex oYearRegex = new Regex(@"^(\d\d\d\d)$");
 		private static Regex oYMRegex = new Regex(@"^(\d\d\d\d)-(\d\d)$");
@@ -755,10 +755,10 @@ namespace Dapple.KML
 		private static Regex oUTCDateTime = new Regex(@"^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$");
 		private static Regex oNonUTCDateTime = new Regex(@"^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)[+-](\d\d):(\d\d)$");
 
-		public DateTime Time;
-		public KMLDateTimeType Type;
+		internal DateTime Time;
+		internal KMLDateTimeType Type;
 
-		public KMLDateTime(String strValue)
+		internal KMLDateTime(String strValue)
 		{
 			strValue = strValue.Trim();
 
@@ -789,14 +789,14 @@ namespace Dapple.KML
 		}
 	}
 
-	public struct KMLVec2
+	internal struct KMLVec2
 	{
-		public double X;
-		public double Y;
-		public KMLUnits XUnits;
-		public KMLUnits YUnits;
+		internal double X;
+		internal double Y;
+		internal KMLUnits XUnits;
+		internal KMLUnits YUnits;
 
-		public KMLVec2(XmlElement element)
+		internal KMLVec2(XmlElement element)
 		{
 			if (element.HasAttribute("x"))
 			{
@@ -835,7 +835,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLVec2(double x, double y, KMLUnits xunits, KMLUnits yunits)
+		internal KMLVec2(double x, double y, KMLUnits xunits, KMLUnits yunits)
 		{
 			X = x;
 			Y = y;
@@ -851,7 +851,7 @@ namespace Dapple.KML
 
 	#region Models ====================================================
 
-	public class KMLLocation : KMLObject
+	internal class KMLLocation : KMLObject
 	{
 		#region Member Variables
 
@@ -866,7 +866,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLocation(XmlElement element, KMLFile source)
+		internal KMLLocation(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_dLongitude = Double.MinValue;
@@ -899,17 +899,17 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double Longitude
+		internal double Longitude
 		{
 			get { return m_dLongitude; }
 		}
 
-		public double Latitude
+		internal double Latitude
 		{
 			get { return m_dLatitude; }
 		}
 
-		public double Altitude
+		internal double Altitude
 		{
 			get
 			{
@@ -927,7 +927,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLOrientation : KMLObject
+	internal class KMLOrientation : KMLObject
 	{
 		#region Member Variables
 
@@ -943,7 +943,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLOrientation(XmlElement element, KMLFile source)
+		internal KMLOrientation(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -966,7 +966,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLOrientation()
+		internal KMLOrientation()
 			: base()
 		{
 		}
@@ -976,7 +976,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double Heading
+		internal double Heading
 		{
 			get
 			{
@@ -991,7 +991,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Tilt
+		internal double Tilt
 		{
 			get
 			{
@@ -1006,7 +1006,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Roll
+		internal double Roll
 		{
 			get
 			{
@@ -1024,7 +1024,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLScale : KMLObject
+	internal class KMLScale : KMLObject
 	{
 		#region Member Variables
 
@@ -1040,7 +1040,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLScale(XmlElement element, KMLFile source)
+		internal KMLScale(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1063,7 +1063,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLScale()
+		internal KMLScale()
 			: base()
 		{
 		}
@@ -1073,7 +1073,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double X
+		internal double X
 		{
 			get
 			{
@@ -1088,7 +1088,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Y
+		internal double Y
 		{
 			get
 			{
@@ -1103,7 +1103,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Z
+		internal double Z
 		{
 			get
 			{
@@ -1121,7 +1121,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLModel : KMLGeometry
+	internal class KMLModel : KMLGeometry
 	{
 		#region Member Variables
 
@@ -1143,7 +1143,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLModel(XmlElement element, KMLPlacemark owner, KMLFile source)
+		internal KMLModel(XmlElement element, KMLPlacemark owner, KMLFile source)
 			: base(element, owner, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1215,7 +1215,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -1230,27 +1230,27 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLLocation Location
+		internal KMLLocation Location
 		{
 			get { return m_oLocation; }
 		}
 
-		public KMLOrientation Orientation
+		internal KMLOrientation Orientation
 		{
 			get { return m_oOrientation; }
 		}
 
-		public KMLScale Scale
+		internal KMLScale Scale
 		{
 			get { return m_oScale; }
 		}
 
-		public KMLIconOrLink Link
+		internal KMLIconOrLink Link
 		{
 			get { return m_oLink; }
 		}
 
-		public String MapResource(String strSource)
+		internal String MapResource(String strSource)
 		{
 			if (m_oResourceMap.ContainsKey(strSource))
 			{
@@ -1270,7 +1270,7 @@ namespace Dapple.KML
 
 	#region Bounding Boxes/Regions ====================================
 
-	public class KMLRegion : KMLObject
+	internal class KMLRegion : KMLObject
 	{
 		#region Member Variables
 
@@ -1284,7 +1284,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLRegion(XmlElement element, KMLFile source)
+		internal KMLRegion(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1310,12 +1310,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLLatLonAltBox LatLonAltBox
+		internal KMLLatLonAltBox LatLonAltBox
 		{
 			get { return m_oBox; }
 		}
 
-		public KMLLod Lod
+		internal KMLLod Lod
 		{
 			get { return m_oLod; }
 		}
@@ -1323,7 +1323,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLod : KMLObject
+	internal class KMLLod : KMLObject
 	{
 		#region Member Variables
 
@@ -1341,7 +1341,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLod(XmlElement element, KMLFile source)
+		internal KMLLod(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1373,7 +1373,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public float MinLoDPixels
+		internal float MinLoDPixels
 		{
 			get
 			{
@@ -1388,7 +1388,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float MaxLoDPixels
+		internal float MaxLoDPixels
 		{
 			get
 			{
@@ -1403,7 +1403,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float MinFadeExtent
+		internal float MinFadeExtent
 		{
 			get
 			{
@@ -1418,7 +1418,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float MaxFadeExtent
+		internal float MaxFadeExtent
 		{
 			get
 			{
@@ -1436,7 +1436,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLatLonBox : KMLObject
+	internal class KMLLatLonBox : KMLObject
 	{
 		#region Member Variables
 
@@ -1456,7 +1456,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLatLonBox(XmlElement element, KMLFile source)
+		internal KMLLatLonBox(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_dNorth = Double.MinValue;
@@ -1502,27 +1502,27 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double North
+		internal double North
 		{
 			get { return m_dNorth; }
 		}
 
-		public double East
+		internal double East
 		{
 			get { return m_dEast; }
 		}
 
-		public double South
+		internal double South
 		{
 			get { return m_dSouth; }
 		}
 
-		public double West
+		internal double West
 		{
 			get { return m_dWest; }
 		}
 
-		public double Rotation
+		internal double Rotation
 		{
 			get
 			{
@@ -1540,7 +1540,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLatLonAltBox : KMLObject
+	internal class KMLLatLonAltBox : KMLObject
 	{
 		#region Member Variables
 
@@ -1564,7 +1564,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLatLonAltBox(XmlElement element, KMLFile source)
+		internal KMLLatLonAltBox(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_dNorth = Double.MinValue;
@@ -1618,27 +1618,27 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double North
+		internal double North
 		{
 			get { return m_dNorth; }
 		}
 
-		public double East
+		internal double East
 		{
 			get { return m_dEast; }
 		}
 
-		public double South
+		internal double South
 		{
 			get { return m_dSouth; }
 		}
 
-		public double West
+		internal double West
 		{
 			get { return m_dWest; }
 		}
 
-		public double MinAltitude
+		internal double MinAltitude
 		{
 			get
 			{
@@ -1653,7 +1653,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double MaxAltitude
+		internal double MaxAltitude
 		{
 			get
 			{
@@ -1668,7 +1668,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -1691,7 +1691,7 @@ namespace Dapple.KML
 
 	#region TimePrimitives ============================================
 
-	public class KMLTimeStamp : KLMTimePrimitive
+	internal class KMLTimeStamp : KLMTimePrimitive
 	{
 		#region Member Variables
 
@@ -1703,7 +1703,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLTimeStamp(XmlElement element, KMLFile source)
+		internal KMLTimeStamp(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			bool blWhenSet = false;
@@ -1728,7 +1728,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLDateTime When
+		internal KMLDateTime When
 		{
 			get
 			{
@@ -1739,7 +1739,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLTimeSpan : KLMTimePrimitive
+	internal class KMLTimeSpan : KLMTimePrimitive
 	{
 		#region Member Variables
 
@@ -1753,7 +1753,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLTimeSpan(XmlElement element, KMLFile source)
+		internal KMLTimeSpan(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1777,12 +1777,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLDateTime Begin
+		internal KMLDateTime Begin
 		{
 			get { return m_oBegin; }
 		}
 
-		public KMLDateTime End
+		internal KMLDateTime End
 		{
 			get { return m_oEnd; }
 		}
@@ -1795,7 +1795,7 @@ namespace Dapple.KML
 
 	#region Styles ====================================================
 
-	public class KMLBalloonStyle : KMLObject
+	internal class KMLBalloonStyle : KMLObject
 	{
 		#region Member Variables
 
@@ -1813,7 +1813,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLBalloonStyle(XmlElement element, KMLFile source)
+		internal KMLBalloonStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1840,7 +1840,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLBalloonStyle()
+		internal KMLBalloonStyle()
 			: base()
 		{
 		}
@@ -1850,7 +1850,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public Color BackgroundColor
+		internal Color BackgroundColor
 		{
 			get
 			{
@@ -1865,7 +1865,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public Color TextColor
+		internal Color TextColor
 		{
 			get
 			{
@@ -1880,7 +1880,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public String Text
+		internal String Text
 		{
 			get
 			{
@@ -1888,7 +1888,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLDisplayMode DisplayMode
+		internal KMLDisplayMode DisplayMode
 		{
 			get
 			{
@@ -1906,7 +1906,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLineStyle : KMLColorStyle
+	internal class KMLLineStyle : KMLColorStyle
 	{
 		#region Member Variables
 
@@ -1918,7 +1918,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLineStyle(XmlElement element, KMLFile source)
+		internal KMLLineStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -1933,7 +1933,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLLineStyle()
+		internal KMLLineStyle()
 			: base()
 		{
 		}
@@ -1943,7 +1943,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public float Width
+		internal float Width
 		{
 			get
 			{
@@ -1961,7 +1961,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLListStyle : KMLObject
+	internal class KMLListStyle : KMLObject
 	{
 		#region Member Variables
 
@@ -1977,7 +1977,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLListStyle(XmlElement element, KMLFile source)
+		internal KMLListStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2026,7 +2026,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLListStyle()
+		internal KMLListStyle()
 			: base()
 		{
 		}
@@ -2036,7 +2036,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public Color BackgroundColor
+		internal Color BackgroundColor
 		{
 			get
 			{
@@ -2051,7 +2051,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLListItemType ListItemType
+		internal KMLListItemType ListItemType
 		{
 			get
 			{
@@ -2066,7 +2066,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public String GetItemIcon(KMLItemIconState eMode)
+		internal String GetItemIcon(KMLItemIconState eMode)
 		{
 			if (m_oItemIcons.ContainsKey(eMode))
 			{
@@ -2081,7 +2081,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLIconStyle : KMLColorStyle
+	internal class KMLIconStyle : KMLColorStyle
 	{
 		#region Member Variables
 
@@ -2099,7 +2099,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLIconStyle(XmlElement element, KMLFile source)
+		internal KMLIconStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			bool blHotSpotSet = false;
@@ -2131,7 +2131,7 @@ namespace Dapple.KML
 			if (!blHotSpotSet) m_oHotSpot = new KMLVec2(0.5, 0.5, KMLUnits.fraction, KMLUnits.fraction);
 		}
 
-		public KMLIconStyle()
+		internal KMLIconStyle()
 			: base()
 		{
 		}
@@ -2141,7 +2141,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public float Scale
+		internal float Scale
 		{
 			get
 			{
@@ -2156,7 +2156,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float Heading
+		internal float Heading
 		{
 			get
 			{
@@ -2171,12 +2171,12 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLIconOrLink Icon
+		internal KMLIconOrLink Icon
 		{
 			get { return m_oIcon; }
 		}
 
-		public KMLVec2 HotSpot
+		internal KMLVec2 HotSpot
 		{
 			get { return m_oHotSpot; }
 		}
@@ -2184,7 +2184,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLabelStyle : KMLColorStyle
+	internal class KMLLabelStyle : KMLColorStyle
 	{
 		#region Member Variables
 
@@ -2196,7 +2196,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLabelStyle(XmlElement element, KMLFile source)
+		internal KMLLabelStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2211,7 +2211,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLLabelStyle()
+		internal KMLLabelStyle()
 			: base()
 		{
 		}
@@ -2221,7 +2221,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public float Scale
+		internal float Scale
 		{
 			get
 			{
@@ -2239,7 +2239,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLPolyStyle : KMLColorStyle
+	internal class KMLPolyStyle : KMLColorStyle
 	{
 		#region Member Variables
 
@@ -2253,7 +2253,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLPolyStyle(XmlElement element, KMLFile source)
+		internal KMLPolyStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2272,7 +2272,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLPolyStyle()
+		internal KMLPolyStyle()
 			: base()
 		{
 		}
@@ -2282,7 +2282,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool Fill
+		internal bool Fill
 		{
 			get
 			{
@@ -2297,7 +2297,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public bool Outline
+		internal bool Outline
 		{
 			get
 			{
@@ -2316,7 +2316,7 @@ namespace Dapple.KML
 	}
 
 	[DebuggerDisplay("Style, id = {m_strID}")]
-	public class KMLStyle : KMLStyleSelector
+	internal class KMLStyle : KMLStyleSelector
 	{
 		#region Member Variables
 
@@ -2338,7 +2338,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLStyle(XmlElement element, KMLFile source)
+		internal KMLStyle(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChildNode in element.ChildNodes)
@@ -2380,7 +2380,7 @@ namespace Dapple.KML
 			if (m_oListStyle == null) m_oListStyle = new KMLListStyle();
 		}
 
-		public KMLStyle()
+		internal KMLStyle()
 			: base()
 		{
 			m_oLineStyle = new KMLLineStyle();
@@ -2396,42 +2396,42 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public override KMLStyle NormalStyle
+		internal override KMLStyle NormalStyle
 		{
 			get { return this; }
 		}
 
-		public override KMLStyle HighlightStyle
+		internal override KMLStyle HighlightStyle
 		{
 			get { return this; }
 		}
 
-		public KMLLineStyle LineStyle
+		internal KMLLineStyle LineStyle
 		{
 			get { return m_oLineStyle; }
 		}
 
-		public KMLPolyStyle PolyStyle
+		internal KMLPolyStyle PolyStyle
 		{
 			get { return m_oPolyStyle; }
 		}
 
-		public KMLIconStyle IconStyle
+		internal KMLIconStyle IconStyle
 		{
 			get { return m_oIconStyle; }
 		}
 
-		public KMLLabelStyle LabelStyle
+		internal KMLLabelStyle LabelStyle
 		{
 			get { return m_oLabelStyle; }
 		}
 
-		public KMLListStyle ListStyle
+		internal KMLListStyle ListStyle
 		{
 			get { return m_oListStyle; }
 		}
 
-		public KMLBalloonStyle BalloonStyle
+		internal KMLBalloonStyle BalloonStyle
 		{
 			get { return m_oBalloonStyle; }
 		}
@@ -2440,7 +2440,7 @@ namespace Dapple.KML
 	}
 
 	[DebuggerDisplay("StyleMap, id = {m_strID}")]
-	public class KMLStyleMap : KMLStyleSelector
+	internal class KMLStyleMap : KMLStyleSelector
 	{
 		#region Member Variables
 
@@ -2454,7 +2454,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLStyleMap(XmlElement element, KMLFile source)
+		internal KMLStyleMap(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2482,12 +2482,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public override KMLStyle NormalStyle
+		internal override KMLStyle NormalStyle
 		{
 			get { return m_oSourceFile.GetStyle(m_strNormalStyle).NormalStyle; }
 		}
 
-		public override KMLStyle HighlightStyle
+		internal override KMLStyle HighlightStyle
 		{
 			get { return m_oSourceFile.GetStyle(m_strHighlightStyle).HighlightStyle; }
 		}
@@ -2500,7 +2500,7 @@ namespace Dapple.KML
 
 	#region Geometry ==================================================
 
-	public class KMLLinearRing : KMLGeometry
+	internal class KMLLinearRing : KMLGeometry
 	{
 		#region Member Variables
 
@@ -2518,7 +2518,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLinearRing(XmlElement element, KMLPlacemark owner, KMLFile source)
+		internal KMLLinearRing(XmlElement element, KMLPlacemark owner, KMLFile source)
 			: base(element, owner, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2556,7 +2556,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool Extrude
+		internal bool Extrude
 		{
 			get
 			{
@@ -2571,7 +2571,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public bool Tessellate
+		internal bool Tessellate
 		{
 			get
 			{
@@ -2586,7 +2586,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -2601,12 +2601,12 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLCoordinates this[int i]
+		internal KMLCoordinates this[int i]
 		{
 			get { return m_oCoords[i]; }
 		}
 
-		public int Count
+		internal int Count
 		{
 			get { return m_oCoords.Count; }
 		}
@@ -2614,7 +2614,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLPolygon : KMLGeometry
+	internal class KMLPolygon : KMLGeometry
 	{
 		#region Member Variables
 
@@ -2634,7 +2634,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLPolygon(XmlElement element, KMLPlacemark owner, KMLFile source)
+		internal KMLPolygon(XmlElement element, KMLPlacemark owner, KMLFile source)
 			: base(element, owner, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2690,27 +2690,27 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool Extrude
+		internal bool Extrude
 		{
 			get { return m_blExtrude; }
 		}
 
-		public bool Tessellate
+		internal bool Tessellate
 		{
 			get { return m_blTessellate; }
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get { return m_eAltitudeMode; }
 		}
 
-		public KMLLinearRing OuterBoundary
+		internal KMLLinearRing OuterBoundary
 		{
 			get { return m_oOuterBoundary; }
 		}
 
-		public List<KMLLinearRing> InnerBoundaries
+		internal List<KMLLinearRing> InnerBoundaries
 		{
 			get { return m_oInnerBoundaries; }
 		}
@@ -2718,7 +2718,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLPoint : KMLGeometry
+	internal class KMLPoint : KMLGeometry
 	{
 		#region Member Variables
 
@@ -2734,7 +2734,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLPoint(XmlElement element, KMLFeature owner, KMLFile source)
+		internal KMLPoint(XmlElement element, KMLFeature owner, KMLFile source)
 			: base(element, owner, source)
 		{
 			bool blCoordinatesSet = false;
@@ -2767,17 +2767,17 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool Extrude
+		internal bool Extrude
 		{
 			get { return m_blExtrude; }
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get { return m_eAltitudeMode; }
 		}
 
-		public KMLCoordinates Coordinates
+		internal KMLCoordinates Coordinates
 		{
 			get { return m_oCoords; }
 		}
@@ -2785,7 +2785,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLineString : KMLGeometry
+	internal class KMLLineString : KMLGeometry
 	{
 		#region Member Varialbes
 
@@ -2803,7 +2803,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLineString(XmlElement element, KMLPlacemark owner, KMLFile source)
+		internal KMLLineString(XmlElement element, KMLPlacemark owner, KMLFile source)
 			: base(element, owner, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2841,7 +2841,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool Extrude
+		internal bool Extrude
 		{
 			get
 			{
@@ -2856,7 +2856,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public bool Tessellate
+		internal bool Tessellate
 		{
 			get
 			{
@@ -2871,7 +2871,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -2886,12 +2886,12 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLCoordinates this[int i]
+		internal KMLCoordinates this[int i]
 		{
 			get { return m_oCoords[i]; }
 		}
 
-		public int Count
+		internal int Count
 		{
 			get { return m_oCoords.Count; }
 		}
@@ -2899,7 +2899,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLMultiGeometry : KMLGeometry
+	internal class KMLMultiGeometry : KMLGeometry
 	{
 		#region Member Variables
 
@@ -2910,7 +2910,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLMultiGeometry(XmlElement element, KMLPlacemark owner, KMLFile source)
+		internal KMLMultiGeometry(XmlElement element, KMLPlacemark owner, KMLFile source)
 			: base(element, owner, source)
 		{
 			m_oChildren = KMLGeometry.GetGeometries(element, owner, source);
@@ -2921,12 +2921,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLGeometry this[int i]
+		internal KMLGeometry this[int i]
 		{
 			get { return m_oChildren[i]; }
 		}
 
-		public int Count
+		internal int Count
 		{
 			get { return m_oChildren.Count; }
 		}
@@ -2939,7 +2939,7 @@ namespace Dapple.KML
 
 	#region Overlays ==================================================
 
-	public class KMLGroundOverlay : KMLOverlay
+	internal class KMLGroundOverlay : KMLOverlay
 	{
 		#region Member Variables
 
@@ -2955,7 +2955,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLGroundOverlay(XmlElement element, KMLFile source)
+		internal KMLGroundOverlay(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -2985,7 +2985,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double Altitude
+		internal double Altitude
 		{
 			get
 			{
@@ -3000,7 +3000,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -3015,7 +3015,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLLatLonBox LatLonBox
+		internal KMLLatLonBox LatLonBox
 		{
 			get
 			{
@@ -3028,7 +3028,7 @@ namespace Dapple.KML
 
 		#region Public Methods
 
-		public String GetUri()
+		internal String GetUri()
 		{
 			String result = Icon.HRef;
 			if (!String.IsNullOrEmpty(Icon.HTTPQuery))
@@ -3046,7 +3046,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLScreenOverlay : KMLOverlay
+	internal class KMLScreenOverlay : KMLOverlay
 	{
 		#region Member Variables
 
@@ -3066,7 +3066,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLScreenOverlay(XmlElement element, KMLFile source)
+		internal KMLScreenOverlay(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -3102,27 +3102,27 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLVec2 OverlayXY
+		internal KMLVec2 OverlayXY
 		{
 			get { return m_oOverlayXY; }
 		}
 
-		public KMLVec2 ScreenXY
+		internal KMLVec2 ScreenXY
 		{
 			get { return m_oScreenXY; }
 		}
 
-		public KMLVec2 RotationXY
+		internal KMLVec2 RotationXY
 		{
 			get { return m_oRotationXY; }
 		}
 
-		public KMLVec2 Size
+		internal KMLVec2 Size
 		{
 			get { return m_oSize; }
 		}
 
-		public float Rotation
+		internal float Rotation
 		{
 			get
 			{
@@ -3140,7 +3140,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLPhotoOverlay : KMLOverlay
+	internal class KMLPhotoOverlay : KMLOverlay
 	{
 		#region Member Variables
 
@@ -3162,7 +3162,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLPhotoOverlay(XmlElement element, KMLFile source)
+		internal KMLPhotoOverlay(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -3244,7 +3244,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLShape Shape
+		internal KMLShape Shape
 		{
 			get
 			{
@@ -3259,7 +3259,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double ViewVolumeLeftFOV
+		internal double ViewVolumeLeftFOV
 		{
 			get
 			{
@@ -3274,7 +3274,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double ViewVolumeRightFOV
+		internal double ViewVolumeRightFOV
 		{
 			get
 			{
@@ -3289,7 +3289,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double ViewVolumeBottomFOV
+		internal double ViewVolumeBottomFOV
 		{
 			get
 			{
@@ -3304,7 +3304,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double ViewVolumeTopFOV
+		internal double ViewVolumeTopFOV
 		{
 			get
 			{
@@ -3319,7 +3319,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double ViewVolumeNear
+		internal double ViewVolumeNear
 		{
 			get
 			{
@@ -3334,7 +3334,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Roll
+		internal double Roll
 		{
 			get
 			{
@@ -3349,7 +3349,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public int ImagePyramidTileSize
+		internal int ImagePyramidTileSize
 		{
 			get
 			{
@@ -3364,17 +3364,17 @@ namespace Dapple.KML
 			}
 		}
 
-		public int ImagePyramidMaxWidth
+		internal int ImagePyramidMaxWidth
 		{
 			get { return m_iImagePyramidMaxWidth; }
 		}
 
-		public int ImagePyramidMaxHeight
+		internal int ImagePyramidMaxHeight
 		{
 			get { return m_iImagePyramidMaxHeight; }
 		}
 
-		public KMLGridOrigin ImagePyramidGridOrigin
+		internal KMLGridOrigin ImagePyramidGridOrigin
 		{
 			get
 			{
@@ -3389,7 +3389,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLPoint Point
+		internal KMLPoint Point
 		{
 			get { return m_oPoint; }
 		}
@@ -3402,7 +3402,7 @@ namespace Dapple.KML
 
 	#region Features ==================================================
 
-	public class KMLNetworkLink : KMLFeature
+	internal class KMLNetworkLink : KMLFeature
 	{
 		#region Member Variables
 
@@ -3418,7 +3418,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLNetworkLink(XmlElement element, KMLFile source)
+		internal KMLNetworkLink(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -3448,7 +3448,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool RefreshVisibility
+		internal bool RefreshVisibility
 		{
 			get
 			{
@@ -3463,7 +3463,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public bool FlyToView
+		internal bool FlyToView
 		{
 			get
 			{
@@ -3478,7 +3478,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLIconOrLink Link
+		internal KMLIconOrLink Link
 		{
 			get
 			{
@@ -3490,7 +3490,7 @@ namespace Dapple.KML
 	}
 
 	[DebuggerDisplay("Placemark, name = {m_strName}")]
-	public class KMLPlacemark : KMLFeature
+	internal class KMLPlacemark : KMLFeature
 	{
 		#region Member Variables
 
@@ -3501,7 +3501,7 @@ namespace Dapple.KML
 
 		#region Constructor
 
-		public KMLPlacemark(XmlElement element, KMLFile source)
+		internal KMLPlacemark(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			List<KMLGeometry> oGeometries = KMLGeometry.GetGeometries(element, this, source);
@@ -3514,7 +3514,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLGeometry Geometry
+		internal KMLGeometry Geometry
 		{
 			get { return m_oGeometry; }
 		}
@@ -3528,7 +3528,7 @@ namespace Dapple.KML
 	#region Containers ================================================
 
 	[DebuggerDisplay("Folder, name = {m_strName}")]
-	public class KMLFolder : KMLContainer
+	internal class KMLFolder : KMLContainer
 	{
 		#region Member Variables
 
@@ -3540,7 +3540,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLFolder(XmlElement element, KMLFile source)
+		internal KMLFolder(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_oFeatures = KMLFeature.GetFeatures(element, source);
@@ -3551,12 +3551,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public override KMLFeature this[int i]
+		internal override KMLFeature this[int i]
 		{
 			get { return m_oFeatures[i]; }
 		}
 
-		public override int Count
+		internal override int Count
 		{
 			get { return m_oFeatures.Count; }
 		}
@@ -3565,7 +3565,7 @@ namespace Dapple.KML
 	}
 
 	[DebuggerDisplay("Document, name = {m_strName}")]
-	public class KMLDocument : KMLContainer
+	internal class KMLDocument : KMLContainer
 	{
 		#region Member Variables
 
@@ -3577,7 +3577,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLDocument(XmlElement element, KMLFile source)
+		internal KMLDocument(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_oFeatures = KMLFeature.GetFeatures(element, source);
@@ -3588,12 +3588,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public override KMLFeature this[int i]
+		internal override KMLFeature this[int i]
 		{
 			get { return m_oFeatures[i]; }
 		}
 
-		public override int Count
+		internal override int Count
 		{
 			get { return m_oFeatures.Count; }
 		}
@@ -3603,7 +3603,7 @@ namespace Dapple.KML
 
 		#region Public Methods
 
-		public KMLStyleSelector GetStyle(string strStyleURL)
+		internal KMLStyleSelector GetStyle(string strStyleURL)
 		{
 			if (strStyleURL.StartsWith("#"))
 			{
@@ -3633,7 +3633,7 @@ namespace Dapple.KML
 
 	#region Abstract Views ============================================
 
-	public class KMLCamera : KMLAbstractView
+	internal class KMLCamera : KMLAbstractView
 	{
 		#region Member Variables
 
@@ -3657,7 +3657,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLCamera(XmlElement element, KMLFile source)
+		internal KMLCamera(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -3701,7 +3701,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double Longitude
+		internal double Longitude
 		{
 			get
 			{
@@ -3716,7 +3716,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Latitude
+		internal double Latitude
 		{
 			get
 			{
@@ -3731,7 +3731,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Altitude
+		internal double Altitude
 		{
 			get
 			{
@@ -3746,7 +3746,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Heading
+		internal double Heading
 		{
 			get
 			{
@@ -3761,7 +3761,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Tilt
+		internal double Tilt
 		{
 			get
 			{
@@ -3776,7 +3776,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Roll
+		internal double Roll
 		{
 			get
 			{
@@ -3791,7 +3791,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -3809,7 +3809,7 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLLookAt : KMLAbstractView
+	internal class KMLLookAt : KMLAbstractView
 	{
 		#region Member Variables
 
@@ -3833,7 +3833,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLLookAt(XmlElement element, KMLFile source)
+		internal KMLLookAt(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			m_dRange = Double.MinValue;
@@ -3881,7 +3881,7 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public double Longitude
+		internal double Longitude
 		{
 			get
 			{
@@ -3896,7 +3896,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Latitude
+		internal double Latitude
 		{
 			get
 			{
@@ -3911,7 +3911,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Altitude
+		internal double Altitude
 		{
 			get
 			{
@@ -3926,7 +3926,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Heading
+		internal double Heading
 		{
 			get
 			{
@@ -3941,7 +3941,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Tilt
+		internal double Tilt
 		{
 			get
 			{
@@ -3956,12 +3956,12 @@ namespace Dapple.KML
 			}
 		}
 
-		public double Range
+		internal double Range
 		{
 			get { return m_dRange; }
 		}
 
-		public KMLAltitudeMode AltitudeMode
+		internal KMLAltitudeMode AltitudeMode
 		{
 			get
 			{
@@ -3981,7 +3981,7 @@ namespace Dapple.KML
 
 	#endregion
 
-	public class KMLIconOrLink : KMLObject
+	internal class KMLIconOrLink : KMLObject
 	{
 		#region Member Variables
 
@@ -4007,7 +4007,7 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLIconOrLink(XmlElement element, KMLFile source)
+		internal KMLIconOrLink(XmlElement element, KMLFile source)
 			: base(element, source)
 		{
 			foreach (XmlNode oChild in element.ChildNodes)
@@ -4055,12 +4055,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public bool IsLocalFile
+		internal bool IsLocalFile
 		{
 			get { return !m_strHRef.StartsWith("http://"); }
 		}
 
-		public String HRef
+		internal String HRef
 		{
 			get
 			{
@@ -4068,7 +4068,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KLMRefreshMode RefreshMode
+		internal KLMRefreshMode RefreshMode
 		{
 			get
 			{
@@ -4083,7 +4083,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float RefreshInterval
+		internal float RefreshInterval
 		{
 			get
 			{
@@ -4098,7 +4098,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public KMLViewRefreshMode ViewRefreshMode
+		internal KMLViewRefreshMode ViewRefreshMode
 		{
 			get
 			{
@@ -4113,7 +4113,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float ViewRefreshTime
+		internal float ViewRefreshTime
 		{
 			get
 			{
@@ -4128,7 +4128,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public float ViewBoundScale
+		internal float ViewBoundScale
 		{
 			get
 			{
@@ -4143,7 +4143,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public String ViewFormat
+		internal String ViewFormat
 		{
 			get
 			{
@@ -4151,7 +4151,7 @@ namespace Dapple.KML
 			}
 		}
 
-		public String HTTPQuery
+		internal String HTTPQuery
 		{
 			get
 			{
@@ -4164,7 +4164,7 @@ namespace Dapple.KML
 
 		#region Public Methods
 
-		public String GetUri(double west, double south, double east, double north)
+		internal String GetUri(double west, double south, double east, double north)
 		{
 			String result = HRef;
 			if (!String.IsNullOrEmpty(HTTPQuery))
@@ -4182,11 +4182,11 @@ namespace Dapple.KML
 		#endregion
 	}
 
-	public class KMLFile
+	internal class KMLFile
 	{
 		#region Statics
 
-		public static string KMLTempDirectory = Path.Combine(Path.GetTempPath(), "DappleKML");
+		internal static string KMLTempDirectory = Path.Combine(Path.GetTempPath(), "DappleKML");
 
 		#endregion
 
@@ -4209,12 +4209,12 @@ namespace Dapple.KML
 
 		#region Constructors
 
-		public KMLFile(String strFilename)
+		internal KMLFile(String strFilename)
 			: this(strFilename, false)
 		{
 		}
 
-		public KMLFile(String strFilename, bool blValidate)
+		internal KMLFile(String strFilename, bool blValidate)
 		{
 			XmlReader oDocReader = null;
 
@@ -4341,12 +4341,12 @@ namespace Dapple.KML
 
 		#region Properties
 
-		public KMLDocument Document
+		internal KMLDocument Document
 		{
 			get { return m_oDocument; }
 		}
 
-		public String Filename
+		internal String Filename
 		{
 			get
 			{
@@ -4354,12 +4354,12 @@ namespace Dapple.KML
 			}
 		}
 
-		public Dictionary<String, KMLObject> NamedElements
+		internal Dictionary<String, KMLObject> NamedElements
 		{
 			get { return m_oNamedElements; }
 		}
 
-		public String Version
+		internal String Version
 		{
 			get { return m_strVersion; }
 		}
@@ -4369,7 +4369,7 @@ namespace Dapple.KML
 
 		#region Public Methods
 
-		public KMLStyleSelector GetStyle(String strStyleUrl)
+		internal KMLStyleSelector GetStyle(String strStyleUrl)
 		{
 			KMLStyleSelector result = Document.GetStyle(strStyleUrl);
 			if (result != null)

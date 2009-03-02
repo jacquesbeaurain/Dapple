@@ -7,7 +7,7 @@ namespace MWA.Progress
 	/// which indicate the progress of a long operation.
 	/// (See ProgressWindow for a typical implementation)
 	/// </summary>
-	public interface IProgressCallback
+	internal interface IProgressCallback
 	{
 		/// <summary>
 		/// Call this method from the worker thread to initialize

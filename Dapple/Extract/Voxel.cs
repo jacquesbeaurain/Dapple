@@ -11,7 +11,7 @@ namespace Dapple.Extract
    /// <summary>
    /// Set voxel download options
    /// </summary>
-   public partial class Voxel : DownloadOptions
+   internal partial class Voxel : DownloadOptions
    {
       #region Constants
       private readonly string MAP_EXT = ".map";
@@ -20,17 +20,17 @@ namespace Dapple.Extract
       /// <summary>
       /// Control where the resolution can be changed
       /// </summary>
-      public override bool ResolutionEnabled
+      internal override bool ResolutionEnabled
       {
          set { oResolution.Enabled = value; }
       }
 
-		public override bool OpenInMap
+		internal override bool OpenInMap
 		{
 			get { return true; }
 		}
 
-		public override ErrorProvider ErrorProvider
+		internal override ErrorProvider ErrorProvider
 		{
 			get
 			{
@@ -47,7 +47,7 @@ namespace Dapple.Extract
       /// Default constructor
       /// </summary>
       /// <param name="oDAPbuilder"></param>
-      public Voxel(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
+      internal Voxel(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder)
          : base(oDAPbuilder)
       {
          InitializeComponent();
@@ -62,7 +62,7 @@ namespace Dapple.Extract
       /// <summary>
       /// Set the default resolution
       /// </summary>
-      public override void SetDefaultResolution()
+      internal override void SetDefaultResolution()
       {
          double dMinX, dMaxX, dMinY, dMaxY;
          SortedList<double, int> oResolutionList;
@@ -77,7 +77,7 @@ namespace Dapple.Extract
          oResolution.Setup(strCoordinateSystem, dMinX, dMinY, dMaxX, dMaxY, oResolutionList, oX, oY, oZ);
       }
 
-      public override void SetNativeResolution()
+      internal override void SetNativeResolution()
       {
          oResolution.SetNativeResolution();
       }
@@ -89,7 +89,7 @@ namespace Dapple.Extract
       /// <param name="strDestFolder"></param>
       /// <param name="bDefaultResolution"></param>
       /// <returns></returns>
-		public override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
+		internal override ExtractSaveResult Save(System.Xml.XmlElement oDatasetElement, string strDestFolder, DownloadSettings.DownloadCoordinateSystem eCS)
       {
          ExtractSaveResult result = base.Save(oDatasetElement, strDestFolder, eCS);
 
@@ -108,7 +108,7 @@ namespace Dapple.Extract
 			return result;
       }
 
-		public override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
+		internal override DownloadOptions.DuplicateFileCheckResult CheckForDuplicateFiles(String szExtractDirectory, Form hExtractForm)
 		{
 			String szFilename = System.IO.Path.Combine(szExtractDirectory, System.IO.Path.ChangeExtension(tbFilename.Text, MAP_EXT));
 			if (System.IO.File.Exists(szFilename))

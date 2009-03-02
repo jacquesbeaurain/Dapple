@@ -40,7 +40,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Name displayed in layer manager
 		/// </summary>
-		public static string LayerName = "0 - Compass rose";
+		internal static string LayerName = "0 - Compass rose";
 
 		public RenderableObject Layer
 		{
@@ -104,12 +104,12 @@ namespace Murris.Plugins
 	/// <summary>
 	/// Compass
 	/// </summary>
-	public class CompassLayer : RenderableObject
+	internal class CompassLayer : RenderableObject
 	{
 		static string version = "0.5";
 		string settingsFileName = "Compass.ini";
 		string pluginPath;
-		public DrawArgs drawArgs;
+		internal DrawArgs drawArgs;
 		CustomVertex.PositionTextured[] borderVertices = new CustomVertex.PositionTextured[4];
 		Texture texture;
 		Rectangle spriteSize;
@@ -124,13 +124,13 @@ namespace Murris.Plugins
 		bool isInitializing = false;
 
 		// default texture bitmap
-		public string textureFileName = "Compass_Rose_Classic.png";
-		public string textureTiltFileName = "";
+		internal string textureFileName = "Compass_Rose_Classic.png";
+		internal string textureTiltFileName = "";
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
+		internal CompassLayer(string LayerName, string pluginPath, WorldWindow worldWindow)
 			: base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = pluginPath;
@@ -142,7 +142,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Read saved settings from ini file
 		/// </summary>
-		public void ReadSettings()
+		internal void ReadSettings()
 		{
 			string line = "";
 			try
@@ -171,7 +171,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Save settings in ini file
 		/// </summary>
-		public void SaveSettings()
+		internal void SaveSettings()
 		{
 			string line;
 
@@ -557,7 +557,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
-		public new void OnPropertiesClick(object sender, EventArgs e)
+		internal new void OnPropertiesClick(object sender, EventArgs e)
 		{
 			if (pDialog != null && !pDialog.IsDisposed)
 				// Already open
@@ -572,7 +572,7 @@ namespace Murris.Plugins
 		/// <summary>
 		/// Properties Dialog
 		/// </summary>
-		public class propertiesDialog : System.Windows.Forms.Form
+		internal class propertiesDialog : System.Windows.Forms.Form
 		{
 			private System.Windows.Forms.Label lblTexture;
 			private System.Windows.Forms.ComboBox cboTexture;
@@ -584,7 +584,7 @@ namespace Murris.Plugins
 			private System.Windows.Forms.Button btnCancel;
 			private CompassLayer layer;
 
-			public propertiesDialog(CompassLayer layer)
+			internal propertiesDialog(CompassLayer layer)
 			{
 				InitializeComponent();
 				//this.Icon = WorldWind.PluginEngine.Plugin.Icon;
@@ -768,11 +768,11 @@ namespace Murris.Plugins
 			float x1, y1, x2, y2;
 			string DecSep = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
-			public string debugMsg = "";
-			public Point min = new System.Drawing.Point(int.MaxValue, int.MaxValue);
-			public Point max = new System.Drawing.Point(int.MinValue, int.MinValue);
+			internal string debugMsg = "";
+			internal Point min = new System.Drawing.Point(int.MaxValue, int.MaxValue);
+			internal Point max = new System.Drawing.Point(int.MinValue, int.MinValue);
 
-			public SvgShape(XmlTextReader reader)
+			internal SvgShape(XmlTextReader reader)
 			{
 				// Catch color
 				if (reader["stroke"] != null)
@@ -944,7 +944,7 @@ namespace Murris.Plugins
 
 			}
 
-			public void Render(DrawArgs drawArgs)
+			internal void Render(DrawArgs drawArgs)
 			{
 				drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
 				drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;

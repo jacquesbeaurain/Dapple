@@ -10,15 +10,15 @@ using System.Runtime.InteropServices;
 
 namespace WorldWind
 {
-    public class KMLDialog : Form
+    internal class KMLDialog : Form
     {
         private System.Windows.Forms.Label closeButton;
         private WebBrowser myBrowser;
-        public bool isVisible = false;
-        public bool HTMLIsSet = false;
+        internal bool isVisible = false;
+        internal bool HTMLIsSet = false;
         private String HTML;
 
-        public KMLDialog()
+        internal KMLDialog()
         {
             InitializeComponent();           
             isVisible = true;
@@ -38,7 +38,7 @@ namespace WorldWind
             }
         }
 
-        public void SetHTML(String Html){
+        internal void SetHTML(String Html){
 
             HTMLIsSet = true;
 

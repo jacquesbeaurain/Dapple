@@ -12,16 +12,16 @@ using Geosoft.GX.DAPGetData;
 
 namespace Dapple
 {
-   public partial class AddDAP : Form
+   internal partial class AddDAP : Form
    {
 		private static string DEFAULT_TEXT = "http://";
 
-      public AddDAP()
+      internal AddDAP()
       {
          InitializeComponent();
       }
 
-      public string Url
+      internal string Url
       {
          get
          {

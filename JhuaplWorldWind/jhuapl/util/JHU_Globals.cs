@@ -94,7 +94,7 @@ namespace jhuapl.util
 		/// Table of all icon textures
 		/// </summary>
 		protected static Hashtable m_textures;
-		public Hashtable Textures
+		internal Hashtable Textures
 		{
 			get { return m_textures; }
 		}
@@ -112,7 +112,7 @@ namespace jhuapl.util
 		/// The description form that contains the description info for mouseovers
 		/// </summary>
 		protected static JHU_FormWidget m_infoForm;		
-		public JHU_FormWidget InfoForm
+		internal JHU_FormWidget InfoForm
 		{
 			get { return m_infoForm; }
 		}		
@@ -121,7 +121,7 @@ namespace jhuapl.util
 		/// The widgets that holds information about an object sorted by general type.
 		/// </summary>
 		protected static JHU_SimpleTreeNodeWidget m_infoTree;
-		public JHU_SimpleTreeNodeWidget InfoTree
+		internal JHU_SimpleTreeNodeWidget InfoTree
 		{
 			get { return m_infoTree; }
 		}
@@ -136,7 +136,7 @@ namespace jhuapl.util
 		/// The general info label that shows the current mouseover target's general info
 		/// </summary>
 		protected static JHU_LabelWidget m_generalInfoLabel;
-		public JHU_LabelWidget GeneralInfoLabel
+		internal JHU_LabelWidget GeneralInfoLabel
 		{
 			get { return m_generalInfoLabel; }
 		}
@@ -145,7 +145,7 @@ namespace jhuapl.util
 		/// The description label that shows the current mouseover target
 		/// </summary>
 		protected static JHU_LabelWidget m_detailedInfoLabel;
-		public JHU_LabelWidget DetailedInfoLabel
+		internal JHU_LabelWidget DetailedInfoLabel
 		{
 			get { return m_detailedInfoLabel; }
 		}
@@ -154,7 +154,7 @@ namespace jhuapl.util
 		/// The description label that shows the current mouseover target
 		/// </summary>
 		protected static JHU_LabelWidget m_descriptionLabel;
-		public JHU_LabelWidget DescriptionLabel
+		internal JHU_LabelWidget DescriptionLabel
 		{
 			get { return m_descriptionLabel; }
 		}
@@ -171,7 +171,7 @@ namespace jhuapl.util
 		protected static JHU_ButtonWidget m_zoomBldgWidget;
 		protected static JHU_ButtonWidget m_resetWidget;
 
-		public JHU_FormWidget NavigatorForm
+		internal JHU_FormWidget NavigatorForm
 		{
 			get { return m_controlForm; }
 		}
@@ -376,7 +376,7 @@ namespace jhuapl.util
 			}
 		}
 
-		public static void PerformZoomOut(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformZoomOut(System.Windows.Forms.MouseEventArgs e)
 		{
 			DrawArgs drawArgs = JHU_Globals.getInstance().WorldWindow.DrawArgs;
 
@@ -389,7 +389,7 @@ namespace jhuapl.util
 			JHU_Log.Write(1, "NAV", drawArgs.WorldCamera.Latitude.Degrees, drawArgs.WorldCamera.Longitude.Degrees, alt, "", "Zoom Out Button Pressed");
 		}
 
-		public static void PerformZoomIn(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformZoomIn(System.Windows.Forms.MouseEventArgs e)
 		{
 			DrawArgs drawArgs = JHU_Globals.getInstance().WorldWindow.DrawArgs;
 
@@ -402,42 +402,42 @@ namespace jhuapl.util
 			JHU_Log.Write(1, "NAV", drawArgs.WorldCamera.Latitude.Degrees, drawArgs.WorldCamera.Longitude.Degrees, alt, "", "Zoom In Button Pressed");
 		}
 
-		public static void PerformWorldZoom(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformWorldZoom(System.Windows.Forms.MouseEventArgs e)
 		{
 			JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude = 12500000;
 
 			JHU_Log.Write(1, "NAV", JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude, "", "World Zoom Button Pressed");
 		}
 
-		public static void PerformCountryZoom(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformCountryZoom(System.Windows.Forms.MouseEventArgs e)
 		{
 			JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude = 3500000;
 
 			JHU_Log.Write(1, "NAV", JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude, "", "Country Zoom Button Pressed");
 		}		
 
-		public static void PerformStateZoom(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformStateZoom(System.Windows.Forms.MouseEventArgs e)
 		{
 			JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude = 300000;
 
 			JHU_Log.Write(1, "NAV", JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude, "", "State Zoom Button Pressed");
 		}
 
-		public static void PerformCityZoom(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformCityZoom(System.Windows.Forms.MouseEventArgs e)
 		{
 			JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude = 30000;
 
 			JHU_Log.Write(1, "NAV", JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude, "", "City Zoom Button Pressed");
 		}
 
-		public static void PerformBuildingZoom(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformBuildingZoom(System.Windows.Forms.MouseEventArgs e)
 		{
 			JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude = 1000;
 
 			JHU_Log.Write(1, "NAV", JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees, JHU_Globals.getInstance().WorldWindow.DrawArgs.WorldCamera.Altitude, "", "Building Zoom Button Pressed");
 		}
 
-		public static void PerformReset(System.Windows.Forms.MouseEventArgs e)
+		internal static void PerformReset(System.Windows.Forms.MouseEventArgs e)
 		{
 			DrawArgs drawArgs = JHU_Globals.getInstance().WorldWindow.DrawArgs;
 

@@ -14,7 +14,7 @@ namespace WorldWind.DataSource
 	/// <summary>
 	/// Simple window showing all http downloads and progress.
 	/// </summary>
-	public class QueueMonitor : System.Windows.Forms.Form
+	internal class QueueMonitor : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.ListView listView;
 		private System.Windows.Forms.ColumnHeader columnHeaderStartTime;
@@ -65,7 +65,7 @@ namespace WorldWind.DataSource
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProgressMonitor"/> class.
 		/// </summary>
-		public QueueMonitor()
+		internal QueueMonitor()
 		{
 			//
 			// Required for Windows Form Designer support

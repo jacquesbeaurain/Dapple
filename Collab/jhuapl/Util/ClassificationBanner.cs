@@ -55,9 +55,9 @@ namespace Collab.jhuapl.Util
 	/// <summary>
 	/// This is the classification banner for CollabSpace.
 	/// </summary>
-	public class ClassificationBanner : RenderableObject
+	internal class ClassificationBanner : RenderableObject
 	{
-		public enum ClassificationLevel
+		internal enum ClassificationLevel
 		{
 			UNCLASS,
 			CONFIDENTIAL,
@@ -65,7 +65,7 @@ namespace Collab.jhuapl.Util
 			TOPSECRET
 		}
 
-		public string[] ClassificationString =
+		internal string[] ClassificationString =
 		{
 			"UNCLASSIFIED",
 			"CONFIDENTIAL",
@@ -73,7 +73,7 @@ namespace Collab.jhuapl.Util
 			"TOP SECRET"
 		};
 
-		public int[] ClassificationColor = 
+		internal int[] ClassificationColor = 
 		{
 			Color.PaleGreen.ToArgb(),
 			Color.Turquoise.ToArgb(),
@@ -88,16 +88,16 @@ namespace Collab.jhuapl.Util
 
 		#endregion
 
-		#region public members
+		#region Public members
 
-		public ClassificationLevel Classification;
+		internal ClassificationLevel Classification;
 
 		#endregion
 
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public ClassificationBanner()
+		internal ClassificationBanner()
 			: base("Banner", Point3d.Empty, Quaternion4d.Identity)
 		{
 			// draw with icons (on top)

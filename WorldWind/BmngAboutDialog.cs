@@ -9,7 +9,7 @@ namespace NASA.Plugins
 	/// <summary>
 	/// Summary description for BmngAboutDialog.
 	/// </summary>
-	public class BmngAboutDialog : System.Windows.Forms.Form
+	internal class BmngAboutDialog : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label label1;
@@ -25,7 +25,7 @@ namespace NASA.Plugins
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public BmngAboutDialog()
+		internal BmngAboutDialog()
 		{
 			//
 			// Required for Windows Form Designer support

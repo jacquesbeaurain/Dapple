@@ -8,7 +8,7 @@ namespace WorldWind
 	/// Summary description for BinaryTriangleTree.
 	/// </summary>
 	// BinaryTriangleTree class - handle mesh optimization (PM)
-	public class BinaryTriangleTree
+	internal class BinaryTriangleTree
 	{
 		CustomVertex.PositionTextured[] _elevatedVertices;
 		int _vertexDensity;
@@ -21,10 +21,10 @@ namespace WorldWind
 		int _terrainFaceCount;
 		short nw, sw, ne, se;
 
-		public int TriangleCount;
-		public short[] Indices;
+		internal int TriangleCount;
+		internal short[] Indices;
 		
-		public BinaryTriangleTree(
+		internal BinaryTriangleTree(
 			CustomVertex.PositionTextured[] ElevatedVertices, 
 			int VertexDensity,  // must be a power of 2
 			int Margin, 
@@ -43,7 +43,7 @@ namespace WorldWind
 			
 		}
 
-		public void BuildTree(int MaxVariance)
+		internal void BuildTree(int MaxVariance)
 		{
 			this._maxVariance = MaxVariance;
 			this._treeList = new BinaryTriangle[this._vertexDensity * this._vertexDensity * 8]; // find real formula ! sum(Math.Pow(2,x), x=1, x=n+1)
@@ -205,7 +205,7 @@ namespace WorldWind
 			return MaxVar;
 		}
 
-		public void BuildIndices()
+		internal void BuildIndices()
 		{
 			// how many faces total with walls/margin ?
 			int MarginFaces = (this._margin + this._vertexDensity) * this._margin * 2 * 4;
@@ -354,13 +354,13 @@ namespace WorldWind
 		}
 	}
 
-	public class BinaryTriangle
+	internal class BinaryTriangle
 	{
-		public short i1, i2, i3; // indices to _elevatedVertices
-		public short lc, rc;	 // indices to left and right childs in _treeList
-		public short ln, rn, bn; // indices of left, right and bottom neighbours in _treeList
+		internal short i1, i2, i3; // indices to _elevatedVertices
+		internal short lc, rc;	 // indices to left and right childs in _treeList
+		internal short ln, rn, bn; // indices of left, right and bottom neighbours in _treeList
 
-		public BinaryTriangle(short vertice1, short vertice2, short vertice3)
+		internal BinaryTriangle(short vertice1, short vertice2, short vertice3)
 		{
 			this.i1 = vertice1;
 			this.i2 = vertice2;

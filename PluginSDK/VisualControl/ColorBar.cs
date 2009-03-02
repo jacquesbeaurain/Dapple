@@ -20,7 +20,7 @@ namespace WorldWind.VisualControl
 		/// Initializes a new instance of the <see cref= "T:WorldWind.VisualControl.Colorbar"/> class.
 		/// </summary>
 		/// <param name="parent"></param>
-		public Colorbar( Form parent )
+		internal Colorbar( Form parent )
 		{
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint | 
 				ControlStyles.Opaque |
@@ -42,7 +42,7 @@ namespace WorldWind.VisualControl
 		/// <summary>
 		/// Loads a bitmap from the web or a file and displays.
 		/// </summary>
-		public void LoadImage( string url )
+		internal void LoadImage( string url )
 		{
 			if(url != null && !url.ToLower().StartsWith("http://"))
 			{
@@ -63,7 +63,7 @@ namespace WorldWind.VisualControl
 		/// <summary>
 		/// Loads a bitmap from the web in background and displays.
 		/// </summary>
-		public void LoadImageInBackground( string url )
+		internal void LoadImageInBackground( string url )
 		{
 			if(url != null && !url.ToLower().StartsWith("http://"))
 			{
@@ -109,7 +109,7 @@ namespace WorldWind.VisualControl
 		/// <summary>
 		/// The image displayed in the form.
 		/// </summary>
-		public Image Image
+		internal Image Image
 		{
 			get
 			{

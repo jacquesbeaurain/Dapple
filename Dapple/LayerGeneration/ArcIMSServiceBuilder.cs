@@ -8,8 +8,8 @@ namespace Dapple.LayerGeneration
    /*class ArcIMSServiceBuilder : BuilderDirectory
    {
       #region Delegates
-      public delegate void LoadingCompletedCallbackHandler(ArcIMSServiceBuilder builder);
-      public delegate void LoadingFailedCallbackHandler(ArcIMSServiceBuilder builder, string message);
+      internal delegate void LoadingCompletedCallbackHandler(ArcIMSServiceBuilder builder);
+      internal delegate void LoadingFailedCallbackHandler(ArcIMSServiceBuilder builder, string message);
       #endregion
 
       #region Constants
@@ -22,10 +22,10 @@ namespace Dapple.LayerGeneration
       private System.Threading.Semaphore sem = new System.Threading.Semaphore(1, 1, "builderList");
       private String m_strServiceName;
 
-      public LoadingCompletedCallbackHandler LoadingCompleted = null;
-      public LoadingFailedCallbackHandler LoadingFailed = null;
+      internal LoadingCompletedCallbackHandler LoadingCompleted = null;
+      internal LoadingFailedCallbackHandler LoadingFailed = null;
 
-      public ArcIMSServiceBuilder(Uri serverUri,WorldWindow oWorldWindow, IBuilder parent)
+      internal ArcIMSServiceBuilder(Uri serverUri,WorldWindow oWorldWindow, IBuilder parent)
          : base("Accessing...", parent, false)
       {
       }

@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Dapple.LayerGeneration
 {
-   public class BuilderDirectory : IBuilder
+   internal class BuilderDirectory : IBuilder
    {
       private string m_strName;
       private IBuilder m_Parent;
@@ -19,7 +19,7 @@ namespace Dapple.LayerGeneration
       protected List<BuilderDirectory> m_colSublist;
       protected byte m_bOpacity = 255;
 
-      public BuilderDirectory(string name, IBuilder parent, bool removable)
+      internal BuilderDirectory(string name, IBuilder parent, bool removable)
       {
          m_strName = name;
          m_Parent = parent;
@@ -29,7 +29,7 @@ namespace Dapple.LayerGeneration
       }
 
       [System.ComponentModel.Browsable(false)]
-      public List<LayerBuilder> LayerBuilders
+      internal List<LayerBuilder> LayerBuilders
       {
          get
          {
@@ -38,7 +38,7 @@ namespace Dapple.LayerGeneration
       }
 
       [System.ComponentModel.Browsable(false)]
-      public bool Removable
+      internal bool Removable
       {
          get
          {
@@ -47,7 +47,7 @@ namespace Dapple.LayerGeneration
       }
       
       [System.ComponentModel.Browsable(false)]
-      public List<BuilderDirectory> SubList
+      internal List<BuilderDirectory> SubList
       {
          get
          {
@@ -57,53 +57,53 @@ namespace Dapple.LayerGeneration
 
       #region IBuilder Members
 
-      public string Title
+		public string Title
       {
          get { return m_strName; }
       }
 
-      public void ChangeName(string strNewName)
+      internal void ChangeName(string strNewName)
       {
          m_strName = strNewName;
       }
 
       [System.ComponentModel.Browsable(false)]
-      public bool IsChanged
+		public bool IsChanged
       {
          get { return false; }
       }
 
       [System.ComponentModel.Browsable(false)]
-      public IBuilder Parent
+		public IBuilder Parent
       {
          get { return m_Parent; }
       }
 
       [System.ComponentModel.Browsable(false)]
-      public virtual string DisplayIconKey
+		public virtual string DisplayIconKey
       {
          get { return "folder"; }
       }
 
-      public event BuilderChangedHandler BuilderChanged; 
+      internal event BuilderChangedHandler BuilderChanged;
 
-      public void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
+		public void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
       {
          BuilderChanged += handler;
       }
 
-      public virtual bool SupportsMetaData
+		public virtual bool SupportsMetaData
       {
          get { return false; }
       }
 
       [System.ComponentModel.Browsable(false)]
-      public virtual string StyleSheetName
+		public virtual string StyleSheetName
       {
          get { return null; }
       }
 
-      public virtual XmlNode GetMetaData(XmlDocument oDoc)
+		public virtual XmlNode GetMetaData(XmlDocument oDoc)
       {
          return null;
       }
@@ -129,7 +129,7 @@ namespace Dapple.LayerGeneration
          }
       }
 
-      public int iGetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText)
+      internal int iGetLayerCount(bool bInterSect, WorldWind.GeographicBoundingBox extents, string strText)
       {
          int iCount = 0;
          if (strText == null) strText = String.Empty;
@@ -141,12 +141,12 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      public void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
+		public void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler)
       {
          BuilderChanged -= handler;
       }
 
-      public LayerBuilder GetLayerBuilderByName(String layerName)
+      internal LayerBuilder GetLayerBuilderByName(String layerName)
       {
          foreach (LayerBuilder b in m_colChildren)
          {
@@ -162,7 +162,7 @@ namespace Dapple.LayerGeneration
 
       #region ICloneable Members
 
-      public virtual object Clone()
+		public virtual object Clone()
       {
          BuilderDirectory dir = new BuilderDirectory(m_strName, m_Parent, m_Removable);
          foreach (IBuilder builder in SubList)
@@ -181,7 +181,7 @@ namespace Dapple.LayerGeneration
       #region IBuilder Members
 
 
-      public virtual TreeNode[] getChildTreeNodes()
+		public virtual TreeNode[] getChildTreeNodes()
       {
          TreeNode[] result = new TreeNode[m_colChildren.Count + m_colSublist.Count];
          int index = 0;
@@ -206,7 +206,7 @@ namespace Dapple.LayerGeneration
       /// Get all of the LayerBuilders throughout the tree.
       /// </summary>
       /// <param name="result">The ArrayList to fill with the LayerBuilders.</param>
-      public void getLayerBuilders(ref List<LayerBuilder> result)
+      internal void getLayerBuilders(ref List<LayerBuilder> result)
       {
          foreach (LayerBuilder oBuilder in m_colChildren)
             result.Add(oBuilder);
@@ -215,12 +215,12 @@ namespace Dapple.LayerGeneration
       }
    }
 
-   public abstract class ServerBuilder : AsyncBuilder
+   internal abstract class ServerBuilder : AsyncBuilder
    {
       protected ServerUri m_oUri;
       protected bool m_blEnabled = true;
 
-      public ServerBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
+      internal ServerBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
          : base(name, parent, oUri, blEnabled)
       {
          m_oUri = oUri;
@@ -234,7 +234,7 @@ namespace Dapple.LayerGeneration
       /// If this server is still loading, the only child is a temporary node.
       /// </remarks>
       /// <returns></returns>
-      public override TreeNode[] getChildTreeNodes()
+		public override TreeNode[] getChildTreeNodes()
       {
          if (!m_blEnabled)
          {
@@ -251,7 +251,7 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
       /// <param name="oTree">The ServerTree which contains oParent.</param>
-      public override void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
+      internal override void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
       {
          if (m_blEnabled == false)
          {
@@ -268,14 +268,14 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// The URL of this server.
       /// </summary>
-      public ServerUri Uri
+      internal ServerUri Uri
       {
          get { return m_oUri; }
       }
 
       [System.ComponentModel.Browsable(true)]
       [System.ComponentModel.ReadOnly(true)]
-      public bool Enabled
+      internal bool Enabled
       {
          get { return m_blEnabled; }
          set
@@ -291,13 +291,13 @@ namespace Dapple.LayerGeneration
       protected abstract void SetEnabled(bool blValue);
 
       [System.ComponentModel.Browsable(false)]
-      public abstract override System.Drawing.Icon Icon
+      internal abstract override System.Drawing.Icon Icon
       {
          get;
       }
 
       [System.ComponentModel.Browsable(false)]
-      public override string DisplayIconKey
+		public override string DisplayIconKey
       {
          get
          {
@@ -317,13 +317,13 @@ namespace Dapple.LayerGeneration
    /// A BuilderDirectory representing a builder that has asynchronous loading and thus may
    /// not be loaded immediately upon addition to a ServerTree.
    /// </summary>
-   public abstract class AsyncBuilder : BuilderDirectory
+   internal abstract class AsyncBuilder : BuilderDirectory
    {
       protected string m_strErrorMessage = String.Empty;
       protected bool m_blnIsLoading = true;
       private ManualResetEvent m_oLoadBlock = new ManualResetEvent(false);
       
-      public AsyncBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
+      internal AsyncBuilder(string name, IBuilder parent, ServerUri oUri, bool blEnabled)
          :base(name, parent, true)
       {
       }
@@ -333,7 +333,7 @@ namespace Dapple.LayerGeneration
       /// Description of the error that occurred while loading the server.
       /// </summary>
       [System.ComponentModel.Browsable(false)]
-      public String ErrorMessage
+      internal String ErrorMessage
       {
          get { return m_strErrorMessage; }
       }
@@ -342,7 +342,7 @@ namespace Dapple.LayerGeneration
       /// Whether an error occurred while accessing this server for its service information.
       /// </summary>
       [System.ComponentModel.Browsable(false)]
-      public bool LoadingErrorOccurred
+      internal bool LoadingErrorOccurred
       {
          get { return !m_strErrorMessage.Equals(String.Empty); }
       }
@@ -351,7 +351,7 @@ namespace Dapple.LayerGeneration
       /// Whether the server loaded successfully.  Eqivalent to saying !IsLoading && !LoadingErrorOccurred.
       /// </summary>
       [System.ComponentModel.Browsable(false)]
-      public bool IsLoadedSuccessfully
+      internal bool IsLoadedSuccessfully
       {
          get { return !IsLoading && !LoadingErrorOccurred; }
       }
@@ -360,13 +360,13 @@ namespace Dapple.LayerGeneration
       /// Whether the server is loading, or loading has been completed.
       /// </summary>
       [System.ComponentModel.Browsable(false)]
-      public bool IsLoading
+      internal bool IsLoading
       {
          get { return m_blnIsLoading; }
       }
 
       [System.ComponentModel.Browsable(false)]
-      public override string DisplayIconKey
+		public override string DisplayIconKey
       {
          get
          {
@@ -385,7 +385,7 @@ namespace Dapple.LayerGeneration
       /// If this server is still loading, the only child is a temporary node.
       /// </remarks>
       /// <returns></returns>
-      public override TreeNode[] getChildTreeNodes()
+		public override TreeNode[] getChildTreeNodes()
       {
          if (IsLoading)
          {
@@ -417,7 +417,7 @@ namespace Dapple.LayerGeneration
       /// </summary>
       /// <param name="oParent">The TreeNode whose tag is this ServerBuilder.</param>
       /// <param name="oTree">The ServerTree which contains oParent.</param>
-      public virtual void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
+      internal virtual void updateTreeNode(TreeNode oParent, bool blnAOIFilter, GeographicBoundingBox oAOI, String strSearch)
       {
          if (IsLoading)
          {
@@ -440,7 +440,7 @@ namespace Dapple.LayerGeneration
       }
 
       [System.ComponentModel.Browsable(false)]
-      public abstract System.Drawing.Icon Icon
+      internal abstract System.Drawing.Icon Icon
       {
          get;
       }
@@ -451,7 +451,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Call when this server has been loaded successfully.
       /// </summary>
-      public void SetLoadSuccessful()
+      internal void SetLoadSuccessful()
       {
          m_blnIsLoading = false;
          m_strErrorMessage = String.Empty;
@@ -462,7 +462,7 @@ namespace Dapple.LayerGeneration
       /// Call when loading this server fails.
       /// </summary>
       /// <param name="strErrorMessage"></param>
-      public void SetLoadFailed(String strErrorMessage)
+      internal void SetLoadFailed(String strErrorMessage)
       {
          m_blnIsLoading = false;
          m_strErrorMessage = strErrorMessage;
@@ -472,7 +472,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Call to reset the loaded state of this server.
       /// </summary>
-      public void SetUnloaded()
+      internal void SetUnloaded()
       {
          m_blnIsLoading = true;
          m_strErrorMessage = String.Empty;
@@ -486,7 +486,7 @@ namespace Dapple.LayerGeneration
       /// <summary>
       /// Block until this server has loaded (successfully or not).
       /// </summary>
-      public void WaitUntilLoaded()
+      internal void WaitUntilLoaded()
       {
          m_oLoadBlock.WaitOne();
       }

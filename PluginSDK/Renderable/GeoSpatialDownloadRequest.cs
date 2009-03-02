@@ -150,9 +150,9 @@ namespace WorldWind.Renderable
 
 	public class GeoSpatialDownloadRequest : IDisposable
 	{
-		public float ProgressPercent;
-		public int DownloadPos;
-		public int DownloadTotal;
+		internal float ProgressPercent;
+		internal int DownloadPos;
+		internal int DownloadTotal;
 		protected WebDownload download;
 		protected string m_localFilePath;
 		protected string m_url;
@@ -174,7 +174,7 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Whether the request is currently being downloaded
 		/// </summary>
-		public bool IsDownloading
+		internal bool IsDownloading
 		{
 			get
 			{
@@ -182,7 +182,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public bool IsComplete
+		internal bool IsComplete
 		{
 			get
 			{
@@ -192,11 +192,11 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        public string LocalFilePath
+        internal string LocalFilePath
         {
             get { return m_localFilePath; }
         }
-		public IGeoSpatialDownloadTile Tile
+		  public IGeoSpatialDownloadTile Tile
 		{
 			get
 			{
@@ -300,7 +300,7 @@ namespace WorldWind.Renderable
 			ProgressPercent = (float)pos / total;
 		}
 
-		public virtual void Cancel()
+		internal virtual void Cancel()
 		{
 			if (download != null)
 				download.Cancel();

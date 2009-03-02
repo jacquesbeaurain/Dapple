@@ -2,7 +2,7 @@ using System;
 
 namespace WorldWind
 {
-	public enum AltitudeMode
+	internal enum AltitudeMode
 	{
 		ClampedToGround,
 		RelativeToGround,

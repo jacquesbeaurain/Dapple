@@ -9,7 +9,7 @@ namespace WorldWind.Renderable
 	/// <summary>
 	/// Summary description for PathList.
 	/// </summary>
-	public class PathList : RenderableObjectList
+	internal class PathList : RenderableObjectList
 	{
 		BinaryReader dataArchiveReader = null;
 
@@ -32,7 +32,7 @@ namespace WorldWind.Renderable
 		/// <param name="altitude"></param>
 		/// <param name="color"></param>
 		/// <param name="terrainAccessor"></param>
-		public PathList(
+		internal PathList(
 			string name,
 			World parentWorld,
 			double minDisplayAltitude,
@@ -132,7 +132,7 @@ namespace WorldWind.Renderable
 		}
 
 
-		public static void CreateArchiveFromDirectory(string directoryPath)
+		internal static void CreateArchiveFromDirectory(string directoryPath)
 		{
 			DirectoryInfo inDir = new DirectoryInfo(directoryPath);
 

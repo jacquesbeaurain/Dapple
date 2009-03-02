@@ -6,7 +6,7 @@ namespace Geosoft.DotNetTools.ErrorLogger
    /// <summary>
 	/// Log errors to a file
 	/// </summary>
-	public class ErrorLogger : IDisposable
+	internal class ErrorLogger : IDisposable
 	{
       /// <summary>
       /// Name of log file
@@ -22,7 +22,7 @@ namespace Geosoft.DotNetTools.ErrorLogger
       /// <summary>
       /// Get or set the filename 
       /// </summary>
-      public string FileName
+      internal string FileName
       {
          get { return m_strFileName; }
          set { m_strFileName = value; }
@@ -35,7 +35,7 @@ namespace Geosoft.DotNetTools.ErrorLogger
       /// </summary>
       /// <param name="strFileName">
       /// </param>
-      public ErrorLogger(string strFileName)
+      internal ErrorLogger(string strFileName)
       {
          m_strFileName = strFileName;
 
@@ -55,7 +55,7 @@ namespace Geosoft.DotNetTools.ErrorLogger
       /// Write out log message
       /// </summary>
       /// <param name="strMessage"></param>
-      public void Write(string strMessage)
+      internal void Write(string strMessage)
       {
          try
          {
@@ -74,7 +74,7 @@ namespace Geosoft.DotNetTools.ErrorLogger
       /// <summary>
       /// Dispose of any resources
       /// </summary>
-      public void Dispose()
+		public void Dispose()
       {
          Disposing();
          if (m_hStream != null) 

@@ -30,7 +30,7 @@ using NewServerTree;
 
 namespace Dapple
 {
-	public partial class MainForm : MainApplication
+	internal partial class MainForm : MainApplication
 	{
 		#region Win32 DLLImports
 
@@ -39,10 +39,10 @@ namespace Dapple
 
 		private struct RECT
 		{
-			public int left;
-			public int top;
-			public int right;
-			public int bottom;
+			internal int left;
+			internal int top;
+			internal int right;
+			internal int bottom;
 
 			public static implicit operator Rectangle(RECT rect)
 			{
@@ -88,34 +88,34 @@ namespace Dapple
 		/// Called when this control selects a layer to tell others to load Metadata for it.
 		/// </summary>
 		/// <param name="?"></param>
-		public delegate void ViewMetadataHandler(IBuilder oBuilder);
+		internal delegate void ViewMetadataHandler(IBuilder oBuilder);
 
 		#endregion
 
 		#region Constants
 
-		public const int MAX_MRU_TERMS = 8;
-		public const int DOWNLOAD_TIMEOUT = 30000;
-		public const string ViewExt = ".dapple";
-		public const string FavouriteServerExt = ".dapple_serverlist";
-		public const string LastView = "lastview" + ViewExt;
-		public const string DefaultView = "default" + ViewExt;
-		public const string ViewFileDescr = "Dapple View";
-		public const string LinkFileDescr = "Dapple Link";
-		public const string WebsiteUrl = "http://dapple.geosoft.com/";
-		public const string VersionFile = "version.txt";
-		public const string LicenseWebsiteUrl = "http://dapple.geosoft.com/license.asp";
-		public const string CreditsWebsiteUrl = "http://dapple.geosoft.com/credits.asp";
-		public const string ReleaseNotesWebsiteUrl = "http://dapple.geosoft.com/releasenotes.asp";
-		public const string WebsiteHelpUrl = "http://dapple.geosoft.com/help/";
-		public const string WebsiteForumsHelpUrl = "https://dappleforums.geosoft.com/";
-		public const string WMSWebsiteHelpUrl = "http://dapple.geosoft.com/help/wms.asp";
-		public const string DAPWebsiteHelpUrl = "http://dapple.geosoft.com/help/dap.asp";
-		public const string NEW_SERVER_GATEWAY = "AddNewServer.aspx";
-		public const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
-		public const string NO_SEARCH = "--- Enter keyword(s) ---";
-		public static readonly UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
-		public static readonly string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
+		internal const int MAX_MRU_TERMS = 8;
+		internal const int DOWNLOAD_TIMEOUT = 30000;
+		internal const string ViewExt = ".dapple";
+		internal const string FavouriteServerExt = ".dapple_serverlist";
+		internal const string LastView = "lastview" + ViewExt;
+		internal const string DefaultView = "default" + ViewExt;
+		internal const string ViewFileDescr = "Dapple View";
+		internal const string LinkFileDescr = "Dapple Link";
+		internal const string WebsiteUrl = "http://dapple.geosoft.com/";
+		internal const string VersionFile = "version.txt";
+		internal const string LicenseWebsiteUrl = "http://dapple.geosoft.com/license.asp";
+		internal const string CreditsWebsiteUrl = "http://dapple.geosoft.com/credits.asp";
+		internal const string ReleaseNotesWebsiteUrl = "http://dapple.geosoft.com/releasenotes.asp";
+		internal const string WebsiteHelpUrl = "http://dapple.geosoft.com/help/";
+		internal const string WebsiteForumsHelpUrl = "https://dappleforums.geosoft.com/";
+		internal const string WMSWebsiteHelpUrl = "http://dapple.geosoft.com/help/wms.asp";
+		internal const string DAPWebsiteHelpUrl = "http://dapple.geosoft.com/help/dap.asp";
+		internal const string NEW_SERVER_GATEWAY = "AddNewServer.aspx";
+		internal const string SEARCH_XML_GATEWAY = "SearchInterfaceXML.aspx";
+		internal const string NO_SEARCH = "--- Enter keyword(s) ---";
+		internal static readonly UInt32 OpenViewMessage = RegisterWindowMessageW("Dapple.OpenViewMessage");
+		internal static readonly string UserPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DappleData");
 
 		#endregion
 
@@ -128,7 +128,7 @@ namespace Dapple
 		private DappleSearchList c_oDappleSearch;
 		private static WorldWindow c_oWorldWindow;
 
-		public static WorldWindow WorldWindowSingleton
+		internal static WorldWindow WorldWindowSingleton
 		{
 			get { return c_oWorldWindow; }
 		}
@@ -173,7 +173,7 @@ namespace Dapple
 
 		#region Properties
 
-		public void SetSelectPersonalDAPOnStartup(bool blValue)
+		internal void SetSelectPersonalDAPOnStartup(bool blValue)
 		{
 			m_blSelectPersonalDAP = blValue;
 		}
@@ -194,17 +194,17 @@ namespace Dapple
 			get { return m_oMontajRemoteInterface != null; }
 		}
 
-		public static bool IsRunningAsMapinfoDapClient
+		internal static bool IsRunningAsMapinfoDapClient
 		{
 			get { return IsRunningAsDapClient && m_eClientType == Dapple.Extract.Options.Client.ClientType.MapInfo; }
 		}
 
-		public static ImageList DataTypeImageList
+		internal static ImageList DataTypeImageList
 		{
 			get { return m_oImageList; }
 		}
 
-		public static RemoteInterface MontajInterface
+		internal static RemoteInterface MontajInterface
 		{
 			get
 			{
@@ -215,7 +215,7 @@ namespace Dapple
 		/// <summary>
 		/// Get the client
 		/// </summary>
-		public static Dapple.Extract.Options.Client.ClientType Client
+		internal static Dapple.Extract.Options.Client.ClientType Client
 		{
 			get { return m_eClientType; }
 		}
@@ -223,7 +223,7 @@ namespace Dapple
 		/// <summary>
 		/// Get the open map area of interest
 		/// </summary>
-		public static GeographicBoundingBox MapAoi
+		internal static GeographicBoundingBox MapAoi
 		{
 			get { return m_oOMMapExtentNative; }
 		}
@@ -231,7 +231,7 @@ namespace Dapple
 		/// <summary>
 		/// Get the open map coordinate system
 		/// </summary>
-		public static string MapAoiCoordinateSystem
+		internal static string MapAoiCoordinateSystem
 		{
 			get { return m_strAoiCoordinateSystem; }
 		}
@@ -239,7 +239,7 @@ namespace Dapple
 		/// <summary>
 		/// Get the name of the open map
 		/// </summary>
-		public static string MapFileName
+		internal static string MapFileName
 		{
 			get { return m_strOpenMapFileName; }
 		}
@@ -299,7 +299,7 @@ namespace Dapple
 
 		#region Constructor
 
-		public MainForm(string strView,
+		internal MainForm(string strView,
 			string strGeoTiff, string strGeotiffName, bool bGeotiffTmp,
 			string strKMLFile, string strKMLName, bool blKMLTmp, 
 			string strLastView, Dapple.Extract.Options.Client.ClientType eClientType, RemoteInterface oMRI, GeographicBoundingBox oAoi, string strAoiCoordinateSystem, string strMapFileName)
@@ -850,9 +850,9 @@ namespace Dapple
 
 		private class ActiveDownload
 		{
-			public LayerBuilder builder; // null indicates Blue Marble
-			public bool bOn;
-			public bool bRead;
+			internal LayerBuilder builder; // null indicates Blue Marble
+			internal bool bOn;
+			internal bool bRead;
 		}
 
 		bool m_bDownloadUpdating;
@@ -1123,8 +1123,8 @@ namespace Dapple
 
 		#region Metadata displayer
 
-		public delegate void StringParamDelegate(String szString);
-		public delegate void LoadMetadataDelegate(IBuilder oBuilder);
+		internal delegate void StringParamDelegate(String szString);
+		internal delegate void LoadMetadataDelegate(IBuilder oBuilder);
 
 		private void DisplayMetadataMessage(String szMessage)
 		{
@@ -1234,7 +1234,7 @@ namespace Dapple
 			private Thread m_hThread;
 			private MainForm m_hOwner;
 
-			public MetadataDisplayThread(MainForm hOwner)
+			internal MetadataDisplayThread(MainForm hOwner)
 			{
 				m_hOwner = hOwner;
 
@@ -1243,7 +1243,7 @@ namespace Dapple
 				m_hThread.Start();
 			}
 
-			public void AddBuilder(IBuilder oBuilder)
+			internal void AddBuilder(IBuilder oBuilder)
 			{
 				lock (LOCK)
 				{
@@ -1252,7 +1252,7 @@ namespace Dapple
 				}
 			}
 
-			public void Abort()
+			internal void Abort()
 			{
 				m_hThread.Abort();
 			}
@@ -2411,7 +2411,7 @@ namespace Dapple
 		/// </summary>
 		/// <param name="strKey"></param>
 		/// <returns></returns>
-		public static int ImageListIndex(string strKey)
+		internal static int ImageListIndex(string strKey)
 		{
 			return m_oImageList.Images.IndexOfKey(strKey);
 		}
@@ -2421,7 +2421,7 @@ namespace Dapple
 		/// </summary>
 		/// <param name="strType"></param>
 		/// <returns></returns>
-		public static int ImageIndex(string strType)
+		internal static int ImageIndex(string strType)
 		{
 			switch (strType.ToLower())
 			{
@@ -2822,7 +2822,7 @@ namespace Dapple
 			}
 		}
 
-		public void AddLayerBuilder(LayerBuilder oLayer)
+		internal void AddLayerBuilder(LayerBuilder oLayer)
 		{
 			c_oLayerList.AddLayer(oLayer);
 
@@ -2852,17 +2852,17 @@ namespace Dapple
 
 		#region Add Servers
 
-		public void AddDAPServer()
+		internal void AddDAPServer()
 		{
 			m_oModel.AddDAPServer();
 		}
 
-		public void AddWMSServer()
+		internal void AddWMSServer()
 		{
 			m_oModel.AddWMSServer();
 		}
 
-		public void AddArcIMSServer()
+		internal void AddArcIMSServer()
 		{
 			m_oModel.AddArcIMSServer();
 		}
@@ -2873,7 +2873,7 @@ namespace Dapple
 		/// Try to open url in web browser
 		/// </summary>
 		/// <param name="url">The url to open in browser</param>
-		public static void BrowseTo(string url)
+		internal static void BrowseTo(string url)
 		{
 			try
 			{
@@ -2910,12 +2910,12 @@ namespace Dapple
 			}
 		}
 
-		public void CmdSaveHomeView()
+		internal void CmdSaveHomeView()
 		{
 			SaveCurrentView(HomeView.FullPath, Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), ".jpg"), String.Empty);
 		}
 
-		public void CmdLoadHomeView()
+		internal void CmdLoadHomeView()
 		{
 			OpenView(HomeView.FullPath, true, true);
 		}
@@ -3134,7 +3134,7 @@ namespace Dapple
 			c_miRemoveLayer.Enabled = c_oLayerList.RemoveAllowed;
 		}
 
-		public void CmdShowServerTree()
+		internal void CmdShowServerTree()
 		{
 			c_tcSearchViews.SelectedIndex = 0;
 		}

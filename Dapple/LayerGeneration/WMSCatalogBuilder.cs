@@ -17,7 +17,7 @@ using System.Collections;
 
 namespace Dapple.LayerGeneration
 {
-	public class WMSCatalogBuilder : BuilderDirectory
+	internal class WMSCatalogBuilder : BuilderDirectory
 	{
 		#region Constants
 		protected const string CATALOG_CACHE = "WMS Catalog Cache";
@@ -28,9 +28,9 @@ namespace Dapple.LayerGeneration
 		private System.Collections.Hashtable m_oWMSListCache = new System.Collections.Hashtable(); //<WMSUri, WMSList>>
 		private int m_iDownloadIndex = 0;
 
-		public MethodInvoker LoadFinished = null;
+		internal MethodInvoker LoadFinished = null;
 
-		public WMSCatalogBuilder(String strName, WorldWindow worldWindow, IBuilder parent)
+		internal WMSCatalogBuilder(String strName, WorldWindow worldWindow, IBuilder parent)
 			: base(strName, parent, false)
 		{
 			m_WorldWindow = worldWindow;
@@ -41,7 +41,7 @@ namespace Dapple.LayerGeneration
 		/// </summary>
 		/// <param name="oUri">The URI of the server.</param>
 		/// <returns>A WMSServerBuilder for the server added.</returns>
-		public BuilderDirectory AddServer(WMSServerUri oUri, bool blEnabled)
+		internal BuilderDirectory AddServer(WMSServerUri oUri, bool blEnabled)
 		{
 			// create the cache directory
 			string savePath = Path.Combine(Path.Combine(MainApplication.Settings.CachePath, CATALOG_CACHE), oUri.ToCacheDirectory());
@@ -79,7 +79,7 @@ namespace Dapple.LayerGeneration
 			download.BackgroundDownloadFile();
 		}
 
-		public bool ContainsServer(WMSServerUri oUri)
+		internal bool ContainsServer(WMSServerUri oUri)
 		{
 			foreach (WMSServerBuilder iter in m_colSublist)
 			{
@@ -89,7 +89,7 @@ namespace Dapple.LayerGeneration
 			return false;
 		}
 
-		public WMSServerBuilder GetServer(WMSServerUri oUri)
+		internal WMSServerBuilder GetServer(WMSServerUri oUri)
 		{
 			foreach (WMSServerBuilder iter in m_colSublist)
 			{
@@ -99,7 +99,7 @@ namespace Dapple.LayerGeneration
 			return null;
 		}
 
-		public ArrayList GetServers()
+		internal ArrayList GetServers()
 		{
 			ArrayList result = new ArrayList();
 
@@ -112,7 +112,7 @@ namespace Dapple.LayerGeneration
 			return result;
 		}
 
-		public void UncacheServer(WMSServerUri oUri)
+		internal void UncacheServer(WMSServerUri oUri)
 		{
 			m_oWMSListCache.Remove(oUri);
 
@@ -126,7 +126,7 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-		public void cancelDownloads()
+		internal void cancelDownloads()
 		{
 			lock (((System.Collections.ICollection)m_oCatalogDownloadsInProgress).SyncRoot)
 			{
@@ -247,27 +247,27 @@ namespace Dapple.LayerGeneration
 		}
 	}
 
-	public class WMSServerBuilder : ServerBuilder
+	internal class WMSServerBuilder : ServerBuilder
 	{
 		string m_strCapabilitiesFilePath;
 		WMSList m_oList;
 		bool m_blLoadingPending = true;
 
-		public WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath, bool blEnabled)
+		internal WMSServerBuilder(IBuilder parent, WMSServerUri oUri, string CapabilitiesFilePath, bool blEnabled)
 			: base(oUri.ToBaseUri(), parent, oUri, blEnabled)
 		{
 			m_strCapabilitiesFilePath = CapabilitiesFilePath;
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public bool LoadingPending
+		internal bool LoadingPending
 		{
 			get { return m_blLoadingPending; }
 			set { m_blLoadingPending = value; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public string CapabilitiesFilePath
+		internal string CapabilitiesFilePath
 		{
 			get
 			{
@@ -315,14 +315,14 @@ namespace Dapple.LayerGeneration
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public WMSList List
+		internal WMSList List
 		{
 			get { return m_oList; }
 			set { m_oList = value; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
-		public override System.Drawing.Icon Icon
+		internal override System.Drawing.Icon Icon
 		{
 			get { return Dapple.Properties.Resources.wms; }
 		}

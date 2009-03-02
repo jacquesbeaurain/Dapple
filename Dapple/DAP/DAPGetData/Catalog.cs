@@ -10,7 +10,7 @@ namespace Geosoft.GX.DAPGetData
 	/// <summary>
 	/// Hold a specific catalog
 	/// </summary>
-   public class Catalog
+   internal class Catalog
    {
       #region Member Variables
       protected XmlDocument   m_hCatalog;
@@ -23,7 +23,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the catalog
       /// </summary>
-      public XmlDocument Document
+      internal XmlDocument Document
       {
          get { return m_hCatalog; }
       }
@@ -31,7 +31,7 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the catalog edition
       /// </summary>
-      public string Edition
+      internal string Edition
       {
          get { return m_strCatalogEdition; }
       }
@@ -39,14 +39,14 @@ namespace Geosoft.GX.DAPGetData
       /// <summary>
       /// Get the configuration edition
       /// </summary>
-      public string ConfigurationEdition
+      internal string ConfigurationEdition
       {
          get { return m_strConfigurationEdition; }
       }
       #endregion
 
       #region Constructor
-      public Catalog(XmlDocument hCatalog, string strCatalogEdition)
+      internal Catalog(XmlDocument hCatalog, string strCatalogEdition)
       {
          m_hCatalog = hCatalog;
          m_strCatalogEdition = strCatalogEdition;

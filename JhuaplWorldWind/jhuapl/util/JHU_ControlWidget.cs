@@ -186,7 +186,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Filename of button graphic
 		/// </summary>
-		public string ImageName
+		internal string ImageName
 		{
 			get { return m_imageName; }
 			set 
@@ -201,7 +201,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public JHU_ControlWidget()
+		internal JHU_ControlWidget()
 		{
 			m_textures = JHU_Globals.getInstance().Textures;
 
@@ -255,7 +255,7 @@ namespace jhuapl.util
 		/// Default implementation of left click.
 		/// </summary>
 		/// <param name="e">Mouse event parameters</param>
-		public void PerformLMBAction(System.Windows.Forms.MouseEventArgs e)
+		internal void PerformLMBAction(System.Windows.Forms.MouseEventArgs e)
 		{
 			double lon = (e.X - this.AbsoluteLocation.X)*2 - 180;
 			double lat = (e.Y - this.AbsoluteLocation.Y)*2 - 90;
@@ -423,7 +423,7 @@ namespace jhuapl.util
 		/// Called on the GUI thread.
 		/// </summary>
 		/// <param name="drawArgs">The drawing arguments passed from the WW GUI thread.</param>
-		public void Initialize (DrawArgs drawArgs)
+		public void Initialize(DrawArgs drawArgs)
 		{
 			object key = null;
 

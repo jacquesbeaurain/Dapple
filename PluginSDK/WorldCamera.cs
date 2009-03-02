@@ -28,7 +28,7 @@ namespace WorldWind.Camera
 		/// </summary>
 		/// <param name="targetPosition"></param>
 		/// <param name="radius"></param>
-		public WorldCamera( Point3d targetPosition,double radius ) : base( targetPosition, radius ) 
+		internal WorldCamera( Point3d targetPosition,double radius ) : base( targetPosition, radius ) 
 		{
 			this._targetOrientation = m_Orientation;
 			this._targetDistance = this._distance;
@@ -122,7 +122,7 @@ namespace WorldWind.Camera
          this._fov = this._targetFov;
       }
 
-      public bool EpsilonTest()
+		public bool EpsilonTest()
       {
          return (m_Orientation.EpsilonTest(this._targetOrientation) &&
             Math.Abs(this._tilt.Radians - this._targetTilt.Radians) < Camera.CameraBase.dEpsilonTestValue &&
@@ -141,7 +141,7 @@ namespace WorldWind.Camera
       }
 		#region Public properties
 
-      public override double SlerpPercentage
+		public override double SlerpPercentage
       {
          set
          {
@@ -149,7 +149,7 @@ namespace WorldWind.Camera
          }
       }
 
-		public override double TargetAltitude
+		internal override double TargetAltitude
 		{
 			get
 			{
@@ -166,7 +166,7 @@ namespace WorldWind.Camera
 			}
 		}
 
-		public Angle TargetHeading
+		internal Angle TargetHeading
 		{
 			get { return this._targetHeading; }
 			set 
@@ -175,24 +175,24 @@ namespace WorldWind.Camera
 			}
 		}
 		
-		public Angle TargetLatitude
+		internal Angle TargetLatitude
 		{
 			get { return this._targetLatitude; }
 			set { this._targetLatitude = value; }
 		}
 		
-		public Angle TargetLongitude
+		internal Angle TargetLongitude
 		{
 			get { return this._targetLongitude; }
 			set { this._targetLongitude = value; }
 		}
 		
-		public Quaternion4d TargetOrientation
+		internal Quaternion4d TargetOrientation
 		{
 			get { return this._targetOrientation; }
 			set { this._targetOrientation = value; }
 		}
-		
+
 		public override Angle Fov
 		{
 			get { return this._targetFov; }
@@ -237,7 +237,7 @@ namespace WorldWind.Camera
       }
 
 		#endregion
-	
+
 		public override string ToString()
 		{
 			string res = base.ToString() + 
@@ -246,7 +246,7 @@ namespace WorldWind.Camera
 				_targetLatitude, _targetLongitude, _targetDistance, _targetAltitude ) + "\nAngle: " + angle;
 			return res;
 		}
-	
+
 		public override void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)
 		{
 			_targetOrientation = Quaternion4d.RotationYawPitchRoll(yaw.Radians, pitch.Radians, roll.Radians) * _targetOrientation;
@@ -259,7 +259,7 @@ namespace WorldWind.Camera
 			if(Math.Abs(roll.Radians)>double.Epsilon)
 				this._targetHeading.Radians = v.Z;
 		}
-	
+
 		public override Angle Bank
 		{
 			get { return _targetBank; }
@@ -290,7 +290,7 @@ namespace WorldWind.Camera
 					_tilt = value;
 			}
 		}
-	
+
 		public override double TargetDistance
 		{
 			get
@@ -388,7 +388,8 @@ namespace WorldWind.Camera
 		/// </summary>
 		/// <param name="targetPosition"></param>
 		/// <param name="radius"></param>
-		public MomentumCamera( Point3d targetPosition,double radius ) : base( targetPosition, radius ) 
+		public MomentumCamera(Point3d targetPosition, double radius)
+			: base(targetPosition, radius) 
 		{
 			this._targetOrientation = m_Orientation;
 			this._targetDistance = this._distance;
@@ -396,7 +397,7 @@ namespace WorldWind.Camera
 			this._targetTilt = this._tilt;
 		}
 
-		public bool HasMomentum
+		internal bool HasMomentum
 		{
 			get { return World.Settings.cameraHasMomentum; }
 			set { 

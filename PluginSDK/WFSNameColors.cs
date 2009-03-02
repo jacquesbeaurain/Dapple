@@ -3,7 +3,7 @@ using System;
 
 namespace WorldWind
 {
-    public enum WFSNameColors
+    internal enum WFSNameColors
     {
         Default,
         White,

@@ -14,13 +14,13 @@ using Geosoft.Dap.Common;
 
 namespace Geosoft.GX.DAPGetData
 {
-   public class CatalogCacheManager : IDisposable
+   internal class CatalogCacheManager : IDisposable
    {
       // Make Cache upper limit fixed at 10 MB and cleanup to 9MB lower limit
       // and cleanup every 60 seconds
-      public long m_lCacheUpperLimit = 10L * 1024L * 1024L;
-      public long m_lCacheLowerLimit = 9L * 1024L * 1024L;
-      public TimeSpan m_tsCleanupFrequency = TimeSpan.FromSeconds(60);
+      internal long m_lCacheUpperLimit = 10L * 1024L * 1024L;
+      internal long m_lCacheLowerLimit = 9L * 1024L * 1024L;
+      internal TimeSpan m_tsCleanupFrequency = TimeSpan.FromSeconds(60);
       Timer m_timer;
       string m_strCacheDir = String.Empty;
       ServerTree m_oServerTree;
@@ -31,14 +31,14 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="strCacheDir">Location of the cache files.</param>
       /// <remarks>Only files with extension .gz is managed and cleaned up</remarks>
 #if !DAPPLE
-      public CatalogCacheManager(ServerTree oServerTree)
+      internal CatalogCacheManager(ServerTree oServerTree)
       {
          // --- Create the cache manager ---
 
          GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheDir);
          m_strCacheDir = Path.Combine(m_strCacheDir, "Dap Catalog Cache");
 #else
-      public CatalogCacheManager(ServerTree oServerTree, string strCacheDir)
+      internal CatalogCacheManager(ServerTree oServerTree, string strCacheDir)
       {
          m_strCacheDir = Path.Combine(strCacheDir, "Dap Catalog Cache");
          Directory.CreateDirectory(m_strCacheDir);
@@ -60,7 +60,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="bTextFilter"></param>
       /// <param name="strSearchString"></param>
       /// <returns>true if server's cache version changed or some other error occured</returns>
-      public bool bGetDatasetList(Server oServer, string strHierarchy, int iTimestamp, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString)
+      internal bool bGetDatasetList(Server oServer, string strHierarchy, int iTimestamp, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString)
       {
          string strEdition;
          System.Xml.XmlDocument oDoc = null;
@@ -130,7 +130,7 @@ namespace Geosoft.GX.DAPGetData
       /// <param name="bTextFilter"></param>
       /// <param name="strSearchString"></param>
       /// <returns>The hierarchy as a CatalogFolder</returns>
-      public CatalogFolder GetCatalogHierarchyRoot(Server oServer, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString, out bool bEntireCatalogMode, out string strEdition)
+      internal CatalogFolder GetCatalogHierarchyRoot(Server oServer, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString, out bool bEntireCatalogMode, out string strEdition)
       {
          XmlDocument oDoc = null;
 
@@ -269,7 +269,7 @@ namespace Geosoft.GX.DAPGetData
          return null;
       }
 
-      public FolderDatasetList GetDatasets(Server oServer, CatalogFolder oFolder, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString)
+      internal FolderDatasetList GetDatasets(Server oServer, CatalogFolder oFolder, BoundingBox oBounds, bool bAOIFilter, bool bTextFilter, string strSearchString)
       {
          FolderDatasetList oRet = null;
 
@@ -382,7 +382,7 @@ namespace Geosoft.GX.DAPGetData
          }
       }
 
-      public static ArrayList GetDirectoryFileInfoList(DirectoryInfo inDir)
+      internal static ArrayList GetDirectoryFileInfoList(DirectoryInfo inDir)
       {
          ArrayList returnList = new ArrayList();
          
@@ -398,7 +398,7 @@ namespace Geosoft.GX.DAPGetData
          return returnList;
       }
 
-      public static long GetDirectorySize(DirectoryInfo inDir)
+      internal static long GetDirectorySize(DirectoryInfo inDir)
       {
          long returnBytes = 0;
          if (!inDir.Exists) return returnBytes;
@@ -426,7 +426,7 @@ namespace Geosoft.GX.DAPGetData
 
       #region IDisposable Members
 
-      public void Dispose()
+		public void Dispose()
       {
          if (m_timer != null)
          {

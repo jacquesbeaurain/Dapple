@@ -61,7 +61,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// Default constructor.  Stub
 		/// </summary>
-		public JHU_SimpleTreeNodeWidget() :base()
+		internal JHU_SimpleTreeNodeWidget() :base()
 		{
 		}
 
@@ -69,7 +69,7 @@ namespace jhuapl.util
 		/// Constructor that allows passing in a name
 		/// </summary>
 		/// <param name="name"></param>
-		public JHU_SimpleTreeNodeWidget(string name) : base(name)
+		internal JHU_SimpleTreeNodeWidget(string name) : base(name)
 		{
 		}
 
@@ -80,7 +80,7 @@ namespace jhuapl.util
 		/// <param name="xOffset">The offset from the left based on how deep this node is nested</param>
 		/// <param name="yOffset">The offset from the top based on how many treenodes are above this one</param>
 		/// <returns>Total pixels consumed by this widget and its children</returns>
-		public override int Render(DrawArgs drawArgs, int xOffset, int yOffset)
+		internal override int Render(DrawArgs drawArgs, int xOffset, int yOffset)
 		{
 			m_ConsumedSize.Height = 0;
 
