@@ -63,16 +63,6 @@ namespace WorldWind.Net
 		public DownloadProgressHandler ProgressCallback;
 
 		/// <summary>
-		/// Called to update debug window.
-		/// </summary>
-		internal static DownloadCompleteHandler DebugCallback;
-
-		/// <summary>
-		/// Called when a download has ended with success or failure
-		/// </summary>
-		internal static DownloadCompleteHandler DownloadEnded;
-
-		/// <summary>
 		/// Called when download is completed.  Call Verify from event handler to throw any exception.
 		/// </summary>
 		public DownloadCompleteHandler CompleteCallback;
@@ -333,28 +323,6 @@ namespace WorldWind.Net
             if(responseStream != null)
                 responseStream.Close();
 
-            // cancelled downloads must still be verified to set
-            // the proper error bits and avoid immediate re-download
-            /* NO. This is WRONG since the above request.Abort() or response.Close() 
-             * may still be in flight.
-            if (CompleteCallback == null)
-            {
-                Verify();
-            }
-            else
-            {
-                try
-                {
-                    CompleteCallback(this);
-                }
-                catch
-                {
-
-                }
-            }
-             */
-			OnDebugCallback(this);
-			OnDownloadEnded(this);
 			// it's not really complete, but done with...
 			IsComplete = true;
 		}
@@ -369,30 +337,6 @@ namespace WorldWind.Net
 			if (ProgressCallback != null)
 			{
 				ProgressCallback(bytesRead, totalBytes);
-			}
-		}
-
-		/// <summary>
-		/// Called with detailed information about the download.
-		/// </summary>
-		/// <param name="wd">The WebDownload.</param>
-		protected static void OnDebugCallback(WebDownload wd)
-		{
-			if (DebugCallback != null)
-			{
-				DebugCallback(wd);
-			}
-		}
-
-		/// <summary>
-		/// Called when downloading has ended.
-		/// </summary>
-		/// <param name="wd">The download.</param>
-		protected static void OnDownloadEnded(WebDownload wd)
-		{
-			if (DownloadEnded != null)
-			{
-				DownloadEnded(wd);
 			}
 		}
 
@@ -454,7 +398,6 @@ namespace WorldWind.Net
 				{
 					// If a registered progress-callback, inform it of our download progress so far.
 					OnProgressCallback(0, 1);
-					OnDebugCallback(this);
 
 					BuildContentStream();
 					request = BuildRequest();
@@ -575,7 +518,6 @@ namespace WorldWind.Net
 					ContentStream = null;
 				}
 
-				OnDebugCallback(this);
 
 				if (CompleteCallback == null)
 				{
@@ -595,7 +537,6 @@ namespace WorldWind.Net
 				IsComplete = true;
 			}
 
-			OnDownloadEnded(this);
 		}
 
 		private static void AsyncReadCallback(IAsyncResult asyncResult)
@@ -647,7 +588,6 @@ namespace WorldWind.Net
 				ContentStream = null;
 			}
 
-			OnDebugCallback(this);
 
 			if (CompleteCallback == null)
 			{
@@ -658,7 +598,6 @@ namespace WorldWind.Net
 				CompleteCallback(this);
 			}
 
-			OnDownloadEnded(this);
 			IsComplete = true;
 		}
 
@@ -679,7 +618,6 @@ namespace WorldWind.Net
 			{
 				// If a registered progress-callback, inform it of our download progress so far.
 				OnProgressCallback(0, 1);
-				OnDebugCallback(this);
 
 				BuildContentStream();
 				request = BuildRequest();
@@ -808,9 +746,6 @@ namespace WorldWind.Net
 			{
 				ContentStream.Close();
 			}
-
-			if (DownloadStartTime != DateTime.MinValue)
-				OnDebugCallback(this);
 
 			GC.SuppressFinalize(this);
 		}

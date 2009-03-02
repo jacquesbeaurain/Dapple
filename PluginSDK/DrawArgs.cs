@@ -31,7 +31,6 @@ namespace WorldWind
 		public int screenHeight;
 		public static System.Drawing.Point LastMousePosition;
 		public int numberTilesDrawn;
-		internal System.Drawing.Point CurrentMousePosition;
 		public string UpperLeftCornerText = "";
 		CameraBase m_WorldCamera;
 		internal World m_CurrentWorld = null;

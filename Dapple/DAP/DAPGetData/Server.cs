@@ -38,7 +38,6 @@ namespace Geosoft.GX.DAPGetData
       protected Int32                     m_iMinorVersion;
       protected string                    m_strCacheVersion;
       protected bool m_bLogin = false;
-      protected string                    m_strToken;
 
       protected ServerStatus              m_eStatus;
       protected Int32                     m_iCount;

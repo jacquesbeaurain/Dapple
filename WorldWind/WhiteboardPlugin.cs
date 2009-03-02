@@ -105,7 +105,7 @@ namespace jhuapl.sample
 		{
 			get { return m_infoMenuItem; }
 		}
-		protected System.Windows.Forms.MenuItem m_infoMenuItem;
+		protected System.Windows.Forms.MenuItem m_infoMenuItem = null;
 
 
 		internal WhiteboardPlugin()

@@ -166,11 +166,11 @@ namespace jhuapl.util
 		internal JHU_IconTexture m_iconTexture;
 
 		protected bool m_iconTexture2Show = false;
-		protected string m_iconTexture2Name;
+		protected string m_iconTexture2Name = null;
 		protected JHU_IconTexture m_iconTexture2 = null;
 
 		protected bool m_iconTexture3Show = false;
-		protected string m_iconTexture3Name;
+		protected string m_iconTexture3Name = null;
 		protected JHU_IconTexture m_iconTexture3 = null;
 
 		/// <summary>
@@ -223,7 +223,7 @@ namespace jhuapl.util
 		/// <summary>
 		/// The minimum distance (meters) the icon will be visible from
 		/// </summary>
-		internal double MinimumDisplayDistance;
+		internal double MinimumDisplayDistance = 0;
 
 		/// <summary>
 		/// Bounding box centered at (0,0) used to calculate whether mouse is over icon/label

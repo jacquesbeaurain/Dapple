@@ -21,7 +21,6 @@ namespace WorldWind
 		int _terrainFaceCount;
 		short nw, sw, ne, se;
 
-		internal int TriangleCount;
 		internal short[] Indices;
 		
 		internal BinaryTriangleTree(

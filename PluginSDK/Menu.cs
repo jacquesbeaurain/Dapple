@@ -354,9 +354,7 @@ namespace WorldWind.Menu
 
 	internal abstract class SideBarMenu : IMenu
 	{
-		internal long Id;
-
-		internal readonly int Left;
+		internal readonly int Left = 0;
 		internal readonly int Top = 120;
 		internal int Right = World.Settings.layerManagerWidth;
 		internal int Bottom;
@@ -1468,7 +1466,7 @@ namespace WorldWind.Menu
 		protected int y;
 		protected int hideTimeMilliseconds = 100;
 		protected MenuAnchor m_anchor = MenuAnchor.Left;
-		protected bool _isHideable;
+		protected bool _isHideable = false;
 		protected const float padRatio = 1/9.0f;
 		protected CursorType mouseCursor;
 		protected int chevronColor =  Color.Black.ToArgb();

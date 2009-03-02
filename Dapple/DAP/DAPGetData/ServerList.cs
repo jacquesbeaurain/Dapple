@@ -16,7 +16,7 @@ namespace Geosoft.GX.DAPGetData
    internal class ServerList
    {
       #region Member Variables
-      protected string m_strCSV;
+      protected string m_strCSV = null;
 #if DAPPLE
       protected string m_strCacheDir;
 #endif

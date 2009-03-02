@@ -16,7 +16,6 @@ namespace ConfigurationWizard
 		private string _title;
 		private string _subTitle;
 		private Font _titleFont = new Font("Arial", 10, FontStyle.Bold);
-		protected Wizard wizard;
 
 		/// <summary> 
 		/// Required designer variable.
