@@ -32,15 +32,15 @@ namespace DM.SharedMemory
    /// Enum for specifying whether a new shared memory 
    /// segment should be created or just attach to an existing one
    /// </summary>
-	public enum SharedMemoryCreationFlag
+   public enum SharedMemoryCreationFlag
    {
       Create,
       Attach
    }
 
-   internal class SharedMemoryException : ApplicationException
+   public class SharedMemoryException : ApplicationException
    {
-      internal SharedMemoryException(string msg)
+      public SharedMemoryException(string msg)
          : base(msg)
       {
       }
@@ -51,15 +51,14 @@ namespace DM.SharedMemory
    /// This class wraps Win32 shared memory.
    /// </summary>
    /// 
-	public sealed class Segment : IDisposable
+   public sealed class Segment : IDisposable
    {
       private IntPtr nativeHandle = IntPtr.Zero;
       private IntPtr nativePointer = IntPtr.Zero;
       private Mutex guard = null;
       private int currentSize = 0;
-      private string segmentName = string.Empty;
 
-		public Segment(string name, SharedMemoryCreationFlag creationFlag, int size)
+      public Segment(string name, SharedMemoryCreationFlag creationFlag, int size)
       {
          if (String.IsNullOrEmpty(name))
          {
@@ -110,13 +109,12 @@ namespace DM.SharedMemory
          }
 
          this.currentSize = size;
-         this.segmentName = name;
       }
 
       /// <summary>
       /// Provides a cross processs lock on the named mutex
       /// </summary>
-      internal void Lock()
+      public void Lock()
       {
          guard.WaitOne();
       }
@@ -124,7 +122,7 @@ namespace DM.SharedMemory
       /// <summary>
       /// Releases to cross process lock on the named mutex
       /// </summary>
-      internal void Unlock()
+      public void Unlock()
       {
          guard.ReleaseMutex();
       }
@@ -132,7 +130,7 @@ namespace DM.SharedMemory
       /// <summary>
       /// Provides access to the cross process waithandle
       /// </summary>
-      internal WaitHandle WaitHandle
+      public WaitHandle WaitHandle
       {
          get { return guard; }
       }
@@ -141,7 +139,7 @@ namespace DM.SharedMemory
       /// Returns the object graph stored in the shared memory segment
       /// </summary>
       /// <returns>System.Object - root of object graph</returns>
-		public object GetData()
+      public object GetData()
       {
          MemoryStream ms = new MemoryStream();
 
@@ -156,7 +154,7 @@ namespace DM.SharedMemory
       /// Stores serializable object graph in shared memory
       /// </summary>
       /// <param name="obj">System.Object root of object graph to be stored in shared memory</param>
-		public void SetData(object obj)
+      public void SetData(object obj)
       {
          // Ensure root object is serializable
          if (!obj.GetType().IsSerializable)
@@ -206,7 +204,7 @@ namespace DM.SharedMemory
       /// <summary>
       /// IDisposable.Dispose allow timely clean up and removed the need for finalization
       /// </summary>
-		public void Dispose()
+      public void Dispose()
       {
          GC.SuppressFinalize(this);
          Dispose(true);

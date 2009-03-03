@@ -14,7 +14,7 @@ using System.Security.Permissions;
 namespace Geosoft.OpenGX.UtilityForms
 {
    // This defines the possible values for the FEditControl's FileOpenSaveEnum property.
-	public enum FileOpenSaveEnum
+   public enum FileOpenSaveEnum
    {
       Open = 0,
       Save = 1
@@ -24,7 +24,7 @@ namespace Geosoft.OpenGX.UtilityForms
    /// Summary description for FEditControl.
    /// </summary>
    [Serializable]
-	public class FEditControl : System.Windows.Forms.UserControl, ISerializable, IRequirable
+   public class FEditControl : System.Windows.Forms.UserControl, ISerializable, IRequirable
    {
       #region Member Variables
       protected string m_strDirectory = "";
@@ -38,8 +38,8 @@ namespace Geosoft.OpenGX.UtilityForms
       protected List<string> m_hLST = null;
       #endregion
       private IContainer components;
-		public delegate void FEditTextChangedEventHandler(object sender);
-		public event FEditTextChangedEventHandler FEditTextChanged;
+      public delegate void FEditTextChangedEventHandler(object sender);
+      public event FEditTextChangedEventHandler FEditTextChanged;
 		/// <summary>
 		/// Fired when the <see cref="Required"/> property changes
 		/// </summary>
@@ -59,7 +59,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// <summary> 
       /// Default constructor.
       /// </summary>
-		public FEditControl()
+      public FEditControl()
       {
          // This call is required by the Windows.Forms Form Designer.
          InitializeComponent();
@@ -68,8 +68,7 @@ namespace Geosoft.OpenGX.UtilityForms
          m_strDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
       }
 
-		public FEditControl(SerializationInfo info, StreamingContext context)
-			: this()
+      protected FEditControl(SerializationInfo info, StreamingContext context) : this()
       {
          if (info == null)
             throw new System.ArgumentNullException("info");
@@ -130,7 +129,7 @@ namespace Geosoft.OpenGX.UtilityForms
       }
 
       [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-		public virtual void GetObjectData(
+      public virtual void GetObjectData(
       SerializationInfo info, StreamingContext context)
       {
          if (info == null)
@@ -191,7 +190,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// 
       /// </summary>
       /// <param name="strFile"></param>
-		public void Serialize(string strFile)
+      public void Serialize(string strFile)
       {
          BinaryFormatter binaryFmt = new BinaryFormatter();
          using (FileStream fs = new FileStream(strFile, FileMode.Create))
@@ -206,7 +205,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       /// <param name="strFile"></param>
       /// <param name="fEdit"></param>
-		public static FEditControl DeSerialize(string strFile)
+      public static FEditControl DeSerialize(string strFile)
       {
          BinaryFormatter binaryFmt = new BinaryFormatter();
          FEditControl fEdit;
@@ -323,7 +322,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("Determines whether to open or save the file.")]
-		public FileOpenSaveEnum FileOpenSave
+      public FileOpenSaveEnum FileOpenSave
       {
          get
          {
@@ -340,7 +339,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("If true, then the field may not be left blank (dummy).")]
-		public bool Required
+      public bool Required
       {
          get
          {
@@ -359,7 +358,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// at the time this control was last serialized"</summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("If >0, then a dropdown box will be displayed showing a history of N previously selected files at the time this control was last serialized.")]
-		public int MaxHistory
+      public int MaxHistory
       {
          get
          {
@@ -388,7 +387,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// The current number of items in the history"</summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("The current number of items in the history")]
-      internal int History
+      public int History
       {
          get
          {
@@ -404,7 +403,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("The title of the browse dialog launched using the browse button.")]
-		public String BrowseQuery
+      public String BrowseQuery
       {
          get
          {
@@ -422,7 +421,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("Gets or sets the file filters. Example: \"Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*\"")]
-		public String Filters
+      public String Filters
       {
          get
          {
@@ -445,7 +444,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </summary>
       [Browsable(true), Category("GX_Parameters")]
       [Description("Gets or sets the file filter index.")]
-		public int FilterIndex
+      public int FilterIndex
       {
          get
          {
@@ -463,7 +462,7 @@ namespace Geosoft.OpenGX.UtilityForms
 
       [Browsable(false), Category("GX_Parameters")]
       [Description("Gets or sets the default file name.")]
-		public string FileName
+      public string FileName
       {
          get 
          {
@@ -483,7 +482,7 @@ namespace Geosoft.OpenGX.UtilityForms
 
       [Browsable(false), Category("GX_Parameters")]
       [Description("Gets or sets the default directory.")]
-		public string InitialDirectory
+      public string InitialDirectory
       {
          get 
          {
@@ -506,7 +505,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// The path is automatically split, so that only the file name in the text edit box.
       /// </remarks>
       /// <param name="strPath">The input path string.</param>
-      internal void SetFilePath(string strPath)
+      public void SetFilePath(string strPath)
       {
          // --- Set the volume, directory and edit box text ---
 
@@ -566,7 +565,7 @@ namespace Geosoft.OpenGX.UtilityForms
       ///           } 
       /// </code>
       /// </example>
-		public void GetFilePath(ref string strPath)
+      public void GetFilePath(ref string strPath)
       {
          // --- Return the current path, without validation ---
 
@@ -584,7 +583,7 @@ namespace Geosoft.OpenGX.UtilityForms
       /// </remarks>
       /// <param name="strError">The returned error string if the control does not validate.</param>
       /// <returns>true if validation succeeds</returns>
-		public bool bIsValid(ref string strError)
+      public bool bIsValid(ref string strError)
       {
          string strPath = "";
          return (bValidate(ref strPath, ref strError, true));

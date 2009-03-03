@@ -5,19 +5,6 @@ using System.Windows.Forms;
 
 namespace Utility
 {
-    internal class LogEventArgs : EventArgs
-    {
-        internal int level;
-        internal string category;
-        internal string message;
-
-        internal LogEventArgs(int _l, string _c, string _m)
-        {
-            level = _l;
-            category = _c;
-            message = _m;
-        }
-    }
 	/// <summary>
 	/// Debug log functionality
 	/// </summary>
@@ -28,12 +15,12 @@ namespace Utility
 		static string logFilePath;
 
         // a few standard values to facilitate logging
-        public struct Levels
+        public static class Levels
         {
-            public static readonly int Error = 0;
-            public static readonly int Warning = 2;
-            public static readonly int Debug = 5;
-            public static readonly int Verbose = 7;
+            public const int Error = 0;
+				public const int Warning = 2;
+				public const int Debug = 5;
+				public const int Verbose = 7;
         };
         internal static int Level;
 
@@ -88,11 +75,6 @@ namespace Utility
 		public static void Write(string category, string message)
         {
             Write(Levels.Error, category, message);
-        }
-
-        internal static void Write(string message)
-        {
-            Write(Levels.Error, message);
         }
 
 		/// <summary>

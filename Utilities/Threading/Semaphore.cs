@@ -7,7 +7,7 @@ namespace Geosoft.DotNetTools.Common
    /// Implementation of a semaphore class for our queue
    /// http://weblogs.asp.net/tspascoal/archive/2004/01/16/59340.aspx
    /// </summary>
-	public class Semaphore 
+   public class Semaphore 
    {
       #region Member Variables
       private int m_iCount; 
@@ -17,13 +17,13 @@ namespace Geosoft.DotNetTools.Common
       /// <summary>
       /// Default constructor, initialize the semaphore to be set
       /// </summary>
-      internal Semaphore() : this(1) {}
+      public Semaphore() : this(1) {}
  
       /// <summary>
       /// Desult constructor, initialize the semaphore to the passed in count
       /// </summary>
       /// <param name="iCount"></param>
-      internal Semaphore(int iCount) { m_iCount = iCount; } 
+      public Semaphore(int iCount) { m_iCount = iCount; } 
       #endregion
 
       #region Public Methods
@@ -31,7 +31,7 @@ namespace Geosoft.DotNetTools.Common
       /// Wait forever for a unit to become available
       /// </summary>
       /// <returns></returns>
-      internal bool Wait() 
+      public bool Wait() 
       { 
          lock(this) 
          { 
@@ -53,7 +53,7 @@ namespace Geosoft.DotNetTools.Common
       /// </summary>
       /// <param name="iMilliseconds"></param>
       /// <returns></returns>
-      internal bool Wait(int iMilliseconds) 
+      public bool Wait(int iMilliseconds) 
       { 
          DateTime dtBegin = DateTime.Now; 
          bool     bLockObtained = false; 
@@ -91,7 +91,7 @@ namespace Geosoft.DotNetTools.Common
       /// <summary>
       /// Release out hold on a unit
       /// </summary>
-      internal void Release() 
+      public void Release() 
       { 
          // --- Lock so we can work in peace. This works because lock is actually ---
          // --- built around Monitor. ---
