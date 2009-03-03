@@ -82,48 +82,48 @@ namespace Utils.MessageBoxExLib
 		#endregion
 
 		#region Properties
-		internal string Message
+		public string Message
 		{
 			set{ rtbMessage.Text = value; }
 		}
 
-		internal string Caption
+		public string Caption
 		{
 			set{ this.Text = value; }
 		}
 
-		internal Font CustomFont
+		public Font CustomFont
 		{
 			set{ this.Font = value; }
 		}
 
-		internal ArrayList Buttons
+		public ArrayList Buttons
 		{
 			get{ return _buttons; }
 		}
 
-		internal bool AllowSaveResponse
+		public bool AllowSaveResponse
 		{
 			get{ return _allowSaveResponse; }
 			set{ _allowSaveResponse = value; }
 		}
 
-		internal bool SaveResponse
+		public bool SaveResponse
 		{
 			get{ return chbSaveResponse.Checked; }
 		}
 
-		internal string SaveResponseText
+		public string SaveResponseText
 		{
 			set{ chbSaveResponse.Text = value; }
 		}
 
-		internal MessageBoxIcon StandardIcon
+		public MessageBoxIcon StandardIcon
 		{
 			set{ SetStandardIcon(value); }
 		}
 
-		internal Icon CustomIcon
+		public Icon CustomIcon
 		{
 			set
 			{
@@ -132,29 +132,29 @@ namespace Utils.MessageBoxExLib
 			}
 		}
 
-		internal MessageBoxExButton CustomCancelButton
+		public MessageBoxExButton CustomCancelButton
 		{
 			set{ _cancelButton = value; }
 		}
 
-		internal string Result
+		public string Result
 		{
 			get{ return _result; }
 		}
 
-		internal bool PlayAlertSound
+		public bool PlayAlertSound
 		{
 			get{ return _playAlert; }
 			set{ _playAlert = value; }
 		}
 
-        internal int Timeout
+        public int Timeout
         {
             get{ return _timeout; }
             set{ _timeout = value; }
         }
 
-        internal TimeoutResult TimeoutResult
+        public TimeoutResult TimeoutResult
         {
             get{ return _timeoutResult; }
             set{ _timeoutResult = value; }
@@ -162,7 +162,7 @@ namespace Utils.MessageBoxExLib
 		#endregion
 
 		#region Ctor/Dtor
-		internal MessageBoxExForm()
+		public MessageBoxExForm()
 		{
 			//
 			// Required for Windows Form Designer support
@@ -867,41 +867,41 @@ namespace Utils.MessageBoxExLib
 		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
 		private struct LOGFONT
 		{ 
-			internal int lfHeight; 
-			internal int lfWidth; 
-			internal int lfEscapement; 
-			internal int lfOrientation; 
-			internal int lfWeight; 
-			internal byte lfItalic; 
-			internal byte lfUnderline; 
-			internal byte lfStrikeOut; 
-			internal byte lfCharSet; 
-			internal byte lfOutPrecision; 
-			internal byte lfClipPrecision; 
-			internal byte lfQuality; 
-			internal byte lfPitchAndFamily; 
+			public int lfHeight; 
+			public int lfWidth; 
+			public int lfEscapement; 
+			public int lfOrientation; 
+			public int lfWeight; 
+			public byte lfItalic; 
+			public byte lfUnderline; 
+			public byte lfStrikeOut; 
+			public byte lfCharSet; 
+			public byte lfOutPrecision; 
+			public byte lfClipPrecision; 
+			public byte lfQuality; 
+			public byte lfPitchAndFamily; 
 			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-			internal string lfFaceSize;
+			public string lfFaceSize;
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
 		private struct NONCLIENTMETRICS
 		{
-			internal int cbSize;
-			internal int iBorderWidth;
-			internal int iScrollWidth;
-			internal int iScrollHeight;
-			internal int iCaptionWidth;
-			internal int iCaptionHeight;
-			internal LOGFONT lfCaptionFont;
-			internal int iSmCaptionWidth;
-			internal int iSmCaptionHeight;
-			internal LOGFONT lfSmCaptionFont;
-			internal int iMenuWidth;
-			internal int iMenuHeight;
-			internal LOGFONT lfMenuFont;
-			internal LOGFONT lfStatusFont;
-			internal LOGFONT lfMessageFont;
+			public int cbSize;
+			public int iBorderWidth;
+			public int iScrollWidth;
+			public int iScrollHeight;
+			public int iCaptionWidth;
+			public int iCaptionHeight;
+			public LOGFONT lfCaptionFont;
+			public int iSmCaptionWidth;
+			public int iSmCaptionHeight;
+			public LOGFONT lfSmCaptionFont;
+			public int iMenuWidth;
+			public int iMenuHeight;
+			public LOGFONT lfMenuFont;
+			public LOGFONT lfStatusFont;
+			public LOGFONT lfMessageFont;
 		} 
 		
 		[DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]

@@ -5,13 +5,13 @@ namespace Utils.MessageBoxExLib
 	/// <summary>
 	/// Internal DataStructure used to represent a button
 	/// </summary>
-	internal class MessageBoxExButton
+	public class MessageBoxExButton
 	{
 		private string _text = null;
 		/// <summary>
 		/// Gets or Sets the text of the button
 		/// </summary>
-		internal string Text
+		public string Text
 		{
 			get{ return _text; }
 			set{ _text = value; }
@@ -21,7 +21,7 @@ namespace Utils.MessageBoxExLib
 		/// <summary>
 		/// Gets or Sets the return value when this button is clicked
 		/// </summary>
-		internal string Value
+		public string Value
 		{
 			get{ return _value; }
 			set{_value = value; }
@@ -31,7 +31,7 @@ namespace Utils.MessageBoxExLib
 		/// <summary>
 		/// Gets or Sets the tooltip that is displayed for this button
 		/// </summary>
-		internal string HelpText
+		public string HelpText
 		{
 			get{ return _helpText; }
 			set{ _helpText = value; }
@@ -43,7 +43,7 @@ namespace Utils.MessageBoxExLib
 		/// that will be assumed to have been clicked if the user closes the message box
 		/// without pressing any button.
 		/// </summary>
-		internal bool IsCancelButton
+		public bool IsCancelButton
 		{
 			get{ return _isCancelButton; }
 			set{ _isCancelButton = value; }

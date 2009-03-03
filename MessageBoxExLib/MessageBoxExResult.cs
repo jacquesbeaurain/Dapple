@@ -14,6 +14,6 @@ namespace Utils.MessageBoxExLib
 		public const string Abort = "Abort";
 		public const string Retry = "Retry";
 		public const string Ignore = "Ignore";
-		public const string Timeout = "Timeout";
+        public const string Timeout = "Timeout";
 	}
 }

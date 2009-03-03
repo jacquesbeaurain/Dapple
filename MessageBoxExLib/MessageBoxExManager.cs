@@ -59,7 +59,7 @@ namespace Utils.MessageBoxExLib
 		/// </summary>
 		/// <param name="name">The name of the message box</param>
 		/// <returns>A new message box</returns>
-		  public static MessageBoxEx CreateMessageBox(string name)
+		public static MessageBoxEx CreateMessageBox(string name)
 		{
 			if(name != null && _messageBoxes.ContainsKey(name))
 			{
@@ -83,7 +83,7 @@ namespace Utils.MessageBoxExLib
 		/// <param name="name">The name of the message box to retrieve</param>
 		/// <returns>The message box with the specified name or null if a message box
 		/// with that name does not exist</returns>
-		internal static MessageBoxEx GetMessageBox(string name)
+		public static MessageBoxEx GetMessageBox(string name)
 		{
 			if(_messageBoxes.Contains(name))
 			{
@@ -99,7 +99,7 @@ namespace Utils.MessageBoxExLib
 		/// Deletes the message box with the specified name
 		/// </summary>
 		/// <param name="name">The name of the message box to delete</param>
-		internal static void DeleteMessageBox(string name)
+		public static void DeleteMessageBox(string name)
 		{
 			if(name == null)
 				return;
@@ -112,12 +112,12 @@ namespace Utils.MessageBoxExLib
 			}
 		}
 
-		internal static void WriteSavedResponses(Stream stream)
+		public static void WriteSavedResponses(Stream stream)
 		{
 			throw new NotImplementedException("This feature has not yet been implemented");
 		}
 
-		internal static void ReadSavedResponses(Stream stream)
+		public static void ReadSavedResponses(Stream stream)
 		{
 			throw new NotImplementedException("This feature has not yet been implemented");
 		}
@@ -126,7 +126,7 @@ namespace Utils.MessageBoxExLib
 		/// Reset the saved response for the message box with the specified name.
 		/// </summary>
 		/// <param name="messageBoxName">The name of the message box whose response is to be reset.</param>
-		internal static void ResetSavedResponse(string messageBoxName)
+		public static void ResetSavedResponse(string messageBoxName)
 		{
             if(messageBoxName == null)
                 return;
@@ -140,7 +140,7 @@ namespace Utils.MessageBoxExLib
 		/// <summary>
 		/// Resets the saved responses for all message boxes that are managed by the manager.
 		/// </summary>
-		internal static void ResetAllSavedResponses()
+		public static void ResetAllSavedResponses()
 		{
 			_savedResponses.Clear();
 		}
