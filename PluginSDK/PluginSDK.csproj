@@ -261,15 +261,11 @@
     </Compile>
     <Compile Include="WFSNameColors.cs" />
     <Compile Include="WidgetCollection.cs" />
-    <Compile Include="Widgets\ButtonWidget.cs" />
     <Compile Include="Widgets\FormWidget.cs" />
     <Compile Include="Widgets\IInteractive.cs" />
     <Compile Include="Widgets\IWidget.cs" />
     <Compile Include="Widgets\IWidgetCollection.cs" />
-    <Compile Include="Widgets\PanelWidget.cs" />
     <Compile Include="Widgets\RootWidget.cs" />
-    <Compile Include="Widgets\SimpleTreeNodeWidget.cs" />
-    <Compile Include="Widgets\TreeNodeWidget.cs" />
     <Compile Include="Widgets\WidgetCollection.cs" />
     <Compile Include="Widgets\WidgetEnums.cs" />
     <Compile Include="Widgets\WidgetUtilities.cs" />

@@ -40,7 +40,7 @@ namespace WorldWind
     /// Helper class with satic functions to signal the beginnings and endings
     /// of userdefined event blocks to the profiler, most likely PIX. 
     /// </summary>
-    internal class DirectXProfiler
+    internal static class DirectXProfiler
     {
         #region Profiler settings
 

@@ -397,13 +397,6 @@ namespace WorldWind
 			}
 		}
 
-		internal double ViewRange
-		{
-			get
-			{
-				return this.drawArgs.WorldCamera.ViewRange.Degrees;
-			}
-		}
 		public double Latitude
 		{
 			get
@@ -416,18 +409,6 @@ namespace WorldWind
 			get
 			{
 				return this.drawArgs.WorldCamera.Longitude.Degrees;
-			}
-		}
-
-		internal string Caption
-		{
-			get
-			{
-				return this._caption;
-			}
-			set
-			{
-				this._caption = value;
 			}
 		}
 
@@ -465,20 +446,6 @@ namespace WorldWind
 		#endregion
 
 		#region Public methods
-
-		/// <summary>
-		/// Rotate for a heading
-		/// </summary>
-		/// <param name="dX"></param>
-		/// <param name="dY"></param>
-		/// <param name="dCos"></param>
-		/// <param name="dSin"></param>
-		private static void Rotate(ref double dX, ref double dY, double dCos, double dSin)
-		{
-			double dTemp = dX * dCos + dY * dSin;
-			dY = dY * dCos - dX * dSin;
-			dX = dTemp;
-		}
 
 		/// <summary>
 		/// If the camera's height is above this value, the entire half of the world is visible.  Below this value, the top and bottom of the globe
@@ -593,175 +560,8 @@ namespace WorldWind
 		}
 
 
-		/// <summary>
-		/// Algorithm for a better estimate of what we are looking at on the planet.
-		/// Used for overview drawing as well as dataset filtering and export in Dapple.
-		/// </summary>
-		const double DVangle = 30.0; // Diagonal view angle in radians
-		const double HVangle = 22.21; // Horizontal view angle
 		const double Deg2Rad = Math.PI / 180.0;
 		const double Rad2Deg = 180 / Math.PI;
-		internal GeographicQuad GetViewBox(bool bForceRayIntersectionTest)
-		{
-			// Known Variables
-			double dAlt = this.drawArgs.WorldCamera.Distance; // distance to target position on ground
-			double dTilt = this.drawArgs.WorldCamera.Tilt.Degrees; // tilt angle, 0 (vertical) to 90 (Horizontal)
-			double dHead = this.drawArgs.WorldCamera.Heading.Degrees; // view direction CW relative to North
-			double dX = this.drawArgs.WorldCamera.Longitude.Degrees, dY = this.drawArgs.WorldCamera.Latitude.Degrees; // view centre
-			double dRadius = m_World.EquatorialRadius;
-			double dX1, dY1; // lower left
-			double dX2, dY2; // lower right
-			double dX3, dY3; // upper right
-			double dX4, dY4; // upper left
-
-			double dFov = this.drawArgs.WorldCamera.Fov.Radians;
-			double dHeightThreshold = dRadius * (1 - Math.Sin(dFov / 2)) / Math.Sin(dFov / 2);
-			if (dAlt > dHeightThreshold)
-			{
-				return new GeographicQuad(-180.0, -90.0, 180.0, -90.0, 180.0, 90.0, -180.0, 90.0);
-			}
-
-			double dMaxAngle = Math.Acos(dRadius / (dRadius + dAlt)) * Rad2Deg;
-
-			double H_Range, D_Range;
-			double dHRatio = (dAlt + dRadius) * Math.Sin(HVangle * Deg2Rad) / dRadius;
-			double dVRatio = (dAlt + dRadius) * Math.Sin(DVangle * Deg2Rad) / dRadius;
-
-			// horizontal range
-			if (dHRatio < 1.0)
-				H_Range = Rad2Deg * Math.Asin(dHRatio) - HVangle;
-			else
-				H_Range = 90.0 - HVangle;
-
-			// diagonal range
-			if (dVRatio < 1.0)
-				D_Range = Rad2Deg * Math.Asin(dVRatio) - DVangle;
-			else
-				D_Range = 90.0 - DVangle;
-
-			H_Range = Math.Min(dMaxAngle, H_Range);
-			D_Range = Math.Min(dMaxAngle, D_Range);
-
-			// area limits for a tilted view (tilt maxes out at 85 degrees)
-			dY1 = dY2 = -H_Range * (Math.Cos(DVangle * Deg2Rad) / Math.Cos((DVangle - dTilt) * Deg2Rad));
-			if (DVangle + dTilt >= 90.0)
-				dY3 = dY4 = Math.Min(dMaxAngle, 90 - DVangle);
-			else
-			{
-				double dTA = H_Range * (Math.Cos(DVangle * Deg2Rad) / Math.Cos((DVangle + dTilt) * Deg2Rad));
-				if (double.IsNaN(dTA) || dTA > 90.0 - DVangle)
-					dTA = 90.0 - DVangle;
-				dY3 = dY4 = Math.Min(dMaxAngle, dTA);
-			}
-
-			double dSkew = H_Range * Math.Sin(dTilt * Deg2Rad);
-			dX1 = dSkew - H_Range;
-			dX2 = H_Range - dSkew;
-			dX3 = H_Range + dSkew * (dY3 / (-dY1));
-			dX4 = -dX3;
-
-			if (dHead != 0)
-			{
-				double dCos = Math.Cos(dHead * Deg2Rad);
-				double dSin = Math.Sin(dHead * Deg2Rad);
-				Rotate(ref dX1, ref dY1, dCos, dSin);
-				Rotate(ref dX2, ref dY2, dCos, dSin);
-				Rotate(ref dX3, ref dY3, dCos, dSin);
-				Rotate(ref dX4, ref dY4, dCos, dSin);
-			}
-
-			dX1 += dX;
-			dX2 += dX;
-			dX3 += dX;
-			dX4 += dX;
-			dY1 += dY;
-			dY2 += dY;
-			dY3 += dY;
-			dY4 += dY;
-
-			// See if we can pick ray intersections on the four corners first
-			// If tilted or too close to poles or if any one fails fall back 
-			// to an estimate method
-
-			if (bForceRayIntersectionTest ||
-				(this.drawArgs.WorldCamera.Tilt.Degrees < 5.0 &&
-				 this.drawArgs.WorldCamera.Latitude.Degrees < 72 &&
-				 this.drawArgs.WorldCamera.Latitude.Degrees > -72))
-			{
-				Angle aX1, aY1; // lower left
-				Angle aX2, aY2; // lower right
-				Angle aX3, aY3; // upper right
-				Angle aX4, aY4; // upper left
-
-				this.drawArgs.WorldCamera.PickingRayIntersection(0, this.Height, out aY1, out aX1);
-				this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, this.Height, out aY2, out aX2);
-				this.drawArgs.WorldCamera.PickingRayIntersection(this.Width, 0, out aY3, out aX3);
-				this.drawArgs.WorldCamera.PickingRayIntersection(0, 0, out aY4, out aX4);
-
-				if (!(aX1.Radians == 0.0 && aX2.Radians == 0.0 && aX3.Radians == 0.0 && aX4.Radians == 0.0 && aY1.Radians == 0.0 && aY2.Radians == 0.0 && aY3.Radians == 0.0 && aY4.Radians == 0.0) &&
-					 (!Angle.IsNaN(aX1) && !Angle.IsNaN(aY1) && !Angle.IsNaN(aX2) && !Angle.IsNaN(aY2) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aY3) && !Angle.IsNaN(aX4) && !Angle.IsNaN(aY4)))
-				{
-					double dPX1 = aX1.Degrees;
-					double dPX2 = aX2.Degrees;
-					double dPX3 = aX3.Degrees;
-					double dPX4 = aX4.Degrees;
-
-					double dPY1 = aY1.Degrees;
-					double dPY2 = aY2.Degrees;
-					double dPY3 = aY3.Degrees;
-					double dPY4 = aY4.Degrees;
-
-					// Make sure the coordinates surround center close to edges
-					if (180.0 < Math.Abs(dX1 - dPX1))
-					{
-						if (dPX1 < dX1)
-							dPX1 += 360.0;
-						else
-							dPX1 -= 360.0;
-					}
-
-					if (180.0 < Math.Abs(dX2 - dPX2))
-					{
-						if (dPX2 < dX2)
-							dPX2 += 360.0;
-						else
-							dPX2 -= 360.0;
-					}
-
-					if (180.0 < Math.Abs(dX3 - dPX3))
-					{
-						if (dPX3 < dX3)
-							dPX3 += 360.0;
-						else
-							dPX3 -= 360.0;
-					}
-
-					if (180.0 < Math.Abs(dX4 - dPX4))
-					{
-						if (dPX4 < dX4)
-							dPX4 += 360.0;
-						else
-							dPX4 -= 360.0;
-					}
-
-					return new GeographicQuad(dPX1, dPY1, dPX2, dPY2, dPX3, dPY3, dPX4, dPY4);
-				}
-			}
-			return new GeographicQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
-		}
-
-		/// <summary>
-		/// Go to worldwind URI
-		/// </summary>
-		internal void Goto(WorldWind.Net.WorldWindUri uri)
-		{
-			GotoLatLon(
-				uri.Latitude.Degrees, uri.Longitude.Degrees, uri.Direction.Degrees,
-				uri.Altitude, uri.ViewRange.Degrees, uri.Tilt.Degrees);
-			drawArgs.WorldCamera.Bank = uri.Bank;
-			drawArgs.UpperLeftCornerText = uri.ToString();
-			CurrentWorld.RenderableObjects.Enable(uri.Layer);
-		}
 
 		/// <summary>
 		/// Moves to specified location.
@@ -791,25 +591,10 @@ namespace WorldWind
 				this.drawArgs.WorldCamera.Tilt.Degrees);
 		}
 
-		internal void GotoLatLonAltitude(double latitude, double longitude, double altitude)
-		{
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			this.drawArgs.WorldCamera.SetPosition(latitude, longitude,
-				this.drawArgs.WorldCamera.Heading.Degrees,
-				altitude,
-				this.drawArgs.WorldCamera.Tilt.Degrees);
-		}
-
 		public void GotoLatLonHeadingViewRange(double latitude, double longitude, double heading, double perpendicularViewRange)
 		{
 			double altitude = m_World.EquatorialRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
 			this.GotoLatLonHeadingAltitude(latitude, longitude, heading, altitude);
-		}
-
-		internal void GotoLatLonViewRange(double latitude, double longitude, double perpendicularViewRange)
-		{
-			double altitude = m_World.EquatorialRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
-			this.GotoLatLonHeadingAltitude(latitude, longitude, this.drawArgs.WorldCamera.Heading.Degrees, altitude);
 		}
 
 		internal void GotoLatLonHeadingAltitude(double latitude, double longitude, double heading, double altitude)
@@ -920,11 +705,6 @@ namespace WorldWind
 			{
 				Render();
 			}
-		}
-
-		internal void ClearDevice()
-		{
-			m_Device3d.Clear(ClearFlags.Target, 0, 0, 0);
 		}
 
 		System.Collections.ArrayList m_FrameTimes = new ArrayList();
@@ -1259,11 +1039,6 @@ namespace WorldWind
 		}
 
 		#region Event handlers
-
-		internal void HandleMouseWheel(MouseEventArgs e)
-		{
-			OnMouseWheel(e);
-		}
 
 		/// <summary>
 		/// Occurs when the mouse wheel moves while the control has focus.
