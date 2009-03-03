@@ -21,7 +21,7 @@ namespace Mapack
 		/// <summary>Constructs an empty matrix of the given size.</summary>
 		/// <param name="rows">Number of rows.</param>
 		/// <param name="columns">Number of columns.</param>
-		internal Matrix(int rows, int columns)
+		public Matrix(int rows, int columns)
 		{
 			this.rows = rows;
 			this.columns = columns;
@@ -36,7 +36,7 @@ namespace Mapack
 		/// <param name="rows">Number of rows.</param>
 		/// <param name="columns">Number of columns.</param>
 		/// <param name="value">Value to assign to the diagnoal elements.</param>
-		internal Matrix(int rows, int columns, double value)
+		public Matrix(int rows, int columns, double value)
 		{
 			this.rows = rows;
 			this.columns = columns;
@@ -79,7 +79,7 @@ namespace Mapack
 		}
 
 		/// <summary>Determines weather two instances are equal.</summary>
-		internal static bool Equals(Matrix left, Matrix right)
+		public static bool Equals(Matrix left, Matrix right)
 		{
 			if (((object) left) == ((object) right))
 			{
@@ -143,7 +143,7 @@ namespace Mapack
 		}
 
 		/// <summary>Return <see langword="true"/> if the matrix is a square matrix.</summary>
-		internal bool Square
+		public bool Square
 		{
 			get 
 			{ 
@@ -152,7 +152,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns <see langword="true"/> if the matrix is symmetric.</summary>
-		internal bool Symmetric
+		public bool Symmetric
 		{
 			get
 			{
@@ -195,7 +195,7 @@ namespace Mapack
 		/// <param name="endRow">End row index</param>
 		/// <param name="startColumn">Start column index</param>
 		/// <param name="endColumn">End column index</param>
-		internal Matrix Submatrix(int startRow, int endRow, int startColumn, int endColumn)
+		public Matrix Submatrix(int startRow, int endRow, int startColumn, int endColumn)
 		{
 			if ((startRow > endRow) || (startColumn > endColumn) ||  (startRow < 0) || (startRow >= this.rows) ||  (endRow < 0) || (endRow >= this.rows) ||  (startColumn < 0) || (startColumn >= this.columns) ||  (endColumn < 0) || (endColumn >= this.columns)) 
             { 
@@ -218,7 +218,7 @@ namespace Mapack
 		/// <summary>Returns a sub matrix extracted from the current matrix.</summary>
 		/// <param name="rowIndexes">Array of row indices</param>
 		/// <param name="columnIndexes">Array of column indices</param>
-		internal Matrix Submatrix(int[] rowIndexes, int[] columnIndexes)
+		public Matrix Submatrix(int[] rowIndexes, int[] columnIndexes)
 		{
 			Matrix X = new Matrix(rowIndexes.Length, columnIndexes.Length);
 			double[][] x = X.Array;
@@ -242,7 +242,7 @@ namespace Mapack
 		/// <param name="i0">Starttial row index</param>
 		/// <param name="i1">End row index</param>
 		/// <param name="c">Array of row indices</param>
-		internal Matrix Submatrix(int i0, int i1, int[] c)
+		public Matrix Submatrix(int i0, int i1, int[] c)
 		{
 			if ((i0 > i1) || (i0 < 0) || (i0 >= this.rows) || (i1 < 0) || (i1 >= this.rows)) 
 			{ 
@@ -271,7 +271,7 @@ namespace Mapack
 		/// <param name="r">Array of row indices</param>
 		/// <param name="j0">Start column index</param>
 		/// <param name="j1">End column index</param>
-		internal Matrix Submatrix(int[] r, int j0, int j1)
+		public Matrix Submatrix(int[] r, int j0, int j1)
 		{
 			if ((j0 > j1) || (j0 < 0) || (j0 >= columns) || (j1 < 0) || (j1 >= columns)) 
 			{ 
@@ -297,7 +297,7 @@ namespace Mapack
 		}
 
 		/// <summary>Creates a copy of the matrix.</summary>
-		internal Matrix Clone()
+		public Matrix Clone()
 		{
 			Matrix X = new Matrix(rows, columns);
 			double[][] x = X.Array;
@@ -313,7 +313,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the transposed matrix.</summary>
-		internal Matrix Transpose()
+		public Matrix Transpose()
 		{
 			Matrix X = new Matrix(columns, rows);
 			double[][] x = X.Array;
@@ -330,7 +330,7 @@ namespace Mapack
 
 		/// <summary>Returns the One Norm for the matrix.</summary>
 		/// <value>The maximum column sum.</value>
-		internal double Norm1
+		public double Norm1
 		{
 			get
 			{
@@ -351,7 +351,7 @@ namespace Mapack
 
 		/// <summary>Returns the Infinity Norm for the matrix.</summary>
 		/// <value>The maximum row sum.</value>
-		internal double InfinityNorm
+		public double InfinityNorm
 		{
 			get
 			{
@@ -369,7 +369,7 @@ namespace Mapack
 
 		/// <summary>Returns the Frobenius Norm for the matrix.</summary>
 		/// <value>The square root of sum of squares of all elements.</value>
-		internal double FrobeniusNorm
+		public double FrobeniusNorm
 		{
 			get
 			{
@@ -387,7 +387,7 @@ namespace Mapack
 		}
 
 		/// <summary>Unary minus.</summary>
-		internal static Matrix Negate(Matrix value)
+		public static Matrix Negate(Matrix value)
 		{
 			if (value == null)
 			{
@@ -412,7 +412,7 @@ namespace Mapack
 		}
 
 		/// <summary>Unary minus.</summary>
-		public static Matrix operator -(Matrix value)
+		public static Matrix operator-(Matrix value)
 		{
 			if (value == null)
 			{
@@ -423,19 +423,19 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix equality.</summary>
-		public static bool operator ==(Matrix left, Matrix right)
+		public static bool operator==(Matrix left, Matrix right)
 		{
 			return Equals(left, right);
 		}
 
 		/// <summary>Matrix inequality.</summary>
-		public static bool operator !=(Matrix left, Matrix right)
+		public static bool operator!=(Matrix left, Matrix right)
 		{
 			return !Equals(left, right);
 		}
 
 		/// <summary>Matrix addition.</summary>
-		internal static Matrix Add(Matrix left, Matrix right)
+		public static Matrix Add(Matrix left, Matrix right)
 		{
 			if (left == null)
 			{
@@ -469,7 +469,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix addition.</summary>
-		public static Matrix operator +(Matrix left, Matrix right)
+		public static Matrix operator+(Matrix left, Matrix right)
 		{
 			if (left == null)
 			{
@@ -485,7 +485,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix subtraction.</summary>
-		internal static Matrix Subtract(Matrix left, Matrix right)
+		public static Matrix Subtract(Matrix left, Matrix right)
 		{
 			if (left == null)
 			{
@@ -519,7 +519,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix subtraction.</summary>
-		public static Matrix operator -(Matrix left, Matrix right)
+		public static Matrix operator-(Matrix left, Matrix right)
 		{
 			if (left == null)
 			{
@@ -535,7 +535,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix-scalar multiplication.</summary>
-		internal static Matrix Multiply(Matrix left, double right)
+		public static Matrix Multiply(Matrix left, double right)
 		{
 			if (left == null)
 			{
@@ -561,7 +561,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix-scalar multiplication.</summary>
-		public static Matrix operator *(Matrix left, double right)
+		public static Matrix operator*(Matrix left, double right)
 		{
 			if (left == null)
 			{
@@ -572,7 +572,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix-matrix multiplication.</summary>
-		internal static Matrix Multiply(Matrix left, Matrix right)
+		public static Matrix Multiply(Matrix left, Matrix right)
 		{
 			if (left == null)
 			{
@@ -620,7 +620,7 @@ namespace Mapack
 		}
 
 		/// <summary>Matrix-matrix multiplication.</summary>
-		public static Matrix operator *(Matrix left, Matrix right)
+		public static Matrix operator*(Matrix left, Matrix right)
 		{
 			if (left == null)
 			{
@@ -636,13 +636,13 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the LHS solution vetor if the matrix is square or the least squares solution otherwise.</summary>
-		internal Matrix Solve(Matrix rightHandSide)
+		public Matrix Solve(Matrix rightHandSide)
 		{
 			return (rows == columns) ? new LuDecomposition(this).Solve(rightHandSide) : new QrDecomposition(this).Solve(rightHandSide);
 		}
 
 		/// <summary>Inverse of the matrix if matrix is square, pseudoinverse otherwise.</summary>
-		internal Matrix Inverse
+		public Matrix Inverse
 		{
 			get 
 			{ 
@@ -651,7 +651,7 @@ namespace Mapack
 		}
 
 		/// <summary>Determinant if matrix is square.</summary>
-		internal double Determinant
+		public double Determinant
 		{
 			get 
 			{ 
@@ -661,7 +661,7 @@ namespace Mapack
 
 		/// <summary>Returns the trace of the matrix.</summary>
 		/// <returns>Sum of the diagonal elements.</returns>
-		internal double Trace
+		public double Trace
 		{
 			get
 			{
@@ -675,7 +675,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns a matrix filled with random values.</summary>
-		internal static Matrix Random(int rows, int columns)
+		public static Matrix Random(int rows, int columns)
 		{
 			Matrix X = new Matrix(rows, columns);
 			double[][] x = X.Array;

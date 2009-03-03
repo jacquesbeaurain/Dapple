@@ -17,14 +17,14 @@ namespace Mapack
 	///		decomposition and sets two internal variables that can be queried using the
 	///		<see cref="Symmetric"/> and <see cref="PositiveDefinite"/> properties.
 	///	</remarks>
-	internal class CholeskyDecomposition
+	public class CholeskyDecomposition
 	{
 		private Matrix L;
 		private bool symmetric;
 		private	bool positiveDefinite;
 
 		/// <summary>Construct a Cholesky Decomposition.</summary>
-		internal CholeskyDecomposition(Matrix value)
+		public CholeskyDecomposition(Matrix value)
 		{
 			if (value == null)
 			{
@@ -75,7 +75,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns <see langword="true"/> if the matrix is symmetric.</summary>
-		internal bool Symmetric
+		public bool Symmetric
 		{
 			get 
 			{ 
@@ -84,7 +84,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns <see langword="true"/> if the matrix is positive definite.</summary>
-		internal bool PositiveDefinite
+		public bool PositiveDefinite
 		{
 			get 
 			{ 
@@ -93,7 +93,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the left triangular factor <c>L</c> so that <c>A = L * L'</c>.</summary>
-		internal Matrix LeftTriangularFactor
+		public Matrix LeftTriangularFactor
 		{
 			get 
 			{ 
@@ -106,7 +106,7 @@ namespace Mapack
 		/// <returns>Matrix <c>X</c> so that <c>L * L' * X = B</c>.</returns>
 		/// <exception cref="T:System.ArgumentException">Matrix dimensions do not match.</exception>
 		/// <exception cref="T:System.InvalidOperationException">Matrix is not symmetrix and positive definite.</exception>
-		internal Matrix Solve(Matrix value)
+		public Matrix Solve(Matrix value)
 		{
 			if (value == null)
 			{

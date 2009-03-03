@@ -111,7 +111,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns if the matrix is non-singular.</summary>
-		internal bool NonSingular
+		public bool NonSingular
 		{
 			get 
 			{
@@ -123,7 +123,7 @@ namespace Mapack
 		}
 	
 		/// <summary>Returns the determinant of the matrix.</summary>
-		internal double Determinant
+		public double Determinant
 		{
 			get
 			{
@@ -136,7 +136,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the lower triangular factor <c>L</c> with <c>A=LU</c>.</summary>
-		internal Matrix LowerTriangularFactor
+		public Matrix LowerTriangularFactor
 		{
 			get
 			{
@@ -156,7 +156,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the lower triangular factor <c>L</c> with <c>A=LU</c>.</summary>
-		internal Matrix UpperTriangularFactor
+		public Matrix UpperTriangularFactor
 		{
 			get
 			{
@@ -174,7 +174,7 @@ namespace Mapack
 		}     	
 
 		/// <summary>Returns the pivot permuation vector.</summary>
-		internal double[] PivotPermutationVector
+		public double[] PivotPermutationVector
 		{
 			get
 			{

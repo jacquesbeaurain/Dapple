@@ -20,7 +20,7 @@ namespace Mapack
 	/// The matrix V may be badly conditioned, or even singular, so the validity of the equation
 	/// <c>A=V*D*inverse(V)</c> depends upon the condition of <c>V</c>.
 	/// </remarks>
-	internal class EigenvalueDecomposition
+	public class EigenvalueDecomposition
 	{
 		private int n;           	// matrix dimension
 		private double[] d, e; 		// storage of eigenvalues.
@@ -31,7 +31,7 @@ namespace Mapack
 		private bool symmetric;
 
 		/// <summary>Construct an eigenvalue decomposition.</summary>
-		internal EigenvalueDecomposition(Matrix value)
+		public EigenvalueDecomposition(Matrix value)
 		{
 			if (value == null)
 			{
@@ -883,7 +883,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the real parts of the eigenvalues.</summary>
-		internal double[] RealEigenvalues
+		public double[] RealEigenvalues
 		{
 			get 
 			{ 
@@ -892,7 +892,7 @@ namespace Mapack
 		}
 	
 		/// <summary>Returns the imaginary parts of the eigenvalues.</summary>	
-		internal double[] ImaginaryEigenvalues
+		public double[] ImaginaryEigenvalues
 		{
 			get 
 			{ 
@@ -901,7 +901,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the eigenvector matrix.</summary>
-		internal Matrix EigenvectorMatrix
+		public Matrix EigenvectorMatrix
 		{
 			get 
 			{ 
@@ -910,7 +910,7 @@ namespace Mapack
 		}
 	
 		/// <summary>Returns the block diagonal eigenvalue matrix.</summary>
-		internal Matrix DiagonalMatrix
+		public Matrix DiagonalMatrix
 		{
 			get
 			{

@@ -20,7 +20,7 @@ namespace Mapack
 	///   never fail. The matrix condition number and the effective numerical
 	///   rank can be computed from this decomposition.
 	/// </remarks>
-	internal class SingularValueDecomposition
+	public class SingularValueDecomposition
 	{
 		private Matrix U;
 		private Matrix V;
@@ -29,7 +29,7 @@ namespace Mapack
 		private int n;
 	
 		/// <summary>Construct singular value decomposition.</summary>
-		internal SingularValueDecomposition(Matrix value)
+		public SingularValueDecomposition(Matrix value)
 		{
 			if (value == null)
 			{
@@ -470,7 +470,7 @@ namespace Mapack
 		}
 
 		/// <summary>Returns the condition number <c>max(S) / min(S)</c>.</summary>
-		internal double Condition
+		public double Condition
 		{
 			get 
 			{ 
@@ -479,7 +479,7 @@ namespace Mapack
 		}
 	
 		/// <summary>Returns the Two norm.</summary>
-		internal double Norm2
+		public double Norm2
 		{
 			get 
 			{ 
@@ -489,7 +489,7 @@ namespace Mapack
 
 		/// <summary>Returns the effective numerical matrix rank.</summary>
 		/// <value>Number of non-negligible singular values.</value>
-		internal int Rank
+		public int Rank
 		{
 			get
 			{
@@ -509,7 +509,7 @@ namespace Mapack
 		}
 
 		/// <summary>Return the one-dimensional array of singular values.</summary>		
-		internal double[] Diagonal
+		public double[] Diagonal
 		{
 			get 
 			{ 
