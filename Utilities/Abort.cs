@@ -10,7 +10,7 @@ using System.Text;
 namespace Utility
 {
 #if !DEBUG
-   internal class AbortUtility
+   public class AbortUtility
    {
       [DllImport("clrdump.dll", CharSet = CharSet.Unicode, SetLastError = true)]
       static extern Int32 CreateDump(Int32 ProcessId, string FileName,
@@ -32,7 +32,7 @@ namespace Utility
       /// Display an error message to the user, then shut down.
       /// </summary>
       /// <param name="msg">The message (reason for shutdown) to display to the user.</param>
-      internal static void Abort(Exception caught, Thread curthread)
+      public static void Abort(Exception caught, Thread curthread)
       {
 			if (caught is ThreadAbortException)
 			{
@@ -131,7 +131,7 @@ namespace Utility
          return result.ToString();
       }
 
-		internal static event MethodInvoker ProgramAborting;
+		public static event MethodInvoker ProgramAborting;
 
       /// <summary>
       /// Display an error message to the user, then shut down.

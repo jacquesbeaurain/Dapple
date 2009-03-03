@@ -2232,7 +2232,7 @@ namespace WorldWind
 			}
 		}
 
-		internal void KillD3DAndWorkerThread()
+		public void KillD3DAndWorkerThread()
 		{
 			if (m_WorkerThread != null)
 			{
