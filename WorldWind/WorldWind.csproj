@@ -172,14 +172,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Collab\Collab.csproj">
-      <Project>{B86848BD-12A5-44F9-8464-DB387C64D9A6}</Project>
-      <Name>Collab</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\JhuaplWorldWind\JhuaplWorldWind.csproj">
-      <Project>{0BFE5EF3-9A5A-441A-918F-E763070ECE46}</Project>
-      <Name>JhuaplWorldWind</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PluginSDK\PluginSDK.csproj">
       <Project>{30178337-6BBE-45A0-B7DF-73B2A46F06EE}</Project>
       <Name>PluginSDK</Name>
