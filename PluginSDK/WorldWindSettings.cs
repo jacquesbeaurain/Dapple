@@ -15,10 +15,9 @@ namespace WorldWind
 	/// <summary>
 	/// World Wind persisted settings.
 	/// </summary>
-	public class WorldWindSettings : WorldWind.Configuration.SettingsBase
+   public class WorldWindSettings : WorldWind.Configuration.SettingsBase
 	{
-		public WorldWindSettings()
-			: base()
+		public WorldWindSettings() : base()
 		{
 			
 		}
@@ -34,13 +33,13 @@ namespace WorldWind
 
       [Browsable(true), Category("Proxy")]
       [Description("Which HTTP protocol to use in communicating with servers.")]
-		public Net.WebDownload.HttpProtoVersion UseHTTPProtocol
+      public Net.WebDownload.HttpProtoVersion UseHTTPProtocol
       {
          get
          {
             return useHttpProtoVersion;
          }
-			set
+         set
          {
             this.useHttpProtoVersion = value;
             UpdateProxySettings();
@@ -132,7 +131,7 @@ namespace WorldWind
       private string newCachePath = "";
 		private int cacheSizeGigaBytes = 10;
 		private TimeSpan cacheCleanupInterval = TimeSpan.FromMinutes(60);
-		internal static readonly DateTime ApplicationStartTime = DateTime.Now;
+		public static readonly DateTime ApplicationStartTime = DateTime.Now;
 		private TimeSpan totalRunTime = TimeSpan.Zero;
 
 		[Browsable(false),Category("Cache")]
@@ -151,13 +150,13 @@ namespace WorldWind
 
       [Browsable(false), Category("Cache")]
       [Description("Directory to use for caching Image and Terrain files.")]
-		public string NewCachePath
+      public string NewCachePath
       {
          get
          {
             return newCachePath;
          }
-			set
+         set
          {
             newCachePath = value;
          }
@@ -186,7 +185,7 @@ namespace WorldWind
 			{
 				return cacheCleanupInterval;
 			}
-			private set
+			set
 			{
 				TimeSpan minimum = TimeSpan.FromMinutes(1);
 				if(value < minimum)
@@ -200,7 +199,7 @@ namespace WorldWind
 		/// </summary>
 		[Browsable(false)]
 		[XmlElement("CacheCleanupInterval", DataType="duration")] 
-		internal string CacheCleanupIntervalXml 
+		public string CacheCleanupIntervalXml 
 		{     
 			get     
 			{         
@@ -208,8 +207,8 @@ namespace WorldWind
 					return null;
 
 				return XmlConvert.ToString(cacheCleanupInterval);         
-			}
-			private set     
+			}     
+			set     
 			{
 				if(String.IsNullOrEmpty(value))
 					return;         
@@ -227,7 +226,7 @@ namespace WorldWind
 			{
 				return totalRunTime + DateTime.Now.Subtract(ApplicationStartTime);
 			}
-			private set
+			set
 			{
 				value = totalRunTime;
 			}
@@ -238,7 +237,7 @@ namespace WorldWind
 		/// </summary>
 		[Browsable(false)]
 		[XmlElement("TotalRunTime", DataType="duration")] 
-		internal string TotalRunTimeXml 
+		public string TotalRunTimeXml 
 		{     
 			get     
 			{         
@@ -246,8 +245,8 @@ namespace WorldWind
 					return null;
 
 				return XmlConvert.ToString(TotalRunTime);         
-			}
-			private set     
+			}     
+			set     
 			{         
 				if(String.IsNullOrEmpty(value))
 					return;         
@@ -280,13 +279,13 @@ namespace WorldWind
 
 		[Browsable(true), Category("DappleSearch")]
 		[Description("The URL of the DappleSearch server to search from.")]
-		public string DappleSearchURL
+      public string DappleSearchURL
       {
          get
          {
             return dappleSearchURL;
          }
-			set
+         set
          {
             // Fix: Dapple 1.0.20 had nascent DappleSearch code that would set this value to null.  When saved and loaded, this would
             // come back as setting it to empty string.  Going forward, disregard empty string.  DappleSearchURL must always be a
@@ -318,8 +317,8 @@ namespace WorldWind
 
       #region Miscellaneous settings
 
-      internal bool askLastViewAtStartup = true;
-      internal bool lastViewAtStartup = true;
+      public bool askLastViewAtStartup = true;
+      public bool lastViewAtStartup = true;
 
 		// Misc
 		private string defaultWorld = "Earth";
@@ -329,13 +328,13 @@ namespace WorldWind
 
 		[Browsable(true),Category("Miscellaneous")]
 		[Description("World to load on startup.")]
-		internal string DefaultWorld
+		public string DefaultWorld
 		{
 			get
 			{
 				return defaultWorld;
 			}
-			private set
+			set
 			{
 				defaultWorld = value;
 			}
@@ -343,13 +342,13 @@ namespace WorldWind
 
 		[Browsable(true),Category("Miscellaneous")]
 		[Description("Show Configuration Wizard on program startup.")]
-		public bool ConfigurationWizardAtStartup
+      public bool ConfigurationWizardAtStartup
       {
          get
          {
             return configurationWizardAtStartup;
          }
-			set
+         set
          {
             configurationWizardAtStartup = value;
          }
@@ -357,13 +356,13 @@ namespace WorldWind
 
        [Browsable(true), Category("Miscellaneous")]
        [Description("Update check date. Wil check the website for update only once per day, store last check time.")]
-		public DateTime UpdateCheckDate
+      public DateTime UpdateCheckDate
        {
            get
            {
               return updateCheckDate;
            }
-			 set
+           set
            {
               updateCheckDate = value;
            }
@@ -371,13 +370,13 @@ namespace WorldWind
 
       [Browsable(true), Category("Miscellaneous")]
       [Description("Load last view on program startup.")]
-		 public bool AskLastViewAtStartup
+      public bool AskLastViewAtStartup
       {
          get
          {
             return askLastViewAtStartup;
          }
-			set
+         set
          {
             askLastViewAtStartup = value;
          }
@@ -385,13 +384,13 @@ namespace WorldWind
 
       [Browsable(true), Category("Miscellaneous")]
       [Description("Load last view on program startup.")]
-		public bool LastViewAtStartup
+      public bool LastViewAtStartup
       {
          get
          {
             return lastViewAtStartup;
          }
-			set
+         set
          {
             lastViewAtStartup = value;
          }
@@ -412,7 +411,7 @@ namespace WorldWind
 			{
 				return configPath;
 			}
-			private set
+			set
 			{
 				configPath = value;
 			}
@@ -435,7 +434,7 @@ namespace WorldWind
 		/// <summary>
 		/// World Wind application base directory ("C:\Program Files\NASA\Worldwind v1.2\") 
 		/// </summary>
-		internal readonly string WorldWindDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+		public readonly string WorldWindDirectory = Path.GetDirectoryName(Application.ExecutablePath);
 
 		#endregion
 
