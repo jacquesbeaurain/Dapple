@@ -450,17 +450,6 @@ namespace WorldWind.Renderable
 				
 							break;
 						}
-                        if (ro is ShapeFileLayer)
-                        {
-                            ShapeFileLayer slayer = (ShapeFileLayer)ro;
-                            DrawArgs.Camera.SetPosition((slayer.North + slayer.South) / 2, (slayer.East + slayer.West) / 2);
-                            double perpendicularViewRange = (slayer.North - slayer.South > slayer.East - slayer.West ? slayer.North - slayer.South : slayer.East - slayer.West);
-                            double altitude = slayer.MaxAltitude;
-
-                            DrawArgs.Camera.Altitude = altitude;
-
-                            break;
-                        }
 					}
 				}
 			}

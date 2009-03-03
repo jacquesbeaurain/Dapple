@@ -139,18 +139,8 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BinaryTriangleTree.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="BoundaryLayer.cs" />
     <Compile Include="ConfigurationLoader.cs" />
     <Compile Include="ConvertDX.cs" />
-    <Compile Include="DataSource\DataRequest.cs" />
-    <Compile Include="DataSource\DataRequestHTTP.cs" />
-    <Compile Include="DataSource\DataStore.cs" />
-    <Compile Include="DataSource\QueueMonitor.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="DirectXProfiler.cs" />
     <Compile Include="GeographicBoundingBox.cs" />
     <Compile Include="BoundingBox.cs">
@@ -174,23 +164,13 @@
     <Compile Include="LineGraph.cs" />
     <Compile Include="LineString.cs" />
     <Compile Include="ModelFeature.cs" />
-    <Compile Include="PathLine.cs" />
     <Compile Include="PathList.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="PolygonFeature.cs" />
-    <Compile Include="PolygonLayer.cs" />
-    <Compile Include="PolygonTriangulation\AnalyticGeometryException.cs" />
-    <Compile Include="PolygonTriangulation\CLine.cs" />
-    <Compile Include="PolygonTriangulation\CPoint2D.cs" />
-    <Compile Include="PolygonTriangulation\CPolygon.cs" />
-    <Compile Include="PolygonTriangulation\CPolygonShape.cs" />
-    <Compile Include="PolygonTriangulation\Definition.cs" />
     <Compile Include="ProjectedVectorRenderer.cs" />
     <Compile Include="ProjectedVectorTile.cs" />
     <Compile Include="QuadTile.cs" />
     <Compile Include="QuadTileSet.cs" />
-    <Compile Include="ShapeFileLayer.cs" />
-    <Compile Include="ShapeLayer.cs" />
     <Compile Include="TerrainPath.cs" />
     <Compile Include="Terrain\GeoSpatialDownloadRequest.cs">
       <SubType>Code</SubType>
@@ -212,12 +192,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="KMLIcon.cs" />
-    <Compile Include="KMLReader\KMLLoader.cs" />
-    <Compile Include="KMLReader\KMLNetworkLink.cs" />
-    <Compile Include="KMLReader\KMLParser.cs" />
-    <Compile Include="ImageTileService.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="IRenderable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -252,7 +226,6 @@
     <Compile Include="RenderableObjectList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Renderable\Bar3D.cs" />
     <Compile Include="Renderable\GeoSpatialDownloadRequest.cs" />
     <Compile Include="ScreenOverlay.cs" />
     <Compile Include="SettingsBase.cs">
@@ -261,8 +234,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SunCalculator.cs" />
-    <Compile Include="SurfaceImage.cs" />
-    <Compile Include="SurfaceTile.cs" />
     <Compile Include="Terrain\NltTerrainAccessor.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -294,20 +265,13 @@
     <Compile Include="WFSNameColors.cs" />
     <Compile Include="WidgetCollection.cs" />
     <Compile Include="Widgets\ButtonWidget.cs" />
-    <Compile Include="Widgets\CompassWidget.cs" />
-    <Compile Include="Widgets\ControlWidget.cs" />
     <Compile Include="Widgets\FormWidget.cs" />
     <Compile Include="Widgets\IInteractive.cs" />
     <Compile Include="Widgets\IWidget.cs" />
     <Compile Include="Widgets\IWidgetCollection.cs" />
-    <Compile Include="Widgets\LabelWidget.cs" />
     <Compile Include="Widgets\PanelWidget.cs" />
-    <Compile Include="Widgets\PictureBox.cs" />
     <Compile Include="Widgets\RootWidget.cs" />
-    <Compile Include="Widgets\Scrollbar.cs" />
     <Compile Include="Widgets\SimpleTreeNodeWidget.cs" />
-    <Compile Include="Widgets\TextBox.cs" />
-    <Compile Include="Widgets\TextLabel.cs" />
     <Compile Include="Widgets\TreeNodeWidget.cs" />
     <Compile Include="Widgets\WidgetCollection.cs" />
     <Compile Include="Widgets\WidgetEnums.cs" />
@@ -325,11 +289,8 @@
     <Compile Include="WorldSettings.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WorldSurfaceRenderer.cs" />
     <Compile Include="WorldWind.Widgets.PictureBox.cs" />
     <Compile Include="WorldWind.Widgets.RootWidget.cs" />
-    <Compile Include="WorldWind.Widgets.TextBox.cs" />
-    <Compile Include="WorldWind.Widgets.TextLabel.cs" />
     <Compile Include="WorldWindow.Widgets.Form.cs" />
     <Compile Include="WorldWindow.Widgets.Utilities.cs" />
     <Compile Include="WorldWindSettings.cs">
@@ -338,10 +299,6 @@
     <Compile Include="WorldWindUri.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="DataSource\QueueMonitor.resx">
-      <DependentUpon>QueueMonitor.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="LayerManagerItemInfo.resx">
       <DependentUpon>LayerManagerItemInfo.cs</DependentUpon>
       <SubType>Designer</SubType>

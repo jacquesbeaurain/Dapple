@@ -132,10 +132,6 @@
     <Compile Include="LabelControl.designer.cs">
       <DependentUpon>LabelControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Location\GPSLocationTypeConverter.cs" />
-    <Compile Include="Location\LatitudeTypeConverter.cs" />
-    <Compile Include="Location\Location.cs" />
-    <Compile Include="Location\LongitudeTypeConverter.cs" />
     <Compile Include="Log.cs">
       <SubType>Code</SubType>
     </Compile>

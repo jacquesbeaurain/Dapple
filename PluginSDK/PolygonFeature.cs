@@ -7,9 +7,6 @@ using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
-using GeometryUtility;
-using PolygonCuttingEar;
-
 using Tao.OpenGl;
 using Utility;
 

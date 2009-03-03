@@ -10,6 +10,9 @@ namespace WorldWind
 {
 	internal class ProjectedVectorTile
 	{
+		private const float TileDrawDistance = 2.5f;
+		private const float TileSpreadFactor = 2.0f;
+
 		private static int TileSize = 256;
 		internal static string CachePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Cache");
 		bool m_Initialized = false;
@@ -125,227 +128,6 @@ namespace WorldWind
 			{
 				m_Disposing = false;
 			}
-		}
-
-		internal static System.Drawing.Drawing2D.HatchStyle getGDIHatchStyle(WorldWind.ShapeFillStyle shapeFillStyle)
-		{
-			if(shapeFillStyle == WorldWind.ShapeFillStyle.BackwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.BackwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Cross)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Cross;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DarkDownwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DarkDownwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DarkHorizontal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DarkHorizontal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DarkUpwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DarkUpwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DarkVertical)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DarkVertical;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DashedDownwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DashedDownwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DashedHorizontal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DashedHorizontal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DashedUpwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DashedUpwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DashedVertical)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DashedVertical;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DiagonalBrick)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DiagonalBrick;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DiagonalCross)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DiagonalCross;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Divot)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Divot;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DottedDiamond)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DottedDiamond;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.DottedGrid)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.DottedGrid;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.ForwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.ForwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Horizontal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Horizontal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LargeCheckerBoard)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LargeCheckerBoard;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LargeConfetti)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LargeConfetti;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LargeGrid)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LargeGrid;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LightDownwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LightDownwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LightHorizontal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LightHorizontal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LightUpwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LightUpwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.LightVertical)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.LightVertical;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Max)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Max;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Min)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Min;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.NarrowHorizontal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.NarrowHorizontal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.NarrowVertical)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.NarrowVertical;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.OutlinedDiamond)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.OutlinedDiamond;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent05)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent05;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent10)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent10;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent20)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent20;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent25)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent25;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent30)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent30;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent40)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent40;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent50)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent50;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent60)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent60;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent70)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent70;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent75)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent75;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent80)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent80;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Percent90)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Percent90;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Plaid)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Plaid;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Shingle)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Shingle;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.SmallCheckerBoard)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.SmallCheckerBoard;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.SmallConfetti)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.SmallConfetti;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.SmallGrid)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.SmallGrid;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.SolidDiamond)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.SolidDiamond;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Sphere)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Sphere;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Trellis)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Trellis;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Wave)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Wave;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.Weave)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.Weave;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.WideDownwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.WideDownwardDiagonal;
-			}
-			else if(shapeFillStyle == WorldWind.ShapeFillStyle.WideUpwardDiagonal)
-			{
-				return System.Drawing.Drawing2D.HatchStyle.WideUpwardDiagonal;
-			}
-			else
-			{
-				return System.Drawing.Drawing2D.HatchStyle.ZigZag;
-			}
-			
 		}
 
 		private Renderable.ImageLayer CreateImageLayer(double north, double south, double west, double east, DrawArgs drawArgs, string imagePath)
@@ -817,9 +599,9 @@ namespace WorldWind
 
 				if(!m_Initialized)
 				{
-					if(drawArgs.WorldCamera.ViewRange * 0.5f < Angle.FromDegrees(ShapeTileArgs.TileDrawDistance * tileSize) 
+					if(drawArgs.WorldCamera.ViewRange * 0.5f < Angle.FromDegrees(TileDrawDistance * tileSize) 
 						&& MathEngine.SphericalDistance(Angle.FromDegrees(centerLatitude), Angle.FromDegrees(centerLongitude), 
-						drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) < Angle.FromDegrees( ShapeTileArgs.TileSpreadFactor * tileSize * 1.25f )
+						drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) < Angle.FromDegrees( TileSpreadFactor * tileSize * 1.25f )
 						&& drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox)
 						)
 					{
@@ -850,9 +632,9 @@ namespace WorldWind
 					}
 
 					if(
-						drawArgs.WorldCamera.ViewRange < Angle.FromDegrees(ShapeTileArgs.TileDrawDistance*tileSize) && 
+						drawArgs.WorldCamera.ViewRange < Angle.FromDegrees(TileDrawDistance*tileSize) && 
 						MathEngine.SphericalDistance( Angle.FromDegrees(centerLatitude), Angle.FromDegrees(centerLongitude), 
-						drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) < Angle.FromDegrees( ShapeTileArgs.TileSpreadFactor*tileSize )
+						drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) < Angle.FromDegrees( TileSpreadFactor*tileSize )
 						&& drawArgs.WorldCamera.ViewFrustum.Intersects(BoundingBox)
 						)
 					{
@@ -913,8 +695,8 @@ namespace WorldWind
 
 				if(m_Initialized)
 				{
-					if(drawArgs.WorldCamera.ViewRange > Angle.FromDegrees( ShapeTileArgs.TileDrawDistance*tileSize*1.5f )
-						|| MathEngine.SphericalDistance(Angle.FromDegrees(centerLatitude), Angle.FromDegrees(centerLongitude), drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) > Angle.FromDegrees( ShapeTileArgs.TileSpreadFactor*tileSize*1.5f ))
+					if(drawArgs.WorldCamera.ViewRange > Angle.FromDegrees( TileDrawDistance*tileSize*1.5f )
+						|| MathEngine.SphericalDistance(Angle.FromDegrees(centerLatitude), Angle.FromDegrees(centerLongitude), drawArgs.WorldCamera.Latitude, drawArgs.WorldCamera.Longitude) > Angle.FromDegrees( TileSpreadFactor*tileSize*1.5f ))
 					{
 						if(this.Level != 0)
 						//{

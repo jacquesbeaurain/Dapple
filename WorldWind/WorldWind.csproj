@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{394E6BC1-62F8-4776-9FC5-25633A239433}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -129,9 +129,6 @@
     </Compile>
     <Compile Include="Compass3D.cs" />
     <Compile Include="CompassRose.cs" />
-    <Compile Include="KMLImporter.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <None Include="MeasureTool.cs" />
     <None Include="MeasureToolNG.cs">
       <SubType>Form</SubType>

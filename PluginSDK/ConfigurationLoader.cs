@@ -592,37 +592,6 @@ namespace WorldWind
 			return null;
 		}
 
-		private static ImageTileService getImageTileServiceFromXPathNodeIterator(XPathNodeIterator iter)
-		{
-			if (iter.Count > 0)
-			{
-				while (iter.MoveNext())
-				{
-					string serverUrl = getInnerTextFromFirstChild(iter.Current.Select("ServerUrl"));
-					string dataSetName = getInnerTextFromFirstChild(iter.Current.Select("DataSetName"));
-					string serverLogoFilePath = getInnerTextFromFirstChild(iter.Current.Select("ServerLogoFilePath"));
-
-					TimeSpan cacheExpiration = getCacheExpiration(iter.Current.Select("CacheExpirationTime"));
-
-					if (serverLogoFilePath != null && serverLogoFilePath.Length > 0 && !Path.IsPathRooted(serverLogoFilePath))
-					{
-						serverLogoFilePath = Path.Combine(
-							Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath),
-							serverLogoFilePath);
-					}
-
-
-					if (serverUrl != null &&
-						dataSetName != null)
-					{
-						return new ImageTileService(dataSetName, serverUrl, serverLogoFilePath, cacheExpiration);
-					}
-				}
-			}
-
-			return null;
-		}
-
 		private static ImageStore getImageStoreFromXPathNodeIterator(string name, XPathNodeIterator imageAccessorIter, RenderableObjectList parentRenderable, Cache cache)
 		{
 			double levelZeroTileSizeDegrees = ParseDouble(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("LevelZeroTileSizeDegrees")));

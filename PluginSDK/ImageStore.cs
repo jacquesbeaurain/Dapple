@@ -1,7 +1,6 @@
 using Microsoft.DirectX.Direct3D;
 using WorldWind.Net.Wms;
 using WorldWind.Renderable;
-using WorldWind.DataSource;
 using System;
 using System.IO;
 using Utility;

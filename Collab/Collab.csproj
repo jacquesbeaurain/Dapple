@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B86848BD-12A5-44F9-8464-DB387C64D9A6}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -78,7 +78,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CollabObj.xsd</DependentUpon>
     </Compile>
-    <Compile Include="jhuapl\Util\ClassificationBanner.cs" />
     <Compile Include="jhuapl\Whiteboard\DrawLayer.cs" />
     <Compile Include="jhuapl\Whiteboard\Hotspot.cs" />
     <Compile Include="jhuapl\Whiteboard\HotspotForm.cs">

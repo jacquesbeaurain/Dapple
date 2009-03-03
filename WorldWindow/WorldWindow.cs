@@ -298,7 +298,6 @@ using System;
 using WorldWind.Camera;
 using WorldWind.Menu;
 using WorldWind;
-using WorldWind.DataSource;
 using WorldWind.Net;
 using WorldWind.Net.Wms;
 using WorldWind.Interop;
@@ -1165,27 +1164,6 @@ namespace WorldWind
 
 			if (this.showDiagnosticInfo)
 			{
-				string bytesTransferred;
-				float bytes = DataRequest.TotalBytes;
-				if (bytes > 1024)
-				{
-					bytes /= 1024;
-					if (bytes > 1024)
-					{
-						bytes /= 1024;
-						if (bytes > 1024)
-						{
-							bytes /= 1024;
-							bytesTransferred = bytes.ToString("0.#") + "G";
-						}
-						else
-							bytesTransferred = bytes.ToString("0.#") + "M";
-					}
-					else
-						bytesTransferred = bytes.ToString("0.#") + "K";
-				}
-				else
-					bytesTransferred = bytes.ToString();
 
 				captionText +=
 					"\nAvailable Texture Memory: " + (m_Device3d.AvailableTextureMemory / 1024).ToString("N0") + " kB" +
@@ -1196,9 +1174,6 @@ namespace WorldWind
 					"\nRO: " + m_World.RenderableObjects.Count.ToString("f0") +
 					"\nmLat: " + this.cLat.Degrees.ToString() +
 						  "\nmLon: " + this.cLon.Degrees.ToString() +
-						  "\nTotal Data Requests: " + DataRequest.TotalRequests + ", " + DataRequest.CacheHits + " cache hits (" + string.Format("{0:f2}", 100.0 * DataRequest.CacheHits / DataRequest.TotalRequests) + " %)" +
-						  "\nCurrent Data Requests: " + DataStore.ActiveRequestCount + " active, " + DataStore.PendingRequestCount + " pending." +
-						  "\nBytes Transferred: " + bytesTransferred +
 						  "\n" + TimeKeeper.CurrentTimeUtc.ToLocalTime().ToLongTimeString();
 			}
 
@@ -2098,8 +2073,6 @@ namespace WorldWind
 
 				long startTicks = 0;
 				PerformanceTimer.QueryPerformanceCounter(ref startTicks);
-
-				DataStore.Update();
 
 				if (!supressUpdates)
 				{

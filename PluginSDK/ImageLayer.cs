@@ -487,7 +487,7 @@ namespace WorldWind.Renderable
 						return;
 				}
 
-				if (m_SurfaceImage == null && isInitialized && Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration) > 0.01f)
+				if (isInitialized && Math.Abs(this.verticalExaggeration - World.Settings.VerticalExaggeration) > 0.01f)
 				{
 					// Vertical exaggeration changed - rebuild mesh
 					this.verticalExaggeration = World.Settings.VerticalExaggeration;
@@ -536,18 +536,8 @@ namespace WorldWind.Renderable
 			set
 			{
 				m_opacity = value;
-
-				//	if(vertices==null)
-				//		return;
-
-				// Update mesh opacity
-				//	int opacityColor = m_opacity << 24;
-				//	for(int index = 0; index < vertices.Length; index++)
-				//		vertices[index].Color = opacityColor;
 			}
 		}
-
-		SurfaceImage m_SurfaceImage = null;
 
 		/// <summary>
 		/// Builds the image's mesh 
@@ -670,7 +660,7 @@ namespace WorldWind.Renderable
 			try
 			{
 
-				if (texture == null || m_SurfaceImage != null)
+				if (texture == null)
 					return;
 
 				drawArgs.device.SetTexture(0, this.texture);
@@ -1015,11 +1005,6 @@ namespace WorldWind.Renderable
 				downloadThread = null;
 			}
 
-			if (m_SurfaceImage != null)
-			{
-				m_ParentWorld.WorldSurfaceRenderer.RemoveSurfaceImage(m_SurfaceImage.ImageFilePath);
-				m_SurfaceImage = null;
-			}
 			if (this.texture != null)
 			{
 				this.texture.Dispose();

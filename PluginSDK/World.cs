@@ -30,29 +30,10 @@ namespace WorldWind
 		TerrainAccessor _terrainAccessor;
 		RenderableObjectList _renderableObjects;
 		private DateTime lastElevationUpdate = System.DateTime.Now;
-		WorldSurfaceRenderer m_WorldSurfaceRenderer = null;
 
 		#endregion
 
 		#region Properties
-		internal WorldSurfaceRenderer WorldSurfaceRenderer
-		{
-			get
-			{
-				return m_WorldSurfaceRenderer;
-			}
-		}
-		/*		internal string DataDirectory
-				{
-					get
-					{
-						return this._dataDirectory;
-					}
-					set
-					{
-						this._dataDirectory = value;
-					}
-				} */
 
 		/// <summary>
 		/// Whether this world is planet Earth.
@@ -274,10 +255,6 @@ namespace WorldWind
 			{
 				this.RenderableObjects.Update(drawArgs);
 			}
-			if (this.m_WorldSurfaceRenderer != null)
-			{
-				this.m_WorldSurfaceRenderer.Update(drawArgs);
-			}
 
 			if (this.m_projectedVectorRenderer != null)
 			{
@@ -369,11 +346,6 @@ namespace WorldWind
 			{
 				try
 				{
-					if (m_WorldSurfaceRenderer != null && World.Settings.UseWorldSurfaceRenderer)
-					{
-						m_WorldSurfaceRenderer.RenderSurfaceImages(drawArgs);
-					}
-
 					//  Old method -- problems with RenderPriority sorting
 					//RenderableObjects.Render(drawArgs);
 
@@ -569,11 +541,6 @@ namespace WorldWind
 			{
 				this.RenderableObjects.Dispose();
 				this.RenderableObjects = null;
-			}
-
-			if (m_WorldSurfaceRenderer != null)
-			{
-				m_WorldSurfaceRenderer.Dispose();
 			}
 
 			if (m_outerSphere != null)
