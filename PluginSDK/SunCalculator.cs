@@ -7,7 +7,7 @@ namespace WorldWind
 	/// <summary>
 	/// Summary description for SunCalculator.
 	/// </summary>
-	internal class SunCalculator
+	internal static class SunCalculator
 	{
 		internal static Point3d GetGeocentricPosition(System.DateTime utcDateTime)
 		{

@@ -706,11 +706,6 @@ namespace WorldWind.Renderable
 				return;
 			}
 
-			// VE Tiles are rectangular with respect to WW and top left is 0, 0
-			// For the purposes of the spiral algorithm the 0,0 row/col at the 
-			// bottom left is fine though, just increase the tilesize in longitude
-			bool blVEQTS = ImageStores[0] is VEImageStore;
-
 			// 'Spiral' from the centre tile outward adding tiles that's in the view
 			// Defer the updates to after the loop to prevent tiles from updating twice
 			// If the tilespread is huge we are likely looking at a small dataset in the view 
@@ -721,7 +716,7 @@ namespace WorldWind.Renderable
 			double dRowInc = ImageStores[0].LevelZeroTileSizeDegrees;
 			double dColInc = ImageStores[0].LevelZeroTileSizeDegrees;
 
-			if (!blVEQTS && iTileSpread > 10)
+			if (iTileSpread > 10)
 			{
 				iTileSpread = Math.Max(5, (int)Math.Ceiling(Math.Max(North - South, East - West) / (2.0 * ImageStores[0].LevelZeroTileSizeDegrees)));
 				iMiddleRow = MathEngine.GetRowFromLatitude(South + (North - South) / 2.0, ImageStores[0].LevelZeroTileSizeDegrees);
@@ -732,8 +727,6 @@ namespace WorldWind.Renderable
 				iMiddleRow = MathEngine.GetRowFromLatitude(drawArgs.WorldCamera.Latitude, ImageStores[0].LevelZeroTileSizeDegrees);
 				iMiddleCol = MathEngine.GetColFromLongitude(drawArgs.WorldCamera.Longitude, ImageStores[0].LevelZeroTileSizeDegrees);
 			}
-
-			if (blVEQTS) dColInc *= 2.0;
 
 
 			// --- Calculate the bounding box of the middle tile, and from this, its latitude and longitude size ---

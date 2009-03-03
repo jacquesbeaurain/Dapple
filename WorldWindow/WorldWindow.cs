@@ -306,7 +306,7 @@ using Utility;
 
 namespace WorldWind
 {
-	public class WorldWindow : Control, IGlobe
+	public class WorldWindow : Control
 	{
 		/// <summary>
 		/// Direct3D rendering m_Device3d
@@ -2092,36 +2092,6 @@ namespace WorldWind
 			}
 		}
 
-		#region IGlobe Members
-
-		public void SetLatLonGridShow(bool show)
-		{
-			World.Settings.ShowLatLonLines = show;
-		}
-
-		public void SetLayers(IList layers)
-		{
-			if (layers != null)
-			{
-				foreach (LayerDescriptor ld in layers)
-				{
-					this.CurrentWorld.SetLayerOpacity(ld.Category, ld.Name, (float)ld.Opacity * 0.01f);
-				}
-			}
-		}
-
-		public void SetVerticalExaggeration(double exageration)
-		{
-			World.Settings.VerticalExaggeration = (float)exageration;
-		}
-
-		public void SetViewDirection(String type, double horiz, double vert, double elev)
-		{
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-			this.drawArgs.WorldCamera.SetPosition(this.drawArgs.WorldCamera.Latitude.Degrees, this.drawArgs.WorldCamera.Longitude.Degrees, horiz,
-				this.drawArgs.WorldCamera.Altitude, vert);
-		}
-
 		public void SetViewPosition(double degreesLatitude, double degreesLongitude,
 			double metersElevation)
 		{
@@ -2129,27 +2099,6 @@ namespace WorldWind
 			this.drawArgs.WorldCamera.SetPosition(degreesLatitude, degreesLongitude, this.drawArgs.WorldCamera.Heading.Degrees,
 				metersElevation, this.drawArgs.WorldCamera.Tilt.Degrees);
 		}
-
-		public void SetWmsImage(WmsDescriptor imageA, WmsDescriptor imageB, double alpha)
-		{
-			// TODO:  Add WorldWindow.SetWmsImage implementation
-			if (imageA != null)
-			{
-				// TODO: Remove writes to console once Wms images are implemented.
-				System.Console.Write(imageA.Url.ToString() + " ");
-				System.Console.WriteLine(imageA.Opacity);
-			}
-			if (imageB != null)
-			{
-				// TODO: Remove writes to console once Wms images are implemented.
-				System.Console.Write(imageB.Url.ToString() + " ");
-				System.Console.Write(imageB.Opacity);
-				System.Console.Write(" alpha = ");
-				System.Console.WriteLine(alpha);
-			}
-		}
-
-		#endregion
 
 		bool m_FpsUpdate = false;
 		private void m_FpsTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

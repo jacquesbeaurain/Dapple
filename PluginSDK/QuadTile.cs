@@ -142,11 +142,7 @@ namespace WorldWind.Renderable
 			localOrigin.Z = (float)(Math.Round(localOrigin.Z / 10000) * 10000);
 
 
-			// VE Tiles are rectangular with respect to WW and top left is 0, 0
-			if (quadTileSet.ImageStores[0] is VEImageStore)
-				row = MathEngine.GetRowFromLatitude(-north, north - south);
-			else
-				row = MathEngine.GetRowFromLatitude((north + south) / 2.0, north - south);
+			row = MathEngine.GetRowFromLatitude((north + south) / 2.0, north - south);
 			col = MathEngine.GetColFromLongitude((east + west) / 2.0, east - west);
 
 			downloadRequests = new List<GeoSpatialDownloadRequest>();
@@ -1894,13 +1890,6 @@ namespace WorldWind.Renderable
 
 		}
 
-		public bool IsValidTile(string strFile)
-		{
-			if (quadTileSet.ImageStores[0] is VEImageStore)
-				return (quadTileSet.ImageStores[0] as VEImageStore).IsValidTile(strFile);
-			else
-				return true;
-		}
 		#endregion
 	}
 }

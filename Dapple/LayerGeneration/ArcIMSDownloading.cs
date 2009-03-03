@@ -72,7 +72,7 @@ namespace Dapple.LayerGeneration
             }
 
             m_tile.TileSet.NumberRetries = 0;
-            if (m_tile.IsValidTile(downloadInfo.SavedFilePath) && nOutputElement != null)
+            if (nOutputElement != null)
             {
                // Rename temp file to real name
                File.Delete(m_localFilePath);

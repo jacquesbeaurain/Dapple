@@ -97,33 +97,14 @@ namespace Dapple.DAP
 				}
 
 				m_tile.TileSet.NumberRetries = 0;
-				if (m_tile.IsValidTile(downloadInfo.SavedFilePath))
-				{
-					// Rename temp file to real name
-					File.Delete(m_localFilePath);
-					File.Move(downloadInfo.SavedFilePath, m_localFilePath);
 
-					// Make the tile reload the new image
-					m_tile.DownloadRequests.Remove(this);
-					m_tile.Initialize();
-				}
-				else
-				{
-					using (File.Create(m_localFilePath + ".txt"))
-					{ }
-					if (File.Exists(downloadInfo.SavedFilePath))
-					{
-						try
-						{
-							File.Delete(downloadInfo.SavedFilePath);
-						}
-						catch (Exception e)
-						{
-							Log.Write(Log.Levels.Error, "DGDR", "could not delete file " + downloadInfo.SavedFilePath + ":");
-							Log.Write(e);
-						}
-					}
-				}
+				// Rename temp file to real name
+				File.Delete(m_localFilePath);
+				File.Move(downloadInfo.SavedFilePath, m_localFilePath);
+
+				// Make the tile reload the new image
+				m_tile.DownloadRequests.Remove(this);
+				m_tile.Initialize();
 			}
 			catch (System.Net.WebException caught)
 			{
