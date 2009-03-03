@@ -6,7 +6,8 @@
     <ProjectGuid>{394E6BC1-62F8-4776-9FC5-25633A239433}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ApplicationIcon>nasa.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>WorldWind_GD</AssemblyName>
@@ -121,23 +122,9 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BMNG.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BmngAboutDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Compass3D.cs" />
     <Compile Include="CompassRose.cs" />
-    <None Include="MeasureTool.cs" />
-    <None Include="MeasureToolNG.cs">
-      <SubType>Form</SubType>
-    </None>
     <Compile Include="PluginEngine\MainApplication.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NativeMethods.cs">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="OverviewControl.cs">
       <SubType>Component</SubType>
@@ -156,33 +143,13 @@
     <Compile Include="PluginEngine\PluginListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="ScaleBarLegend.cs" />
-    <Compile Include="shapelib.cs" />
     <Compile Include="Splash.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Stars3D.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WhiteboardPlugin.cs" />
-    <Compile Include="WindowsControlMenuButton.cs" />
-    <EmbeddedResource Include="BMNG.resx">
-      <DependentUpon>BMNG.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BmngAboutDialog.resx">
-      <DependentUpon>BmngAboutDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MeasureToolNG.resx">
-      <DependentUpon>MeasureToolNG.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="OverviewControl.resx">
       <DependentUpon>OverviewControl.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -198,11 +165,6 @@
     <EmbeddedResource Include="PluginEngine\PluginListView.resx">
       <DependentUpon>PluginListView.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Splash.resx">
       <DependentUpon>Splash.cs</DependentUpon>
@@ -234,6 +196,9 @@
       <Project>{4C575E6F-27B6-4397-87C8-008742DF0E2D}</Project>
       <Name>WorldWindow</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
