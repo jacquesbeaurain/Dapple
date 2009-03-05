@@ -27,8 +27,6 @@ namespace WorldWind.Renderable
         float m_Width = 0;
         float m_Height = 0;
 		bool m_ShowHeader = true;
-        internal ScreenUnits OffsetXUnits = ScreenUnits.Pixels;
-        internal ScreenUnits OffsetYUnits = ScreenUnits.Pixels;
         internal ScreenUnits SizeXUnits = ScreenUnits.Pixels;
         internal ScreenUnits SizeYUnits = ScreenUnits.Pixels;
         internal ScreenUnits PositionXUnits = ScreenUnits.Pixels;

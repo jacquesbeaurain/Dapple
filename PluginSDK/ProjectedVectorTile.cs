@@ -14,7 +14,6 @@ namespace WorldWind
 		private const float TileSpreadFactor = 2.0f;
 
 		private static int TileSize = 256;
-		internal static string CachePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Cache");
 		bool m_Initialized = false;
 		bool m_Initializing = false;
 		bool m_Disposing = false;

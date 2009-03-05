@@ -18,8 +18,6 @@ namespace WorldWind.VisualControl
 		CustomVertex.TransformedColored[] progressRight = new Microsoft.DirectX.Direct3D.CustomVertex.TransformedColored[4];
 		float x;
 		float y;
-		float width;
-		float height;
 		float halfWidth;
 		float halfHeight;
 		static int backColor = Color.FromArgb(98,200,200,200).ToArgb();
@@ -34,8 +32,6 @@ namespace WorldWind.VisualControl
 		/// <param name="color">Color of the progress bar</param>
 		public ProgressBar(float width, float height)
 		{
-			this.width = width;
-			this.height = height;
 			this.halfWidth = width/2;
 			this.halfHeight = height/2;
 		}

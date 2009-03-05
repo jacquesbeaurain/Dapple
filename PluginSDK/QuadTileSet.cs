@@ -140,7 +140,6 @@ namespace WorldWind.Renderable
       internal float GrayscaleBrightness
       {
          get { return m_grayscaleBrightness; }
-         set { m_grayscaleBrightness = value; }
       }
 
       internal bool RenderGrayscale
@@ -299,21 +298,6 @@ namespace WorldWind.Renderable
       }
 
       /// <summary>
-      /// Destination blend when rendering non-opaque layer
-      /// </summary>
-      internal Blend DestinationBlend
-      {
-         get
-         {
-            return m_destinationBlend;
-         }
-         set
-         {
-            m_destinationBlend = value;
-         }
-      }
-
-      /// <summary>
       /// North bound for this QuadTileSet
       /// </summary>
       public double North
@@ -354,21 +338,6 @@ namespace WorldWind.Renderable
          get
          {
             return m_east;
-         }
-      }
-
-      /// <summary>
-      /// Controls if images are rendered using ColorKey (transparent areas)
-      /// </summary>
-      internal bool EnableColorKeying
-      {
-         get
-         {
-            return m_enableColorKeying;
-         }
-         set
-         {
-            m_enableColorKeying = value;
          }
       }
 
@@ -475,11 +444,6 @@ namespace WorldWind.Renderable
          {
             return m_imageStores;
          }
-         set
-         {
-            m_imageStores = value;
-         }
-
       }
 
       /// <summary>
@@ -509,25 +473,6 @@ namespace WorldWind.Renderable
       }
 
       /// <summary>
-      /// Path to the effect used to render this tileset; if null, use fixed function pipeline
-      /// </summary>
-      internal string EffectPath
-      {
-         get
-         {
-            return m_effectPath;
-         }
-         set
-         {
-            m_effectPath = Path.GetFullPath(value);
-            Log.Write(Log.Levels.Debug, string.Format("setting effect to {0}", m_effectPath));
-            // can't reload here because we need a valid DX device for that and EffectPath
-            // may be set before DX is initialized, so set null and reload in Update()
-            m_effect = null;
-         }
-      }
-
-      /// <summary>
       /// The effect used to render this tileset.
       /// </summary>
       internal Effect Effect
@@ -539,20 +484,6 @@ namespace WorldWind.Renderable
          set
          {
             m_effect = value;
-         }
-      }
-
-      internal bool EffectEnabled
-      {
-         get
-         {
-            return m_effectEnabled;
-         }
-         set
-         {
-            m_effectEnabled = value;
-            if (!m_effectEnabled)
-               m_effect = null;
          }
       }
 

@@ -16,21 +16,6 @@ namespace WorldWind.Terrain
       protected TerrainAccessor[] m_higherResolutionSubsets;
 
       /// <summary>
-      /// Terrain model name
-      /// </summary>
-      internal string Name
-      {
-         get
-         {
-            return m_name;
-         }
-         set
-         {
-            m_name = value;
-         }
-      }
-
-      /// <summary>
       /// North boundary
       /// </summary>
       internal double North
@@ -38,10 +23,6 @@ namespace WorldWind.Terrain
          get
          {
             return m_north;
-         }
-         set
-         {
-            m_north = value;
          }
       }
 
@@ -54,10 +35,6 @@ namespace WorldWind.Terrain
          {
             return m_south;
          }
-         set
-         {
-            m_south = value;
-         }
       }
 
       /// <summary>
@@ -69,10 +46,6 @@ namespace WorldWind.Terrain
          {
             return m_west;
          }
-         set
-         {
-            m_west = value;
-         }
       }
 
       /// <summary>
@@ -83,10 +56,6 @@ namespace WorldWind.Terrain
          get
          {
             return m_east;
-         }
-         set
-         {
-            m_east = value;
          }
       }
 
@@ -177,28 +146,6 @@ namespace WorldWind.Terrain
 
 		public virtual void Dispose()
       {
-      }
-
-      /// <summary>
-      /// This method appends to the array of higher resolution
-      /// subsets for runtime addition of terrain layers
-      /// </summary>
-      /// <param name="highressubset"></param>
-      internal void AddHigherResolutionSubset(TerrainAccessor newhighressubset)
-      {
-         //need to lock array here
-         if (m_higherResolutionSubsets == null)
-            m_higherResolutionSubsets = new TerrainAccessor[0];
-         lock (m_higherResolutionSubsets)
-         {
-            TerrainAccessor[] temp_highres = new TerrainAccessor[m_higherResolutionSubsets.Length + 1];
-            for (int i = 0; i < m_higherResolutionSubsets.Length; i++)
-            {
-               temp_highres[i] = m_higherResolutionSubsets[i];
-            }
-            temp_highres[temp_highres.Length - 1] = newhighressubset;
-            m_higherResolutionSubsets = temp_highres;
-         }
       }
    }
 }

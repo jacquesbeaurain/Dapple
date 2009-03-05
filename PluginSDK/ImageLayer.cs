@@ -27,7 +27,6 @@ namespace WorldWind.Renderable
 		protected double maxLat;
 		protected double minLon;
 		protected double maxLon;
-		World m_ParentWorld;
 		Stream m_TextureStream = null;
 
 		protected bool _disableZbuffer;
@@ -65,21 +64,6 @@ namespace WorldWind.Renderable
 		#region Properties
 
 		/// <summary>
-		/// Gets or sets the color used for transparent areas.
-		/// </summary>
-		/// <value></value>
-		internal int TransparentColor
-		{
-			get
-			{
-				return m_TransparentColor;
-			}
-			set
-			{
-				m_TransparentColor = value;
-			}
-		}
-		/// <summary>
 		/// The url of the image (when image is on network)
 		/// </summary>
 		public string ImageUrl
@@ -111,17 +95,6 @@ namespace WorldWind.Renderable
 					_imagePath = null;
 				else
 					_imagePath = value.Trim();
-			}
-		}
-
-		/// <summary>
-		/// Opacity (0..1)
-		/// </summary>
-		internal float OpacityPercent
-		{
-			get
-			{
-				return (float)this.m_opacity / 255;
 			}
 		}
 
@@ -205,21 +178,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		/// <summary>
-		/// Path or URL of layer legend image
-		/// </summary>
-		internal string LegendImagePath
-		{
-			get
-			{
-				return m_legendImagePath;
-			}
-			set
-			{
-				m_legendImagePath = value;
-			}
-		}
-
 		#endregion
 
 		float m_grayscaleBrightness = 0.0f;
@@ -233,7 +191,6 @@ namespace WorldWind.Renderable
 		internal bool RenderGrayscale
 		{
 			get { return m_renderGrayscale; }
-			set { m_renderGrayscale = value; }
 		}
 
 		internal TimeSpan CacheExpiration
@@ -267,7 +224,6 @@ namespace WorldWind.Renderable
 			TerrainAccessor terrainAccessor)
 			: base(name, parentWorld.Position, parentWorld.Orientation)
 		{
-			this.m_ParentWorld = parentWorld;
 			this.layerRadius = (float)parentWorld.EquatorialRadius + distanceAboveSurface;
 			this._imagePath = imagePath;
 			minLat = minLatitude;

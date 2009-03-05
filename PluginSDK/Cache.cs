@@ -15,7 +15,6 @@ namespace WorldWind
 		// default value for size where Cache cleanup stops is 1.5 Gigabytes(75% of max size)
 		internal long CacheLowerLimit = 1536L * 1024L * 1024L;
 		public string CacheDirectory;
-		internal TimeSpan CleanupFrequency;
 		Timer m_timer;
 
 		/// <summary>
@@ -29,7 +28,6 @@ namespace WorldWind
 			TimeSpan cleanupFrequencyInterval,
 			TimeSpan totalRunTime)
 		{
-			this.CleanupFrequency = cleanupFrequencyInterval;
 			this.CacheDirectory = cacheDirectory;
 			Directory.CreateDirectory(this.CacheDirectory);
 

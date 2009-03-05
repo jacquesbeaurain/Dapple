@@ -14,35 +14,6 @@ namespace WorldWind
       internal readonly BoundingSphere boundsphere = new BoundingSphere(new Point3d(0.0,0.0,0.0), 0.0);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.BoundingSphere"/> class.
-		/// </summary>
-		/// <param name="v0"></param>
-		/// <param name="v1"></param>
-		/// <param name="v2"></param>
-		/// <param name="v3"></param>
-		/// <param name="v4"></param>
-		/// <param name="v5"></param>
-		/// <param name="v6"></param>
-		/// <param name="v7"></param>
-		internal BoundingBox(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
-		{
-         Update(v0, v1, v2, v3, v4, v5, v6, v7);
-		}
-      internal void Update(Point3d v0, Point3d v1, Point3d v2, Point3d v3, Point3d v4, Point3d v5, Point3d v6, Point3d v7)
-      {
-         this.corners[0] = v0;
-         this.corners[1] = v1;
-         this.corners[2] = v2;
-         this.corners[3] = v3;
-         this.corners[4] = v4;
-         this.corners[5] = v5;
-         this.corners[6] = v6;
-         this.corners[7] = v7;
-
-         ComputeBoundSphere();
-      }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.BoundingSphere"/> class
 		/// from a set of lat/lon values (degrees)
 		/// </summary>
@@ -95,26 +66,6 @@ namespace WorldWind
                this.boundsphere.RadiusSq = distSq;
          }
       }
-
-		/// <summary>
-		/// Calculate the screen area (pixels) covered by the bottom of the bounding box.
-		/// </summary>
-		internal double CalcRelativeScreenArea(CameraBase camera)
-		{
-			Point3d a = camera.Project(corners[0]);
-			Point3d b = camera.Project(corners[2]);
-			Point3d c = camera.Project(corners[6]);
-			Point3d d = camera.Project(corners[4]);
-
-			Point3d ab = b - a;
-			Point3d ac = c - a;
-			Point3d ad = d - a;
-
-			double tri1SqArea = Point3d.cross(ab,ac).LengthSq; 
-			double tri2SqArea = Point3d.cross(ad,ac).LengthSq; 
-			// Real area = (sqrt(tri1SqArea)+sqrt(tri2SqArea))/2 but we're only interested in relative size
-			return tri1SqArea + tri2SqArea; 
-		}
 
 		public override string ToString()
       {

@@ -48,33 +48,12 @@ namespace WorldWind.Widgets
 		}
 
 		#region Properties
-        internal Alignment Alignment
-        {
-            get { return m_alignment; }
-            set { m_alignment = value; }
-        }
-		internal bool HideBorder
+      internal bool HideBorder
 		{
 			get{ return m_HideBorder; }
 			set{ m_HideBorder = value; }
 		}
-        internal bool HideHeader
-        {
-            get { return m_HideHeader; }
-            set { m_HideHeader = value; }
-        }
 
-		internal Microsoft.DirectX.Direct3D.Font TextFont
-		{
-			get
-			{
-				return m_TextFont;
-			}
-			set
-			{
-				m_TextFont = value;
-			}
-		}
 		public string Name
 		{
 			get
@@ -97,17 +76,7 @@ namespace WorldWind.Widgets
 				m_AutoHideHeader = value;
 			}
 		}
-		internal System.Drawing.Color HeaderColor
-		{
-			get
-			{
-				return m_HeaderColor;
-			}
-			set
-			{
-				m_HeaderColor = value;
-			}
-		}
+
 		internal int HeaderHeight
 		{
 			get
@@ -128,17 +97,6 @@ namespace WorldWind.Widgets
 			set
 			{
 				m_BorderColor = value;
-			}
-		}
-		internal System.Drawing.Color BackgroundColor
-		{
-			get
-			{
-				return m_BackgroundColor;
-			}
-			set
-			{
-				m_BackgroundColor = value;
 			}
 		}
 

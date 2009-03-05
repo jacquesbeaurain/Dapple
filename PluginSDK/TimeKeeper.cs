@@ -9,7 +9,6 @@ namespace WorldWind
 	{
 		static System.DateTime m_currentTimeUtc = System.DateTime.Now.ToUniversalTime();
 		static float m_timeMultiplier = 1.0f;
-		static bool m_enabled = false;
 		static System.Timers.Timer m_timer = null;
 		static float m_interval = 15;
 
@@ -27,25 +26,6 @@ namespace WorldWind
 			}
 		}
 
-		internal static bool Enabled
-		{
-			get{ return m_enabled; }
-			set
-			{
-				if(value != m_enabled)
-				{
-					if(value)
-					{
-						Start();
-					}
-					else
-					{
-						Stop();
-					}
-				}
-			}
-		}
-
 		internal static float TimeMultiplier
 		{
 			get{ return m_timeMultiplier; }
@@ -54,7 +34,6 @@ namespace WorldWind
 
 		public static void Start()
 		{
-			m_enabled = true;
 			if(m_timer == null)
 			{
 				m_timer = new System.Timers.Timer(m_interval);
@@ -65,7 +44,6 @@ namespace WorldWind
 
 		internal static void Stop()
 		{
-			m_enabled = false;
 			if(m_timer != null)
 				m_timer.Stop();
 		}

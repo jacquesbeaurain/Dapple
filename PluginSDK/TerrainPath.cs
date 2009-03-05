@@ -24,7 +24,6 @@ namespace WorldWind.Renderable
 		World _parentWorld;
 		BinaryReader _dataArchiveReader;
 		long _fileOffset;
-		long _fileSize;
 		TerrainAccessor _terrainAccessor;
 		float heightAboveSurface;
 		string terrainFileName;
@@ -41,27 +40,6 @@ namespace WorldWind.Renderable
 
 		List <Vector3> sphericalCoordinates = new List <Vector3>(); // x = lat, y = lon, z = height
         bool m_needsUpdate = false;
-
-		internal int LineColor
-		{
-			get { return lineColor; }
-		}
-
-		internal bool EnableLighting
-		{
-			get { return m_enableLighting; }
-			set { m_enableLighting = value; }
-		}
-
-		internal Vector3[] SphericalCoordinates
-		{
-			get{ return sphericalCoordinates.ToArray(); }
-		}
-
-        internal List<Vector3> SphericalCoordinatesList
-        {
-            get { return sphericalCoordinates; }
-        }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.TerrainPath"/> class.
@@ -135,7 +113,6 @@ namespace WorldWind.Renderable
 			this._maxDisplayAltitude = maxDisplayAltitude;
 			this._dataArchiveReader = dataArchiveReader;
 			this._fileOffset = fileOffset;
-			this._fileSize = fileSize;
 			this.heightAboveSurface = heightAboveSurface;
 			//this.terrainMapped = terrainMapped;
 			this.lineColor = lineColor.ToArgb();
@@ -157,56 +134,6 @@ namespace WorldWind.Renderable
 		{
 			this.verticalExaggeration = World.Settings.VerticalExaggeration;
 			this.isInitialized = true;
-		}
-
-        /// <summary>
-        /// Adds a new point to the terrain path
-        /// </summary>
-        /// <param name="x">Lat</param>
-        /// <param name="y">Lon</param>
-        /// <param name="z">Alt</param>
-        internal void Add(float x, float y, float z)
-        {
-            Vector3 item = new Vector3(x, y, z);
-            sphericalCoordinates.Add(item);
-            
-            // zero out bounds for 1st entry
-            if (sphericalCoordinates.Count == 1)
-            {
-                this.north = 0;
-                this.east = 0;
-                this.south = 0;
-                this.west = 0;
-            }
-
-            if (this.north < x)
-                this.north = x;
-            if (this.east < y)
-                this.east = y;
-            if (this.south > x)
-                this.south = x;
-            if (this.west > y)
-                this.west = y;
-
-            this.boundingBox = new BoundingBox(this.south, this.north, this.west, this.east,
-                (float)this._parentWorld.EquatorialRadius,
-                (float)(this._parentWorld.EquatorialRadius + this.verticalExaggeration * z));
-
-            // fiddle with last updated position to force update
-            lastUpdatedPosition.X = x;
-
-            this.isLoaded = true;
-            this.isInitialized = false;
-            this.m_needsUpdate = true;
-        }
-		internal List<Vector3> GetSphericalCoordinates()
-		{
-			float n = 0;
-			float s = 0;
-			float w = 0;
-			float e = 0;
-
-			return GetSphericalCoordinates(ref n, ref s, ref w, ref e);
 		}
 
 		internal List<Vector3> GetSphericalCoordinates(ref float northExtent, ref float southExtent, ref float westExtent, ref float eastExtent)

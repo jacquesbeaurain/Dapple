@@ -112,11 +112,6 @@ namespace WorldWind
 			get { return North - South; }
 		}
 
-		internal double Height
-		{
-			get { return MaximumAltitude - MinimumAltitude; }
-		}
-
 		public double CenterLatitude
 		{
 			get { return (North + South) / 2.0; }

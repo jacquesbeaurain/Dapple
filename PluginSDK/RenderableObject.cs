@@ -145,44 +145,6 @@ namespace WorldWind.Renderable
 		}
 
 		/// <summary>
-		/// Path for an icon for the object, such as an image to be used in the Active Layer window.
-		/// This can be different than the Thumbnail(e.g. an ImageLayer can have an IconImage, and no Thumbnail).
-		/// </summary>
-		internal string IconImagePath
-		{
-			get
-			{
-				return m_iconImagePath;
-			}
-			set
-			{
-				m_iconImagePath = value;
-			}
-		}
-
-		/// <summary>
-		/// The icon image referenced by IconImagePath. 
-		/// </summary>
-		internal Image IconImage
-		{
-			get
-			{
-				if(m_iconImage==null)
-				{
-					if(m_iconImagePath==null)
-						return null;
-					try
-					{
-						if(File.Exists(m_iconImagePath))
-							m_iconImage = ImageHelper.LoadImage(m_iconImagePath);
-					}
-					catch {}
-				}
-				return m_iconImage;
-			}
-		}
-
-		/// <summary>
 		/// Called when object is disabled.
 		/// </summary>
 		public abstract void Dispose();

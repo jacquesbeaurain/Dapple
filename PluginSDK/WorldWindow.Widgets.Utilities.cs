@@ -128,31 +128,5 @@ namespace WorldWind.Widgets
 				device.TextureState[0].ColorOperation = TextureOperation.Disable;
 				device.DrawUserPrimitives(PrimitiveType.TriangleStrip, verts.Length - 2, verts);
 			}
-
-			internal static void DrawSector(double startAngle, double endAngle, int centerX, int centerY, int radius, float z, int color, Device device)
-			{
-				int prec = 7;
-
-				CustomVertex.TransformedColored[] verts = new CustomVertex.TransformedColored[prec + 2];
-				verts[0].X = centerX;
-				verts[0].Y = centerY;
-				verts[0].Z = z;
-				verts[0].Color = color;
-				double angleInc = (double)(endAngle - startAngle) / prec;
-
-				for(int i = 0; i <= prec; i++)
-				{
-					verts[i + 1].X = (float)Math.Cos((double)(startAngle + angleInc * i))*radius + centerX;
-					verts[i + 1].Y = (float)Math.Sin((double)(startAngle + angleInc * i))*radius*(-1.0f) + centerY;
-					verts[i + 1].Z = z;
-					verts[i + 1].Color = color;
-				}
-
-				device.VertexFormat = CustomVertex.TransformedColored.Format;
-				device.TextureState[0].ColorOperation = TextureOperation.Disable;
-				device.DrawUserPrimitives(PrimitiveType.TriangleFan, verts.Length - 2, verts);
-			}
 		}
-
-	
 }

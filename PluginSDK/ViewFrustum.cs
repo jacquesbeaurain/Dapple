@@ -64,24 +64,6 @@ namespace WorldWind
             this.planes[count].Normalize();
 		}
 
-		/// <summary>
-		/// Test if a sphere intersects or is completely inside the frustum.
-		/// </summary>
-		/// <returns>true when the sphere intersects.</returns>
-		internal bool Intersects(BoundingSphere c)
-		{
-			foreach(Plane2d p in this.planes)
-			{
-				double distancePlaneToPoint = p.A * c.Center.X + p.B * c.Center.Y + p.C * c.Center.Z + p.D;
-            if (distancePlaneToPoint * distancePlaneToPoint < -c.RadiusSq)
-					// More than 1 radius outside the plane = outside
-					return false;
-			}
-
-			//else it's in view
-			return true;
-		}
-
       /// <summary>
       /// Test if a sphere intersects at least one plane in in the frustum.
       /// </summary>
@@ -113,44 +95,6 @@ namespace WorldWind
 					return false;
 
 			return true;
-		}
-
-		/// <summary>
-		/// Tests if the view frustum fully contains the bounding box.
-		/// </summary>
-		/// <returns>true when the box is complete enclosed by the frustum.</returns>
-		internal bool Contains(BoundingBox bb)
-		{
-         // Optimize by always checking bounding sphere first
-         if (!Intersects(bb.boundsphere))
-            return false;
-
-			//Code taken from Flip Code Article:
-			// http://www.flipcode.com/articles/article_frustumculling.shtml
-			int iTotalIn = 0;
-			foreach(Plane2d p in this.planes)
-			{
-				int iInCount = 8;
-				int iPtIn = 1;
-				for(int i = 0; i < 8; i++)
-				{
-					if(Point3d.dot(new Point3d(p.A,p.B,p.C), bb.corners[i]) + p.D < 0)
-					{
-						iPtIn = 0;
-						--iInCount;
-					}
-				}
-
-				if(iInCount == 0)
-					return false;
-
-				iTotalIn += iPtIn;
-			}
-
-			if(iTotalIn == 6)
-				return true;
-
-			return false;
 		}
 
 		/// <summary>

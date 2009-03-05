@@ -46,54 +46,6 @@ namespace WorldWind
 			}
 		}
 
-		internal bool AlphaKeyEnabled
-		{
-			get { return m_alphaKeyEnabled; }
-			set { m_alphaKeyEnabled = value; }
-		}
-
-		internal bool ColorKeyEnabled
-		{
-			get { return m_colorKeyEnabled; }
-			set { m_colorKeyEnabled = value; }
-		}
-
-		internal int ColorKey
-		{
-			get
-			{
-				return m_colorKey;
-			}
-			set
-			{
-				m_colorKey = value;
-			}
-		}
-
-		internal int AlphaKeyMin
-		{
-			get
-			{
-				return m_alphaKeyMin;
-			}
-			set
-			{
-				m_alphaKeyMin = value;
-			}
-		}
-
-		internal int AlphaKeyMax
-		{
-			get
-			{
-				return m_alphaKeyMax;
-			}
-			set
-			{
-				m_alphaKeyMax = value;
-			}
-		}
-
 		/// <summary>
 		/// Coverage of outer level 0 bitmaps (decimal degrees)
 		/// Level 1 has half the coverage, level 2 half of level 1 (1/4) etc.

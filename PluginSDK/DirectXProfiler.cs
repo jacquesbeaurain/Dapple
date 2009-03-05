@@ -49,29 +49,8 @@ namespace WorldWind
 #else
             private static bool enabled = false;
 #endif
-        /// <summary>
-        /// Whether or not the profiler output is enabled. You should set this
-        /// to false for release, since there's no point in draaing your app down
-        /// with profiler info calls.
-        /// </summary>
-        internal static bool Enabled
-        {
-            get { return enabled; }
-            set { enabled = value; }
-        }
 
         private static bool addLineInfo = false;
-        /// <summary>
-        /// Whether or not to add code-file line info to the events & markers sent
-        /// to the profiler. This can be useful for debugging large applications,
-        /// but as it is very costly and may be a big hit on performance you may
-        /// want to disable it.
-        /// </summary>
-        internal static bool AddLineInfo
-        {
-            get { return addLineInfo; }
-            set { addLineInfo = value; }
-        }
 
         #endregion
 

@@ -19,14 +19,6 @@ namespace WorldWind.Configuration
 			set { m_fileName = value; }
 		}
 
-		private string m_formatVersion; // Version of application that created file
-		[Browsable(false)]
-		internal string FormatVersion 
-		{
-			get { return m_formatVersion; }
-			set { m_formatVersion = value; }
-		}
-
 		// types of location supported
 		public enum LocationType 
 		{
@@ -82,8 +74,6 @@ namespace WorldWind.Configuration
 		/// </summary>
 		internal SettingsBase()
 		{
-			// experimental: store app version
-			m_formatVersion = Application.ProductVersion;
 		}
 
 

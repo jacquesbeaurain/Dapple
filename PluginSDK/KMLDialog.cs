@@ -16,7 +16,6 @@ namespace WorldWind
         private WebBrowser myBrowser;
         internal bool isVisible = false;
         internal bool HTMLIsSet = false;
-        private String HTML;
 
         internal KMLDialog()
         {
@@ -48,8 +47,6 @@ namespace WorldWind
             }
 
             myBrowser.Navigate("about:blank");
-            
-            HTML = Html;
 
             // create an IHTMLDocument2
             HtmlDocument htmlDoc = myBrowser.Document;

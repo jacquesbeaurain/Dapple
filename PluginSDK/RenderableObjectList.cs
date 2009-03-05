@@ -17,7 +17,6 @@ namespace WorldWind.Renderable
 		protected ArrayList m_children = new ArrayList();
 		
 		string m_DataSource = null;
-		TimeSpan m_RefreshInterval = TimeSpan.MaxValue;
 
 		World m_ParentWorld = null;
 		Cache m_Cache = null;
@@ -25,18 +24,8 @@ namespace WorldWind.Renderable
 		public bool ShowOnlyOneLayer;
 
 		protected bool m_blSortChildrenOnAdd = true;
-		internal bool SortChildrenOnAdd
-		{
-			get { return m_blSortChildrenOnAdd; }
-			set { m_blSortChildrenOnAdd = value; }
-		}
 
 		protected bool m_blAllowDuplicateNames = false;
-		internal bool AllowDuplicateNames
-		{
-			get { return m_blAllowDuplicateNames; }
-			set { m_blAllowDuplicateNames = value; }
-		}
 		
 		private bool m_disableExpansion = false;
 		internal bool DisableExpansion
@@ -72,7 +61,6 @@ namespace WorldWind.Renderable
 		{
 			isSelectable = true;
 			m_DataSource = dataSource;
-			m_RefreshInterval = refreshInterval;
 
 			m_ParentWorld = parentWorld;
 			m_Cache = cache;

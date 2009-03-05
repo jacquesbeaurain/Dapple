@@ -49,30 +49,11 @@ namespace WorldWind.Renderable
 		protected int m_renderColor;
 		protected ArrayList m_placenameFileList = new ArrayList();
 		protected Hashtable m_placenameFiles = new Hashtable();
-		protected Hashtable m_renderablePlacenames = new Hashtable();
 		protected WorldWindPlacename[] m_placeNames;
 		protected double m_altitude;
 		protected Texture m_iconTexture;
-		protected System.Drawing.Rectangle m_spriteSize;
 		protected FontDescription m_fontDescription;
 		protected DrawTextFormat m_textFormat = DrawTextFormat.None;
-
-		protected static int IconWidth = 48;
-		protected static int IconHeight = 48;
-
-		internal WorldWindPlacename[] PlaceNames
-		{
-			get { return m_placeNames; }
-		}
-
-		internal int Color
-		{
-			get { return m_defaultColor; }
-		}
-		internal FontDescription FontDescription
-		{
-			get { return m_fontDescription; }
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.TiledPlacenameSet"/> class.
@@ -169,7 +150,6 @@ namespace WorldWind.Renderable
 				using (Surface s = m_iconTexture.GetSurfaceLevel(0))
 				{
 					SurfaceDescription desc = s.Description;
-					m_spriteSize = new System.Drawing.Rectangle(0, 0, desc.Width, desc.Height);
 				}
 
 				m_sprite = new Sprite(drawArgs.device);
@@ -567,7 +547,6 @@ namespace WorldWind.Renderable
 		internal double west = -180.0f;
 		internal double east = 180.0f;
 		protected WorldWindPlacename[] m_placeNames = null;
-		protected string wfsBaseUrl;
 		protected string labelfield;
 		protected string typename;
 		protected World m_world;
@@ -589,7 +568,6 @@ namespace WorldWind.Renderable
 		{
 			//TODO:Validate basewfsurl
 			this.name = name;
-			this.wfsBaseUrl = wfsBaseUrl;
 			this.typename = typename;
 			this.labelfield = labelfield;
 			this.north = north;

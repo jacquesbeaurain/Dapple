@@ -37,9 +37,6 @@ namespace WorldWind.Renderable
             }
         }
 
-        internal string NormalIcon;
-
-        internal bool HasBeenUpdated = true;
 
         internal bool IsDescriptionVisible = false;
 
@@ -56,7 +53,6 @@ namespace WorldWind.Renderable
 		  public KMLIcon(string name, double latitude, double longitude, string normalicon, double heightAboveSurface)
             : base(name, latitude, longitude, heightAboveSurface)
 		{
-			NormalIcon = normalicon;
             AutoScaleIcon = true;
             Declutter = true;
 		}

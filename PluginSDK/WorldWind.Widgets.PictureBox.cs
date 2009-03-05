@@ -12,7 +12,6 @@ namespace WorldWind.Widgets
 	/// </summary>
 	internal class PictureBox : IWidget, IInteractive
 	{
-		string m_Text = "";
 		byte m_Opacity = 255;
 		System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
 		System.Drawing.Size m_Size = new System.Drawing.Size(0,0);
@@ -110,21 +109,6 @@ namespace WorldWind.Widgets
 			get
 			{
 				return m_ForeColor;
-			}
-			set
-			{
-				m_ForeColor = value;
-			}
-		}
-		internal string Text
-		{
-			get
-			{
-				return m_Text;
-			}
-			set
-			{
-				m_Text = value;
 			}
 		}
 		#endregion

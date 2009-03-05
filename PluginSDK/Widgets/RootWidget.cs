@@ -56,7 +56,6 @@ namespace WorldWind.NewWidgets
 		WorldWind.NewWidgets.IWidget m_parentWidget = null;
 		WorldWind.NewWidgets.IWidgetCollection m_ChildWidgets = new WidgetCollection();
 		System.Windows.Forms.Control m_ParentControl;
-		bool m_Initialized = false;
 
 		public RootWidget(System.Windows.Forms.Control parentControl) 
 		{
@@ -182,11 +181,6 @@ namespace WorldWind.NewWidgets
 		{
 			get { return m_tag; }
 			set { m_tag = value; }
-		}
-		internal bool IsInitialized
-		{
-			get { return m_Initialized;}
-			set { m_Initialized = value; }
 		}
 		#endregion
 

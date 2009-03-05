@@ -60,25 +60,6 @@ namespace WorldWind.VisualControl
 			}
 		}
 
-		/// <summary>
-		/// Loads a bitmap from the web in background and displays.
-		/// </summary>
-		internal void LoadImageInBackground( string url )
-		{
-			if(url != null && !url.ToLower().StartsWith("http://"))
-			{
-				// Local file
-				Image = Image.FromFile(url);
-				return;
-			}
-
-			oldText = Text;
-			Text = Text + ": Loading...";
-			WebDownload client = new WebDownload(url);
-		////	client.CompleteCallback += new DownloadCompleteHandler(DownloadComplete);
-			client.BackgroundDownloadMemory();
-		}
-
 		void DownloadComplete( WebDownload downloadInfo )
 		{
 			if(this.InvokeRequired)

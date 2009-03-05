@@ -190,10 +190,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-        internal string LocalFilePath
-        {
-            get { return m_localFilePath; }
-        }
 		  public IGeoSpatialDownloadTile Tile
 		{
 			get

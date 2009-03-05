@@ -29,7 +29,6 @@ namespace WorldWind
 		const double SemiMinorAxis = 6356752.31425;
 		TerrainAccessor _terrainAccessor;
 		RenderableObjectList _renderableObjects;
-		private DateTime lastElevationUpdate = System.DateTime.Now;
 
 		#endregion
 
@@ -426,29 +425,6 @@ namespace WorldWind
 			}
 		}
 
-		private void RenderStars(DrawArgs drawArgs, WorldWind.Renderable.RenderableObject renderable)
-		{
-			if (renderable is RenderableObjectList)
-			{
-				RenderableObjectList rol = (RenderableObjectList)renderable;
-				for (int i = 0; i < rol.ChildObjects.Count; i++)
-				{
-					RenderStars(drawArgs, (RenderableObject)rol.ChildObjects[i]);
-				}
-			}
-			else if (renderable.Name != null && renderable.Name.Equals("Starfield"))
-			{
-				try
-				{
-					renderable.Render(drawArgs);
-				}
-				catch (Exception ex)
-				{
-					Log.Write(ex);
-				}
-			}
-		}
-
 		private void Render(WorldWind.Renderable.RenderableObject renderable, WorldWind.Renderable.RenderPriority priority, DrawArgs drawArgs)
 		{
 			if (!renderable.IsOn || (renderable.Name != null && renderable.Name.Equals("Starfield")))
@@ -565,15 +541,6 @@ namespace WorldWind
 		}
 
 		/// <summary>
-		/// Computes the distance between two pairs of lat/longs in meters.
-		/// </summary>
-		internal double ApproxDistance(Angle latA, Angle lonA, Angle latB, Angle lonB)
-		{
-			double distance = equatorialRadius * ApproxAngularDistance(latA, lonA, latB, lonB).Radians;
-			return distance;
-		}
-
-		/// <summary>
 		/// Intermediate points on a great circle
 		/// In previous sections we have found intermediate points on a great circle given either
 		/// the crossing latitude or longitude. Here we find points (lat,lon) a given fraction of the
@@ -630,10 +597,9 @@ namespace WorldWind
 	{
 		internal float m_radius;
 		protected int m_numberSlices;
-		protected int m_numberSections;
 
-		internal static float m_fInnerRadius = 0;
-		internal static float m_fOuterRadius = 0;
+		internal static float m_fInnerRadius;
+		internal static float m_fOuterRadius;
 		internal static int TilesHigh = 4;
 		internal static int TilesWide = 8;
 
@@ -643,7 +609,6 @@ namespace WorldWind
 			{
 				m_radius = radius;
 				m_numberSlices = slices;
-				m_numberSections = sections;
 
 				Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
 				Point3d sunVector = new Point3d(
@@ -725,8 +690,6 @@ namespace WorldWind
 			internal BoundingBox BoundingBox = null;
 		}
 		System.Collections.Generic.List<MeshSubset> m_meshList = new System.Collections.Generic.List<MeshSubset>();
-
-		Vector3 m_lastSunPosition = Vector3.Empty;
 
 		System.Threading.Thread m_backgroundThread = null;
 		bool active = false;
@@ -1073,13 +1036,9 @@ namespace WorldWind
 		}
 
 		float DELTA = 1e-6f;
-		//static float[] m_opticalDepthBuffer = null;
 		static int m_nChannels = 4;
 		static int m_nWidth;				// The width of the buffer (x axis)
 		static int m_nHeight;				// The height of the buffer (y axis)
-		//static int m_nDepth = 0;				// The depth of the buffer (z axis)
-		//static int m_nDataType = 0;			// The data type stored in the buffer (i.e. GL_UNSIGNED_BYTE, GL_FLOAT)
-		static int m_nElementSize;			// The size of one element in the buffer
 		float m_fScale = 0;
 		float[] m_fWavelength = new float[3];
 		float[] m_fWavelength4 = new float[3];
@@ -1094,32 +1053,6 @@ namespace WorldWind
 
 		Point3d m_vLight;
 		Point3d m_vLightDirection;
-
-		private void UpdateColor(DrawArgs drawArgs, MeshSubset meshSubset, bool doHighResolution)
-		{
-			int blank = System.Drawing.Color.FromArgb(255, 0, 0, 0).ToArgb();
-
-			if (doHighResolution)
-			{
-				for (int i = 0; i < meshSubset.HigherResolutionVertices.Length; i++)
-				{
-					if (Point3d.dot(drawArgs.WorldCamera.Position, new Point3d(meshSubset.HigherResolutionVertices[i].X, meshSubset.HigherResolutionVertices[i].Y, meshSubset.HigherResolutionVertices[i].Z)) > 0)
-						SetColor(ref meshSubset.HigherResolutionVertices[i], drawArgs);
-					else
-						meshSubset.HigherResolutionVertices[i].Color = blank;
-				}
-			}
-			else
-			{
-				for (int i = 0; i < meshSubset.Vertices.Length; i++)
-				{
-					if (Point3d.dot(drawArgs.WorldCamera.Position, new Point3d(meshSubset.Vertices[i].X, meshSubset.Vertices[i].Y, meshSubset.Vertices[i].Z)) > 0)
-						SetColor(ref meshSubset.Vertices[i], drawArgs);
-					else
-						meshSubset.Vertices[i].Color = blank;
-				}
-			}
-		}
 
 		// -- Addition from Sky Gradient geometry (PM 2006-11-27)
 		// Rebuild sky mesh with updated colors
@@ -1236,9 +1169,7 @@ namespace WorldWind
 				double linear = (float)(stack - 1) / (stacks - 1f);
 				double k = 1 - Math.Cos((float)(stack - 1) / (stacks - 1f) * Math.PI / 2);
 				latitude = startLat + (k * k * k * (float)(endLat - startLat));
-				//double colorFactorZ = (float)(stack-1)/(stacks-1f); 	// coef zenith color
-				double colorFactorZ = linear; 				// coef zenith color
-				double colorFactorH = 1 - colorFactorZ;			// coef horizon color
+				double colorFactorH = 1 - linear;			// coef horizon color
 				double alphaFactor = 1 - (linear * linear * linear);	// coef alpha transparency
 				if (alphaFactor > .8) alphaFactor = .8f;
 				for (int slice = 0; slice <= slices; slice++)
@@ -1607,7 +1538,6 @@ namespace WorldWind
 			//m_nDepth = 1;
 			//m_nDataType = 4;
 			m_nChannels = 4;
-			m_nElementSize = m_nChannels * 4;
 			int nIndex = 0;
 			for (int nAngle = 0; nAngle < nSize; nAngle++)
 			{

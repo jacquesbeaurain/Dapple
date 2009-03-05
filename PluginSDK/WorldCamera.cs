@@ -166,33 +166,6 @@ namespace WorldWind.Camera
 			}
 		}
 
-		internal Angle TargetHeading
-		{
-			get { return this._targetHeading; }
-			set 
-			{
-				this._targetHeading = value; 
-			}
-		}
-		
-		internal Angle TargetLatitude
-		{
-			get { return this._targetLatitude; }
-			set { this._targetLatitude = value; }
-		}
-		
-		internal Angle TargetLongitude
-		{
-			get { return this._targetLongitude; }
-			set { this._targetLongitude = value; }
-		}
-		
-		internal Quaternion4d TargetOrientation
-		{
-			get { return this._targetOrientation; }
-			set { this._targetOrientation = value; }
-		}
-
 		public override Angle Fov
 		{
 			get { return this._targetFov; }
@@ -395,17 +368,6 @@ namespace WorldWind.Camera
 			this._targetDistance = this._distance;
 			this._targetAltitude = this._altitude;
 			this._targetTilt = this._tilt;
-		}
-
-		internal bool HasMomentum
-		{
-			get { return World.Settings.cameraHasMomentum; }
-			set { 
-				World.Settings.cameraHasMomentum = value; 
-				this._latitudeMomentum.Radians = 0;
-				this._longitudeMomentum.Radians = 0;
-				this._headingMomentum.Radians = 0;
-			}
 		}
 
 		public override void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)

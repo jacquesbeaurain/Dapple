@@ -366,30 +366,6 @@ namespace WorldWind.NewWidgets
 
 		#region Properties
 
-		internal Microsoft.DirectX.Direct3D.Font TextFont
-		{
-			get { return m_TextFont; }
-			set { m_TextFont = value; }
-		}
-
-		internal System.Drawing.Color HeaderColor
-		{
-			get { return m_HeaderColor; }
-			set { m_HeaderColor = value; }
-		}
-
-		internal int HeaderHeight
-		{
-			get { return m_headerHeight; }
-			set { m_headerHeight = value; }
-		}
-
-		internal System.Drawing.Color BorderColor
-		{
-			get { return m_BorderColor; }
-			set { m_BorderColor = value; }
-		}
-
 		public System.Drawing.Color BackgroundColor
 		{
 			get { return m_BackgroundColor; }

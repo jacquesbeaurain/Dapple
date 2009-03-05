@@ -26,7 +26,6 @@ namespace WorldWind
 		private ToolStripButton webBrowserGo;
 		private ToolStripButton webBrowserClose;
 		private ToolStripButton webBrowserStop;
-		private Splitter splitter;
 		
 		internal InternalWebBrowserPanel()
 		{
@@ -87,7 +86,6 @@ namespace WorldWind
 			this.webBrowserGo = new System.Windows.Forms.ToolStripButton();
 			this.webBrowserStop = new System.Windows.Forms.ToolStripButton();
 			this.webBrowserClose = new System.Windows.Forms.ToolStripButton();
-			this.splitter = new System.Windows.Forms.Splitter();
 			this.webBrowserToolStrip.SuspendLayout();
 			this.SuspendLayout();
 		

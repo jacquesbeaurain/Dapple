@@ -42,31 +42,6 @@ namespace WorldWind
 			}
 		}
 
-		internal System.Drawing.Color BackgroundColor
-		{
-			get
-			{
-				return m_BackgroundColor;
-			}
-			set
-			{
-				m_BackgroundColor = value;
-			}
-		}
-
-		internal System.Drawing.Color LineColor
-		{
-			get
-			{
-				return m_LineColor;
-			}
-			set
-			{
-				m_LineColor = value;
-				m_ResetVerts = true;
-			}
-		}
-
 		public System.Drawing.Point Location
 		{
 			get{ return m_Location; }

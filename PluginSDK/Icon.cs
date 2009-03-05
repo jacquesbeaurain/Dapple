@@ -222,29 +222,7 @@ namespace WorldWind.Renderable
 		}
 		protected int normalColor = Color.FromArgb(150, 255, 255, 255).ToArgb();
 
-		/// <summary>
-		/// An ID for this icon.  Depends on the plugin to assign but can be used to uniquely identify this icon
-		/// without having an incomprehensible name.
-		/// 
-		/// TODO: Name is not always unique...determine if this is a problem since it may be used as a key in things.
-		/// </summary>
-		internal object Id
-		{
-			get { return m_id; }
-			set { m_id = value; }
-		}
 		protected object m_id;
-
-		/// <summary>
-		/// Any user defined icon related data to hang onto.
-		/// 
-		/// TODO:  Should this be in RO?
-		/// </summary>
-		internal object Tag
-		{
-			get { return m_tag; }
-			set { m_tag = value; }
-		}
 		protected object m_tag;
 
 		/// <summary>
@@ -377,18 +355,6 @@ namespace WorldWind.Renderable
 		{
 			if (overlay != null)
 				overlays.Add(overlay);
-		}
-
-		internal void RemoveOverlay(ScreenOverlay overlay)
-		{
-			for (int i = 0; i < overlays.Count; i++)
-			{
-				ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
-				if (curOverlay.IconImagePath == overlay.IconImagePath && overlay.Name == curOverlay.Name)
-				{
-					overlays.RemoveAt(i);
-				}
-			}
 		}
 
 		/// <summary>

@@ -112,12 +112,6 @@ namespace WorldWind
 			set { m_altitudeMode = value; }
 		}
 
-		internal bool EnableLighting
-		{
-			get { return m_enableLighting; }
-			set { m_enableLighting = value; }
-		}
-
 		public System.Drawing.Color LineColor
 		{
 			get { return m_lineColor; }
@@ -147,20 +141,6 @@ namespace WorldWind
 				if (m_topVertices != null)
 				{
 					NeedsUpdate = true;
-				}
-			}
-		}
-
-		internal System.Drawing.Color PolygonColor
-		{
-			get { return m_polygonColor; }
-			set
-			{
-				m_polygonColor = value;
-				if (m_topVertices != null)
-				{
-					NeedsUpdate = true;
-					//					UpdateVertices();
 				}
 			}
 		}

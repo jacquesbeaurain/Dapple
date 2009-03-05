@@ -272,9 +272,7 @@ namespace WorldWind
 
 	public class WMSLayerStyle
    {
-      internal string description;
       internal string title;
-      internal string name;
 		public WMSLayerStyleLegendURL[] legendURL;
 
 		public override string ToString()
@@ -285,10 +283,7 @@ namespace WorldWind
 
 	public class WMSLayerStyleLegendURL
    {
-      internal string format;
 		public string href;
-      internal int width;
-      internal int height;
 
 		public override string ToString()
       {

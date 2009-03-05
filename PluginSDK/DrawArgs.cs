@@ -26,7 +26,6 @@ namespace WorldWind
 		public Font defaultDrawingFont;
 		internal System.Drawing.Font defaultSubTitleFont;
 		internal Font defaultSubTitleDrawingFont;
-		internal Font toolbarFont;
 		public int screenWidth;
 		public int screenHeight;
 		public static System.Drawing.Point LastMousePosition;
@@ -34,14 +33,11 @@ namespace WorldWind
 		public string UpperLeftCornerText = "";
 		CameraBase m_WorldCamera;
 		internal World m_CurrentWorld = null;
-		public static bool IsLeftMouseButtonDown = false;
-		public static bool IsRightMouseButtonDown = false;
+		public static bool IsLeftMouseButtonDown;
+		public static bool IsRightMouseButtonDown;
 		internal static DownloadQueue DownloadQueue = new DownloadQueue();
 		public static WorldWind.Widgets.RootWidget RootWidget = null;
 		  public static WorldWind.NewWidgets.RootWidget NewRootWidget = null;
-        internal int TexturesLoadedThisFrame = 0;
-		private static System.Drawing.Bitmap bitmap;
-		internal static System.Drawing.Graphics Graphics = null;
 
 		public bool RenderWireFrame = false;
 
@@ -68,7 +64,6 @@ namespace WorldWind
 			}
 		}
 
-        internal static World CurrentWorldStatic = null;
 		  public World CurrentWorld
 		{
 			get
@@ -78,7 +73,6 @@ namespace WorldWind
 			set
 			{
 				m_CurrentWorld = value;
-                CurrentWorldStatic = value;
 			}
 		}
 
@@ -86,16 +80,9 @@ namespace WorldWind
 		/// Absolute time of current frame render start (ticks)
 		/// </summary>
 		public static long CurrentFrameStartTicks;
-		
-		/// <summary>
-		/// Seconds elapsed between start of previous frame and start of current frame.
-		/// </summary>
-		internal static float LastFrameSecondsElapsed;
 
 		static CursorType mouseCursor;
 		static CursorType lastCursor;
-		bool repaint = true;
-		bool isPainting;
 		Hashtable fontList = new Hashtable();
 
 		public static Device Device = null;
@@ -120,11 +107,6 @@ namespace WorldWind
 			defaultSubTitleDrawingFont = new Font(device, defaultSubTitleFont);
 			if(defaultSubTitleDrawingFont==null)
 				defaultSubTitleDrawingFont = CreateFont( "", 8 );
-			
-			toolbarFont = CreateFont( World.Settings.ToolbarFontName, World.Settings.ToolbarFontSize, World.Settings.ToolbarFontStyle );
-		
-			bitmap = new System.Drawing.Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			DrawArgs.Graphics = System.Drawing.Graphics.FromImage(bitmap);
 		}
 
 		public void BeginRender()
@@ -132,20 +114,14 @@ namespace WorldWind
 			// Development variable to see the number of tiles drawn - Added for frustum culling testing
 			this.numberTilesDrawn = 0;
 
-			this.TexturesLoadedThisFrame = 0;
-
 			this.UpperLeftCornerText = "";
 			this.numBoundaryPointsRendered = 0;
 			this.numBoundaryPointsTotal = 0;
 			this.numBoundariesDrawn = 0;
-
-			this.isPainting = true;
 		}
 
 		public void EndRender()
 		{
-			Debug.Assert(isPainting);
-			this.isPainting = false;
 		}
 
 		/// <summary>
@@ -159,8 +135,6 @@ namespace WorldWind
 			// Calculate frame time
 			long previousFrameStartTicks = CurrentFrameStartTicks;
 			PerformanceTimer.QueryPerformanceCounter(ref CurrentFrameStartTicks);
-			LastFrameSecondsElapsed = (CurrentFrameStartTicks - previousFrameStartTicks) / 
-				(float)PerformanceTimer.TicksPerSecond;
 
 			// Display the render
 			device.Present();
@@ -283,32 +257,6 @@ namespace WorldWind
 					break;
 			}
 			lastCursor = mouseCursor;
-		}
-
-		/// <summary>
-		/// Returns the time elapsed since last frame render operation started.
-		/// </summary>
-		internal static float SecondsSinceLastFrame
-		{
-			get
-			{
-				long curTicks = 0;
-				PerformanceTimer.QueryPerformanceCounter( ref curTicks );
-				float elapsedSeconds = (curTicks - CurrentFrameStartTicks)/(float)PerformanceTimer.TicksPerSecond;
-				return elapsedSeconds;
-			}
-		}
-
-		internal bool Repaint
-		{
-			get
-			{
-				return this.repaint;
-			}
-			set
-			{
-				this.repaint = value;
-			}
 		}
 
 		#region IDisposable Members

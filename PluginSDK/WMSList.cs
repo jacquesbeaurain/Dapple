@@ -379,12 +379,6 @@ namespace WorldWind
 
                wmsLayer.Styles[i] = new WMSLayerStyle();
 
-               if (curStyle.HasAbstract2())
-                  wmsLayer.Styles[i].description = curStyle.Abstract2.Value.Value;
-
-               if (curStyle.HasName())
-                  wmsLayer.Styles[i].name = curStyle.Name.Value.Value;
-
                if (curStyle.HasTitle())
                   wmsLayer.Styles[i].title = curStyle.Title.Value.Value;
 
@@ -397,14 +391,6 @@ namespace WorldWind
                      WMS_MS_Capabilities.LegendURLType curLegend = curStyle.GetLegendURLAt(j);
 
                      wmsLayer.Styles[i].legendURL[j] = new WMSLayerStyleLegendURL();
-                     if (curLegend.HasFormat())
-                        wmsLayer.Styles[i].legendURL[j].format = curLegend.Format.Value.Value;
-
-                     if (curLegend.Haswidth())
-                        wmsLayer.Styles[i].legendURL[j].width = (int)curLegend.width.IntValue();
-
-                     if (curLegend.Hasheight())
-                        wmsLayer.Styles[i].legendURL[j].height = (int)curLegend.height.IntValue();
 
                      if (curLegend.HasOnlineResource())
                      {
@@ -559,11 +545,6 @@ namespace WorldWind
                capabilities_1_3_0.wms.StyleType curStyle = layer.GetStyleAt(i);
 
                wmsLayer.Styles[i] = new WMSLayerStyle();
-               if (curStyle.HasAbstract2())
-                  wmsLayer.Styles[i].description = curStyle.Abstract2.Value;
-
-               if (curStyle.HasName())
-                  wmsLayer.Styles[i].name = curStyle.Name.Value;
 
                if (curStyle.HasTitle())
                   wmsLayer.Styles[i].title = curStyle.Title.Value;
@@ -576,14 +557,6 @@ namespace WorldWind
                   {
                      capabilities_1_3_0.wms.LegendURLType curLegend = curStyle.GetLegendURLAt(j);
                      wmsLayer.Styles[i].legendURL[j] = new WMSLayerStyleLegendURL();
-                     if (curLegend.HasFormat())
-                        wmsLayer.Styles[i].legendURL[j].format = curLegend.Format.Value;
-
-                     if (curLegend.Haswidth())
-                        wmsLayer.Styles[i].legendURL[j].width = (int)curLegend.width.Value;
-
-                     if (curLegend.Hasheight())
-                        wmsLayer.Styles[i].legendURL[j].height = (int)curLegend.height.Value;
 
                      if (curLegend.HasOnlineResource())
                      {

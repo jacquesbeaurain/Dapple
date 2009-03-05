@@ -49,10 +49,6 @@ namespace WorldWind.Camera
       static Point3d cameraUpVector = new Point3d(0, 0, 1);
 		public Point3d ReferenceCenter = new Point3d(0, 0, 0);
 
-      // Camera Reset variables
-      static int lastResetTime; // Used by Reset() to keep track type of reset.
-      const int DoubleTapDelay = 3000; // Double tap max time (ms)
-
       // Camera changed callback
 		public event System.EventHandler CameraChanged;
 
@@ -100,12 +96,6 @@ namespace WorldWind.Camera
          {
             return m_WorldMatrix;
          }
-      }
-
-      internal bool IsPointGoto
-      {
-         get { return World.Settings.cameraIsPointGoto; }
-         set { World.Settings.cameraIsPointGoto = value; }
       }
 
 		public virtual Angle Latitude
@@ -294,8 +284,6 @@ namespace WorldWind.Camera
          get { return this._worldRadius; }
          set { this._worldRadius = value; }
       }
-
-      internal Point3d EyeDiff = Point3d.Empty;
 
       internal float curCameraElevation = 0;
       float targetCameraElevation = 0;
@@ -552,23 +540,14 @@ namespace WorldWind.Camera
          Fov = World.Settings.cameraFov;
 
          int curTime = Environment.TickCount;
-         if (true)//(curTime - lastResetTime < DoubleTapDelay)
-         {
-            // Was already reset (step 1) - do a full reset
-            if (Angle.IsNaN(_tilt))
-               _tilt.Radians = 0;
-            if (Angle.IsNaN(_heading))
-               _heading.Radians = 0;
-            if (Angle.IsNaN(_bank))
-               _bank.Radians = 0;
-            this.SetPosition(double.NaN, double.NaN, 0, 2 * this._worldRadius, 0, 0);
-         }
-			//else
-			//{
-			//   // Reset direction, tilt & bank
-			//   this.SetPosition(double.NaN, double.NaN, 0, double.NaN, 0, 0);
-			//}
-         lastResetTime = curTime;
+
+         if (Angle.IsNaN(_tilt))
+            _tilt.Radians = 0;
+         if (Angle.IsNaN(_heading))
+            _heading.Radians = 0;
+         if (Angle.IsNaN(_bank))
+            _bank.Radians = 0;
+         this.SetPosition(double.NaN, double.NaN, 0, 2 * this._worldRadius, 0, 0);
       }
 
       /// <summary>
@@ -689,11 +668,6 @@ namespace WorldWind.Camera
       internal Matrix4d AbsoluteWorldMatrix
       {
          get { return m_absoluteWorldMatrix; }
-      }
-
-      internal Matrix4d AbsoluteProjectionMatrix
-      {
-         get { return m_absoluteProjectionMatrix; }
       }
 
       /// <summary>
