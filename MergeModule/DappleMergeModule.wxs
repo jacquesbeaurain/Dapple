@@ -7,9 +7,6 @@
         <Component Id="AltovaGen.dll" Guid="4d3155f4-5d8b-4a1f-a2af-205aff8c3e59">
           <File Id="AltovaGen.dll" Name="AltovaGen.dll" Source="..\Dapple\bin\x86\Release\AltovaGen.dll" Vital="yes" KeyPath="yes" />
         </Component>
-        <Component Id="Collab.dll" Guid="baf39509-ea78-4d11-850c-e2a1c775ad9a">
-          <File Id="Collab.dll" Name="Collab.dll" Source="..\Dapple\bin\x86\Release\Collab.dll" Vital="yes" KeyPath="yes" />
-        </Component>
         <Component Id="dapxmlclient.dll" Guid="66d3dfcc-cd95-4067-9561-a995f7d7e5dd">
           <File Id="dapxmlclient.dll" Name="dapxmlclient.dll" Source="..\Dapple\bin\x86\Release\dapxmlclient.dll" Vital="yes" KeyPath="yes" />
         </Component>
@@ -18,9 +15,6 @@
         </Component>
         <Component Id="CreateSecureDAPToken.dll" Guid="861130B0-4531-4973-A4D2-74B3066DEF4D">
           <File Id="CreateSecureDAPToken.dll" Name="CreateSecureDAPToken.dll" Source="..\Dapple\bin\x86\Release\CreateSecureDAPToken.dll" Vital="yes" KeyPath="yes" />
-        </Component>
-        <Component Id="JhuaplWorldWind.dll" Guid="9ff344bb-7c4c-417e-ae07-d04d307e301d">
-          <File Id="JhuaplWorldWind.dll" Name="JhuaplWorldWind.dll" Source="..\Dapple\bin\x86\Release\JhuaplWorldWind.dll" Vital="yes" KeyPath="yes" />
         </Component>
         <Component Id="Mapack.dll" Guid="157c47ef-dc00-40c1-be34-768247dd525a">
           <File Id="Mapack.dll" Name="Mapack.dll" Source="..\Dapple\bin\x86\Release\Mapack.dll" Vital="yes" KeyPath="yes" />
