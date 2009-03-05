@@ -128,12 +128,12 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// CountHeight property value
 		/// </summary>
-		protected bool m_countHeight = false;
+		protected bool m_countHeight;
 
 		/// <summary>
 		/// CountWidth property value
 		/// </summary>
-		protected bool m_countWidth = false;
+		protected bool m_countWidth;
 
 		/// <summary>
 		/// Parent widget property value
@@ -153,7 +153,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Flag indicating if initialization is required
 		/// </summary>
-		protected bool m_isInitialized = false;
+		protected bool m_isInitialized;
 
 		#endregion
 
@@ -212,7 +212,7 @@ namespace WorldWind.NewWidgets
 		/// Height of title bar
 		/// </summary>
 		protected int m_headerHeight = 15;
-		protected int m_currHeaderHeight = 0;
+		protected int m_currHeaderHeight;
 
 		protected int m_leftPadding = 2;
 		protected int m_rightPadding = 1;
@@ -226,18 +226,18 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		protected int m_scrollbarWidth = 20;
 
-		protected int m_vScrollbarPos = 0;
-		protected int m_vScrollbarHeight = 0;
-		protected double m_vScrollbarPercent = 0.0;
+		protected int m_vScrollbarPos;
+		protected int m_vScrollbarHeight;
+		protected double m_vScrollbarPercent;
 
 		// where we grabbed the scroll bar in a drag
-		protected int m_vScrollbarGrabPosition = 0;
+		protected int m_vScrollbarGrabPosition;
 
 		// True if the vertical scroll bar must be visible because the client height is too small
-		protected bool m_showVScrollbar = false;
+		protected bool m_showVScrollbar;
 
 		// True if we are currently dragging the scroll bar
-		protected bool m_isVScrolling = false;
+		protected bool m_isVScrolling;
 
 		#endregion
 
@@ -248,18 +248,18 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		protected int m_scrollbarHeight = 20;
 
-		protected int m_hScrollbarPos = 0;
-		protected int m_hScrollbarWidth = 0;
-		protected double m_hScrollbarPercent = 0.0;
+		protected int m_hScrollbarPos;
+		protected int m_hScrollbarWidth;
+		protected double m_hScrollbarPercent;
 
 		// where we grabbed the scroll bar in a drag
-		protected int m_hScrollbarGrabPosition = 0;
+		protected int m_hScrollbarGrabPosition;
 
 		// True if the horizontal scroll bar must be visible because the client width is too small
-		protected bool m_showHScrollbar = false;
+		protected bool m_showHScrollbar;
 
 		// True if we are currently dragging the scroll bar
-		protected bool m_isHScrolling = false;
+		protected bool m_isHScrolling;
 
 		#endregion
 
@@ -284,7 +284,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// True if we're dragging the form around
 		/// </summary>
-		protected bool m_isDragging = false;
+		protected bool m_isDragging;
 
 		/// <summary>
 		/// Last point where the mouse was clicked (mousedown).
@@ -301,10 +301,10 @@ namespace WorldWind.NewWidgets
 		/// </summary>
 		protected ResizeDirection m_resize = ResizeDirection.None;
 
-		protected int m_distanceFromTop = 0;
-		protected int m_distanceFromBottom = 0;
-		protected int m_distanceFromLeft = 0;
-		protected int m_distanceFromRight = 0;
+		protected int m_distanceFromTop;
+		protected int m_distanceFromBottom;
+		protected int m_distanceFromLeft;
+		protected int m_distanceFromRight;
 
 		#endregion
 
@@ -328,7 +328,7 @@ namespace WorldWind.NewWidgets
 		/// <summary>
 		/// Whether or not to hide the header when form doesn't have focus.
 		/// </summary>
-		  public bool AutoHideHeader = false;
+		  public bool AutoHideHeader;
 
 		/// <summary>
 		/// Minimum drawing size
@@ -354,11 +354,6 @@ namespace WorldWind.NewWidgets
 		/// True if we allow the showing of the horizontal scroll bar (clips otherwise)
 		/// </summary>
 		public bool HorizontalScrollbarEnabled = true;
-
-		/// <summary>
-		/// Flag that indicates this form should get deleted on close
-		/// </summary>
-		internal bool DestroyOnClose = false;
 
 		public WidgetEnums.AnchorStyles Anchor = WidgetEnums.AnchorStyles.None;
 
@@ -1514,16 +1509,6 @@ namespace WorldWind.NewWidgets
 				Visible = false;
                 m_isDragging = false;
                 
-                if (DestroyOnClose)
-				{
-					Enabled = false;
-
-					WidgetCollection parentCollection = (WidgetCollection) m_parentWidget;
-					if (parentCollection != null)
-						parentCollection.Remove(this);
-
-					this.Dispose();
-				}
                 m_lastMouseDownPosition = System.Drawing.Point.Empty;
                 return true;
 			}

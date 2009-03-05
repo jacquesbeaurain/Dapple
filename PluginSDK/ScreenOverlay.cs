@@ -24,8 +24,8 @@ namespace WorldWind.Renderable
 		ScreenAlignment alignment = ScreenAlignment.Left;
 
 		string clickableUrl = null;
-        float m_Width = 0;
-        float m_Height = 0;
+        float m_Width;
+        float m_Height;
 		bool m_ShowHeader = true;
         internal ScreenUnits SizeXUnits = ScreenUnits.Pixels;
         internal ScreenUnits SizeYUnits = ScreenUnits.Pixels;
@@ -36,11 +36,11 @@ namespace WorldWind.Renderable
         float m_StartY = 0;
 		string m_ImageUri = null;
 		string m_SaveFilePath = null;
-		double m_RefreshTimeSec = 0;
-		bool m_HideBorder = false;
+		double m_RefreshTimeSec;
+		bool m_HideBorder;
 		System.Drawing.Color m_BorderColor = System.Drawing.Color.White;
-        float m_offsetX = 0;
-        float m_offsetY = 0;
+        float m_offsetX;
+        float m_offsetY;
 		internal System.Drawing.Color BorderColor
 		{
 			get{ return (overlay == null ? m_BorderColor : overlay.BorderColor); }

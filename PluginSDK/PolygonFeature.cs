@@ -18,24 +18,24 @@ namespace WorldWind
 	internal class PolygonFeature : WorldWind.Renderable.RenderableObject
 	{
 		System.Drawing.Color m_polygonColor = System.Drawing.Color.Yellow;
-		double m_distanceAboveSurface = 0;
+		double m_distanceAboveSurface;
 		float m_verticalExaggeration = World.Settings.VerticalExaggeration;
-		double m_minimumDisplayAltitude = 0;
+		double m_minimumDisplayAltitude;
 		double m_maximumDisplayAltitude = double.MaxValue;
 		System.Drawing.Color m_outlineColor = System.Drawing.Color.Black;
-		bool m_outline = false;
+		bool m_outline;
 		float m_outlineWidth = 1.0f;
 		LineFeature[] m_lineFeature = null;
 		AltitudeMode m_altitudeMode = AltitudeMode.ClampedToGround;
 		internal BoundingBox BoundingBox = null;
-		bool m_extrude = false;
+		bool m_extrude;
 		bool m_fill = true;
 		LinearRing m_outerRing = null;
 		LinearRing[] m_innerRings = null;
 		Vector3 m_localOrigin;
 		bool m_extrudeUpwards;
 		double m_extrudeHeight = 1000;
-		bool m_extrudeToGround = false;
+		bool m_extrudeToGround;
 
 		/// <summary>
 		/// Whether polygon should be extruded

@@ -25,8 +25,8 @@ namespace WorldWind.Renderable
 	{
 		# region private variables
 
-		protected bool m_isUpdated = false;
-		protected bool m_newTexture = false;
+		protected bool m_isUpdated;
+		protected bool m_newTexture;
 
 		protected Point3d m_groundPoint;
 		protected Line m_groundStick;
@@ -62,7 +62,7 @@ namespace WorldWind.Renderable
 			get { return m_nameAlwaysVisible; }
 			set { m_nameAlwaysVisible = value; }
 		}
-		protected bool m_nameAlwaysVisible = false;
+		protected bool m_nameAlwaysVisible;
 
 		/// <summary>
 		/// Whether or not this icon should be rotated.
@@ -72,7 +72,7 @@ namespace WorldWind.Renderable
 			get { return m_isRotated; }
 			set { m_isRotated = value; }
 		}
-		protected bool m_isRotated = false;
+		protected bool m_isRotated;
 
 		/// <summary>
 		/// The angle of rotation to display the icon's texture in degrees.
@@ -125,7 +125,7 @@ namespace WorldWind.Renderable
 				m_isUpdated = false;
 			}
 		}
-		protected double m_altitude = 0.0;
+		protected double m_altitude;
 
 		/// <summary>
 		/// The cartesian coordinates of this icon.  
@@ -200,7 +200,7 @@ namespace WorldWind.Renderable
 			get { return m_declutter; }
 			set { m_declutter = value; }
 		}
-		private bool m_declutter = false;
+		private bool m_declutter;
 
 		/// <summary>
 		/// The color of the icon in its highlighted state.
@@ -233,7 +233,7 @@ namespace WorldWind.Renderable
 			get { return m_autoScaleIcon; }
 			set { m_autoScaleIcon = value; }
 		}
-		protected bool m_autoScaleIcon = false;
+		protected bool m_autoScaleIcon;
 
         /// <summary>
         /// True if altitude is in AGL, False if ASL.  Default is AGL.
@@ -282,7 +282,7 @@ namespace WorldWind.Renderable
                 m_alwaysHighlight = value;
             }
         }
-        protected bool m_alwaysHighlight = false;
+        protected bool m_alwaysHighlight;
 
         /// <summary>
         /// Whether or not this will change color on mouseover (default = true)
@@ -298,7 +298,7 @@ namespace WorldWind.Renderable
                 m_disableMouseoverHighlight = value;
             }
         }
-        protected bool m_disableMouseoverHighlight = false;
+        protected bool m_disableMouseoverHighlight;
 
         internal bool OnClickZoomTo
         {
@@ -480,102 +480,6 @@ namespace WorldWind.Renderable
 			isSelectable = actionURL != null;
 			this.RenderPriority = RenderPriority.Icons;
 		}
-
-		#region Obsolete
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
-		/// </summary>
-		/// <param name="name">Name of the icon</param>
-		/// <param name="latitude">Latitude in decimal degrees.</param>
-		/// <param name="longitude">Longitude in decimal degrees.</param>
-		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
-		[Obsolete]
-		internal Icon(string name,
-			double latitude, 
-			double longitude,
-			double heightAboveSurface, 
-			World parentWorld)
-			: base(name)
-		{
-			m_latitude = latitude;
-			m_longitude = longitude;
-			this.Altitude = heightAboveSurface;
-			this.RenderPriority = RenderPriority.Icons;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
-		/// </summary>
-		/// <param name="name">Name of the icon</param>
-		/// <param name="latitude">Latitude in decimal degrees.</param>
-		/// <param name="longitude">Longitude in decimal degrees.</param>
-		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
-		[Obsolete]
-		internal Icon(string name,
-			string description,
-			double latitude, 
-			double longitude, 
-			double heightAboveSurface,
-			World parentWorld, 
-			Bitmap image,
-			int width,
-			int height,
-			string actionURL)
-			: base(name)
-		{
-			this.Description = description;
-			m_latitude = latitude;
-			m_longitude = longitude;
-			this.Altitude = heightAboveSurface;
-			this.m_image = image;
-			this.Width = width;
-			this.Height = height;
-			ClickableActionURL = actionURL;
-			this.RenderPriority = RenderPriority.Icons;
-			isSelectable = actionURL != null;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="description"></param>
-		/// <param name="latitude"></param>
-		/// <param name="longitude"></param>
-		/// <param name="heightAboveSurface"></param>
-		/// <param name="parentWorld"></param>
-		/// <param name="TextureFileName"></param>
-		/// <param name="width"></param>
-		/// <param name="height"></param>
-		/// <param name="actionURL"></param>
-		[Obsolete]
-		internal Icon(string name,
-			string description,
-			double latitude, 
-			double longitude, 
-			double heightAboveSurface,
-			World parentWorld, 
-			string TextureFileName,
-			int width,
-			int height,
-			string actionURL)
-			: base(name)
-		{
-			this.Description = description;
-			m_latitude = latitude;
-			m_longitude = longitude;
-			this.Altitude = heightAboveSurface;
-			this.TextureFileName = TextureFileName;
-			this.Width = width;
-			this.Height = height;
-			ClickableActionURL = actionURL;
-			this.RenderPriority = RenderPriority.Icons;
-			isSelectable = actionURL != null;
-
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Sets the geographic position of the icon.
@@ -1034,7 +938,6 @@ namespace WorldWind.Renderable
 			if ((!m_disableMouseoverHighlight && isMouseOver) || m_alwaysHighlight)
 				color = hotColor;
 
-			byte bTotalOpacity = (byte)(Color.FromArgb(color).A * (double)this.Opacity / (double)Byte.MaxValue);
 			color = Color.FromArgb(this.Opacity, Color.FromArgb(color)).ToArgb();
 
 			// Render the label if necessary

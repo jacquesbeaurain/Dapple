@@ -27,7 +27,7 @@ namespace WorldWind
       private Net.WebDownload.HttpProtoVersion useHttpProtoVersion = Net.WebDownload.HttpProtoVersion.HTTP1_1;
 		private bool useWindowsDefaultProxy = true;
 		private string proxyUrl = "";
-		private bool useDynamicProxy = false;
+		private bool useDynamicProxy;
 		private string proxyUsername = "";
 		private string proxyPassword = "";
 
@@ -228,7 +228,7 @@ namespace WorldWind
 			}
 			set
 			{
-				value = totalRunTime;
+				totalRunTime = value;
 			}
 		}
 

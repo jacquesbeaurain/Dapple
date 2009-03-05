@@ -77,8 +77,8 @@ namespace WorldWind.Widgets
 		}
 		
 		System.Drawing.Point m_Location = new System.Drawing.Point(0,0);
-		bool m_Enabled = false;
-		bool m_Visible = false;
+		bool m_Enabled;
+		bool m_Visible;
 		object m_Tag = null;
 
 		public System.Drawing.Point ClientLocation

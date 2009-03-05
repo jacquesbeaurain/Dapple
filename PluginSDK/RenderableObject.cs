@@ -27,10 +27,6 @@ namespace WorldWind.Renderable
 
 		public RenderableObjectList ParentList;
 
-		internal string dbfPath = "";
-		internal bool dbfIsInZip = false;
-		
-
 		protected string name;
 		protected string m_description = null;
 		protected Hashtable _metaData = new Hashtable();
@@ -168,9 +164,6 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public virtual void Delete()
 		{
-
-			RenderableObjectList list = this.ParentList;
-
 			string xmlConfigFile = (string)this.MetaData["XmlSource"];
 
 			if (this.ParentList.Name == "Earth" & xmlConfigFile != null)
@@ -223,11 +216,6 @@ namespace WorldWind.Renderable
 			menu.MenuItems.Add("Info...", new EventHandler(OnInfoClick));
 			menu.MenuItems.Add("Delete...", new EventHandler(OnDeleteClick)); 
 			menu.MenuItems.Add("Reload Shader", new EventHandler(OnReloadShaderClick));
-			
-			if(dbfPath != "")
-				menu.MenuItems.Add("Dbf Info", new EventHandler(OnDbfInfo));
-			
-			
 		}
 
 		/// <summary>
@@ -370,15 +358,6 @@ namespace WorldWind.Renderable
 		#endregion
 
 		#region Menu items
-
-		///<summary>
-		///  Goes to the Shapefiles's DBF Information Window
-		/// </summary>
-		protected virtual void OnDbfInfo(object sender, EventArgs e)
-		{			
-			ShapeFileInfoDlg sfid = new ShapeFileInfoDlg(dbfPath, dbfIsInZip);
-			sfid.Show();	
-		}
 
 		///<summary>
 		///  Goes to the extent specified by the bounding box for the QTS layer

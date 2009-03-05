@@ -55,15 +55,13 @@ namespace WorldWind.Camera
       /// <summary>
       /// Initializes a new instance of the <see cref= "T:WorldWind.Camera.CameraBase"/> class.
       /// </summary>
-      /// <param name="targetPosition"></param>
       /// <param name="radius">Planet's radius in meters</param>
-      internal CameraBase(Point3d targetPosition, double radius)
+		internal CameraBase(double radius)
       {
          this._worldRadius = radius;
          this._distance = 2 * _worldRadius;
          this._altitude = this._distance;
          maximumAltitude = 20 * _worldRadius;
-         //	this._orientation = MathEngine.EulerToQuaternion(0,0,0);
          this.m_Orientation = Quaternion4d.RotationYawPitchRoll(0, 0, 0);
       }
 
@@ -285,8 +283,8 @@ namespace WorldWind.Camera
          set { this._worldRadius = value; }
       }
 
-      internal float curCameraElevation = 0;
-      float targetCameraElevation = 0;
+      internal float curCameraElevation;
+      float targetCameraElevation;
 
       internal static Point3d LookFrom = new Point3d();
       internal static Point3d relCameraPos = new Point3d();
@@ -538,8 +536,6 @@ namespace WorldWind.Camera
 		public virtual void Reset()
       {
          Fov = World.Settings.cameraFov;
-
-         int curTime = Environment.TickCount;
 
          if (Angle.IsNaN(_tilt))
             _tilt.Radians = 0;

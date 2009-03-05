@@ -34,7 +34,7 @@ namespace WorldWind.Renderable
         #endregion
 
         #region Protected variables
-        protected float currentElevation = 0;
+        protected float currentElevation;
         protected float vertExaggeration = 1;
         protected Point3d worldXyz = Point3d.Empty; // XYZ World coordinates
         protected string meshFileName;
@@ -578,7 +578,7 @@ namespace WorldWind.Renderable
 
         }
 
-        bool isUpdating = false;
+        bool isUpdating;
         private void refreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (isUpdating)

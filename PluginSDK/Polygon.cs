@@ -17,7 +17,7 @@ namespace WorldWind
 		public bool Outline = true;
 		public bool Fill = true;
 		internal bool Visible = true;
-		internal bool Remove = false;
+		internal bool Remove;
 		internal WorldWind.Renderable.RenderableObject ParentRenderable = null;
 
 		public GeographicBoundingBox GetGeographicBoundingBox()

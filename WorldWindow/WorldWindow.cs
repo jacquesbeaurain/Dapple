@@ -376,7 +376,7 @@ namespace WorldWind
 				m_World = value;
 				if (m_World != null)
 				{
-					MomentumCamera camera = new MomentumCamera(m_World.Position, m_World.EquatorialRadius);
+					MomentumCamera camera = new MomentumCamera(m_World.EquatorialRadius);
 					if (!World.Settings.CameraResetsAtStartup)
 					{
 						camera.SetPosition(

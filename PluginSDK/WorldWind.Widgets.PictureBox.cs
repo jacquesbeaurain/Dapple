@@ -23,13 +23,11 @@ namespace WorldWind.Widgets
 		string m_SaveFilePath = null;
 		System.Drawing.Color m_ForeColor = System.Drawing.Color.White;
 
-		double m_RefreshTime = 0;
+		double m_RefreshTime;
 		System.Timers.Timer m_RefreshTimer = new System.Timers.Timer(100000);
 
 		string m_ImageUri = null;
 		string clickableUrl = null;
-
-        internal bool LoadAsUncompressed = false;
 
 		internal string ClickableUrl
 		{
@@ -221,12 +219,11 @@ namespace WorldWind.Widgets
 		Texture m_ImageTexture = null;
 		string displayText = null;
 
-		bool isLoading = false;
 		Sprite m_sprite = null;
 		SurfaceDescription m_surfaceDescription;
-		internal bool IsLoaded = false;
+		internal bool IsLoaded;
         string m_currentImageUri = null;
-        bool m_isMouseInside = false;
+        bool m_isMouseInside;
 
         internal event System.EventHandler OnMouseEnterEvent;
         internal event System.EventHandler OnMouseLeaveEvent;
@@ -294,7 +291,7 @@ namespace WorldWind.Widgets
 						m_ForeColor);
 				}
 
-				if(m_ImageTexture != null && !isLoading)
+				if(m_ImageTexture != null)
 				{
 					drawArgs.device.SetTexture(0, m_ImageTexture);
 							
@@ -329,7 +326,7 @@ namespace WorldWind.Widgets
 		#endregion
 
         
-		bool isUpdating = false;
+		bool isUpdating;
 		private void m_RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
             try
@@ -386,14 +383,8 @@ namespace WorldWind.Widgets
                     return;
                 }
 
-                if (LoadAsUncompressed)
-                {
-                    m_ImageTexture = TextureLoader.FromFile(DrawArgs.Device, m_SaveFilePath, 0, 0, 1, 0, Format.Unknown, Pool.Managed, Filter.None, Filter.None, 0);
-                }
-                else
-                {
-                    m_ImageTexture = ImageHelper.LoadTexture(m_SaveFilePath);
-                }
+
+                m_ImageTexture = ImageHelper.LoadTexture(m_SaveFilePath);
                 m_surfaceDescription = m_ImageTexture.GetLevelDescription(0);
 
                 int width = ClientSize.Width;
@@ -435,7 +426,7 @@ namespace WorldWind.Widgets
             }
 		}
 
-        internal bool SizeParentToImage = false;
+        internal bool SizeParentToImage;
 		#region IInteractive Members
 
 		  public bool OnKeyDown(System.Windows.Forms.KeyEventArgs e)

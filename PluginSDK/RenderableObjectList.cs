@@ -25,9 +25,9 @@ namespace WorldWind.Renderable
 
 		protected bool m_blSortChildrenOnAdd = true;
 
-		protected bool m_blAllowDuplicateNames = false;
+		protected bool m_blAllowDuplicateNames;
 		
-		private bool m_disableExpansion = false;
+		private bool m_disableExpansion;
 		internal bool DisableExpansion
 		{
 			get{ return m_disableExpansion; }
@@ -554,7 +554,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		bool hasSkippedFirstRefresh = false;
+		bool hasSkippedFirstRefresh;
 
 		private void m_RefreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{

@@ -124,7 +124,6 @@ namespace WorldWind.NewWidgets
 		public System.Drawing.Point ClientLocation
 		{
 			get { return m_ClientLocation; }
-			set { }
 		}
 
 		public System.Drawing.Size ClientSize
@@ -134,10 +133,7 @@ namespace WorldWind.NewWidgets
 				System.Drawing.Size mySize = m_ParentControl.Size;
 				return mySize;
 			}
-            set
-            {
-                // ignore attempts to resize the root widget
-            }
+			set { }
 		}
 
 		public System.Drawing.Size WidgetSize

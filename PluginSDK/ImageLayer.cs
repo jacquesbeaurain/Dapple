@@ -54,10 +54,7 @@ namespace WorldWind.Renderable
 		protected string m_legendImagePath;
 		protected Colorbar legendControl;
 
-		int m_TransparentColor = 0;
 		#endregion
-
-		bool m_renderGrayscale = false;
 
 		TimeSpan cacheExpiration = TimeSpan.MaxValue;
 		System.Timers.Timer refreshTimer = null;
@@ -180,7 +177,7 @@ namespace WorldWind.Renderable
 
 		#endregion
 
-		float m_grayscaleBrightness = 0.0f;
+		float m_grayscaleBrightness;
 
 		internal float GrayscaleBrightness
 		{
@@ -190,7 +187,7 @@ namespace WorldWind.Renderable
 
 		internal bool RenderGrayscale
 		{
-			get { return m_renderGrayscale; }
+			get { return false; }
 		}
 
 		internal TimeSpan CacheExpiration
@@ -238,24 +235,12 @@ namespace WorldWind.Renderable
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		internal ImageLayer(
-			string name,
-			World parentWorld,
-			double distanceAboveSurface,
-			Stream textureStream,
-			int transparentColor,
-			double minLatitude,
-			double maxLatitude,
-			double minLongitude,
-			double maxLongitude,
-			double opacityPercent,
-			TerrainAccessor terrainAccessor)
+		internal ImageLayer(string name, World parentWorld, double distanceAboveSurface, Stream textureStream, double minLatitude, double maxLatitude, double minLongitude, double maxLongitude, double opacityPercent, TerrainAccessor terrainAccessor)
 			: this(name, parentWorld, distanceAboveSurface, null,
 			minLatitude, maxLatitude, minLongitude, maxLongitude,
 			(byte)(255 * opacityPercent), terrainAccessor)
 		{
 			m_TextureStream = textureStream;
-			m_TransparentColor = transparentColor;
 		}
 
 		/// <summary>
@@ -320,7 +305,7 @@ namespace WorldWind.Renderable
 
 				if (m_TextureStream != null)
 				{
-					UpdateTexture(m_TextureStream, m_TransparentColor);
+					UpdateTexture(m_TextureStream);
 					verticalExaggeration = World.Settings.VerticalExaggeration;
 					CreateMesh();
 					isInitialized = true;
@@ -370,7 +355,6 @@ namespace WorldWind.Renderable
 				using (WebDownload downloadReq = new WebDownload(this._imageUrl))
 				{
 					downloadReq.ProgressCallback += new DownloadProgressHandler(UpdateDownloadProgress);
-					string filePath = getFilePathFromUrl(_imageUrl);
 
 					if (_imagePath == null)
 					{
@@ -418,7 +402,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		bool showedError = false;
+		bool showedError;
 
 		/// <summary>
 		/// Download progress callback 
@@ -509,7 +493,6 @@ namespace WorldWind.Renderable
 			else
 				lonrange = 360.0f + maxLon - minLon;
 
-			int opacityColor = System.Drawing.Color.FromArgb(this.m_opacity, 0, 0, 0).ToArgb();
 			vertices = new CustomVertex.PositionNormalTextured[meshPointCount * meshPointCount];
 			for (int i = 0; i < meshPointCount; i++)
 			{
@@ -597,9 +580,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		//Blend m_sourceBlend = Blend.BlendFactor;
-		//Blend m_destinationBlend = Blend.InvBlendFactor;
-		static Effect grayscaleEffect = null;
 		/// <summary>
 		/// Draws the layer
 		/// </summary>
@@ -642,84 +622,53 @@ namespace WorldWind.Renderable
 						  );
 				device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
 
-				if (!RenderGrayscale || (device.DeviceCaps.PixelShaderVersion.Major < 1))
+				if (World.Settings.EnableSunShading)
 				{
-					if (World.Settings.EnableSunShading)
-					{
-						Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
-						Vector3 sunVector = new Vector3(
-							 (float)sunPosition.X,
-							 (float)sunPosition.Y,
-							 (float)sunPosition.Z);
+					Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
+					Vector3 sunVector = new Vector3(
+						 (float)sunPosition.X,
+						 (float)sunPosition.Y,
+						 (float)sunPosition.Z);
 
-						device.RenderState.Lighting = true;
-						Material material = new Material();
-						material.Diffuse = System.Drawing.Color.White;
-						material.Ambient = System.Drawing.Color.White;
+					device.RenderState.Lighting = true;
+					Material material = new Material();
+					material.Diffuse = System.Drawing.Color.White;
+					material.Ambient = System.Drawing.Color.White;
 
-						device.Material = material;
-						device.RenderState.AmbientColor = World.Settings.ShadingAmbientColor.ToArgb();
-						device.RenderState.NormalizeNormals = true;
-						device.RenderState.AlphaBlendEnable = true;
+					device.Material = material;
+					device.RenderState.AmbientColor = World.Settings.ShadingAmbientColor.ToArgb();
+					device.RenderState.NormalizeNormals = true;
+					device.RenderState.AlphaBlendEnable = true;
 
-						device.Lights[0].Enabled = true;
-						device.Lights[0].Type = LightType.Directional;
-						device.Lights[0].Diffuse = System.Drawing.Color.White;
-						device.Lights[0].Direction = sunVector;
+					device.Lights[0].Enabled = true;
+					device.Lights[0].Type = LightType.Directional;
+					device.Lights[0].Diffuse = System.Drawing.Color.White;
+					device.Lights[0].Direction = sunVector;
 
-						device.TextureState[0].ColorOperation = TextureOperation.Modulate;
-						device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
-						device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
-					}
-					else
-					{
-						device.RenderState.Lighting = false;
-						device.RenderState.Ambient = World.Settings.StandardAmbientColor;
-
-						drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
-						drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
-					}
-
-					device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(m_opacity, 255, 255, 255).ToArgb();
-					device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
-					device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
-					device.TextureState[0].AlphaArgument2 = TextureArgument.TFactor;
-
-					drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-
-					drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
-						 vertices.Length, indices.Length / 3, indices, true, vertices);
-
-					device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb();
+					device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+					device.TextureState[0].ColorArgument1 = TextureArgument.Diffuse;
+					device.TextureState[0].ColorArgument2 = TextureArgument.TextureColor;
 				}
 				else
 				{
-					if (grayscaleEffect == null)
-					{
-						device.DeviceReset += new EventHandler(device_DeviceReset);
-						device_DeviceReset(device, null);
-					}
+					device.RenderState.Lighting = false;
+					device.RenderState.Ambient = World.Settings.StandardAmbientColor;
 
-					grayscaleEffect.Technique = "RenderGrayscaleBrightness";
-					grayscaleEffect.SetValue("WorldViewProj", Matrix.Multiply(device.Transform.World, Matrix.Multiply(device.Transform.View, device.Transform.Projection)));
-					grayscaleEffect.SetValue("Tex0", texture);
-					grayscaleEffect.SetValue("Brightness", GrayscaleBrightness);
-					float opacity = (float)m_opacity / 255.0f;
-					grayscaleEffect.SetValue("Opacity", opacity);
-
-					int numPasses = grayscaleEffect.Begin(0);
-					for (int i = 0; i < numPasses; i++)
-					{
-						grayscaleEffect.BeginPass(i);
-
-						drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
-						vertices.Length, indices.Length / 3, indices, true, vertices);
-
-						grayscaleEffect.EndPass();
-					}
-
-					grayscaleEffect.End();
+					drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
+					drawArgs.device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
 				}
+
+				device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(m_opacity, 255, 255, 255).ToArgb();
+				device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
+				device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+				device.TextureState[0].AlphaArgument2 = TextureArgument.TFactor;
+
+				drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
+
+				drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
+					 vertices.Length, indices.Length / 3, indices, true, vertices);
+
+				device.RenderState.TextureFactor = System.Drawing.Color.FromArgb(255, 255, 255, 255).ToArgb();
 
 				drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 
@@ -740,17 +689,7 @@ namespace WorldWind.Renderable
 
 		void device_DeviceReset(object sender, EventArgs e)
 		{
-			Device device = (Device)sender;
-
 			string outerrors = "";
-			grayscaleEffect = Effect.FromFile(
-				 device,
-				 "shaders\\grayscale.fx",
-				 null,
-				 null,
-				 ShaderFlags.None,
-				 null,
-				 out outerrors);
 
 			if (outerrors != null && outerrors.Length > 0)
 				Log.Write(Log.Levels.Error, outerrors);
@@ -918,29 +857,15 @@ namespace WorldWind.Renderable
 		/// </summary>
 		internal void UpdateTexture(Stream textureStream)
 		{
-			UpdateTexture(textureStream, 0);
-		}
-
-		/// <summary>
-		/// Switch to a different image
-		/// </summary>
-		internal void UpdateTexture(Stream textureStream, int transparentColor)
-		{
-			try
+			if (this.device != null)
 			{
-				if (this.device != null)
-				{
-					Texture oldTexture = this.texture;
+				Texture oldTexture = this.texture;
 
-					Texture newTexture = ImageHelper.LoadTexture(textureStream);
-					this.texture = newTexture;
+				Texture newTexture = ImageHelper.LoadTexture(textureStream);
+				this.texture = newTexture;
 
-					if (oldTexture != null)
-						oldTexture.Dispose();
-				}
-			}
-			catch
-			{
+				if (oldTexture != null)
+					oldTexture.Dispose();
 			}
 		}
 
@@ -1031,7 +956,7 @@ namespace WorldWind.Renderable
 			legendControl.LoadImage(m_legendImagePath);
 		}
 
-		bool abortedFirstRefresh = false;
+		bool abortedFirstRefresh;
 
 		private void refreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{

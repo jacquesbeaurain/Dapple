@@ -284,8 +284,8 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		private bool waitingForDownload = false;
-		private bool isDownloadingImage = false;
+		private bool waitingForDownload;
+		private bool isDownloadingImage;
 
 		public virtual void Initialize()
 		{
@@ -438,7 +438,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		private bool renderStruts = false;
+		private bool renderStruts;
 
 		/// <summary>
 		/// Builds flat or terrain mesh for current tile
@@ -919,7 +919,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		private double meshBaseRadius = 0;
+		private double meshBaseRadius;
 
 		/// <summary>
 		/// Build the elevated terrain mesh
@@ -969,10 +969,10 @@ namespace WorldWind.Renderable
 			// Radius of mesh bottom grid
 			meshBaseRadius = layerRadius + minimumElevation - overlap;
 
-			CreateElevatedMesh(ChildLocation.NorthWest, northWestVertices, meshBaseRadius, heightData);
-			CreateElevatedMesh(ChildLocation.SouthWest, southWestVertices, meshBaseRadius, heightData);
-			CreateElevatedMesh(ChildLocation.NorthEast, northEastVertices, meshBaseRadius, heightData);
-			CreateElevatedMesh(ChildLocation.SouthEast, southEastVertices, meshBaseRadius, heightData);
+			CreateElevatedMesh(ChildLocation.NorthWest, northWestVertices, heightData);
+			CreateElevatedMesh(ChildLocation.SouthWest, southWestVertices, heightData);
+			CreateElevatedMesh(ChildLocation.NorthEast, northEastVertices, heightData);
+			CreateElevatedMesh(ChildLocation.SouthEast, southEastVertices, heightData);
 
 			// --- Make bounding box slightly larger so the tile won't blink in and out near the edges ---
 			BoundingBox = new BoundingBox(south - 1.0, north + 1.0, west - 1.0, east + 1.0, layerRadius, layerRadius + 10000.0 * this.verticalExaggeration);
@@ -1013,8 +1013,7 @@ namespace WorldWind.Renderable
 		/// Build the mesh with one extra vertice all around for proper normals calculations later on.
 		/// Use the struts vertices to that effect. Struts are properly folded after normals calculations.
 		/// </summary>
-		protected void CreateElevatedMesh(ChildLocation corner, CustomVertex.PositionNormalTextured[] vertices,
-													 double meshBaseRadius, float[,] heightData)
+		protected void CreateElevatedMesh(ChildLocation corner, CustomVertex.PositionNormalTextured[] vertices, float[,] heightData)
 		{
 			// Figure out child lat/lon boundaries (radians)
 			double _north = MathEngine.DegreesToRadians(north);
@@ -1430,7 +1429,6 @@ namespace WorldWind.Renderable
 							param = (EffectHandle)quadTileSet.EffectParameters[name];
 							if (param != null)
 							{
-								SurfaceDescription sd = textures[i].GetLevelDescription(0);
 								effect.SetValue(param, textures[i]);
 							}
 						}
@@ -1709,7 +1707,6 @@ namespace WorldWind.Renderable
 					{
 						int iWidth, iHeight, iX, iY;
 
-						GeographicBoundingBox geoBox = new GeographicBoundingBox(this.north, this.south, this.west, this.east);
 						img = Image.FromFile(imageFilePath);
 
 						iWidth = (int)Math.Ceiling((this.east - this.west) * (double)expInfo.iPixelsX / (expInfo.dMaxLon - expInfo.dMinLon));

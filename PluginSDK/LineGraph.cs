@@ -10,8 +10,8 @@ namespace WorldWind
 	/// </summary>
 	public class LineGraph
 	{
-		float m_Min = 0f;
-		float m_Max = 50.0f;
+		const float m_Min = 0.0f;
+		const float m_Max = 50.0f;
 
 		float[] m_Values = new float[0];
 
@@ -20,7 +20,7 @@ namespace WorldWind
 		System.Drawing.Color m_BackgroundColor = System.Drawing.Color.FromArgb(100, 0, 0, 0);
 		System.Drawing.Color m_LineColor = System.Drawing.Color.Red;
 
-		bool m_Visible = false;
+		bool m_Visible;
 		bool m_ResetVerts = true;
 
 		public bool Visible

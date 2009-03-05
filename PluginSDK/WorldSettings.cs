@@ -22,7 +22,7 @@ namespace WorldWind
    public class WorldSettings : SettingsBase
    {
       #region Atmosphere
-      internal bool enableAtmosphericScattering = false;
+      internal bool enableAtmosphericScattering;
 
       [Browsable(true), Category("Atmosphere")]
       [Description("Enable Atmospheric Scattering")]
@@ -53,12 +53,12 @@ namespace WorldWind
       /// <summary>
       /// Display the layer manager window
       /// </summary>
-      internal bool showLayerManager = false;
+      internal bool showLayerManager;
 
       /// <summary>
       /// Display cross-hair symbol on screen
       /// </summary>
-      internal bool showCrosshairs = false;
+      internal bool showCrosshairs;
       public int crosshairColor = Color.Beige.ToArgb();
       internal int crosshairSize = 10;
 
@@ -120,7 +120,7 @@ namespace WorldWind
       /// <summary>
       /// Draw anti-aliased text
       /// </summary>
-      internal bool antiAliasedText = false;
+      internal bool antiAliasedText;
 
       /// <summary>
       /// Maximum frames-per-second setting
@@ -138,7 +138,7 @@ namespace WorldWind
       internal int modisIconSize = 60;
 
       internal int m_FpsFrameCount = 300;
-      internal bool m_ShowFpsGraph = false;
+      internal bool m_ShowFpsGraph;
 
       internal int downloadTerrainRectangleColor = Color.FromArgb(50, 0, 0, 255).ToArgb();
       internal int downloadProgressColor = Color.FromArgb(50, 255, 0, 0).ToArgb();
@@ -150,16 +150,16 @@ namespace WorldWind
       internal int scrollbarHotColor = System.Drawing.Color.FromArgb(170, 255, 255, 255).ToArgb();
       public int toolBarBackColor = System.Drawing.Color.FromArgb(100, 255, 255, 255).ToArgb();
       internal bool showDownloadIndicator = true;
-      internal bool outlineText = false;
-      internal bool showCompass = false;
+      internal bool outlineText;
+      internal bool showCompass;
       internal WFSNameColors nameColors = WFSNameColors.Default;
       internal float nameSizeMultiplier = 1.0f;
 
-      internal bool browserVisible = false;
-      internal bool browserOrientationHorizontal = false;
+      internal bool browserVisible;
+      internal bool browserOrientationHorizontal;
       internal int browserSize = 300;
       internal bool useInternalBrowser = true;
-      internal bool useOfflineSearch = false;
+      internal bool useOfflineSearch;
 
       [Browsable(true), Category("UI")]
       [Description("Show Compass Indicator.")]
@@ -530,7 +530,7 @@ namespace WorldWind
       /// <summary>
       /// Display the latitude/longitude grid
       /// </summary>
-      internal bool showLatLonLines = false;
+      internal bool showLatLonLines;
 
       /// <summary>
       /// The color of the latitude/longitude grid
@@ -610,7 +610,7 @@ namespace WorldWind
       /// <summary>
       /// Whether to display the planet axis line (through poles)
       /// </summary>
-      internal bool showPlanetAxis = false;
+      internal bool showPlanetAxis;
 
       /// <summary>
       /// Whether place name labels should display
@@ -620,17 +620,17 @@ namespace WorldWind
       /// <summary>
       /// Whether country borders and other boundaries should display
       /// </summary>
-      internal bool showBoundaries = false;
+      internal bool showBoundaries;
 
       /// <summary>
       /// Displays coordinates of current position
       /// </summary>
-      internal bool showPosition = false;
+      internal bool showPosition;
 
 		/// <summary>
 		/// Whether to display the scale bar in the globe.
 		/// </summary>
-		protected bool m_blShowScaleBar = false;
+		protected bool m_blShowScaleBar;
 
 
       /// <summary>
@@ -651,7 +651,7 @@ namespace WorldWind
       /// <summary>
       /// Keep the original (unconverted) NASA SVS image files on disk (in addition to converted files). 
       /// </summary>
-      internal bool keepOriginalSvsImages = false;
+      internal bool keepOriginalSvsImages;
 
       [Browsable(true), Category("World")]
       [Description("Whether to display the planet axis line (through poles).")]
@@ -661,7 +661,7 @@ namespace WorldWind
          set { showPlanetAxis = value; }
       }
 
-      internal bool showClouds = false;
+      internal bool showClouds;
       [Browsable(true), Category("World")]
       [Description("Whether to show clouds.")]
       public bool ShowClouds
@@ -732,7 +732,7 @@ namespace WorldWind
       internal bool cameraIsPointGoto = true;
       internal bool cameraHasInertia = true;
       internal bool cameraSmooth = true;
-      internal bool cameraHasMomentum = false;
+      internal bool cameraHasMomentum;
       internal bool cameraTwistLock = true;
       internal bool cameraBankLock = true;
       internal float cameraSlerpStandard = 0.35f;
@@ -750,7 +750,7 @@ namespace WorldWind
       internal float cameraZoomStepKeyboard = 0.15f;
       internal float cameraRotationSpeed = 3.5f;
       internal bool elevateCameraLookatPoint = true;
-      internal bool allowNegativeAltitude = false;
+      internal bool allowNegativeAltitude;
 
       [Browsable(true), Category("Camera")]
       public bool ElevateCameraLookatPoint
@@ -999,21 +999,8 @@ namespace WorldWind
       #region 3D
 
       private Format textureFormat = Format.Dxt3;
-      private bool m_UseBelowNormalPriorityUpdateThread = false;
-      private bool m_AlwaysRenderWindow = false;
-
-      [Browsable(true), Category("3D settings")]
-      [Description("This feature is not supported in Dapple and will always return false.")]
-      public bool ConvertDownloadedImagesToDds
-      {
-         get
-         {
-            return false;
-         }
-         set
-         {
-         }
-      }
+      private bool m_UseBelowNormalPriorityUpdateThread;
+      private bool m_AlwaysRenderWindow;
 
       [Browsable(true), Category("3D settings")]
       [Description("Always Renders the 3D window even form is unfocused.")]
@@ -1044,7 +1031,7 @@ namespace WorldWind
          }
       }
 
-      private bool m_enableSunShading = false;
+      private bool m_enableSunShading;
       [Browsable(true), Category("3D settings")]
       [Description("Shade the Earth according to the Sun's position at a certain time.")]
       public bool EnableSunShading
@@ -1059,7 +1046,7 @@ namespace WorldWind
          }
       }
 
-      private bool m_sunSynchedWithTime = false;
+      private bool m_sunSynchedWithTime;
       [Browsable(true), Category("3D settings")]
       [Description("Sun position is computed according to time.")]
       public bool SunSynchedWithTime

@@ -15,7 +15,7 @@ namespace WorldWind
         private System.Windows.Forms.Label closeButton;
         private WebBrowser myBrowser;
         internal bool isVisible = false;
-        internal bool HTMLIsSet = false;
+        internal bool HTMLIsSet;
 
         internal KMLDialog()
         {

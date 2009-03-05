@@ -15,7 +15,7 @@ namespace WorldWind
 		#endregion
 
 		#region Private Members
-		double m_distanceAboveSurface = 0;
+		double m_distanceAboveSurface;
 		protected Point3d[] m_points = null;
 		CustomVertex.PositionNormalTextured[] m_wallVertices = null;
 
@@ -26,22 +26,20 @@ namespace WorldWind
 		Color m_lineColor = Color.Black;
 		Color finalLineColor = Color.Black;
 		float m_verticalExaggeration = World.Settings.VerticalExaggeration;
-		double m_minimumDisplayAltitude = 0;
+		double m_minimumDisplayAltitude;
 		double m_maximumDisplayAltitude = double.MaxValue;
 		string m_imageUri = null;
 		Texture m_texture = null;
 		Color m_polygonColor = Color.Black;
-		Color finalPolygonColor = Color.Black;
 		bool m_outline = true;
 		float m_lineWidth = 1.0f;
-		bool m_extrude = false;
+		bool m_extrude;
 		AltitudeMode m_altitudeMode = AltitudeMode.ClampedToGround;
-		protected long m_numPoints = 0;
+		protected long m_numPoints;
 		Vector3 m_localOrigin;
 		bool m_extrudeUpwards;
 		double m_extrudeHeight = 1000;
-		bool m_extrudeToGround = false;
-		bool m_enableLighting = false;
+		bool m_extrudeToGround;
 		#endregion
 
 		/// <summary>
@@ -370,8 +368,6 @@ namespace WorldWind
 		{
 			int lineAlpha = (int)(((double)m_lineColor.A / 255 * (double)base.Opacity / 255) * 255);
 			finalLineColor = Color.FromArgb(lineAlpha, m_lineColor);
-			int polyAlpha = (int)(((double)m_polygonColor.A / 255 * (double)base.Opacity / 255) * 255);
-			finalPolygonColor = Color.FromArgb(polyAlpha, m_polygonColor);
 
 			try
 			{
@@ -454,7 +450,6 @@ namespace WorldWind
 
 			float textureCoordIncrement = 1.0f / (float)(m_numPoints - 1);
 			m_verticalExaggeration = World.Settings.VerticalExaggeration;
-			int vertexColor = finalPolygonColor.ToArgb();
 
 			m_topVertices = new CustomVertex.PositionColored[m_numPoints];
 
@@ -631,7 +626,7 @@ namespace WorldWind
 
 					//Fix for sunshading screwing with everything
 					bool lighting = drawArgs.device.RenderState.Lighting;
-					drawArgs.device.RenderState.Lighting = m_enableLighting;
+					drawArgs.device.RenderState.Lighting = false;
 
 					if (m_wallVertices != null)
 					{

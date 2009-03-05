@@ -12,7 +12,7 @@ namespace WorldWind
 		public Color Color = Color.Yellow;
 		public float LineWidth = 1.0f;
 		internal bool Visible = true;
-		internal bool Remove = false;
+		internal bool Remove;
 		internal WorldWind.Renderable.RenderableObject ParentRenderable = null;
 
 		public GeographicBoundingBox GetGeographicBoundingBox()

@@ -39,7 +39,7 @@ namespace WorldWind
 		public static WorldWind.Widgets.RootWidget RootWidget = null;
 		  public static WorldWind.NewWidgets.RootWidget NewRootWidget = null;
 
-		public bool RenderWireFrame = false;
+		public bool RenderWireFrame;
 
         /// <summary>
         /// Table of all icon textures
@@ -132,10 +132,6 @@ namespace WorldWind
 		/// </remarks>
 		public void Present()
 		{
-			// Calculate frame time
-			long previousFrameStartTicks = CurrentFrameStartTicks;
-			PerformanceTimer.QueryPerformanceCounter(ref CurrentFrameStartTicks);
-
 			// Display the render
 			device.Present();
 		}

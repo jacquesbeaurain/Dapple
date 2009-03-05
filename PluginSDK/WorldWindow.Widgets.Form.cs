@@ -22,7 +22,7 @@ namespace WorldWind.Widgets
 		System.Drawing.Color m_BackgroundColor = System.Drawing.Color.FromArgb(
 			100, 0, 0, 0);
 
-		bool m_HideBorder = false;
+		bool m_HideBorder;
 		System.Drawing.Color m_BorderColor = System.Drawing.Color.GhostWhite;
 		System.Drawing.Color m_HeaderColor =  System.Drawing.Color.FromArgb(
 			120,
@@ -36,8 +36,7 @@ namespace WorldWind.Widgets
 		Microsoft.DirectX.Direct3D.Font m_WorldWindDingsFont = null;
 		Microsoft.DirectX.Direct3D.Font m_TextFont = null;
 
-        bool m_HideHeader = false;
-		bool m_AutoHideHeader = false;
+		bool m_AutoHideHeader;
 		bool m_Visible = true;
 		bool m_Enabled = true;
 		object m_Tag = null;
@@ -323,8 +322,7 @@ namespace WorldWind.Widgets
 				ClientSize = new System.Drawing.Size(drawArgs.parentControl.Width, ClientSize.Height);
 			}
 
-            if (!m_HideHeader && 
-                (!m_AutoHideHeader || (DrawArgs.LastMousePosition.X >= ClientLocation.X &&
+            if ((!m_AutoHideHeader || (DrawArgs.LastMousePosition.X >= ClientLocation.X &&
                 DrawArgs.LastMousePosition.X <= ClientLocation.X + m_Size.Width &&
                 DrawArgs.LastMousePosition.Y >= ClientLocation.Y &&
                 DrawArgs.LastMousePosition.Y <= ClientLocation.Y + m_Size.Height)))
@@ -419,17 +417,17 @@ namespace WorldWind.Widgets
 
 		#endregion
 
-		bool m_IsDragging = false;
+		bool m_IsDragging;
 		System.Drawing.Point m_LastMousePosition = new System.Drawing.Point(0,0);
 
-		bool isResizingLeft = false;
-		bool isResizingRight = false;
-		bool isResizingBottom = false;
-		bool isResizingTop = false;
-		bool isResizingUL = false;
-		bool isResizingUR = false;
-		bool isResizingLL = false;
-		bool isResizingLR = false;
+		bool isResizingLeft;
+		bool isResizingRight;
+		bool isResizingBottom;
+		bool isResizingTop;
+		bool isResizingUL;
+		bool isResizingUR;
+		bool isResizingLL;
+		bool isResizingLR;
 
 		#region IInteractive Members
 
@@ -568,7 +566,7 @@ namespace WorldWind.Widgets
 
 			if(inClientArea)
 			{
-				if(!m_HideHeader && isPointInCloseBox(new System.Drawing.Point(e.X, e.Y)))
+				if(isPointInCloseBox(new System.Drawing.Point(e.X, e.Y)))
 				{
 					Visible = false;
 					handled = true;

@@ -115,7 +115,6 @@ namespace WorldWind.Renderable
 
 				using (Surface s = m_iconTexture.GetSurfaceLevel(0))
 				{
-					SurfaceDescription desc = s.Description;
 				}
 
 				m_sprite = new Sprite(drawArgs.device);
@@ -266,19 +265,6 @@ namespace WorldWind.Renderable
 					string name = dataFileReader.ReadString();
 					float lat = dataFileReader.ReadSingle();
 					float lon = dataFileReader.ReadSingle();
-					int c = dataFileReader.ReadInt32();
-
-					// Not in use, removed for speed
-					// Hashtable metaData = new Hashtable(c);
-
-					for (int n = 0; n < c; n++)
-					{
-						string key = dataFileReader.ReadString();
-						string keyData = dataFileReader.ReadString();
-
-						// Not in use, removed for speed
-						//metaData.Add(key, keyData);
-					}
 
 					// for easier hit testing
 					float lonRanged = lon;

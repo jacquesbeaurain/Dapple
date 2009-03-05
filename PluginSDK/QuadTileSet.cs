@@ -24,7 +24,7 @@ namespace WorldWind.Renderable
    {
       #region Private Members
 
-      bool m_RenderStruts = false;
+      bool m_RenderStruts;
       protected string m_ServerLogoFilePath;
       protected Image m_ServerLogoImage;
 
@@ -35,7 +35,7 @@ namespace WorldWind.Renderable
       protected double m_west;
       protected double m_east;
 
-      bool renderFileNames = false;
+      bool renderFileNames;
 
       protected Texture m_iconTexture;
       protected Sprite sprite;
@@ -134,12 +134,11 @@ namespace WorldWind.Renderable
 
       #endregion
 
-      bool m_renderGrayscale = false;
-      float m_grayscaleBrightness = 0.0f;
+      bool m_renderGrayscale;
 
       internal float GrayscaleBrightness
       {
-         get { return m_grayscaleBrightness; }
+         get { return 0.0f; }
       }
 
       internal bool RenderGrayscale

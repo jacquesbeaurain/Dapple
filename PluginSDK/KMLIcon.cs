@@ -38,7 +38,7 @@ namespace WorldWind.Renderable
         }
 
 
-        internal bool IsDescriptionVisible = false;
+        internal bool IsDescriptionVisible;
 
         internal KMLDialog DescriptionBubble;
 
@@ -48,9 +48,9 @@ namespace WorldWind.Renderable
 		/// <param name="name">Name of the icon</param>
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
-        /// <param name="normalicon"></param>
+		  /// 
         /// <param name="heightAboveSurface">Altitude</param>
-		  public KMLIcon(string name, double latitude, double longitude, string normalicon, double heightAboveSurface)
+		  public KMLIcon(string name, double latitude, double longitude, double heightAboveSurface)
             : base(name, latitude, longitude, heightAboveSurface)
 		{
             AutoScaleIcon = true;

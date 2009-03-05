@@ -71,7 +71,7 @@ namespace Dapple.KML
 			{
 				KMLPoint oCastSource = oSource as KMLPoint;
 
-				KMLIcon result = new KMLIcon(oCastSource.Owner.Name, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Longitude, oCastSource.Style.NormalStyle.IconStyle.Icon != null ? oCastSource.Style.NormalStyle.IconStyle.Icon.HRef : null, oCastSource.Coordinates.Altitude);
+				KMLIcon result = new KMLIcon(oCastSource.Owner.Name, oCastSource.Coordinates.Latitude, oCastSource.Coordinates.Longitude, oCastSource.Coordinates.Altitude);
 				result.DrawGroundStick = oCastSource.Extrude;
 				result.Rotation = WorldWind.Angle.FromDegrees(oCastSource.Style.NormalStyle.IconStyle.Heading);
 				result.IsRotated = oCastSource.Style.NormalStyle.IconStyle.Heading != 0.0f;

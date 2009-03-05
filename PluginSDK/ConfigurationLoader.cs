@@ -180,7 +180,6 @@ namespace WorldWind
 							WorldWind.Net.WebDownload download = new WorldWind.Net.WebDownload(redirect);
 
 							string username = iter.Current.GetAttribute("username", "");
-							string password = iter.Current.GetAttribute("password", "");
 
 							if (username != null)
 							{
@@ -337,8 +336,8 @@ namespace WorldWind
 						//addWater(iter.Current.Select("Water"), parentWorld, parentRenderable);
 						addTiledPlacenameSet(iter.Current.Select("TiledPlacenameSet"), parentWorld, parentRenderable);
 						addTiledWFSPlacenameSet(iter.Current.Select("TiledWFSPlacenameSet"), parentWorld, parentRenderable, cache);
-						addIcon(iter.Current.Select("Icon"), parentWorld, parentRenderable, cache);
-						addScreenOverlays(iter.Current.Select("ScreenOverlay"), parentWorld, parentRenderable, cache);
+						addIcon(iter.Current.Select("Icon"), parentRenderable, cache);
+						addScreenOverlays(iter.Current.Select("ScreenOverlay"), parentRenderable, cache);
 						addChildLayerSet(iter.Current.Select("ChildLayerSet"), parentWorld, parentRenderable, cache);
 
 						addExtendedInformation(iter.Current.Select("ExtendedInformation"), parentRenderable);
@@ -466,8 +465,8 @@ namespace WorldWind
 					addLineFeature(iter.Current.Select("LineFeature"), parentWorld, rol);
 					addPathList(iter.Current.Select("PathList"), parentWorld, rol);
 					addTiledPlacenameSet(iter.Current.Select("TiledPlacenameSet"), parentWorld, rol);
-					addIcon(iter.Current.Select("Icon"), parentWorld, rol, cache);
-					addScreenOverlays(iter.Current.Select("ScreenOverlay"), parentWorld, rol, cache);
+					addIcon(iter.Current.Select("Icon"), rol, cache);
+					addScreenOverlays(iter.Current.Select("ScreenOverlay"), rol, cache);
 					addChildLayerSet(iter.Current.Select("ChildLayerSet"), parentWorld, rol, cache);
 
 					addExtendedInformation(iter.Current.Select("ExtendedInformation"), rol);
@@ -482,15 +481,11 @@ namespace WorldWind
 		{
 			double levelZeroTileSizeDegrees = ParseDouble(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("LevelZeroTileSizeDegrees")));
 			int numberLevels = Int32.Parse(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("NumberLevels")), NumberStyles.Any, CultureInfo.InvariantCulture);
-			int textureSizePixels = Int32.Parse(getInnerTextFromFirstChild(imageAccessorIter.Current.Select("TextureSizePixels")), NumberStyles.Any, CultureInfo.InvariantCulture);
 			string imageFileExtension = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("ImageFileExtension"));
 			string textureFormatSpec = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("TextureFormat"));
 			string permanentDirectory = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("PermanentDirectory"));
 			if (permanentDirectory == null || permanentDirectory.Length == 0)
 				permanentDirectory = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("PermanantDirectory"));
-
-
-			TimeSpan dataExpiration = getCacheExpiration(imageAccessorIter.Current.Select("DataExpirationTime"));
 
 			string duplicateTilePath = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("DuplicateTilePath"));
 			string cacheDir = getInnerTextFromFirstChild(imageAccessorIter.Current.Select("CacheDirectory"));
@@ -513,8 +508,6 @@ namespace WorldWind
 			{
 				duplicateTilePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), duplicateTilePath);
 			}
-
-			byte opacity = 255;
 
 			Microsoft.DirectX.Direct3D.Format format = World.Settings.TextureFormat;
 			if (textureFormatSpec != null)
@@ -576,19 +569,12 @@ namespace WorldWind
 				string dataSetName = getInnerTextFromFirstChild(imageTileServiceIter.Current.Select("DataSetName"));
 				string serverLogoFilePath = getInnerTextFromFirstChild(imageTileServiceIter.Current.Select("ServerLogoFilePath"));
 
-				TimeSpan cacheExpiration = getCacheExpiration(imageTileServiceIter.Current.Select("CacheExpirationTime"));
-
 				if (serverLogoFilePath != null && serverLogoFilePath.Length > 0 && !Path.IsPathRooted(serverLogoFilePath))
 				{
 					serverLogoFilePath = Path.Combine(
 						Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath),
 						serverLogoFilePath);
 				}
-
-				string opacityString = getInnerTextFromFirstChild(imageTileServiceIter.Current.Select("Opacity"));
-
-				if (opacityString != null)
-					opacity = byte.Parse(opacityString);
 
 				ImageStore ia;
 
@@ -622,17 +608,12 @@ namespace WorldWind
 
 				wmsLayerStore.ImageExtension = imageFileExtension;
 				wmsLayerStore.CacheDirectory = cacheDir;
-				//wmsLayerAccessor.IsTransparent = ParseBool(getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("UseTransparency")));
 				wmsLayerStore.ServerGetMapUrl = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("ServerGetMapUrl"));
 				wmsLayerStore.Version = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("Version"));
 				wmsLayerStore.WMSLayerName = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("WMSLayerName"));
 
-				string username = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("Username"));
-				string password = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("Password"));
 				string wmsStyleName = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("WMSLayerStyle"));
 				string serverLogoPath = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("ServerLogoFilePath"));
-				string opacityString = getInnerTextFromFirstChild(wmsAccessorIter.Current.Select("Opacity"));
-
 
 				if (serverLogoPath != null && serverLogoPath.Length > 0 && !Path.IsPathRooted(serverLogoPath))
 				{
@@ -640,17 +621,6 @@ namespace WorldWind
 						Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath),
 						serverLogoPath);
 				}
-				if (opacityString != null)
-					opacity = byte.Parse(opacityString);
-
-				TimeSpan cacheExpiration = getCacheExpiration(imageAccessorIter.Current.Select("CacheExpirationTime"));
-
-				//if(username != null && username.Length > 0)
-				//    wmsLayerStore.Username = username;
-
-				//if(password != null)
-				//    wmsLayerAccessor.Password = password;
-
 				if (wmsStyleName != null && wmsStyleName.Length > 0)
 					wmsLayerStore.WMSLayerStyle = wmsStyleName;
 				else
@@ -681,8 +651,6 @@ namespace WorldWind
 				double south = 0;
 				double west = 0;
 				double east = 0;
-				DateTime earliesttime = DateTime.MinValue;
-				DateTime latesttime = DateTime.MaxValue;
 
 				XPathNodeIterator boundingBoxIter = iter.Current.Select("BoundingBox");
 				if (boundingBoxIter.Count > 0)
@@ -692,10 +660,6 @@ namespace WorldWind
 					south = ParseDouble(getInnerTextFromFirstChild(boundingBoxIter.Current.Select("South")));
 					west = ParseDouble(getInnerTextFromFirstChild(boundingBoxIter.Current.Select("West")));
 					east = ParseDouble(getInnerTextFromFirstChild(boundingBoxIter.Current.Select("East")));
-					if (boundingBoxIter.Current.SelectSingleNode("EarliestTime") != null)
-						earliesttime = DateTime.Parse(getInnerTextFromFirstChild(boundingBoxIter.Current.Select("EarliestTime")));
-					if (boundingBoxIter.Current.SelectSingleNode("LatestTime") != null)
-						latesttime = DateTime.Parse(getInnerTextFromFirstChild(boundingBoxIter.Current.Select("LatestTime")));
 				}
 
 				string terrainMappedString = getInnerTextFromFirstChild(iter.Current.Select("TerrainMapped"));
@@ -989,7 +953,7 @@ namespace WorldWind
 			}
 		}
 
-		private static void addScreenOverlays(XPathNodeIterator iter, World parentWorld, RenderableObjectList parentRenderable, Cache cache)
+		private static void addScreenOverlays(XPathNodeIterator iter, RenderableObjectList parentRenderable, Cache cache)
 		{
 			if (iter.Count > 0)
 			{
@@ -1103,7 +1067,7 @@ namespace WorldWind
 			}
 		}
 
-		private static void addScreenOverlaysToIcon(XPathNodeIterator iter, World parentWorld, Icon icon, Cache cache)
+		private static void addScreenOverlaysToIcon(XPathNodeIterator iter, Icon icon, Cache cache)
 		{
 			if (iter.Count > 0)
 			{
@@ -1519,7 +1483,7 @@ namespace WorldWind
 			}
 		}
 
-		private static void addIcon(XPathNodeIterator iter, World parentWorld, RenderableObjectList parentRenderable, Cache cache)
+		private static void addIcon(XPathNodeIterator iter, RenderableObjectList parentRenderable, Cache cache)
 		{
 			if (iter.Count > 0)
 			{
@@ -1666,7 +1630,7 @@ namespace WorldWind
 
 					parentIconList.Add(ic);
 
-					addScreenOverlaysToIcon(iter.Current.Select("ScreenOverlay"), parentWorld, ic, cache);
+					addScreenOverlaysToIcon(iter.Current.Select("ScreenOverlay"), ic, cache);
 				}
 			}
 		}
@@ -1912,7 +1876,6 @@ namespace WorldWind
 					string extrudeHeightString = getInnerTextFromFirstChild(iter.Current.Select("ExtrudeHeight"));
 					string extrudeUpwardsString = getInnerTextFromFirstChild(iter.Current.Select("ExtrudeUpwards"));
 					string extrudeToGroundString = getInnerTextFromFirstChild(iter.Current.Select("ExtrudeToGround"));
-					string imageUri = getInnerTextFromFirstChild(iter.Current.Select("ImageUri"));
 					string outlineString = getInnerTextFromFirstChild(iter.Current.Select("Outline"));
 					string altitudeModeString = getInnerTextFromFirstChild(iter.Current.Select("AltitudeMode"));
 					string outlineWidthString = getInnerTextFromFirstChild(iter.Current.Select("OutlineWidth"));
@@ -2047,7 +2010,6 @@ namespace WorldWind
 				while (iter.MoveNext())
 				{
 					string name = getInnerTextFromFirstChild(iter.Current.Select("Name"));
-					string refreshurl = getInnerTextFromFirstChild(iter.Current.Select("RefreshURL"));
 					float lat = Convert.ToSingle(getInnerTextFromFirstChild(iter.Current.Select("Latitude")), CultureInfo.InvariantCulture);
 					float lon = Convert.ToSingle(getInnerTextFromFirstChild(iter.Current.Select("Longitude")), CultureInfo.InvariantCulture);
 					float alt = Convert.ToSingle(getInnerTextFromFirstChild(iter.Current.Select("DistanceAboveSurface")), CultureInfo.InvariantCulture);

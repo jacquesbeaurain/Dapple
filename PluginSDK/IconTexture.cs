@@ -19,7 +19,7 @@ namespace WorldWind.Renderable
 		public Texture Texture;
 		internal int Width;
 		internal int Height;
-        internal int ReferenceCount = 0;
+        internal int ReferenceCount;
 
         /// <summary>
         /// Base Save path for any downloaded images.  Set to CachePath\IconTextures by default.

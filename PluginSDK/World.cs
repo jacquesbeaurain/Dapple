@@ -87,7 +87,7 @@ namespace WorldWind
 			AtmosphericScatteringSphere.m_fInnerRadius = (float)equatorialRadius;
 			AtmosphericScatteringSphere.m_fOuterRadius = (float)equatorialRadius * 1.025f;
 
-			m_outerSphere.Init((float)equatorialRadius * 1.025f, 75, 75);
+			m_outerSphere.Init((float)equatorialRadius * 1.025f, 75);
 		}
 
 		internal AtmosphericScatteringSphere m_outerSphere = null;
@@ -603,7 +603,7 @@ namespace WorldWind
 		internal static int TilesHigh = 4;
 		internal static int TilesWide = 8;
 
-		internal void Init(float radius, int slices, int sections)
+		internal void Init(float radius, int slices)
 		{
 			try
 			{
@@ -692,9 +692,9 @@ namespace WorldWind
 		System.Collections.Generic.List<MeshSubset> m_meshList = new System.Collections.Generic.List<MeshSubset>();
 
 		System.Threading.Thread m_backgroundThread = null;
-		bool active = false;
+		bool active;
 		System.DateTime m_lastOpticalUpdate = System.DateTime.MinValue;
-		bool m_canDoShaders = false;
+		bool m_canDoShaders;
 
 		private void Updater()
 		{
@@ -1039,11 +1039,11 @@ namespace WorldWind
 		static int m_nChannels = 4;
 		static int m_nWidth;				// The width of the buffer (x axis)
 		static int m_nHeight;				// The height of the buffer (y axis)
-		float m_fScale = 0;
+		float m_fScale;
 		float[] m_fWavelength = new float[3];
 		float[] m_fWavelength4 = new float[3];
-		float m_fRayleighScaleDepth = 0;
-		float m_fMieScaleDepth = 0;
+		float m_fRayleighScaleDepth;
+		float m_fMieScaleDepth;
 
 		int m_nSamples;
 		float m_Kr, m_Kr4PI;
@@ -1061,7 +1061,6 @@ namespace WorldWind
 		private void UpdateSkyMesh(DrawArgs drawArgs, double horizonSpan)
 		{
 			WorldWind.Camera.CameraBase camera = drawArgs.WorldCamera;
-			Device device = drawArgs.device;
 
 			// Use world atmospheric scattering sphere radius for thickness
 			thickness = m_radius - camera.WorldRadius;
@@ -1088,7 +1087,7 @@ namespace WorldWind
 			// new mesh
 			if (skyMesh != null) skyMesh.Dispose();
 			int res = horizonSpan > 180 ? 64 : 128;
-			skyMesh = ColoredSpherePartial(drawArgs, (float)domeRadius, horizonLat, zenithLat, res, res / 2, horizonSpan, camera.Heading.Degrees);
+			skyMesh = ColoredSpherePartial(drawArgs, (float)domeRadius, horizonLat, zenithLat, res, res / 2, horizonSpan);
 
 		}
 
@@ -1106,7 +1105,7 @@ namespace WorldWind
 		/// Number of faces	:slices*stacks*2
 		/// Number of Indexes	: Number of faces * 3;
 		/// </remarks>
-		private Mesh ColoredSpherePartial(DrawArgs drawArgs, float radius, double startLat, double endLat, int slices, int stacks, double lonSpan, double heading)
+		private Mesh ColoredSpherePartial(DrawArgs drawArgs, float radius, double startLat, double endLat, int slices, int stacks, double lonSpan)
 		{
 			slices = (int)((double)slices * lonSpan / 360);
 
@@ -1169,7 +1168,6 @@ namespace WorldWind
 				double linear = (float)(stack - 1) / (stacks - 1f);
 				double k = 1 - Math.Cos((float)(stack - 1) / (stacks - 1f) * Math.PI / 2);
 				latitude = startLat + (k * k * k * (float)(endLat - startLat));
-				double colorFactorH = 1 - linear;			// coef horizon color
 				double alphaFactor = 1 - (linear * linear * linear);	// coef alpha transparency
 				if (alphaFactor > .8) alphaFactor = .8f;
 				for (int slice = 0; slice <= slices; slice++)
@@ -1407,9 +1405,6 @@ namespace WorldWind
 			// Camera & Viewport shortcuts
 			Camera.CameraBase camera = drawArgs.WorldCamera;
 			Viewport viewport = camera.Viewport;
-
-			// Compute camera altitude
-			double cameraAltitude = camera.Position.Length - camera.WorldRadius;
 
 			// Compute camera absolute field of view (to the horizon)
 			double fovH = Math.Abs(Math.Asin(camera.WorldRadius / (camera.WorldRadius + camera.Altitude))) * 2;

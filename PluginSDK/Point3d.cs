@@ -52,7 +52,6 @@ namespace WorldWind
 
       internal void TransformCoordinate(Matrix4d m)
       {
-         double w = this.X * m[0, 3] + this.Y * m[1, 3] + this.Z * m[2, 3] + m[3, 3];
          this = new Point3d(this.X * m[0, 0] + this.Y * m[1, 0] + this.Z * m[2, 0] + m[3, 0],
             this.X * m[0, 1] + this.Y * m[1, 1] + this.Z * m[2, 1] + m[3, 1],
             this.X * m[0, 2] + this.Y * m[1, 2] + this.Z * m[2, 2] + m[3, 2]);

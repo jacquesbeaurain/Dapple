@@ -14,14 +14,14 @@ namespace WorldWind
 		private const float TileSpreadFactor = 2.0f;
 
 		private static int TileSize = 256;
-		bool m_Initialized = false;
-		bool m_Initializing = false;
-		bool m_Disposing = false;
+		bool m_Initialized;
+		bool m_Initializing;
+		bool m_Disposing;
 		byte m_bOpacity = 255;
 
-		internal int Level = 0;
-		internal int Row = 0;
-		internal int Col = 0;
+		internal int Level;
+		internal int Row;
+		internal int Col;
 
 		ProjectedVectorRenderer m_parentProjectedLayer = null;
 		
@@ -129,7 +129,7 @@ namespace WorldWind
 			}
 		}
 
-		private Renderable.ImageLayer CreateImageLayer(double north, double south, double west, double east, DrawArgs drawArgs, string imagePath)
+		private Renderable.ImageLayer CreateImageLayer(double north, double south, double west, double east)
 		{
 			if (m_parentProjectedLayer.Bounds.Equals(GeographicBoundingBox.NullBox()) || !m_parentProjectedLayer.Bounds.Intersects(new GeographicBoundingBox(north, south, west, east)))
 			{
@@ -237,18 +237,7 @@ namespace WorldWind
 				b.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
 				ms.Seek(0, SeekOrigin.Begin);
 
-				result = new WorldWind.Renderable.ImageLayer(
-					String.Format("PVT ImageLayer L{0} R{1} C{2}", Level, Row, Col),
-					m_parentProjectedLayer.World,
-					0,
-					ms,
-					System.Drawing.Color.Black.ToArgb(),
-					(float)south,
-					(float)north,
-					(float)west,
-					(float)east,
-					1.0f,
-					m_parentProjectedLayer.World.TerrainAccessor);
+				result = new WorldWind.Renderable.ImageLayer(String.Format("PVT ImageLayer L{0} R{1} C{2}", Level, Row, Col), m_parentProjectedLayer.World, 0, ms, (float)south, (float)north, (float)west, (float)east, 1.0f, m_parentProjectedLayer.World.TerrainAccessor);
 
 				result.Opacity = this.Opacity;
 			}
@@ -312,37 +301,13 @@ namespace WorldWind
 				double centerLatitude = 0.5 * (m_geographicBoundingBox.North + m_geographicBoundingBox.South);
 				double centerLongitude = 0.5 * (m_geographicBoundingBox.West + m_geographicBoundingBox.East);
 
-				m_NwImageLayer = CreateImageLayer(m_geographicBoundingBox.North, centerLatitude, m_geographicBoundingBox.West, centerLongitude, drawArgs,
-					String.Format("{0}\\{1}\\{2}\\{3:D4}\\{3:D4}_{4:D4}.dds",
-					null,//ShapeTile.CachePath,
-					"R",//ConfigurationLoader.GetRenderablePathString(m_parentProjectedLayer),
-					Level + 1,
-					2 * Row + 1,
-					2 * Col));
+				m_NwImageLayer = CreateImageLayer(m_geographicBoundingBox.North, centerLatitude, m_geographicBoundingBox.West, centerLongitude);
 
-				m_NeImageLayer = CreateImageLayer(m_geographicBoundingBox.North, centerLatitude, centerLongitude, m_geographicBoundingBox.East, drawArgs,
-					String.Format("{0}\\{1}\\{2}\\{3:D4}\\{3:D4}_{4:D4}.dds",
-					null,//ShapeTile.CachePath,
-					"R",//ConfigurationLoader.GetRenderablePathString(m_parentProjectedLayer),
-					Level + 1,
-					2 * Row + 1,
-					2 * Col + 1));
+				m_NeImageLayer = CreateImageLayer(m_geographicBoundingBox.North, centerLatitude, centerLongitude, m_geographicBoundingBox.East);
 
-				m_SwImageLayer = CreateImageLayer(centerLatitude, m_geographicBoundingBox.South, m_geographicBoundingBox.West, centerLongitude, drawArgs,
-					String.Format("{0}\\{1}\\{2}\\{3:D4}\\{3:D4}_{4:D4}.dds",
-					null,//ShapeTile.CachePath,
-					"R",//ConfigurationLoader.GetRenderablePathString(m_parentProjectedLayer),
-					Level + 1,
-					2 * Row,
-					2 * Col));
+				m_SwImageLayer = CreateImageLayer(centerLatitude, m_geographicBoundingBox.South, m_geographicBoundingBox.West, centerLongitude);
 
-				m_SeImageLayer = CreateImageLayer(centerLatitude, m_geographicBoundingBox.South, centerLongitude, m_geographicBoundingBox.East, drawArgs,
-					String.Format("{0}\\{1}\\{2}\\{3:D4}\\{3:D4}_{4:D4}.dds",
-					null,//ShapeTile.CachePath,
-					"R",//ConfigurationLoader.GetRenderablePathString(m_parentProjectedLayer),
-					Level + 1,
-					2 * Row,
-					2 * Col + 1));
+				m_SeImageLayer = CreateImageLayer(centerLatitude, m_geographicBoundingBox.South, centerLongitude, m_geographicBoundingBox.East);
 
 				if(m_NwImageLayer != null)
 				{
@@ -460,8 +425,8 @@ namespace WorldWind
 
 			return (Point[])screenPointList.ToArray(typeof(Point));
 		}
-		
-		private ProjectedVectorTile ComputeChild( DrawArgs drawArgs, double childSouth, double childNorth, double childWest, double childEast, double tileSize ) 
+
+		private ProjectedVectorTile ComputeChild(double childSouth, double childNorth, double childWest, double childEast) 
 		{
 			ProjectedVectorTile child = new ProjectedVectorTile(
 				new GeographicBoundingBox(childNorth, childSouth, childWest, childEast),
@@ -548,7 +513,7 @@ namespace WorldWind
 			
 				if(m_NorthWestChild == null && m_NwImageLayer != null && m_Initialized)
 				{
-					m_NorthWestChild = ComputeChild(drawArgs, CenterLat, m_geographicBoundingBox.North, m_geographicBoundingBox.West, CenterLon, tileSize );
+					m_NorthWestChild = ComputeChild(CenterLat, m_geographicBoundingBox.North, m_geographicBoundingBox.West, CenterLon);
 					m_NorthWestChild.Level = Level++;
 					m_NorthWestChild.Row = 2 * Row + 1;
 					m_NorthWestChild.Col = 2 * Col;
@@ -558,7 +523,7 @@ namespace WorldWind
 
 				if(m_NorthEastChild == null && m_NeImageLayer != null && m_Initialized)
 				{
-					m_NorthEastChild = ComputeChild(drawArgs, CenterLat, m_geographicBoundingBox.North, CenterLon, m_geographicBoundingBox.East, tileSize );
+					m_NorthEastChild = ComputeChild(CenterLat, m_geographicBoundingBox.North, CenterLon, m_geographicBoundingBox.East);
 					m_NorthEastChild.Level = Level++;
 					m_NorthEastChild.Row = 2 * Row + 1;
 					m_NorthEastChild.Col = 2 * Col + 1;
@@ -568,7 +533,7 @@ namespace WorldWind
 
 				if(m_SouthWestChild == null && m_SwImageLayer != null && m_Initialized)
 				{
-					m_SouthWestChild = ComputeChild(drawArgs, m_geographicBoundingBox.South, CenterLat, m_geographicBoundingBox.West, CenterLon, tileSize );
+					m_SouthWestChild = ComputeChild(m_geographicBoundingBox.South, CenterLat, m_geographicBoundingBox.West, CenterLon);
 					m_SouthWestChild.Level = Level++;
 					m_SouthWestChild.Row = 2 * Row;
 					m_SouthWestChild.Col = 2 * Col;
@@ -578,7 +543,7 @@ namespace WorldWind
 
 				if(m_SouthEastChild == null && m_SeImageLayer != null && m_Initialized)
 				{
-					m_SouthEastChild = ComputeChild(drawArgs, m_geographicBoundingBox.South, CenterLat, CenterLon, m_geographicBoundingBox.East, tileSize );
+					m_SouthEastChild = ComputeChild(m_geographicBoundingBox.South, CenterLat, CenterLon, m_geographicBoundingBox.East);
 					m_SouthEastChild.Level = Level++;
 					m_SouthEastChild.Row = 2 * Row;
 					m_SouthEastChild.Col = 2 * Col + 1;

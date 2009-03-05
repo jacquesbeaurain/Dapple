@@ -22,11 +22,11 @@ namespace WorldWind
 		protected string m_duplicateTexturePath;
 		protected string m_serverlogo;
 
-		protected bool m_colorKeyEnabled = false;
-		protected bool m_alphaKeyEnabled = false;
+		protected bool m_colorKeyEnabled;
+		protected bool m_alphaKeyEnabled;
 
 		protected Format m_textureFormat;
-		protected int m_colorKey = 0;
+		protected int m_colorKey;
 		protected int m_alphaKeyMin = -1;
 		protected int m_alphaKeyMax = -1;
 

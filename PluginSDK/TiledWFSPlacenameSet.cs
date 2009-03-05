@@ -130,26 +130,12 @@ namespace WorldWind.Renderable
 
 			m_drawingFont = drawArgs.CreateFont(scaledDescription);
 
-			//Validate URL
-			/*
-			if(System.Text.RegularExpressions.Regex.IsMatch(m_placenameBaseUrl, "(http|ftp|https)://([/w-]+/.)+(/[/w- ./?%&=]*)?"))
-			{
-				 this.isInitialized = true;
-			}
-			*/
-			//Generate Initial File List
-			//WorldWindWFSPlacenameFile root_file = new WorldWindWFSPlacenameFile(m_placenameBaseUrl, m_typename, m_labelfield);
-			//m_placenameFileList = new ArrayList(root_file.SplitPlacenameFiles());
-
-			//TODO:Download and validate capabitilities
-
 			if (m_iconFilePath != null)
 			{
 				m_iconTexture = ImageHelper.LoadIconTexture(m_iconFilePath);
 
 				using (Surface s = m_iconTexture.GetSurfaceLevel(0))
 				{
-					SurfaceDescription desc = s.Description;
 				}
 
 				m_sprite = new Sprite(drawArgs.device);
@@ -552,7 +538,7 @@ namespace WorldWind.Renderable
 		protected World m_world;
 		protected Cache m_cache;
 
-		protected bool m_dlInProcess = false;
+		protected bool m_dlInProcess;
 
 		internal WorldWindWFSPlacenameFile(
 			 string name,
@@ -599,46 +585,11 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		/*internal WorldWindWFSPlacenameFile[] SplitPlacenameFiles()
-	 {
-		 //split
-		 WorldWindWFSPlacenameFile northWest = new WorldWindWFSPlacenameFile(this.wfsBaseUrl,this.typename,this.labelfield);
-		 northWest.north = this.north;
-		 northWest.south = 0.5f * (this.north + this.south);
-		 northWest.west = this.west;
-		 northWest.east = 0.5f * (this.west + this.east);
-			 northWest.wfsURL = northWest.wfsBaseUrl + "&OUTPUTFORMAT=GML2-GZIP&BBOX=" + northWest.west + "," + northWest.south + "," + northWest.east + ","+northWest.north;
-
-			 WorldWindWFSPlacenameFile northEast = new WorldWindWFSPlacenameFile(this.wfsBaseUrl,this.typename, this.labelfield);
-		 northEast.north = this.north;
-		 northEast.south = 0.5f * (this.north + this.south);
-		 northEast.west = 0.5f * (this.west + this.east);
-		 northEast.east = this.east;
-			 northEast.wfsURL = northEast.wfsBaseUrl + "&OUTPUTFORMAT=GML2-GZIP&BBOX=" + northEast.west + "," + northEast.south + "," + northEast.east + "," + northEast.north;
-
-			 WorldWindWFSPlacenameFile southWest = new WorldWindWFSPlacenameFile(this.wfsBaseUrl,this.typename, this.labelfield);
-		 southWest.north = 0.5f * (this.north + this.south);
-		 southWest.south = this.south;
-		 southWest.west = this.west;
-		 southWest.east = 0.5f * (this.west + this.east);
-			 southWest.wfsURL = southWest.wfsBaseUrl + "&OUTPUTFORMAT=GML2-GZIP&BBOX=" + southWest.west + "," + southWest.south + "," + southWest.east + "," + southWest.north;
-
-			 WorldWindWFSPlacenameFile southEast = new WorldWindWFSPlacenameFile(this.wfsBaseUrl,this.typename, this.labelfield);
-		 southEast.north = 0.5f * (this.north + this.south);
-		 southEast.south = this.south;
-		 southEast.west = 0.5f * (this.west + this.east);
-		 southEast.east = this.east;
-			 southEast.wfsURL = southEast.wfsBaseUrl + "&OUTPUTFORMAT=GML2-GZIP&BBOX=" + southEast.west + "," + southEast.south + "," + southEast.east + "," + southEast.north;
-
-		 WorldWindWFSPlacenameFile[] returnArray = new WorldWindWFSPlacenameFile[] {northWest, northEast, southWest, southEast};
-		 return returnArray;
-	 }*/
-
 		public override int GetHashCode()
 		{
 			return wfsURL.GetHashCode();
 		}
-		bool m_failed = false;
+		bool m_failed;
 
 		//TODO: Implement Downloading + Uncompressing + Caching 
 		private void DownloadParsePlacenames()
@@ -652,13 +603,6 @@ namespace WorldWind.Renderable
 
 				if (m_dlInProcess)
 					return;
-
-				//hard coded cache location
-				//string cachefilename = 
-				//    Directory.GetParent(System.Windows.Forms.Application.ExecutablePath) +
-				//    string.Format("Cache//WFS//Placenames//{0}//{1}_{2}_{3}_{4}.xml.gz", 
-				//    this.name, this.west, this.south, this.east, this.north);
-
 
 				//let's use the location from settings instead
 				string cachefilename = m_cache.CacheDirectory +

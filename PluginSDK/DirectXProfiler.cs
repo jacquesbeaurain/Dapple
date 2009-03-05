@@ -49,9 +49,6 @@ namespace WorldWind
 #else
             private static bool enabled = false;
 #endif
-
-        private static bool addLineInfo = false;
-
         #endregion
 
 
@@ -91,7 +88,7 @@ namespace WorldWind
         {
             if (enabled)
             {
-                return BeginEventDirect(col, name + GetLineInfo());
+                return BeginEventDirect(col, name);
             }
             else
             {
@@ -115,8 +112,7 @@ namespace WorldWind
         {
             if (enabled)
             {
-                SetMarkerDirect(col, name + GetLineInfo());
-                GetLineInfo();
+                SetMarkerDirect(col, name);
             }
         }
 
@@ -124,32 +120,6 @@ namespace WorldWind
 
 
         #region Line tracing and DLL imports
-
-        private static string GetLineInfo()
-        {
-            if (addLineInfo)
-            {
-                StackTrace trace = new StackTrace(true);
-
-                int i = 0;
-                StackFrame frame = trace.GetFrame(i);
-                string lastFile = System.IO.Path.GetFileName(frame.GetFileName()).ToLower();
-
-                // ugly hack to trace out off profiler class
-                while (lastFile == "profiler.cs" && i < trace.FrameCount)
-                {
-                    i++;
-                    frame = trace.GetFrame(i);
-                    lastFile = System.IO.Path.GetFileName(frame.GetFileName()).ToLower();
-                }
-
-                return String.Format(" ({0}:{1})", lastFile, frame.GetFileLineNumber());
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
 
         // int D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName );		
         [System.Security.SuppressUnmanagedCodeSecurity] // We won't use this maliciously

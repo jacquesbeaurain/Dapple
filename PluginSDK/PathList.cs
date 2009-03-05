@@ -82,19 +82,7 @@ namespace WorldWind.Renderable
 						double north = indexFileReader.ReadDouble();
 						long offset = indexFileReader.ReadInt64();
 
-						TerrainPath tp = new TerrainPath(
-							fileName,
-							parentWorld,
-							minDisplayAltitude,
-							maxDisplayAltitude,
-							dataArchiveReader,
-							offset,
-							0,
-							north,
-							south,
-							east,
-							west,
-							(float)altitude, color, terrainAccessor);
+						TerrainPath tp = new TerrainPath(fileName, parentWorld, minDisplayAltitude, maxDisplayAltitude, dataArchiveReader, offset, north, south, east, west, (float)altitude, color, terrainAccessor);
 
 						tp.ParentList = this;
 						m_children.Add(tp);

@@ -21,14 +21,15 @@ namespace WorldWind.Camera
 		protected Angle _targetFov;
 		protected Quaternion4d _targetOrientation;
       protected bool _firstUpdate = true;
-		protected bool m_blForceRender = false;
+		protected bool m_blForceRender;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Camera.WorldCamera"/> class.
 		/// </summary>
-		/// <param name="targetPosition"></param>
+		/// 
 		/// <param name="radius"></param>
-		internal WorldCamera( Point3d targetPosition,double radius ) : base( targetPosition, radius ) 
+		internal WorldCamera(double radius)
+			: base(radius) 
 		{
 			this._targetOrientation = m_Orientation;
 			this._targetDistance = this._distance;
@@ -354,15 +355,14 @@ namespace WorldWind.Camera
 		protected Angle _latitudeMomentum;
 		protected Angle _longitudeMomentum;
 		protected Angle _headingMomentum;
-		//protected Angle _bankMomentum;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Camera.MomentumCamera"/> class.
 		/// </summary>
-		/// <param name="targetPosition"></param>
+		/// 
 		/// <param name="radius"></param>
-		public MomentumCamera(Point3d targetPosition, double radius)
-			: base(targetPosition, radius) 
+		public MomentumCamera(double radius)
+			: base(radius) 
 		{
 			this._targetOrientation = m_Orientation;
 			this._targetDistance = this._distance;

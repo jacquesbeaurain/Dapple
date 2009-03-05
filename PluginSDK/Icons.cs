@@ -593,7 +593,7 @@ namespace WorldWind.Renderable
 			return res;
 		}
 
-		bool isUpdating = false;
+		bool isUpdating;
 		private void refreshTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			if(isUpdating)
