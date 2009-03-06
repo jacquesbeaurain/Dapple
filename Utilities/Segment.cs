@@ -38,12 +38,28 @@ namespace DM.SharedMemory
       Attach
    }
 
+	[Serializable]
    public class SharedMemoryException : ApplicationException
    {
-      public SharedMemoryException(string msg)
-         : base(msg)
+		public SharedMemoryException()
+			: base()
+		{
+		}
+
+      public SharedMemoryException(string message)
+         : base(message)
       {
       }
+
+		public SharedMemoryException(string message, Exception innerException)
+			:base(message, innerException)
+		{
+		}
+
+		public SharedMemoryException(SerializationInfo info, StreamingContext context)
+			:base(info, context)
+		{
+		}
    }
 
 
@@ -90,7 +106,7 @@ namespace DM.SharedMemory
 
          if (nativeHandle == IntPtr.Zero)
          {
-            uint i = Win32Native.GetLastError();
+				int i = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
             if (i == Win32Native.ERROR_INVALID_HANDLE)
                throw new SharedMemoryException("Shared memory segment already in use");
             else
@@ -102,7 +118,7 @@ namespace DM.SharedMemory
 
          if (nativePointer == IntPtr.Zero)
          {
-            uint i = Win32Native.GetLastError();
+				int i = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
             Win32Native.CloseHandle(nativeHandle);
             nativeHandle = IntPtr.Zero;
             throw new SharedMemoryException("Unable to map shared memory segment. GetLastError = " + i);

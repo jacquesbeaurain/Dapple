@@ -85,9 +85,6 @@ namespace DM.SharedMemory
                                           );
 
       [DllImport("Kernel32.dll")]
-      internal static extern uint GetLastError();
-
-      [DllImport("Kernel32.dll")]
       internal static extern void CopyMemory(int dest, int source, int size);
 
    }

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections.ObjectModel;
 
 namespace Utility
 {
-   public class GCSMappings
-   {
-      private GCSMappings() { }
-
-      public static List<string> WMSWGS84Equivalents = new List<string>(new string[] {
+	public static class GCSMappings
+	{
+		private static readonly List<string> s_WMSWGS84Equivalents = new List<string>(new string[] {
          "EPSG:4019",
          "EPSG:4176",
          "EPSG:4151",
@@ -47,8 +46,13 @@ namespace Utility
          "EPSG:4163",
          "CRS:83"
       });
-  
-      public static List<string> GeoTiffWGS84Equivalents = new List<string>(new string[] {
+
+		public static IList<String> WMSWGS84Equivalents
+		{
+			get { return new ReadOnlyCollection<String>(s_WMSWGS84Equivalents); }
+		}
+
+		private static readonly List<string> s_GeoTiffWGS84Equivalents = new List<string>(new string[] {
          "GCSE_GRS1980",
          "GCS_GGRS87",
          "GCS_RT90",
@@ -59,5 +63,10 @@ namespace Utility
          "GCS_Dealul_Piscului_1970",
          "GCS_WGS_84"
       });
-   }
+
+		public static IList<String> GeoTiffWGS84Equivalents
+		{
+			get { return new ReadOnlyCollection<String>(s_GeoTiffWGS84Equivalents); }
+		}
+	}
 }
