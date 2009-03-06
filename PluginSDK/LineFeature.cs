@@ -15,7 +15,6 @@ namespace WorldWind
 		#endregion
 
 		#region Private Members
-		readonly double m_distanceAboveSurface = 0.0;
 		protected Point3d[] m_points = null;
 		CustomVertex.PositionNormalTextured[] m_wallVertices = null;
 
@@ -312,7 +311,7 @@ namespace WorldWind
 				Point3d xyzPoint = MathEngine.SphericalToCartesian(
 					 Angle.FromDegrees(m_points[i].Y),
 					 Angle.FromDegrees(m_points[i].X),
-					 m_verticalExaggeration * (m_distanceAboveSurface + terrainHeight + m_points[i].Z) + World.EquatorialRadius
+					 m_verticalExaggeration * (terrainHeight + m_points[i].Z) + World.EquatorialRadius
 					 );
 
 				Vector3 xyzVertex = (xyzPoint - center).Vector3;
@@ -339,7 +338,7 @@ namespace WorldWind
 					xyzPoint = MathEngine.SphericalToCartesian(
 						 Angle.FromDegrees(m_points[i].Y),
 						 Angle.FromDegrees(m_points[i].X),
-						 (m_points[i].Z + extrudeDist + m_distanceAboveSurface) * m_verticalExaggeration + World.EquatorialRadius
+						 (m_points[i].Z + extrudeDist) * m_verticalExaggeration + World.EquatorialRadius
 						 );
 
 					xyzVertex = (xyzPoint - center).Vector3;

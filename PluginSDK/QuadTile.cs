@@ -958,8 +958,6 @@ namespace WorldWind.Renderable
 				maximumElevation = minimumElevation;
 			}
 
-			double overlap = 500 * verticalExaggeration; // 500m high tiles
-
 			CreateElevatedMesh(ChildLocation.NorthWest, northWestVertices, heightData);
 			CreateElevatedMesh(ChildLocation.SouthWest, southWestVertices, heightData);
 			CreateElevatedMesh(ChildLocation.NorthEast, northEastVertices, heightData);
