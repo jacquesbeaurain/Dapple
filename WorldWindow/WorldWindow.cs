@@ -1827,6 +1827,9 @@ namespace WorldWind
 					drawArgs.CurrentRoI = GeographicBoundingBox.FromQuad(CurrentAreaOfInterest);
 					m_World.Update(this.drawArgs);
 				}
+#else
+				drawArgs.CurrentRoI = GeographicBoundingBox.FromQuad(CurrentAreaOfInterest);
+				m_World.Update(this.drawArgs);
 #endif
 				if (Updated != null)
 					Updated(this, EventArgs.Empty);
