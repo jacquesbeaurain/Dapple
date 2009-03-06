@@ -56,7 +56,7 @@ namespace DM.SharedMemory
 		{
 		}
 
-		public SharedMemoryException(SerializationInfo info, StreamingContext context)
+		protected SharedMemoryException(SerializationInfo info, StreamingContext context)
 			:base(info, context)
 		{
 		}

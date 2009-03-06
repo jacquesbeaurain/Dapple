@@ -175,11 +175,11 @@ namespace Dapple.KML
 			KMLLookAt oView = m_oSourceFile.Document.View as KMLLookAt;
 			if (oView != null)
 			{
-				oTarget.GotoLatLonHeadingViewRange(oView.Latitude, oView.Longitude, oView.Heading, oView.Range);
+				oTarget.GoToLatLonHeadingViewRange(oView.Latitude, oView.Longitude, oView.Heading, oView.Range);
 			}
 			else
 			{
-				oTarget.GotoBoundingbox(m_oBounds, false);
+				oTarget.GoToBoundingBox(m_oBounds, false);
 			}
 		}
 	}

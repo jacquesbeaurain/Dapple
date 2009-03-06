@@ -328,8 +328,10 @@ namespace WorldWind
 		private Point mouseDownStartPosition = Point.Empty;
 		private bool renderWireFrame;
 		private System.Timers.Timer m_FpsTimer = new System.Timers.Timer(250);
-		private bool supressUpdates = false;
-		public static event MethodInvoker VideoMemoryExhausted;
+#if DEBUG
+		private bool supressUpdates;
+#endif
+		public static event EventHandler VideoMemoryExhausted;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.WorldWindow"/> class.
@@ -516,47 +518,48 @@ namespace WorldWind
 		/// the FOV, and the aspect ratio of the window.  In pretty much all cases, it more accurately reflects what you're actually looking at.
 		/// </summary>
 		/// <returns></returns>
-		public GeographicQuad GetSearchBox()
+		public GeographicQuad CurrentAreaOfInterest
 		{
-			double dDistance = this.drawArgs.WorldCamera.Distance;
-			double dRadius = m_World.EquatorialRadius;
-			double dFov = this.drawArgs.WorldCamera.Fov.Radians;
-			double dCameraLatitude = drawArgs.WorldCamera.Latitude.Degrees;
-			if (dCameraLatitude > 89.9) dCameraLatitude = 89.0;
-			if (dCameraLatitude < -89.9) dCameraLatitude = -89.9;
-			double dCameraLongitude = drawArgs.WorldCamera.Longitude.Degrees;
-			double dMaxVisibleAngle = 90.0 - drawArgs.WorldCamera.Fov.Degrees / 2;
-
-			// Step 0: If you're zoomed out, use a whole-world box
-
-			if (dDistance > HeightThreshold)
+			get
 			{
-				return new GeographicQuad(-180.0, -90.0, 180.0, -90.0, 180.0, 90.0, -180.0, 90.0);
+				double dDistance = this.drawArgs.WorldCamera.Distance;
+				double dCameraLatitude = drawArgs.WorldCamera.Latitude.Degrees;
+				if (dCameraLatitude > 89.9) dCameraLatitude = 89.0;
+				if (dCameraLatitude < -89.9) dCameraLatitude = -89.9;
+				double dCameraLongitude = drawArgs.WorldCamera.Longitude.Degrees;
+				double dMaxVisibleAngle = 90.0 - drawArgs.WorldCamera.Fov.Degrees / 2;
+
+				// Step 0: If you're zoomed out, use a whole-world box
+
+				if (dDistance > HeightThreshold)
+				{
+					return new GeographicQuad(-180.0, -90.0, 180.0, -90.0, 180.0, 90.0, -180.0, 90.0);
+				}
+
+				// Step 1: Figure out the third side of the triangle
+
+				double dLatitudeVisibleAngle = LatitudeVisibleAngleFromCameraHeight(dDistance);
+
+				// Step 2: Scale the longitude viewing angle by the screen aspect ratio
+
+				double dAspectRatio = (double)this.Width / (double)this.Height;
+				double dLongitudeVisibleAngle = dLatitudeVisibleAngle * dAspectRatio;
+				if (dLongitudeVisibleAngle > dMaxVisibleAngle) dLongitudeVisibleAngle = dMaxVisibleAngle;
+
+				// Step 3: Scale the longitude viewing angle by the latitude (higher up == wider)
+
+				double dLatitudeScaleFactor = 1 / Math.Cos(dCameraLatitude * Deg2Rad);
+				dLongitudeVisibleAngle *= dLatitudeScaleFactor;
+
+				// Step 4: Return the box based on that viewed area
+
+				return new GeographicQuad(
+					dCameraLongitude - dLongitudeVisibleAngle, dCameraLatitude - dLatitudeVisibleAngle,
+					dCameraLongitude - dLongitudeVisibleAngle, dCameraLatitude + dLatitudeVisibleAngle,
+					dCameraLongitude + dLongitudeVisibleAngle, dCameraLatitude + dLatitudeVisibleAngle,
+					dCameraLongitude + dLongitudeVisibleAngle, dCameraLatitude - dLatitudeVisibleAngle
+				);
 			}
-
-			// Step 1: Figure out the third side of the triangle
-
-			double dLatitudeVisibleAngle = LatitudeVisibleAngleFromCameraHeight(dDistance);
-
-			// Step 2: Scale the longitude viewing angle by the screen aspect ratio
-
-			double dAspectRatio = (double)this.Width / (double)this.Height;
-			double dLongitudeVisibleAngle = dLatitudeVisibleAngle * dAspectRatio;
-			if (dLongitudeVisibleAngle > dMaxVisibleAngle) dLongitudeVisibleAngle = dMaxVisibleAngle;
-
-			// Step 3: Scale the longitude viewing angle by the latitude (higher up == wider)
-
-			double dLatitudeScaleFactor = 1 / Math.Cos(dCameraLatitude * Deg2Rad);
-			dLongitudeVisibleAngle *= dLatitudeScaleFactor;
-
-			// Step 4: Return the box based on that viewed area
-
-			return new GeographicQuad(
-				dCameraLongitude - dLongitudeVisibleAngle, dCameraLatitude - dLatitudeVisibleAngle,
-				dCameraLongitude - dLongitudeVisibleAngle, dCameraLatitude + dLatitudeVisibleAngle,
-				dCameraLongitude + dLongitudeVisibleAngle, dCameraLatitude + dLatitudeVisibleAngle,
-				dCameraLongitude + dLongitudeVisibleAngle, dCameraLatitude - dLatitudeVisibleAngle
-			);
 		}
 
 
@@ -572,7 +575,7 @@ namespace WorldWind
 		/// <param name="altitude">Camera altitude in meters or double.NaN for no change.</param>
 		/// <param name="perpendicularViewRange"></param>
 		/// <param name="tilt">Camera tilt in degrees (-90 - 90) or double.NaN for no change.</param>
-		public void GotoLatLon(double latitude, double longitude, double heading, double altitude, double perpendicularViewRange, double tilt)
+		public void GoToLatLon(double latitude, double longitude, double heading, double altitude, double perpendicularViewRange, double tilt)
 		{
 			if (!double.IsNaN(perpendicularViewRange))
 				altitude = m_World.EquatorialRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
@@ -582,7 +585,7 @@ namespace WorldWind
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude, heading, altitude, tilt);
 		}
 
-		public void GotoLatLon(double latitude, double longitude)
+		public void GoToLatLon(double latitude, double longitude)
 		{
 			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude,
@@ -591,7 +594,7 @@ namespace WorldWind
 				this.drawArgs.WorldCamera.Tilt.Degrees);
 		}
 
-		public void GotoLatLonHeadingViewRange(double latitude, double longitude, double heading, double perpendicularViewRange)
+		public void GoToLatLonHeadingViewRange(double latitude, double longitude, double heading, double perpendicularViewRange)
 		{
 			double altitude = m_World.EquatorialRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
 			this.GotoLatLonHeadingAltitude(latitude, longitude, heading, altitude);
@@ -613,12 +616,12 @@ namespace WorldWind
 		/// <param name="dMinLat"></param>
 		/// <param name="dMaxLon"></param>
 		/// <param name="dMaxLat"></param>
-		public void GotoBoundingbox(GeographicBoundingBox oBoundingBox, bool blImmediate)
+		public void GoToBoundingBox(GeographicBoundingBox boundingBox, bool blImmediate)
 		{
-			double dMinLon = oBoundingBox.West;
-			double dMinLat = oBoundingBox.South;
-			double dMaxLon = oBoundingBox.East;
-			double dMaxLat = oBoundingBox.North;
+			double dMinLon = boundingBox.West;
+			double dMinLat = boundingBox.South;
+			double dMaxLon = boundingBox.East;
+			double dMaxLat = boundingBox.North;
 
 			double dLatitudeAngle = dMaxLat - dMinLat;
 			double dLongitudeAngle = dMaxLon - dMinLon;
@@ -710,7 +713,7 @@ namespace WorldWind
 		System.Collections.ArrayList m_FrameTimes = new ArrayList();
 		WorldWind.Widgets.RootWidget m_RootWidget = null;
 		WorldWind.NewWidgets.RootWidget m_NewRootWidget = null;
-		private bool m_blDeviceLost = false;
+		private bool m_blDeviceLost;
 
 		/// <summary>
 		/// This method is a redirect; delete it sometime and call the redirected method directly.
@@ -793,7 +796,7 @@ namespace WorldWind
 							m_World.Render(this.drawArgs);
 
 							if (World.Settings.ShowCrosshairs)
-								this.DrawCrossHairs();
+								this.DrawCrosshairs();
 
 							frameCounter++;
 							if (frameCounter == 30)
@@ -890,14 +893,14 @@ namespace WorldWind
 				if (World.Settings.DisplayUnits == Units.Metric)
 				{
 					if (agl >= 1000)
-						alt = string.Format("{0:,.0} km", agl / 1000);
+						alt = string.Format(CultureInfo.CurrentCulture, "{0:,.0} km", agl / 1000);
 					else
-						alt = string.Format("{0:f0} m", agl);
+						alt = string.Format(CultureInfo.CurrentCulture, "{0:f0} m", agl);
 
 					if (dgl > 100000)
-						dist = string.Format("{0:f2} km", dgl / 1000);
+						dist = string.Format(CultureInfo.CurrentCulture, "{0:f2} km", dgl / 1000);
 					else
-						dist = string.Format("{0:f0} m", dgl);
+						dist = string.Format(CultureInfo.CurrentCulture, "{0:f0} m", dgl);
 				}
 				else
 				{
@@ -905,21 +908,21 @@ namespace WorldWind
 					dgl *= (float)feetPerMeter;
 
 					if (agl >= feetPerMile)
-						alt = string.Format("{0:,.0} miles", agl / feetPerMile);
+						alt = string.Format(CultureInfo.CurrentCulture, "{0:,.0} miles", agl / feetPerMile);
 					else
-						alt = string.Format("{0:f0} ft", agl);
+						alt = string.Format(CultureInfo.CurrentCulture, "{0:f0} ft", agl);
 
 					if (dgl > 100000)
-						dist = string.Format("{0:f2} miles", dgl / feetPerMile);
+						dist = string.Format(CultureInfo.CurrentCulture, "{0:f2} miles", dgl / feetPerMile);
 					else
-						dist = string.Format("{0:f0} ft", dgl);
+						dist = string.Format(CultureInfo.CurrentCulture, "{0:f0} ft", dgl);
 				}
 
 				// Heading from 0 - 360
 				double heading = this.drawArgs.WorldCamera.Heading.Degrees;
 				if (heading < 0)
 					heading += 360;
-				captionText += String.Format("Latitude: {0:f6}°\nLongitude: {1:f6}°\nHeading: {2:f2}°\nTilt: {3:f2}°\nAltitude: {4}\nDistance: {5}\nFOV: {6}",
+				captionText += String.Format(CultureInfo.CurrentCulture, "Latitude: {0:f6}°\nLongitude: {1:f6}°\nHeading: {2:f2}°\nTilt: {3:f2}°\nAltitude: {4}\nDistance: {5}\nFOV: {6}",
 					 this.drawArgs.WorldCamera.Latitude.Degrees,
 					 this.drawArgs.WorldCamera.Longitude.Degrees,
 					 heading,
@@ -933,11 +936,11 @@ namespace WorldWind
 					double terrainElevation = drawArgs.WorldCamera.TerrainElevation;
 					if (World.Settings.DisplayUnits == Units.Metric)
 					{
-						captionText += String.Format("\nTerrain Elevation: {0:n} meters\n", terrainElevation);
+						captionText += String.Format(CultureInfo.CurrentCulture, "\nTerrain Elevation: {0:n} meters\n", terrainElevation);
 					}
 					else
 					{
-						captionText += String.Format("\nTerrain Elevation: {0:n} feet\n", terrainElevation * feetPerMeter);
+						captionText += String.Format(CultureInfo.CurrentCulture, "\nTerrain Elevation: {0:n} feet\n", terrainElevation * feetPerMeter);
 					}
 				}
 			}
@@ -946,14 +949,14 @@ namespace WorldWind
 			{
 
 				captionText +=
-					"\nAvailable Texture Memory: " + (m_Device3d.AvailableTextureMemory / 1024).ToString("N0") + " kB" +
-					"\nBoundary Points: " + this.drawArgs.numBoundaryPointsRendered.ToString() + " / " + this.drawArgs.numBoundaryPointsTotal.ToString() + " : " + this.drawArgs.numBoundariesDrawn.ToString() +
-					"\nTiles Drawn: " + (this.drawArgs.numberTilesDrawn * 0.25f).ToString() +
+					"\nAvailable Texture Memory: " + (m_Device3d.AvailableTextureMemory / 1024).ToString("N0", CultureInfo.CurrentCulture) + " Kb" +
+					"\nBoundary Points: " + this.drawArgs.numBoundaryPointsRendered.ToString(CultureInfo.CurrentCulture) + " / " + this.drawArgs.numBoundaryPointsTotal.ToString(CultureInfo.CurrentCulture) + " : " + this.drawArgs.numBoundariesDrawn.ToString(CultureInfo.CurrentCulture) +
+					"\nTiles Drawn: " + (this.drawArgs.numberTilesDrawn * 0.25f).ToString(CultureInfo.CurrentCulture) +
 					"\n" + this.drawArgs.WorldCamera +
-					"\nFPS: " + this.fps.ToString("f1") +
-					"\nRO: " + m_World.RenderableObjects.Count.ToString("f0") +
-					"\nmLat: " + this.cLat.Degrees.ToString() +
-						  "\nmLon: " + this.cLon.Degrees.ToString() +
+					"\nFPS: " + this.fps.ToString("f1", CultureInfo.CurrentCulture) +
+					"\nRO: " + m_World.RenderableObjects.Count.ToString("f0", CultureInfo.CurrentCulture) +
+					"\nmLat: " + this.cLat.Degrees.ToString(CultureInfo.CurrentCulture) +
+						  "\nmLon: " + this.cLon.Degrees.ToString(CultureInfo.CurrentCulture) +
 						  "\n" + TimeKeeper.CurrentTimeUtc.ToLocalTime().ToLongTimeString();
 			}
 
@@ -982,7 +985,7 @@ namespace WorldWind
 		/// TODO: Make this user-resizeable and color customizable
 		/// </summary>
 		Line crossHairs;
-		protected void DrawCrossHairs()
+		protected void DrawCrosshairs()
 		{
 			int crossHairColor = World.Settings.CrosshairColor.ToArgb();
 			int crossHairSize = World.Settings.CrosshairSize;
@@ -1071,19 +1074,11 @@ namespace WorldWind
 		/// </summary>
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			if (!IsWorldReady())
-			{
-				return;
-			}
-			try
+			if (IsWorldReady())
 			{
 				e.Handled = HandleKeyDown(e);
-				base.OnKeyDown(e);
 			}
-			catch (Exception caught)
-			{
-				MessageBox.Show(caught.Message, "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
+			base.OnKeyDown(e);
 		}
 
 		/// <summary>
@@ -1091,19 +1086,11 @@ namespace WorldWind
 		/// </summary>
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
-			if (!IsWorldReady())
-			{
-				return;
-			}
-			try
+			if (IsWorldReady())
 			{
 				e.Handled = HandleKeyUp(e);
-				base.OnKeyUp(e);
 			}
-			catch (Exception caught)
-			{
-				MessageBox.Show(caught.Message, "Operation failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
+			base.OnKeyUp(e);
 		}
 
 		protected override void OnKeyPress(KeyPressEventArgs e)
@@ -1176,137 +1163,141 @@ namespace WorldWind
 
 			// Alt key down
 			if (e.Alt)
-			{
-				switch (e.KeyCode)
-				{
-					case Keys.C:
-						World.Settings.ShowCrosshairs = !World.Settings.ShowCrosshairs;
-						return true;
-					case Keys.Add:
-					case Keys.Oemplus:
-					case Keys.Home:
-					case Keys.NumPad7:
-						this.drawArgs.WorldCamera.Fov -= Angle.FromDegrees(5);
-						return true;
-					case Keys.Subtract:
-					case Keys.OemMinus:
-					case Keys.End:
-					case Keys.NumPad1:
-						this.drawArgs.WorldCamera.Fov += Angle.FromDegrees(5);
-						return true;
-				}
-			}
-			// Control key down
+				return HandleAltKeyDown(e);
 			else if (e.Control)
-			{
-			}
-			// Other and no control key
+				return false;
 			else
+				return HandleNormalKeyDown(e);
+		}
+
+		private bool HandleAltKeyDown(KeyEventArgs e)
+		{
+			switch (e.KeyCode)
 			{
-				switch (e.KeyCode)
-				{
-					// reset north
-					case Keys.N:
-						this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-						this.DrawArgs.WorldCamera.SetPosition(
-						this.Latitude,
-						this.Longitude,
-						 0,
-						 this.DrawArgs.WorldCamera.Altitude,
-						 this.DrawArgs.WorldCamera.Tilt.Degrees);
-						return true;
-					// reset Tilt
-					case Keys.T:
-						this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-						this.DrawArgs.WorldCamera.SetPosition(
-						this.Latitude,
-						this.Longitude,
-						 this.DrawArgs.WorldCamera.Heading.Degrees,
-						 this.DrawArgs.WorldCamera.Altitude,
-						 0);
-						return true;
-					// rotate left
-					case Keys.A:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						Angle rotateClockwise = Angle.FromRadians(0.01f);
-						this.drawArgs.WorldCamera.Heading += rotateClockwise;
-						this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
-						return true;
-					// rotate right
-					case Keys.D:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						Angle rotateCounterclockwise = Angle.FromRadians(-0.01f);
-						this.drawArgs.WorldCamera.Heading += rotateCounterclockwise;
-						this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
-						return true;
-					// rotate up
-					case Keys.W:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						this.drawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
-						return true;
-					// rotate down
-					case Keys.S:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						this.drawArgs.WorldCamera.Tilt += Angle.FromDegrees(1.0f);
-						return true;
-					// pan left
-					case Keys.Left:
-					case Keys.H:
-					case Keys.NumPad4:
-						// TODO: pan n pixels
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						Angle panLeft = Angle.FromRadians((float)-1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
-						this.drawArgs.WorldCamera.RotationYawPitchRoll(panLeft, Angle.Zero, Angle.Zero);
-						return true;
-					// pan down
-					case Keys.Down:
-					case Keys.J:
-					case Keys.NumPad2:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						Angle panDown = Angle.FromRadians((float)-1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
-						this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, panDown, Angle.Zero);
-						return true;
-					// pan right
-					case Keys.Right:
-					case Keys.K:
-					case Keys.NumPad6:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						Angle panRight = Angle.FromRadians((float)1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
-						this.drawArgs.WorldCamera.RotationYawPitchRoll(panRight, Angle.Zero, Angle.Zero);
-						return true;
-					// pan up
-					case Keys.Up:
-					case Keys.U:
-					case Keys.NumPad8:
-						// TODO: Pan n pixels
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						Angle panUp = Angle.FromRadians((float)1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
-						this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, panUp, Angle.Zero);
-						return true;
-					// zoom in
-					case Keys.Add:
-					case Keys.Oemplus:
-					case Keys.Home:
-					case Keys.NumPad7:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						this.drawArgs.WorldCamera.ZoomStepped(World.Settings.CameraZoomStepKeyboard);
-						return true;
-					// zoom out
-					case Keys.Subtract:
-					case Keys.OemMinus:
-					case Keys.End:
-					case Keys.NumPad1:
-						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-						this.drawArgs.WorldCamera.ZoomStepped(-World.Settings.CameraZoomStepKeyboard);
-						return true;
-#if DEBUG
-					case Keys.Escape:
-						this.supressUpdates ^= true;
-						return true;
-#endif
-				}
+				case Keys.C:
+					World.Settings.ShowCrosshairs = !World.Settings.ShowCrosshairs;
+					break;
+				case Keys.Add:
+				case Keys.Oemplus:
+				case Keys.Home:
+				case Keys.NumPad7:
+					this.drawArgs.WorldCamera.Fov -= Angle.FromDegrees(5);
+					break;
+				case Keys.Subtract:
+				case Keys.OemMinus:
+				case Keys.End:
+				case Keys.NumPad1:
+					this.drawArgs.WorldCamera.Fov += Angle.FromDegrees(5);
+					break;
 			}
-			return false;
+			return true;
+		}
+
+		private bool HandleNormalKeyDown(KeyEventArgs e)
+		{
+			switch (e.KeyCode)
+			{
+				// reset north
+				case Keys.N:
+					this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+					this.DrawArgs.WorldCamera.SetPosition(
+					this.Latitude,
+					this.Longitude,
+					 0,
+					 this.DrawArgs.WorldCamera.Altitude,
+					 this.DrawArgs.WorldCamera.Tilt.Degrees);
+					break;
+				// reset Tilt
+				case Keys.T:
+					this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+					this.DrawArgs.WorldCamera.SetPosition(
+					this.Latitude,
+					this.Longitude,
+					 this.DrawArgs.WorldCamera.Heading.Degrees,
+					 this.DrawArgs.WorldCamera.Altitude,
+					 0);
+					break;
+				// rotate left
+				case Keys.A:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					Angle rotateClockwise = Angle.FromRadians(0.01f);
+					this.drawArgs.WorldCamera.Heading += rotateClockwise;
+					this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
+					break;
+				// rotate right
+				case Keys.D:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					Angle rotateCounterclockwise = Angle.FromRadians(-0.01f);
+					this.drawArgs.WorldCamera.Heading += rotateCounterclockwise;
+					this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
+					break;
+				// rotate up
+				case Keys.W:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					this.drawArgs.WorldCamera.Tilt += Angle.FromDegrees(-1.0f);
+					break;
+				// rotate down
+				case Keys.S:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					this.drawArgs.WorldCamera.Tilt += Angle.FromDegrees(1.0f);
+					break;
+				// pan left
+				case Keys.Left:
+				case Keys.H:
+				case Keys.NumPad4:
+					// TODO: pan n pixels
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					Angle panLeft = Angle.FromRadians((float)-1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
+					this.drawArgs.WorldCamera.RotationYawPitchRoll(panLeft, Angle.Zero, Angle.Zero);
+					break;
+				// pan down
+				case Keys.Down:
+				case Keys.J:
+				case Keys.NumPad2:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					Angle panDown = Angle.FromRadians((float)-1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
+					this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, panDown, Angle.Zero);
+					break;
+				// pan right
+				case Keys.Right:
+				case Keys.K:
+				case Keys.NumPad6:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					Angle panRight = Angle.FromRadians((float)1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
+					this.drawArgs.WorldCamera.RotationYawPitchRoll(panRight, Angle.Zero, Angle.Zero);
+					break;
+				// pan up
+				case Keys.Up:
+				case Keys.U:
+				case Keys.NumPad8:
+					// TODO: Pan n pixels
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					Angle panUp = Angle.FromRadians((float)1 * (this.drawArgs.WorldCamera.Altitude) * (1 / (300 * this.CurrentWorld.EquatorialRadius)));
+					this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, panUp, Angle.Zero);
+					break;
+				// zoom in
+				case Keys.Add:
+				case Keys.Oemplus:
+				case Keys.Home:
+				case Keys.NumPad7:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					this.drawArgs.WorldCamera.ZoomStepped(World.Settings.CameraZoomStepKeyboard);
+					break;
+				// zoom out
+				case Keys.Subtract:
+				case Keys.OemMinus:
+				case Keys.End:
+				case Keys.NumPad1:
+					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+					this.drawArgs.WorldCamera.ZoomStepped(-World.Settings.CameraZoomStepKeyboard);
+					break;
+#if DEBUG
+				case Keys.Escape:
+					this.supressUpdates ^= true;
+					break;
+#endif
+			}
+			return true;
 		}
 
 		/// <summary>
@@ -1399,7 +1390,7 @@ namespace WorldWind
 			}
 		}
 
-		bool isDoubleClick = false;
+		bool isDoubleClick;
 		protected override void OnMouseDoubleClick(MouseEventArgs e)
 		{
 			isDoubleClick = true;
@@ -1711,7 +1702,7 @@ namespace WorldWind
 		/// <returns></returns>
 		private static bool IsInDesignMode()
 		{
-			return Application.ExecutablePath.ToUpper(CultureInfo.InvariantCulture).EndsWith("DEVENV.EXE");
+			return Application.ExecutablePath.EndsWith("DEVENV.EXE", StringComparison.OrdinalIgnoreCase);
 		}
 
 		private void InitializeGraphics()
@@ -1741,15 +1732,6 @@ namespace WorldWind
 			}
 
 			DeviceType dType = DeviceType.Hardware;
-
-			foreach (AdapterInformation ai in Manager.Adapters)
-			{
-				if (ai.Information.Description.IndexOf("NVPerfHUD") >= 0)
-				{
-					adapterOrdinal = ai.Adapter;
-					dType = DeviceType.Reference;
-				}
-			}
 			CreateFlags flags = CreateFlags.SoftwareVertexProcessing;
 
 			// Check to see if we can use a pure hardware m_Device3d
@@ -1816,12 +1798,13 @@ namespace WorldWind
 		}
 
 
+
+		public event EventHandler Updated;
+		private const int WORKER_THREAD_REFRESH_INTERVAL = 150; // Max 6 updates per seconds
+
 		/// <summary>
 		/// Background worker thread loop (updates UI)
 		/// </summary>
-		public delegate void UpdatedDelegate();
-		public event UpdatedDelegate Updated;
-		private const int WORKER_THREAD_REFRESH_INTERVAL = 150; // Max 6 updates per seconds
 		private void WorkerThreadFunc()
 		{
 			while (m_WorkerThreadRunning)
@@ -1838,13 +1821,15 @@ namespace WorldWind
 				long startTicks = 0;
 				PerformanceTimer.QueryPerformanceCounter(ref startTicks);
 
+#if DEBUG
 				if (!supressUpdates)
 				{
-					drawArgs.CurrentRoI = GeographicBoundingBox.FromQuad(GetSearchBox());
+					drawArgs.CurrentRoI = GeographicBoundingBox.FromQuad(CurrentAreaOfInterest);
 					m_World.Update(this.drawArgs);
 				}
+#endif
 				if (Updated != null)
-					Updated();
+					Updated(this, EventArgs.Empty);
 
 				long endTicks = 0;
 				PerformanceTimer.QueryPerformanceCounter(ref endTicks);
@@ -1864,7 +1849,7 @@ namespace WorldWind
 				metersElevation, this.drawArgs.WorldCamera.Tilt.Degrees);
 		}
 
-		bool m_FpsUpdate = false;
+		bool m_FpsUpdate;
 		private void m_FpsTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
 			if (m_FpsUpdate)
@@ -1908,7 +1893,8 @@ namespace WorldWind
 			catch (OutOfVideoMemoryException)
 			{
 				KillD3DAndWorkerThread();
-				VideoMemoryExhausted();
+				if (VideoMemoryExhausted != null)
+					VideoMemoryExhausted(this, EventArgs.Empty);
 			}
 			catch (InvalidCallException)
 			{

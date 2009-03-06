@@ -12,19 +12,6 @@ namespace Utility
 #if !DEBUG
    public class AbortUtility
    {
-      [DllImport("clrdump.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-      static extern Int32 CreateDump(Int32 ProcessId, string FileName,
-          Int32 DumpType, Int32 ExcThreadId, IntPtr ExtPtrs);
-
-      [DllImport("clrdump.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-      static extern Int32 RegisterFilter(string FileName, Int32 DumpType);
-
-      [DllImport("clrdump.dll", SetLastError = true)]
-      static extern Int32 UnregisterFilter();
-
-      [DllImport("clrdump.dll")]
-      static extern Int32 SetFilterOptions(Int32 Options);
-
       private static object ABORT_LOCK = new object();
 		private static bool blAbortCreated = false;
 

@@ -1907,7 +1907,7 @@ namespace Dapple
 			this.toolStripStatusSpin5.Alignment = ToolStripItemAlignment.Right;
 			this.toolStripStatusSpin6.Visible = false;
 			this.toolStripStatusSpin6.Alignment = ToolStripItemAlignment.Right;
-			c_oWorldWindow.Updated += new WorldWindow.UpdatedDelegate(c_oWorldWindow_Updated);
+			c_oWorldWindow.Updated += c_oWorldWindow_Updated;
 		}
 
 		private void MainForm_Closing(object sender, CancelEventArgs e)
@@ -2015,7 +2015,7 @@ namespace Dapple
 			c_oWorldWindow.Select();
 		}
 
-		private void c_oWorldWindow_Updated()
+		private void c_oWorldWindow_Updated(object sender, EventArgs e)
 		{
 			int iBuilderPos, iBuilderTotal;
 			// Do the work in the update thread and just invoke to update the GUI
@@ -2083,7 +2083,7 @@ namespace Dapple
 		{
 			if (m_oLastSearchROI != null)
 			{
-				SetSearchable(!GeographicBoundingBox.FromQuad(c_oWorldWindow.GetSearchBox()).Equals(m_oLastSearchROI));
+				SetSearchable(!GeographicBoundingBox.FromQuad(c_oWorldWindow.CurrentAreaOfInterest).Equals(m_oLastSearchROI));
 			}
 		}
 
@@ -2845,7 +2845,7 @@ namespace Dapple
 
 		void GoTo(GeographicBoundingBox extents, bool blImmediate)
 		{
-			c_oWorldWindow.GotoBoundingbox(extents, blImmediate);
+			c_oWorldWindow.GoToBoundingBox(extents, blImmediate);
 		}
 
 		#endregion
@@ -3018,7 +3018,7 @@ namespace Dapple
 		private void doSearch()
 		{
 			// --- Cancel if the search parameters are unchanged ---
-			GeographicBoundingBox oCurrSearchROI = GeographicBoundingBox.FromQuad(c_oWorldWindow.GetSearchBox());
+			GeographicBoundingBox oCurrSearchROI = GeographicBoundingBox.FromQuad(c_oWorldWindow.CurrentAreaOfInterest);
 			String szCurrSearchString = SearchKeyword;
 			if (oCurrSearchROI.Equals(m_oLastSearchROI) && szCurrSearchString.Equals(m_szLastSearchString)) return;
 
@@ -3044,7 +3044,7 @@ namespace Dapple
 			SetSearchable(false);
 			SetSearchClearable(true);
 
-			m_oLastSearchROI = GeographicBoundingBox.FromQuad(c_oWorldWindow.GetSearchBox());
+			m_oLastSearchROI = GeographicBoundingBox.FromQuad(c_oWorldWindow.CurrentAreaOfInterest);
 			m_szLastSearchString = SearchKeyword;
 
 			applySearchCriteria();

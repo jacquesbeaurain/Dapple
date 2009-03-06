@@ -10,3 +10,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("NASA World Window (Dapple Fork)")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
+[assembly: CLSCompliant(false)]

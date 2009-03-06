@@ -289,7 +289,7 @@ namespace Dapple.LayerGeneration
 
 		internal bool exportToGeoTiff(String szFilename)
 		{
-			if (!GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(this.Extents)) return false;
+			if (!GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest).Intersects(this.Extents)) return false;
 			String szTempMetaFilename = String.Empty;
 			String szTempImageFile = String.Empty;
 			szFilename = Path.ChangeExtension(szFilename, ".tif");
@@ -305,7 +305,7 @@ namespace Dapple.LayerGeneration
 			//camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
 
 			// Minimize the estimated extents to what is available
-			GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+			GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
 			oViewedArea.East = Math.Min(oViewedArea.East, oExportInfo.dMaxLon);
 			oViewedArea.North = Math.Min(oViewedArea.North, oExportInfo.dMaxLat);
 			oViewedArea.West = Math.Max(oViewedArea.West, oExportInfo.dMinLon);
@@ -382,7 +382,7 @@ namespace Dapple.LayerGeneration
 					String.Format("An error occurred extracting data layer [{0}]: Viewed Area={1}, Extract area={2}, Extract image size={3}x{4}",
 					this.ToString(),
 					oViewedArea.ToString(),
-					GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()),
+					GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest),
 					iImageWidth,
 					iImageHeight),
 					ex);

@@ -145,7 +145,7 @@ namespace Dapple.Extract
       /// <returns></returns>
       private DownloadOptions CreateUserControl(Dapple.LayerGeneration.LayerBuilder oBuilder)
       {
-			if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox()).Intersects(oBuilder.Extents))
+			if (!WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest).Intersects(oBuilder.Extents))
 			{
 				return new Disabled("This data layer cannot be " + GetExtractionVerb(oBuilder) + "ed. View the data layer extents within the currently viewed area and try again.");
 			}
@@ -357,7 +357,7 @@ namespace Dapple.Extract
 
 #if DEBUG
             System.Xml.XmlElement oDebugElement = oExtractDoc.CreateElement("debug");
-            WorldWind.GeographicBoundingBox oViewAOI = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+            WorldWind.GeographicBoundingBox oViewAOI = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
             oDebugElement.SetAttribute("wgs84_west", oViewAOI.West.ToString("f2"));
             oDebugElement.SetAttribute("wgs84_south", oViewAOI.South.ToString("f2"));
             oDebugElement.SetAttribute("wgs84_east", oViewAOI.East.ToString("f2"));

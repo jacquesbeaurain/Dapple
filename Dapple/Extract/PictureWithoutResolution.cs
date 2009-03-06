@@ -112,7 +112,7 @@ namespace Dapple.Extract
          oDisplayElement.InnerText = eDisplayOption.ToString();
          oDatasetElement.AppendChild(oDisplayElement);
 
-         WorldWind.GeographicBoundingBox oViewBox = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+         WorldWind.GeographicBoundingBox oViewBox = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
          String szViewCRS = Dapple.Extract.Resolution.WGS_84;
 
          WorldWind.GeographicBoundingBox oMapBox = MainForm.MapAoi;

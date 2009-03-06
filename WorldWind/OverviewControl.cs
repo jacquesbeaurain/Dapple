@@ -165,7 +165,7 @@ namespace WorldWind
 		{
          Point[] pts = new Point[4];
 
-         GeographicQuad viewBox = m_WorldWindow.GetSearchBox();
+         GeographicQuad viewBox = m_WorldWindow.CurrentAreaOfInterest;
          
          Point center = GetPointFromCoord(m_WorldWindow.DrawArgs.WorldCamera.Latitude.Degrees, m_WorldWindow.DrawArgs.WorldCamera.Longitude.Degrees);
          
@@ -286,7 +286,7 @@ namespace WorldWind
 					dLongitudeAngle *= degreesPerPixelX;
 					dLatitudeAngle *= degreesPerPixelY;
 
-               m_WorldWindow.GotoBoundingbox(
+               m_WorldWindow.GoToBoundingBox(
 						new GeographicBoundingBox(
                   gotoPoint.Y + dLatitudeAngle / 2.0,
 						gotoPoint.Y - dLatitudeAngle / 2.0,
@@ -299,7 +299,7 @@ namespace WorldWind
 			else if(e.Button == MouseButtons.Left)
 			{
 				PointF gotoPoint = GetGeoCoordFromScreenPoint(new Point(e.X, e.Y));
-				m_WorldWindow.GotoLatLon(gotoPoint.Y, gotoPoint.X);
+				m_WorldWindow.GoToLatLon(gotoPoint.Y, gotoPoint.X);
 
 				m_FireMouseUpEvent = true;
 			}
@@ -410,7 +410,7 @@ namespace WorldWind
                Point dstP = new Point((int)Math.Round((float)srcP.X + m_PanSpeed * (float)(m_LastMousePosition.X - srcP.X)), (int)Math.Round((float)srcP.Y + m_PanSpeed * (m_LastMousePosition.Y - srcP.Y)));
 
 					PointF dest = this.GetGeoCoordFromScreenPoint(dstP);
-					m_WorldWindow.GotoLatLon(dest.Y, dest.X);
+					m_WorldWindow.GoToLatLon(dest.Y, dest.X);
 				}
 			}
 		}

@@ -7,12 +7,8 @@ namespace WorldWind.Interop
 	/// <summary>
 	/// Interop methods for WorldWindow namespace
 	/// </summary>
-	internal sealed class NativeMethods
+	internal static class NativeMethods
 	{
-		private NativeMethods()
-		{
-		}
-
 		/// <summary>
 		/// Contains message information from a thread's message queue.
 		/// </summary>
@@ -34,6 +30,7 @@ namespace WorldWind.Interop
 		/// </summary>
 		[System.Security.SuppressUnmanagedCodeSecurity] // We won't use this maliciously
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		internal static extern bool PeekMessage(out Message msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, uint flags);
 	}
 }

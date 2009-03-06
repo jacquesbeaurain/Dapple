@@ -1278,7 +1278,7 @@ namespace Dapple
                camera.SetPosition(camera.Latitude.Degrees, camera.Longitude.Degrees, camera.Heading.Degrees, camera.Altitude, camera.Tilt.Degrees);
 
                // Determine output parameters
-               GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+               GeographicBoundingBox oViewedArea = GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
                int iExportPixelsX, iExportPixelsY;
 
                // Minimize the estimated extents to what is available

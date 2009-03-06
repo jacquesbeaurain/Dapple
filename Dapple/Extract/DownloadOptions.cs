@@ -122,7 +122,7 @@ namespace Dapple.Extract
       internal DownloadOptions(Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPLayer) : this()
       {
          m_oDAPLayer = oDAPLayer;
-         m_oViewedAoi = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.GetSearchBox());
+         m_oViewedAoi = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
          m_oMapAoi = MainForm.MapAoi;
          m_strMapProjection = MainForm.MapAoiCoordinateSystem;
       }
