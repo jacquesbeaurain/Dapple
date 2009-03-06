@@ -148,25 +148,6 @@ namespace WorldWind
 				Math.Sin(radLatA)*Math.Sin(radLatB)) );
 		}
 
-		/// <summary>
-		/// Calculates the azimuth from latA/lonA to latB/lonB
-		/// Borrowed from http://williams.best.vwh.net/avform.htm
-		/// </summary>
-		internal static Angle Azimuth( Angle latA, Angle lonA, Angle latB, Angle lonB )
-		{
-			double cosLatB = Math.Cos(latB.Radians);
-			Angle tcA = Angle.FromRadians( Math.Atan2(
-				Math.Sin(lonA.Radians - lonB.Radians) * cosLatB,
-				Math.Cos(latA.Radians) * Math.Sin(latB.Radians) - 
-				Math.Sin(latA.Radians) * cosLatB * 
-				Math.Cos(lonA.Radians - lonB.Radians)));
-			if(tcA.Radians < 0) 
-				tcA.Radians = tcA.Radians + Math.PI*2;
-			tcA.Radians = Math.PI*2 - tcA.Radians;
-
-			return tcA;
-		}
-
 		/// Compute the tile number (used in file names) for given latitude and tile size.
 		/// </summary>
 		/// <param name="latitude">Latitude (decimal degrees)</param>
@@ -208,25 +189,6 @@ namespace WorldWind
 		internal static int GetColFromLongitude(Angle longitude, double tileSize)
 		{
 			return (int)System.Math.Truncate((System.Math.Abs(-180.0 - longitude.Degrees) % 360) / tileSize);
-		}
-
-		/// <summary>
-		/// Computes the distance between a point and a plane.
-		/// </summary>
-		/// <param name="p">Plane</param>
-		/// <param name="v">Point (XYZ coordinates)</param>
-		/// <returns>The shortest distance between the point and the plane.</returns>
-		internal static double DistancePlaneToPoint(Plane2d p, Point3d v)
-		{
-			return p.A * v.X + p.B * v.Y + p.C + v.Z + p.D;
-		}
-
-		/// <summary>
-		/// Computes the hypotenuse (sqrt(x²+y²)).
-		/// </summary>
-		internal static double Hypot( double x, double y )
-		{
-			return Math.Sqrt(x*x + y*y);
 		}
 	}
 }

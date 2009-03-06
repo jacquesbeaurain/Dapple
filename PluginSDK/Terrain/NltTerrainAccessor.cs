@@ -18,32 +18,6 @@ namespace WorldWind.Terrain
       //protected WmsImageStore m_wmsElevationSet;
       protected Hashtable m_tileCache = new Hashtable();
 
-      #region Properties
-
-      /*
-      internal WmsImageStore WmsElevationStore
-      {
-         get
-         {
-            return m_wmsElevationSet;
-         }
-         set
-         {
-            m_wmsElevationSet = value;
-         }
-      }
-       */
-
-      internal TerrainAccessor this[int index]
-      {
-         get
-         {
-            return m_higherResolutionSubsets[index];
-         }
-      }
-
-      #endregion
-
       #region Public Methods
 
       /// <summary>
@@ -332,10 +306,6 @@ namespace WorldWind.Terrain
             get
             {
                return m_terrainTile;
-            }
-            set
-            {
-               m_terrainTile = value;
             }
          }
 

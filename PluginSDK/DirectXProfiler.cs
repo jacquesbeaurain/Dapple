@@ -15,19 +15,9 @@ namespace WorldWind
     /// </summary>
 	public class DirectXProfilerEvent : IDisposable
     {
-        internal DirectXProfilerEvent(System.Drawing.Color color, string name)
-        {
-            DirectXProfiler.BeginEvent(color, name);
-        }
-
-		  public DirectXProfilerEvent(string name)
+        public DirectXProfilerEvent(string name)
         {
             DirectXProfiler.BeginEvent(name);
-        }
-
-        internal DirectXProfilerEvent()
-        {
-            DirectXProfiler.BeginEvent();
         }
 
 		  public void Dispose()
@@ -54,11 +44,6 @@ namespace WorldWind
 
         #region Profiler event and marker methods
 
-        internal static int BeginEvent()
-        {
-            return BeginEvent(" ");
-        }
-
         internal static int BeginEvent(string name)
         {
             return BeginEvent(System.Drawing.Color.Black, name);
@@ -67,21 +52,6 @@ namespace WorldWind
         internal static int BeginEvent(System.Drawing.Color color, string name)
         {
             return BeginEvent(unchecked((uint)color.ToArgb()), name);
-        }
-
-        internal static void SetMarker()
-        {
-            SetMarker(" ");
-        }
-
-        internal static void SetMarker(string name)
-        {
-            SetMarker(System.Drawing.Color.Black, name);
-        }
-
-        internal static void SetMarker(System.Drawing.Color color, string name)
-        {
-            SetMarker(unchecked((uint)color.ToArgb()), name);
         }
 
         internal static int BeginEvent(uint col, string name)
@@ -108,14 +78,6 @@ namespace WorldWind
             }
         }
 
-        internal static void SetMarker(uint col, string name)
-        {
-            if (enabled)
-            {
-                SetMarkerDirect(col, name);
-            }
-        }
-
         #endregion
 
 
@@ -130,11 +92,6 @@ namespace WorldWind
         [System.Security.SuppressUnmanagedCodeSecurity] // We won't use this maliciously, really 
         [DllImport("d3d9.dll", EntryPoint = "D3DPERF_EndEvent", CallingConvention = CallingConvention.Winapi)]
         private static extern int EndEventDirect();
-
-        // void D3DPERF_SetMarker( D3DCOLOR col,LPCWSTR wszName);
-        [System.Security.SuppressUnmanagedCodeSecurity] // We won't use this maliciously, really really
-        [DllImport("d3d9.dll", EntryPoint = "D3DPERF_SetMarker", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
-        private static extern void SetMarkerDirect(uint col, string wszName);
 
         #endregion
     }

@@ -26,13 +26,6 @@ namespace WorldWind.Renderable
 		protected bool m_blSortChildrenOnAdd = true;
 
 		protected bool m_blAllowDuplicateNames;
-		
-		private bool m_disableExpansion;
-		internal bool DisableExpansion
-		{
-			get{ return m_disableExpansion; }
-			set{ m_disableExpansion = value; }
-		}
 
 		internal System.Timers.Timer RefreshTimer
 		{
@@ -71,14 +64,6 @@ namespace WorldWind.Renderable
 				refreshInterval.Seconds * 1000
 				);
 			m_RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_RefreshTimer_Elapsed);
-		}
-
-		internal void StartRefreshTimer()
-		{
-			if(m_RefreshTimer != null)
-			{
-				m_RefreshTimer.Start();
-			}
 		}
 
         /// <summary>

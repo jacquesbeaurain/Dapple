@@ -18,18 +18,10 @@ namespace WorldWind
 
       internal void Normalize()
       {
-         //Microsoft.DirectX.Plane test = new Microsoft.DirectX.Plane((float)this.A, (float)this.B, (float)this.C, (float)this.D);
-         //test.Normalize();
-
          double dNormSize = (new Point3d(A, B, C)).Length;
          double dInverseLength = dNormSize != 0.0 ? 1.0 / dNormSize : 1.0;
 
          this.A *= dInverseLength; this.B *= dInverseLength; this.C *= dInverseLength; this.D *= dInverseLength; 
-      }
-
-      internal double DistanceToPoint(Point3d p)
-      {
-         return this.A * p.X + this.B * p.Y + this.C * p.Z + this.D;
       }
 
 		public override string ToString()

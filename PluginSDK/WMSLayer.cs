@@ -29,12 +29,8 @@ namespace WorldWind
       private string _title;
       private string _description;
       private string _name;
-      private uint _width;
-      private uint _height;
       private string _crs;
       private string _srs;
-      private string _defaultDate;
-      private string[] _dates;
       private WMSLayer[] _childLayers;
       private WMSLayerStyle[] _styles;
 
@@ -192,54 +188,6 @@ namespace WorldWind
          set
          {
             this._description = value;
-         }
-      }
-
-      internal string DefaultDate
-      {
-         get
-         {
-            return this._defaultDate;
-         }
-         set
-         {
-            this._defaultDate = value;
-         }
-      }
-
-      internal uint Width
-      {
-         get
-         {
-            return this._width;
-         }
-         set
-         {
-            this._width = value;
-         }
-      }
-
-      internal uint Height
-      {
-         get
-         {
-            return this._height;
-         }
-         set
-         {
-            this._height = value;
-         }
-      }
-
-      internal string[] Dates
-      {
-         get
-         {
-            return this._dates;
-         }
-         set
-         {
-            this._dates = value;
          }
       }
 

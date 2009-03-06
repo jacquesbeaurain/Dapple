@@ -39,16 +39,6 @@ namespace WorldWind
             m_formatString = "{0}?T={1}&L={2}&X={3}&Y={4}";
         }
 
-        internal NltImageStore(
-            string dataSetName,
-            string serverUri,
-            string formatString)
-        {
-            m_serverUri = serverUri;
-            m_dataSetName = dataSetName;
-            m_formatString = formatString;
-        }
-
         protected override string GetDownloadUrl(IGeoSpatialDownloadTile tile)
         {
             return string.Format(CultureInfo.InvariantCulture,
@@ -56,21 +46,5 @@ namespace WorldWind
 					 m_dataSetName, tile.Level, tile.Col, tile.Row,
 					 tile.West, tile.South, tile.East, tile.North);
         }
-
-       internal string ServerUri
-       {
-          get
-          {
-             return m_serverUri;
-          }
-       }
-
-       internal string DatasetName
-       {
-          get
-          {
-             return m_dataSetName;
-          }
-       }
     }
 }

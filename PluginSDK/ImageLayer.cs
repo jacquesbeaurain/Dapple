@@ -52,7 +52,6 @@ namespace WorldWind.Renderable
 		protected Thread downloadThread;
 		protected float verticalExaggeration;
 		protected string m_legendImagePath;
-		protected Colorbar legendControl;
 
 		#endregion
 
@@ -92,18 +91,6 @@ namespace WorldWind.Renderable
 					_imagePath = null;
 				else
 					_imagePath = value.Trim();
-			}
-		}
-
-		internal bool DisableZBuffer
-		{
-			get
-			{
-				return this._disableZbuffer;
-			}
-			set
-			{
-				this._disableZbuffer = value;
 			}
 		}
 
@@ -167,43 +154,7 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		internal GeographicBoundingBox Bounds
-		{
-			get
-			{
-				return new GeographicBoundingBox(MaxLat, MinLat, MinLon, MaxLon);
-			}
-		}
-
 		#endregion
-
-		float m_grayscaleBrightness;
-
-		internal float GrayscaleBrightness
-		{
-			get { return m_grayscaleBrightness; }
-			set { m_grayscaleBrightness = value; }
-		}
-
-		internal bool RenderGrayscale
-		{
-			get { return false; }
-		}
-
-		internal TimeSpan CacheExpiration
-		{
-			get { return cacheExpiration; }
-			set { cacheExpiration = value; }
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.ImageLayer"/> class.
-		/// </summary>
-		internal ImageLayer(string name, float layerRadius)
-			: base(name)
-		{
-			this.layerRadius = layerRadius;
-		}
 
 		/// <summary>
 		/// Constructor
@@ -678,14 +629,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		void device_DeviceReset(object sender, EventArgs e)
-		{
-			string outerrors = "";
-
-			if (outerrors != null && outerrors.Length > 0)
-				Log.Write(Log.Levels.Error, outerrors);
-		}
-
 		protected virtual void RenderProgress(DrawArgs drawArgs)
 		{
 
@@ -883,56 +826,11 @@ namespace WorldWind.Renderable
 				this.texture = null;
 			}
 
-			if (legendControl != null)
-			{
-				legendControl.Dispose();
-				legendControl = null;
-			}
-
 			if (refreshTimer != null && refreshTimer.Enabled)
 			{
 				refreshTimer.Stop();
 				refreshTimer = null;
 			}
-		}
-
-		/// <summary>
-		/// Change opacity
-		/// </summary>
-		/// <param name="percent">0=transparent, 1=opaque</param>
-		internal void UpdateOpacity(float percent)
-		{
-			Debug.Assert(percent <= 1);
-			Debug.Assert(percent >= 0);
-
-			this.m_opacity = (byte)(255 * percent);
-
-			this.isInitialized = false;
-			CreateMesh();
-			this.isInitialized = true;
-		}
-
-		/// <summary>
-		/// Change radius
-		/// </summary>
-		/// <param name="layerRadius">Sphere radius (meters)</param>
-		internal void UpdateLayerRadius(float layerRadius)
-		{
-			this.layerRadius = layerRadius;
-
-			this.isInitialized = false;
-			CreateMesh();
-			this.isInitialized = true;
-		}
-
-		/// <summary>
-		/// Called when user chooses to display legendControl
-		/// </summary>
-		protected virtual void OnLegendClick(object sender, EventArgs e)
-		{
-			if (legendControl == null)
-				legendControl = new Colorbar(null);
-			legendControl.LoadImage(m_legendImagePath);
 		}
 
 		bool abortedFirstRefresh;

@@ -450,25 +450,6 @@ namespace WorldWind.NewWidgets
 		}
 
 		/// <summary>
-		/// Adds a new child widget
-		/// </summary>
-		/// <param name="widget">The widget to be added</param>
-		new internal void Add(WorldWind.NewWidgets.IWidget widget)
-		{
-			m_ChildWidgets.Add(widget);
-			widget.ParentWidget = this;
-		}
-
-		/// <summary>
-		/// Removes a child widget
-		/// </summary>
-		/// <param name="widget">The widget to be removed</param>
-		new internal void Remove(WorldWind.NewWidgets.IWidget widget)
-		{
-			m_ChildWidgets.Remove(widget);
-		}
-
-		/// <summary>
 		/// Try to clean up everything.
 		/// </summary>
 		public void Dispose()

@@ -343,12 +343,7 @@ namespace WorldWind
                {
                   if (String.Compare(curExtent.name.Value, "time", true) == 0)
                   {
-                     wmsLayer.Dates = WMSList.GetDatesFromDateTimeString(curExtent.getDOMNode().InnerText);
-
-                     if (curExtent.Hasdefault2())
-                     {
-                        wmsLayer.DefaultDate = curExtent.default2.Value;
-                     }
+                     WMSList.GetDatesFromDateTimeString(curExtent.getDOMNode().InnerText);
                   }
                }
             }
@@ -499,12 +494,6 @@ namespace WorldWind
          if (layer.HasCRS())
             wmsLayer.CRS = layer.CRS.Value;
 
-         if (layer.HasfixedHeight())
-            wmsLayer.Height = (uint)layer.fixedHeight.Value;
-
-         if (layer.HasfixedWidth())
-            wmsLayer.Width = (uint)layer.fixedWidth.Value;
-
          if (layer.HasDimension())
          {
             for (int i = capabilities_1_3_0.wms.LayerType.DimensionMinCount; i < layer.DimensionCount; i++)
@@ -514,9 +503,7 @@ namespace WorldWind
                {
                   if (String.Compare(layer.Dimension.name.Value, "time", true, CultureInfo.InvariantCulture) == 0)
                   {
-                     wmsLayer.Dates = WMSList.GetDatesFromDateTimeString(curDimension.Value.Value);
-                     if (curDimension.Hasdefault2())
-                        wmsLayer.DefaultDate = curDimension.default2.Value;
+                     WMSList.GetDatesFromDateTimeString(curDimension.Value.Value);
                   }
                }
             }

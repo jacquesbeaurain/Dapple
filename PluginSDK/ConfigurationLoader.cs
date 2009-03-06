@@ -263,12 +263,6 @@ namespace WorldWind
 							parentRenderable.IsOn = IsLayerOn(parentRenderable);
 						}
 
-						string disableExpansionString = iter.Current.GetAttribute("DisableExpansion", "");
-						if (disableExpansionString != null)
-						{
-							parentRenderable.DisableExpansion = ParseBool(disableExpansionString);
-						}
-
 						string description = getInnerTextFromFirstChild(iter.Current.Select("Description"));
 						if (description != null && description.Length > 0)
 							parentRenderable.Description = description;

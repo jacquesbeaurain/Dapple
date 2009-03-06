@@ -125,15 +125,6 @@ namespace WorldWind
          }
       }
 
-      
-
-      internal static Angle GetAngle(Point3d p1, Point3d p2)
-      {
-         Angle returnAngle = new Angle();
-         returnAngle.Radians = Math.Acos(Point3d.dot(p1, p2) / (p1.Length * p2.Length));
-         return returnAngle;
-      }
-
 		public double Length
       {
          get
@@ -201,14 +192,6 @@ namespace WorldWind
 		public static Point3d cross(Point3d P1, Point3d P2) // cross product
       {
          return P1 * P2;
-      }
-
-      // Normal direction corresponds to a right handed traverse of ordered points.
-      internal static Point3d unit_normal(Point3d P0, Point3d P1, Point3d P2)
-      {
-         Point3d p = (P1 - P0) * (P2 - P0);
-         double l = p.Length;
-         return new Point3d(p.X / l, p.Y / l, p.Z / l);
       }
 
 		public static bool operator ==(Point3d P1, Point3d P2) // equal?

@@ -169,14 +169,6 @@ namespace WorldWind.Configuration
 		{
 			return Load(defaultSettings, LocationType.User);
 		}
-
-		internal string SettingsFilePath
-		{
-			get
-			{
-				return m_fileName;
-			}
-		}	
 	}
 }
 

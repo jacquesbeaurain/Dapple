@@ -63,21 +63,6 @@ namespace WorldWind
 		}
 
 		/// <summary>
-		/// Server Logo path for Downloadable layers
-		/// </summary>
-		internal string ServerLogo
-		{
-			get
-			{
-				return m_serverlogo;
-			}
-			set
-			{
-				m_serverlogo = value;
-			}
-		}
-
-		/// <summary>
 		/// The size of a texture tile in the store (for Nlt servers this is later determined in QTS texture loading code once first tile is read)
 		/// Used by QTS export in Dapple
 		/// </summary>
@@ -185,10 +170,6 @@ namespace WorldWind
 			get
 			{
 				return m_duplicateTexturePath;
-			}
-			set
-			{
-				m_duplicateTexturePath = value;
 			}
 		}
 

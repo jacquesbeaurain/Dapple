@@ -18,11 +18,6 @@ namespace WorldWind
          return new Vector4((float)v.X, (float)v.Y, (float) v.Z, 0.0f);
       }
 
-      internal static Point3d ToPoint3d(Vector3 v)
-      {
-         return new Point3d(v.X, v.Y, v.Z);
-      }
-
 		public static Matrix FromMatrix4d(Matrix4d m)
       {
          Matrix ret = new Matrix();
@@ -41,18 +36,6 @@ namespace WorldWind
             m.M31, m.M32, m.M33, m.M34,
             m.M41, m.M42, m.M43, m.M44
          );
-      }
-
-      internal static Viewport FromViewport2d(Viewport2d v)
-      {
-         Viewport ret = new Viewport();
-         ret.Height = v.Height;
-         ret.MaxZ = (float)v.MaxZ;
-         ret.MinZ = (float)v.MinZ;
-         ret.Width = v.Width;
-         ret.X = v.X;
-         ret.Y = v.Y;
-         return ret;
       }
 
       internal static Viewport2d ToViewport2d(Viewport v) 

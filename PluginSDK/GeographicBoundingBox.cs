@@ -196,21 +196,5 @@ namespace WorldWind
 		}
 
 		#endregion
-		internal bool Contains(Point3d p)
-		{
-			if (North < p.Y ||
-				 South > p.Y ||
-				 West > p.X ||
-				 East < p.X ||
-				 MaximumAltitude < p.Z ||
-				 MinimumAltitude > p.Z)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
 	}
 }

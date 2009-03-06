@@ -15,7 +15,7 @@ namespace WorldWind
 		#endregion
 
 		#region Private Members
-		double m_distanceAboveSurface;
+		readonly double m_distanceAboveSurface = 0.0;
 		protected Point3d[] m_points = null;
 		CustomVertex.PositionNormalTextured[] m_wallVertices = null;
 
@@ -33,82 +33,16 @@ namespace WorldWind
 		Color m_polygonColor = Color.Black;
 		bool m_outline = true;
 		float m_lineWidth = 1.0f;
-		bool m_extrude;
 		AltitudeMode m_altitudeMode = AltitudeMode.ClampedToGround;
 		protected long m_numPoints;
 		Vector3 m_localOrigin;
-		bool m_extrudeUpwards;
 		double m_extrudeHeight = 1000;
-		bool m_extrudeToGround;
 		#endregion
 
 		/// <summary>
 		/// Boolean indicating whether or not the line needs rebuilding.
 		/// </summary>
 		internal bool NeedsUpdate = true;
-
-		/// <summary>
-		/// Whether line should be extruded
-		/// </summary>
-		internal bool Extrude
-		{
-			get { return m_extrude; }
-			set
-			{
-				m_extrude = value;
-				if (m_topVertices != null)
-					NeedsUpdate = true;
-			}
-		}
-
-		/// <summary>
-		/// Whether extrusion should be upwards
-		/// </summary>
-		internal bool ExtrudeUpwards
-		{
-			get { return m_extrudeUpwards; }
-			set
-			{
-				m_extrudeUpwards = value;
-				if (m_topVertices != null)
-					NeedsUpdate = true;
-			}
-		}
-
-		/// <summary>
-		/// Distance to extrude
-		/// </summary>
-		internal double ExtrudeHeight
-		{
-			get { return m_extrudeHeight; }
-			set
-			{
-				m_extrudeHeight = value;
-				if (m_topVertices != null)
-					NeedsUpdate = true;
-			}
-		}
-
-		/// <summary>
-		/// Whether line should be extruded to the ground (completely overrides other extrusion options)
-		/// </summary>
-		internal bool ExtrudeToGround
-		{
-			get { return m_extrudeToGround; }
-			set
-			{
-				m_extrude = value;
-				m_extrudeToGround = value;
-				if (m_topVertices != null)
-					NeedsUpdate = true;
-			}
-		}
-
-		internal AltitudeMode AltitudeMode
-		{
-			get { return m_altitudeMode; }
-			set { m_altitudeMode = value; }
-		}
 
 		public System.Drawing.Color LineColor
 		{
@@ -127,33 +61,6 @@ namespace WorldWind
 			{
 				m_lineWidth = value;
 				NeedsUpdate = true;
-			}
-		}
-
-		internal double DistanceAboveSurface
-		{
-			get { return m_distanceAboveSurface; }
-			set
-			{
-				m_distanceAboveSurface = value;
-				if (m_topVertices != null)
-				{
-					NeedsUpdate = true;
-				}
-			}
-		}
-
-		internal bool Outline
-		{
-			get { return m_outline; }
-			set
-			{
-				m_outline = value;
-				if (m_topVertices != null)
-				{
-					NeedsUpdate = true;
-					//					UpdateVertices();
-				}
 			}
 		}
 
@@ -225,16 +132,6 @@ namespace WorldWind
 			RenderPriority = WorldWind.Renderable.RenderPriority.LinePaths;
 		}
 
-		internal LineFeature(string name, World parentWorld, Point3d[] points, string imageUri)
-			: base(name, parentWorld)
-		{
-			m_points = points;
-			m_imageUri = imageUri;
-			m_numPoints = m_points.LongLength;
-
-			RenderPriority = WorldWind.Renderable.RenderPriority.LinePaths;
-		}
-
 		public override void Dispose()
 		{
 			if (m_texture != null && !m_texture.Disposed)
@@ -287,81 +184,6 @@ namespace WorldWind
 			UpdateVertices();
 
 			isInitialized = true;
-		}
-
-		/// <summary>
-		/// Adds a point to the end of the line.
-		/// </summary>
-		/// <param name="x">Lon</param>
-		/// <param name="y">Lat</param>
-		/// <param name="z">Alt (meters)</param>
-		internal void AddPoint(double x, double y, double z)
-		{
-			Point3d point = new Point3d(x, y, z);
-			//TODO:Divide into subsegments if too far
-			if (m_numPoints > 0)
-			{
-				Angle startlon = Angle.FromDegrees(m_points[m_numPoints - 1].X);
-				Angle startlat = Angle.FromDegrees(m_points[m_numPoints - 1].Y);
-				double startalt = m_points[m_numPoints - 1].Z;
-				Angle endlon = Angle.FromDegrees(x);
-				Angle endlat = Angle.FromDegrees(y);
-				double endalt = z;
-
-				Angle dist = World.ApproxAngularDistance(startlat, startlon, endlat, endlon);
-				if (dist.Degrees > 0.25)
-				{
-
-					double stepSize = 0.25;
-					int samples = (int)(dist.Degrees / stepSize);
-
-					for (int i = 0; i < samples; i++)
-					{
-						Angle lat, lon = Angle.Zero;
-						float frac = (float)i / samples;
-						World.IntermediateGCPoint(frac, startlat, startlon, endlat, endlon,
-						dist, out lat, out lon);
-						double alt = startalt + frac * (endalt - startalt);
-						Point3d pointint = new Point3d(lon.Degrees, lat.Degrees, alt);
-						AddPoint(pointint);
-					}
-					AddPoint(point);
-				}
-				else
-				{
-					AddPoint(point);
-				}
-			}
-			else
-			{
-				AddPoint(point);
-			}
-
-		}
-
-		/// <summary>
-		/// Adds a point to the line at the end of the line.
-		/// </summary>
-		/// <param name="point">The Point3d object to add.</param>
-		internal void AddPoint(Point3d point)
-		{
-			// if the array is too small grow it.
-			if (m_numPoints >= m_points.LongLength)
-			{
-				long growSize = m_points.LongLength / 2;
-				if (growSize < 10) growSize = 10;
-
-				Point3d[] points = new Point3d[m_points.LongLength + growSize];
-
-				for (int i = 0; i < m_numPoints; i++)
-				{
-					points[i] = m_points[i];
-				}
-				m_points = points;
-			}
-			m_points[m_numPoints] = point;
-			m_numPoints++;
-			NeedsUpdate = true;
 		}
 
 		private void UpdateVertices()
@@ -443,7 +265,7 @@ namespace WorldWind
 			// triangles (smooth shading) vs. having separate vertices (and thus normals)
 			// ('hard' edges). GE doesn't do that, by the way.
 			// -stepman
-			if (m_extrude || m_altitudeMode != AltitudeMode.ClampedToGround)
+			if (m_altitudeMode != AltitudeMode.ClampedToGround)
 			{
 				m_wallVertices = new CustomVertex.PositionNormalTextured[m_numPoints * 4 - 2];
 			}
@@ -501,7 +323,7 @@ namespace WorldWind
 				m_topVertices[i].Color = finalLineColor.ToArgb();
 
 
-				if (m_extrude || m_altitudeMode != AltitudeMode.ClampedToGround)
+				if (m_altitudeMode != AltitudeMode.ClampedToGround)
 				{
 					m_wallVertices[4 * i].X = xyzVertex.X;
 					m_wallVertices[4 * i].Y = xyzVertex.Y;
@@ -512,27 +334,13 @@ namespace WorldWind
 
 					m_wallVertices[4 * i].Normal = new Vector3(0, 0, 0);
 
-					// extruded point
-					if (m_extrudeToGround)
-					{
-						xyzPoint = MathEngine.SphericalToCartesian(
-							 Angle.FromDegrees(m_points[i].Y),
-							 Angle.FromDegrees(m_points[i].X),
-							 m_verticalExaggeration * (m_distanceAboveSurface + terrainHeight) + World.EquatorialRadius
-							 );
-					}
-					else
-					{
-						double extrudeDist = m_extrudeHeight;
-						if (!m_extrudeUpwards)
-							extrudeDist *= -1;
+					double extrudeDist = -m_extrudeHeight;
 
-						xyzPoint = MathEngine.SphericalToCartesian(
-							 Angle.FromDegrees(m_points[i].Y),
-							 Angle.FromDegrees(m_points[i].X),
-							 (m_points[i].Z + extrudeDist + m_distanceAboveSurface) * m_verticalExaggeration + World.EquatorialRadius
-							 );
-					}
+					xyzPoint = MathEngine.SphericalToCartesian(
+						 Angle.FromDegrees(m_points[i].Y),
+						 Angle.FromDegrees(m_points[i].X),
+						 (m_points[i].Z + extrudeDist + m_distanceAboveSurface) * m_verticalExaggeration + World.EquatorialRadius
+						 );
 
 					xyzVertex = (xyzPoint - center).Vector3;
 

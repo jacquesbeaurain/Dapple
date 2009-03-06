@@ -57,15 +57,6 @@ namespace WorldWind
 			set { this.Radians = MathEngine.DegreesToRadians(value); }
 		}
 
-
-		/// <summary>
-		/// Returns the absolute value of the specified angle
-		/// </summary>
-		internal static Angle Abs( Angle a )
-		{
-			return Angle.FromRadians(Math.Abs(a.Radians));
-		}
-
 		/// <summary>
 		/// Checks for angle containing "Not a Number"
 		/// </summary>
@@ -137,34 +128,6 @@ namespace WorldWind
 		public override int GetHashCode() 
 		{
 			return (int)(Radians*100000);
-		}
-
-		/// <summary>
-		/// Normalizes the angle so it is between 0° and 360°.
-		/// </summary>
-		internal void Normalize()
-		{
-			if(Radians>Math.PI*2)
-				Radians -= Math.PI*2;
-			if(Radians<-Math.PI*2)
-				Radians += Math.PI*2;
-		}
-
-		/// <summary>
-		/// Converts degrees to degrees/minutes/seconds
-		/// </summary>
-		/// <returns>String on format dd°mm'ss.sss"</returns>
-		internal string ToStringDms()
-		{
-			double decimalDegrees = this.Degrees;
-			double d = Math.Abs(decimalDegrees);
-			double m = (60*(d-Math.Floor(d)));
-			double s = (60*(m-Math.Floor(m)));
-
-			return String.Format("{0}°{1}'{2:f3}\"", 
-				(int)d*Math.Sign(decimalDegrees), 
-				(int)m, 
-				s);
 		}
 
 		public override string ToString()

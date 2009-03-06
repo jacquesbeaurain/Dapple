@@ -42,7 +42,7 @@ namespace WorldWind
 			m_timer.Start();
 		}
 
-		internal static void Stop()
+		public static void Stop()
 		{
 			if(m_timer != null)
 				m_timer.Stop();

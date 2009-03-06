@@ -355,8 +355,7 @@ namespace WorldWind.Renderable
 			}
 
 			if (isInitialized && World.Settings.VerticalExaggeration != verticalExaggeration ||
-				 m_CurrentOpacity != quadTileSet.Opacity ||
-				 quadTileSet.RenderStruts != renderStruts)
+				 m_CurrentOpacity != quadTileSet.Opacity)
 			{
 				CreateTileMesh();
 			}
@@ -438,8 +437,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		private bool renderStruts;
-
 		/// <summary>
 		/// Builds flat or terrain mesh for current tile
 		/// </summary>
@@ -472,7 +469,6 @@ namespace WorldWind.Renderable
 
 				verticalExaggeration = World.Settings.VerticalExaggeration;
 				m_CurrentOpacity = quadTileSet.Opacity;
-				renderStruts = quadTileSet.RenderStruts;
 
 				Projection proj = quadTileSet.ImageStores[0].Projection;
 				bool bTerrain = quadTileSet.TerrainMapped && Math.Abs(verticalExaggeration) > 1e-3;
@@ -919,8 +915,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		private double meshBaseRadius;
-
 		/// <summary>
 		/// Build the elevated terrain mesh
 		/// </summary>
@@ -965,9 +959,6 @@ namespace WorldWind.Renderable
 			}
 
 			double overlap = 500 * verticalExaggeration; // 500m high tiles
-
-			// Radius of mesh bottom grid
-			meshBaseRadius = layerRadius + minimumElevation - overlap;
 
 			CreateElevatedMesh(ChildLocation.NorthWest, northWestVertices, heightData);
 			CreateElevatedMesh(ChildLocation.SouthWest, southWestVertices, heightData);
@@ -1146,7 +1137,6 @@ namespace WorldWind.Renderable
 							 new Point3d(vertices[i * vertexDensity + j + offset].Position.X,
 											 vertices[i * vertexDensity + j + offset].Position.Y,
 											 vertices[i * vertexDensity + j + offset].Position.Z);
-						if (renderStruts && m_CurrentOpacity == 255) p = ProjectOnMeshBase(p);
 						vertices[i * vertexDensity + j].Position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
 					}
 				}
@@ -1155,27 +1145,16 @@ namespace WorldWind.Renderable
 					Point3d p =
 						 new Point3d(vertices[i * vertexDensity + 1].Position.X, vertices[i * vertexDensity + 1].Position.Y,
 										 vertices[i * vertexDensity + 1].Position.Z);
-					if (renderStruts && m_CurrentOpacity == 255) p = ProjectOnMeshBase(p);
 					vertices[i * vertexDensity].Position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
 
 					p =
 						 new Point3d(vertices[i * vertexDensity + vertexDensity - 2].Position.X,
 										 vertices[i * vertexDensity + vertexDensity - 2].Position.Y,
 										 vertices[i * vertexDensity + vertexDensity - 2].Position.Z);
-					if (renderStruts && m_CurrentOpacity == 255) p = ProjectOnMeshBase(p);
 					vertices[i * vertexDensity + vertexDensity - 1].Position =
 						 new Vector3((float)p.X, (float)p.Y, (float)p.Z);
 				}
 			}
-		}
-
-		// Project an elevated mesh point to the mesh base
-		private Point3d ProjectOnMeshBase(Point3d p)
-		{
-			p = p + this.localOrigin;
-			p.normalize();
-			p = p * meshBaseRadius - this.localOrigin;
-			return p;
 		}
 
 		// End edits by Patrick Murris : fixing mesh sides normals (2006-11-18)
@@ -1219,41 +1198,6 @@ namespace WorldWind.Renderable
 				if (southEastChild != null)
 					if (southEastChild.Render(drawArgs))
 						southEastChildRendered = true;
-
-				if (quadTileSet.RenderFileNames &&
-					 (!northWestChildRendered || !northEastChildRendered || !southWestChildRendered ||
-					  !southEastChildRendered))
-				{
-					Point3d referenceCenter = new Point3d(
-						 drawArgs.WorldCamera.ReferenceCenter.X,
-						 drawArgs.WorldCamera.ReferenceCenter.Y,
-						 drawArgs.WorldCamera.ReferenceCenter.Z);
-
-					RenderDownloadRectangle(drawArgs, Color.FromArgb(255, 0, 0).ToArgb(), referenceCenter);
-
-					Point3d cartesianPoint = MathEngine.SphericalToCartesian(
-						 centerLatitude.Degrees,
-						 centerLongitude.Degrees,
-						 drawArgs.WorldCamera.WorldRadius + drawArgs.WorldCamera.TerrainElevation);
-
-					if (imageFilePath != null && drawArgs.WorldCamera.ViewFrustum.ContainsPoint(cartesianPoint))
-					{
-						Point3d projectedPoint = drawArgs.WorldCamera.Project(cartesianPoint - referenceCenter);
-
-						Rectangle rect = new Rectangle(
-							 (int)projectedPoint.X - 100,
-							 (int)projectedPoint.Y,
-							 200,
-							 200);
-
-						drawArgs.defaultDrawingFont.DrawText(
-							 null,
-							 imageFilePath,
-							 rect,
-							 DrawTextFormat.WordBreak,
-							 Color.Red);
-					}
-				}
 
 				if (northWestChildRendered && northEastChildRendered && southWestChildRendered && southEastChildRendered)
 				{
@@ -1302,60 +1246,6 @@ namespace WorldWind.Renderable
 			}
 			return false;
 		}
-
-		/// <summary>
-		/// Render a rectangle around an image tile in the specified color
-		/// </summary>
-		internal void RenderDownloadRectangle(DrawArgs drawArgs, int color, Point3d referenceCenter)
-		{
-			CustomVertex.PositionColored[] downloadRectangle = new CustomVertex.PositionColored[5];
-
-			// Render terrain download rectangle
-			Point3d northWestV = MathEngine.SphericalToCartesian(north, west, quadTileSet.LayerRadius) -
-										referenceCenter;
-			Point3d southWestV = MathEngine.SphericalToCartesian(south, west, quadTileSet.LayerRadius) -
-										referenceCenter;
-			Point3d northEastV = MathEngine.SphericalToCartesian(north, east, quadTileSet.LayerRadius) -
-										referenceCenter;
-			Point3d southEastV = MathEngine.SphericalToCartesian(south, east, quadTileSet.LayerRadius) -
-										referenceCenter;
-
-			downloadRectangle[0].X = (float)northWestV.X;
-			downloadRectangle[0].Y = (float)northWestV.Y;
-			downloadRectangle[0].Z = (float)northWestV.Z;
-			downloadRectangle[0].Color = color;
-
-			downloadRectangle[1].X = (float)southWestV.X;
-			downloadRectangle[1].Y = (float)southWestV.Y;
-			downloadRectangle[1].Z = (float)southWestV.Z;
-			downloadRectangle[1].Color = color;
-
-			downloadRectangle[2].X = (float)southEastV.X;
-			downloadRectangle[2].Y = (float)southEastV.Y;
-			downloadRectangle[2].Z = (float)southEastV.Z;
-			downloadRectangle[2].Color = color;
-
-			downloadRectangle[3].X = (float)northEastV.X;
-			downloadRectangle[3].Y = (float)northEastV.Y;
-			downloadRectangle[3].Z = (float)northEastV.Z;
-			downloadRectangle[3].Color = color;
-
-			downloadRectangle[4].X = downloadRectangle[0].X;
-			downloadRectangle[4].Y = downloadRectangle[0].Y;
-			downloadRectangle[4].Z = downloadRectangle[0].Z;
-			downloadRectangle[4].Color = color;
-
-			drawArgs.device.RenderState.ZBufferEnable = false;
-			drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
-			drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
-			drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, 4, downloadRectangle);
-			drawArgs.device.TextureState[0].ColorOperation = TextureOperation.SelectArg1;
-			drawArgs.device.VertexFormat = CustomVertex.PositionNormalTextured.Format;
-			drawArgs.device.RenderState.ZBufferEnable = true;
-		}
-
-
-		private static Effect grayscaleEffect = null;
 
 		/// <summary>
 		/// Render one of the 4 quadrants with optional download indicator
@@ -1531,7 +1421,7 @@ namespace WorldWind.Renderable
 					effect.End();
 					device.SetTextureStageState(1, TextureStageStates.TextureCoordinateIndex, tc1);
 				}
-				else if (!quadTileSet.RenderGrayscale || (device.DeviceCaps.PixelShaderVersion.Major < 1))
+				else
 				{
 					if (World.Settings.EnableSunShading)
 					{
@@ -1576,71 +1466,11 @@ namespace WorldWind.Renderable
 
                device.RenderState.TextureFactor = Color.FromArgb(255, 255, 255, 255).ToArgb();
 				}
-				else
-				{
-					if (grayscaleEffect == null)
-					{
-						device.DeviceReset += new EventHandler(device_DeviceReset);
-						device_DeviceReset(device, null);
-					}
-
-					grayscaleEffect.Technique = "RenderGrayscaleBrightness";
-					grayscaleEffect.SetValue("WorldViewProj",
-													 Matrix.Multiply(device.Transform.World,
-																		  Matrix.Multiply(device.Transform.View,
-																								device.Transform.Projection)));
-					grayscaleEffect.SetValue("Tex0", textures[0]);
-					grayscaleEffect.SetValue("Brightness", quadTileSet.GrayscaleBrightness);
-					float opacity = (float)quadTileSet.Opacity / 255.0f;
-					grayscaleEffect.SetValue("Opacity", opacity);
-
-					int numPasses = grayscaleEffect.Begin(0);
-					for (int i = 0; i < numPasses; i++)
-					{
-						grayscaleEffect.BeginPass(i);
-						device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0,
-																	verts.Length, vertexIndexes.Length / 3, vertexIndexes, true,
-																	verts);
-
-						grayscaleEffect.EndPass();
-					}
-
-					grayscaleEffect.End();
-				}
 			}
 			if (isMultitexturing)
 				device.SetTextureStageState(1, TextureStageStates.ColorOperation, (int)TextureOperation.Disable);
 		}
 
-		private void device_DeviceReset(object sender, EventArgs e)
-		{
-			Device device = (Device)sender;
-
-			string outerrors = "";
-
-			try
-			{
-				Assembly assembly = Assembly.GetExecutingAssembly();
-				Stream stream = assembly.GetManifestResourceStream("WorldWind.Shaders.grayscale.fx");
-
-				grayscaleEffect =
-					 Effect.FromStream(
-						  device,
-						  stream,
-						  null,
-						  null,
-						  ShaderFlags.None,
-						  null,
-						  out outerrors);
-
-				if (outerrors != null && outerrors.Length > 0)
-					Log.Write(Log.Levels.Error, outerrors);
-			}
-			catch (Exception ex)
-			{
-				Log.Write(ex);
-			}
-		}
 		internal void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
 		{
 			if (isInitialized)

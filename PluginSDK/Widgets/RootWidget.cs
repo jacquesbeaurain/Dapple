@@ -415,16 +415,5 @@ namespace WorldWind.NewWidgets
 		}
 
 		#endregion
-
-		new internal void Add(WorldWind.NewWidgets.IWidget widget)
-		{
-			m_ChildWidgets.Add(widget);
-			widget.ParentWidget = this;
-		}		
-		
-		new internal void Remove(WorldWind.NewWidgets.IWidget widget)
-		{
-			m_ChildWidgets.Remove(widget);
-		}
 	}
 }

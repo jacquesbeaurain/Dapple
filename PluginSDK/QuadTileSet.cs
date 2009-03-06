@@ -24,7 +24,6 @@ namespace WorldWind.Renderable
    {
       #region Private Members
 
-      bool m_RenderStruts;
       protected string m_ServerLogoFilePath;
       protected Image m_ServerLogoImage;
 
@@ -34,8 +33,6 @@ namespace WorldWind.Renderable
       protected double m_south;
       protected double m_west;
       protected double m_east;
-
-      bool renderFileNames;
 
       protected Texture m_iconTexture;
       protected Sprite sprite;
@@ -134,24 +131,12 @@ namespace WorldWind.Renderable
 
       #endregion
 
-      bool m_renderGrayscale;
-
       internal float GrayscaleBrightness
       {
          get { return 0.0f; }
       }
 
-      internal bool RenderGrayscale
-      {
-         get { return m_renderGrayscale; }
-         set { m_renderGrayscale = value; }
-      }
-
-      internal bool RenderStruts
-      {
-         get { return m_RenderStruts; }
-         set { m_RenderStruts = value; }
-      }
+      internal const bool RenderGrayscale = false;
 
       /// <summary>
       /// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.QuadTileSet"/> class.
@@ -233,18 +218,6 @@ namespace WorldWind.Renderable
          }
       }
 
-      internal bool RenderFileNames
-      {
-         get
-         {
-            return renderFileNames;
-         }
-         set
-         {
-            renderFileNames = value;
-         }
-      }
-
       /// <summary>
       /// The image referenced by ServerLogoFilePath.
       /// </summary>
@@ -278,21 +251,6 @@ namespace WorldWind.Renderable
                return base.ThumbnailImage;
 
             return ServerLogoImage;
-         }
-      }
-
-      /// <summary>
-      /// Source blend when rendering non-opaque layer
-      /// </summary>
-      internal Blend SourceBlend
-      {
-         get
-         {
-            return m_sourceBlend;
-         }
-         set
-         {
-            m_sourceBlend = value;
          }
       }
 
@@ -362,10 +320,6 @@ namespace WorldWind.Renderable
          {
             return m_layerRadius;
          }
-         set
-         {
-            m_layerRadius = value;
-         }
       }
 
 		public bool AlwaysRenderBaseTiles
@@ -386,10 +340,6 @@ namespace WorldWind.Renderable
          {
             return m_tileDrawSpread;
          }
-         set
-         {
-            m_tileDrawSpread = value;
-         }
       }
 
       internal float TileDrawDistance
@@ -398,18 +348,10 @@ namespace WorldWind.Renderable
          {
             return m_tileDrawDistance;
          }
-         set
-         {
-            m_tileDrawDistance = value;
-         }
       }
 
       internal bool IsDownloadingElevation
       {
-         get
-         {
-            return m_isDownloadingElevation;
-         }
          set
          {
             m_isDownloadingElevation = value;
@@ -434,7 +376,6 @@ namespace WorldWind.Renderable
       internal bool TerrainMapped
       {
          get { return m_terrainMapped; }
-         set { m_terrainMapped = value; }
       }
 
       internal ImageStore[] ImageStores

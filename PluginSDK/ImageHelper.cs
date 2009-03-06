@@ -62,55 +62,6 @@ namespace WorldWind
 			}
 		}
 
-		internal static void CreateAlphaPngFromBrightness(string srcFilePath, string destinationPngFilePath)
-		{
-			Bitmap image = (Bitmap)Image.FromFile(srcFilePath);
-
-			BitmapData srcInfo = image.LockBits(new Rectangle(0, 0, 
-				image.Width, image.Height), 
-				ImageLockMode.ReadOnly, 
-				PixelFormat.Format32bppArgb);
-
-			// We must always copy it because the source might not be 32bpp ARGB
-			Bitmap transparentImage = new Bitmap(image.Width, image.Height, 
-				PixelFormat.Format32bppArgb);
-
-			BitmapData dstInfo = transparentImage.LockBits(new Rectangle(0, 0, 
-				transparentImage.Width, transparentImage.Height), 
-				ImageLockMode.WriteOnly, 
-				PixelFormat.Format32bppArgb);
-
-			unsafe 
-			{
-				int* srcPointer = (int*)srcInfo.Scan0;
-				int* dstPointer = (int*)dstInfo.Scan0;
-				for(int i = 0; i < dstInfo.Height; i++) 
-				{
-					for(int j = 0; j < dstInfo.Width; j++) 
-					{
-						int color = *srcPointer++;
-						int sum = (color & 0xff) + 
-							((color >> 8) & 0xff) + 
-							((color >> 16) & 0xff);
-
-						color &= 0xffffff; // strip alpha
-						color |= (sum / 3) << 24;
-					
-						*dstPointer++ = color;
-					}
-
-					srcPointer += (srcInfo.Stride>>2) - srcInfo.Width;
-					dstPointer += (srcInfo.Stride>>2) - srcInfo.Width;
-				}
-			}
-			transparentImage.UnlockBits(dstInfo);
-			image.UnlockBits(srcInfo);
-
-			transparentImage.Save(destinationPngFilePath, System.Drawing.Imaging.ImageFormat.Png);
-			image.Dispose();
-			transparentImage.Dispose();
-		}
-
 		/// <summary>
 		/// Loads an image file from disk into a texture and makes a color range transparent.
 		/// </summary>
