@@ -253,67 +253,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-        {
-            int closestIconDistanceSquared = int.MaxValue;
-            Icon closestIcon = null;
-
-            foreach (RenderableObject ro in m_children)
-            {
-                if (!ro.IsOn)
-                    continue;
-                if (!ro.isSelectable)
-                    continue;
-
-                Icon icon = ro as Icon;
-
-                // if it's not an icon just do the normal selection action
-                if (icon == null)
-                {
-                    // Child is not an icon
-                    if (ro.PerformSelectionAction(drawArgs))
-                        return true;
-                }
-                else
-                {
-                    // don't check if we aren't even in view
-                    if (drawArgs.WorldCamera.ViewFrustum.ContainsPoint(icon.Position))
-                    {
-
-                        // check if inside the icons bounding box
-                        Point3d referenceCenter = new Point3d(
-                            drawArgs.WorldCamera.ReferenceCenter.X,
-                            drawArgs.WorldCamera.ReferenceCenter.Y,
-                            drawArgs.WorldCamera.ReferenceCenter.Z);
-
-                        Point3d projectedPoint = drawArgs.WorldCamera.Project(icon.Position - referenceCenter);
-
-                        int dx = DrawArgs.LastMousePosition.X - (int)projectedPoint.X;
-                        int dy = DrawArgs.LastMousePosition.Y - (int)projectedPoint.Y;
-                        
-                        if (icon.SelectionRectangle.Contains( dx, dy ))
-                        {
-                            // Mouse is over, check whether this icon is closest
-                            int distanceSquared = dx * dx + dy * dy;
-                            if (distanceSquared < closestIconDistanceSquared)
-                            {
-                                closestIconDistanceSquared = distanceSquared;
-                                closestIcon = icon;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // if no other object has handled the selection let the closest icon try
-            if (closestIcon != null)
-            {
-                return closestIcon.PerformSelectionAction(drawArgs);
-            }
-
-			return false;
-		}
-
 		public override void Render(DrawArgs drawArgs)
 		{
 			if(!isOn)
@@ -445,7 +384,7 @@ namespace WorldWind.Renderable
 			double distanceToIcon = (icon.Position - drawArgs.WorldCamera.Position).Length;
 			if(distanceToIcon > icon.MaximumDisplayDistance)
 				return;
-			if(distanceToIcon < icon.MinimumDisplayDistance)
+			if(distanceToIcon < 0.0)
 				return;
 
 			IconTexture iconTexture = GetTexture(icon);

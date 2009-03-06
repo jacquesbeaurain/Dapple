@@ -458,15 +458,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		/// <summary>
-		/// Handle mouse click
-		/// </summary>
-		/// <returns>true if click was handled.</returns>
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
-		}
-
 		public override byte Opacity
 		{
 			get
@@ -932,18 +923,6 @@ namespace WorldWind.Renderable
 			this.isInitialized = false;
 			CreateMesh();
 			this.isInitialized = true;
-		}
-		public override void BuildContextMenu(System.Windows.Forms.ContextMenu menu)
-		{
-			base.BuildContextMenu(menu);
-
-			if (m_legendImagePath == null || m_legendImagePath.Length <= 0)
-				return;
-
-			// Add legend menu item
-			System.Windows.Forms.MenuItem mi = new System.Windows.Forms.MenuItem("&Show Legend",
-				new EventHandler(OnLegendClick));
-			menu.MenuItems.Add(0, mi);
 		}
 
 		/// <summary>

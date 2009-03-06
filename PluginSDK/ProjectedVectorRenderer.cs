@@ -139,15 +139,7 @@ namespace WorldWind
 			for (int i = 0; i < m_polygons.Count; i++)
 			{
 				Polygon polygon = (Polygon)m_polygons[i];
-				if (polygon.Remove)
-				{
-					m_polygons.RemoveAt(i);
-					 RecalculateBoundingBox();
-					LastUpdate = System.DateTime.Now;
-					i--;
-				}
-
-				else if (polygon.ParentRenderable != null)
+				if (polygon.ParentRenderable != null)
 				{
 					bool visibility = IsRenderableVisible(polygon.ParentRenderable);
 					if (visibility != polygon.Visible)
@@ -202,11 +194,6 @@ namespace WorldWind
 
 			foreach (ProjectedVectorTile tile in m_rootTiles)
 				tile.Render(drawArgs);
-		}
-
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
 		}
 
 		public override void Dispose()

@@ -18,7 +18,6 @@ namespace WorldWind
 	public class DrawArgs : IDisposable
 	{
 		public Device device;
-		internal System.Windows.Forms.Control parentControl;
 		internal static System.Windows.Forms.Control ParentControl = null;
 		public int numBoundaryPointsTotal;
 		public int numBoundaryPointsRendered;
@@ -95,7 +94,6 @@ namespace WorldWind
 		/// <param name="parentForm"></param>
 		public DrawArgs(Device device, System.Windows.Forms.Control parentForm)
 		{
-			this.parentControl = parentForm;
 			DrawArgs.ParentControl = parentForm;
 			DrawArgs.Device = device;
 			this.device = device;

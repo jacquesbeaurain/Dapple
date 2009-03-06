@@ -145,11 +145,6 @@ namespace WorldWind.Renderable
 		/// </summary>
 		public abstract void Dispose();
 
-		/// <summary>
-		/// User interaction (mouse click)
-		/// </summary>
-		public abstract bool PerformSelectionAction(DrawArgs drawArgs);
-
 		public int CompareTo(object obj)
 		{
 			RenderableObject robj = obj as RenderableObject;
@@ -203,19 +198,6 @@ namespace WorldWind.Renderable
 			{
 				throw new Exception("Can't delete this sub-item from the layer manager.  Try deleting the top-level entry for this layer.");
 			}
-		}
-
-		/// <summary>
-		/// Fills the context menu with menu items specific to the layer.
-		/// </summary>
-		/// <param name="menu">Pre-initialized context menu.</param>
-		public virtual void BuildContextMenu(ContextMenu menu)
-		{
-			menu.MenuItems.Add("Goto", new EventHandler(OnGotoClick));
-			menu.MenuItems.Add("Properties...", new EventHandler(OnPropertiesClick));
-			menu.MenuItems.Add("Info...", new EventHandler(OnInfoClick));
-			menu.MenuItems.Add("Delete...", new EventHandler(OnDeleteClick)); 
-			menu.MenuItems.Add("Reload Shader", new EventHandler(OnReloadShaderClick));
 		}
 
 		/// <summary>

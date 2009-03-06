@@ -266,11 +266,6 @@ namespace WorldWind
 				m_outerSphere.Update(drawArgs);
 		}
 
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return this._renderableObjects.PerformSelectionAction(drawArgs);
-		}
-
 		private void RenderSun(DrawArgs drawArgs)
 		{
 			Point3d sunPosition = -SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);

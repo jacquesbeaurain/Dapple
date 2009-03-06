@@ -583,15 +583,6 @@ namespace bNb.Plugins_GD
 			}
 		}
 
-		/// <summary>
-		/// Handle mouse click
-		/// </summary>
-		/// <returns>true if click was handled.</returns>
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
-		}
-
 		public override void InitExportInfo(DrawArgs drawArgs, RenderableObject.ExportInfo info)
       {
          lock (veTiles)

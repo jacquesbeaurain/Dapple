@@ -24,24 +24,6 @@ namespace WorldWind.Renderable
 	/// </summary>
 	public class KMLIcon : Icon
     {
-        internal new string Description
-        {
-            get
-            {
-                return m_description;
-            }
-            set
-            {
-                isSelectable = value != null;
-                m_description = value;
-            }
-        }
-
-
-        internal bool IsDescriptionVisible;
-
-        internal KMLDialog DescriptionBubble;
-
         /// <summary>
 		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class  
         /// </summary>
@@ -56,81 +38,5 @@ namespace WorldWind.Renderable
             AutoScaleIcon = true;
             Declutter = true;
 		}
-
-		#region Overrriden methods
-
-        /// <summary>
-        /// Disposes the icon (when disabled)
-        /// </summary>
-		  public override void Dispose()
-        {
-            // Nothing to dispose
-            // Ashish Datta - make sure the description bubble is destroyed and not visisble.
-            try
-            {
-                if (this.DescriptionBubble != null)
-                    this.DescriptionBubble.Dispose();
-            }
-            finally
-            {
-                base.Dispose();
-            }
-        }
-
-        protected override bool PerformLMBAction(DrawArgs drawArgs)
-        {
-            if (DescriptionBubble != null)
-            {
-                IsDescriptionVisible = false;
-                DescriptionBubble.isVisible = false;
-                DescriptionBubble.Dispose();
-            }
-
-            DescriptionBubble = new KMLDialog();
-            DescriptionBubble.Owner = (Form)drawArgs.parentControl.Parent.Parent.Parent;
-
-            if (IsDescriptionVisible == false)
-            {
-                IsDescriptionVisible = true;
-            }
-            else
-            {
-                DescriptionBubble.Dispose();
-                IsDescriptionVisible = false;
-            }
-
-            return true;
-        }
-
-        protected override void RenderDescription(DrawArgs drawArgs, Sprite sprite, Point3d projectedPoint, int color)
-        {
-            // Ashish Datta - Show/Hide the description bubble.
-            if (IsDescriptionVisible)
-            {
-                if (DescriptionBubble.isVisible == true)
-                {
-                    DescriptionBubble.Location = new Point((int)projectedPoint.X + (Width / 4), (int)projectedPoint.Y);
-                    DescriptionBubble.Show();
-
-                    if (DescriptionBubble.HTMLIsSet == false)
-                        DescriptionBubble.SetHTML(Description + "<br>URL: <A HREF=" + ClickableActionURL + ">" + ClickableActionURL + "</A>");
-
-                    DescriptionBubble.BringToFront();
-                }
-            }
-        }
-
-        internal override void NoRender(DrawArgs drawArgs)
-        {
-            base.NoRender(drawArgs);
-
-            if (IsDescriptionVisible)
-            {
-                DescriptionBubble.Hide();
-                IsDescriptionVisible = false;
-            }
-        }
-
-		#endregion
 	}
 }

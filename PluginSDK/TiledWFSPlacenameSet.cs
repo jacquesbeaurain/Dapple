@@ -181,11 +181,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
-		}
-
 		/// <summary>
 		/// // Index into currently loaded array for already loaded test
 		/// </summary>

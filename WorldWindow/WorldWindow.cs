@@ -1461,29 +1461,25 @@ namespace WorldWind
 							}
 							else
 							{
-								if (!m_World.PerformSelectionAction(this.drawArgs))
+								Angle targetLatitude;
+								Angle targetLongitude;
+								//Quaternion targetOrientation = new Quaternion();
+								this.drawArgs.WorldCamera.PickingRayIntersection(
+									 DrawArgs.LastMousePosition.X,
+									 DrawArgs.LastMousePosition.Y,
+									 out targetLatitude,
+									 out targetLongitude);
+								if (this.drawArgs.WorldCamera.Altitude < 60e3)
+									this.drawArgs.WorldCamera.PickingRayIntersectionWithTerrain(
+									 DrawArgs.LastMousePosition.X,
+									 DrawArgs.LastMousePosition.Y,
+									 out targetLatitude,
+									 out targetLongitude,
+									 m_World);
+								if (!Angle.IsNaN(targetLatitude))
 								{
-
-									Angle targetLatitude;
-									Angle targetLongitude;
-									//Quaternion targetOrientation = new Quaternion();
-									this.drawArgs.WorldCamera.PickingRayIntersection(
-										 DrawArgs.LastMousePosition.X,
-										 DrawArgs.LastMousePosition.Y,
-										 out targetLatitude,
-										 out targetLongitude);
-									if (this.drawArgs.WorldCamera.Altitude < 60e3)
-										this.drawArgs.WorldCamera.PickingRayIntersectionWithTerrain(
-										 DrawArgs.LastMousePosition.X,
-										 DrawArgs.LastMousePosition.Y,
-										 out targetLatitude,
-										 out targetLongitude,
-										 m_World);
-									if (!Angle.IsNaN(targetLatitude))
-									{
-										this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
-										this.drawArgs.WorldCamera.PointGoto(targetLatitude, targetLongitude);
-									}
+									this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+									this.drawArgs.WorldCamera.PointGoto(targetLatitude, targetLongitude);
 								}
 							}
 						}
@@ -1491,13 +1487,6 @@ namespace WorldWind
 						{
 							if (this.isMouseDragging)
 								this.isMouseDragging = false;
-							else
-							{
-								if (!m_World.PerformSelectionAction(this.drawArgs))
-								{
-									//nothing at the moment
-								}
-							}
 						}
 						else if (e.Button == MouseButtons.Middle)
 						{

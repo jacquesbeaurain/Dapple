@@ -143,37 +143,19 @@ namespace WorldWind.Renderable
 		internal string TextureFileName
 		{
 			get { return m_textureFileName; }
-			set
-			{
-				m_textureFileName = value;
-				m_newTexture = true;
-				m_isUpdated = false;
-			}
 		}
 		protected string m_textureFileName;
 
-		/// <summary>
-		/// The icon's texture
-		/// </summary>
-		internal IconTexture IconTexture
-		{
-			get { return m_iconTexture; }
-		}
 		protected IconTexture m_iconTexture;
 
 		/// <summary>
 		/// On-Click browse to location
 		/// </summary>
-		public string ClickableActionURL
+		internal string ClickableActionURL
 		{
 			get
 			{
 				return m_clickableActionURL;
-			}
-			set
-			{
-				isSelectable = value != null;
-				m_clickableActionURL = value;
 			}
 		}
 		protected string m_clickableActionURL;
@@ -241,7 +223,6 @@ namespace WorldWind.Renderable
         internal bool IsAGL
         {
             get { return m_isAGL; }
-            set { m_isAGL = value; }
         }
         protected bool m_isAGL = true;
 
@@ -252,7 +233,6 @@ namespace WorldWind.Renderable
         internal bool UseVE
         {
             get { return m_useVE; }
-            set { m_useVE = value; }
         }
         protected bool m_useVE = true;        
         
@@ -264,47 +244,12 @@ namespace WorldWind.Renderable
         internal bool UseZeroVE
         {
             get { return m_useZeroVE; }
-            set { m_useZeroVE = value; }
         }
         protected bool m_useZeroVE = true;
 
-        /// <summary>
-        /// Whether or not this will change color on mouseover (default = true)
-        /// </summary>
-        internal bool AlwaysHighlight
-        {
-            get
-            {
-                return m_alwaysHighlight;
-            }
-            set
-            {
-                m_alwaysHighlight = value;
-            }
-        }
         protected bool m_alwaysHighlight;
 
-        /// <summary>
-        /// Whether or not this will change color on mouseover (default = true)
-        /// </summary>
-        internal bool DisableMouseoverHighlight
-        {
-            get
-            {
-                return m_disableMouseoverHighlight;
-            }
-            set
-            {
-                m_disableMouseoverHighlight = value;
-            }
-        }
         protected bool m_disableMouseoverHighlight;
-
-        internal bool OnClickZoomTo
-        {
-            get { return m_onClickZoomTo; }
-            set { m_onClickZoomTo = value; }
-        }
 
         protected bool m_onClickZoomTo = true;
 		#endregion
@@ -315,47 +260,6 @@ namespace WorldWind.Renderable
 		internal string SaveFilePath = null;
 		internal System.DateTime LastRefresh = System.DateTime.MinValue;
 		internal System.TimeSpan RefreshInterval = System.TimeSpan.MaxValue;
-
-		System.Collections.ArrayList overlays = new ArrayList();
-
-		//not a good way to handle this
-		internal void OverlayOnOpen(object o, EventArgs e)
-		{
-			System.Windows.Forms.MenuItem mi = (System.Windows.Forms.MenuItem)o;
-
-			foreach (ScreenOverlay overlay in overlays)
-			{
-				if (overlay == null)
-					continue;
-
-				if (overlay.Name.Equals(mi.Text))
-				{
-					if (!overlay.IsOn)
-						overlay.IsOn = true;
-				}
-			}
-		}
-
-		internal ScreenOverlay[] Overlays
-		{
-			get
-			{
-				if (overlays == null)
-				{
-					return null;
-				}
-				else
-				{
-					return (ScreenOverlay[])overlays.ToArray(typeof(ScreenOverlay));
-				}
-			}
-		}
-
-		internal void AddOverlay(ScreenOverlay overlay)
-		{
-			if (overlay != null)
-				overlays.Add(overlay);
-		}
 
 		/// <summary>
 		/// Longer description of icon (addition to name)
@@ -407,11 +311,6 @@ namespace WorldWind.Renderable
 		internal double MaximumDisplayDistance = double.MaxValue;
 
 		/// <summary>
-		/// The minimum distance (meters) the icon will be visible from
-		/// </summary>
-		internal double MinimumDisplayDistance;
-
-		/// <summary>
 		/// Bounding box centered at (0,0) used to calculate whether mouse is over icon/label
 		/// </summary>
 		internal Rectangle SelectionRectangle;
@@ -439,46 +338,13 @@ namespace WorldWind.Renderable
 		/// <param name="latitude">Latitude in decimal degrees.</param>
 		/// <param name="longitude">Longitude in decimal degrees.</param>
 		/// <param name="heightAboveSurface">Icon height (meters) above sea level.</param>
-		public Icon(string name,
+		internal Icon(string name,
 			double latitude, 
 			double longitude,
             double heightAboveSurface)
 			: this(name, latitude, longitude)
 		{
 			m_altitude = heightAboveSurface;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref= "T:WorldWind.Renderable.Icon"/> class 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="description"></param>
-		/// <param name="latitude"></param>
-		/// <param name="longitude"></param>
-		/// <param name="heightAboveSurface"></param>
-		/// <param name="TextureFileName"></param>
-		/// <param name="width"></param>
-		/// <param name="height"></param>
-		/// <param name="actionURL"></param>
-		internal Icon(string name,
-		 string description,
-			double latitude, 
-			double longitude, 
-			double heightAboveSurface,
-			string TextureFileName,
-			int width,
-			int height,
-			string actionURL)
-			: this (name, latitude, longitude, heightAboveSurface)
-		{
-			this.Description = description;
-
-			this.TextureFileName = TextureFileName;
-			this.Width = width;
-			this.Height = height;
-			m_clickableActionURL = actionURL;
-			isSelectable = actionURL != null;
-			this.RenderPriority = RenderPriority.Icons;
 		}
 
 		/// <summary>
@@ -571,132 +437,6 @@ namespace WorldWind.Renderable
 		}
 
 		/// <summary>
-		/// If LMB pressed calls PerformLMBAction, if RMB pressed calls PerformRMBAction
-		/// </summary>
-		/// <param name="drawArgs"></param>
-		/// <returns></returns>
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			if (DrawArgs.IsLeftMouseButtonDown)
-				return PerformLMBAction(drawArgs);
-
-			if (DrawArgs.IsRightMouseButtonDown)
-				return PerformRMBAction(drawArgs);
-
-			return false;
-		}
-
-		/// <summary>
-		/// Goes to icon if camera positions set.  Also opens URL if it exists
-		/// </summary>
-		/// <param name="drawArgs"></param>
-		/// <returns></returns>
-		protected virtual bool PerformLMBAction(DrawArgs drawArgs)
-		{
-			try
-			{
-				// Goto icon
-                if (OnClickZoomTo && (OnClickZoomAltitude != double.NaN 
-                    || OnClickZoomHeading != double.NaN || OnClickZoomTilt != double.NaN))
-				{
-					drawArgs.WorldCamera.SetPosition(
-						 Latitude,
-						 Longitude,
-						 OnClickZoomHeading,
-						 OnClickZoomAltitude,
-						 OnClickZoomTilt);
-				}
-
-				// Goto to URL if we have one
-                if (ClickableActionURL!=null && !ClickableActionURL.Contains(@"worldwind://"))
-				{
-					if (World.Settings.UseInternalBrowser && ClickableActionURL.StartsWith("http"))
-					{
-						SplitContainer sc = (SplitContainer)drawArgs.parentControl.Parent.Parent;
-						InternalWebBrowserPanel browser = (InternalWebBrowserPanel)sc.Panel1.Controls[0];
-						browser.NavigateTo(ClickableActionURL);
-					}
-					else
-					{
-						ProcessStartInfo psi = new ProcessStartInfo();
-						psi.FileName = ClickableActionURL;
-						psi.Verb = "open";
-						psi.UseShellExecute = true;
-
-						psi.CreateNoWindow = true;
-						Process.Start(psi);
-					}
-				}
-				return true;
-			}
-			catch (Exception ex)
-			{
-				System.Console.WriteLine(ex.Message.ToString());
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Does something with overlays...
-		/// </summary>
-		/// <param name="drawArgs"></param>
-		/// <returns></returns>
-		protected virtual bool PerformRMBAction(DrawArgs drawArgs)
-		{
-			try
-			{
-				if (m_contextMenu == null)
-				{
-					m_contextMenu = new ContextMenu();
-					BuildContextMenu(m_contextMenu);
-				}
-
-				m_contextMenu.Show(DrawArgs.ParentControl, DrawArgs.LastMousePosition);
-
-				return true;
-			}
-			catch (Exception ex)
-			{
-				System.Console.WriteLine(ex.Message.ToString());
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Adds to the default context menu any screen overlays and user defined context menus
-		/// </summary>
-		/// <param name="menu"></param>
-		public override void BuildContextMenu(ContextMenu menu)
-		{
-			base.BuildContextMenu(menu);
-
-			// Add screen overlay items
-			ScreenOverlay[] overlays = Overlays;
-			if (overlays != null && overlays.Length > 0)
-			{
-				foreach (ScreenOverlay curOverlay in overlays)
-				{
-					menu.MenuItems.Add(curOverlay.Name, new System.EventHandler(OverlayOnOpen));
-				}
-			}
-		}
-
-		/// <summary>
-		/// Adds a new context menu item to this icon.
-		/// </summary>
-		/// <param name="newItem">The menu item to add</param>
-		internal void AddContextMenuItem(MenuItem newItem)
-		{
-			if (m_contextMenu == null)
-			{
-				m_contextMenu = new ContextMenu();
-				this.BuildContextMenu(m_contextMenu);
-			}
-
-			m_contextMenu.MenuItems.Add(newItem);
-		}
-
-		/// <summary>
 		/// Updates where we are if the camera has changed position (and thereby might be using higher resolution terrain
 		/// </summary>
 		/// <param name="drawArgs"></param>
@@ -753,19 +493,6 @@ namespace WorldWind.Renderable
 				}
 
 				lastView = drawArgs.WorldCamera.ViewMatrix;
-			}
-
-			// should overlays update every time?
-			if (overlays != null)
-			{
-				for (int i = 0; i < overlays.Count; i++)
-				{
-					ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
-					if (curOverlay != null)
-					{
-						curOverlay.Update(drawArgs);
-					}
-				}
 			}
 
 			if (m_newTexture)
@@ -922,7 +649,7 @@ namespace WorldWind.Renderable
 			double distanceToIcon = (this.Position - drawArgs.WorldCamera.Position).Length;
 			if (distanceToIcon > this.MaximumDisplayDistance)
 				return;
-			if (distanceToIcon < this.MinimumDisplayDistance)
+			if (distanceToIcon < 0.0)
 				return;
 
 			if (!this.isInitialized)
@@ -966,17 +693,6 @@ namespace WorldWind.Renderable
 		/// <param name="drawArgs"></param>
 		internal virtual void RenderOverlay(DrawArgs drawArgs)
 		{
-			if (overlays != null)
-			{
-				for (int i = 0; i < overlays.Count; i++)
-				{
-					ScreenOverlay curOverlay = (ScreenOverlay)overlays[i];
-					if (curOverlay != null && curOverlay.IsOn)
-					{
-						curOverlay.Render(drawArgs);
-					}
-				}
-			}
 		}
 
 		/// <summary>
@@ -1212,7 +928,6 @@ namespace WorldWind.Renderable
 		/// <param name="color"></param>
 		internal virtual void PreRender(DrawArgs drawArgs)
 		{
-			RenderOverlay(drawArgs);
 		}
 
 		/// <summary>

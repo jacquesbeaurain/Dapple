@@ -191,11 +191,6 @@ namespace Dapple.KML
 			//TODO: Something here?
 		}
 
-		public override bool PerformSelectionAction(WorldWind.DrawArgs drawArgs)
-		{
-			return false;
-		}
-
 		/// <summary>
 		/// True if the layer covers the entire world longitudinally.
 		/// </summary>

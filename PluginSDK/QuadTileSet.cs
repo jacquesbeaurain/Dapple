@@ -538,11 +538,6 @@ namespace WorldWind.Renderable
             m_effectHandles = new Dictionary<string, EffectHandle>();
       }
 
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-      {
-         return false;
-      }
-
 		public override void Update(DrawArgs drawArgs)
 		{
 			if (!System.Threading.Thread.CurrentThread.Name.Equals(ThreadNames.WorldWindowBackground))

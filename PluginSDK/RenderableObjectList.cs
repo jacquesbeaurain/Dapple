@@ -147,15 +147,6 @@ namespace WorldWind.Renderable
 			}
 		}
 
-		public override void BuildContextMenu(ContextMenu menu)
-        {
-            menu.MenuItems.Add("Check all children", new EventHandler(OnCheckAllChildrenClick));
-            menu.MenuItems.Add("Uncheck all children", new EventHandler(OnUncheckAllChildrenClick));
-            menu.MenuItems.Add("-");
-
-            base.BuildContextMenu(menu);
-        }
-
 		internal virtual void TurnOffAllChildren()
 		{
             foreach (RenderableObject ro in this.m_children)
@@ -284,27 +275,6 @@ namespace WorldWind.Renderable
 					}
 				}
 			}
-		}
-
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-
-			if (!this.IsOn)
-				return false;
-
-			lock (this.m_children.SyncRoot)
-			{
-				foreach (RenderableObject ro in this.m_children)
-				{
-					if (ro.IsOn && ro.isSelectable)
-					{
-						if (ro.PerformSelectionAction(drawArgs))
-							return true;
-					}
-				}
-			}
-
-			return false;
 		}
 
 		public override void Render(DrawArgs drawArgs)

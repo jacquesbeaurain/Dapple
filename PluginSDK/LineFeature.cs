@@ -583,11 +583,6 @@ namespace WorldWind
 			}
 		}
 
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
-		}
-
 		public override void Update(DrawArgs drawArgs)
 		{
 			if (drawArgs.WorldCamera.Altitude >= m_minimumDisplayAltitude && drawArgs.WorldCamera.Altitude <= m_maximumDisplayAltitude)

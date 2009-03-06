@@ -475,24 +475,6 @@ namespace Stars3D.Plugin
 		}
 
 		/// <summary>
-		/// Gets called when user left clicks.
-		/// RenderableObject abstract member (needed)
-		/// Called from UI thread = UI code safe in this function
-		/// </summary>
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
-		}
-
-		/// <summary>
-		/// Fills the context menu with menu items specific to the layer.
-		/// </summary>
-		public override void BuildContextMenu(ContextMenu menu)
-		{
-			menu.MenuItems.Add("Properties", new System.EventHandler(OnPropertiesClick));
-		}
-
-		/// <summary>
 		/// Properties context menu clicked.
 		/// </summary>
 		internal new void OnPropertiesClick(object sender, EventArgs e)

@@ -225,11 +225,6 @@ namespace WorldWind.Renderable
 		{
 		}
 
-		public override bool PerformSelectionAction(DrawArgs drawArgs)
-		{
-			return false;
-		}
-
 		public override void Update(DrawArgs drawArgs)
 		{
 		}
