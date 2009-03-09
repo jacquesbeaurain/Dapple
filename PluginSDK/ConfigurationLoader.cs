@@ -254,7 +254,7 @@ namespace WorldWind
 
 						parentRenderable.ParentList = parentWorld.RenderableObjects;
 
-						if (World.Settings.useDefaultLayerStates)
+						if (World.Settings.UseDefaultLayerStates)
 						{
 							parentRenderable.IsOn = ParseBool(iter.Current.GetAttribute("ShowAtStartup", ""));
 						}
@@ -336,7 +336,7 @@ namespace WorldWind
 		internal static bool IsLayerOn(RenderableObject ro)
 		{
 			string path = getRenderablePathString(ro);
-			foreach (string s in World.Settings.loadedLayers)
+			foreach (string s in World.Settings.LoadedLayers)
 			{
 				if (s.Equals(path))
 				{
@@ -594,7 +594,7 @@ namespace WorldWind
 					twps.MetaData.Add("XmlSource", (string)parentRenderable.MetaData["XmlSource"]);
 					twps.ParentList = parentRenderable;
 
-					if (World.Settings.useDefaultLayerStates)
+					if (World.Settings.UseDefaultLayerStates)
 					{
 						twps.IsOn = ParseBool(iter.Current.GetAttribute("ShowAtStartup", ""));
 					}

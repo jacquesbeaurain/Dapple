@@ -117,7 +117,7 @@ namespace WorldWind.Renderable
 
 				// HACK: We need a flag telling which layers are "Place names"
 				if (Name == "Placenames")
-					World.Settings.showPlacenames = value;
+					World.Settings.ShowPlacenames = value;
 			}
 		}
 

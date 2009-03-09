@@ -42,7 +42,7 @@ namespace Stars3D.Plugin
 		{
 			if (ParentApplication.WorldWindow.CurrentWorld != null && ParentApplication.WorldWindow.CurrentWorld.Name.IndexOf("SDSS") == -1)
 			{
-				Stars3DLayer layer = new Stars3DLayer(LayerName, PluginDirectory, ParentApplication.WorldWindow);
+				Stars3DLayer layer = new Stars3DLayer(LayerName, ParentApplication.WorldWindow);
 				ParentApplication.WorldWindow.CurrentWorld.RenderableObjects.ChildObjects.Insert(0, layer);
 			}
 		}
@@ -82,7 +82,7 @@ namespace Stars3D.Plugin
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		internal Stars3DLayer(string LayerName, string pluginPath, WorldWind.WorldWindow worldWindow)
+		internal Stars3DLayer(string LayerName, WorldWind.WorldWindow worldWindow)
 			: base(LayerName, worldWindow.CurrentWorld)
 		{
 			this.pluginPath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), @"Plugins\stars3d\");

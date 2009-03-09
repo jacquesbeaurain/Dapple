@@ -674,7 +674,7 @@ namespace WorldWind.Renderable
 					new System.Drawing.Rectangle((int)v.X + 5, (int)v.Y + 5, 200, 50),
 					DrawTextFormat.NoClip, textColor);
 
-				DrawProgressBar(drawArgs, (float)v.X + 100, (float)v.Y + 30, 180, 10, World.Settings.downloadProgressColor);
+				DrawProgressBar(drawArgs, (float)v.X + 100, (float)v.Y + 30, 180, 10, World.Settings.DownloadProgressColor.ToArgb());
 			}
 			device.RenderState.ZBufferEnable = true;
 			drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);

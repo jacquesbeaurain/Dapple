@@ -87,37 +87,6 @@ namespace WorldWind
 				}
 			}
 		}
-		/// <summary>
-		/// Display normal message on splash screen.
-		/// </summary>
-		/// <param name="message">Message to display on the splash screen</param>
-		public void SetText(string message)
-		{
-			if(hasError)
-				Wait();
-			HasError = false;
-		//	this.label.Text = message;
-		//	this.label.ForeColor = Color.Black;
-			this.Invalidate();
-			Application.DoEvents();
-		}
-
-		/// <summary>
-		/// Display an error message on splash.  Splash will stay visible longer to alert the user.
-		/// </summary>
-		/// <param name="message">Message to display on the splash screen</param>
-		internal void SetError(string message)
-		{
-			if(hasError)
-				Wait();
-			HasError = true;
-			wasClicked = false;
-			this.timeOut = TimeSpan.FromSeconds(30);
-		//	this.label.Text = message + "\n\nPress any key or click to continue.";
-		//	this.label.ForeColor = Color.Red;
-			this.Invalidate();
-			Application.DoEvents();
-		}
 
 		/// <summary>
 		/// True when splash is done displaying (timed out or user intervention)

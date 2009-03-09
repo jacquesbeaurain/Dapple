@@ -410,7 +410,7 @@ namespace WorldWind
 					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Custom, drawArgs);
 					DirectXProfiler.EndEvent();
 
-					if (Settings.showPlanetAxis)
+					if (Settings.ShowPlanetAxis)
 						this.DrawAxis(drawArgs);
 				}
 				catch (Exception ex)
@@ -462,14 +462,14 @@ namespace WorldWind
 		{
 			string path = getRenderablePathString(ro);
 			bool found = false;
-			for (int i = 0; i < World.Settings.loadedLayers.Count; i++)
+			for (int i = 0; i < World.Settings.LoadedLayers.Count; i++)
 			{
-				string s = (string)World.Settings.loadedLayers[i];
+				string s = (string)World.Settings.LoadedLayers[i];
 				if (s.Equals(path))
 				{
 					if (!ro.IsOn)
 					{
-						World.Settings.loadedLayers.RemoveAt(i);
+						World.Settings.LoadedLayers.RemoveAt(i);
 						break;
 
 					}
@@ -482,7 +482,7 @@ namespace WorldWind
 
 			if (!found && ro.IsOn)
 			{
-				World.Settings.loadedLayers.Add(path);
+				World.Settings.LoadedLayers.Add(path);
 			}
 		}
 

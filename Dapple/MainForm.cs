@@ -411,7 +411,6 @@ namespace Dapple
 			{
 				this.splashScreen.Owner = this;
 				this.splashScreen.Show();
-				this.splashScreen.SetText("Initializing...");
 
 				Application.DoEvents();
 				//#endif

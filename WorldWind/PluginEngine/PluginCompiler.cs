@@ -189,38 +189,6 @@ namespace WorldWind.PluginEngine
 		}
 
 		/// <summary>
-		/// Loads the plugins that are set for load on world wind startup.
-		/// </summary>
-		internal void LoadStartupPlugins()
-		{
-			foreach(PluginInfo pi in m_plugins)
-			{
-				if(pi.IsLoadedAtStartup)
-				{
-					try
-					{
-						// Compile
-                        Log.Write(Log.Levels.Debug, LogCategory, "loading "+pi.Name+" ...");
-                        worldWind.SplashScreen.SetText("Initializing plugin " + pi.Name);
-						Load(pi);
-					}
-					catch(Exception caught)
-					{
-						// Plugin failed to load
-						string message = "Plugin " + pi.Name + " failed: " + caught.Message;
-						Log.Write(Log.Levels.Error, LogCategory, message);
-						Log.Write(caught);
-
-						// Disable automatic load of this plugin on startup
-						pi.IsLoadedAtStartup = false;
-
-						worldWind.SplashScreen.SetError(message);
-					}
-				}
-			}
-		}
-
-		/// <summary>
 		/// Determine if a file extension is that of a compilable plugin.
 		/// </summary>
 		/// <param name="fullPath">File extension to check.</param>

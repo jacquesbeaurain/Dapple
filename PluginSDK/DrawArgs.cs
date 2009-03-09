@@ -97,7 +97,7 @@ namespace WorldWind
 			DrawArgs.ParentControl = parentForm;
 			DrawArgs.Device = device;
 			this.device = device;
-			defaultDrawingFont = CreateFont( World.Settings.defaultFontName, World.Settings.defaultFontSize );
+			defaultDrawingFont = CreateFont( World.Settings.DefaultFontName, World.Settings.DefaultFontSize );
 			if(defaultDrawingFont==null)
 				defaultDrawingFont = CreateFont( "", 10 );
 

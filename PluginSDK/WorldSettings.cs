@@ -22,7 +22,7 @@ namespace WorldWind
    public class WorldSettings : SettingsBase
    {
       #region Atmosphere
-      internal bool enableAtmosphericScattering;
+      bool enableAtmosphericScattering;
 
       [Browsable(true), Category("Atmosphere")]
       [Description("Enable Atmospheric Scattering")]
@@ -32,7 +32,7 @@ namespace WorldWind
          set { enableAtmosphericScattering = value; }
       }
 
-      internal bool forceCpuAtmosphere = true;
+      bool forceCpuAtmosphere = true;
       [Browsable(true), Category("Atmosphere")]
       [Description("Forces CPU calculation instead of GPU for Atmospheric Scattering")]
       public bool ForceCpuAtmosphere
@@ -48,118 +48,118 @@ namespace WorldWind
       /// <summary>
       /// Show the top tool button bar
       /// </summary>
-      internal bool showToolbar = true;
+      bool showToolbar = true;
 
       /// <summary>
       /// Display the layer manager window
       /// </summary>
-      internal bool showLayerManager;
+      bool showLayerManager;
 
       /// <summary>
       /// Display cross-hair symbol on screen
       /// </summary>
-      internal bool showCrosshairs;
-      public int crosshairColor = Color.Beige.ToArgb();
-      internal int crosshairSize = 10;
+      bool showCrosshairs;
+      int crosshairColor = Color.Beige.ToArgb();
+      int crosshairSize = 10;
 
       /// <summary>
       /// Font name for the default font used in UI
       /// </summary>
-      internal string defaultFontName = "Tahoma";
+      string defaultFontName = "Tahoma";
 
       /// <summary>
       /// Font size (em) for the default font used in UI
       /// </summary>
-      internal float defaultFontSize = 9.0f;
+      float defaultFontSize = 9.0f;
 
       /// <summary>
       /// Font style for the default font used in UI
       /// </summary>
-      internal FontStyle defaultFontStyle = FontStyle.Regular;
+      FontStyle defaultFontStyle = FontStyle.Regular;
 
       /// <summary>
       /// Font name used in the toolbar 
       /// </summary>
-      internal string toolbarFontName = "Tahoma";
+      string toolbarFontName = "Tahoma";
 
       /// <summary>
       /// Font size (em) for the font used in UI
       /// </summary>
-      internal float toolbarFontSize = 8;
+      float toolbarFontSize = 8;
 
       /// <summary>
       /// Font style for the font used in UI
       /// </summary>
-      internal FontStyle toolbarFontStyle = FontStyle.Bold;
+      FontStyle toolbarFontStyle = FontStyle.Bold;
 
       /// <summary>
       /// Menu bar background color
       /// </summary>
-      public int menuBarBackgroundColor = Color.FromArgb(128, 128, 128, 128).ToArgb();
+      int menuBarBackgroundColor = Color.FromArgb(128, 128, 128, 128).ToArgb();
 
       /// <summary>
       /// Font name used in the layer manager 
       /// </summary>
-      internal string layerManagerFontName = "Tahoma";
+      string layerManagerFontName = "Tahoma";
 
       /// <summary>
       /// Font size (em) for the font used in UI
       /// </summary>
-      internal float layerManagerFontSize = 9;
+      float layerManagerFontSize = 9;
 
       /// <summary>
       /// Font style for the font used in layer manager
       /// </summary>
-      internal FontStyle layerManagerFontStyle = FontStyle.Regular;
+      FontStyle layerManagerFontStyle = FontStyle.Regular;
 
       /// <summary>
       /// Layer manager width (pixels)
       /// </summary>
-      internal int layerManagerWidth = 200;
+      int layerManagerWidth = 200;
 
       /// <summary>
       /// Draw anti-aliased text
       /// </summary>
-      internal bool antiAliasedText;
+      bool antiAliasedText;
 
       /// <summary>
       /// Maximum frames-per-second setting
       /// </summary>
-      internal int throttleFpsHz = 50;
+      int throttleFpsHz = 50;
 
       /// <summary>
       /// Vsync on/off (Wait for vertical retrace)
       /// </summary>
-      internal bool vSync = true;
+      bool vSync = true;
 
       /// <summary>
       /// Rapid Fire MODIS icon size
       /// </summary>
-      internal int modisIconSize = 60;
+      int modisIconSize = 60;
 
-      internal int m_FpsFrameCount = 300;
-      internal bool m_ShowFpsGraph;
+      int m_FpsFrameCount = 300;
+      bool m_ShowFpsGraph;
 
-      internal int downloadTerrainRectangleColor = Color.FromArgb(50, 0, 0, 255).ToArgb();
-      internal int downloadProgressColor = Color.FromArgb(50, 255, 0, 0).ToArgb();
-      internal int downloadLogoColor = Color.FromArgb(180, 255, 255, 255).ToArgb();
-      public int menuBackColor = Color.FromArgb(170, 40, 40, 40).ToArgb();
-      internal int menuOutlineColor = Color.FromArgb(150, 160, 160, 160).ToArgb();
-      internal int widgetBackgroundColor = Color.FromArgb(0, 0, 0, 255).ToArgb();
-      internal int scrollbarColor = System.Drawing.Color.FromArgb(170, 100, 100, 100).ToArgb();
-      internal int scrollbarHotColor = System.Drawing.Color.FromArgb(170, 255, 255, 255).ToArgb();
-      public int toolBarBackColor = System.Drawing.Color.FromArgb(100, 255, 255, 255).ToArgb();
-      internal bool showDownloadIndicator = true;
-      internal bool outlineText;
-      internal bool showCompass;
-      internal WFSNameColors nameColors = WFSNameColors.Default;
-      internal float nameSizeMultiplier = 1.0f;
+      int downloadTerrainRectangleColor = Color.FromArgb(50, 0, 0, 255).ToArgb();
+      int downloadProgressColor = Color.FromArgb(50, 255, 0, 0).ToArgb();
+      int downloadLogoColor = Color.FromArgb(180, 255, 255, 255).ToArgb();
+      int menuBackColor = Color.FromArgb(170, 40, 40, 40).ToArgb();
+      int menuOutlineColor = Color.FromArgb(150, 160, 160, 160).ToArgb();
+      int widgetBackgroundColor = Color.FromArgb(0, 0, 0, 255).ToArgb();
+      int scrollbarColor = System.Drawing.Color.FromArgb(170, 100, 100, 100).ToArgb();
+      int scrollbarHotColor = System.Drawing.Color.FromArgb(170, 255, 255, 255).ToArgb();
+      int toolBarBackColor = System.Drawing.Color.FromArgb(100, 255, 255, 255).ToArgb();
+      bool showDownloadIndicator = true;
+      bool outlineText;
+      bool showCompass;
+      WFSNameColors nameColors = WFSNameColors.Default;
+      float nameSizeMultiplier = 1.0f;
 
-      internal bool browserVisible;
-      internal bool browserOrientationHorizontal;
-      internal int browserSize = 300;
-      internal bool useInternalBrowser = true;
-      internal bool useOfflineSearch;
+      bool browserVisible;
+      bool browserOrientationHorizontal;
+      int browserSize = 300;
+      bool useInternalBrowser = true;
+      bool useOfflineSearch;
 
       [Browsable(true), Category("UI")]
       [Description("Show Compass Indicator.")]
@@ -530,27 +530,27 @@ namespace WorldWind
       /// <summary>
       /// Display the latitude/longitude grid
       /// </summary>
-      internal bool showLatLonLines;
+      bool showLatLonLines;
 
       /// <summary>
       /// The color of the latitude/longitude grid
       /// </summary>
-      public int latLonLinesColor = System.Drawing.Color.FromArgb(200, 160, 160, 160).ToArgb();
+      int latLonLinesColor = System.Drawing.Color.FromArgb(200, 160, 160, 160).ToArgb();
 
       /// <summary>
       /// The color of the equator latitude line
       /// </summary>
-      public int equatorLineColor = System.Drawing.Color.FromArgb(160, 64, 224, 208).ToArgb();
+      int equatorLineColor = System.Drawing.Color.FromArgb(160, 64, 224, 208).ToArgb();
 
       /// <summary>
       /// Display the tropic of capricorn/cancer lines
       /// </summary>
-      internal bool showTropicLines = true;
+      bool showTropicLines = true;
 
       /// <summary>
       /// The color of the latitude/longitude grid
       /// </summary>
-      public int tropicLinesColor = System.Drawing.Color.FromArgb(160, 176, 224, 230).ToArgb();
+      int tropicLinesColor = System.Drawing.Color.FromArgb(160, 176, 224, 230).ToArgb();
 
       [Browsable(true), Category("Grid Lines")]
       [Description("Display the latitude/longitude grid.")]
@@ -605,38 +605,38 @@ namespace WorldWind
       /// <summary>
       /// Index of blue marble version to show
       /// </summary>
-      internal int bmngVersion = 1;
+      int bmngVersion = 1;
 
       /// <summary>
       /// Whether to display the planet axis line (through poles)
       /// </summary>
-      internal bool showPlanetAxis;
+      bool showPlanetAxis;
 
       /// <summary>
       /// Whether place name labels should display
       /// </summary>
-      internal bool showPlacenames = true;
+      bool showPlacenames = true;
 
       /// <summary>
       /// Whether country borders and other boundaries should display
       /// </summary>
-      internal bool showBoundaries;
+      bool showBoundaries;
 
       /// <summary>
       /// Displays coordinates of current position
       /// </summary>
-      internal bool showPosition;
+      bool showPosition;
 
 		/// <summary>
 		/// Whether to display the scale bar in the globe.
 		/// </summary>
-		protected bool m_blShowScaleBar;
+		bool m_blShowScaleBar;
 
 
       /// <summary>
       /// Color of the sky at sea level
       /// </summary>
-      internal int skyColor = Color.FromArgb(115, 155, 185).ToArgb();
+      int skyColor = Color.FromArgb(115, 155, 185).ToArgb();
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
@@ -651,7 +651,7 @@ namespace WorldWind
       /// <summary>
       /// Keep the original (unconverted) NASA SVS image files on disk (in addition to converted files). 
       /// </summary>
-      internal bool keepOriginalSvsImages;
+      bool keepOriginalSvsImages;
 
       [Browsable(true), Category("World")]
       [Description("Whether to display the planet axis line (through poles).")]
@@ -661,7 +661,7 @@ namespace WorldWind
          set { showPlanetAxis = value; }
       }
 
-      internal bool showClouds;
+      bool showClouds;
       [Browsable(true), Category("World")]
       [Description("Whether to show clouds.")]
       public bool ShowClouds
@@ -722,35 +722,41 @@ namespace WorldWind
 
       #region Camera
 
-      internal bool cameraResetsAtStartup = true;
-      internal Angle cameraLatitude = Angle.FromDegrees(0.0);
-      internal Angle cameraLongitude = Angle.FromDegrees(0.0);
-      internal double cameraAltitudeMeters = 20000000;
-      internal Angle cameraHeading = Angle.FromDegrees(0.0);
-      internal Angle cameraTilt = Angle.FromDegrees(0.0);
+      bool cameraResetsAtStartup = true;
+      Angle cameraLatitude = Angle.FromDegrees(0.0);
+      Angle cameraLongitude = Angle.FromDegrees(0.0);
+      double cameraAltitudeMeters = 20000000;
+      Angle cameraHeading = Angle.FromDegrees(0.0);
+      Angle cameraTilt = Angle.FromDegrees(0.0);
 
-      internal bool cameraIsPointGoto = true;
-      internal bool cameraHasInertia = true;
-      internal bool cameraSmooth = true;
-      internal bool cameraHasMomentum;
-      internal bool cameraTwistLock = true;
-      internal bool cameraBankLock = true;
-      internal float cameraSlerpStandard = 0.35f;
-      internal float cameraSlerpInertia = 0.25f;
+      bool cameraIsPointGoto = true;
+      bool cameraHasInertia = true;
+      bool cameraSmooth = true;
+      bool cameraHasMomentum;
+      bool cameraTwistLock = true;
+      bool cameraBankLock = true;
+      float cameraSlerpStandard = 0.35f;
+      float cameraSlerpInertia = 0.25f;
 
       // Set to either Inertia or Standard slerp value
-      internal float cameraSlerpPercentage = 0.25f;
+      float cameraSlerpPercentage = 0.25f;
 
-      internal Angle cameraFov = Angle.FromRadians(Math.PI * 0.25f);
-      internal Angle cameraFovMin = Angle.FromDegrees(5);
-      internal Angle cameraFovMax = Angle.FromDegrees(150);
-      internal float cameraZoomStepFactor = 0.015f;
-      internal float cameraZoomAcceleration = 10f;
-      internal float cameraZoomAnalogFactor = 1f;
-      internal float cameraZoomStepKeyboard = 0.15f;
-      internal float cameraRotationSpeed = 3.5f;
-      internal bool elevateCameraLookatPoint = true;
-      internal bool allowNegativeAltitude;
+		public float CameraSlerpPercentage
+		{
+			get { return cameraSlerpPercentage; }
+			set { cameraSlerpPercentage = value; }
+		}
+
+      Angle cameraFov = Angle.FromRadians(Math.PI * 0.25f);
+      Angle cameraFovMin = Angle.FromDegrees(5);
+      Angle cameraFovMax = Angle.FromDegrees(150);
+      float cameraZoomStepFactor = 0.015f;
+      float cameraZoomAcceleration = 10f;
+      float cameraZoomAnalogFactor = 1f;
+      float cameraZoomStepKeyboard = 0.15f;
+      float cameraRotationSpeed = 3.5f;
+      bool elevateCameraLookatPoint = true;
+      bool allowNegativeAltitude;
 
       [Browsable(true), Category("Camera")]
       public bool ElevateCameraLookatPoint
@@ -1228,12 +1234,12 @@ namespace WorldWind
 
       #region Measure tool
 
-      internal MeasureMode measureMode;
+      MeasureMode measureMode;
 
-      internal bool measureShowGroundTrack;
+      bool measureShowGroundTrack;
 
-      internal int measureLineGroundColor = Color.FromArgb(222, 0, 255, 0).ToArgb();
-      internal int measureLineLinearColor = Color.FromArgb(255, 255, 0, 0).ToArgb();
+      int measureLineGroundColor = Color.FromArgb(222, 0, 255, 0).ToArgb();
+      int measureLineLinearColor = Color.FromArgb(255, 255, 0, 0).ToArgb();
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
@@ -1324,7 +1330,7 @@ namespace WorldWind
          }
       }
 
-      internal int downloadQueuedColor = Color.FromArgb(50, 128, 168, 128).ToArgb();
+      int downloadQueuedColor = Color.FromArgb(50, 128, 168, 128).ToArgb();
 
       [XmlIgnore]
       [Browsable(true), Category("UI")]
@@ -1337,9 +1343,9 @@ namespace WorldWind
       }
 
       #region Layers
-      internal System.Collections.ArrayList loadedLayers = new System.Collections.ArrayList();
-      internal bool useDefaultLayerStates = true;
-      internal int maxSimultaneousDownloads = 1;
+      System.Collections.ArrayList loadedLayers = new System.Collections.ArrayList();
+      bool useDefaultLayerStates = true;
+      int maxSimultaneousDownloads = 1;
 
       [Browsable(true), Category("Layers")]
       public bool UseDefaultLayerStates

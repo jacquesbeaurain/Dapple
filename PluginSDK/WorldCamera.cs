@@ -171,10 +171,10 @@ namespace WorldWind.Camera
 		{
 			get { return this._targetFov; }
 			set { 
-				if(value > World.Settings.cameraFovMax)
-					value = World.Settings.cameraFovMax;
-				if(value < World.Settings.cameraFovMin)
-					value = World.Settings.cameraFovMin;
+				if(value > World.Settings.CameraFovMax)
+					value = World.Settings.CameraFovMax;
+				if(value < World.Settings.CameraFovMin)
+					value = World.Settings.CameraFovMin;
 				this._targetFov = value; 
 			}
 		}
@@ -190,7 +190,7 @@ namespace WorldWind.Camera
 			if (EpsilonTest())
             NoSlerpToTargetOrientation();
          else
-            SlerpToTargetOrientation(World.Settings.cameraSlerpPercentage);
+            SlerpToTargetOrientation(World.Settings.CameraSlerpPercentage);
             // Check for terrain collision
             if (_altitude < _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude)
          {
@@ -243,7 +243,7 @@ namespace WorldWind.Camera
 					return;
 
 				_targetBank = value;
-				if(!World.Settings.cameraSmooth)
+				if(!World.Settings.CameraSmooth)
 					_bank = value;
 			}
 		}
@@ -260,7 +260,7 @@ namespace WorldWind.Camera
 
 				_targetTilt = value;
 				ComputeTargetAltitude(_targetDistance, _targetTilt);
-				if(!World.Settings.cameraSmooth)
+				if(!World.Settings.CameraSmooth)
 					_tilt = value;
 			}
 		}
@@ -279,7 +279,7 @@ namespace WorldWind.Camera
 					value = maximumAltitude;
 				_targetDistance = value;
 				ComputeTargetAltitude(_targetDistance, _targetTilt );
-				if(!World.Settings.cameraSmooth)
+				if(!World.Settings.CameraSmooth)
 				{
 					base._distance =  _targetDistance;
  					base._altitude =  _targetAltitude;
@@ -372,7 +372,7 @@ namespace WorldWind.Camera
 
 		public override void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)
 		{
-			if(World.Settings.cameraHasMomentum)
+			if(World.Settings.CameraHasMomentum)
 			{
 				_latitudeMomentum += pitch/100;
 				_longitudeMomentum += yaw/100;
@@ -385,7 +385,7 @@ namespace WorldWind.Camera
 			{
 				this._targetLatitude.Radians = v.Y;
 				this._targetLongitude.Radians = v.X;
-				if(!World.Settings.cameraTwistLock)
+				if(!World.Settings.CameraTwistLock)
 					_targetHeading.Radians = v.Z;
 			}
 
@@ -399,7 +399,7 @@ namespace WorldWind.Camera
 		/// <param name="lon">Longitude offset</param>
 		public override void Pan(Angle lat, Angle lon)
 		{
-			if(World.Settings.cameraHasMomentum)
+			if(World.Settings.CameraHasMomentum)
 			{
 				_latitudeMomentum += lat/100;
 				_longitudeMomentum += lon/100;
@@ -427,7 +427,7 @@ namespace WorldWind.Camera
 				_targetLongitude.Radians = v.X;
 				_targetHeading.Radians = v.Z;
 
-				if(!World.Settings.cameraSmooth)
+				if(!World.Settings.CameraSmooth)
 				{
 					_latitude = _targetLatitude;
 					_longitude = _targetLongitude;
@@ -439,7 +439,7 @@ namespace WorldWind.Camera
 
 		public override void Update(Device device)
 		{
-			if(World.Settings.cameraHasMomentum)
+			if(World.Settings.CameraHasMomentum)
 			{
 				base.RotationYawPitchRoll(
 					_longitudeMomentum,

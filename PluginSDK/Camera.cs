@@ -28,7 +28,7 @@ namespace WorldWind.Camera
       internal const double dEpsilonTestValue = 1e-5;
 
       protected Frustum _viewFrustum = new Frustum();
-      protected Angle _fov = World.Settings.cameraFov;
+      protected Angle _fov = World.Settings.CameraFov;
 
       protected Point3d _position;
 
@@ -418,10 +418,10 @@ namespace WorldWind.Camera
          get { return this._fov; }
          set
          {
-            if (value > World.Settings.cameraFovMax)
-               value = World.Settings.cameraFovMax;
-            if (value < World.Settings.cameraFovMin)
-               value = World.Settings.cameraFovMin;
+            if (value > World.Settings.CameraFovMax)
+               value = World.Settings.CameraFovMax;
+            if (value < World.Settings.CameraFovMin)
+               value = World.Settings.CameraFovMin;
             this._fov = value;
          }
       }
@@ -509,21 +509,21 @@ namespace WorldWind.Camera
 
          if (CameraChanged != null)
          {
-            if (World.Settings.cameraAltitudeMeters != Altitude ||
-               World.Settings.cameraLatitude != _latitude ||
-               World.Settings.cameraLongitude != _longitude ||
-               World.Settings.cameraHeading != _heading ||
-               World.Settings.cameraTilt != _tilt)
+            if (World.Settings.CameraAltitude != Altitude ||
+               World.Settings.CameraLatitude != _latitude ||
+               World.Settings.CameraLongitude != _longitude ||
+               World.Settings.CameraHeading != _heading ||
+               World.Settings.CameraTilt != _tilt)
             {
 					blFireCameraChanged = true;
             }
          }
 
-			World.Settings.cameraAltitudeMeters = Altitude;
-			World.Settings.cameraLatitude = _latitude;
-			World.Settings.cameraLongitude = _longitude;
-			World.Settings.cameraHeading = _heading;
-			World.Settings.cameraTilt = _tilt;
+			World.Settings.CameraAltitude = Altitude;
+			World.Settings.CameraLatitude = _latitude;
+			World.Settings.CameraLongitude = _longitude;
+			World.Settings.CameraHeading = _heading;
+			World.Settings.CameraTilt = _tilt;
 
 			if (blFireCameraChanged)
 				CameraChanged(this, new EventArgs());
@@ -535,7 +535,7 @@ namespace WorldWind.Camera
       /// </summary>
 		public virtual void Reset()
       {
-         Fov = World.Settings.cameraFov;
+         Fov = World.Settings.CameraFov;
 
          if (Angle.IsNaN(_tilt))
             _tilt.Radians = 0;
@@ -556,7 +556,7 @@ namespace WorldWind.Camera
       /// <param name="tilt">Tilt in decimal degrees</param>
       internal virtual void PointGoto(double lat, double lon)
       {
-         if (!World.Settings.cameraIsPointGoto)
+         if (!World.Settings.CameraIsPointGoto)
             return;
 
          SetPosition(lat, lon, double.NaN, double.NaN, double.NaN, double.NaN);
@@ -572,7 +572,7 @@ namespace WorldWind.Camera
       /// <param name="tilt">Tilt in decimal degrees</param>
 		public virtual void PointGoto(Angle lat, Angle lon)
       {
-         if (!World.Settings.cameraIsPointGoto)
+         if (!World.Settings.CameraIsPointGoto)
             return;
 
          SetPosition(lat.Degrees, lon.Degrees, double.NaN, double.NaN, double.NaN, double.NaN);
@@ -792,7 +792,7 @@ namespace WorldWind.Camera
       {
          int currentTickCount = Environment.TickCount;
 
-         double factor = World.Settings.cameraZoomStepFactor;
+         double factor = World.Settings.CameraZoomStepFactor;
          if (factor < 0)
             factor = 0;
          if (factor > 1)
@@ -807,7 +807,7 @@ namespace WorldWind.Camera
          if (multiplier < 0)
             multiplier = 0;
 
-         multiplier = multiplier * World.Settings.cameraZoomAcceleration;
+         multiplier = multiplier * World.Settings.CameraZoomAcceleration;
          double mulfac = Math.Pow(1 - factor, multiplier + 1);
          mulfac = Math.Pow(mulfac, Math.Abs(ticks));
 
