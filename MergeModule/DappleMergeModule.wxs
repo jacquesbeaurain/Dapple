@@ -31,9 +31,6 @@
         <Component Id="proj.dll" Guid="5d33e13c-14cd-4b35-a25a-bf8cef8d0bf4">
           <File Id="proj.dll" Name="proj.dll" Source="..\Dapple\bin\x86\Release\proj.dll" Vital="yes" KeyPath="yes" />
         </Component>
-        <Component Id="Tao.OpenGl.Glu.dll" Guid="e89d8f61-7406-477b-94ca-c324ec1d8747">
-          <File Id="Tao.OpenGl.Glu.dll" Name="Tao.OpenGl.Glu.dll" Source="..\Dapple\bin\x86\Release\Tao.OpenGl.Glu.dll" Vital="yes" KeyPath="yes" />
-        </Component>
         <Component Id="Utilities_GD.dll" Guid="6de2dcc4-7b65-43eb-a291-334cae7ecf2f">
           <File Id="Utilities_GD.dll" Name="Utilities_GD.dll" Source="..\Dapple\bin\x86\Release\Utilities_GD.dll" Vital="yes" KeyPath="yes" />
         </Component>
