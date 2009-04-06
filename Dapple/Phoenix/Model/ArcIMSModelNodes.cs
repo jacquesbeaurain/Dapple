@@ -615,7 +615,7 @@ namespace NewServerTree
 
 				if (m_oModel.SearchKeywordSet)
 				{
-					result &= DisplayText.Contains(m_oModel.SearchKeyword);
+					result &= DisplayText.ToLowerInvariant().Contains(m_oModel.SearchKeyword.ToLowerInvariant());
 				}
 
 				return result;

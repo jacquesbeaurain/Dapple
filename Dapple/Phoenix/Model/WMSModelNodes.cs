@@ -626,7 +626,7 @@ namespace NewServerTree
 
 				if (m_oModel.SearchKeywordSet)
 				{
-					blResult &= (m_oData.Description != null && m_oData.Description.Contains(m_oModel.SearchKeyword)) || (m_oData.Title != null && m_oData.Title.Contains(m_oModel.SearchKeyword));
+					blResult &= (m_oData.Description != null && m_oData.Description.ToLowerInvariant().Contains(m_oModel.SearchKeyword.ToLowerInvariant())) || (m_oData.Title != null && m_oData.Title.ToLowerInvariant().Contains(m_oModel.SearchKeyword.ToLowerInvariant()));
 				}
 
 				if (m_oModel.SearchBoundsSet)
