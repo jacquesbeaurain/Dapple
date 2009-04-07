@@ -78,7 +78,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether Dapple can display legend(s) for this data layer")]
-		internal override bool SupportsLegend
+		public override bool SupportsLegend
 		{
 			get
 			{
@@ -89,7 +89,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		internal override byte Opacity
+		public override byte Opacity
 		{
 			get
 			{
@@ -118,7 +118,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		internal override bool Visible
+		public override bool Visible
 		{
 			get
 			{
@@ -149,7 +149,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.ReadOnly(true)]
 		[System.ComponentModel.Description("The tile size, in degrees, of the topmost level")]
-		private double LevelZeroTileSize
+		public double LevelZeroTileSize
 		{
 			get
 			{
@@ -170,7 +170,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		internal override GeographicBoundingBox Extents
+		public override GeographicBoundingBox Extents
 		{
 			get { return m_hBoundary; }
 		}
@@ -178,7 +178,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The server providing this data layer")]
-		internal string ServerURL
+		public string ServerURL
 		{
 			get { return Layer.ParentWMSList.ServerGetCapabilitiesUrl; }
 		}
@@ -186,7 +186,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("WMS")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The name used to access this data layer on the WMS server")]
-		internal String Name
+		public String Name
 		{
 			get { return m_wmsLayer.Name; }
 		}

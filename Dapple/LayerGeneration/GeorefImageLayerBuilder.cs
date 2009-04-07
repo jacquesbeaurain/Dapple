@@ -61,7 +61,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		internal override byte Opacity
+		public override byte Opacity
 		{
 			get
 			{
@@ -90,7 +90,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		internal override bool Visible
+		public override bool Visible
 		{
 			get
 			{
@@ -120,7 +120,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		internal override GeographicBoundingBox Extents
+		public override GeographicBoundingBox Extents
 		{
 			get
 			{

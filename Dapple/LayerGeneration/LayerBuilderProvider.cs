@@ -128,7 +128,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether Dapple can display legend(s) for this data layer")]
-		internal virtual bool SupportsLegend
+		public virtual bool SupportsLegend
 		{
 			get
 			{
@@ -139,7 +139,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The opacity of the image (255 = opaque, 0 = transparent)")]
-		internal abstract byte Opacity
+		public abstract byte Opacity
 		{
 			get;
 			set;
@@ -148,7 +148,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Dapple")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("Whether this data layer is visible on the globe")]
-		internal abstract bool Visible
+		public abstract bool Visible
 		{
 			get;
 			set;
@@ -168,7 +168,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Category("Common")]
 		[System.ComponentModel.Browsable(true)]
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
-		internal abstract GeographicBoundingBox Extents
+		public abstract GeographicBoundingBox Extents
 		{
 			get;
 		}
