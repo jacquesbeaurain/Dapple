@@ -373,7 +373,7 @@ namespace Dapple.CustomControls
 				}
 				catch (Exception ex)
 				{
-					Program.ShowMessageBox("An error occurred while accessing dataset:" + Environment.NewLine + ex.Message, "Add Dataset to Globe", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
+					Program.ShowMessageBox(ex.Message, "Dataset Could Not Be Added", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
 				}
 			}
 

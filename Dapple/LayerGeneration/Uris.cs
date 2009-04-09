@@ -458,7 +458,7 @@ namespace Dapple.LayerGeneration
 			if (oServer.LoadState == LoadState.LoadFailed) return null;
 
 			WMSLayerModelNode oLayer = oServer.GetLayer(getAttribute("layer"));
-			if (oLayer == null) throw new ArgumentException("The layer '" + getAttribute("layer") + "' was not found in server " + m_oServer.ServerTreeDisplayName);
+			if (oLayer == null) throw new ArgumentException("'" + getAttribute("layer") + "' was not found. This dataset may have been deleted or moved." + Environment.NewLine + Environment.NewLine + "Please check with the publisher of " + m_oServer.ServerTreeDisplayName + " for more information.");
 			WMSServerBuilder oDummyServer = new WMSServerBuilder(null, m_oServer as WMSServerUri, oServer.CapabilitiesFilename, true);
 			return new WMSQuadLayerBuilder(oLayer.LayerData, MainForm.WorldWindowSingleton, oDummyServer, null);
 		}
