@@ -654,7 +654,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("Whether this server is currently enabled.")]
-		internal bool Enabled
+		public bool Enabled
 		{
 			get { return m_blEnabled; }
 		}
@@ -662,7 +662,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("Whether this server is your current favourite server.")]
-		internal bool Favourite
+		public bool Favourite
 		{
 			get { return m_blFavourite; }
 		}
@@ -670,12 +670,12 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		internal abstract ServerUri Uri { get; }
+		public abstract ServerUri Uri { get; }
 
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		internal abstract ServerType Type { get; }
+		public abstract ServerType Type { get; }
 
 		#endregion
 

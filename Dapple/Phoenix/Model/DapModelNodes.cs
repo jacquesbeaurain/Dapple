@@ -280,7 +280,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		internal override ServerUri Uri
+		public override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
@@ -293,7 +293,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		internal override ServerModelNode.ServerType Type
+		public override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.DAP; }
 		}

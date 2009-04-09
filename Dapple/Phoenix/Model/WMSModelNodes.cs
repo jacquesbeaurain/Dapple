@@ -259,7 +259,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("The URI for this server.")]
-		internal override ServerUri Uri
+		public override ServerUri Uri
 		{
 			get { return m_oUri; }
 		}
@@ -267,7 +267,7 @@ namespace NewServerTree
 		[Browsable(true)]
 		[Category("Server")]
 		[Description("What type of server (DAP, WMS, ArcIMS) this server is.")]
-		internal override ServerModelNode.ServerType Type
+		public override ServerModelNode.ServerType Type
 		{
 			get { return ServerType.WMS; }
 		}
@@ -391,6 +391,10 @@ namespace NewServerTree
 					result.Add(new WMSFolderModelNode(m_oModel, oLayer));
 				}
 			}
+			if (oCatalog.Layers[0].Name != null)
+			{
+				result.Add(new WMSLayerModelNode(m_oModel, oCatalog.Layers[0]));
+			}
 
 			result.Sort(new Comparison<ModelNode>(WMSRootModelNode.SortWMSChildNodes));
 
@@ -427,6 +431,10 @@ namespace NewServerTree
 				{
 					AddChildSilently(new WMSFolderModelNode(m_oModel, oLayer));
 				}
+			}
+			if (oData.Name != null)
+			{
+				AddChildSilently(new WMSLayerModelNode(m_oModel, oData));
 			}
 
 			MarkLoaded();
