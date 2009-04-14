@@ -158,7 +158,7 @@ namespace Dapple
 			{
 				for (int count = m_iCurrPage * LAYERS_PER_PAGE; count < m_iCurrPage * LAYERS_PER_PAGE + LAYERS_PER_PAGE; count++)
 				{
-					if (count < m_oCurrServerLayers.Count)
+					if (count < m_oCurrServerLayers.Count && count % LAYERS_PER_PAGE < c_lvLayers.Items.Count)
 					{
 						if (m_hLayerList.AllLayers.Contains(m_oCurrServerLayers[count]))
 						{

@@ -79,7 +79,7 @@ namespace Dapple
 				return;
 			}
 
-			DapServerUri oUri = new DapServerUri(txtDapURL.Text);
+			DapServerUri oUri = new DapServerUri(oServerUrl.ToString());
 			if (oUri.IsForPersonalDAP)
 			{
 				Program.ShowMessageBox(

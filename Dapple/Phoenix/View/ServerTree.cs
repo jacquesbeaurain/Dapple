@@ -369,8 +369,8 @@ namespace NewServerTree.View
 			m_oModel.FavouriteServerChanged -= new EventHandler(m_oModel_FavouriteServerChanged);
 			m_oModel.ServerToggled -= new EventHandler(m_oModel_ServerToggled);
 
-			m_oModel.ViewedDatasets.LayersRemoved += new EventHandler(ViewedDatasets_LayersRemoved);
-			m_oModel.ViewedDatasets.LayersAdded += new EventHandler(ViewedDatasets_LayersAdded);
+			m_oModel.ViewedDatasets.LayersRemoved -= new EventHandler(ViewedDatasets_LayersRemoved);
+			m_oModel.ViewedDatasets.LayersAdded -= new EventHandler(ViewedDatasets_LayersAdded);
 		}
 
 		#endregion
