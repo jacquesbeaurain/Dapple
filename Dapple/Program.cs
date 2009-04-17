@@ -83,7 +83,7 @@ namespace Dapple
 
 				if (cmdl["callerprocid"] != null)
 				{
-					g_iCallerProcID = Int32.Parse(cmdl["callerprocid"]);
+					g_iCallerProcID = Int32.Parse(cmdl["callerprocid"], CultureInfo.InvariantCulture);
 				}
 
 				if (cmdl[0] != null)
@@ -171,7 +171,7 @@ namespace Dapple
 
 					if (cmdl["dummyserver"] != null)
 					{
-						oClientChannel = new IpcChannel(String.Format("localhost:{0}", iMontajPort));
+						oClientChannel = new IpcChannel(String.Format(CultureInfo.InvariantCulture, "localhost:{0}", iMontajPort));
 						ChannelServices.RegisterChannel(oClientChannel, true);
 						RemotingConfiguration.RegisterWellKnownServiceType(typeof(MontajRemote.RemoteInterface), "MontajRemote", System.Runtime.Remoting.WellKnownObjectMode.Singleton);
 					}
@@ -181,7 +181,7 @@ namespace Dapple
 						ChannelServices.RegisterChannel(oClientChannel, true);
 					}
 
-					oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format("ipc://localhost:{0}/MontajRemote", iMontajPort));
+					oRemoteInterface = (MontajRemote.RemoteInterface)Activator.GetObject(typeof(MontajRemote.RemoteInterface), String.Format(CultureInfo.InvariantCulture, "ipc://localhost:{0}/MontajRemote", iMontajPort));
 				}
 
 				if (cmdl["aoi"] != null)

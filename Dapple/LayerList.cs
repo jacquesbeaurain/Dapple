@@ -16,6 +16,7 @@ using WorldWind.PluginEngine;
 using System.Diagnostics;
 using Geosoft.GX.DAPGetData;
 using NewServerTree;
+using System.Globalization;
 
 namespace Dapple
 {
@@ -1406,7 +1407,7 @@ namespace Dapple
 										{
 											szLayers += "\"" + oBuilder.Title + "\"" + ", ";
 										}
-										throw new ArgumentException(String.Format("Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, oViewedArea.ToString(), szLayers));
+										throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", oExportEntry.Info.iPixelsX, oExportEntry.Info.iPixelsY, oViewedArea.ToString(), szLayers));
 									}
 								}
 							}
@@ -1420,7 +1421,7 @@ namespace Dapple
 						{
 							szLayers += "\"" + oBuilder.Title + "\"" + ", ";
 						}
-						throw new ArgumentException(String.Format("Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", iExportPixelsX, iExportPixelsY, oViewedArea.ToString(), szLayers));
+						throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "Error creating layer image for snapshot. Width[{0}] Height[{1}] Bounds[{2}] Layers[{3}]", iExportPixelsX, iExportPixelsY, oViewedArea.ToString(), szLayers));
 					}
 
 					Program.ShowMessageBox(

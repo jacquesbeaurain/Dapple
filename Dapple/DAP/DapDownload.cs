@@ -168,7 +168,7 @@ namespace Dapple.DAP
 
 			try
 			{
-				System.IO.StringWriter hRequest = new StringWriter();
+				System.IO.StringWriter hRequest = new StringWriter(CultureInfo.InvariantCulture);
 
 				Geosoft.Dap.Common.Format oFormat = new Geosoft.Dap.Common.Format();
 				oFormat.Type = "image/" + m_oImageStore.ImageExtension;
@@ -262,7 +262,7 @@ namespace Dapple.DAP
 
          try
          {
-            System.IO.StringWriter hRequest = new StringWriter();
+            System.IO.StringWriter hRequest = new StringWriter(CultureInfo.InvariantCulture);
 
             Geosoft.Dap.Common.Format oFormat = new Geosoft.Dap.Common.Format();
             oFormat.Type = "image/" + m_oImageStore.ImageExtension;

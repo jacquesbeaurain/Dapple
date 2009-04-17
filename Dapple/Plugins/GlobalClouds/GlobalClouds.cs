@@ -34,6 +34,7 @@ using System.Drawing;
 using System.Net;
 using System.Collections;
 using System;
+using System.Globalization;
 
 namespace Murris.Plugins
 {
@@ -739,7 +740,7 @@ namespace Murris.Plugins
 		// Return a date formated as YYYYMMDD-HHMM
 		internal string DateTimeStamp(DateTime d)
 		{
-			return d.Year.ToString() + d.Month.ToString("d2") + d.Day.ToString("d2") + "-" + d.Hour.ToString("d2") + d.Minute.ToString("d2");
+			return d.Year.ToString(CultureInfo.InvariantCulture) + d.Month.ToString("d2", CultureInfo.InvariantCulture) + d.Day.ToString("d2", CultureInfo.InvariantCulture) + "-" + d.Hour.ToString("d2", CultureInfo.InvariantCulture) + d.Minute.ToString("d2", CultureInfo.InvariantCulture);
 
 		}
 

@@ -9,47 +9,47 @@ using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
-   class ArcIMSQuadLayerBuilder : LayerBuilder
-   {
-      #region Member variables
+	class ArcIMSQuadLayerBuilder : LayerBuilder
+	{
+		#region Member variables
 
-      private String m_szServiceName;
-      private QuadTileSet m_oQuadTileSet = null;
-      private bool m_blnIsChanged = true;
-      private GeographicBoundingBox m_oEnvelope;
+		private String m_szServiceName;
+		private QuadTileSet m_oQuadTileSet = null;
+		private bool m_blnIsChanged = true;
+		private GeographicBoundingBox m_oEnvelope;
 		private ArcIMSServerUri m_oServerUri;
-      private double m_dLevelZeroTileSizeDegrees = 0;
-      private int m_iLevels = 15;
-      private int m_iPixels = 256;
-      private String m_szLayerID;
-      private double m_dMinScale, m_dMaxScale;
+		private double m_dLevelZeroTileSizeDegrees = 0;
+		private int m_iLevels = 15;
+		private int m_iPixels = 256;
+		private String m_szLayerID;
+		private double m_dMinScale, m_dMaxScale;
 		private CultureInfo m_oCultureInfo;
 
-      #endregion
+		#endregion
 
-      #region Static
+		#region Static
 
-      internal static readonly string URLProtocolName = "gxarcims://";
-      internal static readonly string CacheSubDir = "ArcIMSImages";
+		internal static readonly string URLProtocolName = "gxarcims://";
+		internal static readonly string CacheSubDir = "ArcIMSImages";
 		internal static readonly double DefaultMinScale = 0.0;
 		internal static readonly double DefaultMaxScale = 1.0;
 
-      #endregion
+		#endregion
 
-      #region Constructor
+		#region Constructor
 
-      internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
-         :base(szLayerTitle, oWorldWindow, oParent)
-      {
+		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
+			: base(szLayerTitle, oWorldWindow, oParent)
+		{
 			m_oServerUri = oServerUri;
 			m_oCultureInfo = oInfo;
-         m_oEnvelope = oEnvelope;
-         m_szLayerID = szLayerID;
-         m_szServiceName = strServiceName;
-         m_dMinScale = dMinScale;
+			m_oEnvelope = oEnvelope;
+			m_szLayerID = szLayerID;
+			m_szServiceName = strServiceName;
+			m_dMinScale = dMinScale;
 			if (m_dMinScale < DefaultMinScale)
 				m_dMinScale = DefaultMinScale;
-         m_dMaxScale = dMaxScale;
+			m_dMaxScale = dMaxScale;
 			if (m_dMaxScale > DefaultMaxScale)
 				m_dMaxScale = DefaultMaxScale;
 			if (m_dMaxScale < m_dMinScale)
@@ -59,40 +59,40 @@ namespace Dapple.LayerGeneration
 				m_dMinScale = DefaultMinScale;
 			}
 
-         m_dLevelZeroTileSizeDegrees = 22.5;
-         m_iLevels = 1;
-         m_iPixels = 256;
+			m_dLevelZeroTileSizeDegrees = 22.5;
+			m_iLevels = 1;
+			m_iPixels = 256;
 
-         while ((m_dLevelZeroTileSizeDegrees / m_iPixels) > m_dMaxScale)
-         {
-            m_dLevelZeroTileSizeDegrees /= 2.0;
-         }
+			while ((m_dLevelZeroTileSizeDegrees / m_iPixels) > m_dMaxScale)
+			{
+				m_dLevelZeroTileSizeDegrees /= 2.0;
+			}
 
-         if (m_dLevelZeroTileSizeDegrees / m_iPixels < m_dMinScale)
-         {
-            double dMidLZTS = (m_dMinScale + m_dMaxScale) * m_iPixels / 2.0;
-            double dCompressRatio = m_dLevelZeroTileSizeDegrees / dMidLZTS;
-            m_iPixels = (int)(m_iPixels * dCompressRatio);
-         }
-         else
-         {
-            double dIter = m_dLevelZeroTileSizeDegrees / 2.0;
+			if (m_dLevelZeroTileSizeDegrees / m_iPixels < m_dMinScale)
+			{
+				double dMidLZTS = (m_dMinScale + m_dMaxScale) * m_iPixels / 2.0;
+				double dCompressRatio = m_dLevelZeroTileSizeDegrees / dMidLZTS;
+				m_iPixels = (int)(m_iPixels * dCompressRatio);
+			}
+			else
+			{
+				double dIter = m_dLevelZeroTileSizeDegrees / 2.0;
 
-            while (dIter / m_iPixels > m_dMinScale && dIter > 0.35)
-            {
-               dIter /= 2.0;
-               m_iLevels++;
-            }
-         }
+				while (dIter / m_iPixels > m_dMinScale && dIter > 0.35)
+				{
+					dIter /= 2.0;
+					m_iLevels++;
+				}
+			}
 
-         // --- Check the calculations ---
-         if (m_dLevelZeroTileSizeDegrees > m_dMaxScale * m_iPixels)
+			// --- Check the calculations ---
+			if (m_dLevelZeroTileSizeDegrees > m_dMaxScale * m_iPixels)
 				throw new InvalidDataException("LZTS is wrong");
-         if (m_dLevelZeroTileSizeDegrees < m_dMinScale * m_iPixels * Math.Pow(2.0, m_iLevels - 1))
+			if (m_dLevelZeroTileSizeDegrees < m_dMinScale * m_iPixels * Math.Pow(2.0, m_iLevels - 1))
 				throw new InvalidDataException("Levels is wrong");
-      }
+		}
 
-      #endregion
+		#endregion
 
 		#region Properties
 
@@ -169,7 +169,7 @@ namespace Dapple.LayerGeneration
 		public string ServerURL
 		{
 			get { return m_oServerUri.ToBaseUri(); }
-		}	
+		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override bool IsChanged
@@ -208,44 +208,44 @@ namespace Dapple.LayerGeneration
 
 		#region ImageBuilder Implementations
 
-      internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
-      {
-         if (m_oQuadTileSet != null)
-            return m_oQuadTileSet.bIsDownloading(out iBytesRead, out iTotalBytes);
-         else
-         {
-            iBytesRead = 0;
-            iTotalBytes = 0;
-            return false;
-         }
-      }
+		internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)
+		{
+			if (m_oQuadTileSet != null)
+				return m_oQuadTileSet.bIsDownloading(out iBytesRead, out iTotalBytes);
+			else
+			{
+				iBytesRead = 0;
+				iTotalBytes = 0;
+				return false;
+			}
+		}
 
-      internal override RenderableObject GetLayer()
-      {
-         if (m_blnIsChanged)
-         {
-            ImageStore[] aImageStore = new ImageStore[1];
+		internal override RenderableObject GetLayer()
+		{
+			if (m_blnIsChanged)
+			{
+				ImageStore[] aImageStore = new ImageStore[1];
 				aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri as ArcIMSServerUri, m_iPixels, m_oCultureInfo);
-            aImageStore[0].DataDirectory = null;
-            aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
-            aImageStore[0].LevelCount = m_iLevels;
-            aImageStore[0].ImageExtension = ".png";
-            aImageStore[0].CacheDirectory = GetCachePath();
-            aImageStore[0].TextureFormat = World.Settings.TextureFormat;
+				aImageStore[0].DataDirectory = null;
+				aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
+				aImageStore[0].LevelCount = m_iLevels;
+				aImageStore[0].ImageExtension = ".png";
+				aImageStore[0].CacheDirectory = GetCachePath();
+				aImageStore[0].TextureFormat = World.Settings.TextureFormat;
 
-            m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0,
-               m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,
-               true, aImageStore);
-            m_oQuadTileSet.AlwaysRenderBaseTiles = true;
-            m_oQuadTileSet.IsOn = m_IsOn;
-            m_oQuadTileSet.Opacity = m_bOpacity;
-            m_blnIsChanged = false;
-         }
-         return m_oQuadTileSet;
-      }
+				m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0,
+					m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,
+					true, aImageStore);
+				m_oQuadTileSet.AlwaysRenderBaseTiles = true;
+				m_oQuadTileSet.IsOn = m_IsOn;
+				m_oQuadTileSet.Opacity = m_bOpacity;
+				m_blnIsChanged = false;
+			}
+			return m_oQuadTileSet;
+		}
 
-      internal override string GetURI()
-      {
+		internal override string GetURI()
+		{
 			return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
 				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
 				m_oEnvelope.West,
@@ -257,7 +257,7 @@ namespace Dapple.LayerGeneration
 				System.Web.HttpUtility.UrlEncode(m_szLayerID),
 				System.Web.HttpUtility.UrlEncode(this.Title),
 				System.Web.HttpUtility.UrlEncode(m_szServiceName));
-      }
+		}
 
 		private String LayerCacheFolder
 		{
@@ -270,56 +270,56 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
-      internal override string GetCachePath()
-      {
+		internal override string GetCachePath()
+		{
 			return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_oServerUri.ToCacheDirectory()), this.LayerCacheFolder);
-      }
+		}
 
-      protected override void CleanUpLayer(bool bFinal)
-      {
-         if (m_oQuadTileSet != null)
-            m_oQuadTileSet.Dispose();
-         m_oQuadTileSet = null;
-         m_blnIsChanged = true;
-      }
+		protected override void CleanUpLayer(bool bFinal)
+		{
+			if (m_oQuadTileSet != null)
+				m_oQuadTileSet.Dispose();
+			m_oQuadTileSet = null;
+			m_blnIsChanged = true;
+		}
 
-      internal override object CloneSpecific()
-      {
+		internal override object CloneSpecific()
+		{
 			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent as ArcIMSServiceBuilder, m_dMinScale, m_dMaxScale, m_oCultureInfo);
-      }
+		}
 
 		public override bool Equals(object obj)
-      {
-         if (!(obj is ArcIMSQuadLayerBuilder)) return false;
-         ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
+		{
+			if (!(obj is ArcIMSQuadLayerBuilder)) return false;
+			ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
 
-         // -- Equal if they're the same service from the same server --
+			// -- Equal if they're the same service from the same server --
 			return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
-      }
+		}
 
 		public override int GetHashCode()
 		{
 			return m_oServerUri.ToString().GetHashCode() ^ m_szServiceName.GetHashCode() ^ m_szLayerID.GetHashCode();
 		}
 
-      #endregion
+		#endregion
 
-      #region Private Members
+		#region Private Members
 
-      internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
-      {
-         szDownloadType = "arcims";
+		internal override void GetOMMetadata(out String szDownloadType, out String szServerURL, out String szLayerId)
+		{
+			szDownloadType = "arcims";
 			szServerURL = m_oServerUri.ToBaseUri();
-         szLayerId = m_szLayerID;
-      }
+			szLayerId = m_szLayerID;
+		}
 
-      #endregion
+		#endregion
 
 		#region Public Methods
 
 		public override string ToString()
 		{
-			return String.Format("ArcIMSQuadLayerBuilder, Server=\"{0}\", Service=\"{1}\", Layer=\"{2}\"", m_oServerUri.ToBaseUri(), m_szServiceName, m_szLayerID);
+			return "ArcIMSQuadLayerBuilder, Server=\"" + m_oServerUri.ToBaseUri() + "\", Service=\"" + m_szServiceName + "\", Layer=\"" + m_szLayerID + "\"";
 		}
 
 		#endregion

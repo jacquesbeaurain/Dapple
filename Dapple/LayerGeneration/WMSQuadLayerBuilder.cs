@@ -7,6 +7,7 @@ using WorldWind.Renderable;
 using System.Xml;
 using WorldWind.Net.Wms;
 using WorldWind.PluginEngine;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -257,7 +258,7 @@ namespace Dapple.LayerGeneration
          if (m_blnIsChanged)
          {
             string strExt = ".png";
-            string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString());
+				string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString(CultureInfo.InvariantCulture));
             System.IO.Directory.CreateDirectory(strCachePath);
 
             string imageFormat = "image/png";
@@ -493,7 +494,7 @@ namespace Dapple.LayerGeneration
 
 		public override string ToString()
 		{
-			return String.Format("WMSQuadLayerBuilder, Server=\"{0}\", LayerName=\"{1}\"", m_Server.Uri.ToBaseUri(), m_wmsLayer.Name);
+			return "WMSQuadLayerBuilder, Server=\"" + m_Server.Uri.ToBaseUri() + "\", LayerName=\"" + m_wmsLayer.Name + "\"";
 		}
 
       #endregion

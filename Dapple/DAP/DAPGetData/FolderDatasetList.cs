@@ -93,7 +93,7 @@ namespace Geosoft.GX.DAPGetData
             assemblyName = oAssembly.FullName;
          }
          
-         Type oType = Type.GetType(string.Format("{0}, {1}", typeName, assemblyName));
+         Type oType = Type.GetType(typeName + ", " + assemblyName);
          return oType;
       }
    }

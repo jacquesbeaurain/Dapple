@@ -216,7 +216,7 @@ namespace Dapple.LayerGeneration
             m_strServerUrl.Replace("http://", URLProtocolName),
             m_strDatasetName,
             System.Web.HttpUtility.UrlEncode(m_szTreeNodeText),
-            distAboveSurface.ToString(),
+            distAboveSurface,
             m_hBoundary.North,
             m_hBoundary.East,
             m_hBoundary.South,
@@ -230,7 +230,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return String.Format("{0}{1}{4}{1}{2}{1}{3}", m_strCacheRoot, Path.DirectorySeparatorChar, CacheSubDir, GetBuilderPathString(this), m_strWorldName);
+         return String.Format(CultureInfo.InvariantCulture, "{0}{1}{4}{1}{2}{1}{3}", m_strCacheRoot, Path.DirectorySeparatorChar, CacheSubDir, GetBuilderPathString(this), m_strWorldName);
       }
 
       protected override void CleanUpLayer(bool bFinal)
@@ -321,7 +321,7 @@ namespace Dapple.LayerGeneration
 
 		public override string ToString()
 		{
-			return String.Format("NLTQuadLayerBuilder, DatasetName=\"{0}\", ServerUrl=\"{1}\"", m_strDatasetName, m_strServerUrl);
+			return String.Format(CultureInfo.InvariantCulture, "NLTQuadLayerBuilder, DatasetName=\"{0}\", ServerUrl=\"{1}\"", m_strDatasetName, m_strServerUrl);
 		}
 
 		#endregion

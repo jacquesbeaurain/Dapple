@@ -160,7 +160,7 @@ namespace Dapple.CustomControls
 			{
 				e.Graphics.DrawIcon(Dapple.Properties.Resources.layer, new Rectangle(0, 0, e.Bounds.Height, e.Bounds.Height));
 				e.Graphics.TranslateTransform(e.Bounds.Height, 0, MatrixOrder.Append);
-				e.Graphics.DrawString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font, Brushes.Black, new PointF(0, 0));
+				e.Graphics.DrawString(String.Format(CultureInfo.CurrentCulture ,"({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font, Brushes.Black, new PointF(0, 0));
 			}
 
 			e.Graphics.Transform = oOrigTransform;
@@ -182,7 +182,7 @@ namespace Dapple.CustomControls
 			}
 			else if (m_eDisplayMode == DisplayMode.List)
 			{
-				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format("({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font).Width;
+				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format(CultureInfo.CurrentCulture, "({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font).Width;
 				e.ItemHeight = ICON_SIZE;
 				c_lbResults.HorizontalExtent = Math.Max(c_lbResults.HorizontalExtent, e.ItemWidth);
 
@@ -245,7 +245,7 @@ namespace Dapple.CustomControls
 
 		private void DisplayModeChanged(int iIndex)
 		{
-			DisplayMode eNewDisplayMode = (DisplayMode)Enum.Parse(typeof(DisplayMode), iIndex.ToString());
+			DisplayMode eNewDisplayMode = (DisplayMode)Enum.Parse(typeof(DisplayMode), iIndex.ToString(CultureInfo.InvariantCulture));
 			if (eNewDisplayMode != m_eDisplayMode)
 			{
 				m_eDisplayMode = eNewDisplayMode;
@@ -634,7 +634,7 @@ namespace Dapple.CustomControls
 		}
 
 		internal String Title { get { return m_aCommonAttributes["layertitle"]; } }
-		internal UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"]); } }
+		internal UInt16 Rank { get { return UInt16.Parse(m_aCommonAttributes["rankingscore"], CultureInfo.InvariantCulture); } }
 		internal double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
 		internal Bitmap Thumbnail { get { return m_oBitmap; } }
 		internal String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
@@ -754,17 +754,17 @@ namespace Dapple.CustomControls
 			XmlElement root = query.CreateElement("search_request");
 			root.SetAttribute("version", "1.0");
 			root.SetAttribute("handle", "cheese");
-			root.SetAttribute("maxcount", m_iNumResults.ToString());
-			root.SetAttribute("offset", (m_iPage * m_iNumResults).ToString());
+			root.SetAttribute("maxcount", m_iNumResults.ToString(CultureInfo.InvariantCulture));
+			root.SetAttribute("offset", (m_iPage * m_iNumResults).ToString(CultureInfo.InvariantCulture));
 			geoRoot.AppendChild(root);
 
 			if (m_oBoundingBox != null)
 			{
 				XmlElement boundingBox = query.CreateElement("bounding_box");
-				boundingBox.SetAttribute("minx", m_oBoundingBox.West.ToString());
-				boundingBox.SetAttribute("miny", m_oBoundingBox.South.ToString());
-				boundingBox.SetAttribute("maxx", m_oBoundingBox.East.ToString());
-				boundingBox.SetAttribute("maxy", m_oBoundingBox.North.ToString());
+				boundingBox.SetAttribute("minx", m_oBoundingBox.West.ToString(CultureInfo.InvariantCulture));
+				boundingBox.SetAttribute("miny", m_oBoundingBox.South.ToString(CultureInfo.InvariantCulture));
+				boundingBox.SetAttribute("maxx", m_oBoundingBox.East.ToString(CultureInfo.InvariantCulture));
+				boundingBox.SetAttribute("maxy", m_oBoundingBox.North.ToString(CultureInfo.InvariantCulture));
 				boundingBox.SetAttribute("crs", "WSG84");
 				root.AppendChild(boundingBox);
 			}

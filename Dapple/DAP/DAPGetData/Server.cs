@@ -4,6 +4,7 @@ using System.Xml;
 using System.Collections;
 using Geosoft.Dap;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -291,7 +292,7 @@ namespace Geosoft.GX.DAPGetData
 
 		internal static String GetStyleSheetFilename(String szName, String szCRC)
 		{
-			return String.Format("{0}[{1}].xsl", szName, szCRC);
+			return szName + "[" + szCRC + "].xsl";
 		}
      
       #endregion
@@ -468,11 +469,11 @@ namespace Geosoft.GX.DAPGetData
          oServerNode.Attributes.Append(oAttr);
 
          oAttr = oNode.OwnerDocument.CreateAttribute(Constant.Xml.Attr.Major_Version);
-         oAttr.Value = m_iMajorVersion.ToString();
+			oAttr.Value = m_iMajorVersion.ToString(CultureInfo.InvariantCulture);
          oServerNode.Attributes.Append(oAttr);
 
          oAttr = oNode.OwnerDocument.CreateAttribute(Constant.Xml.Attr.Minor_Version);
-         oAttr.Value = m_iMinorVersion.ToString();
+			oAttr.Value = m_iMinorVersion.ToString(CultureInfo.InvariantCulture);
          oServerNode.Attributes.Append(oAttr);
 
          oAttr = oNode.OwnerDocument.CreateAttribute(Constant.Xml.Attr.CacheVersion);

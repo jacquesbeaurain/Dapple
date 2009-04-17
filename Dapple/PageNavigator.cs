@@ -6,6 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using System.Globalization;
 
 namespace Dapple
 {
@@ -53,7 +54,7 @@ namespace Dapple
       internal void SetState(int iPage, int iNumResults)
       {
          int iNumPages = PagesFromResults(iNumResults);
-         SetState(String.Format("Results {0}-{1} of {2}", iPage * ResultsPerPage + 1, Math.Min((iPage + 1) * PageNavigator.ResultsPerPage, iNumResults), iNumResults), iPage > 0, iPage < iNumPages - 1);
+         SetState(String.Format(CultureInfo.InvariantCulture, "Results {0}-{1} of {2}", iPage * ResultsPerPage + 1, Math.Min((iPage + 1) * PageNavigator.ResultsPerPage, iNumResults), iNumResults), iPage > 0, iPage < iNumPages - 1);
       }
 
       internal void SetState(String szMessage)

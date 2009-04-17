@@ -140,7 +140,7 @@ namespace Dapple.LayerGeneration
 			foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
 				result = result.Replace(ch.ToString(), "_");
 
-			result += "-" + this.ToString().GetHashCode().ToString("X");
+			result += "-" + this.ToString().GetHashCode().ToString("X", CultureInfo.InvariantCulture);
 
 			// And done
 			return result;
@@ -457,7 +457,7 @@ namespace Dapple.LayerGeneration
 		{
 			WMSServerModelNode oServer = oModel.AddWMSServer(m_oServer as WMSServerUri, true, false, false) as WMSServerModelNode;
 			if (oServer.Enabled == false)
-				if (DialogResult.Yes == MessageBox.Show(String.Format("The WMS server {1} is in your server list, but is disabled.{2}'{0}' cannot be displayed unless the server is re-enabled.{2}{2}Do you wish to enable {1}?", getAttribute("layer"), m_oServer.ServerTreeDisplayName, Environment.NewLine),
+				if (DialogResult.Yes == MessageBox.Show(String.Format(CultureInfo.InvariantCulture, "The WMS server {1} is in your server list, but is disabled.{2}'{0}' cannot be displayed unless the server is re-enabled.{2}{2}Do you wish to enable {1}?", getAttribute("layer"), m_oServer.ServerTreeDisplayName, Environment.NewLine),
 					"Server is Disabled", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1))
 					oModel.ToggleServer(oServer, true);
 				else

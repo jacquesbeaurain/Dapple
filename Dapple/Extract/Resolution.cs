@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -163,15 +164,15 @@ namespace Dapple.Extract
             if (m_bLatLon) {
                tbRes.Text = DisplayInMetres();
 					m_dMinResolution = Round(m_dCellSize * m_dCellConversionFactor);
-               lMinResolution.Text = m_dMinResolution.ToString();
+					lMinResolution.Text = m_dMinResolution.ToString(CultureInfo.CurrentCulture);
 					m_dMaxResolution = Round(m_iSize * m_dCellSize * m_dCellConversionFactor);
-               lMaxResolution.Text = m_dMaxResolution.ToString();
+					lMaxResolution.Text = m_dMaxResolution.ToString(CultureInfo.CurrentCulture);
             } else {
-               tbRes.Text = m_dResolution.ToString();
+					tbRes.Text = m_dResolution.ToString(CultureInfo.CurrentCulture);
 					m_dMinResolution = Round((m_dCellSize * m_dCellConversionFactor) / m_dResolutionConversionFactor);
-               lMinResolution.Text = m_dMinResolution.ToString();
+					lMinResolution.Text = m_dMinResolution.ToString(CultureInfo.CurrentCulture);
 					m_dMaxResolution = Round((m_iSize * m_dCellSize * m_dCellConversionFactor) / m_dResolutionConversionFactor);
-               lMaxResolution.Text = m_dMaxResolution.ToString();
+					lMaxResolution.Text = m_dMaxResolution.ToString(CultureInfo.CurrentCulture);
             }
 
             CalculateScrollPosition();
@@ -263,9 +264,9 @@ namespace Dapple.Extract
             tbResolution.TickFrequency = 1;
 
 				m_dMinResolution = Round((double)m_oResolutions.Keys[0] * m_dCellConversionFactor);
-            lMinResolution.Text = m_dMinResolution.ToString();
+				lMinResolution.Text = m_dMinResolution.ToString(CultureInfo.CurrentCulture);
 				m_dMaxResolution = Round((double)m_oResolutions.Keys[m_oResolutions.Count - 1] * m_dCellConversionFactor);
-            lMaxResolution.Text = m_dMaxResolution.ToString();
+            lMaxResolution.Text = m_dMaxResolution.ToString(CultureInfo.CurrentCulture);
 
             
             // --- calculate the overlap extents ---
@@ -278,7 +279,7 @@ namespace Dapple.Extract
             if (m_bLatLon)
                tbRes.Text = DisplayInMetres();
             else
-               tbRes.Text = m_dResolution.ToString();
+					tbRes.Text = m_dResolution.ToString(CultureInfo.CurrentCulture);
 
             CalculateScrollPosition();
             CalculateSize();
@@ -312,13 +313,12 @@ namespace Dapple.Extract
 
          // ---- calculate the resolution to 4 significant decimal places ---
 
-         string strResolution = dRes.ToString("g4");
-         m_dResolution = Convert.ToDouble(strResolution);
+			m_dResolution = Math.Floor(m_dResolution * 10000.0) / 10000.0;
 
          if (m_bLatLon)
             tbRes.Text = DisplayInMetres();
          else
-            tbRes.Text = m_dResolution.ToString();
+				tbRes.Text = m_dResolution.ToString(CultureInfo.CurrentCulture);
       }
 
       /// <summary>
@@ -511,7 +511,7 @@ namespace Dapple.Extract
          double dRes = m_dResolution * m_dResolutionConversionFactor;
 
          dRes = Round(dRes);
-         return dRes.ToString();
+			return dRes.ToString(CultureInfo.CurrentCulture);
       }
 
       /// <summary>
@@ -521,15 +521,7 @@ namespace Dapple.Extract
       /// <returns></returns>
       protected double Round(double dRes)
       {
-         string strFormat = dRes.ToString("g4");         
-
-         try
-         {
-            dRes = Convert.ToDouble(strFormat);
-         } 
-         catch {}
-
-         return dRes;            
+			return Math.Floor(dRes * 10000.0) / 10000.0;
       }
 
       /// <summary>
@@ -549,7 +541,7 @@ namespace Dapple.Extract
 
          try
          {            
-            dRes = Convert.ToDouble(tbRes.Text);
+            dRes = Convert.ToDouble(tbRes.Text, CultureInfo.InvariantCulture);
 
             if (m_bLatLon)
                dRes /= m_dResolutionConversionFactor;
@@ -613,7 +605,7 @@ namespace Dapple.Extract
             if (m_bLatLon)
                tbRes.Text = DisplayInMetres();
             else
-               tbRes.Text = m_dResolution.ToString();
+					tbRes.Text = m_dResolution.ToString(CultureInfo.CurrentCulture);
          }
       }
 
@@ -657,13 +649,13 @@ namespace Dapple.Extract
          }
 
          if (iSize > 1073741824)
-            lSize.Text = "File Size: " + ((double)iSize / (double)1073741824).ToString("f2") + " GB";
+				lSize.Text = "File Size: " + ((double)iSize / (double)1073741824).ToString("f2", CultureInfo.CurrentCulture) + " GB";
          else if (iSize > 1048576)
-            lSize.Text = "File Size: " + ((double)iSize / (double)1048576).ToString("f2") + " MB";
+				lSize.Text = "File Size: " + ((double)iSize / (double)1048576).ToString("f2", CultureInfo.CurrentCulture) + " MB";
          else if (iSize > 1024)
-            lSize.Text = "File Size: " + ((double)iSize / (double)1024).ToString("f2") + " KB";
+            lSize.Text = "File Size: " + ((double)iSize / (double)1024).ToString("f2", CultureInfo.CurrentCulture) + " KB";
          else
-            lSize.Text = "File Size: " + iSize.ToString() + " B";
+				lSize.Text = "File Size: " + iSize.ToString(CultureInfo.CurrentCulture) + " B";
       }
       #endregion
 
@@ -693,7 +685,7 @@ namespace Dapple.Extract
          if (m_bLatLon)
             tbRes.Text = DisplayInMetres();
          else
-            tbRes.Text = m_dResolution.ToString();
+				tbRes.Text = m_dResolution.ToString(CultureInfo.CurrentCulture);
 
          CalculateSize();
          m_bTextChange = false;
@@ -710,8 +702,8 @@ namespace Dapple.Extract
             return;
 
          try
-         {            
-            m_dResolution = Convert.ToDouble(tbRes.Text);
+         {
+				m_dResolution = Convert.ToDouble(tbRes.Text, CultureInfo.CurrentCulture);
 
             if (m_bLatLon)
                m_dResolution /= m_dResolutionConversionFactor;
@@ -723,7 +715,7 @@ namespace Dapple.Extract
          } 
          catch (Exception ex)
          {
-            MessageBox.Show(this, string.Format("Incorrect value entered in resolution box. Error {0}", ex.Message), "Resolution error");
+            MessageBox.Show(this, string.Format(CultureInfo.InvariantCulture, "Incorrect value entered in resolution box. Error {0}", ex.Message), "Resolution error");
             tbRes.Focus();
          }    
 

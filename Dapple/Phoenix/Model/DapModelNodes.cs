@@ -10,6 +10,7 @@ using Geosoft.Dap.Common;
 using System.Windows.Forms;
 using Geosoft.Dap;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace NewServerTree
 {
@@ -70,7 +71,7 @@ namespace NewServerTree
 
 		internal override string Annotation
 		{
-			get { return String.Format("[{0}]", FilteredChildren.Length); }
+			get { return String.Format(CultureInfo.InvariantCulture, "[{0}]", FilteredChildren.Length); }
 		}
 
 		[Browsable(false)]
@@ -251,7 +252,7 @@ namespace NewServerTree
 					case LoadState.LoadSuccessful:
 						{
 							int cache = FilteredChildCount;
-							return String.Format("[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
+							return String.Format(CultureInfo.InvariantCulture, "[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
 						}
 					case LoadState.Loading:
 						{

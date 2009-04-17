@@ -49,7 +49,7 @@ namespace NewServerTree
 
 		internal override string Annotation
 		{
-			get { return String.Format("[{0}]", FilteredChildren.Length); }
+			get { return String.Format(CultureInfo.InvariantCulture, "[{0}]", FilteredChildren.Length); }
 		}
 
 		[Browsable(false)]
@@ -178,7 +178,7 @@ namespace NewServerTree
 					case LoadState.LoadSuccessful:
 						{
 							int cache = FilteredChildCount;
-							return String.Format("[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
+							return String.Format(CultureInfo.InvariantCulture, "[{0} dataset{1}]", cache, cache != 1 ? "s" : String.Empty);
 						}
 					case LoadState.Loading:
 						{
@@ -315,7 +315,7 @@ namespace NewServerTree
 					String strCountry = oLocaleNode.GetAttribute("country");
 					try
 					{
-						oCultureInfo = new CultureInfo(String.Format("{0}-{1}", strLanguage.ToLowerInvariant(), strCountry.ToUpperInvariant()));
+						oCultureInfo = new CultureInfo(strLanguage.ToLowerInvariant() + '-' + strCountry.ToUpperInvariant());
 					}
 					catch (ArgumentException)
 					{

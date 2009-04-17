@@ -9,6 +9,7 @@ using WorldWind.Renderable;
 using WorldWind.PluginEngine;
 using System.IO;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -187,7 +188,7 @@ namespace Dapple.LayerGeneration
 		{
 			get
 			{
-				return "3 - " + m_intRenderPriority.ToString("0000000000");
+				return "3 - " + m_intRenderPriority.ToString("0000000000", CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -349,9 +350,9 @@ namespace Dapple.LayerGeneration
 						sw.WriteLine("Tagged_Information:");
 						sw.WriteLine("ModelTiepointTag (2,3):");
 						sw.WriteLine("0 0 0");
-						sw.WriteLine(oViewedArea.West.ToString() + " " + oViewedArea.North.ToString() + " 0");
+						sw.WriteLine(oViewedArea.West.ToString(CultureInfo.InvariantCulture) + " " + oViewedArea.North.ToString(CultureInfo.InvariantCulture) + " 0");
 						sw.WriteLine("ModelPixelScaleTag (1,3):");
-						sw.WriteLine(((oViewedArea.East - oViewedArea.West) / (double)iImageWidth).ToString() + " " + ((oViewedArea.North - oViewedArea.South) / (double)iImageHeight).ToString() + " 0");
+						sw.WriteLine(((oViewedArea.East - oViewedArea.West) / (double)iImageWidth).ToString(CultureInfo.InvariantCulture) + " " + ((oViewedArea.North - oViewedArea.South) / (double)iImageHeight).ToString(CultureInfo.InvariantCulture) + " 0");
 						sw.WriteLine("End_Of_Tags.");
 						sw.WriteLine("Keyed_Information:");
 						sw.WriteLine("GTModelTypeGeoKey (Short,1): ModelTypeGeographic");
@@ -379,7 +380,7 @@ namespace Dapple.LayerGeneration
 			catch (ArgumentException ex)
 			{
 				throw new ArgumentException(
-					String.Format("An error occurred extracting data layer [{0}]: Viewed Area={1}, Extract area={2}, Extract image size={3}x{4}",
+					String.Format(CultureInfo.InvariantCulture, "An error occurred extracting data layer [{0}]: Viewed Area={1}, Extract area={2}, Extract image size={3}x{4}",
 					this.ToString(),
 					oViewedArea.ToString(),
 					GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest),

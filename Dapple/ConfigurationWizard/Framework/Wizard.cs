@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using WorldWind;
+using System.Globalization;
 
 namespace ConfigurationWizard
 {
@@ -173,7 +174,7 @@ namespace ConfigurationWizard
 			}
 
 			buttonBack.Enabled = !isOnFirstPage;
-			base.Text = string.Format("{0} ({1}/{2})",
+			base.Text = string.Format(CultureInfo.InvariantCulture, "{0} ({1}/{2})",
 				title, currentPageIndex+1, wizardPages.Count );
 		}
 

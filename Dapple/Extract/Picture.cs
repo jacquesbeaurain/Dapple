@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -100,7 +101,7 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
-         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString();
+         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oResolutionAttr);
 
          System.Xml.XmlElement oDownloadElement = oDatasetElement.OwnerDocument.CreateElement("download_options");

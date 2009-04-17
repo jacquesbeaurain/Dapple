@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -102,7 +103,7 @@ namespace Dapple.Extract
          oPathAttr.Value = System.IO.Path.Combine(strDestFolder, System.IO.Path.ChangeExtension(Utility.FileSystem.SanitizeFilename(tbFilename.Text), MAP_EXT));
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
-         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString();
+         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString(CultureInfo.InvariantCulture);
 
          System.Xml.XmlAttribute oGroupElement = oDatasetElement.OwnerDocument.CreateAttribute("group");
          oGroupElement.Value = tbGroupName.Text;

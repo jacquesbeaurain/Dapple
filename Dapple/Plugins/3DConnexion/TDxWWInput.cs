@@ -34,6 +34,7 @@ using WorldWind.Camera;
 using WorldWind.Interop;
 
 using WorldWind.PluginEngine;
+using System.Globalization;
 
 namespace ThreeDconnexion.Plugin
 {
@@ -1184,7 +1185,7 @@ namespace ThreeDconnexion.Plugin
             }
 				public string GetKeyName(Int32 nKey_p)
             {
-                return nKey_p.ToString();
+                return nKey_p.ToString(CultureInfo.InvariantCulture);
             }
 
 				public event TDxKeyboardEvent KeyboardEventUP

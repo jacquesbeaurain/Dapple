@@ -9,6 +9,7 @@ using WorldWind;
 using WorldWind.Renderable;
 using System.Xml;
 using Dapple;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -217,7 +218,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_strFileName.GetHashCode().ToString());
+			return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_strFileName.GetHashCode().ToString(CultureInfo.InvariantCulture));
       }
 
       protected override void CleanUpLayer(bool bFinal)

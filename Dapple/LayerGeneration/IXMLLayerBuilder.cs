@@ -7,6 +7,7 @@ using WorldWind.Renderable;
 using Geosoft.DotNetTools;
 using WorldWind;
 using System.Threading;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -435,7 +436,7 @@ namespace Dapple.LayerGeneration
          {
             oParent.ImageIndex = MainForm.ImageListIndex("enserver");
             oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
+				oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString(CultureInfo.InvariantCulture) + ")";
          }
       }
 

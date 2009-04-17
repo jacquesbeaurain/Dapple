@@ -12,6 +12,7 @@ using Dapple;
 using WorldWind.Net;
 using System.Net;
 using WorldWind.PluginEngine;
+using System.Globalization;
 
 namespace NewServerTree
 {
@@ -498,8 +499,8 @@ namespace NewServerTree
 						oLayer.dataset.Value,
 						oLayer.levels.Value,
 						oBounds,
-						oLayer.Hasdistanceabovesurface() ? oLayer.distanceabovesurface.Value : Convert.ToInt32(dappleview.tilelayerType.GetdistanceabovesurfaceDefault()),
-						oLayer.Hastilepixelsize() ? oLayer.tilepixelsize.Value : Convert.ToInt32(dappleview.tilelayerType.GettilepixelsizeDefault())
+						oLayer.Hasdistanceabovesurface() ? oLayer.distanceabovesurface.Value : Convert.ToInt32(dappleview.tilelayerType.GetdistanceabovesurfaceDefault(), CultureInfo.InvariantCulture),
+						oLayer.Hastilepixelsize() ? oLayer.tilepixelsize.Value : Convert.ToInt32(dappleview.tilelayerType.GettilepixelsizeDefault(), CultureInfo.InvariantCulture)
 						);
 
 					this.AddImageTileLayer(entry.name.Value, oNode);
@@ -649,7 +650,7 @@ namespace NewServerTree
 				{
 					SubmitServerToSearchEngine(oUri.ToBaseUri(), ServerModelNode.ServerType.DAP);
 				}
-				
+
 
 				OnServerAdded(EventArgs.Empty);
 				return result;
@@ -924,9 +925,7 @@ namespace NewServerTree
 
 			private string CreateAddServerXML()
 			{
-				return String.Format("<geosoft_xml><add_server url=\"{0}\" type=\"{1}\"/></geosoft_xml>",
-					m_strNewServerUrl,
-					m_eType.ToString());
+				return "<geosoft_xml><add_server url=\"" + m_strNewServerUrl + "\" type=\"" + m_eType.ToString() + "\"/></geosoft_xml>";
 			}
 
 			private void DownloadComplete(WebDownload oDownload)

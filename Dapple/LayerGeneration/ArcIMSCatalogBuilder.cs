@@ -179,7 +179,7 @@ namespace Dapple.LayerGeneration
 						String strCountry = oLocaleNode.GetAttribute("country");
 						try
 						{
-							oInfo = new CultureInfo(String.Format("{0}-{1}", strLanguage.ToLowerInvariant(), strCountry.ToUpperInvariant()));
+							oInfo = new CultureInfo(strLanguage.ToLowerInvariant() + '-' + strCountry.ToUpperInvariant());
 						}
 						catch (ArgumentException)
 						{
@@ -536,7 +536,7 @@ namespace Dapple.LayerGeneration
 			}
 			else
 			{
-				oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString() + ")";
+				oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString(CultureInfo.InvariantCulture) + ")";
 			}
 		}
 	}

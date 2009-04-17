@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -276,19 +277,19 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("minx");
-         oAttr.Value = dProjMinX.ToString();
+			oAttr.Value = dProjMinX.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("miny");
-         oAttr.Value = dProjMinY.ToString();
+			oAttr.Value = dProjMinY.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxx");
-         oAttr.Value = dProjMaxX.ToString();
+			oAttr.Value = dProjMaxX.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxy");
-         oAttr.Value = dProjMaxY.ToString();
+			oAttr.Value = dProjMaxY.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("coordinate_system");

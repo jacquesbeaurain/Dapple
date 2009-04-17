@@ -8,6 +8,7 @@ using System.Xml;
 using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Text;
+using System.Globalization;
 
 namespace Dapple.KML
 {
@@ -384,7 +385,7 @@ namespace Dapple.KML
 				}
 				else if (oChildElement.Name.Equals("drawOrder"))
 				{
-					m_iDrawOrder = Convert.ToInt32(oChildElement.InnerText);
+					m_iDrawOrder = Int32.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("Icon"))
 				{
@@ -591,10 +592,10 @@ namespace Dapple.KML
 			strColor = strColor.Replace("#", String.Empty);
 
 			return Color.FromArgb(
-						  Int32.Parse(strColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
-						  Int32.Parse(strColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber),
-						  Int32.Parse(strColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber),
-						  Int32.Parse(strColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)
+						  Int32.Parse(strColor.Substring(0, 2), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+						  Int32.Parse(strColor.Substring(6, 2), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+						  Int32.Parse(strColor.Substring(4, 2), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+						  Int32.Parse(strColor.Substring(2, 2), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture)
 						  );
 		}
 
@@ -734,11 +735,11 @@ namespace Dapple.KML
 				throw new ArgumentException("The KML file contains a malformed 'Coordinates' element.");
 			}
 
-			Longitude = Convert.ToDouble(oValues[0]);
-			Latitude = Convert.ToDouble(oValues[1]);
+			Longitude = Double.Parse(oValues[0], CultureInfo.InvariantCulture);
+			Latitude = Double.Parse(oValues[1], CultureInfo.InvariantCulture);
 			if (oValues.Length == 3)
 			{
-				Altitude = Convert.ToDouble(oValues[2]);
+				Altitude = Double.Parse(oValues[2], CultureInfo.InvariantCulture);
 			}
 			else
 			{
@@ -765,22 +766,22 @@ namespace Dapple.KML
 			if (oYearRegex.IsMatch(strValue))
 			{
 				Type = KMLDateTimeType.Year;
-				Time = new DateTime(Convert.ToInt32(strValue), 1, 1);
+				Time = new DateTime(Int32.Parse(strValue, CultureInfo.InvariantCulture), 1, 1);
 			}
 			else if (oYMRegex.IsMatch(strValue))
 			{
 				Type = KMLDateTimeType.YearMonth;
-				Time = DateTime.Parse(strValue);
+				Time = DateTime.Parse(strValue, CultureInfo.InvariantCulture);
 			}
 			else if (oYMDRegex.IsMatch(strValue))
 			{
 				Type = KMLDateTimeType.YearMonthDay;
-				Time = DateTime.Parse(strValue);
+				Time = DateTime.Parse(strValue, CultureInfo.InvariantCulture);
 			}
 			else if (oUTCDateTime.IsMatch(strValue) || oNonUTCDateTime.IsMatch(strValue))
 			{
 				Type = KMLDateTimeType.YearMonthDayTime;
-				Time = DateTime.Parse(strValue);
+				Time = DateTime.Parse(strValue, CultureInfo.InvariantCulture);
 			}
 			else
 			{
@@ -800,7 +801,7 @@ namespace Dapple.KML
 		{
 			if (element.HasAttribute("x"))
 			{
-				X = Double.Parse(element.GetAttribute("x"));
+				X = Double.Parse(element.GetAttribute("x"), CultureInfo.InvariantCulture);
 			}
 			else
 			{
@@ -809,7 +810,7 @@ namespace Dapple.KML
 
 			if (element.HasAttribute("y"))
 			{
-				Y = Double.Parse(element.GetAttribute("y"));
+				Y = Double.Parse(element.GetAttribute("y"), CultureInfo.InvariantCulture);
 			}
 			else
 			{
@@ -879,15 +880,15 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("longitude"))
 				{
-					m_dLongitude = Double.Parse(oChildElement.InnerText);
+					m_dLongitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("latitude"))
 				{
-					m_dLatitude = Double.Parse(oChildElement.InnerText);
+					m_dLatitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitude"))
 				{
-					m_dAltitude = Double.Parse(oChildElement.InnerText);
+					m_dAltitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				} 
 			}
 
@@ -953,15 +954,15 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("heading"))
 				{
-					m_dHeading = Double.Parse(oChildElement.InnerText);
+					m_dHeading = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("tilt"))
 				{
-					m_dTilt = Double.Parse(oChildElement.InnerText);
+					m_dTilt = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("roll"))
 				{
-					m_dRoll = Double.Parse(oChildElement.InnerText);
+					m_dRoll = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				} 
 			}
 		}
@@ -1050,15 +1051,15 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("x"))
 				{
-					m_dX = Double.Parse(oChildElement.InnerText);
+					m_dX = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("y"))
 				{
-					m_dY = Double.Parse(oChildElement.InnerText);
+					m_dY = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("z"))
 				{
-					m_dZ = Double.Parse(oChildElement.InnerText);
+					m_dZ = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				} 
 			}
 		}
@@ -1351,19 +1352,19 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("minLodPixels"))
 				{
-					m_fMinLodPixels = Single.Parse(oChildElement.InnerText);
+					m_fMinLodPixels = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("maxLodPixels"))
 				{
-					m_fMaxLodPixels = Single.Parse(oChildElement.InnerText);
+					m_fMaxLodPixels = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("minFadeExtent"))
 				{
-					m_fMinFadeExtent = Single.Parse(oChildElement.InnerText);
+					m_fMinFadeExtent = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("maxFadeExtent"))
 				{
-					m_fMaxFadeExtent = Single.Parse(oChildElement.InnerText);
+					m_fMaxFadeExtent = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				} 
 			}
 		}
@@ -1471,23 +1472,23 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("north"))
 				{
-					m_dNorth = Convert.ToDouble(oChildElement.InnerText);
+					m_dNorth = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("east"))
 				{
-					m_dEast = Convert.ToDouble(oChildElement.InnerText);
+					m_dEast = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("south"))
 				{
-					m_dSouth = Convert.ToDouble(oChildElement.InnerText);
+					m_dSouth = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("west"))
 				{
-					m_dWest = Convert.ToDouble(oChildElement.InnerText);
+					m_dWest = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("rotation"))
 				{
-					m_dRotation = Convert.ToDouble(oChildElement.InnerText);
+					m_dRotation = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				} 
 			}
 
@@ -1579,27 +1580,27 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("north"))
 				{
-					m_dNorth = Convert.ToDouble(oChildElement.InnerText);
+					m_dNorth = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("east"))
 				{
-					m_dEast = Convert.ToDouble(oChildElement.InnerText);
+					m_dEast = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("south"))
 				{
-					m_dSouth = Convert.ToDouble(oChildElement.InnerText);
+					m_dSouth = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("west"))
 				{
-					m_dWest = Convert.ToDouble(oChildElement.InnerText);
+					m_dWest = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("minAltitude"))
 				{
-					m_dMinAltitude = Convert.ToDouble(oChildElement.InnerText);
+					m_dMinAltitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("maxAltitude"))
 				{
-					m_dMaxAltitude = Convert.ToDouble(oChildElement.InnerText);
+					m_dMaxAltitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitudeMode"))
 				{
@@ -1928,7 +1929,7 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("width"))
 				{
-					m_fWidth = Convert.ToSingle(oChildElement.InnerText);
+					m_fWidth = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 			}
 		}
@@ -2111,11 +2112,11 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("scale"))
 				{
-					m_fScale = Convert.ToSingle(oChildElement.InnerText);
+					m_fScale = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("heading"))
 				{
-					m_fHeading = Convert.ToSingle(oChildElement.InnerText);
+					m_fHeading = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("Icon"))
 				{
@@ -2206,7 +2207,7 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("scale"))
 				{
-					m_fScale = Convert.ToSingle(oChildElement.InnerText);
+					m_fScale = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				} 
 			}
 		}
@@ -2965,7 +2966,7 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("altitude"))
 				{
-					m_dAltitude = Convert.ToDouble(oChildElement.InnerText);
+					m_dAltitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitudeMode"))
 				{
@@ -3037,7 +3038,11 @@ namespace Dapple.KML
 			}
 			if (!String.IsNullOrEmpty(Icon.ViewFormat))
 			{
-				result += "&" + Icon.ViewFormat.Replace("[bboxNorth]", m_oBox.North.ToString()).Replace("[bboxSouth]", m_oBox.South.ToString()).Replace("[bboxEast]", m_oBox.East.ToString()).Replace("[bboxWest]", m_oBox.West.ToString());
+				result += "&" + Icon.ViewFormat
+					.Replace("[bboxNorth]", m_oBox.North.ToString(CultureInfo.InvariantCulture))
+					.Replace("[bboxSouth]", m_oBox.South.ToString(CultureInfo.InvariantCulture))
+					.Replace("[bboxEast]", m_oBox.East.ToString(CultureInfo.InvariantCulture))
+					.Replace("[bboxWest]", m_oBox.West.ToString(CultureInfo.InvariantCulture));
 			}
 
 			return result;
@@ -3092,7 +3097,7 @@ namespace Dapple.KML
 				}
 				else if (oChildElement.Name.Equals("rotation"))
 				{
-					m_dRotation = Convert.ToSingle(oChildElement.InnerText);
+					m_dRotation = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 			}
 		}
@@ -3183,29 +3188,29 @@ namespace Dapple.KML
 
 						if (oViewVolumeChildElement.Name.Equals("leftFov"))
 						{
-							m_dViewVolumeLeftFov = Double.Parse(oViewVolumeChildElement.InnerText);
+							m_dViewVolumeLeftFov = Double.Parse(oViewVolumeChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oViewVolumeChildElement.Name.Equals("rightFov"))
 						{
-							m_dViewVolumeRightFov = Double.Parse(oViewVolumeChildElement.InnerText);
+							m_dViewVolumeRightFov = Double.Parse(oViewVolumeChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oViewVolumeChildElement.Name.Equals("bottomFov"))
 						{
-							m_dViewVolumeBottomFov = Double.Parse(oViewVolumeChildElement.InnerText);
+							m_dViewVolumeBottomFov = Double.Parse(oViewVolumeChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oViewVolumeChildElement.Name.Equals("topFov"))
 						{
-							m_dViewVolumeTopFov = Double.Parse(oViewVolumeChildElement.InnerText);
+							m_dViewVolumeTopFov = Double.Parse(oViewVolumeChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oViewVolumeChildElement.Name.Equals("near"))
 						{
-							m_dViewVolumeNear = Double.Parse(oViewVolumeChildElement.InnerText);
+							m_dViewVolumeNear = Double.Parse(oViewVolumeChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 					}
 				}
 				else if (oChildElement.Name.Equals("roll"))
 				{
-					m_dRoll = Double.Parse(oChildElement.InnerText);
+					m_dRoll = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("ImagePyramid"))
 				{
@@ -3216,15 +3221,15 @@ namespace Dapple.KML
 
 						if (oImagePyramidChildElement.Name.Equals("tileSize"))
 						{
-							m_iImagePyramidTileSize = Int32.Parse(oImagePyramidChildElement.InnerText);
+							m_iImagePyramidTileSize = Int32.Parse(oImagePyramidChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oImagePyramidChildElement.Name.Equals("maxWidth"))
 						{
-							m_iImagePyramidMaxWidth = Int32.Parse(oImagePyramidChildElement.InnerText);
+							m_iImagePyramidMaxWidth = Int32.Parse(oImagePyramidChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oImagePyramidChildElement.Name.Equals("maxHeight"))
 						{
-							m_iImagePyramidMaxHeight = Int32.Parse(oImagePyramidChildElement.InnerText);
+							m_iImagePyramidMaxHeight = Int32.Parse(oImagePyramidChildElement.InnerText, CultureInfo.InvariantCulture);
 						}
 						else if (oImagePyramidChildElement.Name.Equals("gridOrigin"))
 						{
@@ -3667,27 +3672,27 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("longitude"))
 				{
-					m_dLongitude = Double.Parse(oChildElement.InnerText);
+					m_dLongitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("latitude"))
 				{
-					m_dLatitude = Double.Parse(oChildElement.InnerText);
+					m_dLatitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitude"))
 				{
-					m_dAltitude = Double.Parse(oChildElement.InnerText);
+					m_dAltitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("heading"))
 				{
-					m_dHeading = Double.Parse(oChildElement.InnerText);
+					m_dHeading = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("tilt"))
 				{
-					m_dTilt = Double.Parse(oChildElement.InnerText);
+					m_dTilt = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("roll"))
 				{
-					m_dRoll = Double.Parse(oChildElement.InnerText);
+					m_dRoll = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitudeMode"))
 				{
@@ -3845,27 +3850,27 @@ namespace Dapple.KML
 
 				if (oChildElement.Name.Equals("longitude"))
 				{
-					m_dLongitude = Double.Parse(oChildElement.InnerText);
+					m_dLongitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("latitude"))
 				{
-					m_dLatitude = Double.Parse(oChildElement.InnerText);
+					m_dLatitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitude"))
 				{
-					m_dAltitude = Double.Parse(oChildElement.InnerText);
+					m_dAltitude = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("heading"))
 				{
-					m_dHeading = Double.Parse(oChildElement.InnerText);
+					m_dHeading = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("tilt"))
 				{
-					m_dTilt = Double.Parse(oChildElement.InnerText);
+					m_dTilt = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("range"))
 				{
-					m_dRange = Double.Parse(oChildElement.InnerText);
+					m_dRange = Double.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("altitudeMode"))
 				{
@@ -4025,7 +4030,7 @@ namespace Dapple.KML
 				}
 				else if (oChildElement.Name.Equals("refreshInterval"))
 				{
-					m_fRefreshInterval = Single.Parse(oChildElement.InnerText);
+					m_fRefreshInterval = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("viewRefreshMode"))
 				{
@@ -4033,11 +4038,11 @@ namespace Dapple.KML
 				}
 				else if (oChildElement.Name.Equals("viewRefreshTime"))
 				{
-					m_fViewRefreshTime = Single.Parse(oChildElement.InnerText);
+					m_fViewRefreshTime = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("viewBoundScale"))
 				{
-					m_fViewBoundScale = Single.Parse(oChildElement.InnerText);
+					m_fViewBoundScale = Single.Parse(oChildElement.InnerText, CultureInfo.InvariantCulture);
 				}
 				else if (oChildElement.Name.Equals("viewFormat"))
 				{
@@ -4173,7 +4178,11 @@ namespace Dapple.KML
 			}
 			if (!String.IsNullOrEmpty(ViewFormat))
 			{
-				result += "&" + ViewFormat.Replace("[bboxNorth]", north.ToString()).Replace("[bboxSouth]", south.ToString()).Replace("[bboxEast]", east.ToString()).Replace("[bboxWest]", west.ToString());
+				result += "&" + ViewFormat
+					.Replace("[bboxNorth]", north.ToString(CultureInfo.InvariantCulture))
+					.Replace("[bboxSouth]", south.ToString(CultureInfo.InvariantCulture))
+					.Replace("[bboxEast]", east.ToString(CultureInfo.InvariantCulture))
+					.Replace("[bboxWest]", west.ToString(CultureInfo.InvariantCulture));
 			}
 
 			return result;

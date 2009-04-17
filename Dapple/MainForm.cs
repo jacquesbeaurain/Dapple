@@ -325,7 +325,7 @@ namespace Dapple
 			// For alpha/beta versions, include " alphaN" or " betaN"
 			// at the end of the format string.
 			Version ver = new Version(Application.ProductVersion);
-			Release = string.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
+			Release = string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
 			if (ver.Build % 2 != 0)
 				Release += " (BETA)";
 
@@ -798,18 +798,18 @@ namespace Dapple
 				{
 					strVersion = sr.ReadLine();
 					tokens = strVersion.Split('.');
-					iHaveVer1 = Convert.ToInt32(tokens[0]);
-					iHaveVer2 = Convert.ToInt32(tokens[1]);
-					iHaveVer3 = Convert.ToInt32(tokens[2]);
+					iHaveVer1 = Convert.ToInt32(tokens[0], CultureInfo.InvariantCulture);
+					iHaveVer2 = Convert.ToInt32(tokens[1], CultureInfo.InvariantCulture);
+					iHaveVer3 = Convert.ToInt32(tokens[2], CultureInfo.InvariantCulture);
 				}
 
 				using (StreamReader sr = new StreamReader(strTemp))
 				{
 					strVersion = sr.ReadLine();
 					tokens = strVersion.Split('.');
-					iCurVer1 = Convert.ToInt32(tokens[0]);
-					iCurVer2 = Convert.ToInt32(tokens[1]);
-					iCurVer3 = Convert.ToInt32(tokens[2]);
+					iCurVer1 = Convert.ToInt32(tokens[0], CultureInfo.InvariantCulture);
+					iCurVer2 = Convert.ToInt32(tokens[1], CultureInfo.InvariantCulture);
+					iCurVer3 = Convert.ToInt32(tokens[2], CultureInfo.InvariantCulture);
 				}
 
 				if (iCurVer1 > iHaveVer1 || (iCurVer1 == iHaveVer1 && iCurVer2 > iHaveVer2) ||
@@ -1391,7 +1391,7 @@ namespace Dapple
 				}
 				else
 				{
-					World.Settings.VerticalExaggeration = Convert.ToSingle(item.Text.Replace("x", string.Empty));
+					World.Settings.VerticalExaggeration = Convert.ToSingle(item.Text.Replace("x", string.Empty), CultureInfo.InvariantCulture);
 				}
 			}
 			c_oWorldWindow.Invalidate();
@@ -2759,7 +2759,7 @@ namespace Dapple
 						if (bExist)
 						{
 							iCount++;
-							strNewName = strGeoTiffName + "_" + iCount.ToString();
+							strNewName = strGeoTiffName + "_" + iCount.ToString(CultureInfo.InvariantCulture);
 						}
 					}
 					strGeoTiffName = strNewName;

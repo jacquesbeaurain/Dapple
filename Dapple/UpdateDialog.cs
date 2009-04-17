@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using WorldWind;
+using System.Globalization;
 
 namespace Dapple
 {
@@ -23,7 +24,7 @@ namespace Dapple
          InitializeComponent();
          Icon = new System.Drawing.Icon(@"app.ico");
 
-         this.labelMessage.Text = String.Format(this.labelMessage.Text, strVersion);
+         this.labelMessage.Text = String.Format(CultureInfo.InvariantCulture, this.labelMessage.Text, strVersion);
       }
 
       #region Windows Form Designer generated code

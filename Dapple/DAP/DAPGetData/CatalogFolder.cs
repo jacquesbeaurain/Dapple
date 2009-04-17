@@ -69,7 +69,7 @@ namespace Geosoft.GX.DAPGetData
          oAttr = oFolderNode.Attributes.GetNamedItem("name");
          if (oAttr == null) throw new ArgumentException();
          m_strName = oAttr.Value;
-         m_strHierarchy = string.Format("{0}/{1}", strHierarchy, m_strName);
+         m_strHierarchy = strHierarchy + '/' + m_strName;
 
          oAttr = oFolderNode.Attributes.GetNamedItem("value");
          if (oAttr == null) throw new ArgumentException();

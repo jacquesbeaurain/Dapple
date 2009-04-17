@@ -11,6 +11,7 @@ using System.Xml;
 
 using Geosoft.Dap;
 using Geosoft.Dap.Common;
+using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -64,7 +65,7 @@ namespace Geosoft.GX.DAPGetData
       {
          string strEdition;
          System.Xml.XmlDocument oDoc = null;
-         string strKey = string.Format("{0}:{1}", oServer.Url, strHierarchy);
+         string strKey = oServer.Url + ':' + strHierarchy;
 
          if (!bAOIFilter && !bTextFilter)
             oDoc = oServer.Command.GetCatalog(strHierarchy, 1, 0, 0, null, null, null);
@@ -78,9 +79,9 @@ namespace Geosoft.GX.DAPGetData
          if (bTextFilter)
             strKey += "_" + strSearchString;
          if (bAOIFilter)
-            strKey += "_" + oBounds.GetHashCode().ToString();
+				strKey += "_" + oBounds.GetHashCode().ToString(CultureInfo.InvariantCulture);
 
-         string strFile = Path.Combine(oServer.CacheDir, strKey.GetHashCode().ToString() + ".dap_datasetlist.gz");
+			string strFile = Path.Combine(oServer.CacheDir, strKey.GetHashCode().ToString(CultureInfo.InvariantCulture) + ".dap_datasetlist.gz");
 
          FolderDatasetList oDataset = FolderDatasetList.Parse(oServer, strKey, iTimestamp, oDoc, out strEdition);
 
@@ -141,8 +142,8 @@ namespace Geosoft.GX.DAPGetData
          if (bTextFilter)
             strKey += "_" + strSearchString;
          if (bAOIFilter)
-            strKey += "_" + oBounds.GetHashCode().ToString();
-         string strFile = Path.Combine(oServer.CacheDir, strKey.GetHashCode().ToString() + ".dap_cataloghierarchy.gz");
+				strKey += "_" + oBounds.GetHashCode().ToString(CultureInfo.InvariantCulture);
+			string strFile = Path.Combine(oServer.CacheDir, strKey.GetHashCode().ToString(CultureInfo.InvariantCulture) + ".dap_cataloghierarchy.gz");
 
          if (File.Exists(strFile))
          {
@@ -273,14 +274,14 @@ namespace Geosoft.GX.DAPGetData
       {
          FolderDatasetList oRet = null;
 
-         string strKey = string.Format("{0}:{1}", oServer.Url, oFolder.Hierarchy);
+         string strKey = oServer.Url + ':' + oFolder.Hierarchy;
 
          if (bTextFilter)
             strKey += "_" + strSearchString;
          if (bAOIFilter)
-            strKey += "_" + oBounds.GetHashCode().ToString();
+				strKey += "_" + oBounds.GetHashCode().ToString(CultureInfo.InvariantCulture);
 
-         string strFile = Path.Combine(oServer.CacheDir, strKey.GetHashCode().ToString() + ".dap_datasetlist.gz");
+			string strFile = Path.Combine(oServer.CacheDir, strKey.GetHashCode().ToString(CultureInfo.InvariantCulture) + ".dap_datasetlist.gz");
 
          if (File.Exists(strFile))
          {

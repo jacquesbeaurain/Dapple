@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -293,7 +294,7 @@ namespace Geosoft.GX.DAPGetData
       /// <returns></returns>
       static internal string FormatCoordinate(double d)
       {
-         return d.ToString("f2");
+         return d.ToString("f2", CultureInfo.InvariantCulture);
       }
 
 #if !DAPPLE

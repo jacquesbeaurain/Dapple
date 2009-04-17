@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -106,14 +107,14 @@ namespace Dapple.Extract
 					strFileName = System.IO.Path.ChangeExtension(strFileName, ".grd");
 				}
 			}
-         strFileName = string.Format("{0}({1})", strFileName, Options.Grid.DownloadOptionQualifier[iIndex]);
+         strFileName = string.Format(CultureInfo.InvariantCulture, "{0}({1})", strFileName, Options.Grid.DownloadOptionQualifier[iIndex]);
 
          System.Xml.XmlAttribute oPathAttr = oDatasetElement.OwnerDocument.CreateAttribute("file");
 			oPathAttr.Value = System.IO.Path.Combine(strDestFolder, strFileName);
          oDatasetElement.Attributes.Append(oPathAttr);
 
          System.Xml.XmlAttribute oResolutionAttr = oDatasetElement.OwnerDocument.CreateAttribute("resolution");
-         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString();         
+         oResolutionAttr.Value = oResolution.ResolutionValueSpecific(eCS).ToString(CultureInfo.InvariantCulture);         
          oDatasetElement.Attributes.Append(oResolutionAttr);
 
          System.Xml.XmlElement oDisplayElement = oDatasetElement.OwnerDocument.CreateElement("display_options");

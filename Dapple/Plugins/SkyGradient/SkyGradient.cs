@@ -195,9 +195,9 @@ namespace Murris.Plugins
 		internal void SavePresets()
 		{
 			string line = version + ";"
-					  + thickness.ToString() + ";"
-					  + zenithColor.R.ToString() + " " + zenithColor.G.ToString() + " " + zenithColor.B.ToString() + ";"
-					  + horizonColor.R.ToString() + " " + horizonColor.G.ToString() + " " + horizonColor.B.ToString();
+					  + thickness.ToString(CultureInfo.InvariantCulture) + ";"
+					  + zenithColor.R.ToString(CultureInfo.InvariantCulture) + " " + zenithColor.G.ToString(CultureInfo.InvariantCulture) + " " + zenithColor.B.ToString(CultureInfo.InvariantCulture) + ";"
+					  + horizonColor.R.ToString(CultureInfo.InvariantCulture) + " " + horizonColor.G.ToString(CultureInfo.InvariantCulture) + " " + horizonColor.B.ToString(CultureInfo.InvariantCulture);
 			try
 			{
 				StreamWriter sw = new StreamWriter(Path.Combine(pluginPath, presetFileName));

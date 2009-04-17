@@ -14,6 +14,7 @@ using Geosoft.Dap.Common;
 using Geosoft.GX.DAPGetData;
 
 using Dapple.DAP;
+using System.Globalization;
 
 namespace Dapple.LayerGeneration
 {
@@ -379,18 +380,18 @@ namespace Dapple.LayerGeneration
          NameValueCollection queryColl = new NameValueCollection();
 
          queryColl.Add("datasetname", m_hDataSet.Name);
-         queryColl.Add("height", m_iHeight.ToString());
-         queryColl.Add("size", m_iTextureSizePixels.ToString());
+			queryColl.Add("height", m_iHeight.ToString(CultureInfo.InvariantCulture));
+			queryColl.Add("size", m_iTextureSizePixels.ToString(CultureInfo.InvariantCulture));
          queryColl.Add("type", m_hDataSet.Type);
          queryColl.Add("title", m_hDataSet.Title);
          queryColl.Add("edition", m_hDataSet.Edition);
          queryColl.Add("hierarchy", m_hDataSet.Hierarchy);
-         queryColl.Add("north", m_hDataSet.Boundary.MaxY.ToString(System.Globalization.CultureInfo.InvariantCulture));
-         queryColl.Add("east", m_hDataSet.Boundary.MaxX.ToString(System.Globalization.CultureInfo.InvariantCulture));
-         queryColl.Add("south", m_hDataSet.Boundary.MinY.ToString(System.Globalization.CultureInfo.InvariantCulture));
-         queryColl.Add("west", m_hDataSet.Boundary.MinX.ToString(System.Globalization.CultureInfo.InvariantCulture));
-         queryColl.Add("levels", m_iLevels.ToString());
-         queryColl.Add("lvl0tilesize", m_dLevelZeroTileSizeDegrees.ToString(System.Globalization.CultureInfo.InvariantCulture));
+         queryColl.Add("north", m_hDataSet.Boundary.MaxY.ToString(CultureInfo.InvariantCulture));
+         queryColl.Add("east", m_hDataSet.Boundary.MaxX.ToString(CultureInfo.InvariantCulture));
+         queryColl.Add("south", m_hDataSet.Boundary.MinY.ToString(CultureInfo.InvariantCulture));
+         queryColl.Add("west", m_hDataSet.Boundary.MinX.ToString(CultureInfo.InvariantCulture));
+			queryColl.Add("levels", m_iLevels.ToString(CultureInfo.InvariantCulture));
+         queryColl.Add("lvl0tilesize", m_dLevelZeroTileSizeDegrees.ToString(CultureInfo.InvariantCulture));
 
          string strHost = "";
          string strPath = "";
@@ -401,7 +402,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), m_hDataSet.GetHashCode().ToString());
+			return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), m_hDataSet.GetHashCode().ToString(CultureInfo.InvariantCulture));
       }
 
 		private String GetStyleSheetCachePath()
@@ -498,7 +499,7 @@ namespace Dapple.LayerGeneration
 
 		public override string ToString()
 		{
-			return String.Format("DAPQuadLayerBuilder, Title=\"{0}\", UniqueName=\"{1}\"", m_hDataSet.Title, m_hDataSet.UniqueName);
+			return String.Format(CultureInfo.InvariantCulture, "DAPQuadLayerBuilder, Title=\"{0}\", UniqueName=\"{1}\"", m_hDataSet.Title, m_hDataSet.UniqueName);
 		}
 		#endregion
 
@@ -511,7 +512,7 @@ namespace Dapple.LayerGeneration
          {
 				SwitchToUseTiles();
 
-            string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString());
+				string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString(CultureInfo.InvariantCulture));
             System.IO.Directory.CreateDirectory(strCachePath);
 
             // Determine the needed levels (function of tile size and resolution if available)

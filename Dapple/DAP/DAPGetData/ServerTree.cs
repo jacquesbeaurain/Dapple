@@ -10,6 +10,7 @@ using Geosoft.Dap.Common;
 using Geosoft.DotNetTools;
 
 using Resources = global::Dapple.Properties.Resources;
+using System.Globalization;
 
 namespace Geosoft.GX.DAPGetData
 {
@@ -951,8 +952,8 @@ namespace Geosoft.GX.DAPGetData
             }
             catch (Exception e)
             {
-               if (oRequest.m_bValid)
-                  GetDapError.Instance.Write(string.Format("Failed to send request {0} - {1}", oRequest.m_eType.ToString(), e.Message));
+					if (oRequest.m_bValid)
+						GetDapError.Instance.Write("Failed to send request " + oRequest.m_eType.ToString() + " - " + e.Message);
             }
 
          } while (!oRequest.m_bValid || oRequest.m_eType != AsyncRequestType.Stop);
@@ -964,12 +965,12 @@ namespace Geosoft.GX.DAPGetData
       protected void CreateSearchString(string strSearch)
       {
          m_strCurSearchString = strSearch;
-         if (m_eMode == SearchModeEnum.Name)
-            m_strCurSearchString = string.Format("Name contains({0})", m_strCurSearchString);
-         else if (m_eMode == SearchModeEnum.Description)
-            m_strCurSearchString = string.Format("Description contains({0})", m_strCurSearchString);
-         else if (m_eMode == SearchModeEnum.Keywords)
-            m_strCurSearchString = string.Format("Keywords contains({0})", m_strCurSearchString);
+			if (m_eMode == SearchModeEnum.Name)
+				m_strCurSearchString = "Name contains(" + m_strCurSearchString + ")";
+			else if (m_eMode == SearchModeEnum.Description)
+				m_strCurSearchString = "Description contains(" + m_strCurSearchString + ")";
+			else if (m_eMode == SearchModeEnum.Keywords)
+				m_strCurSearchString = "Keywords contains(" + m_strCurSearchString + ")";
       }
 
       /// <summary>
@@ -1013,7 +1014,7 @@ namespace Geosoft.GX.DAPGetData
                switch (oServer.Status)
                {
                   case Server.ServerStatus.OnLine:
-                     str += " (" + oServer.DatasetCount.ToString() + ")";
+							str += " (" + oServer.DatasetCount.ToString(CultureInfo.InvariantCulture) + ")";
                      iImage = Dapple.MainForm.ImageListIndex("enserver");
                      break;
                   case Server.ServerStatus.Maintenance:

@@ -262,7 +262,7 @@ namespace Dapple.LayerGeneration
 
 		public override string ToString()
 		{
-			return String.Format("VEQuadLayerBuilder, Type=\"{0}\"", m_mapType);
+			return "VEQuadLayerBuilder, Type=\"" + m_mapType + "\"";
 		}
 
 		#endregion

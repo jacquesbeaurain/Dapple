@@ -101,7 +101,7 @@ namespace bNb.Plugins_GD
 				earthCircum = earthRadius * 2.0 * Math.PI; //40075016.685578488
 				earthHalfCirc = earthCircum / 2; //20037508.
 
-				string[] projectionParameters = new string[] { "proj=merc", "ellps=sphere", "a=" + earthRadius.ToString(), "es=0.0", "no.defs" };
+				string[] projectionParameters = new string[] { "proj=merc", "ellps=sphere", "a=" + earthRadius.ToString(CultureInfo.InvariantCulture), "es=0.0", "no.defs" };
 				proj = new Projection(projectionParameters);
 
 				//static
@@ -116,16 +116,6 @@ namespace bNb.Plugins_GD
 				Utility.Log.Write(ex);
 				throw;
 			}
-		}
-
-
-		internal string GetLocalLiveLink()
-		{
-			//http://local.live.com/default.aspx?v=2&cp=43.057723~-88.404224&style=r&lvl=12
-			string lat = parentApplication.DrawArgs.WorldCamera.Latitude.Degrees.ToString("###.#####");
-			string lon = parentApplication.DrawArgs.WorldCamera.Longitude.Degrees.ToString("###.#####");
-			string link = "http://local.live.com/default.aspx?v=2&cp=" + lat + "~" + lon + "&styles=" + datasetName + "&lvl=" + prevLvl.ToString();
-			return link;
 		}
 
 		internal void RemoveAllTiles()
@@ -1146,12 +1136,12 @@ namespace bNb.Plugins_GD
 		{
 			string levelDir = null;
 			//VirtualEarth.m_WorldWindow.Cache.CacheDirectory
-			string cacheDirectory = String.Format("{0}\\Virtual Earth", cacheDirectoryRoot);
+			string cacheDirectory = cacheDirectoryRoot + "\\Virtual Earth";
 			if (Directory.Exists(cacheDirectory) == false)
 			{
 				Directory.CreateDirectory(cacheDirectory);
 			}
-			levelDir = cacheDirectory + @"\" + level.ToString();
+			levelDir = cacheDirectory + @"\" + level.ToString(CultureInfo.InvariantCulture);
 			if (Directory.Exists(levelDir) == false)
 			{
 				Directory.CreateDirectory(levelDir);
@@ -1171,7 +1161,7 @@ namespace bNb.Plugins_GD
 
 		internal string CreateRowDir(string mapTypeDir, int row)
 		{
-			string rowDir = mapTypeDir + @"\" + row.ToString("0000");
+			string rowDir = mapTypeDir + @"\" + row.ToString("0000", CultureInfo.InvariantCulture);
 			if (Directory.Exists(rowDir) == false)
 			{
 				Directory.CreateDirectory(rowDir);
@@ -1181,13 +1171,13 @@ namespace bNb.Plugins_GD
 
 		internal string GetTextureName(string rowDir, int row, int col, string textureExtension)
 		{
-			string textureName = rowDir + @"\" + row.ToString("0000") + "_" + col.ToString("0000") + "." + textureExtension;
+			string textureName = rowDir + @"\" + row.ToString("0000", CultureInfo.InvariantCulture) + "_" + col.ToString("0000", CultureInfo.InvariantCulture) + "." + textureExtension;
 			return textureName;
 		}
 
 		internal void SaveBitmap(Bitmap b, string rowDir, int row, int col, string imageExtension, System.Drawing.Imaging.ImageFormat format)
 		{
-			string bmpName = rowDir + @"\" + row.ToString("0000") + "_" + col.ToString("0000") + "." + imageExtension;
+			string bmpName = rowDir + @"\" + row.ToString("0000", CultureInfo.InvariantCulture) + "_" + col.ToString("0000", CultureInfo.InvariantCulture) + "." + imageExtension;
 			b.Save(bmpName, format);
 			//b.Save(bmpName); //, format
 		}

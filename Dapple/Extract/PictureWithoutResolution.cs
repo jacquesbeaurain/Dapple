@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using WorldWind.Renderable;
 using WorldWind;
 using Dapple.LayerGeneration;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -149,19 +150,19 @@ namespace Dapple.Extract
          }
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("minx");
-         oAttr.Value = oGeoTiffBox.West.ToString();
+         oAttr.Value = oGeoTiffBox.West.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("miny");
-         oAttr.Value = oGeoTiffBox.South.ToString();
+			oAttr.Value = oGeoTiffBox.South.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxx");
-         oAttr.Value = oGeoTiffBox.East.ToString();
+			oAttr.Value = oGeoTiffBox.East.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxy");
-         oAttr.Value = oGeoTiffBox.North.ToString();
+			oAttr.Value = oGeoTiffBox.North.ToString(CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("coordinate_system");
