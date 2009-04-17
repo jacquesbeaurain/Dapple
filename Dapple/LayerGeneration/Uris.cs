@@ -336,7 +336,7 @@ namespace Dapple.LayerGeneration
 
 	internal class ArcIMSLayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] {
          "servicename",
          "layerid",
          "title",
@@ -362,7 +362,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -410,11 +410,11 @@ namespace Dapple.LayerGeneration
 
 	internal class WMSLayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] {
          "layer"
          });
 
-		private static List<String> m_oObsoleteTokens = new List<String>(new String[] {
+		private static List<String> s_oObsoleteTokens = new List<String>(new String[] {
 			"pixelsize"
 		});
 
@@ -432,14 +432,14 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
 		{
 			get
 			{
-				return m_oObsoleteTokens;
+				return s_oObsoleteTokens;
 			}
 		}
 
@@ -475,7 +475,7 @@ namespace Dapple.LayerGeneration
 
 	internal class TileLayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] {
          "datasetname",
          "name",
          "height",
@@ -504,7 +504,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -561,7 +561,7 @@ namespace Dapple.LayerGeneration
 
 	internal class VELayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] { });
 
 		internal VELayerUri(String strUri) : base(strUri) { }
 
@@ -577,7 +577,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -620,7 +620,7 @@ namespace Dapple.LayerGeneration
 
 	internal class DapLayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] {
          "datasetname",
          "height",
          "size",
@@ -650,7 +650,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -706,7 +706,7 @@ namespace Dapple.LayerGeneration
 
 	internal class BrowserMapLayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] {
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] {
          });
 
 		internal BrowserMapLayerUri(String strUri) : base(strUri) { }
@@ -723,7 +723,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -757,7 +757,7 @@ namespace Dapple.LayerGeneration
 
 	internal class GeoTifLayerUri : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] { });
 
 		internal GeoTifLayerUri(String strUri) : base(strUri) { }
 
@@ -773,7 +773,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -805,7 +805,7 @@ namespace Dapple.LayerGeneration
 
 	internal class KeyholeLayerURI : LayerUri
 	{
-		private static List<String> m_lAdditionalTokens = new List<String>(new String[] { });
+		private static List<String> s_lAdditionalTokens = new List<String>(new String[] { });
 
 		internal KeyholeLayerURI(String strUri) : base(strUri) { }
 
@@ -826,7 +826,7 @@ namespace Dapple.LayerGeneration
 
 		protected override List<string> AdditionalUriTokens
 		{
-			get { return m_lAdditionalTokens; }
+			get { return s_lAdditionalTokens; }
 		}
 
 		protected override List<string> ObsoleteUriTokens

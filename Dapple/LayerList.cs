@@ -83,8 +83,8 @@ namespace Dapple
 
 		bool m_bClearDropHint = false;
 		Point m_ptDropHint1, m_ptDropHint2;
-		static System.Drawing.Pen m_oDragPen = new System.Drawing.Pen(System.Drawing.Brushes.Black, 2.0f);
-		static System.Drawing.Pen m_oDragNoPen = new System.Drawing.Pen(System.Drawing.Brushes.White, 2.0f);
+		static System.Drawing.Pen s_oDragPen = new System.Drawing.Pen(System.Drawing.Brushes.Black, 2.0f);
+		static System.Drawing.Pen s_oDragNoPen = new System.Drawing.Pen(System.Drawing.Brushes.White, 2.0f);
 
 		private bool m_blDragAllowed = false;
 
@@ -714,7 +714,7 @@ namespace Dapple
 			{
 				using (Graphics oGraphics = c_lvLayers.CreateGraphics())
 				{
-					oGraphics.DrawLine(m_oDragNoPen, m_ptDropHint1, m_ptDropHint2);
+					oGraphics.DrawLine(s_oDragNoPen, m_ptDropHint1, m_ptDropHint2);
 				}
 				m_bClearDropHint = false;
 			}
@@ -766,7 +766,7 @@ namespace Dapple
 				m_ptDropHint1.Y = iLineY;
 				m_ptDropHint2.X = iLineWidth;
 				m_ptDropHint2.Y = iLineY;
-				oGraphics.DrawLine(m_oDragPen, m_ptDropHint1, m_ptDropHint2);
+				oGraphics.DrawLine(s_oDragPen, m_ptDropHint1, m_ptDropHint2);
 				m_bClearDropHint = true;
 			}
       }

@@ -219,7 +219,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), m_mapType.ToString());
+         return Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), m_mapType.ToString());
       }
 
       protected override void CleanUpLayer(bool bFinal)

@@ -84,7 +84,7 @@ namespace Dapple.LayerGeneration
 		protected byte m_bOpacity = 255;
 		private bool m_blnIsLoading = false;
 		protected bool m_IsOn = true;
-      protected static String m_strCacheRoot = MainApplication.Settings.CachePath;
+      protected static String s_strCacheRoot = MainApplication.Settings.CachePath;
 		private int m_intRenderPriority = 0;
 		protected bool m_blnFailed = false;
 		private bool m_blnIsAdded = false;

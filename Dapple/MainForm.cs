@@ -158,13 +158,13 @@ namespace Dapple
 
 		private MetadataDisplayThread m_oMetadataDisplay;
 
-		private static ImageList m_oImageList = new ImageList();
-		private static RemoteInterface m_oMontajRemoteInterface;
-		private static Dapple.Extract.Options.Client.ClientType m_eClientType;
-		private static GeographicBoundingBox m_oOMMapExtentWGS84;
-		private static GeographicBoundingBox m_oOMMapExtentNative;
-		private static string m_strAoiCoordinateSystem;
-		private static string m_strOpenMapFileName = string.Empty;
+		private static ImageList s_oImageList = new ImageList();
+		private static RemoteInterface s_oMontajRemoteInterface;
+		private static Dapple.Extract.Options.Client.ClientType s_eClientType;
+		private static GeographicBoundingBox s_oOMMapExtentWGS84;
+		private static GeographicBoundingBox s_oOMMapExtentNative;
+		private static string s_strAoiCoordinateSystem;
+		private static string s_strOpenMapFileName = string.Empty;
 		private Dictionary<String, GeographicBoundingBox> m_oCountryAOIs;
 
 		private string m_szLastSearchString = String.Empty;
@@ -191,24 +191,24 @@ namespace Dapple
 
 		private static bool IsRunningAsDapClient
 		{
-			get { return m_oMontajRemoteInterface != null; }
+			get { return s_oMontajRemoteInterface != null; }
 		}
 
 		internal static bool IsRunningAsMapinfoDapClient
 		{
-			get { return IsRunningAsDapClient && m_eClientType == Dapple.Extract.Options.Client.ClientType.MapInfo; }
+			get { return IsRunningAsDapClient && s_eClientType == Dapple.Extract.Options.Client.ClientType.MapInfo; }
 		}
 
 		internal static ImageList DataTypeImageList
 		{
-			get { return m_oImageList; }
+			get { return s_oImageList; }
 		}
 
 		internal static RemoteInterface MontajInterface
 		{
 			get
 			{
-				return m_oMontajRemoteInterface;
+				return s_oMontajRemoteInterface;
 			}
 		}
 
@@ -217,7 +217,7 @@ namespace Dapple
 		/// </summary>
 		internal static Dapple.Extract.Options.Client.ClientType Client
 		{
-			get { return m_eClientType; }
+			get { return s_eClientType; }
 		}
 
 		/// <summary>
@@ -225,7 +225,7 @@ namespace Dapple
 		/// </summary>
 		internal static GeographicBoundingBox MapAoi
 		{
-			get { return m_oOMMapExtentNative; }
+			get { return s_oOMMapExtentNative; }
 		}
 
 		/// <summary>
@@ -233,7 +233,7 @@ namespace Dapple
 		/// </summary>
 		internal static string MapAoiCoordinateSystem
 		{
-			get { return m_strAoiCoordinateSystem; }
+			get { return s_strAoiCoordinateSystem; }
 		}
 
 		/// <summary>
@@ -241,7 +241,7 @@ namespace Dapple
 		/// </summary>
 		internal static string MapFileName
 		{
-			get { return m_strOpenMapFileName; }
+			get { return s_strOpenMapFileName; }
 		}
 
 		#region Blue Marble
@@ -316,7 +316,7 @@ namespace Dapple
 			m_blOpenKMLTmp = blKMLTmp;
 
 			this.lastView = strLastView;
-			m_oMontajRemoteInterface = oMRI;
+			s_oMontajRemoteInterface = oMRI;
 
 			// Establish the version number string used for user display,
 			// such as the Splash and Help->About screens.
@@ -417,51 +417,51 @@ namespace Dapple
 
 				// --- setup the list of images used for the different datatypes ---
 
-				m_oImageList.ColorDepth = ColorDepth.Depth32Bit;
-				m_oImageList.ImageSize = new Size(16, 16);
-				m_oImageList.TransparentColor = Color.Transparent;
+				s_oImageList.ColorDepth = ColorDepth.Depth32Bit;
+				s_oImageList.ImageSize = new Size(16, 16);
+				s_oImageList.TransparentColor = Color.Transparent;
 
-				m_oImageList.Images.Add("enserver", Resources.enserver);
-				m_oImageList.Images.Add("disserver", Resources.disserver);
-				m_oImageList.Images.Add("offline", Resources.offline);
-				m_oImageList.Images.Add("dap", Resources.dap);
-				m_oImageList.Images.Add("dap_database", Resources.dap_database);
-				m_oImageList.Images.Add("dap_document", Resources.dap_document);
-				m_oImageList.Images.Add("dap_grid", Resources.dap_grid);
-				m_oImageList.Images.Add("dap_map", Resources.dap_map);
-				m_oImageList.Images.Add("dap_generic", Resources.dap_map);
-				m_oImageList.Images.Add("dap_picture", Resources.dap_picture);
-				m_oImageList.Images.Add("dap_picturesection", Resources.dap_picture);
-				m_oImageList.Images.Add("dap_point", Resources.dap_point);
-				m_oImageList.Images.Add("dap_spf", Resources.dap_spf);
-				m_oImageList.Images.Add("dap_voxel", Resources.dap_voxel);
-				m_oImageList.Images.Add("dap_imageserver", Resources.arcims);
-				m_oImageList.Images.Add("dap_gridsection", Resources.dap_grid);
-				m_oImageList.Images.Add("folder", Resources.folder);
-				m_oImageList.Images.Add("folder_open", Resources.folder_open);
-				m_oImageList.Images.Add("loading", Resources.loading);
-				m_oImageList.Images.Add("dap_arcgis", global::Dapple.Properties.Resources.dap_arcgis);
-				m_oImageList.Images.Add("dap_imageserver", Resources.nasa);
-				m_oImageList.Images.Add("kml", Resources.kml);
-				m_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
-				m_oImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
-				m_oImageList.Images.Add("error", global::Dapple.Properties.Resources.error);
-				m_oImageList.Images.Add("folder_gray", global::Dapple.Properties.Resources.folder_gray);
-				m_oImageList.Images.Add("layer", global::Dapple.Properties.Resources.layer);
-				m_oImageList.Images.Add("live", global::Dapple.Properties.Resources.live);
-				m_oImageList.Images.Add("tile", global::Dapple.Properties.Resources.tile);
-				m_oImageList.Images.Add("tile_gray", global::Dapple.Properties.Resources.tile_gray);
-				m_oImageList.Images.Add("georef_image", global::Dapple.Properties.Resources.georef_image);
-				m_oImageList.Images.Add("time", global::Dapple.Properties.Resources.time_icon);
-				m_oImageList.Images.Add("wms", Resources.wms);
-				m_oImageList.Images.Add("wms_gray", global::Dapple.Properties.Resources.wms_gray);
-				m_oImageList.Images.Add("nasa", global::Dapple.Properties.Resources.nasa);
-				m_oImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
-				m_oImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
-				m_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
-				m_oImageList.Images.Add("imageservice", Dapple.Properties.Resources.layers_top);
-				m_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
-				m_oImageList.Images.Add("desktopcataloger", Dapple.Properties.Resources.dcat);
+				s_oImageList.Images.Add("enserver", Resources.enserver);
+				s_oImageList.Images.Add("disserver", Resources.disserver);
+				s_oImageList.Images.Add("offline", Resources.offline);
+				s_oImageList.Images.Add("dap", Resources.dap);
+				s_oImageList.Images.Add("dap_database", Resources.dap_database);
+				s_oImageList.Images.Add("dap_document", Resources.dap_document);
+				s_oImageList.Images.Add("dap_grid", Resources.dap_grid);
+				s_oImageList.Images.Add("dap_map", Resources.dap_map);
+				s_oImageList.Images.Add("dap_generic", Resources.dap_map);
+				s_oImageList.Images.Add("dap_picture", Resources.dap_picture);
+				s_oImageList.Images.Add("dap_picturesection", Resources.dap_picture);
+				s_oImageList.Images.Add("dap_point", Resources.dap_point);
+				s_oImageList.Images.Add("dap_spf", Resources.dap_spf);
+				s_oImageList.Images.Add("dap_voxel", Resources.dap_voxel);
+				s_oImageList.Images.Add("dap_imageserver", Resources.arcims);
+				s_oImageList.Images.Add("dap_gridsection", Resources.dap_grid);
+				s_oImageList.Images.Add("folder", Resources.folder);
+				s_oImageList.Images.Add("folder_open", Resources.folder_open);
+				s_oImageList.Images.Add("loading", Resources.loading);
+				s_oImageList.Images.Add("dap_arcgis", global::Dapple.Properties.Resources.dap_arcgis);
+				s_oImageList.Images.Add("dap_imageserver", Resources.nasa);
+				s_oImageList.Images.Add("kml", Resources.kml);
+				s_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
+				s_oImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
+				s_oImageList.Images.Add("error", global::Dapple.Properties.Resources.error);
+				s_oImageList.Images.Add("folder_gray", global::Dapple.Properties.Resources.folder_gray);
+				s_oImageList.Images.Add("layer", global::Dapple.Properties.Resources.layer);
+				s_oImageList.Images.Add("live", global::Dapple.Properties.Resources.live);
+				s_oImageList.Images.Add("tile", global::Dapple.Properties.Resources.tile);
+				s_oImageList.Images.Add("tile_gray", global::Dapple.Properties.Resources.tile_gray);
+				s_oImageList.Images.Add("georef_image", global::Dapple.Properties.Resources.georef_image);
+				s_oImageList.Images.Add("time", global::Dapple.Properties.Resources.time_icon);
+				s_oImageList.Images.Add("wms", Resources.wms);
+				s_oImageList.Images.Add("wms_gray", global::Dapple.Properties.Resources.wms_gray);
+				s_oImageList.Images.Add("nasa", global::Dapple.Properties.Resources.nasa);
+				s_oImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
+				s_oImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
+				s_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
+				s_oImageList.Images.Add("imageservice", Dapple.Properties.Resources.layers_top);
+				s_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
+				s_oImageList.Images.Add("desktopcataloger", Dapple.Properties.Resources.dcat);
 
 
 				c_oWorldWindow = new WorldWindow();
@@ -473,7 +473,7 @@ namespace Dapple
 				c_oWorldWindow.DragDrop += new DragEventHandler(c_oWorldWindow_DragDrop);
 				InitializeComponent();
 				this.SuspendLayout();
-				c_oLayerList.ImageList = m_oImageList;
+				c_oLayerList.ImageList = s_oImageList;
 
 /*#if DEBUG
 				// --- Make the server tree HOOGE ---
@@ -679,14 +679,14 @@ namespace Dapple
 
 					if (oAoi != null && !string.IsNullOrEmpty(strAoiCoordinateSystem))
 					{
-						m_oOMMapExtentNative = oAoi;
-						m_strAoiCoordinateSystem = strAoiCoordinateSystem;
-						m_strOpenMapFileName = strMapFileName;
+						s_oOMMapExtentNative = oAoi;
+						s_strAoiCoordinateSystem = strAoiCoordinateSystem;
+						s_strOpenMapFileName = strMapFileName;
 
-						m_oOMMapExtentWGS84 = m_oOMMapExtentNative.Clone() as GeographicBoundingBox;
-						m_oMontajRemoteInterface.ProjectBoundingRectangle(strAoiCoordinateSystem, ref m_oOMMapExtentWGS84.West, ref m_oOMMapExtentWGS84.South, ref m_oOMMapExtentWGS84.East, ref m_oOMMapExtentWGS84.North, Dapple.Extract.Resolution.WGS_84);
+						s_oOMMapExtentWGS84 = s_oOMMapExtentNative.Clone() as GeographicBoundingBox;
+						s_oMontajRemoteInterface.ProjectBoundingRectangle(strAoiCoordinateSystem, ref s_oOMMapExtentWGS84.West, ref s_oOMMapExtentWGS84.South, ref s_oOMMapExtentWGS84.East, ref s_oOMMapExtentWGS84.North, Dapple.Extract.Resolution.WGS_84);
 					}
-					m_eClientType = eClientType;
+					s_eClientType = eClientType;
 
 					c_miLastView.Enabled = false;
 					c_miLastView.Visible = false;
@@ -938,7 +938,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel6.ToolTipText = m_downloadList[5].builder.Title;
-							this.toolStripStatusLabel6.Image = m_oImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel6.Image = s_oImageList.Images[m_downloadList[5].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel6.Visible = true;
 						this.toolStripStatusSpin6.Text = "";
@@ -963,7 +963,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel5.ToolTipText = m_downloadList[4].builder.Title;
-							this.toolStripStatusLabel5.Image = m_oImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel5.Image = s_oImageList.Images[m_downloadList[4].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel5.Visible = true;
 						this.toolStripStatusSpin5.Text = "";
@@ -988,7 +988,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel4.ToolTipText = m_downloadList[3].builder.Title;
-							this.toolStripStatusLabel4.Image = m_oImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel4.Image = s_oImageList.Images[m_downloadList[3].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel4.Visible = true;
 						this.toolStripStatusSpin4.Text = "";
@@ -1013,7 +1013,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel3.ToolTipText = m_downloadList[2].builder.Title;
-							this.toolStripStatusLabel3.Image = m_oImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel3.Image = s_oImageList.Images[m_downloadList[2].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel3.Visible = true;
 						this.toolStripStatusSpin3.Text = "";
@@ -1038,7 +1038,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel2.ToolTipText = m_downloadList[1].builder.Title;
-							this.toolStripStatusLabel2.Image = m_oImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel2.Image = s_oImageList.Images[m_downloadList[1].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel2.Visible = true;
 						this.toolStripStatusSpin2.Text = "";
@@ -1063,7 +1063,7 @@ namespace Dapple
 						else
 						{
 							this.toolStripStatusLabel1.ToolTipText = m_downloadList[0].builder.Title;
-							this.toolStripStatusLabel1.Image = m_oImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
+							this.toolStripStatusLabel1.Image = s_oImageList.Images[m_downloadList[0].builder.ServerTypeIconKey];
 						}
 						this.toolStripStatusLabel1.Visible = true;
 						this.toolStripStatusSpin1.Text = "";
@@ -1762,7 +1762,7 @@ namespace Dapple
 			{
 				try
 				{
-					m_oMontajRemoteInterface.StartConnection();
+					s_oMontajRemoteInterface.StartConnection();
 				}
 				catch (System.Runtime.Remoting.RemotingException ex)
 				{
@@ -1834,10 +1834,10 @@ namespace Dapple
 					}
 				}
 
-				if (m_oOMMapExtentWGS84 != null)
+				if (s_oOMMapExtentWGS84 != null)
 				{
-					doSearch(String.Empty, m_oOMMapExtentWGS84);
-					GoTo(m_oOMMapExtentWGS84, false);
+					doSearch(String.Empty, s_oOMMapExtentWGS84);
+					GoTo(s_oOMMapExtentWGS84, false);
 				}
 
 				c_oOverview.StartRenderTimer();
@@ -2412,7 +2412,7 @@ namespace Dapple
 		/// <returns></returns>
 		internal static int ImageListIndex(string strKey)
 		{
-			return m_oImageList.Images.IndexOfKey(strKey);
+			return s_oImageList.Images.IndexOfKey(strKey);
 		}
 
 		/// <summary>
@@ -2511,9 +2511,9 @@ namespace Dapple
 
 			// --- If we're FDWD, add the original map extents ---
 
-			if (IsRunningAsDapClient && m_oOMMapExtentWGS84 != null)
+			if (IsRunningAsDapClient && s_oOMMapExtentWGS84 != null)
 			{
-				oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", m_oOMMapExtentWGS84));
+				oAois.Add(new KeyValuePair<String, GeographicBoundingBox>("Original map extent", s_oOMMapExtentWGS84));
 			}
 
 

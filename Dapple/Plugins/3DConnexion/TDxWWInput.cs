@@ -188,25 +188,25 @@ namespace ThreeDconnexion.Plugin
 
         //increment this values if you want to decrement the sensitivity of the Input device
         //for single axis
-        private const double m_dNormTilt_c = 1.0E5;
-        private const double m_dNormHeading_c = 2.0E5;
-        private const double m_dNormDistance_c = 3.5E4;
-        private const double m_dNormLatLon_c = 3.0E4;
+        private const double NormTilt = 1.0E5;
+        private const double NormHeading = 2.0E5;
+        private const double NormDistance = 3.5E4;
+        private const double NormLatLon = 3.0E4;
 
         System.Windows.Forms.ToolStripMenuItem menuItem;
 
         AxisMapping m_AxisMode = AxisMapping.TDXUNKNOWN;
         TDconnexion.TDxDeviceWrapper m_TheInputDevice = null;
-        static TDconnexion.I3DxSensor m_TheSensor = null;
-        static TDconnexion.I3DxKeyboard m_TheKeyBoard = null;
-        static WorldWindow m_WW = null;
-        static CameraBase m_TheCamera = null;
-        static Point3d m_Position;
+        static TDconnexion.I3DxSensor s_TheSensor = null;
+        static TDconnexion.I3DxKeyboard s_TheKeyBoard = null;
+        static WorldWindow s_WW = null;
+        static CameraBase s_TheCamera = null;
+        static Point3d s_Position;
         TDconnexion.TDxSensorInputEvent m_SensorEventHandler = null;
         TDconnexion.TDxKeyboardEvent m_KeyEventHandler = null;
-        static double m_dLastHeight = 0;
-        static double m_dDeltaHeight = 0;
-        static private Stopwatch m_stopWatch;  //check event interval of the input device
+        static double s_dLastHeight = 0;
+        static double s_dDeltaHeight = 0;
+        static private Stopwatch s_stopWatch;  //check event interval of the input device
 
         internal TDxWWInput()
         {
@@ -220,10 +220,10 @@ namespace ThreeDconnexion.Plugin
             menuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuItem.Text = "3Dconnexion Input Device";
             menuItem.Click += new System.EventHandler(menuItem_Click);
-            m_stopWatch = new Stopwatch();
-            m_WW = m_Application.WorldWindow;
+            s_stopWatch = new Stopwatch();
+            s_WW = m_Application.WorldWindow;
 
-            m_TheCamera = m_WW.DrawArgs.WorldCamera;
+            s_TheCamera = s_WW.DrawArgs.WorldCamera;
 
             m_TheInputDevice = new TDconnexion.TDxDeviceWrapper();
             if (m_TheInputDevice != null)
@@ -232,12 +232,12 @@ namespace ThreeDconnexion.Plugin
 					{
 						// JBTODO: m_app.MenuStrip.Items.Add(menuItem);
 
-						m_TheSensor = m_TheInputDevice.Sensor;
-						m_TheKeyBoard = m_TheInputDevice.Keyboard;
-						m_Position = new Point3d();
+						s_TheSensor = m_TheInputDevice.Sensor;
+						s_TheKeyBoard = m_TheInputDevice.Keyboard;
+						s_Position = new Point3d();
 						SetCameraMode();
 						m_KeyEventHandler = new TDconnexion.TDxKeyboardEvent(KeyboardEventHandler);
-						m_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;
+						s_TheKeyBoard.KeyboardEventDOWN += m_KeyEventHandler;
 						m_TheInputDevice.Connect();
 					}
 					else
@@ -253,21 +253,21 @@ namespace ThreeDconnexion.Plugin
                 m_TheInputDevice.Disconnect();
 
 
-            if ((m_KeyEventHandler != null) && (m_TheKeyBoard != null))
-                m_TheKeyBoard.KeyboardEventDOWN -= m_KeyEventHandler;
-            if ((m_SensorEventHandler != null) && (m_TheSensor != null))
-                m_TheSensor.SensorInput -= m_SensorEventHandler;
+            if ((m_KeyEventHandler != null) && (s_TheKeyBoard != null))
+                s_TheKeyBoard.KeyboardEventDOWN -= m_KeyEventHandler;
+            if ((m_SensorEventHandler != null) && (s_TheSensor != null))
+                s_TheSensor.SensorInput -= m_SensorEventHandler;
 
             m_KeyEventHandler = null;
             m_SensorEventHandler = null;
-            m_TheSensor = null;
-            m_TheCamera = null;
+            s_TheSensor = null;
+            s_TheCamera = null;
 
-            m_dLastHeight = 0;
-            m_dDeltaHeight = 0;
-            m_stopWatch = null;  //check event interval of the input device
-            m_TheCamera = null;
-            m_WW = null;
+            s_dLastHeight = 0;
+            s_dDeltaHeight = 0;
+            s_stopWatch = null;  //check event interval of the input device
+            s_TheCamera = null;
+            s_WW = null;
 
             if (m_TheInputDevice != null)
                 m_TheInputDevice.Release();
@@ -290,26 +290,26 @@ namespace ThreeDconnexion.Plugin
         #region I3DxPlugin implementation
 		  public void SetObjectMode()
         {
-            if (m_TheSensor != null)
+            if (s_TheSensor != null)
             {
                 if (m_SensorEventHandler != null)
-                    m_TheSensor.SensorInput -= m_SensorEventHandler;
+                    s_TheSensor.SensorInput -= m_SensorEventHandler;
 
                 m_SensorEventHandler = new TDconnexion.TDxSensorInputEvent(ObjectMode);
-                m_TheSensor.SensorInput += m_SensorEventHandler;
+                s_TheSensor.SensorInput += m_SensorEventHandler;
                 m_AxisMode = AxisMapping.TDXOBJECTMODE;
             }
         }//SetObjectMode
 
 		  public void SetCameraMode()
         {
-            if (m_TheSensor != null)
+            if (s_TheSensor != null)
             {
                 if (m_SensorEventHandler != null)
-                    m_TheSensor.SensorInput -= m_SensorEventHandler;
+                    s_TheSensor.SensorInput -= m_SensorEventHandler;
 
                 m_SensorEventHandler = new TDconnexion.TDxSensorInputEvent(CameraMode);
-                m_TheSensor.SensorInput += m_SensorEventHandler;
+                s_TheSensor.SensorInput += m_SensorEventHandler;
                 m_AxisMode = AxisMapping.TDXCAMERAMODE;
             }
         }//SetHelicopterMode
@@ -328,26 +328,26 @@ namespace ThreeDconnexion.Plugin
         private static void ObjectMode()
         {
             long delta = 1;
-            if (m_stopWatch.IsRunning)
+            if (s_stopWatch.IsRunning)
             {
-                delta = m_stopWatch.ElapsedMilliseconds;
+                delta = s_stopWatch.ElapsedMilliseconds;
 
                 //ToDo: remove following two lines;
                 //just a performance improvement for 3DxWare Version < 6.1.8.
-                if (delta < m_TheSensor.Period)
+                if (delta < s_TheSensor.Period)
                     return;
 
-                m_stopWatch.Stop();
+                s_stopWatch.Stop();
 
-                if (delta > (10 * m_TheSensor.Period))
+                if (delta > (10 * s_TheSensor.Period))
                     return;
             }
 
             //get data from the Input Device
-            TDconnexion.C3DxVector TranslVector = m_TheSensor.Translation as TDconnexion.C3DxVector;
-            TDconnexion.C3DxRotation AngleAxis = m_TheSensor.Rotation as TDconnexion.C3DxRotation;
+            TDconnexion.C3DxVector TranslVector = s_TheSensor.Translation as TDconnexion.C3DxVector;
+            TDconnexion.C3DxRotation AngleAxis = s_TheSensor.Rotation as TDconnexion.C3DxRotation;
 
-            double dNormTime = (double)delta / m_TheSensor.Period;
+            double dNormTime = (double)delta / s_TheSensor.Period;
             TranslVector *= dNormTime;
             AngleAxis *= dNormTime;
 
@@ -358,71 +358,71 @@ namespace ThreeDconnexion.Plugin
                 && (TranslVector.Z == 0)
                 )
             {
-                m_stopWatch.Stop();
+                s_stopWatch.Stop();
                 return;
             }
-            m_TheCamera = m_WW.DrawArgs.WorldCamera;
+            s_TheCamera = s_WW.DrawArgs.WorldCamera;
             //set CameraSmooth to false to disable movement after releasing the cap
             bool bBackUpSmooth = World.Settings.CameraSmooth;
             World.Settings.CameraSmooth = false;
 
-            Angle rBank = m_TheCamera.Bank;
+            Angle rBank = s_TheCamera.Bank;
 
             //// Tilt////////////////////////////
-            m_TheCamera.Tilt -= Angle.FromRadians(AngleAxis.X * AngleAxis.Angle * World.Settings.CameraRotationSpeed / m_dNormTilt_c);
+            s_TheCamera.Tilt -= Angle.FromRadians(AngleAxis.X * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormTilt);
 
             //// Heading/////////////////////////
-            double dHeading = -AngleAxis.Y * AngleAxis.Angle * World.Settings.CameraRotationSpeed / m_dNormHeading_c;
+            double dHeading = -AngleAxis.Y * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormHeading;
 
             //// Distance///////////////////////
-            m_TheCamera.TargetDistance *= (1 + TranslVector.Y / m_dNormDistance_c);
+            s_TheCamera.TargetDistance *= (1 + TranslVector.Y / NormDistance);
 
-            double factor = (m_TheCamera.Altitude) / (-m_dNormLatLon_c * m_WW.CurrentWorld.EquatorialRadius);
+            double factor = (s_TheCamera.Altitude) / (-NormLatLon * s_WW.CurrentWorld.EquatorialRadius);
             if (World.Settings.CameraTwistLock)
             {
                 Quaternion4d Orientation
-                   = Quaternion4d.RotationYawPitchRoll(m_TheCamera.Longitude.Radians + (TranslVector.X * factor)
-                                                    , m_TheCamera.Latitude.Radians + (TranslVector.Z * factor)
+                   = Quaternion4d.RotationYawPitchRoll(s_TheCamera.Longitude.Radians + (TranslVector.X * factor)
+                                                    , s_TheCamera.Latitude.Radians + (TranslVector.Z * factor)
                                                     , dHeading);
 
-                m_TheCamera.CurrentOrientation = Orientation;
-                m_Position = Quaternion4d.QuaternionToEuler(Orientation);
+                s_TheCamera.CurrentOrientation = Orientation;
+                s_Position = Quaternion4d.QuaternionToEuler(Orientation);
 
 
-                m_WW.SetViewPosition(Angle.FromRadians(m_Position.Y).Degrees
-                                         , Angle.FromRadians(m_Position.X).Degrees
-                                         , m_TheCamera.Altitude);
+                s_WW.SetViewPosition(Angle.FromRadians(s_Position.Y).Degrees
+                                         , Angle.FromRadians(s_Position.X).Degrees
+                                         , s_TheCamera.Altitude);
 
             }
             else
             {
-                Quaternion4d rCurrentOrient = m_TheCamera.CurrentOrientation;
+                Quaternion4d rCurrentOrient = s_TheCamera.CurrentOrientation;
                 Quaternion4d Orientation
                    = Quaternion4d.RotationYawPitchRoll(TranslVector.X * factor
                                                     , TranslVector.Z * factor
                                                     , dHeading) * rCurrentOrient;
 
-                m_TheCamera.CurrentOrientation = Orientation;
-                m_Position = Quaternion4d.QuaternionToEuler(Orientation);
+                s_TheCamera.CurrentOrientation = Orientation;
+                s_Position = Quaternion4d.QuaternionToEuler(Orientation);
 
-                m_TheCamera.Heading = Angle.FromRadians(m_Position.Z);
+                s_TheCamera.Heading = Angle.FromRadians(s_Position.Z);
 
-                m_WW.SetViewPosition(Angle.FromRadians(m_Position.Y).Degrees
-                                         , Angle.FromRadians(m_Position.X).Degrees
-                                         , m_TheCamera.Altitude);
+                s_WW.SetViewPosition(Angle.FromRadians(s_Position.Y).Degrees
+                                         , Angle.FromRadians(s_Position.X).Degrees
+                                         , s_TheCamera.Altitude);
             }
 
             //// Bank ///////////////////////////
             if (!World.Settings.CameraBankLock)
             {
-                rBank += Angle.FromRadians(AngleAxis.Z * AngleAxis.Angle * World.Settings.CameraRotationSpeed / m_dNormTilt_c);
-                m_TheCamera.Bank = rBank;
+                rBank += Angle.FromRadians(AngleAxis.Z * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormTilt);
+                s_TheCamera.Bank = rBank;
             }
 
             World.Settings.CameraSmooth = bBackUpSmooth;
 
-            m_stopWatch.Reset();
-            m_stopWatch.Start();
+            s_stopWatch.Reset();
+            s_stopWatch.Start();
         }//ObjectMode()
 
 
@@ -466,27 +466,27 @@ namespace ThreeDconnexion.Plugin
         private static void CameraMode()
         {
             long delta = 1;
-            if (m_stopWatch.IsRunning)
+            if (s_stopWatch.IsRunning)
             {
-                delta = m_stopWatch.ElapsedMilliseconds;
+                delta = s_stopWatch.ElapsedMilliseconds;
 
                 //ToDo: remove just a performance improvement for 3DxWare Version < 6.1.8
-                if (delta < m_TheSensor.Period)
+                if (delta < s_TheSensor.Period)
                     return;
 
-                m_stopWatch.Stop();
+                s_stopWatch.Stop();
 
-                if (delta > (10 * m_TheSensor.Period))
+                if (delta > (10 * s_TheSensor.Period))
                     return;
                 //Console.WriteLine(delta.ToString());
                 //Debug.Print(delta.ToString());
             }
 
             //get data from the Input Device
-            TDconnexion.C3DxVector TranslVector = m_TheSensor.Translation as TDconnexion.C3DxVector;
-            TDconnexion.C3DxRotation AngleAxis = m_TheSensor.Rotation as TDconnexion.C3DxRotation;
+            TDconnexion.C3DxVector TranslVector = s_TheSensor.Translation as TDconnexion.C3DxVector;
+            TDconnexion.C3DxRotation AngleAxis = s_TheSensor.Rotation as TDconnexion.C3DxRotation;
 
-            double dNormTime = (double)delta / m_TheSensor.Period;
+            double dNormTime = (double)delta / s_TheSensor.Period;
             TranslVector *= dNormTime;
             AngleAxis *= dNormTime;
 
@@ -497,13 +497,13 @@ namespace ThreeDconnexion.Plugin
                 && (TranslVector.Z == 0)
                 )
             {
-                m_dLastHeight = m_TheCamera.Altitude;
-                m_dDeltaHeight = 0;
-                m_stopWatch.Stop();
+                s_dLastHeight = s_TheCamera.Altitude;
+                s_dDeltaHeight = 0;
+                s_stopWatch.Stop();
                 return;
             }
 
-            m_TheCamera = m_WW.DrawArgs.WorldCamera;
+            s_TheCamera = s_WW.DrawArgs.WorldCamera;
 
             //set CameraSmooth to false to disable movement after releasing the cap
             bool bBackUpSmooth = World.Settings.CameraSmooth;
@@ -511,9 +511,9 @@ namespace ThreeDconnexion.Plugin
 
 
             //variables to move the earth via Quaternion4d
-            double dRadius = m_TheCamera.WorldRadius;
-            double dAltitude = m_TheCamera.Altitude;         //height above sealevel of the camera
-            Angle rTilt = m_TheCamera.Tilt;                  //angle between line [center of earth ... crosshairs] and line [crosshairs ... camera]
+            double dRadius = s_TheCamera.WorldRadius;
+            double dAltitude = s_TheCamera.Altitude;         //height above sealevel of the camera
+            Angle rTilt = s_TheCamera.Tilt;                  //angle between line [center of earth ... crosshairs] and line [crosshairs ... camera]
             double dDeltaLatitude = 0;                       //change of Latitude
             double dDeltaLongitude = 0;                      //change of Longitude
             double dSinus = Math.Sin(rTilt.Radians);
@@ -524,7 +524,7 @@ namespace ThreeDconnexion.Plugin
             //////////////////////////////////////////////////////////////////////////////
             /// Tilt, camera position == center of rotation -> adjust latitude/distance///
             //////////////////////////////////////////////////////////////////////////////
-            double dDeltaTiltRad = AngleAxis.X * AngleAxis.Angle * World.Settings.CameraRotationSpeed / m_dNormTilt_c; //150000.0;
+            double dDeltaTiltRad = AngleAxis.X * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormTilt; //150000.0;
             if (Math.Abs(dDeltaTiltRad) > double.Epsilon)
             {
                 rTilt += Angle.FromRadians(dDeltaTiltRad);
@@ -545,25 +545,25 @@ namespace ThreeDconnexion.Plugin
             /// Camera height: change Distance and Position (Tilt != 0) in order to move radial ///
             ///////////////////////////////////////////////////////////////////////////////////////
             bool bPosOK = false;
-            if (m_dDeltaHeight < -double.Epsilon)
+            if (s_dDeltaHeight < -double.Epsilon)
             {
-                if (dAltitude < (m_dLastHeight + (m_dDeltaHeight * 0.5)))
+                if (dAltitude < (s_dLastHeight + (s_dDeltaHeight * 0.5)))
                     bPosOK = true;
             }
-            else if (m_dDeltaHeight > double.Epsilon)
+            else if (s_dDeltaHeight > double.Epsilon)
             {
-                if (dAltitude > (m_dLastHeight + (m_dDeltaHeight * 0.5)))
+                if (dAltitude > (s_dLastHeight + (s_dDeltaHeight * 0.5)))
                     bPosOK = true;
             }
             else
                 bPosOK = true;
 
-            m_dLastHeight = dAltitude;
-            m_dDeltaHeight = TranslVector.Z * dAltitude / m_dNormDistance_c; //50000.0;
+            s_dLastHeight = dAltitude;
+            s_dDeltaHeight = TranslVector.Z * dAltitude / NormDistance; //50000.0;
 
             if (Math.Abs(dSinus) > double.Epsilon)
             {
-                dAltitude += m_dDeltaHeight;
+                dAltitude += s_dDeltaHeight;
 
                 if (bPosOK)
                 {
@@ -588,16 +588,16 @@ namespace ThreeDconnexion.Plugin
                 }
             }
             else
-                dAltitude += m_dDeltaHeight;
+                dAltitude += s_dDeltaHeight;
 
-            m_TheCamera.Tilt = rTilt;
-            m_TheCamera.TargetDistance = DDxCpteDist(dAltitude, m_TheCamera.Tilt, dRadius);
+            s_TheCamera.Tilt = rTilt;
+            s_TheCamera.TargetDistance = DDxCpteDist(dAltitude, s_TheCamera.Tilt, dRadius);
 
 
             ///////////////////////////////////////////////////////////////////////////////////////
             /// Latitude/Longitude                                                              ///
             ///////////////////////////////////////////////////////////////////////////////////////
-            double factor = m_TheCamera.Altitude / (m_WW.CurrentWorld.EquatorialRadius * m_dNormLatLon_c);//50000.0);
+            double factor = s_TheCamera.Altitude / (s_WW.CurrentWorld.EquatorialRadius * NormLatLon);//50000.0);
             dDeltaLatitude += TranslVector.Y * factor;
             dDeltaLongitude += TranslVector.X * factor;
 
@@ -606,7 +606,7 @@ namespace ThreeDconnexion.Plugin
             ///////////////////////////////////////////////////////////////////////////////////////
             /// Heading                                                                         ///
             ///////////////////////////////////////////////////////////////////////////////////////
-            double dHeading = -AngleAxis.Z * AngleAxis.Angle * World.Settings.CameraRotationSpeed / m_dNormHeading_c; // 250000.0;
+            double dHeading = -AngleAxis.Z * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormHeading; // 250000.0;
 
             ///////////////////////////////////////////////////////////////////////////////////////
             /// set the new View/Camera - position                                              ///
@@ -627,19 +627,19 @@ namespace ThreeDconnexion.Plugin
                                                 , dHeading);
 
             Quaternion4d OrientNew = TiltQuatInv * SpMoQuat * TiltQuat;
-            OrientNew *= m_TheCamera.CurrentOrientation;
-            m_TheCamera.CurrentOrientation = OrientNew;
+            OrientNew *= s_TheCamera.CurrentOrientation;
+            s_TheCamera.CurrentOrientation = OrientNew;
 
-            m_Position = Quaternion4d.QuaternionToEuler(OrientNew);
-            m_TheCamera.Heading = Angle.FromRadians(m_Position.Z);
-            m_WW.SetViewPosition(Angle.FromRadians(m_Position.Y).Degrees
-                                     , Angle.FromRadians(m_Position.X).Degrees
+            s_Position = Quaternion4d.QuaternionToEuler(OrientNew);
+            s_TheCamera.Heading = Angle.FromRadians(s_Position.Z);
+            s_WW.SetViewPosition(Angle.FromRadians(s_Position.Y).Degrees
+                                     , Angle.FromRadians(s_Position.X).Degrees
                                      , dAltitude);
 
 
             World.Settings.CameraSmooth = bBackUpSmooth;
-            m_stopWatch.Reset();
-            m_stopWatch.Start();
+            s_stopWatch.Reset();
+            s_stopWatch.Start();
         }//CameraMode
 
         /// <summary>
@@ -651,12 +651,12 @@ namespace ThreeDconnexion.Plugin
             switch (nKey_p)
             {
                 case 31:
-                    m_TheCamera.Heading = Angle.FromRadians(0.0);
-                    m_WW.SetViewPosition(m_TheCamera.Latitude.Degrees
-                                              , m_TheCamera.Longitude.Degrees
-                                              , m_TheCamera.Altitude);
-                    m_TheCamera.Bank = Angle.FromDegrees(0);
-                    m_TheCamera.Tilt = Angle.FromDegrees(0);
+                    s_TheCamera.Heading = Angle.FromRadians(0.0);
+                    s_WW.SetViewPosition(s_TheCamera.Latitude.Degrees
+                                              , s_TheCamera.Longitude.Degrees
+                                              , s_TheCamera.Altitude);
+                    s_TheCamera.Bank = Angle.FromDegrees(0);
+                    s_TheCamera.Tilt = Angle.FromDegrees(0);
                     break;
                 default:
                     break;
@@ -961,20 +961,20 @@ namespace ThreeDconnexion.Plugin
         internal sealed class C3DxSensor : I3DxSensor
         {
             #region attributes
-            static object m_oComSensor;
+            static object s_oComSensor;
             Type m_tyComSensor;
-            static MethodInfo m_miTranslation;
-            static MethodInfo m_miRotation;
-            static C3DxVector m_TranslVec = new C3DxVector();
-            static C3DxRotation m_AngleAxis = new C3DxRotation();
-            static MethodInfo m_miGetX;
-            static MethodInfo m_miGetY;
-            static MethodInfo m_miGetZ;
+            static MethodInfo s_miTranslation;
+            static MethodInfo s_miRotation;
+            static C3DxVector s_TranslVec = new C3DxVector();
+            static C3DxRotation s_AngleAxis = new C3DxRotation();
+            static MethodInfo s_miGetX;
+            static MethodInfo s_miGetY;
+            static MethodInfo s_miGetZ;
 
-            static MethodInfo m_miRotGetX;
-            static MethodInfo m_miRotGetY;
-            static MethodInfo m_miRotGetZ;
-            static MethodInfo m_miRotGetAngle;
+            static MethodInfo s_miRotGetX;
+            static MethodInfo s_miRotGetY;
+            static MethodInfo s_miRotGetZ;
+            static MethodInfo s_miRotGetAngle;
             #endregion //attributes
 
             /// <summary>
@@ -993,34 +993,34 @@ namespace ThreeDconnexion.Plugin
             /// <param name="r3DxComSensor_p"></param>
             internal C3DxSensor(ref object r3DxComSensor_p)
             {
-                m_oComSensor = r3DxComSensor_p;
+                s_oComSensor = r3DxComSensor_p;
 
-                m_tyComSensor = m_oComSensor.GetType();
+                m_tyComSensor = s_oComSensor.GetType();
                 //MethodInfo[] AllSensorMethods = m_tyComSensor.GetMethods();
 
                 //Translation property
-                m_miTranslation = m_tyComSensor.GetMethod("get_Translation");
-                object result = m_miTranslation.Invoke(m_oComSensor, null);
+                s_miTranslation = m_tyComSensor.GetMethod("get_Translation");
+                object result = s_miTranslation.Invoke(s_oComSensor, null);
                 Type ty3DxVector = result.GetType();
                 //MethodInfo[] TheMethods = ty3DxVector.GetMethods();
-                m_miGetX = ty3DxVector.GetMethod("get_X");
-                m_miGetY = ty3DxVector.GetMethod("get_Y");
-                m_miGetZ = ty3DxVector.GetMethod("get_Z");
+                s_miGetX = ty3DxVector.GetMethod("get_X");
+                s_miGetY = ty3DxVector.GetMethod("get_Y");
+                s_miGetZ = ty3DxVector.GetMethod("get_Z");
 
                 //average time between two Sensor-Events when cap is moved
                 MethodInfo Period = m_tyComSensor.GetMethod("get_Period");
-                m_dPeriod = (double)Period.Invoke(m_oComSensor, null);
+                m_dPeriod = (double)Period.Invoke(s_oComSensor, null);
 
                 //Rotation property
                 //m_miRotation = m_tyComSensor.GetMethod("get_Rotation", new Type[0]);
-                m_miRotation = m_tyComSensor.GetMethod("get_Rotation");
-                result = m_miRotation.Invoke(m_oComSensor, null);
+                s_miRotation = m_tyComSensor.GetMethod("get_Rotation");
+                result = s_miRotation.Invoke(s_oComSensor, null);
                 Type ty3DxRotation = result.GetType();
                 //TheMethods = ty3DxRotation.GetMethods();
-                m_miRotGetX = ty3DxRotation.GetMethod("get_X");
-                m_miRotGetY = ty3DxRotation.GetMethod("get_Y");
-                m_miRotGetZ = ty3DxRotation.GetMethod("get_Z");
-                m_miRotGetAngle = ty3DxRotation.GetMethod("get_Angle");
+                s_miRotGetX = ty3DxRotation.GetMethod("get_X");
+                s_miRotGetY = ty3DxRotation.GetMethod("get_Y");
+                s_miRotGetZ = ty3DxRotation.GetMethod("get_Z");
+                s_miRotGetAngle = ty3DxRotation.GetMethod("get_Angle");
 
                 SensorInput += new TDxSensorInputEvent(UpdateData);
             }
@@ -1036,7 +1036,7 @@ namespace ThreeDconnexion.Plugin
 								{
 									Delegate TheDelegate = Delegate.CreateDelegate(TheSensorEvent.EventHandlerType
 																								  , value.Method);
-									TheSensorEvent.AddEventHandler(m_oComSensor, TheDelegate);
+									TheSensorEvent.AddEventHandler(s_oComSensor, TheDelegate);
 								}
                     }
                     catch (Exception e)
@@ -1054,7 +1054,7 @@ namespace ThreeDconnexion.Plugin
 								{
 									Delegate TheDelegate = Delegate.CreateDelegate(TheSensorEvent.EventHandlerType
 									                                               , value.Method);
-									TheSensorEvent.RemoveEventHandler(m_oComSensor, TheDelegate);
+									TheSensorEvent.RemoveEventHandler(s_oComSensor, TheDelegate);
 								}
                     }
                     catch (Exception e)
@@ -1068,20 +1068,20 @@ namespace ThreeDconnexion.Plugin
             {
                 //object[] ZeroParameter = new object[0];
                 //object Vector = m_miTranslation.Invoke(m_oComSensor, ZeroParameter);
-                object Vector = m_miTranslation.Invoke(m_oComSensor, null);
-                m_TranslVec.X = (double)m_miGetX.Invoke(Vector, null);
-                m_TranslVec.Y = (double)m_miGetY.Invoke(Vector, null);
-                m_TranslVec.Z = (double)m_miGetZ.Invoke(Vector, null);
+                object Vector = s_miTranslation.Invoke(s_oComSensor, null);
+                s_TranslVec.X = (double)s_miGetX.Invoke(Vector, null);
+                s_TranslVec.Y = (double)s_miGetY.Invoke(Vector, null);
+                s_TranslVec.Z = (double)s_miGetZ.Invoke(Vector, null);
                 while (Marshal.ReleaseComObject(Vector) > 0) ;
             }
 
             private static void UpdateAngleAxis()
             {
-                object AngleAxis = m_miRotation.Invoke(m_oComSensor, null);
-                m_AngleAxis.X = (double)m_miRotGetX.Invoke(AngleAxis, null);
-                m_AngleAxis.Y = (double)m_miRotGetY.Invoke(AngleAxis, null);
-                m_AngleAxis.Z = (double)m_miRotGetZ.Invoke(AngleAxis, null);
-                m_AngleAxis.Angle = (double)m_miRotGetAngle.Invoke(AngleAxis, null);
+                object AngleAxis = s_miRotation.Invoke(s_oComSensor, null);
+                s_AngleAxis.X = (double)s_miRotGetX.Invoke(AngleAxis, null);
+                s_AngleAxis.Y = (double)s_miRotGetY.Invoke(AngleAxis, null);
+                s_AngleAxis.Z = (double)s_miRotGetZ.Invoke(AngleAxis, null);
+                s_AngleAxis.Angle = (double)s_miRotGetAngle.Invoke(AngleAxis, null);
                 while (Marshal.ReleaseComObject(AngleAxis) > 0) ;
             }
 
@@ -1089,8 +1089,8 @@ namespace ThreeDconnexion.Plugin
             {
                 get
                 {
-                    I3DxVector Return = m_TranslVec;
-                    m_TranslVec = new C3DxVector(ref m_TranslVec);
+                    I3DxVector Return = s_TranslVec;
+                    s_TranslVec = new C3DxVector(ref s_TranslVec);
                     return Return;
                 }
             }
@@ -1099,8 +1099,8 @@ namespace ThreeDconnexion.Plugin
             {
                 get
                 {
-                    I3DxRotation Return = m_AngleAxis;
-                    m_AngleAxis = new C3DxRotation(m_AngleAxis);
+                    I3DxRotation Return = s_AngleAxis;
+                    s_AngleAxis = new C3DxRotation(s_AngleAxis);
                     return Return;
                 }
             }
@@ -1121,7 +1121,7 @@ namespace ThreeDconnexion.Plugin
         internal sealed class C3DxKeyboard : I3DxKeyboard
         {
             #region attributes
-            static object m_oComKeyboard;
+            static object s_oComKeyboard;
             Type m_tyComKeyboard;
             //static MethodInfo m_miTranslation;
             #endregion
@@ -1132,8 +1132,8 @@ namespace ThreeDconnexion.Plugin
             /// <param name="r3DxComSensor_p"></param>
             internal C3DxKeyboard(ref object r3DxComKeyboard_p)
             {
-                m_oComKeyboard = r3DxComKeyboard_p;
-                m_tyComKeyboard = m_oComKeyboard.GetType();
+                s_oComKeyboard = r3DxComKeyboard_p;
+                m_tyComKeyboard = s_oComKeyboard.GetType();
                 //MethodInfo[] AllSensorMethods = m_tyComKeyboard.GetMethods();
 
             }
@@ -1201,7 +1201,7 @@ namespace ThreeDconnexion.Plugin
 								{
 									Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
 									                                               , value.Method);
-									TheKeyboardEvent.AddEventHandler(m_oComKeyboard, TheDelegate);
+									TheKeyboardEvent.AddEventHandler(s_oComKeyboard, TheDelegate);
 								}
                     }
                     catch (Exception e)
@@ -1220,7 +1220,7 @@ namespace ThreeDconnexion.Plugin
 								{
 									Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
 									                                               , value.Method);
-									TheKeyboardEvent.RemoveEventHandler(m_oComKeyboard, TheDelegate);
+									TheKeyboardEvent.RemoveEventHandler(s_oComKeyboard, TheDelegate);
 								}
                     }
                     catch (Exception e)
@@ -1242,7 +1242,7 @@ namespace ThreeDconnexion.Plugin
 								{
 									Delegate TheDelegate = Delegate.CreateDelegate(TheKeyDownEvent.EventHandlerType
 									                                               , value.Method);
-									TheKeyDownEvent.AddEventHandler(m_oComKeyboard, TheDelegate);
+									TheKeyDownEvent.AddEventHandler(s_oComKeyboard, TheDelegate);
 								}
                     }
                     catch (Exception e)
@@ -1258,7 +1258,7 @@ namespace ThreeDconnexion.Plugin
                         EventInfo TheKeyboardEvent = m_tyComKeyboard.GetEvent("KeyDown");
                         Delegate TheDelegate = Delegate.CreateDelegate(TheKeyboardEvent.EventHandlerType
                                                                        , value.Method);
-                        TheKeyboardEvent.RemoveEventHandler(m_oComKeyboard, TheDelegate);
+                        TheKeyboardEvent.RemoveEventHandler(s_oComKeyboard, TheDelegate);
                     }
                     catch (Exception e)
                     {
@@ -1287,7 +1287,7 @@ namespace ThreeDconnexion.Plugin
             private static extern void LoadTypeLibEx(String strTypeLibName, RegKind regKind,
                 [MarshalAs(UnmanagedType.Interface)] out Object typeLib);
 
-            static readonly object m_Lock = new object();
+            static readonly object s_Lock = new object();
 
             private AssemblyBuilder m_Assembly;
             private object m_OSimpleDevice;
@@ -1425,7 +1425,7 @@ namespace ThreeDconnexion.Plugin
             {
                 get
                 {
-                    lock (m_Lock)
+                    lock (s_Lock)
                     {
                         if ((m_C3dxSensor == null)
                             && (m_OSimpleDevice != null))
@@ -1444,7 +1444,7 @@ namespace ThreeDconnexion.Plugin
             {
                 get
                 {
-                    lock (m_Lock)
+                    lock (s_Lock)
                     {
                         if ((m_C3dxKeyboard == null)
                             && (m_OSimpleDevice != null))

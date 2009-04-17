@@ -10,13 +10,13 @@ namespace Geosoft.GX.DAPGetData
    /// </summary>
    internal class GetDapError : ErrorLogger
    {
-      protected static GetDapError m_hError = null;
+      protected static GetDapError s_hError = null;
 
       internal GetDapError(string strFileName) : base(strFileName)
       {
-         if (m_hError != null)
+         if (s_hError != null)
             throw new ApplicationException("GetDapError has already been constructed");
-         m_hError = this;
+         s_hError = this;
       }
 
       #region Public Access
@@ -24,9 +24,9 @@ namespace Geosoft.GX.DAPGetData
       {
          get
          {
-            if (m_hError == null)
+            if (s_hError == null)
                throw new ApplicationException("GetDapError instance has not been constructed yet");
-            return m_hError;
+            return s_hError;
          }
       }
       #endregion
@@ -35,7 +35,7 @@ namespace Geosoft.GX.DAPGetData
 
       protected override void Disposing()
       {
-         m_hError = null;
+         s_hError = null;
       }
 
       #endregion

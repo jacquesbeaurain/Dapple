@@ -230,7 +230,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return String.Format(CultureInfo.InvariantCulture, "{0}{1}{4}{1}{2}{1}{3}", m_strCacheRoot, Path.DirectorySeparatorChar, CacheSubDir, GetBuilderPathString(this), m_strWorldName);
+         return String.Format(CultureInfo.InvariantCulture, "{0}{1}{4}{1}{2}{1}{3}", s_strCacheRoot, Path.DirectorySeparatorChar, CacheSubDir, GetBuilderPathString(this), m_strWorldName);
       }
 
       protected override void CleanUpLayer(bool bFinal)

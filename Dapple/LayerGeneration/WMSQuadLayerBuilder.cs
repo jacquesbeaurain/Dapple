@@ -316,7 +316,7 @@ namespace Dapple.LayerGeneration
       internal override string GetCachePath()
       {
          WMSServerUri temp = new WMSServerUri(m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl);
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), temp.ToCacheDirectory()), Utility.StringHash.GetBase64HashForPath(m_wmsLayer.Name));
+         return Path.Combine(Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), temp.ToCacheDirectory()), Utility.StringHash.GetBase64HashForPath(m_wmsLayer.Name));
       }
 
       protected override void CleanUpLayer(bool bFinal)

@@ -198,7 +198,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return Path.Combine(Path.Combine(Path.Combine(m_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), "BrowserMap");
+         return Path.Combine(Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), "BrowserMap");
       }
 
       protected override void CleanUpLayer(bool bFinal)
