@@ -91,7 +91,8 @@ namespace Dapple.LayerGeneration
 			NameValueCollection oTokens = HttpUtility.ParseQueryString(oBuilder.Query);
 			foreach (String szKey in oTokens.AllKeys)
 			{
-				if (szKey.Equals("service", StringComparison.InvariantCultureIgnoreCase) ||
+				if (szKey == null ||
+					szKey.Equals("service", StringComparison.InvariantCultureIgnoreCase) ||
 					szKey.Equals("version", StringComparison.InvariantCultureIgnoreCase) ||
 					szKey.Equals("request", StringComparison.InvariantCultureIgnoreCase))
 				{
