@@ -567,7 +567,9 @@ namespace NewServerTree.View
 
 		private void ConfigureEntireTreeDisplay()
 		{
+			c_tvView.BeginUpdate();
 			_ConfigureEntireTreeDisplayRecursive(c_tvView.Nodes[0]);
+			c_tvView.EndUpdate();
 		}
 
 		private void _ConfigureEntireTreeDisplayRecursive(TreeNode oNode)
