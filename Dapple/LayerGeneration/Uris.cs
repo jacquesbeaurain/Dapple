@@ -10,6 +10,7 @@ using Geosoft.Dap.Common;
 using System.Collections.Specialized;
 using System.Globalization;
 using NewServerTree;
+using System.Windows.Forms;
 
 namespace Dapple.LayerGeneration
 {
@@ -454,6 +455,13 @@ namespace Dapple.LayerGeneration
 		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
 			WMSServerModelNode oServer = oModel.AddWMSServer(m_oServer as WMSServerUri, true, false, false) as WMSServerModelNode;
+			if (oServer.Enabled == false)
+				if (DialogResult.Yes == MessageBox.Show(String.Format("The WMS server {1} is in your server list, but is disabled.{2}'{0}' cannot be displayed unless the server is re-enabled.{2}{2}Do you wish to enable {1}?", getAttribute("layer"), m_oServer.ServerTreeDisplayName, Environment.NewLine),
+					"Server is Disabled", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1))
+					oModel.ToggleServer(oServer, true);
+				else
+					return null;
+
 			oServer.WaitForLoad();
 			if (oServer.LoadState == LoadState.LoadFailed) return null;
 
