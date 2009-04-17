@@ -185,7 +185,7 @@ namespace NewServerTree
 			{
 				ClearFavourite(doc);
 			}
-			if (uri is ArcIMSServerUri || uri is DapServerUri || uri is WMSServerUri)
+			else if (uri is ArcIMSServerUri || uri is DapServerUri || uri is WMSServerUri)
 			{
 				SetFavourite(doc, uri.ToString());
 			}
