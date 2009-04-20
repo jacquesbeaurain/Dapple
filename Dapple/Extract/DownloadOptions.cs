@@ -277,19 +277,19 @@ namespace Dapple.Extract
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("minx");
-			oAttr.Value = dProjMinX.ToString(CultureInfo.InvariantCulture);
+			oAttr.Value = dProjMinX.ToString("R", CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("miny");
-			oAttr.Value = dProjMinY.ToString(CultureInfo.InvariantCulture);
+			oAttr.Value = dProjMinY.ToString("R", CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxx");
-			oAttr.Value = dProjMaxX.ToString(CultureInfo.InvariantCulture);
+			oAttr.Value = dProjMaxX.ToString("R", CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("maxy");
-			oAttr.Value = dProjMaxY.ToString(CultureInfo.InvariantCulture);
+			oAttr.Value = dProjMaxY.ToString("R", CultureInfo.InvariantCulture);
          oDatasetElement.Attributes.Append(oAttr);
 
          oAttr = oDatasetElement.OwnerDocument.CreateAttribute("coordinate_system");
@@ -317,15 +317,15 @@ namespace Dapple.Extract
          MainForm.MontajInterface.ProjectBoundingRectangle(strSrcCoordinateSystem, ref dMapBoundMinX_WGS84, ref dMapBoundMinY_WGS84, ref dMapBoundMaxX_WGS84, ref dMapBoundMaxY_WGS84, Resolution.WGS_84);
          MainForm.MontajInterface.ProjectBoundingRectangle(strProjCoordinateSystem, ref dClipBoundMinX_WGS84, ref dClipBoundMinY_WGS84, ref dClipBoundMaxX_WGS84, ref dClipBoundMaxY_WGS84, Resolution.WGS_84);
 
-         oDatasetElement.SetAttribute("map_wgs84_west", dMapBoundMinX_WGS84.ToString("f5"));
-         oDatasetElement.SetAttribute("map_wgs84_south", dMapBoundMinY_WGS84.ToString("f5"));
-         oDatasetElement.SetAttribute("map_wgs84_east", dMapBoundMaxX_WGS84.ToString("f5"));
-         oDatasetElement.SetAttribute("map_wgs84_north", dMapBoundMaxY_WGS84.ToString("f5"));
+         oDatasetElement.SetAttribute("map_wgs84_west", dMapBoundMinX_WGS84.ToString("f5", CultureInfo.InvariantCulture));
+			oDatasetElement.SetAttribute("map_wgs84_south", dMapBoundMinY_WGS84.ToString("f5", CultureInfo.InvariantCulture));
+			oDatasetElement.SetAttribute("map_wgs84_east", dMapBoundMaxX_WGS84.ToString("f5", CultureInfo.InvariantCulture));
+			oDatasetElement.SetAttribute("map_wgs84_north", dMapBoundMaxY_WGS84.ToString("f5", CultureInfo.InvariantCulture));
 
-         oDatasetElement.SetAttribute("clip_wgs84_west", dClipBoundMinX_WGS84.ToString("f5"));
-         oDatasetElement.SetAttribute("clip_wgs84_south", dClipBoundMinY_WGS84.ToString("f5"));
-         oDatasetElement.SetAttribute("clip_wgs84_east", dClipBoundMaxX_WGS84.ToString("f5"));
-         oDatasetElement.SetAttribute("clip_wgs84_north", dClipBoundMaxY_WGS84.ToString("f5"));
+			oDatasetElement.SetAttribute("clip_wgs84_west", dClipBoundMinX_WGS84.ToString("f5", CultureInfo.InvariantCulture));
+			oDatasetElement.SetAttribute("clip_wgs84_south", dClipBoundMinY_WGS84.ToString("f5", CultureInfo.InvariantCulture));
+			oDatasetElement.SetAttribute("clip_wgs84_east", dClipBoundMaxX_WGS84.ToString("f5", CultureInfo.InvariantCulture));
+			oDatasetElement.SetAttribute("clip_wgs84_north", dClipBoundMaxY_WGS84.ToString("f5", CultureInfo.InvariantCulture));
 #endif
 
 			return ExtractSaveResult.Extract;

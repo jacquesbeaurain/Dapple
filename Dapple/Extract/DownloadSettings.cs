@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Threading;
 using MWA.Progress;
 using System.Xml;
+using System.Globalization;
 
 namespace Dapple.Extract
 {
@@ -358,10 +359,10 @@ namespace Dapple.Extract
 #if DEBUG
             System.Xml.XmlElement oDebugElement = oExtractDoc.CreateElement("debug");
             WorldWind.GeographicBoundingBox oViewAOI = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
-            oDebugElement.SetAttribute("wgs84_west", oViewAOI.West.ToString("f2"));
-            oDebugElement.SetAttribute("wgs84_south", oViewAOI.South.ToString("f2"));
-            oDebugElement.SetAttribute("wgs84_east", oViewAOI.East.ToString("f2"));
-            oDebugElement.SetAttribute("wgs84_north", oViewAOI.North.ToString("f2"));
+				oDebugElement.SetAttribute("wgs84_west", oViewAOI.West.ToString("f2", CultureInfo.InvariantCulture));
+				oDebugElement.SetAttribute("wgs84_south", oViewAOI.South.ToString("f2", CultureInfo.InvariantCulture));
+				oDebugElement.SetAttribute("wgs84_east", oViewAOI.East.ToString("f2", CultureInfo.InvariantCulture));
+				oDebugElement.SetAttribute("wgs84_north", oViewAOI.North.ToString("f2", CultureInfo.InvariantCulture));
             oExtractElement.AppendChild(oDebugElement);
 #endif
 				DatasetDisclaimer oDisclaimers = null;
