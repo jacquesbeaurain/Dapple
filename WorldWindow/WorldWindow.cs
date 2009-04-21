@@ -308,6 +308,12 @@ namespace WorldWind
 {
 	public class WorldWindow : Control
 	{
+		const float CameraDoubleClickZoomFactor = 2.0f;
+		const float CameraZoomStepKeyboard = 0.15f;
+		const float CameraZoomAnalogFactor = 1.0f;
+		readonly Color CrosshairColor = Color.Beige;
+		const int CrosshairSize = 10;
+
 		/// <summary>
 		/// Direct3D rendering m_Device3d
 		/// </summary>
@@ -934,8 +940,8 @@ namespace WorldWind
 		Line crossHairs;
 		protected void DrawCrosshairs()
 		{
-			int crossHairColor = World.Settings.CrosshairColor.ToArgb();
-			int crossHairSize = WorldSettings.CrosshairSize;
+			int crossHairColor = CrosshairColor.ToArgb();
+			int crossHairSize = CrosshairSize;
 
 			if (crossHairs == null)
 			{
@@ -1228,7 +1234,7 @@ namespace WorldWind
 				case Keys.Home:
 				case Keys.NumPad7:
 					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-					this.drawArgs.WorldCamera.ZoomStepped(WorldSettings.CameraZoomStepKeyboard);
+					this.drawArgs.WorldCamera.ZoomStepped(CameraZoomStepKeyboard);
 					break;
 				// zoom out
 				case Keys.Subtract:
@@ -1236,7 +1242,7 @@ namespace WorldWind
 				case Keys.End:
 				case Keys.NumPad1:
 					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-					this.drawArgs.WorldCamera.ZoomStepped(-WorldSettings.CameraZoomStepKeyboard);
+					this.drawArgs.WorldCamera.ZoomStepped(-CameraZoomStepKeyboard);
 					break;
 #if DEBUG
 				case Keys.Escape:
@@ -1381,12 +1387,12 @@ namespace WorldWind
 						if (e.Button == MouseButtons.Left)
 						{
 							drawArgs.WorldCamera.SlerpPercentage = 1.0;
-							drawArgs.WorldCamera.Zoom(WorldSettings.CameraDoubleClickZoomFactor);
+							drawArgs.WorldCamera.Zoom(CameraDoubleClickZoomFactor);
 						}
 						else if (e.Button == MouseButtons.Right)
 						{
 							drawArgs.WorldCamera.SlerpPercentage = 1.0;
-							drawArgs.WorldCamera.Zoom(-WorldSettings.CameraDoubleClickZoomFactor);
+							drawArgs.WorldCamera.Zoom(-CameraDoubleClickZoomFactor);
 						}
 					}
 					else
@@ -1556,7 +1562,7 @@ namespace WorldWind
 						// Zoom
 						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
 						if (Math.Abs(deltaYNormalized) > float.Epsilon)
-							this.drawArgs.WorldCamera.Zoom(-deltaYNormalized * WorldSettings.CameraZoomAnalogFactor);
+							this.drawArgs.WorldCamera.Zoom(-deltaYNormalized * CameraZoomAnalogFactor);
 					}
 					else if (!isMouseLeftButtonDown && !isMouseRightButtonDown && isMouseMiddleButtonDown)
 					{

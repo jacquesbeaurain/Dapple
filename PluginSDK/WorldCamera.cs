@@ -10,6 +10,8 @@ namespace WorldWind.Camera
 	/// </summary>
 	public class WorldCamera : CameraBase
 	{
+		const float CameraSlerpPercentage = 0.25f;
+
 		protected Angle _targetLatitude;
 		protected Angle _targetLongitude;
 		protected double _targetAltitude;
@@ -190,7 +192,7 @@ namespace WorldWind.Camera
 			if (EpsilonTest())
             NoSlerpToTargetOrientation();
          else
-            SlerpToTargetOrientation(WorldSettings.CameraSlerpPercentage);
+            SlerpToTargetOrientation(CameraSlerpPercentage);
             // Check for terrain collision
             if (_altitude < _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude)
          {

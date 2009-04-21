@@ -17,6 +17,7 @@ namespace WorldWind.Renderable
 	/// </summary>
 	internal class TiledWFSPlacenameSet : RenderableObject
 	{
+		const float WFSNameSizeMultiplier = 1.0f;
 
 		protected string m_name;
 
@@ -100,7 +101,7 @@ namespace WorldWind.Renderable
 			// Set default render priority
 			m_renderPriority = RenderPriority.Placenames;
 
-			m_fontScaling = WorldSettings.WFSNameSizeMultiplier;
+			m_fontScaling = WFSNameSizeMultiplier;
 		}
 
 		public override bool IsOn
@@ -400,9 +401,9 @@ namespace WorldWind.Renderable
 				{
 					m_renderColor = m_defaultColor;
 					
-					if (WorldSettings.WFSNameSizeMultiplier != m_fontScaling)
+					if (WFSNameSizeMultiplier != m_fontScaling)
 					{
-						m_fontScaling = WorldSettings.WFSNameSizeMultiplier;
+						m_fontScaling = WFSNameSizeMultiplier;
 						// scale font size based on settings
 						FontDescription scaledDescription = m_fontDescription;
 						scaledDescription.Height = (int)(m_fontDescription.Height * m_fontScaling);

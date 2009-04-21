@@ -17,6 +17,9 @@ namespace WorldWind
 	/// </summary>
 	public class DrawArgs : IDisposable
 	{
+		const float DefaultFontSize = 9.0f;
+		const string DefaultFontName = "Tahoma";
+
 		public Device device;
 		internal static System.Windows.Forms.Control ParentControl = null;
 		public int numBoundaryPointsTotal;
@@ -97,7 +100,7 @@ namespace WorldWind
 			DrawArgs.ParentControl = parentForm;
 			DrawArgs.Device = device;
 			this.device = device;
-			defaultDrawingFont = CreateFont( WorldSettings.DefaultFontName, WorldSettings.DefaultFontSize );
+			defaultDrawingFont = CreateFont( DefaultFontName, DefaultFontSize );
 			if(defaultDrawingFont==null)
 				defaultDrawingFont = CreateFont( "", 10 );
 

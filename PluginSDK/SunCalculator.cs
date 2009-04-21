@@ -9,6 +9,8 @@ namespace WorldWind
 	/// </summary>
 	internal static class SunCalculator
 	{
+		const double SunDistance = 150000000000;
+
 		internal static Point3d GetGeocentricPosition(System.DateTime utcDateTime)
 		{
             if (World.Settings.SunSynchedWithTime)
@@ -53,7 +55,7 @@ namespace WorldWind
                 // Fixed sun heading and elevation
                 double worldRadius = 6378137;   // Earth meter
                 Point3d position = MathEngine.SphericalToCartesian(World.Settings.CameraLatitude, World.Settings.CameraLongitude, worldRadius);
-                return GetGeocentricPosition(position, Angle.FromRadians(World.Settings.SunHeading), Angle.FromRadians(World.Settings.SunElevation), WorldSettings.SunDistance);
+                return GetGeocentricPosition(position, Angle.FromRadians(World.Settings.SunHeading), Angle.FromRadians(World.Settings.SunElevation), SunDistance);
             }
 		}
 

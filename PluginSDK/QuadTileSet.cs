@@ -22,6 +22,10 @@ namespace WorldWind.Renderable
    /// </summary>
 	public class QuadTileSet : RenderableObject, IGeoSpatialDownloadTileSet
    {
+		readonly Color DownloadQueuedColor = Color.FromArgb(50, 128, 168, 128);
+		readonly Color DownloadLogoColor = Color.FromArgb(180, 255, 255, 255);
+		const int MaxSimultaneousDownloads = 1;
+
       #region Private Members
 
       protected string m_ServerLogoFilePath;
@@ -447,7 +451,7 @@ namespace WorldWind.Renderable
                   DrawArgs.Device, World.Settings.DownloadProgressColor, 0);
          if (DownloadQueuedTexture == null)
             DownloadQueuedTexture = CreateDownloadRectangle(
-                  DrawArgs.Device, World.Settings.DownloadQueuedColor, 0);
+                  DrawArgs.Device, DownloadQueuedColor, 0);
          if (DownloadTerrainTexture == null)
             DownloadTerrainTexture = CreateDownloadRectangle(
                   DrawArgs.Device, World.Settings.DownloadTerrainRectangleColor, 0);
@@ -835,7 +839,7 @@ namespace WorldWind.Renderable
 
          this.sprite.Draw(m_iconTexture, m_spriteSize,
                new Vector3(1.32f * 48, 1.32f * 48, 0), new Vector3(0, 0, 0),
-               World.Settings.DownloadLogoColor);
+               DownloadLogoColor);
          this.sprite.End();
       }
 
@@ -982,7 +986,7 @@ namespace WorldWind.Renderable
 
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
          {
-            for (int i = 0; i < WorldSettings.MaxSimultaneousDownloads; i++)
+            for (int i = 0; i < MaxSimultaneousDownloads; i++)
             {
                if (m_activeDownloads[i] == null)
                   continue;
@@ -1015,7 +1019,7 @@ namespace WorldWind.Renderable
             }
 
             // Queue new downloads
-            for (int i = 0; i < WorldSettings.MaxSimultaneousDownloads; i++)
+            for (int i = 0; i < MaxSimultaneousDownloads; i++)
             {
                if (m_activeDownloads[i] != null)
                   continue;

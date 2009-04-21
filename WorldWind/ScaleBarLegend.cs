@@ -11,6 +11,8 @@ namespace NASA.Plugins
 {
 	public class ScaleBarLegend : WorldWind.PluginEngine.Plugin
 	{
+		readonly System.Drawing.Color WidgetBackgroundColor = System.Drawing.Color.FromArgb(0, 0, 0, 255);
+
 		FormWidget m_form = null;
 		ScaleBarWidget m_scaleBar = null;
 		System.Windows.Forms.MenuItem m_menuItem = null;
@@ -24,7 +26,7 @@ namespace NASA.Plugins
 			m_form.Location = oDefaultLocation;
 			m_form.ClientSize = new System.Drawing.Size(150, 60);
 			m_form.Text = "Scale Bar Legend";
-			m_form.BackgroundColor = World.Settings.WidgetBackgroundColor;
+			m_form.BackgroundColor = WidgetBackgroundColor;
 			m_form.ParentWidget = DrawArgs.NewRootWidget;
 			m_form.AutoHideHeader = true;
 			m_form.VerticalScrollbarEnabled = false;

@@ -47,21 +47,13 @@ namespace WorldWind
          set { showCompass = value; }
       }
 
-
-		internal const float WFSNameSizeMultiplier = 1.0f;
-
-      [Browsable(true), Category("UI")]
+		[Browsable(true), Category("UI")]
       [Description("Display download progress and rectangles.")]
       public bool ShowDownloadIndicator
       {
          get { return showDownloadIndicator; }
          set { showDownloadIndicator = value; }
       }
-
-		[XmlIgnore]
-		public Color WidgetBackgroundColor = Color.FromArgb(0, 0, 0, 255);
-
-      internal Color DownloadLogoColor = Color.FromArgb(180, 255, 255, 255);
 
 		[XmlIgnore]
 		public Color DownloadProgressColor = Color.FromArgb(50, 255, 0, 0);
@@ -75,16 +67,6 @@ namespace WorldWind
          get { return showCrosshairs; }
          set { showCrosshairs = value; }
       }
-
-		[XmlIgnore]
-		public Color CrosshairColor = Color.Beige;
-
-		[XmlIgnore]
-		public const int CrosshairSize = 10;
-
-		internal const string DefaultFontName = "Tahoma";
-
-		internal const float DefaultFontSize = 9.0f;
 
       #endregion
 
@@ -102,12 +84,6 @@ namespace WorldWind
          get { return showLatLonLines; }
          set { showLatLonLines = value; }
       }
-
-      internal Color LatLonLinesColor = Color.FromArgb(200, 160, 160, 160);
-
-      internal Color EquatorLineColor = Color.FromArgb(160, 64, 224, 208);
-
-      internal Color TropicLinesColor = Color.FromArgb(160, 176, 224, 230);
 
       #endregion
 
@@ -189,8 +165,6 @@ namespace WorldWind
 
       bool cameraSmooth = true;
 
-		internal const float CameraSlerpPercentage = 0.25f;
-
       //[Browsable(true),Category("Camera")]
       public Angle CameraLatitude
       {
@@ -240,20 +214,6 @@ namespace WorldWind
       internal Angle CameraFovMin = Angle.FromDegrees(5);
 
       internal Angle CameraFovMax = Angle.FromDegrees(150);
-
-		[XmlIgnore]
-		public const float CameraZoomStepFactor = 0.015f;
-
-		internal const float CameraZoomAcceleration = 10.0f;
-
-		[XmlIgnore]
-		public const float CameraZoomAnalogFactor = 1.0f;
-
-		[XmlIgnore]
-		public const float CameraZoomStepKeyboard = 0.15f;
-
-		[XmlIgnore]
-		public const float CameraDoubleClickZoomFactor = 2.0f;
 
 		[XmlIgnore]
 		public const float CameraRotationSpeed = 3.5f;
@@ -325,10 +285,6 @@ namespace WorldWind
          }
       }
 
-		internal const double SunDistance = 150000000000;
-
-      internal Color LightColor = Color.FromArgb(255, 255, 255);
-
       internal Color ShadingAmbientColor = Color.FromArgb(50, 50, 50);
 
 		[XmlIgnore]
@@ -337,8 +293,6 @@ namespace WorldWind
       #endregion
 
       #region Terrain
-
-		internal const float MinSamplesPerDegree = 3.0f;
 
       private float verticalExaggeration = 3.0f;
 
@@ -363,21 +317,11 @@ namespace WorldWind
 
       #endregion
 
-      internal Color DownloadQueuedColor = Color.FromArgb(50, 128, 168, 128);
-
       #region Layers
-
-		internal const int MaxSimultaneousDownloads = 1;
 
       internal ArrayList LoadedLayers = new ArrayList();
 
       #endregion
-
-      [Browsable(true), Category("Logging")]
-      public bool Log404Errors
-      {
-         get { return WorldWind.Net.WebDownload.Log404Errors; }
-      }
 
       // comment out ToString() to have namespace+class name being used as filename
       public override string ToString()

@@ -18,6 +18,8 @@ namespace WorldWind.Renderable
 {
 	public class QuadTile : IGeoSpatialDownloadTile, IDisposable
 	{
+		readonly Color LightColor = Color.FromArgb(255, 255, 255);
+
 		/// <summary>
 		/// Child tile location
 		/// </summary>
@@ -1441,7 +1443,7 @@ namespace WorldWind.Renderable
 
 						device.Lights[0].Enabled = true;
 						device.Lights[0].Type = LightType.Directional;
-						device.Lights[0].Diffuse = World.Settings.LightColor;
+						device.Lights[0].Diffuse = LightColor;
 						device.Lights[0].Direction = sunVector;
 
 						device.TextureState[0].ColorOperation = TextureOperation.Modulate;

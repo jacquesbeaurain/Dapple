@@ -1,6 +1,7 @@
 using System;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using System.Drawing;
 
 namespace WorldWind.Renderable
 {
@@ -9,6 +10,10 @@ namespace WorldWind.Renderable
 	/// </summary>
 	public class LatLongGrid : RenderableObject
 	{
+		readonly Color EquatorLineColor = Color.FromArgb(160, 64, 224, 208);
+		readonly Color TropicLinesColor = Color.FromArgb(160, 176, 224, 230);
+		readonly Color LatLonLinesColor = Color.FromArgb(200, 160, 160, 160);
+
 		/// <summary>
 		/// Planet radius (constant)
 		/// </summary>
@@ -131,7 +136,7 @@ namespace WorldWind.Renderable
 					lineVertices[vertexIndex].X = (float)pointXyz.X;
 					lineVertices[vertexIndex].Y = (float)pointXyz.Y;
 					lineVertices[vertexIndex].Z = (float)pointXyz.Z;
-					lineVertices[vertexIndex].Color = World.Settings.LatLonLinesColor.ToArgb();
+					lineVertices[vertexIndex].Color = LatLonLinesColor.ToArgb();
 					vertexIndex++;
 				}
 				drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, LatitudePointCount - 1, lineVertices);
@@ -158,7 +163,7 @@ namespace WorldWind.Renderable
 
 					v = drawArgs.WorldCamera.Project(v - referenceCenter);
 					System.Drawing.Rectangle rect = new System.Drawing.Rectangle((int)v.X + 2, (int)v.Y, 10, 10);
-					drawArgs.defaultDrawingFont.DrawText(null, s, rect.Left, rect.Top, World.Settings.LatLonLinesColor.ToArgb());
+					drawArgs.defaultDrawingFont.DrawText(null, s, rect.Left, rect.Top, LatLonLinesColor.ToArgb());
 				}
 			}
 
@@ -183,7 +188,7 @@ namespace WorldWind.Renderable
 					else if (latLabel < 0)
 						s += "S";
 					System.Drawing.Rectangle rect = new System.Drawing.Rectangle((int)v.X, (int)v.Y, 10, 10);
-					drawArgs.defaultDrawingFont.DrawText(null, s, rect.Left, rect.Top, World.Settings.LatLonLinesColor.ToArgb());
+					drawArgs.defaultDrawingFont.DrawText(null, s, rect.Left, rect.Top, LatLonLinesColor.ToArgb());
 				}
 
 				// Draw latitude line
@@ -196,9 +201,9 @@ namespace WorldWind.Renderable
 					lineVertices[vertexIndex].Z = (float)pointXyz.Z;
 
 					if (latitude == 0)
-						lineVertices[vertexIndex].Color = World.Settings.EquatorLineColor.ToArgb();
+						lineVertices[vertexIndex].Color = EquatorLineColor.ToArgb();
 					else
-						lineVertices[vertexIndex].Color = World.Settings.LatLonLinesColor.ToArgb();
+						lineVertices[vertexIndex].Color = LatLonLinesColor.ToArgb();
 
 					vertexIndex++;
 				}
@@ -273,7 +278,7 @@ namespace WorldWind.Renderable
 				lineVertices[vertexIndex].X = (float)pointXyz.X;
 				lineVertices[vertexIndex].Y = (float)pointXyz.Y;
 				lineVertices[vertexIndex].Z = (float)pointXyz.Z;
-				lineVertices[vertexIndex].Color = World.Settings.TropicLinesColor.ToArgb();
+				lineVertices[vertexIndex].Color = TropicLinesColor.ToArgb();
 				vertexIndex++;
 			}
 			drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, LongitudePointCount - 1, lineVertices);
@@ -283,7 +288,7 @@ namespace WorldWind.Renderable
 			if (drawArgs.WorldCamera.ViewFrustum.ContainsPoint(t1))
 			{
 				t1 = drawArgs.WorldCamera.Project(t1 - referenceCenter);
-				drawArgs.defaultDrawingFont.DrawText(null, label, new System.Drawing.Rectangle((int)t1.X, (int)t1.Y, drawArgs.screenWidth, drawArgs.screenHeight), DrawTextFormat.NoClip, World.Settings.TropicLinesColor.ToArgb());
+				drawArgs.defaultDrawingFont.DrawText(null, label, new System.Drawing.Rectangle((int)t1.X, (int)t1.Y, drawArgs.screenWidth, drawArgs.screenHeight), DrawTextFormat.NoClip, TropicLinesColor.ToArgb());
 			}
 		}
 

@@ -11,6 +11,9 @@ namespace WorldWind.Camera
    /// </summary>
 	public class CameraBase
    {
+		const float CameraZoomStepFactor = 0.015f;
+		const float CameraZoomAcceleration = 10.0f;
+
       protected short _terrainElevation;
       protected short _terrainElevationUnderCamera;   // right under the camera
       protected double _worldRadius;
@@ -780,7 +783,7 @@ namespace WorldWind.Camera
       {
          int currentTickCount = Environment.TickCount;
 
-         double factor = WorldSettings.CameraZoomStepFactor;
+         double factor = CameraZoomStepFactor;
          if (factor < 0)
             factor = 0;
          if (factor > 1)
@@ -795,7 +798,7 @@ namespace WorldWind.Camera
          if (multiplier < 0)
             multiplier = 0;
 
-         multiplier = multiplier * WorldSettings.CameraZoomAcceleration;
+         multiplier = multiplier * CameraZoomAcceleration;
          double mulfac = Math.Pow(1 - factor, multiplier + 1);
          mulfac = Math.Pow(mulfac, Math.Abs(ticks));
 

@@ -13,6 +13,7 @@ namespace WorldWind.Terrain
    /// </summary>
 	public class NltTerrainAccessor : TerrainAccessor
    {
+		const float MinSamplesPerDegree = 3.0f;
       internal static int CacheSize = 100;
       protected TerrainTileService m_terrainTileService;
       //protected WmsImageStore m_wmsElevationSet;
@@ -53,7 +54,7 @@ namespace WorldWind.Terrain
       {
          try
          {
-            if (m_terrainTileService == null || targetSamplesPerDegree < WorldSettings.MinSamplesPerDegree)
+            if (m_terrainTileService == null || targetSamplesPerDegree < MinSamplesPerDegree)
                return 0;
 
             if (m_higherResolutionSubsets != null)
@@ -197,7 +198,7 @@ namespace WorldWind.Terrain
 
          float[,] data = new float[samples, samples];
 
-         if (samplesPerDegree < WorldSettings.MinSamplesPerDegree)
+         if (samplesPerDegree < MinSamplesPerDegree)
          {
             res.ElevationData = data;
             return res;

@@ -515,8 +515,6 @@ namespace Dapple
 					Settings.CacheCleanupInterval,
 					Settings.TotalRunTime);
 
-				WorldWind.Net.WebDownload.Log404Errors = World.Settings.Log404Errors;
-
 				#region Plugin + World Init.
 
 				WorldWind.Terrain.TerrainTileService terrainTileService = new WorldWind.Terrain.TerrainTileService("http://worldwind25.arc.nasa.gov/wwelevation/wwelevation.aspx", "srtm30pluszip", 20, 150, "bil", 12, Path.Combine(Settings.CachePath, "Earth\\TerrainAccessor\\SRTM"), TimeSpan.FromMinutes(30), "Int16");
