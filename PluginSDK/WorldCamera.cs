@@ -16,7 +16,6 @@ namespace WorldWind.Camera
 		protected Angle _targetLongitude;
 		protected double _targetAltitude;
 		protected double _targetDistance;
-      protected double _slerpPercentage = 1.0;
 		protected Angle _targetHeading;
 		protected Angle _targetBank;
 		protected Angle _targetTilt;
@@ -143,14 +142,6 @@ namespace WorldWind.Camera
             this._fov == this._targetFov);
       }
 		#region Public properties
-
-		public override double SlerpPercentage
-      {
-         set
-         {
-            _slerpPercentage = Math.Min(1.0, value);
-         }
-      }
 
 		internal override double TargetAltitude
 		{

@@ -171,17 +171,6 @@ namespace WorldWind.Camera
       }
 
       /// <summary>
-      /// Slerp percentage (will just be supported in certain derivatives)
-      /// </summary>
-		public virtual double SlerpPercentage
-      {
-         set
-         {
-         }
-      }
-
-
-      /// <summary>
       /// Target altitude above sea level (meters) (after travel)
       /// </summary>
       internal virtual double TargetAltitude

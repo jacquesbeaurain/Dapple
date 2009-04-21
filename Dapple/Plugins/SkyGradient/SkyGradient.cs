@@ -91,7 +91,6 @@ namespace Murris.Plugins
 		internal DrawArgs drawArgs;
 		Mesh mesh;
 		double lastAltitude;
-		Color savedSkyColor;
 		Form pDialog;
 		// Defaults
 		double thickness = 60e3;                                        // Atmosphere thickness
@@ -329,8 +328,6 @@ namespace Murris.Plugins
 		{
 			try
 			{
-				savedSkyColor = World.Settings.SkyColor;
-				World.Settings.SkyColor = Color.Black;
 				ReadPresets();
 				isInitialized = true;
 			}
@@ -358,7 +355,6 @@ namespace Murris.Plugins
 		public override void Dispose()
 		{
 			isInitialized = false;
-			World.Settings.SkyColor = savedSkyColor;
 			if (mesh != null)
 			{
 				mesh.Dispose();

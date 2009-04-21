@@ -105,21 +105,6 @@ namespace WorldWind
 		bool m_blShowScaleBar;
 
 
-      /// <summary>
-      /// Color of the sky at sea level
-      /// </summary>
-      int skyColor = Color.FromArgb(115, 155, 185).ToArgb();
-
-      [XmlIgnore]
-      [Browsable(true), Category("UI")]
-      [Editor(typeof(ColorEditor), typeof(UITypeEditor))]
-      [Description("Color of the sky at sea level.")]
-      public Color SkyColor
-      {
-         get { return Color.FromArgb(skyColor); }
-         set { skyColor = value.ToArgb(); }
-      }
-
       bool showClouds;
       [Browsable(true), Category("World")]
       [Description("Whether to show clouds.")]
@@ -205,9 +190,6 @@ namespace WorldWind
          get { return cameraSmooth; }
          set { cameraSmooth = value; }
       }
-
-		[XmlIgnore]
-		public const float CameraSlerpInertia = 0.25f;
 
       internal Angle CameraFov = Angle.FromRadians(Math.PI * 0.25f);
 
