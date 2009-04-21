@@ -48,10 +48,6 @@ namespace WorldWind
 		#endregion
 
 		ProjectedVectorRenderer m_projectedVectorRenderer = null;
-		internal ProjectedVectorRenderer ProjectedVectorRenderer
-		{
-			get { return m_projectedVectorRenderer; }
-		}
 
 		static World()
 		{

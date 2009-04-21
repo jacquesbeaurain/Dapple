@@ -118,14 +118,7 @@ namespace WorldWind
 			for (int i = 0; i < m_lineStrings.Count; i++)
 			{
 				LineString lineString = (LineString)m_lineStrings[i];
-				if (lineString.Remove)
-				{
-					m_lineStrings.RemoveAt(i);
-					RecalculateBoundingBox();
-					LastUpdate = System.DateTime.Now;
-					i--;
-				}
-				else if (lineString.ParentRenderable != null)
+				if (lineString.ParentRenderable != null)
 				{
 					bool visibility = IsRenderableVisible(lineString.ParentRenderable);
 					if (visibility != lineString.Visible)
@@ -152,20 +145,6 @@ namespace WorldWind
 
 			foreach (ProjectedVectorTile tile in m_rootTiles)
 				tile.Update(drawArgs);
-		}
-
-		private void RecalculateBoundingBox()
-		{
-			m_oBounds = GeographicBoundingBox.NullBox();
-
-			foreach (Polygon oPoly in m_polygons)
-			{
-				m_oBounds.Union(oPoly.GetGeographicBoundingBox());
-			}
-			foreach (LineString oLine in m_lineStrings)
-			{
-				m_oBounds.Union(oLine.GetGeographicBoundingBox());
-			}
 		}
 
 		private static bool IsRenderableVisible(WorldWind.Renderable.RenderableObject renderable)

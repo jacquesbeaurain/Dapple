@@ -344,23 +344,6 @@ namespace WorldWind
 			}
 		}
 
-		internal static string GetRenderablePathString(RenderableObject renderable)
-		{
-			return getRenderablePathString(renderable);
-		}
-
-		private static string getRenderablePathString(RenderableObject renderable)
-		{
-			if (renderable.ParentList == null)
-			{
-				return renderable.Name;
-			}
-			else
-			{
-				return getRenderablePathString(renderable.ParentList) + Path.DirectorySeparatorChar + renderable.Name;
-			}
-		}
-
 		/* parseColorNode (overload) */
 		private static System.Drawing.Color parseColorNode(XPathNavigator parentNode)
 		{

@@ -132,7 +132,6 @@
     <Compile Include="..\Version.Assembly.cs">
       <Link>Version.Assembly.cs</Link>
     </Compile>
-    <Compile Include="AltitudeMode.cs" />
     <Compile Include="Angle.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -160,7 +159,6 @@
     </Compile>
     <Compile Include="ImageLayer.cs" />
     <Compile Include="LinearRing.cs" />
-    <Compile Include="LineFeature.cs" />
     <Compile Include="LineGraph.cs" />
     <Compile Include="LineString.cs" />
     <Compile Include="Polygon.cs" />
@@ -244,8 +242,6 @@
     <Compile Include="VisualControl\PropertyBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WFSNameColors.cs" />
-    <Compile Include="WidgetCollection.cs" />
     <Compile Include="Widgets\FormWidget.cs" />
     <Compile Include="Widgets\IInteractive.cs" />
     <Compile Include="Widgets\IWidget.cs" />
@@ -266,8 +262,6 @@
     <Compile Include="WorldSettings.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WorldWind.Widgets.RootWidget.cs" />
-    <Compile Include="WorldWindow.Widgets.Utilities.cs" />
     <Compile Include="WorldWindSettings.cs">
       <SubType>Code</SubType>
     </Compile>

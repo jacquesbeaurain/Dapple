@@ -359,10 +359,8 @@ namespace WorldWind
 
 			//Post m_Device3d creation initialization
 			this.drawArgs = new DrawArgs(m_Device3d, this);
-			this.m_RootWidget = new WorldWind.Widgets.RootWidget(this);
 			this.m_NewRootWidget = new WorldWind.NewWidgets.RootWidget(this);
 
-			DrawArgs.RootWidget = this.m_RootWidget;
 			DrawArgs.NewRootWidget = this.m_NewRootWidget;
 
 			m_FpsTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_FpsTimer_Elapsed);
@@ -699,7 +697,6 @@ namespace WorldWind
 			}
 		}
 
-		WorldWind.Widgets.RootWidget m_RootWidget = null;
 		WorldWind.NewWidgets.RootWidget m_NewRootWidget = null;
 		private bool m_blDeviceLost;
 
@@ -785,7 +782,6 @@ namespace WorldWind
 								lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
 							}
 
-							m_RootWidget.Render(drawArgs);
 							m_NewRootWidget.Render(drawArgs);
 
 							drawArgs.device.RenderState.ZBufferEnable = false;
@@ -1046,11 +1042,6 @@ namespace WorldWind
 			{
 				return;
 			}
-			if (m_RootWidget != null)
-			{
-				bool handled = m_RootWidget.OnKeyPress(e);
-				e.Handled = handled;
-			}
 			if (m_NewRootWidget != null)
 			{
 				bool handled = m_NewRootWidget.OnKeyPress(e);
@@ -1100,11 +1091,7 @@ namespace WorldWind
 		internal bool HandleKeyDown(KeyEventArgs e)
 		{
 
-			bool handled = this.m_RootWidget.OnKeyDown(e);
-			if (handled)
-				return handled;
-
-			handled = this.m_NewRootWidget.OnKeyDown(e);
+			bool handled = this.m_NewRootWidget.OnKeyDown(e);
 			if (handled)
 				return handled;
 
@@ -1242,13 +1229,7 @@ namespace WorldWind
 		/// <returns>Returns true if the key is handled.</returns>
 		internal bool HandleKeyUp(KeyEventArgs e)
 		{
-			bool handled = m_RootWidget.OnKeyUp(e);
-			if (handled)
-			{
-				e.Handled = handled;
-				return handled;
-			}
-			handled = m_NewRootWidget.OnKeyUp(e);
+			bool handled = m_NewRootWidget.OnKeyUp(e);
 			if (handled)
 			{
 				e.Handled = handled;
@@ -1304,13 +1285,7 @@ namespace WorldWind
 
 			try
 			{
-				bool handled = false;
-				handled = m_RootWidget.OnMouseDown(e);
-
-				if (!handled)
-				{
-					handled = m_NewRootWidget.OnMouseDown(e);
-				}
+				m_NewRootWidget.OnMouseDown(e);
 			}
 			finally
 			{
@@ -1342,14 +1317,7 @@ namespace WorldWind
 
 			try
 			{
-				bool handled = false;
-
-				handled = m_RootWidget.OnMouseUp(e);
-
-				if (!handled)
-				{
-					handled = m_NewRootWidget.OnMouseUp(e);
-				}
+				bool handled = m_NewRootWidget.OnMouseUp(e);
 
 				if (!handled)
 				{
@@ -1457,12 +1425,7 @@ namespace WorldWind
 				bool handled = false;
 				if (!isMouseDragging)
 				{
-					handled = m_RootWidget.OnMouseMove(e);
-
-					if (!handled)
-					{
-						handled = m_NewRootWidget.OnMouseMove(e);
-					}
+					handled = m_NewRootWidget.OnMouseMove(e);
 				}
 
 				if (!handled)

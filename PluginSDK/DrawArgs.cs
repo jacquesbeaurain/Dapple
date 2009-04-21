@@ -38,7 +38,6 @@ namespace WorldWind
 		public static bool IsLeftMouseButtonDown;
 		public static bool IsRightMouseButtonDown;
 		internal static DownloadQueue DownloadQueue = new DownloadQueue();
-		public static WorldWind.Widgets.RootWidget RootWidget = null;
 		  public static WorldWind.NewWidgets.RootWidget NewRootWidget = null;
 
 		public bool RenderWireFrame;
