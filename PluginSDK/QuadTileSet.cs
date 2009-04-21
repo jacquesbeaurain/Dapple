@@ -982,7 +982,7 @@ namespace WorldWind.Renderable
 
          lock (((System.Collections.IDictionary)m_downloadRequests).SyncRoot)
          {
-            for (int i = 0; i < World.Settings.MaxSimultaneousDownloads; i++)
+            for (int i = 0; i < WorldSettings.MaxSimultaneousDownloads; i++)
             {
                if (m_activeDownloads[i] == null)
                   continue;
@@ -1015,7 +1015,7 @@ namespace WorldWind.Renderable
             }
 
             // Queue new downloads
-            for (int i = 0; i < World.Settings.MaxSimultaneousDownloads; i++)
+            for (int i = 0; i < WorldSettings.MaxSimultaneousDownloads; i++)
             {
                if (m_activeDownloads[i] != null)
                   continue;

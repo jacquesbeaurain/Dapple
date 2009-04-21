@@ -205,7 +205,7 @@ namespace WorldWind.Renderable
 				drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, LongitudePointCount - 1, lineVertices);
 			}
 
-			if (World.Settings.ShowTropicLines && IsEarth)
+			if (IsEarth)
 				RenderTropicLines(drawArgs);
 
 			// Restore state

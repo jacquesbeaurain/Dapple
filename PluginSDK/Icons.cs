@@ -408,8 +408,6 @@ namespace WorldWind.Renderable
 					// Render description field
 					DrawTextFormat format = DrawTextFormat.NoClip | DrawTextFormat.WordBreak | DrawTextFormat.Bottom;
 					int left = 10;
-					if(World.Settings.ShowLayerManager)
-						left += World.Settings.LayerManagerWidth;
 					Rectangle rect = Rectangle.FromLTRB(left, 10, drawArgs.screenWidth - 10, drawArgs.screenHeight - 10 );
 
 					// Draw outline

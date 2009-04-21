@@ -250,7 +250,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].LevelCount = 10;
             imageStores[0].ImageExtension = ".png";
             imageStores[0].CacheDirectory = GetCachePath();
-            imageStores[0].TextureFormat = World.Settings.TextureFormat;
+            imageStores[0].TextureFormat = WorldSettings.TextureFormat;
             imageStores[0].TextureSizePixels = 256;
 
             m_layer = new QuadTileSet(this.Title, m_oWorldWindow.CurrentWorld, 0, m_oServer.ServerExtents.MaxY, m_oServer.ServerExtents.MinY, m_oServer.ServerExtents.MinX, m_oServer.ServerExtents.MaxX, true, imageStores);

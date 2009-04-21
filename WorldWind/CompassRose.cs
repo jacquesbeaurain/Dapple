@@ -247,20 +247,20 @@ namespace Murris.Plugins
 					// upper right corner
 					offsetY = -((float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 10);
 					offsetZ = -((float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10);
-					if (World.Settings.ShowToolbar) offsetZ += 50;
+					offsetZ += 50;
 					if (World.Settings.ShowPosition) offsetZ += 140;
 					break;
 				case "Top-Center":
 					// up center
 					offsetY = 0;
 					offsetZ = -((float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 10);
-					if (World.Settings.ShowToolbar) offsetZ += 50;
+					offsetZ += 50;
 					break;
 				case "Top-Left":
 					// upper left corner
 					offsetY = ((float)device.Viewport.Width / 2 - spriteSize.Width / 2 - 6);
 					offsetZ = -((float)device.Viewport.Height / 2 - spriteSize.Height / 2 - 4);
-					if (World.Settings.ShowToolbar) offsetZ += 40;
+					offsetZ += 40;
 					break;
 				case "Bottom-Right":
 					// bottom right corner

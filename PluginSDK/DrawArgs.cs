@@ -97,7 +97,7 @@ namespace WorldWind
 			DrawArgs.ParentControl = parentForm;
 			DrawArgs.Device = device;
 			this.device = device;
-			defaultDrawingFont = CreateFont( World.Settings.DefaultFontName, World.Settings.DefaultFontSize );
+			defaultDrawingFont = CreateFont( WorldSettings.DefaultFontName, WorldSettings.DefaultFontSize );
 			if(defaultDrawingFont==null)
 				defaultDrawingFont = CreateFont( "", 10 );
 
@@ -177,10 +177,7 @@ namespace WorldWind
 		{
 			try
 			{
-				if (World.Settings.AntiAliasedText)
-					description.Quality = FontQuality.ClearTypeNatural;
-				else
-					description.Quality = FontQuality.Default;
+				description.Quality = FontQuality.Default;
 
 				// TODO: Improve font cache
 				string hash = description.ToString();//.GetHashCode(); returned hash codes are not correct

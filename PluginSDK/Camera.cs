@@ -228,7 +228,7 @@ namespace WorldWind.Camera
                   double camLon = MathEngine.RadiansToDegrees(cameraCoord.Z);
                   elevation = terrainAccessor.GetCachedElevationAt(camLat, camLon);
                   TerrainElevationUnderCamera = float.IsNaN(elevation) ? (short)0 : (short)elevation;
-                  if (TerrainElevationUnderCamera < 0 && !World.Settings.AllowNegativeAltitude)
+                  if (TerrainElevationUnderCamera < 0)
                      TerrainElevationUnderCamera = 0;
                   // reset timer
                   this.lastElevationUpdate = System.DateTime.Now;
@@ -321,23 +321,17 @@ namespace WorldWind.Camera
       internal virtual void ComputeViewMatrix()
       {
          // Compute camera elevation
-         if (World.Settings.ElevateCameraLookatPoint)
+
+         int minStep = 10;
+         targetCameraElevation = TerrainElevation * World.Settings.VerticalExaggeration;
+         float stepToTarget = targetCameraElevation - curCameraElevation;
+         if (Math.Abs(stepToTarget) > minStep)
          {
-            int minStep = 10;
-            targetCameraElevation = TerrainElevation * World.Settings.VerticalExaggeration;
-            float stepToTarget = targetCameraElevation - curCameraElevation;
-            if (Math.Abs(stepToTarget) > minStep)
-            {
-               float step = 0.05f * stepToTarget;
-               if (Math.Abs(step) < minStep) step = step > 0 ? minStep : -minStep;
-               curCameraElevation = curCameraElevation + step;
-            }
-            else curCameraElevation = targetCameraElevation;
+            float step = 0.05f * stepToTarget;
+            if (Math.Abs(step) < minStep) step = step > 0 ? minStep : -minStep;
+            curCameraElevation = curCameraElevation + step;
          }
-         else
-         {
-            curCameraElevation = 0;
-         }
+         else curCameraElevation = targetCameraElevation;
 
          // Absolute matrices
          ComputeAbsoluteMatrices();
@@ -556,9 +550,6 @@ namespace WorldWind.Camera
       /// <param name="tilt">Tilt in decimal degrees</param>
       internal virtual void PointGoto(double lat, double lon)
       {
-         if (!World.Settings.CameraIsPointGoto)
-            return;
-
          SetPosition(lat, lon, double.NaN, double.NaN, double.NaN, double.NaN);
       }
 
@@ -572,9 +563,6 @@ namespace WorldWind.Camera
       /// <param name="tilt">Tilt in decimal degrees</param>
 		public virtual void PointGoto(Angle lat, Angle lon)
       {
-         if (!World.Settings.CameraIsPointGoto)
-            return;
-
          SetPosition(lat.Degrees, lon.Degrees, double.NaN, double.NaN, double.NaN, double.NaN);
       }
 
@@ -792,7 +780,7 @@ namespace WorldWind.Camera
       {
          int currentTickCount = Environment.TickCount;
 
-         double factor = World.Settings.CameraZoomStepFactor;
+         double factor = WorldSettings.CameraZoomStepFactor;
          if (factor < 0)
             factor = 0;
          if (factor > 1)
@@ -807,7 +795,7 @@ namespace WorldWind.Camera
          if (multiplier < 0)
             multiplier = 0;
 
-         multiplier = multiplier * World.Settings.CameraZoomAcceleration;
+         multiplier = multiplier * WorldSettings.CameraZoomAcceleration;
          double mulfac = Math.Pow(1 - factor, multiplier + 1);
          mulfac = Math.Pow(mulfac, Math.Abs(ticks));
 

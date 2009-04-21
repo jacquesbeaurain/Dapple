@@ -10,12 +10,6 @@ using System.Collections;
 namespace WorldWind
 {
 
-   internal enum MeasureMode
-   {
-      Single,
-      Multi
-   }
-
    /// <summary>
    /// World user configurable settings
    /// TODO: Group settings
@@ -32,8 +26,6 @@ namespace WorldWind
          get { return enableAtmosphericScattering; }
          set { enableAtmosphericScattering = value; }
       }
-
-      internal bool ForceCpuAtmosphere = true;
 
       #endregion
 
@@ -56,11 +48,7 @@ namespace WorldWind
       }
 
 
-      internal bool WFSOutlineText = false;
-
-      internal WFSNameColors WFSNameColors = WFSNameColors.Default;
-
-      internal float WFSNameSizeMultiplier = 1.0f;
+		internal const float WFSNameSizeMultiplier = 1.0f;
 
       [Browsable(true), Category("UI")]
       [Description("Display download progress and rectangles.")]
@@ -80,11 +68,6 @@ namespace WorldWind
 
       internal Color DownloadTerrainRectangleColor = Color.FromArgb(50, 0, 0, 255);
 
-		[XmlIgnore]
-		public bool ShowToolbar = true;
-
-      internal bool ShowLayerManager = false;
-
       [Browsable(true), Category("UI")]
       [Description("Display cross-hair symbol on screen.")]
       public bool ShowCrosshairs
@@ -97,24 +80,11 @@ namespace WorldWind
 		public Color CrosshairColor = Color.Beige;
 
 		[XmlIgnore]
-		public int CrosshairSize = 10;
+		public const int CrosshairSize = 10;
 
-      internal string DefaultFontName = "Tahoma";
+		internal const string DefaultFontName = "Tahoma";
 
-      internal float DefaultFontSize = 9.0f;
-
-      internal int LayerManagerWidth = 200;
-
-      internal bool AntiAliasedText = false;
-
-		[XmlIgnore]
-		public bool VSync = true;
-
-		[XmlIgnore]
-		public bool ShowFpsGraph = false;
-
-		[XmlIgnore]
-		public int FpsFrameCount = 300;
+		internal const float DefaultFontSize = 9.0f;
 
       #endregion
 
@@ -136,8 +106,6 @@ namespace WorldWind
       internal Color LatLonLinesColor = Color.FromArgb(200, 160, 160, 160);
 
       internal Color EquatorLineColor = Color.FromArgb(160, 64, 224, 208);
-
-      internal bool ShowTropicLines = true;
 
       internal Color TropicLinesColor = Color.FromArgb(160, 176, 224, 230);
 
@@ -175,8 +143,6 @@ namespace WorldWind
          get { return Color.FromArgb(skyColor); }
          set { skyColor = value.ToArgb(); }
       }
-
-      internal bool ShowPlanetAxis = false;
 
       bool showClouds;
       [Browsable(true), Category("World")]
@@ -223,14 +189,7 @@ namespace WorldWind
 
       bool cameraSmooth = true;
 
-		internal float CameraSlerpPercentage = 0.25f;
-
-      internal bool ElevateCameraLookatPoint = true;
-
-      internal bool AllowNegativeAltitude = false;
-
-		[XmlIgnore]
-		public bool CameraResetsAtStartup = true;
+		internal const float CameraSlerpPercentage = 0.25f;
 
       //[Browsable(true),Category("Camera")]
       public Angle CameraLatitude
@@ -265,9 +224,7 @@ namespace WorldWind
          set { cameraTilt = value; }
       }
 
-      internal bool CameraIsPointGoto = true;
-
-      [Browsable(true), Category("Camera")]
+		[Browsable(true), Category("Camera")]
       [Description("Smooth camera movement.")]
       public bool CameraSmooth
       {
@@ -276,16 +233,7 @@ namespace WorldWind
       }
 
 		[XmlIgnore]
-		public bool CameraHasMomentum = false;
-
-		[XmlIgnore]
-		public bool CameraTwistLock = true;
-
-		[XmlIgnore]
-		public bool CameraBankLock = true;
-
-		[XmlIgnore]
-		public float CameraSlerpInertia = 0.25f;
+		public const float CameraSlerpInertia = 0.25f;
 
       internal Angle CameraFov = Angle.FromRadians(Math.PI * 0.25f);
 
@@ -294,31 +242,28 @@ namespace WorldWind
       internal Angle CameraFovMax = Angle.FromDegrees(150);
 
 		[XmlIgnore]
-		public float CameraZoomStepFactor = 0.015f;
+		public const float CameraZoomStepFactor = 0.015f;
 
-      internal float CameraZoomAcceleration = 10.0f;
-
-		[XmlIgnore]
-		public float CameraZoomAnalogFactor = 1.0f;
+		internal const float CameraZoomAcceleration = 10.0f;
 
 		[XmlIgnore]
-		public float CameraZoomStepKeyboard = 0.15f;
+		public const float CameraZoomAnalogFactor = 1.0f;
 
 		[XmlIgnore]
-		public float CameraDoubleClickZoomFactor = 2.0f;
+		public const float CameraZoomStepKeyboard = 0.15f;
 
 		[XmlIgnore]
-		public float CameraRotationSpeed = 3.5f;
+		public const float CameraDoubleClickZoomFactor = 2.0f;
+
+		[XmlIgnore]
+		public const float CameraRotationSpeed = 3.5f;
 
       #endregion
 
       #region 3D
 
 		[XmlIgnore]
-      public bool AlwaysRenderWindow = false;
-
-		[XmlIgnore]
-		public Format TextureFormat = Format.Dxt3;
+		public const Format TextureFormat = Format.Dxt3;
 
       private bool m_enableSunShading;
       [Browsable(true), Category("3D settings")]
@@ -380,7 +325,7 @@ namespace WorldWind
          }
       }
 
-      internal double SunDistance = 150000000000;
+		internal const double SunDistance = 150000000000;
 
       internal Color LightColor = Color.FromArgb(255, 255, 255);
 
@@ -389,14 +334,11 @@ namespace WorldWind
 		[XmlIgnore]
 		public Color StandardAmbientColor = Color.FromArgb(64, 64, 64);
 
-		[XmlIgnore]
-		public bool UseBelowNormalPriorityUpdateThread = false;
-
       #endregion
 
       #region Terrain
 
-      internal float MinSamplesPerDegree = 3.0f;
+		internal const float MinSamplesPerDegree = 3.0f;
 
       private float verticalExaggeration = 3.0f;
 
@@ -421,20 +363,11 @@ namespace WorldWind
 
       #endregion
 
-      #region Units
-
-		[XmlIgnore]
-		public Units DisplayUnits = Units.Metric;
-
-      #endregion
-
       internal Color DownloadQueuedColor = Color.FromArgb(50, 128, 168, 128);
 
       #region Layers
 
-      internal bool UseDefaultLayerStates = true;
-
-      internal int MaxSimultaneousDownloads = 1;
+		internal const int MaxSimultaneousDownloads = 1;
 
       internal ArrayList LoadedLayers = new ArrayList();
 

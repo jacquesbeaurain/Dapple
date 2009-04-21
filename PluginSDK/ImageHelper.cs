@@ -40,7 +40,7 @@ namespace WorldWind
 		/// <param name="textureFileName">Path/filename to the image file</param>
 		public static Texture LoadTexture(string textureFileName)
 		{
-			return LoadTexture(textureFileName, 0, World.Settings.TextureFormat);
+			return LoadTexture(textureFileName, 0, WorldSettings.TextureFormat);
 		}
 
 		/// <summary>
@@ -149,7 +149,7 @@ namespace WorldWind
 		/// <param name="textureFileName">Stream containing the image file</param>
 		internal static Texture LoadTexture(Stream textureStream)
 		{
-			return LoadTexture(textureStream, 0, World.Settings.TextureFormat);
+			return LoadTexture(textureStream, 0, WorldSettings.TextureFormat);
 		}
 
 		/// <summary>

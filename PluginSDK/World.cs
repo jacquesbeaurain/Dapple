@@ -87,7 +87,7 @@ namespace WorldWind
 			AtmosphericScatteringSphere.m_fInnerRadius = (float)equatorialRadius;
 			AtmosphericScatteringSphere.m_fOuterRadius = (float)equatorialRadius * 1.025f;
 
-			m_outerSphere.Init((float)equatorialRadius * 1.025f, 75);
+			m_outerSphere.Init((float)equatorialRadius * 1.025f);
 		}
 
 		internal AtmosphericScatteringSphere m_outerSphere = null;
@@ -214,35 +214,6 @@ namespace WorldWind
 			}
 		}
 
-		private void DrawAxis(DrawArgs drawArgs)
-		{
-			CustomVertex.PositionColored[] axis = new CustomVertex.PositionColored[2];
-			Point3d topV = MathEngine.SphericalToCartesian(90, 0, this.EquatorialRadius + 0.15f * this.EquatorialRadius);
-			axis[0].X = (float)topV.X;
-			axis[0].Y = (float)topV.Y;
-			axis[0].Z = (float)topV.Z;
-
-			axis[0].Color = System.Drawing.Color.Pink.ToArgb();
-
-			Point3d botV = MathEngine.SphericalToCartesian(-90, 0, this.EquatorialRadius + 0.15f * this.EquatorialRadius);
-			axis[1].X = (float)botV.X;
-			axis[1].Y = (float)botV.Y;
-			axis[1].Z = (float)botV.Z;
-			axis[1].Color = System.Drawing.Color.Pink.ToArgb();
-
-			drawArgs.device.VertexFormat = CustomVertex.PositionColored.Format;
-			drawArgs.device.TextureState[0].ColorOperation = TextureOperation.Disable;
-			drawArgs.device.Transform.World = Matrix.Translation(
-				(float)-drawArgs.WorldCamera.ReferenceCenter.X,
-				(float)-drawArgs.WorldCamera.ReferenceCenter.Y,
-				(float)-drawArgs.WorldCamera.ReferenceCenter.Z
-				);
-
-			drawArgs.device.DrawUserPrimitives(PrimitiveType.LineStrip, 1, axis);
-			drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
-
-		}
-
 		public override void Update(DrawArgs drawArgs)
 		{
 			if (!this.isInitialized)
@@ -263,7 +234,7 @@ namespace WorldWind
 			// drawArgs.WorldCamera.UpdateTerrainElevation(this.TerrainAccessor); // Moved to WorldWindow.Render()
 
 			if (World.Settings.EnableAtmosphericScattering && m_outerSphere != null)
-				m_outerSphere.Update(drawArgs);
+				m_outerSphere.Update();
 		}
 
 		private void RenderSun(DrawArgs drawArgs)
@@ -409,9 +380,6 @@ namespace WorldWind
 					//render Custom
 					Render(RenderableObjects, WorldWind.Renderable.RenderPriority.Custom, drawArgs);
 					DirectXProfiler.EndEvent();
-
-					if (Settings.ShowPlanetAxis)
-						this.DrawAxis(drawArgs);
 				}
 				catch (Exception ex)
 				{
@@ -591,19 +559,17 @@ namespace WorldWind
 	internal class AtmosphericScatteringSphere
 	{
 		internal float m_radius;
-		protected int m_numberSlices;
 
 		internal static float m_fInnerRadius;
 		internal static float m_fOuterRadius;
 		internal static int TilesHigh = 4;
 		internal static int TilesWide = 8;
 
-		internal void Init(float radius, int slices)
+		internal void Init(float radius)
 		{
 			try
 			{
 				m_radius = radius;
-				m_numberSlices = slices;
 
 				Point3d sunPosition = SunCalculator.GetGeocentricPosition(TimeKeeper.CurrentTimeUtc);
 				Point3d sunVector = new Point3d(
@@ -622,31 +588,13 @@ namespace WorldWind
 
 				m_meshList.Clear();
 
-				double latRange = 180.0 / (double)TilesHigh;
-				double lonRange = 360.0 / (double)TilesWide;
-
-				int meshDensity = m_numberSlices / TilesHigh;
-
 				for (int y = 0; y < TilesHigh; y++)
 				{
 					for (int x = 0; x < TilesWide; x++)
 					{
-						MeshSubset mesh = new MeshSubset();
-						double north = y * latRange + latRange - 90;
-						double south = y * latRange - 90;
-
-						double west = x * lonRange - 180;
-						double east = x * lonRange + lonRange - 180;
-
-						mesh.Vertices = CreateMesh(south, north, west, east, meshDensity);
-						mesh.HigherResolutionVertices = CreateMesh(south, north, west, east, 2 * meshDensity);
-						mesh.BoundingBox = new BoundingBox((float)south, (float)north, (float)west, (float)east, (float)radius, (float)radius);
-						m_meshList.Add(mesh);
+						m_meshList.Add(new MeshSubset());
 					}
 				}
-
-				m_indices = computeIndices(meshDensity);
-				m_indicesHighResolution = computeIndices(2 * meshDensity);
 
 				m_nSamples = 4;		// Number of sample rays to use in integral equation
 				m_Kr = 0.0025f;		// Rayleigh scattering constant
@@ -680,97 +628,55 @@ namespace WorldWind
 
 		class MeshSubset
 		{
-			internal CustomVertex.PositionColored[] Vertices = null;
-			internal CustomVertex.PositionColored[] HigherResolutionVertices = null;
-			internal BoundingBox BoundingBox = null;
 		}
 		System.Collections.Generic.List<MeshSubset> m_meshList = new System.Collections.Generic.List<MeshSubset>();
 
 		System.Threading.Thread m_backgroundThread = null;
 		bool active;
 		System.DateTime m_lastOpticalUpdate = System.DateTime.MinValue;
-		bool m_canDoShaders;
 
 		private void Updater()
 		{
-			try
+			while (active)
 			{
-				while (active)
+				if (World.Settings.EnableAtmosphericScattering && m_meshList.Count > 0)
 				{
-					if (World.Settings.EnableAtmosphericScattering && m_meshList.Count > 0)
+					System.DateTime currentTime = TimeKeeper.CurrentTimeUtc;
+					// Update Sun
+					UpdateLightVector();
+
+					m_nSamples = 4;		// Number of sample rays to use in integral equation
+					m_Kr = 0.0025f;		// Rayleigh scattering constant
+					m_Kr4PI = m_Kr * 4.0f * (float)Math.PI;
+					m_Km = 0.0015f;		// Mie scattering constant
+					m_Km4PI = m_Km * 4.0f * (float)Math.PI;
+					m_ESun = 15.0f;		// Sun brightness constant
+					m_g = -0.85f;		// The Mie phase asymmetry factor
+
+					m_fWavelength[0] = 0.650f;		// 650 nm for red
+					m_fWavelength[1] = 0.570f;		// 570 nm for green
+					m_fWavelength[2] = 0.475f;		// 475 nm for blue
+					m_fWavelength4[0] = (float)Math.Pow(m_fWavelength[0], 4.0f);
+					m_fWavelength4[1] = (float)Math.Pow(m_fWavelength[1], 4.0f);
+					m_fWavelength4[2] = (float)Math.Pow(m_fWavelength[2], 4.0f);
+
+					m_fRayleighScaleDepth = 0.25f;
+					m_fMieScaleDepth = 0.1f;
+
+					if (currentTime.Subtract(m_lastOpticalUpdate) > TimeSpan.FromSeconds(100))
 					{
-						System.DateTime currentTime = TimeKeeper.CurrentTimeUtc;
-						// Update Sun
-						UpdateLightVector();
-						if (World.Settings.ForceCpuAtmosphere)
-						{
-							m_nSamples = 4;		// Number of sample rays to use in integral equation
-							m_Kr = 0.0025f;		// Rayleigh scattering constant
-							m_Kr4PI = m_Kr * 4.0f * (float)Math.PI;
-							m_Km = 0.0015f;		// Mie scattering constant
-							m_Km4PI = m_Km * 4.0f * (float)Math.PI;
-							m_ESun = 15.0f;		// Sun brightness constant
-							m_g = -0.85f;		// The Mie phase asymmetry factor
-
-							m_fWavelength[0] = 0.650f;		// 650 nm for red
-							m_fWavelength[1] = 0.570f;		// 570 nm for green
-							m_fWavelength[2] = 0.475f;		// 475 nm for blue
-							m_fWavelength4[0] = (float)Math.Pow(m_fWavelength[0], 4.0f);
-							m_fWavelength4[1] = (float)Math.Pow(m_fWavelength[1], 4.0f);
-							m_fWavelength4[2] = (float)Math.Pow(m_fWavelength[2], 4.0f);
-
-							m_fRayleighScaleDepth = 0.25f;
-							m_fMieScaleDepth = 0.1f;
-
-							if (currentTime.Subtract(m_lastOpticalUpdate) > TimeSpan.FromSeconds(100))
-							{
-								MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
-								m_lastOpticalUpdate = currentTime;
-							}
-						}
-						else
-						{
-							m_nSamples = 2;		// Number of sample rays to use in integral equation
-							m_Kr = 0.0025f;		// Rayleigh scattering constant
-							m_Kr4PI = m_Kr * 4.0f * (float)Math.PI;
-							m_Km = 0.0015f;		// Mie scattering constant
-							m_Km4PI = m_Km * 4.0f * (float)Math.PI;
-							m_ESun = 15.0f;		// Sun brightness constant
-							m_g = -0.95f;		// The Mie phase asymmetry factor
-							m_fScale = 1 / (m_fOuterRadius - m_fInnerRadius);
-
-							m_fWavelength[0] = 0.650f;		// 650 nm for red
-							m_fWavelength[1] = 0.570f;		// 570 nm for green
-							m_fWavelength[2] = 0.475f;		// 475 nm for blue
-							m_fWavelength4[0] = (float)Math.Pow(m_fWavelength[0], 4.0f);
-							m_fWavelength4[1] = (float)Math.Pow(m_fWavelength[1], 4.0f);
-							m_fWavelength4[2] = (float)Math.Pow(m_fWavelength[2], 4.0f);
-
-							m_fRayleighScaleDepth = 0.25f;
-							m_fMieScaleDepth = 0.1f;
-						}
+						MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+						m_lastOpticalUpdate = currentTime;
 					}
-					System.Threading.Thread.Sleep(500);
 				}
+				System.Threading.Thread.Sleep(500);
 			}
-			catch
-			{ }
 		}
-		internal void Update(DrawArgs drawArgs)
+
+		internal void Update()
 		{
-
-
 			if (m_backgroundThread == null)
 			{
-				if (drawArgs.device.DeviceCaps.PixelShaderVersion.Major >= 2)
-				{
-					m_canDoShaders = true;
-				}
-				else
-				{
-					m_canDoShaders = false;
-				}
-
 				active = true;
 				m_backgroundThread = new System.Threading.Thread(new System.Threading.ThreadStart(Updater));
 				m_backgroundThread.Name = ThreadNames.AtmosphericScatteringBackground;
@@ -780,60 +686,6 @@ namespace WorldWind
 			}
 		}
 
-		CustomVertex.PositionColored[] CreateMesh(double minLat, double maxLat, double minLon, double maxLon, int meshPointCount)
-		{
-			int upperBound = meshPointCount - 1;
-			float scaleFactor = (float)1 / upperBound;
-			double latrange = Math.Abs(maxLat - minLat);
-			double lonrange;
-			if (minLon < maxLon)
-				lonrange = maxLon - minLon;
-			else
-				lonrange = 360.0f + maxLon - minLon;
-
-			CustomVertex.PositionColored[] vertices = new CustomVertex.PositionColored[meshPointCount * meshPointCount];
-
-			for (int i = 0; i < meshPointCount; i++)
-			{
-				for (int j = 0; j < meshPointCount; j++)
-				{
-					Point3d pos = MathEngine.SphericalToCartesian(
-						maxLat - scaleFactor * latrange * i,
-						minLon + scaleFactor * lonrange * j,
-						m_radius);
-
-					vertices[i * meshPointCount + j].X = (float)pos.X;
-					vertices[i * meshPointCount + j].Y = (float)pos.Y;
-					vertices[i * meshPointCount + j].Z = (float)pos.Z;
-				}
-			}
-
-			return vertices;
-		}
-
-		short[] computeIndices(int meshPointCount)
-		{
-			int upperBound = meshPointCount - 1;
-			short[] indices = new short[2 * upperBound * upperBound * 3];
-			for (int i = 0; i < upperBound; i++)
-			{
-				for (int j = 0; j < upperBound; j++)
-				{
-					indices[(2 * 3 * i * upperBound) + 6 * j] = (short)(i * meshPointCount + j);
-					indices[(2 * 3 * i * upperBound) + 6 * j + 1] = (short)((i + 1) * meshPointCount + j);
-					indices[(2 * 3 * i * upperBound) + 6 * j + 2] = (short)(i * meshPointCount + j + 1);
-
-					indices[(2 * 3 * i * upperBound) + 6 * j + 3] = (short)(i * meshPointCount + j + 1);
-					indices[(2 * 3 * i * upperBound) + 6 * j + 4] = (short)((i + 1) * meshPointCount + j);
-					indices[(2 * 3 * i * upperBound) + 6 * j + 5] = (short)((i + 1) * meshPointCount + j + 1);
-				}
-			}
-
-			return indices;
-		}
-
-		short[] m_indices = null;
-		short[] m_indicesHighResolution = null;
 		float[] fCameraDepth = new float[4] { 0, 0, 0, 0 };
 		float[] fLightDepth = new float[4];
 		float[] fSampleDepth = new float[4];
@@ -1272,13 +1124,12 @@ namespace WorldWind
 		// -- End SkyGradiant geometry addition
 
 		static Effect skyFromSpaceEffect = null;
-		static Effect skyFromAtmosphere = null;
 
 		internal void Render(DrawArgs drawArgs)
 		{
 			try
 			{
-				if (m_meshList.Count > 0 && ((!World.Settings.ForceCpuAtmosphere && m_canDoShaders) || m_opticalDepthBuffer1 != null))
+				if (m_meshList.Count > 0 && m_opticalDepthBuffer1 != null)
 				{
 					double horizonSpan = HorizonSpan(drawArgs);
 					if (horizonSpan == 0) return;   // Check if horizon visible (PM 2006-11-28)
@@ -1304,86 +1155,19 @@ namespace WorldWind
 						(float)-drawArgs.WorldCamera.ReferenceCenter.Z
 						);
 
-					bool doHighResolution = (drawArgs.WorldCamera.Altitude < 300000);
-
 					Frustum frustum = new Frustum();
 
 					frustum.Update(
 						Matrix4d.Multiply(ConvertDX.ToMatrix4d(drawArgs.device.Transform.World),
 						Matrix4d.Multiply(ConvertDX.ToMatrix4d(drawArgs.device.Transform.View), ConvertDX.ToMatrix4d(drawArgs.device.Transform.Projection))));
 
-					if (!World.Settings.ForceCpuAtmosphere && m_canDoShaders)
-					{
-						Effect shader = null;
-						// Update Sun
-						UpdateLightVector();
-						if (vCamera.Length >= m_fOuterRadius)
-							shader = skyFromSpaceEffect;
-						else
-							shader = skyFromAtmosphere;
-
-						shader.Technique = "Sky";
-						shader.SetValue("v3CameraPos", new Vector4((float)vCamera.X, (float)vCamera.Y, (float)vCamera.Z, 0));
-						shader.SetValue("v3LightPos", Vector4.Normalize(new Vector4((float)m_vLightDirection.X, (float)m_vLightDirection.Y, (float)m_vLightDirection.Z, 0)));
-						shader.SetValue("WorldViewProj", Matrix.Multiply(drawArgs.device.Transform.World, Matrix.Multiply(drawArgs.device.Transform.View, drawArgs.device.Transform.Projection)));
-						shader.SetValue("v3InvWavelength", new Vector4(1.0f / m_fWavelength4[0], 1.0f / m_fWavelength4[1], 1.0f / m_fWavelength4[2], 0));
-						shader.SetValue("fCameraHeight", (float)vCamera.Length);
-						shader.SetValue("fCameraHeight2", (float)vCamera.LengthSq);
-						shader.SetValue("fInnerRadius", m_fInnerRadius);
-						shader.SetValue("fInnerRadius2", m_fInnerRadius * m_fInnerRadius);
-						shader.SetValue("fOuterRadius", m_fOuterRadius);
-						shader.SetValue("fOuterRadius2", m_fOuterRadius * m_fOuterRadius);
-						shader.SetValue("fKrESun", m_Kr * m_ESun);
-						shader.SetValue("fKmESun", m_Km * m_ESun);
-						shader.SetValue("fKr4PI", m_Kr4PI);
-						shader.SetValue("fKm4PI", m_Km4PI);
-						shader.SetValue("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
-						shader.SetValue("fScaleDepth", m_fRayleighScaleDepth);
-						shader.SetValue("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
-						shader.SetValue("g", m_g);
-						shader.SetValue("g2", m_g * m_g);
-						shader.SetValue("nSamples", m_nSamples);
-						shader.SetValue("fSamples", m_nSamples);
-
-						for (int i = 0; i < m_meshList.Count; i++)
-						{
-							if (!frustum.Intersects(m_meshList[i].BoundingBox))
-								continue;
-
-							int numPasses = shader.Begin(0);
-							for (int j = 0; j < numPasses; j++)
-							{
-								shader.BeginPass(j);
-								if (doHighResolution)
-									drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, m_meshList[i].HigherResolutionVertices.Length, m_indicesHighResolution.Length / 3, m_indicesHighResolution, true, m_meshList[i].HigherResolutionVertices);
-								else
-									drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, m_meshList[i].Vertices.Length, m_indices.Length / 3, m_indices, true, m_meshList[i].Vertices);
-								shader.EndPass();
-							}
-							shader.End();
-						}
-					}
-					else
-					{
-						/*for (int i = 0; i < m_meshList.Count; i++)
-						{
-							if (!frustum.Intersects(m_meshList[i].BoundingBox))
-								continue;
-
-							UpdateColor(drawArgs, m_meshList[i], doHighResolution);
-							if (doHighResolution)
-								drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, m_meshList[i].HigherResolutionVertices.Length, m_indicesHighResolution.Length / 3, m_indicesHighResolution, true, m_meshList[i].HigherResolutionVertices);
-							else
-								drawArgs.device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, m_meshList[i].Vertices.Length, m_indices.Length / 3, m_indices, true, m_meshList[i].Vertices);
-							
-						} */
-						// Update Sun
-						UpdateLightVector();
-						// Use SkyGradient geometry
-						UpdateSkyMesh(drawArgs, horizonSpan);
-						drawArgs.device.RenderState.CullMode = Cull.Clockwise;
-						skyMesh.DrawSubset(0);
-					}
+					// Update Sun
+					UpdateLightVector();
+					// Use SkyGradient geometry
+					UpdateSkyMesh(drawArgs, horizonSpan);
+					drawArgs.device.RenderState.CullMode = Cull.Clockwise;
+					skyMesh.DrawSubset(0);
+					
 					drawArgs.device.Transform.World = ConvertDX.FromMatrix4d(drawArgs.WorldCamera.WorldMatrix);
 				}
 			}
@@ -1455,18 +1239,6 @@ namespace WorldWind
 
 				if (outerrors != null && outerrors.Length > 0)
 					Log.Write(Log.Levels.Error, outerrors);
-
-				Stream skyFromAtmosphereStream = assembly.GetManifestResourceStream("WorldWind.Shaders.SkyFromAtmosphere.fx");
-
-				skyFromAtmosphere =
-					Effect.FromStream(
-					device,
-					skyFromAtmosphereStream,
-					null,
-					null,
-					ShaderFlags.None,
-					null,
-					out outerrors);
 
 				if (outerrors != null && outerrors.Length > 0)
 					Log.Write(Log.Levels.Error, outerrors);

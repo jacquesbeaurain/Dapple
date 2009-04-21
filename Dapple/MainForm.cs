@@ -2108,7 +2108,7 @@ namespace Dapple
 
 		private void c_bResetTilt_Click(object sender, EventArgs e)
 		{
-			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(
 					 c_oWorldWindow.Latitude,
 					 c_oWorldWindow.Longitude,
@@ -2120,7 +2120,7 @@ namespace Dapple
 
 		private void c_bResetRotation_Click(object sender, EventArgs e)
 		{
-			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(
 					 c_oWorldWindow.Latitude,
 					 c_oWorldWindow.Longitude,
@@ -2131,7 +2131,7 @@ namespace Dapple
 
 		private void c_bResetCamera_Click(object sender, EventArgs e)
 		{
-			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			c_oWorldWindow.DrawArgs.WorldCamera.Reset();
 		}
 
@@ -2222,7 +2222,7 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 				c_oWorldWindow.DrawArgs.WorldCamera.Zoom(2.0f);
 			}
 			else
@@ -2234,7 +2234,7 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 				c_oWorldWindow.DrawArgs.WorldCamera.Zoom(-2.0f);
 			}
 			else
@@ -2247,7 +2247,7 @@ namespace Dapple
 			if (!this.bNavTimer)
 			{
 				Angle rotateClockwise = Angle.FromRadians(-0.2f);
-				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 				c_oWorldWindow.DrawArgs.WorldCamera.Heading += rotateClockwise;
 				c_oWorldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateClockwise);
 			}
@@ -2261,7 +2261,7 @@ namespace Dapple
 			if (!this.bNavTimer)
 			{
 				Angle rotateCounterclockwise = Angle.FromRadians(0.2f);
-				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 				c_oWorldWindow.DrawArgs.WorldCamera.Heading += rotateCounterclockwise;
 				c_oWorldWindow.DrawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, rotateCounterclockwise);
 			}
@@ -2274,7 +2274,7 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 				c_oWorldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(-10.0f);
 			}
 			else
@@ -2286,7 +2286,7 @@ namespace Dapple
 			this.timerNavigation.Enabled = false;
 			if (!this.bNavTimer)
 			{
-				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+				c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 				c_oWorldWindow.DrawArgs.WorldCamera.Tilt += Angle.FromDegrees(10.0f);
 			}
 			else
@@ -2706,7 +2706,7 @@ namespace Dapple
 				if (bGoto && view.View.Hascameraorientation())
 				{
 					cameraorientationType orient = view.View.cameraorientation;
-					c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+					c_oWorldWindow.DrawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 					c_oWorldWindow.DrawArgs.WorldCamera.SetPosition(orient.lat.Value, orient.lon.Value, orient.heading.Value, orient.altitude.Value, orient.tilt.Value);
 				}
 

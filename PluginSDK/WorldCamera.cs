@@ -190,7 +190,7 @@ namespace WorldWind.Camera
 			if (EpsilonTest())
             NoSlerpToTargetOrientation();
          else
-            SlerpToTargetOrientation(World.Settings.CameraSlerpPercentage);
+            SlerpToTargetOrientation(WorldSettings.CameraSlerpPercentage);
             // Check for terrain collision
             if (_altitude < _terrainElevationUnderCamera * World.Settings.VerticalExaggeration + minimumAltitude)
          {
@@ -372,21 +372,12 @@ namespace WorldWind.Camera
 
 		public override void RotationYawPitchRoll(Angle yaw, Angle pitch, Angle roll)
 		{
-			if(World.Settings.CameraHasMomentum)
-			{
-				_latitudeMomentum += pitch/100;
-				_longitudeMomentum += yaw/100;
-				_headingMomentum += roll/100;
-			}
-
 			this._targetOrientation = Quaternion4d.RotationYawPitchRoll( yaw.Radians, pitch.Radians, roll.Radians ) * _targetOrientation;
 			Point3d v = Quaternion4d.QuaternionToEuler(_targetOrientation);
 			if(!double.IsNaN(v.Y))
 			{
 				this._targetLatitude.Radians = v.Y;
 				this._targetLongitude.Radians = v.X;
-				if(!World.Settings.CameraTwistLock)
-					_targetHeading.Radians = v.Z;
 			}
 
 			base.RotationYawPitchRoll(yaw,pitch,roll);
@@ -399,12 +390,6 @@ namespace WorldWind.Camera
 		/// <param name="lon">Longitude offset</param>
 		public override void Pan(Angle lat, Angle lon)
 		{
-			if(World.Settings.CameraHasMomentum)
-			{
-				_latitudeMomentum += lat/100;
-				_longitudeMomentum += lon/100;
-			}
-
 			if(Angle.IsNaN(lat)) lat = this._targetLatitude;
 			if(Angle.IsNaN(lon)) lon = this._targetLongitude;
 			lat += _targetLatitude;
@@ -435,19 +420,6 @@ namespace WorldWind.Camera
 					m_Orientation = _targetOrientation;
 				}
 			}
-		}
-
-		public override void Update(Device device)
-		{
-			if(World.Settings.CameraHasMomentum)
-			{
-				base.RotationYawPitchRoll(
-					_longitudeMomentum,
-					_latitudeMomentum,
-					_headingMomentum );
-			}
-
-			base.Update(device);
 		}
 
 		public override void SetPosition(double lat, double lon, double heading, double _altitude, double tilt, double bank)

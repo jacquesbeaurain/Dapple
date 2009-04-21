@@ -100,7 +100,7 @@ namespace WorldWind.Renderable
 			// Set default render priority
 			m_renderPriority = RenderPriority.Placenames;
 
-			m_fontScaling = World.Settings.WFSNameSizeMultiplier;
+			m_fontScaling = WorldSettings.WFSNameSizeMultiplier;
 		}
 
 		public override bool IsOn
@@ -398,29 +398,11 @@ namespace WorldWind.Renderable
 			{
 				lock (this)
 				{
-					//override colors for visibility
-					switch (World.Settings.WFSNameColors)
+					m_renderColor = m_defaultColor;
+					
+					if (WorldSettings.WFSNameSizeMultiplier != m_fontScaling)
 					{
-						case WFSNameColors.Black:
-							m_renderColor = System.Drawing.Color.Black.ToArgb();
-							break;
-
-						case WFSNameColors.White:
-							m_renderColor = System.Drawing.Color.White.ToArgb();
-							break;
-
-						case WFSNameColors.Gray:
-							m_renderColor = System.Drawing.Color.DarkGray.ToArgb();
-							break;
-
-						case WFSNameColors.Default:
-							m_renderColor = m_defaultColor;
-							break;
-					}
-
-					if (World.Settings.WFSNameSizeMultiplier != m_fontScaling)
-					{
-						m_fontScaling = World.Settings.WFSNameSizeMultiplier;
+						m_fontScaling = WorldSettings.WFSNameSizeMultiplier;
 						// scale font size based on settings
 						FontDescription scaledDescription = m_fontDescription;
 						scaledDescription.Height = (int)(m_fontDescription.Height * m_fontScaling);
@@ -430,14 +412,6 @@ namespace WorldWind.Renderable
 					Point3d cameraPosition = drawArgs.WorldCamera.Position;
 					if (m_placeNames == null)
 						return;
-
-					// Black outline for light text, white outline for dark text
-					int outlineColor = unchecked((int)0x80ffffff);
-					int brightness = (m_renderColor & 0xff) +
-						((m_renderColor >> 8) & 0xff) +
-						((m_renderColor >> 16) & 0xff);
-					if (brightness > 255 * 3 / 2)
-						outlineColor = unchecked((int)0x80000000);
 
 					if (m_sprite != null)
 						m_sprite.Begin(SpriteFlags.AlphaBlend);
@@ -490,14 +464,6 @@ namespace WorldWind.Renderable
 						int y = (int)Math.Round(pv.Y);
 
 						rect.Offset(x, y);
-
-						if (World.Settings.WFSOutlineText)
-						{
-							m_drawingFont.DrawText(null, label, x - 1, y - 1, outlineColor);
-							m_drawingFont.DrawText(null, label, x - 1, y + 1, outlineColor);
-							m_drawingFont.DrawText(null, label, x + 1, y - 1, outlineColor);
-							m_drawingFont.DrawText(null, label, x + 1, y + 1, outlineColor);
-						}
 
 						m_drawingFont.DrawText(null, label, x, y, m_renderColor);
 

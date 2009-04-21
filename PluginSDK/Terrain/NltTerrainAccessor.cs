@@ -53,7 +53,7 @@ namespace WorldWind.Terrain
       {
          try
          {
-            if (m_terrainTileService == null || targetSamplesPerDegree < World.Settings.MinSamplesPerDegree)
+            if (m_terrainTileService == null || targetSamplesPerDegree < WorldSettings.MinSamplesPerDegree)
                return 0;
 
             if (m_higherResolutionSubsets != null)
@@ -197,7 +197,7 @@ namespace WorldWind.Terrain
 
          float[,] data = new float[samples, samples];
 
-         if (samplesPerDegree < World.Settings.MinSamplesPerDegree)
+         if (samplesPerDegree < WorldSettings.MinSamplesPerDegree)
          {
             res.ElevationData = data;
             return res;

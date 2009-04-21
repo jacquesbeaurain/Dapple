@@ -378,19 +378,7 @@ namespace WorldWind
 				m_World = value;
 				if (m_World != null)
 				{
-					MomentumCamera camera = new MomentumCamera(m_World.EquatorialRadius);
-					if (!World.Settings.CameraResetsAtStartup)
-					{
-						camera.SetPosition(
-							 World.Settings.CameraLatitude.Degrees,
-							 World.Settings.CameraLongitude.Degrees,
-							 World.Settings.CameraHeading.Degrees,
-							 World.Settings.CameraAltitude,
-							 World.Settings.CameraTilt.Degrees,
-							 0
-							 );
-					}
-					this.drawArgs.WorldCamera = camera;
+					this.drawArgs.WorldCamera = new MomentumCamera(m_World.EquatorialRadius);
 
 					this.drawArgs.CurrentWorld = value;
 					// TODO: Decide how to load grids
@@ -581,13 +569,13 @@ namespace WorldWind
 				altitude = m_World.EquatorialRadius * Math.Sin(MathEngine.DegreesToRadians(perpendicularViewRange * 0.5));
 			if (altitude < 1)
 				altitude = 1;
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude, heading, altitude, tilt);
 		}
 
 		public void GoToLatLon(double latitude, double longitude)
 		{
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude,
 				this.drawArgs.WorldCamera.Heading.Degrees,
 				this.drawArgs.WorldCamera.Altitude,
@@ -602,7 +590,7 @@ namespace WorldWind
 
 		internal void GotoLatLonHeadingAltitude(double latitude, double longitude, double heading, double altitude)
 		{
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(latitude, longitude,
 				heading,
 				altitude,
@@ -628,7 +616,7 @@ namespace WorldWind
 			double dLatitude = (dMinLat + dMaxLat) / 2.0;
 			double dLongitude = (dMinLon + dMaxLon) / 2.0;
 
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 
 			if (blImmediate)
 			{
@@ -667,7 +655,7 @@ namespace WorldWind
 
 			while (IsAppStillIdle)
 			{
-				if (!World.Settings.AlwaysRenderWindow && m_isRenderDisabled && !World.Settings.CameraHasMomentum)
+				if (m_isRenderDisabled)
 					return;
 
 				float fRenderTime = Render();
@@ -710,7 +698,6 @@ namespace WorldWind
 			}
 		}
 
-		System.Collections.ArrayList m_FrameTimes = new ArrayList();
 		WorldWind.Widgets.RootWidget m_RootWidget = null;
 		WorldWind.NewWidgets.RootWidget m_NewRootWidget = null;
 		private bool m_blDeviceLost;
@@ -763,16 +750,7 @@ namespace WorldWind
 							m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
 							m_WorkerThread.Name = ThreadNames.WorldWindowBackground;
 							m_WorkerThread.IsBackground = true;
-							if (World.Settings.UseBelowNormalPriorityUpdateThread)
-							{
-								m_WorkerThread.Priority = ThreadPriority.BelowNormal;
-							}
-							else
-							{
-								m_WorkerThread.Priority = ThreadPriority.Normal;
-							}
-							// BelowNormal makes rendering smooth, but on slower machines updates become slow or stops
-							// TODO: Implement dynamic FPS limiter (or different solution)
+							m_WorkerThread.Priority = ThreadPriority.Normal;
 							m_WorkerThread.Start();
 						}
 
@@ -854,10 +832,6 @@ namespace WorldWind
 					PerformanceTimer.QueryPerformanceCounter(ref endTicks);
 					result = (float)(endTicks - startTicks) / PerformanceTimer.TicksPerSecond;
 
-					if (World.Settings.ShowFpsGraph)
-					{
-						m_FrameTimes.Add(result);
-					}
 					this.drawArgs.EndRender();
 				}
 				drawArgs.UpdateMouseCursor(this);
@@ -881,42 +855,22 @@ namespace WorldWind
 
 			if (World.Settings.ShowPosition)
 			{
-				double feetPerMeter = 3.2808399;
-				double feetPerMile = 5280;
-
 				// TODO: Configurable transparent number->string conversion (metric/imperial etc units)
 				string alt = null;
 				float agl = (float)this.drawArgs.WorldCamera.Altitude;
 				string dist = null;
 				float dgl = (float)this.drawArgs.WorldCamera.Distance;
 
-				if (World.Settings.DisplayUnits == Units.Metric)
-				{
-					if (agl >= 1000)
-						alt = string.Format(CultureInfo.CurrentCulture, "{0:,.0} km", agl / 1000);
-					else
-						alt = string.Format(CultureInfo.CurrentCulture, "{0:f0} m", agl);
-
-					if (dgl > 100000)
-						dist = string.Format(CultureInfo.CurrentCulture, "{0:f2} km", dgl / 1000);
-					else
-						dist = string.Format(CultureInfo.CurrentCulture, "{0:f0} m", dgl);
-				}
+				if (agl >= 1000)
+					alt = string.Format(CultureInfo.CurrentCulture, "{0:,.0} km", agl / 1000);
 				else
-				{
-					agl *= (float)feetPerMeter;
-					dgl *= (float)feetPerMeter;
+					alt = string.Format(CultureInfo.CurrentCulture, "{0:f0} m", agl);
 
-					if (agl >= feetPerMile)
-						alt = string.Format(CultureInfo.CurrentCulture, "{0:,.0} miles", agl / feetPerMile);
-					else
-						alt = string.Format(CultureInfo.CurrentCulture, "{0:f0} ft", agl);
+				if (dgl > 100000)
+					dist = string.Format(CultureInfo.CurrentCulture, "{0:f2} km", dgl / 1000);
+				else
+					dist = string.Format(CultureInfo.CurrentCulture, "{0:f0} m", dgl);
 
-					if (dgl > 100000)
-						dist = string.Format(CultureInfo.CurrentCulture, "{0:f2} miles", dgl / feetPerMile);
-					else
-						dist = string.Format(CultureInfo.CurrentCulture, "{0:f0} ft", dgl);
-				}
 
 				// Heading from 0 - 360
 				double heading = this.drawArgs.WorldCamera.Heading.Degrees;
@@ -934,14 +888,7 @@ namespace WorldWind
 				if (drawArgs.WorldCamera.AltitudeAboveTerrain < 300000)
 				{
 					double terrainElevation = drawArgs.WorldCamera.TerrainElevation;
-					if (World.Settings.DisplayUnits == Units.Metric)
-					{
-						captionText += String.Format(CultureInfo.CurrentCulture, "\nTerrain Elevation: {0:n} meters\n", terrainElevation);
-					}
-					else
-					{
-						captionText += String.Format(CultureInfo.CurrentCulture, "\nTerrain Elevation: {0:n} feet\n", terrainElevation * feetPerMeter);
-					}
+					captionText += String.Format(CultureInfo.CurrentCulture, "\nTerrain Elevation: {0:n} meters\n", terrainElevation);
 				}
 			}
 
@@ -988,7 +935,7 @@ namespace WorldWind
 		protected void DrawCrosshairs()
 		{
 			int crossHairColor = World.Settings.CrosshairColor.ToArgb();
-			int crossHairSize = World.Settings.CrosshairSize;
+			int crossHairSize = WorldSettings.CrosshairSize;
 
 			if (crossHairs == null)
 			{
@@ -1054,7 +1001,7 @@ namespace WorldWind
 			}
 			try
 			{
-				this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia * 2;
+				this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia * 2;
 				this.drawArgs.WorldCamera.ZoomStepped(-e.Delta / 120.0f);
 			}
 			finally
@@ -1199,7 +1146,7 @@ namespace WorldWind
 			{
 				// reset north
 				case Keys.N:
-					this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+					this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 					this.DrawArgs.WorldCamera.SetPosition(
 					this.Latitude,
 					this.Longitude,
@@ -1209,7 +1156,7 @@ namespace WorldWind
 					break;
 				// reset Tilt
 				case Keys.T:
-					this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+					this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 					this.DrawArgs.WorldCamera.SetPosition(
 					this.Latitude,
 					this.Longitude,
@@ -1281,7 +1228,7 @@ namespace WorldWind
 				case Keys.Home:
 				case Keys.NumPad7:
 					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-					this.drawArgs.WorldCamera.ZoomStepped(World.Settings.CameraZoomStepKeyboard);
+					this.drawArgs.WorldCamera.ZoomStepped(WorldSettings.CameraZoomStepKeyboard);
 					break;
 				// zoom out
 				case Keys.Subtract:
@@ -1289,7 +1236,7 @@ namespace WorldWind
 				case Keys.End:
 				case Keys.NumPad1:
 					this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-					this.drawArgs.WorldCamera.ZoomStepped(-World.Settings.CameraZoomStepKeyboard);
+					this.drawArgs.WorldCamera.ZoomStepped(-WorldSettings.CameraZoomStepKeyboard);
 					break;
 #if DEBUG
 				case Keys.Escape:
@@ -1344,7 +1291,7 @@ namespace WorldWind
 				{
 					case Keys.Space:
 					case Keys.Clear:
-						this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+						this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 						this.drawArgs.WorldCamera.Reset();
 						return true;
 				}
@@ -1434,12 +1381,12 @@ namespace WorldWind
 						if (e.Button == MouseButtons.Left)
 						{
 							drawArgs.WorldCamera.SlerpPercentage = 1.0;
-							drawArgs.WorldCamera.Zoom(World.Settings.CameraDoubleClickZoomFactor);
+							drawArgs.WorldCamera.Zoom(WorldSettings.CameraDoubleClickZoomFactor);
 						}
 						else if (e.Button == MouseButtons.Right)
 						{
 							drawArgs.WorldCamera.SlerpPercentage = 1.0;
-							drawArgs.WorldCamera.Zoom(-World.Settings.CameraDoubleClickZoomFactor);
+							drawArgs.WorldCamera.Zoom(-WorldSettings.CameraDoubleClickZoomFactor);
 						}
 					}
 					else
@@ -1469,7 +1416,7 @@ namespace WorldWind
 									 m_World);
 								if (!Angle.IsNaN(targetLatitude))
 								{
-									this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+									this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 									this.drawArgs.WorldCamera.PointGoto(targetLatitude, targetLongitude);
 								}
 							}
@@ -1575,32 +1522,20 @@ namespace WorldWind
 							out curLat,
 							out curLon);
 
-						if (World.Settings.CameraTwistLock)
+						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
+						if (Angle.IsNaN(curLat) || Angle.IsNaN(prevLat))
 						{
-							this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-							if (Angle.IsNaN(curLat) || Angle.IsNaN(prevLat))
-							{
-								// Old style pan
-								Angle deltaLat = Angle.FromRadians((double)deltaY * (this.drawArgs.WorldCamera.Altitude) / (800 * this.CurrentWorld.EquatorialRadius));
-								Angle deltaLon = Angle.FromRadians((double)-deltaX * (this.drawArgs.WorldCamera.Altitude) / (800 * this.CurrentWorld.EquatorialRadius));
-								this.drawArgs.WorldCamera.Pan(deltaLat, deltaLon);
-							}
-							else
-							{
-								//Picking ray pan
-								Angle lat = prevLat - curLat;
-								Angle lon = prevLon - curLon;
-								this.drawArgs.WorldCamera.Pan(lat, lon);
-							}
+							// Old style pan
+							Angle deltaLat = Angle.FromRadians((double)deltaY * (this.drawArgs.WorldCamera.Altitude) / (800 * this.CurrentWorld.EquatorialRadius));
+							Angle deltaLon = Angle.FromRadians((double)-deltaX * (this.drawArgs.WorldCamera.Altitude) / (800 * this.CurrentWorld.EquatorialRadius));
+							this.drawArgs.WorldCamera.Pan(deltaLat, deltaLon);
 						}
 						else
 						{
-							double factor = (this.drawArgs.WorldCamera.Altitude) / (1500 * this.CurrentWorld.EquatorialRadius);
-							this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
-							drawArgs.WorldCamera.RotationYawPitchRoll(
-								Angle.FromRadians(DrawArgs.LastMousePosition.X - e.X) * factor,
-								Angle.FromRadians(e.Y - DrawArgs.LastMousePosition.Y) * factor,
-								Angle.Zero);
+							//Picking ray pan
+							Angle lat = prevLat - curLat;
+							Angle lon = prevLon - curLon;
+							this.drawArgs.WorldCamera.Pan(lat, lon);
 						}
 					}
 					else if (!isMouseLeftButtonDown && isMouseRightButtonDown && !isMouseMiddleButtonDown)
@@ -1608,12 +1543,12 @@ namespace WorldWind
 						//Right mouse button
 
 						// Heading
-						Angle deltaEyeDirection = Angle.FromRadians(-deltaXNormalized * World.Settings.CameraRotationSpeed);
+						Angle deltaEyeDirection = Angle.FromRadians(-deltaXNormalized * WorldSettings.CameraRotationSpeed);
 						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
 						this.drawArgs.WorldCamera.RotationYawPitchRoll(Angle.Zero, Angle.Zero, deltaEyeDirection);
 
 						// tilt
-						this.drawArgs.WorldCamera.Tilt += Angle.FromRadians(deltaYNormalized * World.Settings.CameraRotationSpeed);
+						this.drawArgs.WorldCamera.Tilt += Angle.FromRadians(deltaYNormalized * WorldSettings.CameraRotationSpeed);
 					}
 					else if (isMouseLeftButtonDown && isMouseRightButtonDown)
 					{
@@ -1621,10 +1556,7 @@ namespace WorldWind
 						// Zoom
 						this.drawArgs.WorldCamera.SlerpPercentage = 1.0;
 						if (Math.Abs(deltaYNormalized) > float.Epsilon)
-							this.drawArgs.WorldCamera.Zoom(-deltaYNormalized * World.Settings.CameraZoomAnalogFactor);
-
-						if (!World.Settings.CameraBankLock)
-							this.drawArgs.WorldCamera.Bank -= Angle.FromRadians(deltaXNormalized * World.Settings.CameraRotationSpeed);
+							this.drawArgs.WorldCamera.Zoom(-deltaYNormalized * WorldSettings.CameraZoomAnalogFactor);
 					}
 					else if (!isMouseLeftButtonDown && !isMouseRightButtonDown && isMouseMiddleButtonDown)
 					{
@@ -1714,10 +1646,6 @@ namespace WorldWind
 			m_presentParams.SwapEffect = SwapEffect.Discard;
 			m_presentParams.AutoDepthStencilFormat = DepthFormat.D16;
 			m_presentParams.EnableAutoDepthStencil = true;
-
-			if (!World.Settings.VSync)
-				// Disable wait for vertical retrace (higher frame rate at the expense of tearing)
-				m_presentParams.PresentationInterval = PresentInterval.Immediate;
 
 			int adapterOrdinal = 0;
 			try
@@ -1809,15 +1737,6 @@ namespace WorldWind
 		{
 			while (m_WorkerThreadRunning)
 			{
-				if (World.Settings.UseBelowNormalPriorityUpdateThread && m_WorkerThread.Priority == System.Threading.ThreadPriority.Normal)
-				{
-					m_WorkerThread.Priority = System.Threading.ThreadPriority.BelowNormal;
-				}
-				else if (!World.Settings.UseBelowNormalPriorityUpdateThread && m_WorkerThread.Priority == System.Threading.ThreadPriority.BelowNormal)
-				{
-					m_WorkerThread.Priority = System.Threading.ThreadPriority.Normal;
-				}
-
 				long startTicks = 0;
 				PerformanceTimer.QueryPerformanceCounter(ref startTicks);
 
@@ -1847,7 +1766,7 @@ namespace WorldWind
 		public void SetViewPosition(double degreesLatitude, double degreesLongitude,
 			double metersElevation)
 		{
-			this.drawArgs.WorldCamera.SlerpPercentage = World.Settings.CameraSlerpInertia;
+			this.drawArgs.WorldCamera.SlerpPercentage = WorldSettings.CameraSlerpInertia;
 			this.drawArgs.WorldCamera.SetPosition(degreesLatitude, degreesLongitude, this.drawArgs.WorldCamera.Heading.Degrees,
 				metersElevation, this.drawArgs.WorldCamera.Tilt.Degrees);
 		}
@@ -1860,28 +1779,9 @@ namespace WorldWind
 
 			m_FpsUpdate = true;
 
-			if (World.Settings.ShowFpsGraph)
+			if (m_FpsGraph.Visible)
 			{
-				if (!m_FpsGraph.Visible)
-				{
-					m_FpsGraph.Visible = true;
-				}
-
-				if (m_FrameTimes.Count > World.Settings.FpsFrameCount)
-				{
-					m_FrameTimes.RemoveRange(0, m_FrameTimes.Count - World.Settings.FpsFrameCount);
-				}
-
-				m_FpsGraph.Size = new Size((int)(Width * .5), (int)(Height * .1));
-				m_FpsGraph.Location = new Point((int)(Width * .35), (int)(Height * .895));
-				m_FpsGraph.Values = (float[])m_FrameTimes.ToArray(typeof(float));
-			}
-			else
-			{
-				if (m_FpsGraph.Visible)
-				{
-					m_FpsGraph.Visible = false;
-				}
+				m_FpsGraph.Visible = false;
 			}
 
 			m_FpsUpdate = false;

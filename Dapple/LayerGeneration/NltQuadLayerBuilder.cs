@@ -289,7 +289,7 @@ namespace Dapple.LayerGeneration
             imageStores[0].LevelCount = m_iLevels;
             imageStores[0].ImageExtension = m_strImageExt;
             imageStores[0].CacheDirectory = GetCachePath();
-            imageStores[0].TextureFormat = World.Settings.TextureFormat;
+            imageStores[0].TextureFormat = WorldSettings.TextureFormat;
             imageStores[0].TextureSizePixels = m_iTextureSizePixels;
 
             m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText,

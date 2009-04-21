@@ -253,15 +253,7 @@ namespace WorldWind
 						}
 
 						parentRenderable.ParentList = parentWorld.RenderableObjects;
-
-						if (World.Settings.UseDefaultLayerStates)
-						{
-							parentRenderable.IsOn = ParseBool(iter.Current.GetAttribute("ShowAtStartup", ""));
-						}
-						else
-						{
-							parentRenderable.IsOn = IsLayerOn(parentRenderable);
-						}
+						parentRenderable.IsOn = ParseBool(iter.Current.GetAttribute("ShowAtStartup", ""));
 
 						string description = getInnerTextFromFirstChild(iter.Current.Select("Description"));
 						if (description != null && description.Length > 0)
@@ -329,22 +321,6 @@ namespace WorldWind
 			Log.Write(Log.Levels.Warning, "CONF", "WARNING: no renderable created for " + layerFile);
 
 			return null;
-		}
-
-
-
-		internal static bool IsLayerOn(RenderableObject ro)
-		{
-			string path = getRenderablePathString(ro);
-			foreach (string s in World.Settings.LoadedLayers)
-			{
-				if (s.Equals(path))
-				{
-					return true;
-				}
-			}
-
-			return false;
 		}
 
 		private static void addExtendedInformation(XPathNodeIterator iter, RenderableObject renderable)
@@ -593,15 +569,8 @@ namespace WorldWind
 					twps.MetaData.Add("WFSBaseURL", wfsBaseUrl);
 					twps.MetaData.Add("XmlSource", (string)parentRenderable.MetaData["XmlSource"]);
 					twps.ParentList = parentRenderable;
+					twps.IsOn = ParseBool(iter.Current.GetAttribute("ShowAtStartup", ""));
 
-					if (World.Settings.UseDefaultLayerStates)
-					{
-						twps.IsOn = ParseBool(iter.Current.GetAttribute("ShowAtStartup", ""));
-					}
-					else
-					{
-						twps.IsOn = IsLayerOn(twps);
-					}
 					parentRenderable.ChildObjects.Add(
 						 twps
 						 );

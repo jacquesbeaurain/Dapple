@@ -366,58 +366,29 @@ namespace ThreeDconnexion.Plugin
             bool bBackUpSmooth = World.Settings.CameraSmooth;
             World.Settings.CameraSmooth = false;
 
-            Angle rBank = s_TheCamera.Bank;
-
             //// Tilt////////////////////////////
-            s_TheCamera.Tilt -= Angle.FromRadians(AngleAxis.X * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormTilt);
+            s_TheCamera.Tilt -= Angle.FromRadians(AngleAxis.X * AngleAxis.Angle * WorldSettings.CameraRotationSpeed / NormTilt);
 
             //// Heading/////////////////////////
-            double dHeading = -AngleAxis.Y * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormHeading;
+            double dHeading = -AngleAxis.Y * AngleAxis.Angle * WorldSettings.CameraRotationSpeed / NormHeading;
 
             //// Distance///////////////////////
             s_TheCamera.TargetDistance *= (1 + TranslVector.Y / NormDistance);
 
             double factor = (s_TheCamera.Altitude) / (-NormLatLon * s_WW.CurrentWorld.EquatorialRadius);
-            if (World.Settings.CameraTwistLock)
-            {
-                Quaternion4d Orientation
-                   = Quaternion4d.RotationYawPitchRoll(s_TheCamera.Longitude.Radians + (TranslVector.X * factor)
-                                                    , s_TheCamera.Latitude.Radians + (TranslVector.Z * factor)
-                                                    , dHeading);
 
-                s_TheCamera.CurrentOrientation = Orientation;
-                s_Position = Quaternion4d.QuaternionToEuler(Orientation);
+             Quaternion4d Orientation
+                = Quaternion4d.RotationYawPitchRoll(s_TheCamera.Longitude.Radians + (TranslVector.X * factor)
+                                                 , s_TheCamera.Latitude.Radians + (TranslVector.Z * factor)
+                                                 , dHeading);
+
+             s_TheCamera.CurrentOrientation = Orientation;
+             s_Position = Quaternion4d.QuaternionToEuler(Orientation);
 
 
-                s_WW.SetViewPosition(Angle.FromRadians(s_Position.Y).Degrees
-                                         , Angle.FromRadians(s_Position.X).Degrees
-                                         , s_TheCamera.Altitude);
-
-            }
-            else
-            {
-                Quaternion4d rCurrentOrient = s_TheCamera.CurrentOrientation;
-                Quaternion4d Orientation
-                   = Quaternion4d.RotationYawPitchRoll(TranslVector.X * factor
-                                                    , TranslVector.Z * factor
-                                                    , dHeading) * rCurrentOrient;
-
-                s_TheCamera.CurrentOrientation = Orientation;
-                s_Position = Quaternion4d.QuaternionToEuler(Orientation);
-
-                s_TheCamera.Heading = Angle.FromRadians(s_Position.Z);
-
-                s_WW.SetViewPosition(Angle.FromRadians(s_Position.Y).Degrees
-                                         , Angle.FromRadians(s_Position.X).Degrees
-                                         , s_TheCamera.Altitude);
-            }
-
-            //// Bank ///////////////////////////
-            if (!World.Settings.CameraBankLock)
-            {
-                rBank += Angle.FromRadians(AngleAxis.Z * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormTilt);
-                s_TheCamera.Bank = rBank;
-            }
+             s_WW.SetViewPosition(Angle.FromRadians(s_Position.Y).Degrees
+                                      , Angle.FromRadians(s_Position.X).Degrees
+                                      , s_TheCamera.Altitude);
 
             World.Settings.CameraSmooth = bBackUpSmooth;
 
@@ -524,7 +495,7 @@ namespace ThreeDconnexion.Plugin
             //////////////////////////////////////////////////////////////////////////////
             /// Tilt, camera position == center of rotation -> adjust latitude/distance///
             //////////////////////////////////////////////////////////////////////////////
-            double dDeltaTiltRad = AngleAxis.X * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormTilt; //150000.0;
+            double dDeltaTiltRad = AngleAxis.X * AngleAxis.Angle * WorldSettings.CameraRotationSpeed / NormTilt; //150000.0;
             if (Math.Abs(dDeltaTiltRad) > double.Epsilon)
             {
                 rTilt += Angle.FromRadians(dDeltaTiltRad);
@@ -606,7 +577,7 @@ namespace ThreeDconnexion.Plugin
             ///////////////////////////////////////////////////////////////////////////////////////
             /// Heading                                                                         ///
             ///////////////////////////////////////////////////////////////////////////////////////
-            double dHeading = -AngleAxis.Z * AngleAxis.Angle * World.Settings.CameraRotationSpeed / NormHeading; // 250000.0;
+            double dHeading = -AngleAxis.Z * AngleAxis.Angle * WorldSettings.CameraRotationSpeed / NormHeading; // 250000.0;
 
             ///////////////////////////////////////////////////////////////////////////////////////
             /// set the new View/Camera - position                                              ///
