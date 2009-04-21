@@ -26,12 +26,6 @@ namespace WorldWind
 			}
 		}
 
-		internal static float TimeMultiplier
-		{
-			get{ return m_timeMultiplier; }
-			set{ m_timeMultiplier = value; }
-		}
-
 		public static void Start()
 		{
 			if(m_timer == null)
