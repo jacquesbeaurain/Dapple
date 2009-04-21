@@ -25,7 +25,6 @@ namespace WorldWind
 		protected bool m_colorKeyEnabled;
 		protected bool m_alphaKeyEnabled;
 
-		protected Format m_textureFormat;
 		protected int m_colorKey;
 		protected int m_alphaKeyMin = -1;
 		protected int m_alphaKeyMax = -1;
@@ -33,18 +32,6 @@ namespace WorldWind
 		#endregion
 
 		#region Properties
-
-		public Format TextureFormat
-		{
-			get
-			{
-				return m_textureFormat;
-			}
-			set
-			{
-				m_textureFormat = value;
-			}
-		}
 
 		/// <summary>
 		/// Coverage of outer level 0 bitmaps (decimal degrees)
@@ -303,8 +290,7 @@ namespace WorldWind
 			}
 			else
 			{
-				texture = ImageHelper.LoadTexture(filePath, tile.TileSet.ColorKey,
-				   TextureFormat);
+				texture = ImageHelper.LoadTexture(filePath, tile.TileSet.ColorKey);
 			}
 			if (texture == null) return null;
 

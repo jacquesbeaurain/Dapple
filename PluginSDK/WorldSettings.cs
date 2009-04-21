@@ -222,9 +222,6 @@ namespace WorldWind
 
       #region 3D
 
-		[XmlIgnore]
-		public const Format TextureFormat = Format.Dxt3;
-
       private bool m_enableSunShading;
       [Browsable(true), Category("3D settings")]
       [Description("Shade the Earth according to the Sun's position at a certain time.")]

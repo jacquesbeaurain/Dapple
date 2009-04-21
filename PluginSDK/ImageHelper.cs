@@ -16,6 +16,8 @@ namespace WorldWind
 	/// </summary>
 	public sealed class ImageHelper
 	{
+		const Format TextureFormat = Format.Dxt3;
+
 		/// <summary>
 		/// Static class
 		/// </summary>
@@ -40,7 +42,12 @@ namespace WorldWind
 		/// <param name="textureFileName">Path/filename to the image file</param>
 		public static Texture LoadTexture(string textureFileName)
 		{
-			return LoadTexture(textureFileName, 0, WorldSettings.TextureFormat);
+			return LoadTexture(textureFileName, 0, TextureFormat);
+		}
+
+		internal static Texture LoadTexture(string textureFilename, int colorKey)
+		{
+			return LoadTexture(textureFilename, colorKey, TextureFormat);
 		}
 
 		/// <summary>
@@ -149,7 +156,7 @@ namespace WorldWind
 		/// <param name="textureFileName">Stream containing the image file</param>
 		internal static Texture LoadTexture(Stream textureStream)
 		{
-			return LoadTexture(textureStream, 0, WorldSettings.TextureFormat);
+			return LoadTexture(textureStream, 0, TextureFormat);
 		}
 
 		/// <summary>

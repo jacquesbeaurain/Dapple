@@ -535,7 +535,6 @@ namespace Dapple.LayerGeneration
                              		LevelCount = m_iLevels,
                              		ImageExtension = ".png",
                              		CacheDirectory = strCachePath,
-                             		TextureFormat = WorldSettings.TextureFormat,
                              		TextureSizePixels = m_iTextureSizePixels
                              	};
 
