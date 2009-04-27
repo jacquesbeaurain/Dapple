@@ -464,7 +464,12 @@ namespace Dapple.LayerGeneration
 					return null;
 
 			oServer.WaitForLoad();
-			if (oServer.LoadState == LoadState.LoadFailed) return null;
+			if (oServer.LoadState == LoadState.LoadFailed)
+			{
+				Program.ShowMessageBox(String.Format(CultureInfo.InvariantCulture, "'{0}' could not be added. Connection with the server {1} failed. Refreshing the server may resolve this problem.", getAttribute("layer"), m_oServer.ServerTreeDisplayName),
+					"Dataset Could Not Be Added", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
+				return null;
+			}
 
 			WMSLayerModelNode oLayer = oServer.GetLayer(getAttribute("layer"));
 			if (oLayer == null) throw new ArgumentException("'" + getAttribute("layer") + "' was not found. This dataset may have been deleted or moved." + Environment.NewLine + Environment.NewLine + "Please check with the publisher of " + m_oServer.ServerTreeDisplayName + " for more information.");
