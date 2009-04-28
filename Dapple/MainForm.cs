@@ -471,6 +471,7 @@ namespace Dapple
 				c_oWorldWindow.AllowDrop = true;
 				c_oWorldWindow.DragOver += new DragEventHandler(c_oWorldWindow_DragOver);
 				c_oWorldWindow.DragDrop += new DragEventHandler(c_oWorldWindow_DragDrop);
+				c_oWorldWindow.Resize += new EventHandler(c_oWorldWindow_Resize);
 				InitializeComponent();
 				this.SuspendLayout();
 				c_oLayerList.ImageList = s_oImageList;
@@ -1792,7 +1793,7 @@ namespace Dapple
 						msgBox.AddButtons(MessageBoxButtons.YesNo);
 						msgBox.Text = "Would you like to open your last View?";
 						msgBox.Font = this.Font;
-						Settings.LastViewAtStartup = msgBox.Show() == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
+						Settings.LastViewAtStartup = msgBox.Show(this) == Utils.MessageBoxExLib.MessageBoxExResult.Yes;
 						if (msgBox.SaveResponse)
 							Settings.AskLastViewAtStartup = false;
 					}
@@ -2082,6 +2083,11 @@ namespace Dapple
 			{
 				SetSearchable(!GeographicBoundingBox.FromQuad(c_oWorldWindow.CurrentAreaOfInterest).Equals(m_oLastSearchROI));
 			}
+		}
+
+		void c_oWorldWindow_Resize(object sender, EventArgs e)
+		{
+			c_oOverview.Invalidate();
 		}
 
 		#endregion

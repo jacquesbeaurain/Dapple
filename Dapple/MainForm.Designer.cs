@@ -867,7 +867,6 @@ namespace Dapple
 			  // c_scTemporary
 			  // 
 			  this.c_scTemporary.Dock = System.Windows.Forms.DockStyle.Fill;
-			  this.c_scTemporary.InvertSplitterFix = false;
 			  this.c_scTemporary.IsSplitterFixed = true;
 			  this.c_scTemporary.Location = new System.Drawing.Point(0, 25);
 			  this.c_scTemporary.Name = "c_scTemporary";

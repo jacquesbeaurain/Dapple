@@ -79,6 +79,14 @@ namespace Dapple.CustomControls
 			}
 		}
 
+		protected override void OnInvalidated(InvalidateEventArgs e)
+		{
+			base.OnInvalidated(e);
+
+			if (c_Overview != null)
+				c_Overview.Invalidate();
+		}
+
 		#endregion
 	}
 }
