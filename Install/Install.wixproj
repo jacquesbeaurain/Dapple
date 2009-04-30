@@ -81,6 +81,10 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <SuppressSpecificWarnings>1080</SuppressSpecificWarnings>
+    <SuppressIces>ICE07;ICE45;ICE49</SuppressIces>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <SuppressIces>ICE07;ICE45;ICE49</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DappleInstall.wxs" />

@@ -7,14 +7,22 @@
         <Component Id="AltovaGen.dll" Guid="4d3155f4-5d8b-4a1f-a2af-205aff8c3e59">
           <File Id="AltovaGen.dll" Name="AltovaGen.dll" Source="..\Dapple\bin\x86\Release\AltovaGen.dll" Vital="yes" KeyPath="yes" />
         </Component>
+        <Component Id="Collab.dll" Guid="baf39509-ea78-4d11-850c-e2a1c775ad9a">
+          <RegistryValue Id="empty22" Action="append" Root="HKLM" Key="Software\Geosoft" KeyPath="yes" Value="" Type="multiString" />
+          <RemoveFile Id="remove_Collab.dll" On="install" Name="Collab.dll" />
+        </Component>
         <Component Id="dapxmlclient.dll" Guid="66d3dfcc-cd95-4067-9561-a995f7d7e5dd">
           <File Id="dapxmlclient.dll" Name="dapxmlclient.dll" Source="..\Dapple\bin\x86\Release\dapxmlclient.dll" Vital="yes" KeyPath="yes" />
         </Component>
         <Component Id="ICSharpCode.SharpZipLib.dll" Guid="b63e153a-92f8-4deb-8478-d9635f7095de">
           <File Id="ICSharpCode.SharpZipLib.dll" Name="ICSharpCode.SharpZipLib.dll" Source="..\Dapple\bin\x86\Release\ICSharpCode.SharpZipLib.dll" Vital="yes" KeyPath="yes" />
         </Component>
-        <Component Id="CreateSecureDAPToken.dll" Guid="861130B0-4531-4973-A4D2-74B3066DEF4D">
-          <File Id="CreateSecureDAPToken.dll" Name="CreateSecureDAPToken.dll" Source="..\Dapple\bin\x86\Release\CreateSecureDAPToken.dll" Vital="yes" KeyPath="yes" />
+        <Component Id="Interop.GeoSecureClient.dll" Guid="99857d7d-1173-4c25-9450-4ba3007249a0">
+          <File Id="Interop.GeoSecureClient.dll" Name="CreateSecureDAPToken.dll" Source="..\Dapple\bin\x86\Release\CreateSecureDAPToken.dll" Vital="yes" KeyPath="yes" />
+    		</Component>
+        <Component Id="JhuaplWorldWind.dll" Guid="9ff344bb-7c4c-417e-ae07-d04d307e301d" >
+          <RegistryValue Id="empty23" Action="append" Root="HKLM" Key="Software\Geosoft" KeyPath="yes" Value="" Type="multiString" />
+          <RemoveFile Id="remove_JhuaplWorldWind.dll" On="install" Name="JhuaplWorldWind.dll" />
         </Component>
         <Component Id="Mapack.dll" Guid="157c47ef-dc00-40c1-be34-768247dd525a">
           <File Id="Mapack.dll" Name="Mapack.dll" Source="..\Dapple\bin\x86\Release\Mapack.dll" Vital="yes" KeyPath="yes" />
@@ -30,6 +38,10 @@
         </Component>
         <Component Id="proj.dll" Guid="5d33e13c-14cd-4b35-a25a-bf8cef8d0bf4">
           <File Id="proj.dll" Name="proj.dll" Source="..\Dapple\bin\x86\Release\proj.dll" Vital="yes" KeyPath="yes" />
+        </Component>
+        <Component Id="Tao.OpenGl.Glu.dll" Guid="e89d8f61-7406-477b-94ca-c324ec1d8747">
+          <RegistryValue Id="empty20" Action="append" Root="HKLM" Key="Software\Geosoft" KeyPath="yes" Value="" Type="multiString" />
+          <RemoveFile Id="remove_Tao.OpenGl.Glu.dll" On="install" Name="Tao.OpenGl.Glu.dll" />
         </Component>
         <Component Id="Utilities_GD.dll" Guid="6de2dcc4-7b65-43eb-a291-334cae7ecf2f">
           <File Id="Utilities_GD.dll" Name="Utilities_GD.dll" Source="..\Dapple\bin\x86\Release\Utilities_GD.dll" Vital="yes" KeyPath="yes" />
