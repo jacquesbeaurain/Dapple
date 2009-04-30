@@ -313,7 +313,7 @@ namespace Dapple.Extract
 
          // ---- calculate the resolution to 4 significant decimal places ---
 
-			m_dResolution = Math.Floor(m_dResolution * 10000.0) / 10000.0;
+			m_dResolution = Math.Floor(dRes * 10000.0) / 10000.0;
 
          if (m_bLatLon)
             tbRes.Text = DisplayInMetres();
