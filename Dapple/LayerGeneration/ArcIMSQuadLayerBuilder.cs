@@ -204,6 +204,38 @@ namespace Dapple.LayerGeneration
 			}
 		}
 
+		[System.ComponentModel.Category("ArcIMS")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The minimum scale that this dataset is visible at")]
+		public double MinScale
+		{
+			get { return m_dMinScale; }
+		}
+
+		[System.ComponentModel.Category("ArcIMS")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The maximum scale that this dataset is visible at")]
+		public double MaxScale
+		{
+			get { return m_dMaxScale; }
+		}
+
+		[System.ComponentModel.Category("ArcIMS")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The name of the service on the server that serves this dataset")]
+		public string ServiceName
+		{
+			get { return m_szServiceName; }
+		}
+
+		[System.ComponentModel.Category("ArcIMS")]
+		[System.ComponentModel.Browsable(true)]
+		[System.ComponentModel.Description("The unique identifier of this dataset in its associated service")]
+		public string LayerID
+		{
+			get { return m_szLayerID; }
+		}
+
 		#endregion
 
 		#region ImageBuilder Implementations
