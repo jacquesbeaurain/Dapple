@@ -144,7 +144,22 @@ namespace Dapple.CustomControls
 				}
 				else
 				{
-					e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+					double dWidthRatio = (double)oResult.Thumbnail.Width / THUMBNAIL_SIZE;
+					double dHeightRatio = (double)oResult.Thumbnail.Height / THUMBNAIL_SIZE;
+					double dMajorRatio = Math.Max(dWidthRatio, dHeightRatio);
+
+					dWidthRatio /= dMajorRatio;
+					dHeightRatio /= dMajorRatio;
+
+					int iDrawWidth = (int)(THUMBNAIL_SIZE * dWidthRatio);
+					if (iDrawWidth < 1) iDrawWidth = 1;
+					int iDrawHeight = (int)(THUMBNAIL_SIZE * dHeightRatio);
+					if (iDrawHeight < 1) iDrawHeight = 1;
+
+					int iOffsetX = (THUMBNAIL_SIZE - iDrawWidth) / 2;
+					int iOffsetY = (THUMBNAIL_SIZE - iDrawHeight) / 2;
+
+					e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1 + iOffsetX, 1 + iOffsetY, iDrawWidth, iDrawHeight));
 				}
 
 				// --- Title and URL ---
