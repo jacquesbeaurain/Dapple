@@ -365,6 +365,8 @@ namespace NewServerTree
 			foreach (Geosoft.Dap.Common.DataSet oDataSet in oDapDatasets)
 			{
 				result.Add(new DAPQuadLayerBuilder(oDataSet, Dapple.MainForm.WorldWindowSingleton, m_oServer, null));
+				if (result.Count == 1000)
+					break;
 			}
 
 			return result;
