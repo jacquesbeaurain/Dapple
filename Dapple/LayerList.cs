@@ -1139,7 +1139,17 @@ namespace Dapple
                continue;
             }
 
-            LayerBuilder oBuilder = oUri.getBuilder(oModel);
+				LayerBuilder oBuilder;
+				try
+				{
+					 oBuilder = oUri.getBuilder(oModel);
+				}
+				catch (Exception ex)
+				{
+					Program.ShowMessageBox(ex.Message, "Dataset Could Not Be Added", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
+					continue;
+				}
+
 				if (oBuilder != null)
 				{
 					oBuilder.Visible = dataset.Hasinvisible() ? !dataset.invisible.Value : true;
