@@ -47,6 +47,7 @@
 			this.c_tvView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.c_tvView_AfterSelect);
 			this.c_tvView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.c_tvView_MouseMove);
 			this.c_tvView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.c_tvView_MouseDown);
+			this.c_tvView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.c_tvView_KeyUp);
 			this.c_tvView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.c_tvView_NodeMouseClick);
 			this.c_tvView.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.c_tvView_BeforeSelect);
 			// 

@@ -377,10 +377,28 @@ namespace NewServerTree.View
 
 		#region Controller Sourced
 
+		private void c_tvView_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (c_tvView.SelectedNode == null)
+				return;
+
+			if (e.KeyCode == Keys.F && e.Shift && c_tvView.SelectedNode.Tag is ErrorModelNode)
+			{
+				ErrorModelNode emn = c_tvView.SelectedNode.Tag as ErrorModelNode;
+
+				if (!String.IsNullOrEmpty(emn.AdditionalInfo))
+				{
+					MessageBox.Show(emn.AdditionalInfo, "Additional Error Information", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+				}
+
+				return;
+			}
+		}
+
 		TreeNode before;
 		private void c_tvView_BeforeSelect(object sender, TreeViewCancelEventArgs e)
 		{
-			if (e.Node.Tag is IAnnotationModelNode)
+			if ((e.Node.Tag as ModelNode).Selectable == false)
 			{
 				e.Cancel = true;
 				return;
@@ -399,18 +417,6 @@ namespace NewServerTree.View
 
 		private void c_tvView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			if ((e.Button & MouseButtons.Right) == MouseButtons.Right && e.Node.Tag is ErrorModelNode)
-			{
-				ErrorModelNode emn = e.Node.Tag as ErrorModelNode;
-
-				if (!String.IsNullOrEmpty(emn.AdditionalInfo))
-				{
-					MessageBox.Show(emn.AdditionalInfo, "Additional Error Information", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-				}
-
-				return;
-			}
-
 			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
 			{
 				c_tvView.SelectedNode = e.Node;

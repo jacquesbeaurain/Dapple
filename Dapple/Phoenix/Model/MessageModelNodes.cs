@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace NewServerTree
 {
-	internal abstract class MessageModelNode : ModelNode, IAnnotationModelNode
+	internal abstract class MessageModelNode : ModelNode
 	{
 		#region Member Variables
 
@@ -36,6 +36,12 @@ namespace NewServerTree
 		internal override string DisplayText
 		{
 			get { return m_strMessage; }
+		}
+
+		[Browsable(false)]
+		internal override bool Selectable
+		{
+			get { return false; }
 		}
 
 		#endregion
@@ -108,6 +114,12 @@ namespace NewServerTree
 		internal string AdditionalInfo
 		{
 			get { return m_strAdditionalInfo; }
+		}
+
+		[Browsable(false)]
+		internal override bool Selectable
+		{
+			get { return true; }
 		}
 
 		#endregion

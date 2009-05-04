@@ -127,6 +127,15 @@ namespace NewServerTree
 		[Browsable(false)]
 		internal abstract String IconKey { get; }
 
+		/// <summary>
+		/// Whether this model node can be selected in the server tree.
+		/// </summary>
+		[Browsable(false)]
+		internal virtual bool Selectable
+		{
+			get { return true; }
+		}
+
 		#endregion
 
 
@@ -732,14 +741,6 @@ namespace NewServerTree
 		internal abstract void AddToHomeView();
 
 		#endregion
-	}
-
-
-	/// <summary>
-	/// Interface implemented by modelNodes that the user shouldn't be able to select in the ServerTree.
-	/// </summary>
-	internal interface IAnnotationModelNode
-	{
 	}
 
 
