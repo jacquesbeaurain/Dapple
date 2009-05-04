@@ -340,7 +340,7 @@ namespace Dapple
 							else
 							{
 								ShowMessageBox(
-									"Dapple has experienced an error attempting to connect to '" + EnumUtils.GetDescription(eClientType) + "'. Restarting the application or your computer may fix this problem.",
+									"Dapple has experienced an error attempting to connect to " + EnumUtils.GetDescription(eClientType) + ". Restarting the application or your computer may fix this problem.",
 									"Dapple Startup",
 									MessageBoxButtons.OK,
 									MessageBoxDefaultButton.Button1,

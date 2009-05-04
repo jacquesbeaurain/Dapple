@@ -1763,9 +1763,18 @@ namespace Dapple
 				{
 					s_oMontajRemoteInterface.StartConnection();
 				}
-				catch (System.Runtime.Remoting.RemotingException ex)
+				catch (System.Runtime.Remoting.RemotingException)
 				{
-					throw new System.Runtime.Remoting.RemotingException("A communication error occurred between Dapple and OM during startup", ex);
+					c_oLayerList.OMFeaturesEnabled = false;
+					c_miGetDatahelp.Enabled = false;
+					c_miExtractLayers.Enabled = false;
+
+					Program.ShowMessageBox(
+						"Dapple has experienced an error attempting to connect to " + EnumUtils.GetDescription(s_eClientType) + ". Restarting the application or your computer may fix this problem.",
+						"Dapple Startup",
+						MessageBoxButtons.OK,
+						MessageBoxDefaultButton.Button1,
+						MessageBoxIcon.Error);
 				}
 			}
 

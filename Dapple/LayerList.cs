@@ -157,6 +157,7 @@ namespace Dapple
          set
          {
             c_bExtract.Visible = value;
+            c_bExtract.Enabled = value;
          }
       }
 
