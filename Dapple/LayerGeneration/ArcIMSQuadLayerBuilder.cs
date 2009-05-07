@@ -316,7 +316,7 @@ namespace Dapple.LayerGeneration
 
 		internal override object CloneSpecific()
 		{
-			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent as ArcIMSServiceBuilder, m_dMinScale, m_dMaxScale, m_oCultureInfo);
+			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo);
 		}
 
 		public override bool Equals(object obj)

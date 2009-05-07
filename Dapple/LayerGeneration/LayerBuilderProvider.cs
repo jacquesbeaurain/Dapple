@@ -53,8 +53,6 @@ namespace Dapple.LayerGeneration
 
 		void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler);
 		void UnsubscribeToBuilderChangedEvent(BuilderChangedHandler handler);
-
-      TreeNode[] getChildTreeNodes();
 	}
 
 	internal delegate void LayerLoadedCallback(IBuilder builder);
@@ -604,15 +602,6 @@ namespace Dapple.LayerGeneration
 		internal abstract object CloneSpecific();
 
 		#endregion
-
-      #region IBuilder Members
-
-		public TreeNode[] getChildTreeNodes()
-      {
-         return new TreeNode[0];
-      }
-
-      #endregion
 
       internal void Reset()
       {

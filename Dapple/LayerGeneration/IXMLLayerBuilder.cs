@@ -179,30 +179,6 @@ namespace Dapple.LayerGeneration
 
       #endregion
 
-      #region IBuilder Members
-
-
-		public virtual TreeNode[] getChildTreeNodes()
-      {
-         TreeNode[] result = new TreeNode[m_colChildren.Count + m_colSublist.Count];
-         int index = 0;
-         foreach(LayerBuilder childNode in m_colChildren)
-         {
-            result[index] = new TreeNode(childNode.Title, MainForm.ImageListIndex(childNode.DisplayIconKey), MainForm.ImageListIndex(childNode.DisplayIconKey));
-            result[index].Tag = childNode;
-            index++;
-         }
-         foreach (BuilderDirectory childDir in m_colSublist)
-         {
-            result[index] = new TreeNode(childDir.Title, MainForm.ImageListIndex(childDir.DisplayIconKey), MainForm.ImageListIndex(childDir.DisplayIconKey));
-            result[index].Tag = childDir;
-            index++;
-         }
-         return result;
-      }
-
-      #endregion
-
       /// <summary>
       /// Get all of the LayerBuilders throughout the tree.
       /// </summary>
@@ -226,25 +202,6 @@ namespace Dapple.LayerGeneration
       {
          m_oUri = oUri;
          m_blEnabled = blEnabled;
-      }
-
-      /// <summary>
-      /// Get child nodes.
-      /// </summary>
-      /// <remarks>
-      /// If this server is still loading, the only child is a temporary node.
-      /// </remarks>
-      /// <returns></returns>
-		public override TreeNode[] getChildTreeNodes()
-      {
-         if (!m_blEnabled)
-         {
-            return new TreeNode[0];
-         }
-         else
-         {
-            return base.getChildTreeNodes();
-         }
       }
 
       /// <summary>
@@ -273,23 +230,6 @@ namespace Dapple.LayerGeneration
       {
          get { return m_oUri; }
       }
-
-      [System.ComponentModel.Browsable(true)]
-      [System.ComponentModel.ReadOnly(true)]
-      internal bool Enabled
-      {
-         get { return m_blEnabled; }
-         set
-         {
-            if (value != m_blEnabled)
-            {
-               m_blEnabled = value;
-               SetEnabled(value);
-            }
-         }
-      }
-
-      protected abstract void SetEnabled(bool blValue);
 
       [System.ComponentModel.Browsable(false)]
       internal abstract override System.Drawing.Icon Icon
@@ -376,28 +316,6 @@ namespace Dapple.LayerGeneration
                return "offline";
             }
             return "enserver";
-         }
-      }
-
-      /// <summary>
-      /// Get child nodes.
-      /// </summary>
-      /// <remarks>
-      /// If this server is still loading, the only child is a temporary node.
-      /// </remarks>
-      /// <returns></returns>
-		public override TreeNode[] getChildTreeNodes()
-      {
-         if (IsLoading)
-         {
-            TreeNode[] result = new TreeNode[1];
-            result[0] = getLoadingNode();
-
-            return result;
-         }
-         else
-         {
-            return base.getChildTreeNodes();
          }
       }
 

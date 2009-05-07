@@ -103,12 +103,6 @@
     <Compile Include="ConfigurationWizard\Pages\DappleSearchPage.Designer.cs">
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\JanaLinkTab.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\JanaLinkTab.Designer.cs">
-      <DependentUpon>JanaLinkTab.cs</DependentUpon>
-    </Compile>
     <Compile Include="CustomControls\JanaTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -274,7 +268,6 @@
     <Compile Include="KML\KMLObjectModel.cs" />
     <Compile Include="LayerGeneration\ArcIMSDownloading.cs" />
     <Compile Include="LayerGeneration\ArcIMSQuadLayerBuilder.cs" />
-    <Compile Include="LayerGeneration\ArcIMSCatalogBuilder.cs" />
     <Compile Include="LayerGeneration\ArcIMSServiceBuilder.cs" />
     <Compile Include="LayerGeneration\BlueMarbleBuilder.cs" />
     <Compile Include="LayerGeneration\DAPBrowserMapBuilder.cs" />
@@ -351,10 +344,6 @@
     <EmbeddedResource Include="ConfigurationWizard\Pages\DappleSearchPage.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DappleSearchPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\JanaLinkTab.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>JanaLinkTab.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\JanaTab.resx">
       <DependentUpon>JanaTab.cs</DependentUpon>
