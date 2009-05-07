@@ -33,14 +33,7 @@ namespace Dapple.LayerGeneration
 		/// <returns></returns>
 		internal virtual String ToCacheDirectory()
 		{
-			String result = base.Host + base.AbsolutePath + base.Query;
-
-			// Convert invalid characters to underscores
-			foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
-				result = result.Replace(ch.ToString(), "_");
-
-			// And done
-			return result;
+			return base.ToString().GetHashCode().ToString("X8", CultureInfo.InvariantCulture);
 		}
 
 		internal String ToBaseUri()
@@ -127,24 +120,6 @@ namespace Dapple.LayerGeneration
 		internal ArcIMSServerUri(String strValue)
 			: base(strValue)
 		{ }
-
-		/// <summary>
-		/// Get a cache directory for this Uri (host and path, minus query and scheme.
-		/// </summary>
-		/// <returns></returns>
-		internal override String ToCacheDirectory()
-		{
-			String result = base.Host;
-
-			// Convert invalid characters to underscores
-			foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
-				result = result.Replace(ch.ToString(), "_");
-
-			result += "-" + this.ToString().GetHashCode().ToString("X", CultureInfo.InvariantCulture);
-
-			// And done
-			return result;
-		}
 
 		internal String ToCatalogUri()
 		{

@@ -294,10 +294,8 @@ namespace Dapple.LayerGeneration
 		{
 			get
 			{
-				String result = m_szServiceName + " - " + m_szLayerID;
-				foreach (Char ch in System.IO.Path.GetInvalidFileNameChars())
-					result = result.Replace(ch.ToString(), "_");
-				return result;
+				return Path.Combine(m_szServiceName.GetHashCode().ToString("X8", CultureInfo.InvariantCulture),
+					m_szLayerID.GetHashCode().ToString("X8", CultureInfo.InvariantCulture));
 			}
 		}
 

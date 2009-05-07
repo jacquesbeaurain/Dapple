@@ -937,8 +937,7 @@ namespace bNb.Plugins_GD
 
 			//load a tile from file OR download it if not cached
 			string levelDir = CreateLevelDir(level, _cacheDirectory);
-			string mapTypeDir = CreateMapTypeDir(levelDir, _datasetName);
-			string rowDir = CreateRowDir(mapTypeDir, row);
+			string rowDir = CreateRowDir(levelDir, row);
 			textureName = String.Empty; //= GetTextureName(rowDir, row, col, "dds");
 			if (_datasetName == "r")
 			{
@@ -1134,14 +1133,7 @@ namespace bNb.Plugins_GD
 
 		internal string CreateLevelDir(int level, string cacheDirectoryRoot)
 		{
-			string levelDir = null;
-			//VirtualEarth.m_WorldWindow.Cache.CacheDirectory
-			string cacheDirectory = cacheDirectoryRoot + "\\Virtual Earth";
-			if (Directory.Exists(cacheDirectory) == false)
-			{
-				Directory.CreateDirectory(cacheDirectory);
-			}
-			levelDir = cacheDirectory + @"\" + level.ToString(CultureInfo.InvariantCulture);
+			string levelDir = Path.Combine(cacheDirectoryRoot, level.ToString(CultureInfo.InvariantCulture));
 			if (Directory.Exists(levelDir) == false)
 			{
 				Directory.CreateDirectory(levelDir);

@@ -262,7 +262,7 @@ namespace NewServerTree
 		{
 			get
 			{
-				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("ArcIMS Catalog Cache", Path.Combine(m_oUri.ToCacheDirectory(), "__catalog.xml")));
+				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("ArcIMS Catalog Cache", Path.Combine(m_oUri.ToCacheDirectory(), "serviceinfo.xml")));
 			}
 		}
 
@@ -427,7 +427,7 @@ namespace NewServerTree
 		{
 			get
 			{
-				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("ArcIMS Catalog Cache", Path.Combine(((this.Parent as ArcIMSServerModelNode).Uri as ArcIMSServerUri).ToCacheDirectory(), Path.Combine(m_strServiceName, "__catalog.xml"))));
+				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("ArcIMS Catalog Cache", Path.Combine(((this.Parent as ArcIMSServerModelNode).Uri as ArcIMSServerUri).ToCacheDirectory(), m_strServiceName.GetHashCode().ToString("X8", CultureInfo.InvariantCulture) + ".xml")));
 			}
 		}
 

@@ -308,7 +308,7 @@ namespace NewServerTree
 		{
 			get
 			{
-				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("WMS Catalog Cache", Path.Combine(m_oUri.ToCacheDirectory(), "capabilities.xml")));
+				return Path.Combine(WorldWind.PluginEngine.MainApplication.Settings.CachePath, Path.Combine("WMS Catalog Cache", m_oUri.ToCacheDirectory() + ".xml"));
 			}
 		}
 

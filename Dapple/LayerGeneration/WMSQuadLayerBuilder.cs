@@ -258,7 +258,7 @@ namespace Dapple.LayerGeneration
          if (m_blnIsChanged)
          {
             string strExt = ".png";
-				string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString(CultureInfo.InvariantCulture));
+				string strCachePath = GetCachePath();
             System.IO.Directory.CreateDirectory(strCachePath);
 
             string imageFormat = "image/png";
@@ -315,7 +315,7 @@ namespace Dapple.LayerGeneration
       internal override string GetCachePath()
       {
          WMSServerUri temp = new WMSServerUri(m_wmsLayer.ParentWMSList.ServerGetCapabilitiesUrl);
-         return Path.Combine(Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), temp.ToCacheDirectory()), Utility.StringHash.GetBase64HashForPath(m_wmsLayer.Name));
+         return Path.Combine(Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), temp.ToCacheDirectory()), m_wmsLayer.Name.GetHashCode().ToString("X8", CultureInfo.InvariantCulture));
       }
 
       protected override void CleanUpLayer(bool bFinal)

@@ -402,12 +402,12 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-			return Path.Combine(Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", ""))), m_hDataSet.GetHashCode().ToString(CultureInfo.InvariantCulture));
+			return Path.Combine(Path.Combine(Path.Combine(s_strCacheRoot, CacheSubDir), new Uri(m_oServer.Url).Host), m_hDataSet.Name);
       }
 
 		private String GetStyleSheetCachePath()
 		{
-			return Path.Combine(Path.Combine(s_strCacheRoot, StylesheetCacheSubDir), Utility.FileSystem.SanitizeFilename(m_oServer.Url.Replace("http://", "")));
+			return Path.Combine(Path.Combine(s_strCacheRoot, StylesheetCacheSubDir), new Uri(m_oServer.Url).Host);
 		}
 
       protected override void CleanUpLayer(bool bFinal)
@@ -512,7 +512,7 @@ namespace Dapple.LayerGeneration
          {
 				SwitchToUseTiles();
 
-				string strCachePath = Path.Combine(GetCachePath(), LevelZeroTileSize.ToString(CultureInfo.InvariantCulture));
+				string strCachePath = GetCachePath();
             System.IO.Directory.CreateDirectory(strCachePath);
 
             // Determine the needed levels (function of tile size and resolution if available)

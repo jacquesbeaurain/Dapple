@@ -657,10 +657,10 @@ namespace Geosoft.GX.DAPGetData
 
          // --- remove the http:// from the directory name ---
 
-         strDir = m_strUrl.Substring(7);
+         strDir = new Uri(m_strUrl).Host;
          foreach (char c in System.IO.Path.GetInvalidFileNameChars())
          {
-			 strDir = strDir.Replace(c, '_');
+            strDir = strDir.Replace(c, '_');
          }
 
          m_strCacheDir = System.IO.Path.Combine(m_strCacheDir, strDir);

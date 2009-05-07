@@ -37,7 +37,7 @@ namespace Dapple.LayerGeneration
          imageStore.LevelZeroTileSizeDegrees = 36.0;
          imageStore.LevelCount = 5;
          imageStore.ImageExtension = "jpg";
-         imageStore.CacheDirectory = String.Format(CultureInfo.InvariantCulture, "{0}\\BMNG\\{1}", MainForm.WorldWindowSingleton.Cache.CacheDirectory, String.Format(CultureInfo.InvariantCulture, "BMNG (Shaded + Bathymetry) Tiled - {0}.2004", 7));
+         imageStore.CacheDirectory = MainForm.WorldWindowSingleton.Cache.CacheDirectory + "\\Earth\\BMNG\\";
 
          WorldWind.ImageStore[] ias = new WorldWind.ImageStore[1];
          ias[0] = imageStore;
@@ -140,7 +140,7 @@ namespace Dapple.LayerGeneration
 
       internal override string GetCachePath()
       {
-         return Path.Combine(m_oWorldWindow.Cache.CacheDirectory, "BMNG");
+         return Path.Combine(m_oWorldWindow.Cache.CacheDirectory, @"Earth\BMNG");
       }
 
       protected override void CleanUpLayer(bool bFinal)
