@@ -100,29 +100,6 @@ namespace WorldWind.NewWidgets
 			m_ChildWidgets.Clear();
 		}
 
-		public void Insert(WorldWind.NewWidgets.IWidget widget, int index)
-		{
-			if(index <= m_ChildWidgets.Count)
-			{
-				m_ChildWidgets.Insert(index, widget);
-			}
-			//probably want to throw an indexoutofrange type of exception
-		}
-
-		public WorldWind.NewWidgets.IWidget RemoveAt(int index)
-		{
-			if(index < m_ChildWidgets.Count)
-			{
-				WorldWind.NewWidgets.IWidget oldWidget = m_ChildWidgets[index] as WorldWind.NewWidgets.IWidget;
-				m_ChildWidgets.RemoveAt(index);
-				return oldWidget;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
 		public void Remove(WorldWind.NewWidgets.IWidget widget)
 		{
 			int foundIndex = -1;

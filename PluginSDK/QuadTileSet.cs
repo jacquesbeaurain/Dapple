@@ -391,17 +391,6 @@ namespace WorldWind.Renderable
       }
 
       /// <summary>
-      /// Tiles in the request for download queue
-      /// </summary>
-		public Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
-      {
-         get
-         {
-            return m_downloadRequests;
-         }
-      }
-
-      /// <summary>
       /// The camera controlling the layers update logic
       /// </summary>
 		public CameraBase Camera

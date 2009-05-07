@@ -9,13 +9,6 @@ namespace WorldWind.Renderable
 {
 	public interface IGeoSpatialDownloadTileSet
 	{
-		/// <summary>
-		/// Tiles in the request for download queue
-		/// </summary>
-		Dictionary<IGeoSpatialDownloadTile, GeoSpatialDownloadRequest> DownloadRequests
-		{
-			get;
-		}
 
 		int NumberRetries
 		{

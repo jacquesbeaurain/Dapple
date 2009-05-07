@@ -59,8 +59,6 @@ namespace WorldWind.NewWidgets
 		void BringToFront(IWidget widget);
 		void Add(IWidget widget);
 		void Clear();
-		void Insert(IWidget widget, int index);
-		IWidget RemoveAt(int index);
 		void Remove (IWidget widget);
 		#endregion
 

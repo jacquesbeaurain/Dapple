@@ -50,29 +50,10 @@ using WorldWind;
 namespace WorldWind.NewWidgets
 {
 	/// <summary>
-	/// Delegate for mouse click events
-	/// </summary>
-	public delegate void MouseClickAction(System.Windows.Forms.MouseEventArgs e);
-
-	/// <summary>
 	/// Interface must be implemented in order to recieve user input.
 	/// </summary>
 	internal interface IInteractive
 	{
-		#region Properties
-
-		/// <summary>
-		/// Action to perform when the left mouse button is clicked
-		/// </summary>
-		MouseClickAction LeftClickAction{set; get;}
-
-		/// <summary>
-		/// Action to perform when the right mouse button is clicked
-		/// </summary>
-		MouseClickAction RightClickAction{set; get;}
-
-		#endregion
-
 		#region Methods
 
 		/// <summary>

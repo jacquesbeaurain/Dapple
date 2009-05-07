@@ -182,20 +182,6 @@ namespace WorldWind.NewWidgets
 
 		#region IInteractive Members
 
-		MouseClickAction m_leftClickAction;
-		public MouseClickAction LeftClickAction
-		{
-			get { return m_leftClickAction; }
-			set { m_leftClickAction = value; }
-		}	
-
-		MouseClickAction m_rightClickAction;
-		public MouseClickAction RightClickAction
-		{
-			get { return m_rightClickAction; }
-			set { m_rightClickAction = value; }
-		}
-
 		public bool OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			bool handled = false;

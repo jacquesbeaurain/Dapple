@@ -157,20 +157,6 @@ namespace WorldWind.NewWidgets
 
 		#endregion
 
-		#region IInteractive support variables
-
-		/// <summary>
-		/// LeftClickAction value - holds method to call on left mouse click
-		/// </summary>
-		protected MouseClickAction m_leftClickAction = null;
-
-		/// <summary>
-		/// RightClickAction value - holds method to call on right mouse click
-		/// </summary>
-		protected MouseClickAction m_rightClickAction = null;
-
-		#endregion
-
 		#region Color Values
 
 		/// <summary>
@@ -1196,30 +1182,6 @@ namespace WorldWind.NewWidgets
 		#endregion
 
 		#region IInteractive Members
-
-		#region Properties
-
-		/// <summary>
-		/// Action to perform when the left mouse button is clicked
-		/// </summary>
-		  public MouseClickAction LeftClickAction
-		{
-			get { return m_leftClickAction; }
-			set { m_leftClickAction = value; }
-		}	
-
-
-		/// <summary>
-		/// Action to perform when the right mouse button is clicked
-		/// </summary>
-		  public MouseClickAction RightClickAction
-		{
-			get { return m_rightClickAction; }
-			set { m_rightClickAction = value; }
-		}	
-
-
-		#endregion
 
 		#region Methods
 
