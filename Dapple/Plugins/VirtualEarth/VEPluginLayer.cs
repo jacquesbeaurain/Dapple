@@ -1141,16 +1141,6 @@ namespace bNb.Plugins_GD
 			return levelDir;
 		}
 
-		internal string CreateMapTypeDir(string levelDir, string mapType)
-		{
-			string mapTypeDir = levelDir + @"\" + mapType;
-			if (Directory.Exists(mapTypeDir) == false)
-			{
-				Directory.CreateDirectory(mapTypeDir);
-			}
-			return mapTypeDir;
-		}
-
 		internal string CreateRowDir(string mapTypeDir, int row)
 		{
 			string rowDir = mapTypeDir + @"\" + row.ToString("0000", CultureInfo.InvariantCulture);
@@ -1566,9 +1556,8 @@ namespace bNb.Plugins_GD
 
       internal Image getBitmap(String _cacheDirectory, String _datasetName)
       {
-         string levelDir = CreateLevelDir(level, _cacheDirectory);
-         string mapTypeDir = CreateMapTypeDir(levelDir, _datasetName);
-         string rowDir = CreateRowDir(mapTypeDir, row);
+			string levelDir = CreateLevelDir(level, _cacheDirectory);
+			string rowDir = CreateRowDir(levelDir, row);
          string textureName = String.Empty;
          if (_datasetName == "r")
          {
