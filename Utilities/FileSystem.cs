@@ -23,19 +23,27 @@ namespace Utility
          }
       }
 
-		public static void DeleteFolderGUI(IWin32Window parent, string strFolder, string strTitle)
-      {
-			if (!Directory.Exists(strFolder)) return;
+		private delegate void DeleteFolderGuiDelegate(Control parent, string strFolder, string strTitle);
+		public static void DeleteFolderGUI(Control parent, string strFolder, string strTitle)
+		{
+			if (parent.InvokeRequired)
+			{
+				parent.Invoke(new DeleteFolderGuiDelegate(DeleteFolderGUI), new object[] { parent, strFolder, strTitle });
+			}
+			else
+			{
+				if (!Directory.Exists(strFolder)) return;
 
-         ProgressInfo pi = new ProgressInfo();
-         pi.progress = new ProgressWindow();
-         pi.strOrigFolder = pi.strFolder = strFolder;
-         pi.lCounter = 0;
-         pi.lTotalSize = 0;
-         pi.progress.Text = strTitle;
-         ThreadPool.QueueUserWorkItem(new WaitCallback(DeleteFolderRecursive), pi);
-         pi.progress.ShowDialog(parent);
-      }
+				ProgressInfo pi = new ProgressInfo();
+				pi.progress = new ProgressWindow();
+				pi.strOrigFolder = pi.strFolder = strFolder;
+				pi.lCounter = 0;
+				pi.lTotalSize = 0;
+				pi.progress.Text = strTitle;
+				ThreadPool.QueueUserWorkItem(new WaitCallback(DeleteFolderRecursive), pi);
+				pi.progress.ShowDialog(parent);
+			}
+		}
 
       private static void DeleteFolderRecursive(object info)
       {
