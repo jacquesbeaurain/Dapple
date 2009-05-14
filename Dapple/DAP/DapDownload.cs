@@ -56,7 +56,7 @@ namespace Dapple.DAP
 			Tile.IsDownloadingImage = true;
 
 			Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
-         if (m_DapImageStore.Server.MajorVersion >= 11)
+			if (m_DapImageStore.Server.MajorVersion >= 11 && m_DapImageStore.DataSet.Type.Equals("ArcGIS", StringComparison.InvariantCultureIgnoreCase))
          {
             download = new DapTileDownload(m_localFilePath, Tile, m_DapImageStore);
          }

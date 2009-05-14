@@ -72,7 +72,7 @@ namespace Dapple.LayerGeneration
 		/// </summary>
 		private void SwitchToUseTiles()
 		{
-			if (m_oServer.MajorVersion >= 11)
+			if (m_oServer.MajorVersion >= 11 && m_hDataSet.Type.Equals("ArcGIS", StringComparison.InvariantCultureIgnoreCase))
 			{
 				m_iTextureSizePixels = DAP_TILE_SIZE;
 				m_dLevelZeroTileSizeDegrees = DAP_TILE_LZTS;
