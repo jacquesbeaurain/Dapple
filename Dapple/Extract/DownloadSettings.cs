@@ -337,7 +337,7 @@ namespace Dapple.Extract
 					DownloadCoordinateSystem eCSForLayer = eCS;
 
 					// --- Don't 'reproject to original map' if their projections have different orientations ---
-					if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap && !MainForm.MontajInterface.ProjectionsHaveSameOrientation(MainForm.MapAoiCoordinateSystem, m_oDownloadSettings[count].Projection))
+					if (eCS == DownloadSettings.DownloadCoordinateSystem.OriginalMap && !String.IsNullOrEmpty(m_oDownloadSettings[count].Projection) && !MainForm.MontajInterface.ProjectionsHaveSameOrientation(MainForm.MapAoiCoordinateSystem, m_oDownloadSettings[count].Projection))
 						eCSForLayer = DownloadSettings.DownloadCoordinateSystem.Native;
 
 					switch (m_oDownloadSettings[count].Save(oDatasetElement, cFolderControl.Value, eCSForLayer))

@@ -225,7 +225,7 @@ namespace Dapple
 		/// </summary>
 		internal static GeographicBoundingBox MapAoi
 		{
-			get { return s_oOMMapExtentNative; }
+			get { return s_oOMMapExtentNative.Clone() as GeographicBoundingBox; }
 		}
 
 		/// <summary>

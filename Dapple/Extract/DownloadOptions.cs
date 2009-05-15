@@ -127,7 +127,8 @@ namespace Dapple.Extract
          m_oViewedAoi = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
          m_oMapAoi = MainForm.MapAoi;
          m_strMapProjection = MainForm.MapAoiCoordinateSystem;
-			m_strLayerProjection = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+			if (oDAPLayer != null)
+				m_strLayerProjection = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
       }
       #endregion
 
