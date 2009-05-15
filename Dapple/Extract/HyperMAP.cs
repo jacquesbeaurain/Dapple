@@ -76,7 +76,7 @@ namespace Dapple.Extract
          double dMinX, dMaxX, dMinY, dMaxY;
          SortedList<double, int> oResolutionList;
 
-         string strCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+         string strCoordinateSystem = m_strLayerProjection;
          MainForm.MontajInterface.GetExtents(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY);
          MainForm.MontajInterface.GetMapInfo(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out oResolutionList);
 

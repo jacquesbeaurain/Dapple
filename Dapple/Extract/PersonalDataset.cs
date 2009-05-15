@@ -29,7 +29,7 @@ namespace Dapple.Extract
 
 			if (MainForm.MontajInterface.HostHasOpenMap())
 			{
-				string strSrcCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+				string strSrcCoordinateSystem = m_strLayerProjection;
 				if (string.IsNullOrEmpty(strSrcCoordinateSystem))
 					return ExtractSaveResult.Ignore;
 				double dMinX, dMinY, dMaxX, dMaxY;

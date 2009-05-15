@@ -71,7 +71,7 @@ namespace Dapple.Extract
          SortedList<double, int> oY;
          SortedList<double, int> oZ;
 
-         string strCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+         string strCoordinateSystem = m_strLayerProjection;
          MainForm.MontajInterface.GetExtents(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dMaxX, out dMinX, out dMaxY, out dMinY);
          MainForm.MontajInterface.GetVoxelInfo(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out oResolutionList, out oX, out oY, out oZ);
 

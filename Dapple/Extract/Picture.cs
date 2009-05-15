@@ -73,7 +73,7 @@ namespace Dapple.Extract
          double dXOrigin, dYOrigin, dXCellSize, dYCellSize;
          int iSizeX, iSizeY;
 
-         string strCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+         string strCoordinateSystem = m_strLayerProjection;
          MainForm.MontajInterface.GetGridInfo(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName, out dXOrigin, out dYOrigin, out iSizeX, out iSizeY, out dXCellSize, out dYCellSize);
 
          oResolution.Setup(true, strCoordinateSystem, dXOrigin, dYOrigin, iSizeX, iSizeY, dXCellSize, dYCellSize);

@@ -46,6 +46,7 @@ namespace Dapple.Extract
       protected WorldWind.GeographicBoundingBox m_oViewedAoi;
       protected WorldWind.GeographicBoundingBox m_oMapAoi;
       protected string m_strMapProjection;
+		protected string m_strLayerProjection;
 		protected ErrorProvider m_oErrorProvider;
       #endregion
 
@@ -126,11 +127,21 @@ namespace Dapple.Extract
          m_oViewedAoi = WorldWind.GeographicBoundingBox.FromQuad(MainForm.WorldWindowSingleton.CurrentAreaOfInterest);
          m_oMapAoi = MainForm.MapAoi;
          m_strMapProjection = MainForm.MapAoiCoordinateSystem;
+			m_strLayerProjection = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
       }
       #endregion
 
-      #region Public Methods      
-      /// <summary>
+		#region Properties
+
+		public string Projection
+		{
+			get { return m_strLayerProjection; }
+		}
+
+		#endregion
+
+		#region Public Methods
+		/// <summary>
       /// Save the current contents of these controls to an xml file
       /// </summary>
       /// <param name="oDatasetElement"></param>
@@ -170,10 +181,9 @@ namespace Dapple.Extract
          
          // --- get the dataset coordinate system ---
 
-         string strSrcCoordinateSystem = MainForm.MontajInterface.GetProjection(m_oDAPLayer.ServerURL, m_oDAPLayer.DatasetName);
+         string strSrcCoordinateSystem = m_strLayerProjection;
          if (string.IsNullOrEmpty(strSrcCoordinateSystem))
             return ExtractSaveResult.Ignore;
-         
 
          // --- get the dataset extents ---
 
