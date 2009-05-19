@@ -1825,7 +1825,7 @@ namespace Dapple
 				if (this.m_strOpenGeoTiffFile.Length > 0)
 					AddGeoTiff(this.m_strOpenGeoTiffFile, this.m_strOpenGeoTiffName, this.m_blOpenGeoTiffTmp, true);
 				if (this.m_strOpenKMLFile.Length > 0)
-					AddKML(m_strOpenKMLFile, m_strOpenKMLName, m_blOpenKMLTmp, true);
+					AddKML(m_strOpenKMLFile, m_strOpenKMLName, m_blOpenKMLTmp, true, s_oOMMapExtentWGS84);
 
 
 				// Check for updates daily
@@ -2796,13 +2796,13 @@ namespace Dapple
 			}
 		}
 
-		private void AddKML(String strKMLFile, String strKMLName, bool blTemporary, bool blGoTo)
+		private void AddKML(String strKMLFile, String strKMLName, bool blTemporary, bool blGoTo, GeographicBoundingBox oBounds)
 		{
 			try
 			{
 				this.UseWaitCursor = true;
 
-				Dapple.KML.KMLLayerBuilder oBuilder = new Dapple.KML.KMLLayerBuilder(strKMLFile, strKMLName, WorldWindowSingleton, null);
+				Dapple.KML.KMLLayerBuilder oBuilder = new Dapple.KML.KMLLayerBuilder(strKMLFile, strKMLName, WorldWindowSingleton, null, oBounds);
 				oBuilder.Temporary = blTemporary;
 				c_oLayerList.AddLayer(oBuilder);
 				oBuilder.GoToLookAt(WorldWindowSingleton);

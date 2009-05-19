@@ -23,11 +23,16 @@ namespace Dapple.KML
 		private GeographicBoundingBox m_oBounds;
 
 		internal KMLLayerBuilder(String strFilename, WorldWindow oWorldWindow, IBuilder oParent)
-			:this(strFilename, Path.GetFileNameWithoutExtension(strFilename), oWorldWindow, oParent)
+			: this(strFilename, Path.GetFileNameWithoutExtension(strFilename), oWorldWindow, oParent, null)
 		{
 		}
 
-		internal KMLLayerBuilder(String strFilename, String strLayerName, WorldWindow oWorldWindow, IBuilder oParent)
+		internal KMLLayerBuilder(String strFilename, WorldWindow oWorldWindow, IBuilder oParent, GeographicBoundingBox oBounds)
+			:this(strFilename, Path.GetFileNameWithoutExtension(strFilename), oWorldWindow, oParent, oBounds)
+		{
+		}
+
+		internal KMLLayerBuilder(String strFilename, String strLayerName, WorldWindow oWorldWindow, IBuilder oParent, GeographicBoundingBox oBounds)
 			: base(strLayerName, oWorldWindow, oParent)
 		{
 			m_strInitFilename = strFilename;
@@ -35,6 +40,8 @@ namespace Dapple.KML
 			{
 				m_oSourceFile = new KMLFile(strFilename);
 				m_oRenderable = KMLCreation.CreateKMLLayer(m_oSourceFile, oWorldWindow.CurrentWorld, out m_oBounds);
+				if (oBounds != null)
+					m_oBounds = oBounds;
 				m_oRenderable.RenderPriority = RenderPriority.TerrainMappedImages;
 			}
 		}
