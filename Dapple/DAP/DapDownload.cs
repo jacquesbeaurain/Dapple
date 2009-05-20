@@ -221,7 +221,7 @@ namespace Dapple.DAP
 				request.KeepAlive = false;
 				request.ContentType = "application/x-www-form-urlencoded";
 				request.ContentLength = byte1.Length;
-				request.Timeout = MainForm.DOWNLOAD_TIMEOUT;
+				request.Timeout = WebDownload.DownloadTimeout;
 
 				// --- Serialize the XML document request onto the wire ---
 
@@ -314,7 +314,7 @@ namespace Dapple.DAP
             request.KeepAlive = false;
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = byte1.Length;
-            request.Timeout = MainForm.DOWNLOAD_TIMEOUT;
+            request.Timeout = WebDownload.DownloadTimeout;
 
             // --- Serialize the XML document request onto the wire ---
 

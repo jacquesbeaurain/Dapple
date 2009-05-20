@@ -811,6 +811,7 @@ namespace Dapple.CustomControls
 				proxyPassword);
 
 			request.ProtocolVersion = HttpVersion.Version11;
+			request.Timeout = WebDownload.DownloadTimeout;
 
 			return request;
 		}

@@ -98,6 +98,7 @@ namespace Geosoft.Dap.Xml
 							  WorldWind.Net.WebDownload.proxyUrl,
 							  WorldWind.Net.WebDownload.proxyUserName,
 							  WorldWind.Net.WebDownload.proxyPassword);
+			req.Timeout = WorldWind.Net.WebDownload.DownloadTimeout;
 #endif
 
 			return Download(req, progressCB);

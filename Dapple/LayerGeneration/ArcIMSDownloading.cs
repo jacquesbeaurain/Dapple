@@ -158,6 +158,7 @@ namespace Dapple.LayerGeneration
               WorldWind.Net.WebDownload.proxyUrl,
               WorldWind.Net.WebDownload.proxyUserName,
               WorldWind.Net.WebDownload.proxyPassword);
+			oRequest.Timeout = WebDownload.DownloadTimeout;
 
          WebResponse oResponse = oRequest.GetResponse();
          FileStream hLocalFile = new FileStream(strFilename, FileMode.Create);
@@ -205,6 +206,7 @@ namespace Dapple.LayerGeneration
                        WorldWind.Net.WebDownload.proxyUrl,
                        WorldWind.Net.WebDownload.proxyUserName,
                        WorldWind.Net.WebDownload.proxyPassword);
+			request.Timeout = WebDownload.DownloadTimeout;
 
 
          // --- Encode the document into ascii ---

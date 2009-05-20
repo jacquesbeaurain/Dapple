@@ -322,7 +322,7 @@ namespace Geosoft.GX.DAPGetData
          m_strCacheRoot = string.Empty;
          GXNet.CSYS.IGetDirectory(GXNet.Constant.SYS_DIR_USER, ref m_strCacheRoot);
 #else
-         m_oCommand = new Geosoft.Dap.Command(strDnsAddress, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, Dapple.MainForm.DOWNLOAD_TIMEOUT);
+         m_oCommand = new Geosoft.Dap.Command(strDnsAddress, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, WorldWind.Net.WebDownload.DownloadTimeout);
          m_strCacheRoot = strCacheDir;
 #endif
 

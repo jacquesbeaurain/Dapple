@@ -95,7 +95,6 @@ namespace Dapple
 		#region Constants
 
 		internal const int MAX_MRU_TERMS = 8;
-		internal const int DOWNLOAD_TIMEOUT = 30000;
 		internal const string ViewExt = ".dapple";
 		internal const string FavouriteServerExt = ".dapple_serverlist";
 		internal const string LastView = "lastview" + ViewExt;

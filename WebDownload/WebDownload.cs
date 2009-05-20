@@ -22,6 +22,8 @@ namespace WorldWind.Net
 
 	public class WebDownload : IDisposable
 	{
+		public const int DownloadTimeout = 30 * 1000;
+
 		public enum HttpProtoVersion
 		{
 			HTTP1_1,
@@ -361,7 +363,7 @@ namespace WorldWind.Net
 				proxyPassword);
 
 			request.ProtocolVersion = HttpVersion.Version11;
-			request.Timeout = 5000;
+			request.Timeout = DownloadTimeout;
 
 			return request;
 		}
