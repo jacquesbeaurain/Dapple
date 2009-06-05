@@ -49,18 +49,24 @@ namespace Dapple
 
       #endregion
 
-      #region Display methods
 
-      internal void SetState(int iPage, int iNumResults)
+		#region Display methods
+
+		internal void SetState(int iPage, int iNumResults)
       {
          int iNumPages = PagesFromResults(iNumResults);
-         SetState(String.Format(CultureInfo.InvariantCulture, "Results {0}-{1} of {2}", iPage * ResultsPerPage + 1, Math.Min((iPage + 1) * PageNavigator.ResultsPerPage, iNumResults), iNumResults), iPage > 0, iPage < iNumPages - 1);
+         SetState(String.Format(CultureInfo.InvariantCulture, "Results {0}-{1} of {2}", iPage * m_iResultsPerPage + 1, Math.Min((iPage + 1) * m_iResultsPerPage, iNumResults), iNumResults), iPage > 0, iPage < iNumPages - 1);
       }
 
       internal void SetState(String szMessage)
       {
          SetState(szMessage, false, false);
       }
+
+		internal void SetPageSize(int newSize)
+		{
+			m_iResultsPerPage = newSize;
+		}
 
       private delegate void SetStateDelegate(String szMessage, bool blCanBack, bool blCanForward);
       internal void SetState(String szMessage, bool blCanBack, bool blCanForward)
@@ -81,12 +87,12 @@ namespace Dapple
 
       #region Statics
 
-      internal static int ResultsPerPage = 10;
+      internal int m_iResultsPerPage = 10;
 
-      internal static int PagesFromResults(int iNumResults)
+      internal int PagesFromResults(int iNumResults)
       {
-         int result = iNumResults / ResultsPerPage;
-         if (iNumResults % ResultsPerPage != 0) result++;
+         int result = iNumResults / m_iResultsPerPage;
+         if (iNumResults % m_iResultsPerPage != 0) result++;
          return result;
       }
 

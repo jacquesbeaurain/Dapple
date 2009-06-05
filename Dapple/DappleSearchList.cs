@@ -56,6 +56,7 @@ namespace Dapple.CustomControls
 		private Point m_oDragDropStartPoint = Point.Empty;
 		private LayerList m_hLayerList;
 		private DappleModel m_oModel;
+		private int m_iPageSize;
 
 		long m_lSearchIndex = 0;
 
@@ -205,13 +206,13 @@ namespace Dapple.CustomControls
 					(int)e.Graphics.MeasureString(oResult.Title, c_lbResults.Font).Width,
 					(int)e.Graphics.MeasureString(oResult.ServerUrl, new Font(c_lbResults.Font, FontStyle.Bold)).Width
 					);
-				c_lbResults.HorizontalExtent = Math.Max(c_lbResults.HorizontalExtent, e.ItemWidth);
+				m_iHorizontalExtent = Math.Max(m_iHorizontalExtent, e.ItemWidth);
 			}
 			else if (m_eDisplayMode == DisplayMode.List)
 			{
 				e.ItemWidth = ICON_SIZE + (int)e.Graphics.MeasureString(String.Format(CultureInfo.CurrentCulture, "({0:P0}) {1}", oResult.PercentageRank, oResult.Title), c_lbResults.Font).Width;
 				e.ItemHeight = ICON_SIZE;
-				c_lbResults.HorizontalExtent = Math.Max(c_lbResults.HorizontalExtent, e.ItemWidth);
+				m_iHorizontalExtent = Math.Max(m_iHorizontalExtent, e.ItemWidth);
 
 			}
 		}
@@ -306,7 +307,7 @@ namespace Dapple.CustomControls
 			if (m_iCurrentPage >= m_iAccessedPages)
 			{
 				m_iAccessedPages++;
-				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, m_iCurrentPage, m_lSearchIndex);
+				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, m_iCurrentPage, m_lSearchIndex, m_iPageSize);
 				SetSearching();
 				oDownload.BackgroundDownloadMemory(new DownloadCompleteHandler(ForwardPageComplete));
 			}
@@ -344,10 +345,21 @@ namespace Dapple.CustomControls
 			}
 			else
 			{
-				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, 0, m_lSearchIndex);
+				UpdatePageSize();
+				DappleSearchWebDownload oDownload = new DappleSearchWebDownload(m_oSearchBoundingBox, m_szSearchString, 0, m_lSearchIndex, m_iPageSize);
 				SetSearching();
 				oDownload.BackgroundDownloadMemory(new DownloadCompleteHandler(SetSearchParametersComplete));
 			}
+		}
+
+		private void UpdatePageSize()
+		{
+			if (m_eDisplayMode == DisplayMode.Thumbnail)
+				m_iPageSize = Math.Max(c_lbResults.ClientSize.Height / (THUMBNAIL_SIZE + 1), 1);
+			else
+				m_iPageSize = Math.Max(c_lbResults.ClientSize.Height / (ICON_SIZE) - 1, 1);
+
+			c_oPageNavigator.SetPageSize(m_iPageSize);
 		}
 
 		private void SetSearchParametersComplete(WebDownload oWebDownload)
@@ -422,6 +434,7 @@ namespace Dapple.CustomControls
 			}
 		}
 
+		private int m_iHorizontalExtent;
 		private void RefreshResultList()
 		{
 			if (InvokeRequired) throw new InvalidOperationException("Tried to refresh result list off of the event thread");
@@ -430,7 +443,6 @@ namespace Dapple.CustomControls
 
 			c_lbResults.SuspendLayout();
 			c_lbResults.Items.Clear();
-			c_lbResults.HorizontalExtent = 0;
 
 			if (!MainForm.Settings.UseDappleSearch)
 			{
@@ -446,15 +458,18 @@ namespace Dapple.CustomControls
 			{
 				if (m_aPages.Length > 0 && m_aPages[m_iCurrentPage] != null)
 				{
+					m_iHorizontalExtent = 0;
 					foreach (SearchResult oResult in m_aPages[m_iCurrentPage].Results)
 					{
 						c_lbResults.Items.Add(oResult);
 					}
 					c_oPageNavigator.SetState(m_iCurrentPage, m_aPages[0].TotalCount);
+					c_lbResults.HorizontalExtent = m_iHorizontalExtent;
 				}
 				else
 				{
 					c_oPageNavigator.SetState("No results");
+					c_lbResults.HorizontalExtent = 0;
 				}
 
 				if (m_eDisplayMode == DisplayMode.Thumbnail && m_iCurrentPage < m_aPages.Length)
@@ -480,15 +495,14 @@ namespace Dapple.CustomControls
 			else
 			{
 				c_oPageNavigator.SetState("Press Alt-S to search");
-				c_lbResults.HorizontalExtent = 0;
 			}
+			c_lbResults.HorizontalExtent = 0;
 		}
 
 		private void SetSearching()
 		{
 			c_lbResults.Items.Clear();
 			c_oPageNavigator.SetState("Searching...");
-			c_lbResults.HorizontalExtent = 0;
 		}
 
 		private void SetSearchFailed()
@@ -498,7 +512,6 @@ namespace Dapple.CustomControls
 			m_aPages = new SearchResultSet[0];
 			c_lbResults.Items.Clear();
 			c_oPageNavigator.SetState("Error contacting DappleSearch server");
-			c_lbResults.HorizontalExtent = 0;
 		}
 
 		private delegate void InitResultsDelegate(SearchResultSet oResults);
@@ -516,7 +529,7 @@ namespace Dapple.CustomControls
 
 				if (oResults != null)
 				{
-					int iNumPages = PageNavigator.PagesFromResults(oResults.TotalCount);
+					int iNumPages = c_oPageNavigator.PagesFromResults(oResults.TotalCount);
 
 					m_aPages = new SearchResultSet[iNumPages];
 
@@ -764,16 +777,17 @@ namespace Dapple.CustomControls
 		private GeographicBoundingBox m_oBoundingBox = null;
 		private String m_szKeywords = null;
 		private int m_iPage = 0;
-		private int m_iNumResults = PageNavigator.ResultsPerPage;
+		private int m_iNumResults;
 		private long m_lSearchIndex;
 
-		internal DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex)
+		internal DappleSearchWebDownload(GeographicBoundingBox oBoundingBox, String szKeywords, int iPage, long lSearchIndex, int resultsPerPage)
 			: base(MainForm.Settings.DappleSearchURL, true)
 		{
 			m_oBoundingBox = oBoundingBox;
 			m_szKeywords = szKeywords;
 			m_iPage = iPage;
 			m_lSearchIndex = lSearchIndex;
+			m_iNumResults = resultsPerPage;
 		}
 
 		internal long SearchIndex
