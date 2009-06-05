@@ -323,7 +323,7 @@ namespace Dapple.LayerGeneration
 			ArcIMSQuadLayerBuilder castObj = obj as ArcIMSQuadLayerBuilder;
 
 			// -- Equal if they're the same service from the same server --
-			return m_oServerUri.Equals(castObj.m_oServerUri) && m_szTreeNodeText.Equals(castObj.m_szTreeNodeText);
+			return m_oServerUri.Equals(castObj.m_oServerUri) && m_szServiceName.Equals(castObj.m_szServiceName) && m_szLayerID.Equals(castObj.m_szLayerID);
 		}
 
 		public override int GetHashCode()
