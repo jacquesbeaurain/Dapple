@@ -166,10 +166,22 @@ namespace Dapple.CustomControls
 
 				e.Graphics.TranslateTransform(THUMBNAIL_SIZE + 2, 0, MatrixOrder.Append);
 
-				Font oTitleFont = new Font(c_lbResults.Font, FontStyle.Bold);
-				int iSpace = (THUMBNAIL_SIZE - 2 * c_lbResults.Font.Height) / 3;
-				e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
-				e.Graphics.DrawString(oResult.ServerUrl, new Font(oTitleFont, FontStyle.Regular), Brushes.Black, new PointF(0, iSpace * 2 + c_lbResults.Font.Height));
+				using (Font oTitleFont = new Font(c_lbResults.Font, FontStyle.Bold))
+				{
+					if (String.IsNullOrEmpty(oResult.ArcIMSServiceName))
+					{
+						int iSpace = (THUMBNAIL_SIZE - 2 * c_lbResults.Font.Height) / 3;
+						e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
+						e.Graphics.DrawString(oResult.ServerUrl, c_lbResults.Font, Brushes.Black, new PointF(0, iSpace * 2 + c_lbResults.Font.Height));
+					}
+					else
+					{
+						int iSpace = (THUMBNAIL_SIZE - 3 * c_lbResults.Font.Height) / 4;
+						e.Graphics.DrawString(oResult.Title, oTitleFont, Brushes.Black, new PointF(0, iSpace));
+						e.Graphics.DrawString(oResult.ArcIMSServiceName, c_lbResults.Font, Brushes.Black, new PointF(0, iSpace * 2 + c_lbResults.Font.Height));
+						e.Graphics.DrawString(oResult.ServerUrl, c_lbResults.Font, Brushes.Black, new PointF(0, iSpace * 3 + c_lbResults.Font.Height * 2));
+					}
+				}
 			}
 			else if (m_eDisplayMode == DisplayMode.List)
 			{
@@ -653,6 +665,16 @@ namespace Dapple.CustomControls
 		internal double PercentageRank { get { return (double)Rank / (double)UInt16.MaxValue; } }
 		internal Bitmap Thumbnail { get { return m_oBitmap; } }
 		internal String ServerUrl { get { return "http://" + m_aCommonAttributes["url"]; } }
+		internal String ArcIMSServiceName
+		{
+			get
+			{
+				if (m_aCommonAttributes["type"].Equals("ArcIMS"))
+					return m_aTypeSpecificAttributes["servicename"];
+				else
+					return null;
+			}
+		}
 
 		internal LayerUri Uri
 		{
