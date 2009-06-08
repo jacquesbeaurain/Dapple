@@ -20,6 +20,8 @@ namespace NewServerTree
 		internal static String DisabledServer = "server-disabled";
 		internal static String PersonalDAPServer = "server-personaldap";
 		internal static String ArcIMSService = "folder-arcimsservice";
+		internal static String ArcIMSServiceLoading = "folder-arcimsservice-loading";
+		internal static String ArcIMSServiceLoadFailed = "folder-arcimsservice-loadfailed";
 		internal static String TileSet = "folder-tileset";
 
 		internal static String OpenFolder = "folder-open";
@@ -84,6 +86,8 @@ namespace NewServerTree
 			result.Images.Add(DisabledServer, Resources.disserver);
 			result.Images.Add(PersonalDAPServer, Resources.dcat);
 			result.Images.Add(ArcIMSService, Resources.layers_top);
+			result.Images.Add(ArcIMSServiceLoading, Resources.time);
+			result.Images.Add(ArcIMSServiceLoadFailed, Resources.error);
 			result.Images.Add(TileSet, Resources.tile);
 
 			result.Images.Add(OpenFolder, Resources.folder_open);

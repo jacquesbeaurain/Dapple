@@ -370,6 +370,8 @@ namespace NewServerTree
 		{
 			m_strServiceName = strServiceName;
 			m_oCultureInfo = oCultureInfo;
+
+			BeginLoad();
 		}
 
 		#endregion
@@ -385,7 +387,15 @@ namespace NewServerTree
 		[Browsable(false)]
 		internal override string IconKey
 		{
-			get { return IconKeys.ArcIMSService; }
+			get
+			{
+				if (LoadState == LoadState.Loading)
+					return IconKeys.ArcIMSServiceLoading;
+				else if (LoadState == LoadState.LoadFailed)
+					return IconKeys.ArcIMSServiceLoadFailed;
+				else
+					return IconKeys.ArcIMSService;
+			}
 		}
 
 		[Browsable(false)]

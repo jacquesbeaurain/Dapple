@@ -808,17 +808,7 @@ namespace NewServerTree
 
 		internal void ModelNodeDisplayUpdated(ModelNode oUpdatedNode)
 		{
-			bool blVisible = false;
-			for (ModelNode iter = m_oSelectedNode; iter != null; iter = iter.Parent)
-			{
-				if (iter == oUpdatedNode.Parent)
-				{
-					blVisible = true;
-					break;
-				}
-			}
-
-			if (blVisible) OnNodeDisplayUpdated(new NodeDisplayUpdatedEventArgs(oUpdatedNode));
+			OnNodeDisplayUpdated(new NodeDisplayUpdatedEventArgs(oUpdatedNode));
 		}
 
 		internal void ModelNodeUnloaded(ModelNode oNode)

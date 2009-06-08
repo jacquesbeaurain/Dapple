@@ -282,11 +282,14 @@ namespace NewServerTree.View
 		{
 			MethodInvoker MethodBody = delegate()
 			{
-				TreeNode oUpdatedNode = FindNodeWithTag(e.Node);
-
-				if (oUpdatedNode != null)
+				for (ModelNode iter = e.Node; iter != null; iter = iter.Parent)
 				{
-					ConfigureTreeNodeDisplay(oUpdatedNode);
+					TreeNode node = FindNodeWithTag(iter);
+
+					if (node != null)
+					{
+						ConfigureTreeNodeDisplay(node);
+					}
 				}
 			};
 
