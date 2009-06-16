@@ -293,7 +293,7 @@ namespace WorldWind
             if (value != null && Uri.IsWellFormedUriString(value, UriKind.Absolute))
             {
                Uri parse = new Uri(value);
-               dappleSearchURL = "http://" + parse.Authority + "/";
+               dappleSearchURL = "http://" + parse.Authority + parse.AbsolutePath;
             }
          }
       }
