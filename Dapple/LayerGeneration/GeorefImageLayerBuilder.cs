@@ -155,13 +155,13 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		internal override string ServerTypeIconKey
 		{
-			get { return "georef_image"; }
+			get { return MainForm.GeorefImageIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "georef_image"; }
+			get { return MainForm.GeorefImageIconKey; }
 		}
 
 		#endregion

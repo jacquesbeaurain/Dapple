@@ -112,13 +112,13 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
       internal override string ServerTypeIconKey
       {
-         get { return "blue_marble"; }
+			get { return MainForm.BlueMarbleIconKey; }
       }
 
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
       {
-         get { return "blue_marble"; }
+			get { return MainForm.BlueMarbleIconKey; }
       }
 
 		#endregion

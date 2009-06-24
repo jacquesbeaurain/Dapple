@@ -201,13 +201,13 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		internal override string ServerTypeIconKey
 		{
-			get { return "wms"; }
+			get { return MainForm.WmsIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "wms"; }
+			get { return MainForm.WmsIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]

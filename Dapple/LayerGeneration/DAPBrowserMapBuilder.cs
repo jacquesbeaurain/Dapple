@@ -140,11 +140,11 @@ namespace Dapple.LayerGeneration
 			{
 				if (this.IsFromPersonalDapServer)
 				{
-					return "desktopcataloger";
+					return MainForm.DesktopCatalogerIconKey;
 				}
 				else
 				{
-					return "dap";
+					return MainForm.DapIconKey;
 				}
 			}
 		}

@@ -267,11 +267,11 @@ namespace Dapple.LayerGeneration
 			{
 				if (this.IsFromPersonalDapServer)
 				{
-					return "desktopcataloger";
+					return MainForm.DesktopCatalogerIconKey;
 				}
 				else
 				{
-					return "dap";
+					return MainForm.DapIconKey;
 				}
 			}
 		}
@@ -279,7 +279,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "dap_" + m_hDataSet.Type.ToLower(); }
+			get { return "dap_" + m_hDataSet.Type; }
 		}
 
 		[System.ComponentModel.Browsable(false)]

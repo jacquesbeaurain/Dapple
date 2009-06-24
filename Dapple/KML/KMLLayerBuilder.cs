@@ -106,13 +106,13 @@ namespace Dapple.KML
 		[System.ComponentModel.Browsable(false)]
 		internal override string ServerTypeIconKey
 		{
-			get { return "kml"; }
+			get { return MainForm.KmlIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "kml"; }
+			get { return MainForm.KmlIconKey; }
 		}
 
 		internal override bool bIsDownloading(out int iBytesRead, out int iTotalBytes)

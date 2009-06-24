@@ -203,6 +203,31 @@ namespace Dapple
 			get { return s_oImageList; }
 		}
 
+		public const string DisabledServerIconKey = "disserver";
+		public const string OfflineServerIconKey = "offline";
+		public const string EnabledServerIconKey = "enserver";
+		public const string LiveMapsIconKey = "live";
+		public const string DapDatabaseIconKey = "dap_database";
+		public const string DapDocumentIconKey = "dap_document";
+		public const string DapMapIconKey = "dap_map";
+		public const string DapGridIconKey = "dap_grid";
+		public const string DapPictureIconKey = "dap_picture";
+		public const string DapPointIconKey = "dap_point";
+		public const string DapSpfIconKey = "dap_spf";
+		public const string DapVoxelIconKey = "dap_voxel";
+		public const string DapArcGisIconKey = "dap_arcgis";
+		public const string LayerIconKey = "layer";
+		public const string ErrorIconKey = "error";
+		public const string ArcImsIconKey = "arcims";
+		public const string GeorefImageIconKey = "georef_image";
+		public const string WmsIconKey = "wms";
+		public const string KmlIconKey = "kml";
+		public const string BlueMarbleIconKey = "blue_marble";
+		public const string DapIconKey = "dap";
+		public const string TileIconKey = "tile";
+		public const string FolderIconKey = "folder";
+		public const string DesktopCatalogerIconKey = "desktopcataloger";
+
 		internal static RemoteInterface MontajInterface
 		{
 			get
@@ -423,48 +448,30 @@ namespace Dapple
 				s_oImageList.ImageSize = new Size(16, 16);
 				s_oImageList.TransparentColor = Color.Transparent;
 
-				s_oImageList.Images.Add("enserver", Resources.enserver);
-				s_oImageList.Images.Add("disserver", Resources.disserver);
-				s_oImageList.Images.Add("offline", Resources.offline);
-				s_oImageList.Images.Add("dap", Resources.dap);
-				s_oImageList.Images.Add("dap_database", Resources.dap_database);
-				s_oImageList.Images.Add("dap_document", Resources.dap_document);
-				s_oImageList.Images.Add("dap_grid", Resources.dap_grid);
-				s_oImageList.Images.Add("dap_map", Resources.dap_map);
-				s_oImageList.Images.Add("dap_generic", Resources.dap_map);
-				s_oImageList.Images.Add("dap_picture", Resources.dap_picture);
-				s_oImageList.Images.Add("dap_picturesection", Resources.dap_picture);
-				s_oImageList.Images.Add("dap_point", Resources.dap_point);
-				s_oImageList.Images.Add("dap_spf", Resources.dap_spf);
-				s_oImageList.Images.Add("dap_voxel", Resources.dap_voxel);
-				s_oImageList.Images.Add("dap_imageserver", Resources.arcims);
-				s_oImageList.Images.Add("dap_gridsection", Resources.dap_grid);
-				s_oImageList.Images.Add("folder", Resources.folder);
-				s_oImageList.Images.Add("folder_open", Resources.folder_open);
-				s_oImageList.Images.Add("loading", Resources.loading);
-				s_oImageList.Images.Add("dap_arcgis", global::Dapple.Properties.Resources.dap_arcgis);
-				s_oImageList.Images.Add("dap_imageserver", Resources.nasa);
-				s_oImageList.Images.Add("kml", Resources.kml);
-				s_oImageList.Images.Add("dapple", global::Dapple.Properties.Resources.dapple);
-				s_oImageList.Images.Add("dap_gray", global::Dapple.Properties.Resources.dap_gray);
-				s_oImageList.Images.Add("error", global::Dapple.Properties.Resources.error);
-				s_oImageList.Images.Add("folder_gray", global::Dapple.Properties.Resources.folder_gray);
-				s_oImageList.Images.Add("layer", global::Dapple.Properties.Resources.layer);
-				s_oImageList.Images.Add("live", global::Dapple.Properties.Resources.live);
-				s_oImageList.Images.Add("tile", global::Dapple.Properties.Resources.tile);
-				s_oImageList.Images.Add("tile_gray", global::Dapple.Properties.Resources.tile_gray);
-				s_oImageList.Images.Add("georef_image", global::Dapple.Properties.Resources.georef_image);
-				s_oImageList.Images.Add("time", global::Dapple.Properties.Resources.time_icon);
-				s_oImageList.Images.Add("wms", Resources.wms);
-				s_oImageList.Images.Add("wms_gray", global::Dapple.Properties.Resources.wms_gray);
-				s_oImageList.Images.Add("nasa", global::Dapple.Properties.Resources.nasa);
-				s_oImageList.Images.Add("usgs", global::Dapple.Properties.Resources.usgs);
-				s_oImageList.Images.Add("worldwind_central", global::Dapple.Properties.Resources.worldwind_central);
-				s_oImageList.Images.Add("arcims", global::Dapple.Properties.Resources.arcims);
-				s_oImageList.Images.Add("imageservice", Dapple.Properties.Resources.layers_top);
-				s_oImageList.Images.Add("blue_marble", Dapple.Properties.Resources.blue_marble);
-				s_oImageList.Images.Add("desktopcataloger", Dapple.Properties.Resources.dcat);
-
+				s_oImageList.Images.Add(EnabledServerIconKey, Resources.enserver);
+				s_oImageList.Images.Add(DisabledServerIconKey, Resources.disserver);
+				s_oImageList.Images.Add(OfflineServerIconKey, Resources.offline);
+				s_oImageList.Images.Add(DapIconKey, Resources.dap);
+				s_oImageList.Images.Add(DapDatabaseIconKey, Resources.dap_database);
+				s_oImageList.Images.Add(DapDocumentIconKey, Resources.dap_document);
+				s_oImageList.Images.Add(DapGridIconKey, Resources.dap_grid);
+				s_oImageList.Images.Add(DapMapIconKey, Resources.dap_map);
+				s_oImageList.Images.Add(DapPictureIconKey, Resources.dap_picture);
+				s_oImageList.Images.Add(DapPointIconKey, Resources.dap_point);
+				s_oImageList.Images.Add(DapSpfIconKey, Resources.dap_spf);
+				s_oImageList.Images.Add(DapVoxelIconKey, Resources.dap_voxel);
+				s_oImageList.Images.Add(FolderIconKey, Resources.folder);
+				s_oImageList.Images.Add(DapArcGisIconKey, global::Dapple.Properties.Resources.dap_arcgis);
+				s_oImageList.Images.Add(KmlIconKey, Resources.kml);
+				s_oImageList.Images.Add(ErrorIconKey, global::Dapple.Properties.Resources.error);
+				s_oImageList.Images.Add(LayerIconKey, global::Dapple.Properties.Resources.layer);
+				s_oImageList.Images.Add(LiveMapsIconKey, global::Dapple.Properties.Resources.live);
+				s_oImageList.Images.Add(TileIconKey, global::Dapple.Properties.Resources.tile);
+				s_oImageList.Images.Add(GeorefImageIconKey, global::Dapple.Properties.Resources.georef_image);
+				s_oImageList.Images.Add(WmsIconKey, Resources.wms);
+				s_oImageList.Images.Add(ArcImsIconKey, global::Dapple.Properties.Resources.arcims);
+				s_oImageList.Images.Add(BlueMarbleIconKey, Dapple.Properties.Resources.blue_marble);
+				s_oImageList.Images.Add(DesktopCatalogerIconKey, Dapple.Properties.Resources.dcat);
 
 				c_oWorldWindow = new WorldWindow();
 #if !DEBUG
@@ -2430,33 +2437,33 @@ namespace Dapple
 			switch (strType.ToLower())
 			{
 				case "database":
-					return ImageListIndex("dap_database");
+					return ImageListIndex(DapDatabaseIconKey);
 				case "document":
-					return ImageListIndex("dap_document");
+					return ImageListIndex(DapDocumentIconKey);
 				case "generic":
-					return ImageListIndex("dap_map");
+					return ImageListIndex(DapMapIconKey);
 				case "grid":
-					return ImageListIndex("dap_grid");
+					return ImageListIndex(DapGridIconKey);
 				case "gridsection":
-					return ImageListIndex("dap_grid");
+					return ImageListIndex(DapGridIconKey);
 				case "map":
-					return ImageListIndex("dap_map");
+					return ImageListIndex(DapMapIconKey);
 				case "picture":
-					return ImageListIndex("dap_picture");
+					return ImageListIndex(DapPictureIconKey);
 				case "picturesection":
-					return ImageListIndex("dap_picture");
+					return ImageListIndex(DapPictureIconKey);
 				case "point":
-					return ImageListIndex("dap_point");
+					return ImageListIndex(DapPointIconKey);
 				case "spf":
-					return ImageListIndex("dap_spf");
+					return ImageListIndex(DapSpfIconKey);
 				case "voxel":
-					return ImageListIndex("dap_voxel");
+					return ImageListIndex(DapVoxelIconKey);
 				case "imageserver":
-					return ImageListIndex("arcims");
+					return ImageListIndex(ArcImsIconKey);
 				case "arcgis":
-					return ImageListIndex("dap_arcgis");
+					return ImageListIndex(DapArcGisIconKey);
 				default:
-					return 3;
+					return ImageListIndex(DapIconKey);
 			}
 		}
 

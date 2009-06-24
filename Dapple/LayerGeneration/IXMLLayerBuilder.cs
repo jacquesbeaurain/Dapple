@@ -83,7 +83,7 @@ namespace Dapple.LayerGeneration
       [System.ComponentModel.Browsable(false)]
 		public virtual string DisplayIconKey
       {
-         get { return "folder"; }
+			get { return MainForm.FolderIconKey; }
       }
 
       internal event BuilderChangedHandler BuilderChanged;
@@ -213,8 +213,8 @@ namespace Dapple.LayerGeneration
       {
          if (m_blEnabled == false)
          {
-            oParent.ImageIndex = MainForm.ImageListIndex("disserver");
-            oParent.SelectedImageIndex = MainForm.ImageListIndex("disserver");
+				oParent.ImageIndex = MainForm.ImageListIndex(MainForm.DisabledServerIconKey);
+				oParent.SelectedImageIndex = MainForm.ImageListIndex(MainForm.DisabledServerIconKey);
             oParent.Text = Title + " (Disabled)";
          }
          else
@@ -244,7 +244,7 @@ namespace Dapple.LayerGeneration
          {
             if (m_blEnabled == false)
             {
-               return "disserver";
+               return MainForm.DisabledServerIconKey;
             }
             else
             {
@@ -313,9 +313,9 @@ namespace Dapple.LayerGeneration
          {
             if (LoadingErrorOccurred)
             {
-               return "offline";
+               return MainForm.OfflineServerIconKey;
             }
-            return "enserver";
+            return MainForm.EnabledServerIconKey;
          }
       }
 
@@ -340,20 +340,20 @@ namespace Dapple.LayerGeneration
       {
          if (IsLoading)
          {
-            oParent.ImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
+				oParent.ImageIndex = MainForm.ImageListIndex(MainForm.EnabledServerIconKey);
+				oParent.SelectedImageIndex = MainForm.ImageListIndex(MainForm.EnabledServerIconKey);
             oParent.Text = Title + " (Loading...)";
          }
          else if (LoadingErrorOccurred)
          {
-            oParent.ImageIndex = MainForm.ImageListIndex("offline");
-            oParent.SelectedImageIndex = MainForm.ImageListIndex("offline");
+            oParent.ImageIndex = MainForm.ImageListIndex(MainForm.OfflineServerIconKey);
+            oParent.SelectedImageIndex = MainForm.ImageListIndex(MainForm.OfflineServerIconKey);
             oParent.Text = Title + " (" + ErrorMessage + ")";
          }
          else
          {
-            oParent.ImageIndex = MainForm.ImageListIndex("enserver");
-            oParent.SelectedImageIndex = MainForm.ImageListIndex("enserver");
+            oParent.ImageIndex = MainForm.ImageListIndex(MainForm.EnabledServerIconKey);
+				oParent.SelectedImageIndex = MainForm.ImageListIndex(MainForm.EnabledServerIconKey);
 				oParent.Text = Title + " (" + iGetLayerCount(blnAOIFilter, oAOI, strSearch).ToString(CultureInfo.InvariantCulture) + ")";
          }
       }

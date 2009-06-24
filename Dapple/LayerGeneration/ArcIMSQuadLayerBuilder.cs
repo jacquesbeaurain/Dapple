@@ -180,13 +180,13 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		internal override string ServerTypeIconKey
 		{
-			get { return "arcims"; }
+			get { return MainForm.ArcImsIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "arcims"; }
+			get { return MainForm.ArcImsIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]

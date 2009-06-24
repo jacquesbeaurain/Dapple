@@ -133,13 +133,6 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Icon dap_gray {
-            get {
-                object obj = ResourceManager.GetObject("dap_gray", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
         internal static System.Drawing.Icon dap_grid {
             get {
                 object obj = ResourceManager.GetObject("dap_grid", resourceCulture);
@@ -259,13 +252,6 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap folder_gray {
-            get {
-                object obj = ResourceManager.GetObject("folder_gray", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap folder_open {
             get {
                 object obj = ResourceManager.GetObject("folder_open", resourceCulture);
@@ -364,23 +350,9 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Icon loading {
-            get {
-                object obj = ResourceManager.GetObject("loading", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
         internal static System.Drawing.Icon marble_icon {
             get {
                 object obj = ResourceManager.GetObject("marble_icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Icon nasa {
-            get {
-                object obj = ResourceManager.GetObject("nasa", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -567,24 +539,10 @@ namespace Dapple.Properties {
             }
         }
         
-        internal static System.Drawing.Icon tile_gray {
-            get {
-                object obj = ResourceManager.GetObject("tile_gray", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap time {
             get {
                 object obj = ResourceManager.GetObject("time", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Icon time_icon {
-            get {
-                object obj = ResourceManager.GetObject("time_icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -599,13 +557,6 @@ namespace Dapple.Properties {
             get {
                 object obj = ResourceManager.GetObject("trackbutton_disable", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Icon usgs {
-            get {
-                object obj = ResourceManager.GetObject("usgs", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -633,20 +584,6 @@ namespace Dapple.Properties {
         internal static System.Drawing.Icon wms {
             get {
                 object obj = ResourceManager.GetObject("wms", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Icon wms_gray {
-            get {
-                object obj = ResourceManager.GetObject("wms_gray", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Icon worldwind_central {
-            get {
-                object obj = ResourceManager.GetObject("worldwind_central", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

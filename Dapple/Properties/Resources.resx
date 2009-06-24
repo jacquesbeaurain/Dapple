@@ -202,23 +202,11 @@
   <data name="tile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tile.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="time_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\time.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="wms" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\wms.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="marble_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\marble_icon.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="nasa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\nasa.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="usgs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\usgs.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="worldwind_central" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\worldwind_central.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="led_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\led_off.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -262,15 +250,6 @@
   <data name="refresh_cache" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\refresh_cache.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dap_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\dap_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="tile_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tile_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="wms_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\wms_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="legend" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\legend.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -283,14 +262,8 @@
   <data name="folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="folder_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_gray.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="folder_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder_open.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="loading" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\loading.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="offline" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\offline.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

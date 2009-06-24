@@ -142,13 +142,13 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		internal override string ServerTypeIconKey
 		{
-			get { return "live"; }
+			get { return MainForm.LiveMapsIconKey; }
 		}
 
 		[System.ComponentModel.Browsable(false)]
 		public override string DisplayIconKey
 		{
-			get { return "live"; }
+			get { return MainForm.LiveMapsIconKey; }
 		}
 
 		#endregion

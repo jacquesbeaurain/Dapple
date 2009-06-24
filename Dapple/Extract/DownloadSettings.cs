@@ -80,23 +80,23 @@ namespace Dapple.Extract
             {
                Dapple.LayerGeneration.DAPQuadLayerBuilder oDAPbuilder = (Dapple.LayerGeneration.DAPQuadLayerBuilder)oBuilder;
 
-               iImageIndex = MainForm.ImageIndex(oDAPbuilder.DAPType.ToLower());
+               iImageIndex = MainForm.ImageIndex(oDAPbuilder.DAPType);
                if (iImageIndex == -1)
-                  MainForm.ImageListIndex("layer");
+                  MainForm.ImageListIndex(MainForm.LayerIconKey);
             }
             else if (oBuilder is Dapple.LayerGeneration.VEQuadLayerBuilder)
-               iImageIndex = MainForm.ImageListIndex("live");
+					iImageIndex = MainForm.ImageListIndex(MainForm.LiveMapsIconKey);
             else if (oBuilder is Dapple.LayerGeneration.GeorefImageLayerBuilder)
-               iImageIndex = MainForm.ImageListIndex("georef_image");
+               iImageIndex = MainForm.ImageListIndex(MainForm.GeorefImageIconKey);
             else
-               iImageIndex = MainForm.ImageListIndex("layer");
+               iImageIndex = MainForm.ImageListIndex(MainForm.LayerIconKey);
             
             // --- create the user control ---
 				DownloadOptions oControl = CreateUserControl(oBuilder);
 
 				if (oControl is Disabled)
 				{
-					iImageIndex = MainForm.ImageListIndex("error");
+					iImageIndex = MainForm.ImageListIndex(MainForm.ErrorIconKey);
 				}
 				else
 				{
