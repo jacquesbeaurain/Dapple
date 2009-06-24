@@ -133,12 +133,6 @@
   <data name="email_view" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\email-view.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="layers_bottom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\layers-bottom.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="layers_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\layers-down.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="layers_goto" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\layers-goto.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -148,9 +142,6 @@
   <data name="layers_top" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\layers-top.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="layers_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\layers-up.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="openview" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\openview.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -159,12 +150,6 @@
   </data>
   <data name="vertical_exag" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\vertical-exag.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="collapse" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\collapse.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="expand" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\expand.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="trackbutton" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\trackbutton.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -177,9 +162,6 @@
   </data>
   <data name="layers_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\layers_add.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="metadata" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\metadata.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="dap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dap.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -238,20 +220,11 @@
   <data name="worldwind_central" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\worldwind_central.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="led_off_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\led_off.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="led_on_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\led_on.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="led_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\led_off.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="led_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\led_on.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="home" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\home.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="nav_earth" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\nav-earth.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -280,26 +253,8 @@
   <data name="nav_zoom_out" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\nav-zoom-out.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="saveview" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\saveview.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="reset_dapple_defaults" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reset-dapple-defaults.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="exit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\exit.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="export" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\export.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="help" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\help.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\open.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -310,41 +265,14 @@
   <data name="dap_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dap_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="image_server_18x18" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image-server-18x18.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="tile_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tile_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="wms_18x18" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\wms-18x18.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="wms_gray" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\wms_gray.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="blue_marble_checked" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\blue-marble_checked.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="blue_marble_unchecked" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\blue-marble_unchecked.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="layers_remove_all" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\layers-remove-all.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="layers_removeallothers" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\layers-removeallothers.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="legend" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\legend.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="search_intersecting" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\search-intersecting.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="search_none" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\search-none.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="search_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\search-text.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="import" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\import.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -432,9 +360,6 @@
   </data>
   <data name="snapshot" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\globe-snapshot.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dap_mxd" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\mxd.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="dap_arcgis" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arcims_lyr.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
