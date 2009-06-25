@@ -1196,6 +1196,11 @@ namespace Dapple
 						strStyleSheet = oBuilder.StyleSheetName;
 						DisplayMetadataMessage("Loading metadata for layer " + oBuilder.Title + "...");
 					}
+					else if (!String.IsNullOrEmpty(oBuilder.MetadataDisplayMessage))
+					{
+						DisplayMetadataMessage(oBuilder.MetadataDisplayMessage);
+						return;
+					}
 					else
 					{
 						DisplayMetadataMessage("Metadata for the selected object is unsupported.");

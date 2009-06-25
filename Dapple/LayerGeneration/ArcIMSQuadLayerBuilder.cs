@@ -331,6 +331,12 @@ namespace Dapple.LayerGeneration
 			return m_oServerUri.ToString().GetHashCode() ^ m_szServiceName.GetHashCode() ^ m_szLayerID.GetHashCode();
 		}
 
+		[System.ComponentModel.Browsable(false)]
+		public override string MetadataDisplayMessage
+		{
+			get { return "The selected layer or service does not publish metadata."; }
+		}
+
 		#endregion
 
 		#region Private Members

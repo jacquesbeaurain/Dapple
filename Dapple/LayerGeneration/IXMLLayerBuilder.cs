@@ -56,6 +56,12 @@ namespace Dapple.LayerGeneration
          }
       }
 
+		[System.ComponentModel.Browsable(false)]
+		public string MetadataDisplayMessage
+		{
+			get { return null; }
+		}
+
       #region IBuilder Members
 
 		public string Title

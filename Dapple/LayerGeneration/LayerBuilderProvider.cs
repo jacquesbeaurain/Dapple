@@ -49,6 +49,12 @@ namespace Dapple.LayerGeneration
          get;
       }
 
+		[System.ComponentModel.Browsable(false)]
+		string MetadataDisplayMessage
+		{
+			get;
+		}
+
 		XmlNode GetMetaData(XmlDocument oDoc);
 
 		void SubscribeToBuilderChangedEvent(BuilderChangedHandler handler);
@@ -265,6 +271,15 @@ namespace Dapple.LayerGeneration
 			get
 			{
 				return false;
+			}
+		}
+
+		[System.ComponentModel.Browsable(false)]
+		public virtual string MetadataDisplayMessage
+		{
+			get
+			{
+				return null;
 			}
 		}
 
