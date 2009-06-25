@@ -334,7 +334,7 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Browsable(false)]
 		public override string MetadataDisplayMessage
 		{
-			get { return "The selected layer or service does not publish metadata."; }
+			get { return "The selected layer does not publish metadata."; }
 		}
 
 		#endregion

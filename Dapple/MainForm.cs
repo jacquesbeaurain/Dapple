@@ -1287,7 +1287,7 @@ namespace Dapple
 
 					if (oCurrentBuilder == null)
 					{
-						m_hOwner.DisplayMetadataMessage("Select a dataset or server to view its associated metadata.");
+						m_hOwner.DisplayMetadataMessage("Select a dataset in the server tree or server list to view its associated metadata.");
 						oLastBuilder = oCurrentBuilder;
 					}
 					else
