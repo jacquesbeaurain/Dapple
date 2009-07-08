@@ -441,7 +441,7 @@ namespace Dapple.LayerGeneration
 			oServer.WaitForLoad();
 			if (oServer.LoadState == LoadState.LoadFailed)
 			{
-				Program.ShowMessageBox(String.Format(CultureInfo.InvariantCulture, "'{0}' could not be added. Connection with the server {1} failed. Refreshing the server may resolve this problem.", getAttribute("layer"), m_oServer.ServerTreeDisplayName),
+				Program.ShowMessageBox(String.Format(CultureInfo.InvariantCulture, "'{0}' could not be added. Connection with the server at URL '{1}' failed. Refreshing the server from the Servers tab may resolve this problem.", getAttribute("layer"), m_oServer.ServerTreeDisplayName),
 					"Dataset Could Not Be Added", MessageBoxButtons.OK, MessageBoxDefaultButton.Button1, MessageBoxIcon.Error);
 				return null;
 			}
