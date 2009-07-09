@@ -349,6 +349,16 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
+		protected override void OnLoadCompleted()
+		{
+			if (LoadState != LoadState.LoadSuccessful)
+				return;
+
+			foreach (ModelNode child in UnfilteredChildren)
+				if (child is ArcIMSServiceModelNode)
+					child.BeginLoad();
+		}
+
 		#endregion
 	}
 
@@ -370,8 +380,6 @@ namespace NewServerTree
 		{
 			m_strServiceName = strServiceName;
 			m_oCultureInfo = oCultureInfo;
-
-			BeginLoad();
 		}
 
 		#endregion

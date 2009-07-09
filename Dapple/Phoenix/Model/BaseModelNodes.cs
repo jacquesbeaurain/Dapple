@@ -240,6 +240,13 @@ namespace NewServerTree
 			try
 			{
 				oChildren = oContext.LoadDelegate.EndInvoke(oResult);
+
+				foreach (ModelNode oChild in oChildren)
+				{
+					AddChildSilently(oChild);
+				}
+
+				m_eStatus = LoadState.LoadSuccessful;
 			}
 			catch (Exception ex)
 			{
@@ -248,12 +255,12 @@ namespace NewServerTree
 				return;
 			}
 
-			foreach (ModelNode oChild in oChildren)
-			{
-				AddChildSilently(oChild);
-			}
+			OnLoadCompleted();
+		}
 
-			m_eStatus = LoadState.LoadSuccessful;
+		protected virtual void OnLoadCompleted()
+		{
+			// --- Overridable to signal subclasses about load completion ---
 		}
 
 		internal void WaitForLoad()
