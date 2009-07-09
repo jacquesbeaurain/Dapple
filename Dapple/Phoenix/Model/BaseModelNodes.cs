@@ -252,7 +252,6 @@ namespace NewServerTree
 			{
 				AddChildSilently(new ErrorModelNode(m_oModel, "Load failed (" + ex.Message + ")", ex.GetType().ToString() + ": " + ex.Message + Environment.NewLine + ex.StackTrace));
 				m_eStatus = LoadState.LoadFailed;
-				return;
 			}
 
 			OnLoadCompleted();
