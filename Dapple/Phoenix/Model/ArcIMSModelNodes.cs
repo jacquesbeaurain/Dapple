@@ -658,8 +658,8 @@ namespace NewServerTree
 				null,
 				m_dMinScale,
 				m_dMaxScale,
-				m_oCultureInfo
-				);
+				m_oCultureInfo,
+				m_strTitle);
 		}
 
 		#endregion

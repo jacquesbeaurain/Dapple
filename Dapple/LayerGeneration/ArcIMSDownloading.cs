@@ -16,24 +16,80 @@ namespace Dapple.LayerGeneration
    internal class ArcIMSDownloadRequest : GeoSpatialDownloadRequest
    {
 		protected CultureInfo m_oCultureInfo;
+		private double m_dArtificialZoom;
 
       internal ArcIMSDownloadRequest(IGeoSpatialDownloadTile oTile, ArcIMSImageStore oImageStore, string strLocalFilePath, CultureInfo oInfo)
          : base(oTile, oImageStore, strLocalFilePath, oImageStore.ServerUri.ToBaseUri())
       {
 			m_oCultureInfo = oInfo;
+
+			CalculateArtificialZoom();
       }
+
+		private void CalculateArtificialZoom()
+		{
+			double dMapUntis = m_tile.East - m_tile.West;
+			double dScale = dMapUntis / m_imageStore.TextureSizePixels;
+
+			ArcIMSImageStore castImageStore = m_imageStore as ArcIMSImageStore;
+
+			if (dScale > castImageStore.MaxScale) // Zoomed out too far
+			{
+				// Want to keep the target scale as large as possible
+				// The smaller it is, the larger (and slower to render) the
+				// resulting tiles on the server side will be
+				double dTargetScale = castImageStore.MinScale + 0.95 * (castImageStore.MaxScale - castImageStore.MinScale);
+				m_dArtificialZoom = dScale / dTargetScale;
+			}
+			else if (dScale < castImageStore.MinScale) // Zoomed in too far
+			{
+				// Want to keep the target scale as small as possible
+				// The larger it is, the smaller (and lower resolution)
+				// the resulting tiles on the server side will be
+				double dTargetScale = castImageStore.MinScale + 0.05 * (castImageStore.MaxScale - castImageStore.MinScale);
+				m_dArtificialZoom = dScale / dTargetScale;
+			}
+			else
+			{
+				m_dArtificialZoom = 1.0;
+			}
+		}
 
 		public override void StartDownload()
       {
+			Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
          Tile.IsDownloadingImage = true;
 
-         Directory.CreateDirectory(Path.GetDirectoryName(m_localFilePath));
-         download = new ArcIMSImageDownload(m_imageStore as ArcIMSImageStore, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), 0, m_oCultureInfo);
-         download.DownloadType = DownloadType.Unspecified;
-         download.SavedFilePath = m_localFilePath + ".tmp";
-         download.ProgressCallback += new DownloadProgressHandler(UpdateProgress);
-         download.CompleteCallback += new WorldWind.Net.DownloadCompleteHandler(DownloadComplete);
-         download.BackgroundDownloadMemory();
+			if (m_dArtificialZoom >= 2.0)
+			{
+				Tile.IsDownloadingImage = false;
+
+				using (Bitmap b = new Bitmap(256, 256))
+				{
+					using (Graphics g = Graphics.FromImage(b))
+					{
+						using (Font f = new Font(FontFamily.GenericSansSerif, 16.0f))
+						{
+							int levelsOut = (int)Math.Floor(Math.Log(m_dArtificialZoom, 2.0));
+
+							g.DrawString("'" + ((ArcIMSImageStore)m_imageStore).LayerTitle + "' is not visible at this scale", f, Brushes.White, new RectangleF(0, 0, 256, 128), new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+							g.DrawString("Zoom in " + levelsOut + " level" + (levelsOut == 1 ? String.Empty : "s") + " to see this layer", f, Brushes.White, new RectangleF(0, 128, 256, 128), new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+						}
+						g.DrawRectangle(Pens.Green, new Rectangle(0, 0, 255, 255));
+					}
+					b.Save(m_localFilePath, System.Drawing.Imaging.ImageFormat.Png);
+				}
+				m_tile.TileSet.RemoveFromDownloadQueue(this, true);
+			}
+			else
+			{
+				download = new ArcIMSImageDownload(m_imageStore as ArcIMSImageStore, new Geosoft.Dap.Common.BoundingBox(Tile.East, Tile.North, Tile.West, Tile.South), 0, m_oCultureInfo, m_dArtificialZoom);
+				download.DownloadType = DownloadType.Unspecified;
+				download.SavedFilePath = m_localFilePath + ".tmp";
+				download.ProgressCallback += new DownloadProgressHandler(UpdateProgress);
+				download.CompleteCallback += new WorldWind.Net.DownloadCompleteHandler(DownloadComplete);
+				download.BackgroundDownloadMemory();
+			}
       }
 
       protected override void DownloadComplete(WebDownload downloadInfo)
@@ -247,13 +303,15 @@ namespace Dapple.LayerGeneration
 		protected CultureInfo m_oCultureInfo;
       private ArcIMSImageStore m_oImageStore;
       private Geosoft.Dap.Common.BoundingBox m_oEnvelope;
+		private double m_dArtificialZoom;
 
-      internal ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber, CultureInfo oInfo)
+      internal ArcIMSImageDownload(ArcIMSImageStore oImageStore, Geosoft.Dap.Common.BoundingBox oEnvelope, int iIndexNumber, CultureInfo oInfo, double dArtificialZoom)
          :base(oImageStore.ServerUri, iIndexNumber)
       {
 			m_oCultureInfo = oInfo;
 			m_oImageStore = oImageStore;
          m_oEnvelope = oEnvelope;
+			m_dArtificialZoom = dArtificialZoom;
       }
 
       internal double Degrees
@@ -300,9 +358,23 @@ namespace Dapple.LayerGeneration
 				nEnvelopeElement.SetAttribute("maxy", m_oEnvelope.MaxY.ToString(m_oCultureInfo.NumberFormat));
             nPropertiesElement.AppendChild(nEnvelopeElement);
 
-            XmlElement nImageSizeElement = oRequestDoc.CreateElement("IMAGESIZE", oRequestDoc.NamespaceURI);
-				nImageSizeElement.SetAttribute("width", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
-				nImageSizeElement.SetAttribute("height", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
+				XmlElement nImageSizeElement = oRequestDoc.CreateElement("IMAGESIZE", oRequestDoc.NamespaceURI);
+
+				if (m_dArtificialZoom != 1.0)
+				{
+					int renderSize = (int)Math.Ceiling(m_oImageStore.TextureSizePixels * m_dArtificialZoom);
+
+					nImageSizeElement.SetAttribute("width", renderSize.ToString(m_oCultureInfo.NumberFormat));
+					nImageSizeElement.SetAttribute("height", renderSize.ToString(m_oCultureInfo.NumberFormat));
+					nImageSizeElement.SetAttribute("printwidth", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
+					nImageSizeElement.SetAttribute("printheight", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
+				}
+				else
+				{
+					nImageSizeElement.SetAttribute("width", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
+					nImageSizeElement.SetAttribute("height", m_oImageStore.TextureSizePixels.ToString(m_oCultureInfo.NumberFormat));
+				}
+
             nPropertiesElement.AppendChild(nImageSizeElement);
 
             XmlElement nLayerListElement = oRequestDoc.CreateElement("LAYERLIST", oRequestDoc.NamespaceURI);
@@ -424,14 +496,20 @@ namespace Dapple.LayerGeneration
       private ArcIMSServerUri m_oUri;
       private int m_iTextureSize;
 		private CultureInfo m_oCultureInfo;
+		private double m_dMinScale;
+		private double m_dMaxScale;
+		private String m_strLayerTitle;
 
-      internal ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo)
+      internal ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo, double minScale, double maxScale, String layerTitle)
       {
          m_oUri = oUri;
          m_strServiceName = strServiceName;
          m_szLayerID = szLayerID;
          m_iTextureSize = iTextureSize;
 			m_oCultureInfo = oInfo;
+			m_dMinScale = minScale;
+			m_dMaxScale = maxScale;
+			m_strLayerTitle = layerTitle;
       }
 
       #region Properties
@@ -451,6 +529,21 @@ namespace Dapple.LayerGeneration
             m_iTextureSize = value;
          }
       }
+
+		internal double MinScale
+		{
+			get { return m_dMinScale; }
+		}
+
+		internal double MaxScale
+		{
+			get { return m_dMaxScale; }
+		}
+
+		internal String LayerTitle
+		{
+			get { return m_strLayerTitle; }
+		}
 
       #endregion
 

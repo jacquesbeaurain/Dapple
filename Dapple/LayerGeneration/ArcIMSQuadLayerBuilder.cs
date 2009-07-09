@@ -11,6 +11,13 @@ namespace Dapple.LayerGeneration
 {
 	class ArcIMSQuadLayerBuilder : LayerBuilder
 	{
+		#region Constants
+
+		private const double LevelZeroTileSize = 22.5;
+		private const int TileSize = 256;
+
+		#endregion
+
 		#region Member variables
 
 		private String m_szServiceName;
@@ -18,12 +25,11 @@ namespace Dapple.LayerGeneration
 		private bool m_blnIsChanged = true;
 		private GeographicBoundingBox m_oEnvelope;
 		private ArcIMSServerUri m_oServerUri;
-		private double m_dLevelZeroTileSizeDegrees = 0;
-		private int m_iLevels = 15;
-		private int m_iPixels = 256;
+		private int m_iLevels;
 		private String m_szLayerID;
 		private double m_dMinScale, m_dMaxScale;
 		private CultureInfo m_oCultureInfo;
+		private String m_strLayerTitle;
 
 		#endregion
 
@@ -38,7 +44,7 @@ namespace Dapple.LayerGeneration
 
 		#region Constructor
 
-		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
+		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo, String layerTitle)
 			: base(szLayerTitle, oWorldWindow, oParent)
 		{
 			m_oServerUri = oServerUri;
@@ -59,37 +65,20 @@ namespace Dapple.LayerGeneration
 				m_dMinScale = DefaultMinScale;
 			}
 
-			m_dLevelZeroTileSizeDegrees = 22.5;
+			CalculateLevels();
+			m_strLayerTitle = layerTitle;
+		}
+
+		private void CalculateLevels()
+		{
 			m_iLevels = 1;
-			m_iPixels = 256;
-
-			while ((m_dLevelZeroTileSizeDegrees / m_iPixels) > m_dMaxScale)
+			double iter = LevelZeroTileSize;
+			while (iter / (TileSize * Math.Pow(2, m_iLevels)) > m_dMinScale)
 			{
-				m_dLevelZeroTileSizeDegrees /= 2.0;
+				m_iLevels += 1;
+				iter /= 2;
 			}
-
-			if (m_dLevelZeroTileSizeDegrees / m_iPixels < m_dMinScale)
-			{
-				double dMidLZTS = (m_dMinScale + m_dMaxScale) * m_iPixels / 2.0;
-				double dCompressRatio = m_dLevelZeroTileSizeDegrees / dMidLZTS;
-				m_iPixels = (int)(m_iPixels * dCompressRatio);
-			}
-			else
-			{
-				double dIter = m_dLevelZeroTileSizeDegrees / 2.0;
-
-				while (dIter / m_iPixels > m_dMinScale && dIter > 0.35)
-				{
-					dIter /= 2.0;
-					m_iLevels++;
-				}
-			}
-
-			// --- Check the calculations ---
-			if (m_dLevelZeroTileSizeDegrees > m_dMaxScale * m_iPixels)
-				throw new InvalidDataException("LZTS is wrong");
-			if (m_dLevelZeroTileSizeDegrees < m_dMinScale * m_iPixels * Math.Pow(2.0, m_iLevels - 1))
-				throw new InvalidDataException("Levels is wrong");
+			m_iLevels += 1;
 		}
 
 		#endregion
@@ -257,9 +246,9 @@ namespace Dapple.LayerGeneration
 			if (m_blnIsChanged)
 			{
 				ImageStore[] aImageStore = new ImageStore[1];
-				aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri as ArcIMSServerUri, m_iPixels, m_oCultureInfo);
+				aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri as ArcIMSServerUri, TileSize, m_oCultureInfo, m_dMinScale, m_dMaxScale, m_strLayerTitle);
 				aImageStore[0].DataDirectory = null;
-				aImageStore[0].LevelZeroTileSizeDegrees = m_dLevelZeroTileSizeDegrees;
+				aImageStore[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
 				aImageStore[0].LevelCount = m_iLevels;
 				aImageStore[0].ImageExtension = ".png";
 				aImageStore[0].CacheDirectory = GetCachePath();
@@ -314,7 +303,7 @@ namespace Dapple.LayerGeneration
 
 		internal override object CloneSpecific()
 		{
-			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo);
+			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo, m_strLayerTitle);
 		}
 
 		public override bool Equals(object obj)
