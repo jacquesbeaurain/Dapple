@@ -520,7 +520,7 @@ namespace NewServerTree
 					Double.TryParse(szMaxScale, NumberStyles.Any, CultureInfo.InvariantCulture, out dMaxScale);
 				}
 
-				if (dMaxScale > dMinScale || dMinScale > 1.0)
+				if (dMaxScale < dMinScale || dMinScale > 1.0)
 				{
 					// --- If the server sends back weird values, ignore them ---
 					dMaxScale = ArcIMSQuadLayerBuilder.DefaultMaxScale;
