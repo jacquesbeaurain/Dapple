@@ -489,6 +489,34 @@ namespace Dapple.LayerGeneration
       }
    }
 
+	internal class ArcIMSReprojectDownload : ArcIMSDownload
+	{
+		private GeographicBoundingBox sourceBounds;
+		private ArcIMSFeatureCoordSys sourceCoordSys;
+		private String serviceName;
+
+		public ArcIMSReprojectDownload(ArcIMSServerUri serverUri, int index, GeographicBoundingBox sourceBounds, ArcIMSFeatureCoordSys sourceCoordSys, String serviceName)
+			:base(serverUri, index)
+		{
+			this.sourceBounds = sourceBounds;
+			this.sourceCoordSys = sourceCoordSys;
+			this.serviceName = serviceName;
+		}
+
+		protected override XmlDocument RequestDocument
+		{
+			get
+			{
+				return sourceCoordSys.MakeArcXmlRequest(sourceBounds);
+			}
+		}
+
+		protected override string TargetUrl
+		{
+			get { return m_oUri.ToQueryServerUrl(serviceName); }
+		}
+	}
+
    internal class ArcIMSImageStore : ImageStore
    {
       private String m_strServiceName;

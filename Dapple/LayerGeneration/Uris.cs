@@ -135,6 +135,13 @@ namespace Dapple.LayerGeneration
 				+ "ServiceName=" + serviceName + "&ClientVersion=9.0";
 		}
 
+		internal string ToQueryServerUrl(string serviceName)
+		{
+			return base.ToString()
+				+ (base.ToString().IndexOf("?") > 0 ? "&" : "?")
+				+ "ServiceName=" + serviceName + "&ClientVersion=9.0&CustomService=Query";
+		}
+
 		internal ArcIMSLayerUri ToLayerUri(String strServiceName, GeographicBoundingBox oBox)
 		{
 			String strUri = base.ToString()
@@ -375,6 +382,7 @@ namespace Dapple.LayerGeneration
 				getAttribute("title"),
 				getAttribute("layerid"),
 				oLayerBounds,
+				new ArcIMSFeatureCoordSys(new CultureInfo("en-US")),
 				MainForm.WorldWindowSingleton,
 				null,
 				dMinScale,

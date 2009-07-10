@@ -369,6 +369,7 @@ namespace NewServerTree
 
 		private CultureInfo m_oCultureInfo;
 		private String m_strServiceName;
+		private ArcIMSFeatureCoordSys m_oCoordinateSystem;
 
 		#endregion
 
@@ -449,6 +450,15 @@ namespace NewServerTree
 			}
 		}
 
+		[Browsable(false)]
+		internal ArcIMSFeatureCoordSys CoordinateSystem
+		{
+			get
+			{
+				return m_oCoordinateSystem;
+			}
+		}
+
 		#endregion
 
 
@@ -468,32 +478,30 @@ namespace NewServerTree
 			oServiceXML.Load(strServiceFilename);
 
 
-			bool blRecognizedCRS = false;
-
 			XmlElement oFeatureCoordSys = oServiceXML.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/FEATURECOORDSYS") as XmlElement;
 			if (oFeatureCoordSys != null)
 			{
-				String szCRSID = "EPSG:" + oFeatureCoordSys.GetAttribute("id");
-				blRecognizedCRS = Utility.GCSMappings.WMSWGS84Equivalents.Contains(szCRSID);
+				m_oCoordinateSystem = new ArcIMSFeatureCoordSys(m_oCultureInfo, oFeatureCoordSys);
+			}
+			else
+			{
+				m_oCoordinateSystem = new ArcIMSFeatureCoordSys(m_oCultureInfo);
 			}
 
-			GeographicBoundingBox oServiceBounds = new GeographicBoundingBox();
+			GeographicBoundingBox oServiceBounds = null;
 
-			if (blRecognizedCRS)
+			XmlElement oServiceEnvelope = oServiceXML.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/ENVELOPE") as XmlElement;
+			if (oServiceEnvelope != null)
 			{
-				XmlElement oServiceEnvelope = oServiceXML.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/ENVELOPE") as XmlElement;
-				if (oServiceEnvelope != null)
-				{
-					GeographicBoundingBox oRealServiceBounds = new GeographicBoundingBox();
-					bool blValid = true;
-					blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.West);
-					blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.South);
-					blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.East);
-					blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.North);
+				GeographicBoundingBox oRealServiceBounds = new GeographicBoundingBox();
+				bool blValid = true;
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.West);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.South);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.East);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.North);
 
-					if (blValid)
-						oServiceBounds = oRealServiceBounds;
-				}
+				if (blValid)
+					oServiceBounds = oRealServiceBounds;
 			}
 
 
@@ -527,26 +535,23 @@ namespace NewServerTree
 					dMinScale = ArcIMSQuadLayerBuilder.DefaultMinScale;
 				}
 
-				GeographicBoundingBox oLayerBounds = oServiceBounds.Clone() as GeographicBoundingBox;
+				GeographicBoundingBox oLayerBounds = (oServiceBounds != null ? oServiceBounds.Clone() as GeographicBoundingBox : null);
 
-				if (blRecognizedCRS)
+				XmlElement oLayerEnvelope = null;
+				if (nLayerElement.GetAttribute("type").Equals("image"))
+					oLayerEnvelope = nLayerElement.SelectSingleNode("ENVELOPE") as XmlElement;
+				if (nLayerElement.GetAttribute("type").Equals("featureclass"))
+					oLayerEnvelope = nLayerElement.SelectSingleNode("FCLASS/ENVELOPE") as XmlElement;
+				if (oLayerEnvelope != null)
 				{
-					XmlElement oLayerEnvelope = null;
-					if (nLayerElement.GetAttribute("type").Equals("image"))
-						oLayerEnvelope = nLayerElement.SelectSingleNode("ENVELOPE") as XmlElement;
-					if (nLayerElement.GetAttribute("type").Equals("featureclass"))
-						oLayerEnvelope = nLayerElement.SelectSingleNode("FCLASS/ENVELOPE") as XmlElement;
-					if (oLayerEnvelope != null)
-					{
-						GeographicBoundingBox oRealLayerBounds = new GeographicBoundingBox();
-						bool blValid = true;
-						blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.West);
-						blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.South);
-						blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.East);
-						blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.North);
-						if (blValid)
-							oLayerBounds = oRealLayerBounds;
-					}
+					GeographicBoundingBox oRealLayerBounds = new GeographicBoundingBox();
+					bool blValid = true;
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.West);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.South);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.East);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.North);
+					if (blValid)
+						oLayerBounds = oRealLayerBounds;
 				}
 
 				result.Add(new ArcIMSLayerModelNode(m_oModel, szTitle, szID, oLayerBounds, dMinScale, dMaxScale, m_oCultureInfo));
@@ -654,6 +659,7 @@ namespace NewServerTree
 				m_strTitle,
 				m_strID,
 				m_oBounds,
+				(Parent as ArcIMSServiceModelNode).CoordinateSystem,
 				Dapple.MainForm.WorldWindowSingleton,
 				null,
 				m_dMinScale,

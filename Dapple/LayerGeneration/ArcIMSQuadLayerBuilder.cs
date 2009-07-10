@@ -6,6 +6,7 @@ using WorldWind;
 using System.IO;
 using WorldWind.PluginEngine;
 using System.Globalization;
+using System.Xml;
 
 namespace Dapple.LayerGeneration
 {
@@ -24,12 +25,14 @@ namespace Dapple.LayerGeneration
 		private QuadTileSet m_oQuadTileSet = null;
 		private bool m_blnIsChanged = true;
 		private GeographicBoundingBox m_oEnvelope;
+		private GeographicBoundingBox m_oUnprojectedEnvelope;
 		private ArcIMSServerUri m_oServerUri;
 		private int m_iLevels;
 		private String m_szLayerID;
 		private double m_dMinScale, m_dMaxScale;
 		private CultureInfo m_oCultureInfo;
 		private String m_strLayerTitle;
+		private ArcIMSFeatureCoordSys m_oProjection;
 
 		#endregion
 
@@ -44,12 +47,13 @@ namespace Dapple.LayerGeneration
 
 		#region Constructor
 
-		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo, String layerTitle)
+		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, ArcIMSFeatureCoordSys oProjection, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo, String layerTitle)
 			: base(szLayerTitle, oWorldWindow, oParent)
 		{
 			m_oServerUri = oServerUri;
 			m_oCultureInfo = oInfo;
-			m_oEnvelope = oEnvelope;
+			m_oUnprojectedEnvelope = oEnvelope;
+			m_oProjection = oProjection;
 			m_szLayerID = szLayerID;
 			m_szServiceName = strServiceName;
 			m_dMinScale = dMinScale;
@@ -149,7 +153,13 @@ namespace Dapple.LayerGeneration
 		[System.ComponentModel.Description("The extents of this data layer, in WGS 84")]
 		public override GeographicBoundingBox Extents
 		{
-			get { return m_oEnvelope; }
+			get
+			{
+				if (m_oEnvelope == null)
+					m_oEnvelope = m_oProjection.ReprojectToWGS84(m_oServerUri, m_szServiceName, m_oUnprojectedEnvelope);
+
+				return m_oEnvelope;
+			}
 		}
 
 		[System.ComponentModel.Category("Common")]
@@ -254,7 +264,7 @@ namespace Dapple.LayerGeneration
 				aImageStore[0].CacheDirectory = GetCachePath();
 
 				m_oQuadTileSet = new QuadTileSet(m_szTreeNodeText, m_oWorldWindow.CurrentWorld, 0,
-					m_oEnvelope.North, m_oEnvelope.South, m_oEnvelope.West, m_oEnvelope.East,
+					Extents.North, Extents.South, Extents.West, Extents.East,
 					true, aImageStore);
 				m_oQuadTileSet.AlwaysRenderBaseTiles = true;
 				m_oQuadTileSet.IsOn = m_IsOn;
@@ -268,10 +278,10 @@ namespace Dapple.LayerGeneration
 		{
 			return m_oServerUri.ToBaseUri().Replace("http://", URLProtocolName)
 				+ String.Format(System.Globalization.CultureInfo.InvariantCulture, "&minx={0}&miny={1}&maxx={2}&maxy={3}&minscale={4}&maxscale={5}&layerid={6}&title={7}&servicename={8}",
-				m_oEnvelope.West,
-				m_oEnvelope.South,
-				m_oEnvelope.East,
-				m_oEnvelope.North,
+				Extents.West,
+				Extents.South,
+				Extents.East,
+				Extents.North,
 				m_dMinScale,
 				m_dMaxScale,
 				System.Web.HttpUtility.UrlEncode(m_szLayerID),
@@ -303,7 +313,7 @@ namespace Dapple.LayerGeneration
 
 		internal override object CloneSpecific()
 		{
-			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oEnvelope, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo, m_strLayerTitle);
+			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oUnprojectedEnvelope, m_oProjection, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo, m_strLayerTitle);
 		}
 
 		public override bool Equals(object obj)
@@ -347,5 +357,121 @@ namespace Dapple.LayerGeneration
 		}
 
 		#endregion
+	}
+
+	internal class ArcIMSFeatureCoordSys
+	{
+		private String idAttribute;
+		private String stringAttribute;
+		private bool defined;
+		private CultureInfo culture;
+
+		public ArcIMSFeatureCoordSys(CultureInfo culture)
+		{
+			this.culture = culture;
+			defined = false;
+		}
+
+		public ArcIMSFeatureCoordSys(CultureInfo culture, System.Xml.XmlElement featureCoordSysElement)
+		{
+			this.culture = culture;
+			idAttribute = featureCoordSysElement.GetAttribute("id");
+			stringAttribute = featureCoordSysElement.GetAttribute("string");
+			defined = !String.IsNullOrEmpty(idAttribute) || !String.IsNullOrEmpty(stringAttribute);
+		}
+
+		public bool IsWGS84
+		{
+			get
+			{
+				return defined && Utility.GCSMappings.WMSWGS84Equivalents.Contains(idAttribute);
+			}
+		}
+
+		public GeographicBoundingBox ReprojectToWGS84(ArcIMSServerUri uri, String serviceName, GeographicBoundingBox source)
+		{
+			if (IsWGS84)
+				return source;
+
+			if (!defined)
+				return new GeographicBoundingBox(89.1, -89.1, -180, 180);
+
+			if (source == null)
+				return new GeographicBoundingBox(89.2, -89.2, -180, 180);
+
+			ArcIMSReprojectDownload download = new ArcIMSReprojectDownload(uri, 0, source, this, serviceName);
+			try
+			{
+				download.DownloadMemory();
+				XmlDocument response = new XmlDocument();
+				response.Load(download.ContentStream);
+				return ProcessResponse(response);
+			}
+			catch (Exception)
+			{
+				return new GeographicBoundingBox(89.3, -89.3, -180, 180);
+			}
+		}
+
+		public XmlDocument MakeArcXmlRequest(GeographicBoundingBox source)
+		{
+			XmlDocument result = new XmlDocument();
+
+			result.AppendChild(result.CreateXmlDeclaration("1.0", "UTF-8", null));
+
+			XmlElement arcNode = result.CreateElement("ARCXML");
+			arcNode.SetAttribute("version", "1.1");
+			{
+				XmlNode requestNode = result.CreateElement("REQUEST");
+				{
+					XmlElement getProjectElement = result.CreateElement("GET_PROJECT");
+					getProjectElement.SetAttribute("envelope", "true");
+					{
+						XmlElement fromCoordSysElement = result.CreateElement("FROMCOORDSYS");
+						if (!String.IsNullOrEmpty(stringAttribute))
+							fromCoordSysElement.SetAttribute("string", stringAttribute);
+						else
+							fromCoordSysElement.SetAttribute("id", idAttribute);
+						getProjectElement.AppendChild(fromCoordSysElement);
+
+						XmlElement toCoordSysElement = result.CreateElement("TOCOORDSYS");
+						toCoordSysElement.SetAttribute("id", "4326");
+						getProjectElement.AppendChild(toCoordSysElement);
+
+						XmlElement envelopeElement = result.CreateElement("ENVELOPE");
+						envelopeElement.SetAttribute("minx", source.West.ToString(culture));
+						envelopeElement.SetAttribute("miny", source.South.ToString(culture));
+						envelopeElement.SetAttribute("maxx", source.East.ToString(culture));
+						envelopeElement.SetAttribute("maxy", source.North.ToString(culture));
+						getProjectElement.AppendChild(envelopeElement);
+					}
+					requestNode.AppendChild(getProjectElement);
+				}
+				arcNode.AppendChild(requestNode);
+			}
+			result.AppendChild(arcNode);
+
+			return result;
+		}
+
+		private GeographicBoundingBox ProcessResponse(XmlDocument document)
+		{
+			XmlElement envelopeElement = document.SelectSingleNode("/ARCXML/RESPONSE/PROJECT/ENVELOPE") as XmlElement;
+			if (envelopeElement != null)
+			{
+				GeographicBoundingBox result = new GeographicBoundingBox();
+
+				bool success = true;
+				success &= Double.TryParse(envelopeElement.GetAttribute("minx"), NumberStyles.Float, culture, out result.West);
+				success &= Double.TryParse(envelopeElement.GetAttribute("miny"), NumberStyles.Float, culture, out result.South);
+				success &= Double.TryParse(envelopeElement.GetAttribute("maxx"), NumberStyles.Float, culture, out result.East);
+				success &= Double.TryParse(envelopeElement.GetAttribute("maxy"), NumberStyles.Float, culture, out result.North);
+
+				if (success)
+					return result;
+			}
+
+			return new GeographicBoundingBox(89.4, -89.4, -180, 180);
+		}
 	}
 }
