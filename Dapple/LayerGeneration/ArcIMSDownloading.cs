@@ -70,10 +70,8 @@ namespace Dapple.LayerGeneration
 					{
 						using (Font f = new Font(FontFamily.GenericSansSerif, 16.0f))
 						{
-							int levelsOut = (int)Math.Floor(Math.Log(m_dArtificialZoom, 2.0));
-
-							g.DrawString("'" + ((ArcIMSImageStore)m_imageStore).LayerTitle + "' is not visible at this scale", f, Brushes.White, new RectangleF(0, 0, 256, 128), new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-							g.DrawString("Zoom in " + levelsOut + " level" + (levelsOut == 1 ? String.Empty : "s") + " to see this layer", f, Brushes.White, new RectangleF(0, 128, 256, 128), new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+							g.DrawString("One or more layers are not visible at this scale", f, Brushes.White, new RectangleF(0, 0, 256, 128), new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+							g.DrawString("Zoom in further\nto enable them", f, Brushes.White, new RectangleF(0, 128, 256, 128), new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 						}
 						g.DrawRectangle(Pens.Green, new Rectangle(0, 0, 255, 255));
 					}
@@ -526,9 +524,8 @@ namespace Dapple.LayerGeneration
 		private CultureInfo m_oCultureInfo;
 		private double m_dMinScale;
 		private double m_dMaxScale;
-		private String m_strLayerTitle;
 
-      internal ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo, double minScale, double maxScale, String layerTitle)
+      internal ArcIMSImageStore(String strServiceName, String szLayerID, ArcIMSServerUri oUri, int iTextureSize, CultureInfo oInfo, double minScale, double maxScale)
       {
          m_oUri = oUri;
          m_strServiceName = strServiceName;
@@ -537,7 +534,6 @@ namespace Dapple.LayerGeneration
 			m_oCultureInfo = oInfo;
 			m_dMinScale = minScale;
 			m_dMaxScale = maxScale;
-			m_strLayerTitle = layerTitle;
       }
 
       #region Properties
@@ -566,11 +562,6 @@ namespace Dapple.LayerGeneration
 		internal double MaxScale
 		{
 			get { return m_dMaxScale; }
-		}
-
-		internal String LayerTitle
-		{
-			get { return m_strLayerTitle; }
 		}
 
       #endregion

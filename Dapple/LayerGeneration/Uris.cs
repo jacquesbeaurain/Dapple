@@ -387,8 +387,7 @@ namespace Dapple.LayerGeneration
 				null,
 				dMinScale,
 				dMaxScale,
-				new CultureInfo("en-US"),
-				getAttribute("layerid"));
+				new CultureInfo("en-US"));
 		}
 	}
 

@@ -664,8 +664,7 @@ namespace NewServerTree
 				null,
 				m_dMinScale,
 				m_dMaxScale,
-				m_oCultureInfo,
-				m_strTitle);
+				m_oCultureInfo);
 		}
 
 		#endregion

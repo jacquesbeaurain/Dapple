@@ -31,7 +31,6 @@ namespace Dapple.LayerGeneration
 		private String m_szLayerID;
 		private double m_dMinScale, m_dMaxScale;
 		private CultureInfo m_oCultureInfo;
-		private String m_strLayerTitle;
 		private ArcIMSFeatureCoordSys m_oProjection;
 
 		#endregion
@@ -47,7 +46,7 @@ namespace Dapple.LayerGeneration
 
 		#region Constructor
 
-		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, ArcIMSFeatureCoordSys oProjection, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo, String layerTitle)
+		internal ArcIMSQuadLayerBuilder(ArcIMSServerUri oServerUri, String strServiceName, String szLayerTitle, String szLayerID, GeographicBoundingBox oEnvelope, ArcIMSFeatureCoordSys oProjection, WorldWindow oWorldWindow, IBuilder oParent, double dMinScale, double dMaxScale, CultureInfo oInfo)
 			: base(szLayerTitle, oWorldWindow, oParent)
 		{
 			m_oServerUri = oServerUri;
@@ -70,7 +69,6 @@ namespace Dapple.LayerGeneration
 			}
 
 			CalculateLevels();
-			m_strLayerTitle = layerTitle;
 		}
 
 		private void CalculateLevels()
@@ -256,7 +254,7 @@ namespace Dapple.LayerGeneration
 			if (m_blnIsChanged)
 			{
 				ImageStore[] aImageStore = new ImageStore[1];
-				aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri as ArcIMSServerUri, TileSize, m_oCultureInfo, m_dMinScale, m_dMaxScale, m_strLayerTitle);
+				aImageStore[0] = new ArcIMSImageStore(m_szServiceName, m_szLayerID, m_oServerUri as ArcIMSServerUri, TileSize, m_oCultureInfo, m_dMinScale, m_dMaxScale);
 				aImageStore[0].DataDirectory = null;
 				aImageStore[0].LevelZeroTileSizeDegrees = LevelZeroTileSize;
 				aImageStore[0].LevelCount = m_iLevels;
@@ -313,7 +311,7 @@ namespace Dapple.LayerGeneration
 
 		internal override object CloneSpecific()
 		{
-			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oUnprojectedEnvelope, m_oProjection, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo, m_strLayerTitle);
+			return new ArcIMSQuadLayerBuilder(m_oServerUri, m_szServiceName, this.m_szTreeNodeText, m_szLayerID, m_oUnprojectedEnvelope, m_oProjection, m_oWorldWindow, m_Parent, m_dMinScale, m_dMaxScale, m_oCultureInfo);
 		}
 
 		public override bool Equals(object obj)
