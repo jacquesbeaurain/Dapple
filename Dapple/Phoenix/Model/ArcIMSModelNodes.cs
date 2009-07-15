@@ -349,7 +349,7 @@ namespace NewServerTree
 			return result.ToArray();
 		}
 
-		protected override void OnLoadCompleted()
+		protected override void OnLoaded()
 		{
 			if (LoadState != LoadState.LoadSuccessful)
 				return;

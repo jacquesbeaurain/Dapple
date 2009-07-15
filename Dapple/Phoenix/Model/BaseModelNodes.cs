@@ -46,7 +46,7 @@ namespace NewServerTree
 			m_oModel.ModelNodeDisplayUpdated(this);
 		}
 
-		private void OnLoaded()
+		protected virtual void OnLoaded()
 		{
 			m_oModel.ModelNodeLoaded(this);
 		}
@@ -209,6 +209,9 @@ namespace NewServerTree
 		{
 			lock (m_oAsyncLock)
 			{
+				if (m_eStatus != LoadState.Unloaded)
+					return;
+
 				LoadDelegate oLoad = new LoadDelegate(Load);
 				AsyncContext oContext = new AsyncContext(m_iLoadSync, oLoad);
 				m_oCurrentAsyncResult = oLoad.BeginInvoke(_EndLoad, oContext);
@@ -253,13 +256,6 @@ namespace NewServerTree
 				AddChildSilently(new ErrorModelNode(m_oModel, "Load failed (" + ex.Message + ")", ex.GetType().ToString() + ": " + ex.Message + Environment.NewLine + ex.StackTrace));
 				m_eStatus = LoadState.LoadFailed;
 			}
-
-			OnLoadCompleted();
-		}
-
-		protected virtual void OnLoadCompleted()
-		{
-			// --- Overridable to signal subclasses about load completion ---
 		}
 
 		internal void WaitForLoad()
