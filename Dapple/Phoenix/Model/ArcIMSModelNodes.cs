@@ -466,6 +466,12 @@ namespace NewServerTree
 
 		protected override ModelNode[] Load()
 		{
+			NumberStyles parseStyle =
+				NumberStyles.AllowDecimalPoint |
+				NumberStyles.AllowLeadingSign |
+				NumberStyles.AllowLeadingWhite |
+				NumberStyles.AllowTrailingWhite;
+
 			String strServiceFilename = CapabilitiesFilename;
 
 			ArcIMSServiceDownload oServiceDownload = new ArcIMSServiceDownload((Parent as ServerModelNode).Uri as ArcIMSServerUri, m_strServiceName, 0);
@@ -495,10 +501,10 @@ namespace NewServerTree
 			{
 				GeographicBoundingBox oRealServiceBounds = new GeographicBoundingBox();
 				bool blValid = true;
-				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.West);
-				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.South);
-				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.East);
-				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealServiceBounds.North);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("minx"), parseStyle, m_oCultureInfo, out oRealServiceBounds.West);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("miny"), parseStyle, m_oCultureInfo, out oRealServiceBounds.South);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxx"), parseStyle, m_oCultureInfo, out oRealServiceBounds.East);
+				blValid &= Double.TryParse(oServiceEnvelope.GetAttribute("maxy"), parseStyle, m_oCultureInfo, out oRealServiceBounds.North);
 
 				if (blValid)
 					oServiceBounds = oRealServiceBounds;
@@ -546,10 +552,10 @@ namespace NewServerTree
 				{
 					GeographicBoundingBox oRealLayerBounds = new GeographicBoundingBox();
 					bool blValid = true;
-					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.West);
-					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.South);
-					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.East);
-					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), NumberStyles.Any, m_oCultureInfo, out oRealLayerBounds.North);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("minx"), parseStyle, m_oCultureInfo, out oRealLayerBounds.West);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("miny"), parseStyle, m_oCultureInfo, out oRealLayerBounds.South);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxx"), parseStyle, m_oCultureInfo, out oRealLayerBounds.East);
+					blValid &= Double.TryParse(oLayerEnvelope.GetAttribute("maxy"), parseStyle, m_oCultureInfo, out oRealLayerBounds.North);
 					if (blValid)
 						oLayerBounds = oRealLayerBounds;
 				}
