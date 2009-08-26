@@ -80,7 +80,7 @@ namespace Dapple.LayerGeneration
 				m_iLevels += 1;
 				iter /= 2;
 			}
-			m_iLevels += 1;
+			m_iLevels += 2;
 		}
 
 		#endregion
