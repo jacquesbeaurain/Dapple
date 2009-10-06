@@ -77,10 +77,12 @@
     </WixVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <SuppressIces>ICE07;ICE49</SuppressIces>
+    <SuppressIces>ICE07;ICE49;ICE03</SuppressIces>
+    <SuppressSpecificWarnings>1079</SuppressSpecificWarnings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <SuppressIces>ICE07;ICE49</SuppressIces>
+    <SuppressIces>ICE07;ICE49;ICE03</SuppressIces>
+    <SuppressSpecificWarnings>1079</SuppressSpecificWarnings>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DappleMergeModule.wxs" />
