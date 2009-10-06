@@ -3,24 +3,44 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Install", "Install\Install.wixproj", "{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}"
 	ProjectSection(ProjectDependencies) = postProject
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705} = {79E96F5A-9645-4E78-8C8D-FE6B14D61705}
 		{31BA40A6-4CBE-4976-A165-90DCA291DC79} = {31BA40A6-4CBE-4976-A165-90DCA291DC79}
 	EndProjectSection
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MergeModule", "MergeModule\MergeModule.wixproj", "{31BA40A6-4CBE-4976-A165-90DCA291DC79}"
 EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "DappleMergeModule", "DappleMergeModule\DappleMergeModule.wixproj", "{79E96F5A-9645-4E78-8C8D-FE6B14D61705}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Debug|Any CPU.Build.0 = Debug|x86
+		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Debug|x86.ActiveCfg = Debug|x86
+		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Debug|x86.Build.0 = Debug|x86
 		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Release|Any CPU.ActiveCfg = Release|x86
 		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Release|Any CPU.Build.0 = Release|x86
+		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Release|x86.ActiveCfg = Release|x86
+		{6C7B2EB0-3DD7-4D17-8335-A09DF0CCEC36}.Release|x86.Build.0 = Release|x86
 		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Debug|x86.ActiveCfg = Debug|x86
+		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Debug|x86.Build.0 = Debug|x86
 		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Release|Any CPU.ActiveCfg = Release|x86
 		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Release|Any CPU.Build.0 = Release|x86
+		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Release|x86.ActiveCfg = Release|x86
+		{31BA40A6-4CBE-4976-A165-90DCA291DC79}.Release|x86.Build.0 = Release|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Debug|x86.ActiveCfg = Debug|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Debug|x86.Build.0 = Debug|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Release|Any CPU.ActiveCfg = Release|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Release|Any CPU.Build.0 = Release|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Release|x86.ActiveCfg = Release|x86
+		{79E96F5A-9645-4E78-8C8D-FE6B14D61705}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
