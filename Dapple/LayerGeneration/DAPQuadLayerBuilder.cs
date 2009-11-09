@@ -393,6 +393,9 @@ namespace Dapple.LayerGeneration
 			queryColl.Add("levels", m_iLevels.ToString(CultureInfo.InvariantCulture));
          queryColl.Add("lvl0tilesize", m_dLevelZeroTileSizeDegrees.ToString(CultureInfo.InvariantCulture));
 
+			if (m_blUseXMLMeta)
+				queryColl.Add("stylesheet", m_hDataSet.Stylesheet);
+
          string strHost = "";
          string strPath = "";
          Utility.URI.ParseURI("http", m_oServer.Url, ref strHost, ref strPath);

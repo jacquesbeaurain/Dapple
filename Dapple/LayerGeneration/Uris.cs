@@ -230,7 +230,7 @@ namespace Dapple.LayerGeneration
 			{
 				if (variable.Trim().Equals(String.Empty)) continue;
 
-				if (!AdditionalUriTokens.Contains(variable) && !ObsoleteUriTokens.Contains(variable))
+				if (!AdditionalUriTokens.Contains(variable) && !OptionalUriTokens.Contains(variable) && !ObsoleteUriTokens.Contains(variable))
 					reducedQuery += variable + "=" + m_oTokens[variable] + "&";
 			}
 
@@ -301,11 +301,18 @@ namespace Dapple.LayerGeneration
 			return m_oTokens[strKey.ToLower()] as String;
 		}
 
+		internal bool hasAttribute(String strKey)
+		{
+			return m_oTokens.Contains(strKey.ToLower());
+		}
+
 		protected abstract string LayerScheme { get; }
 
 		internal abstract String LayerType { get; }
 
 		protected abstract List<String> AdditionalUriTokens { get; }
+
+		protected abstract List<String> OptionalUriTokens { get; }
 
 		protected abstract List<String> ObsoleteUriTokens { get; }
 
@@ -345,6 +352,11 @@ namespace Dapple.LayerGeneration
 		protected override List<string> AdditionalUriTokens
 		{
 			get { return s_lAdditionalTokens; }
+		}
+
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -416,6 +428,11 @@ namespace Dapple.LayerGeneration
 		protected override List<string> AdditionalUriTokens
 		{
 			get { return s_lAdditionalTokens; }
+		}
+
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -495,6 +512,11 @@ namespace Dapple.LayerGeneration
 			get { return s_lAdditionalTokens; }
 		}
 
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
+		}
+
 		protected override List<String> ObsoleteUriTokens
 		{
 			get
@@ -568,6 +590,11 @@ namespace Dapple.LayerGeneration
 			get { return s_lAdditionalTokens; }
 		}
 
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
+		}
+
 		protected override List<String> ObsoleteUriTokens
 		{
 			get
@@ -624,6 +651,10 @@ namespace Dapple.LayerGeneration
          "lvl0tilesize"
          });
 
+		private static List<string> s_lOptionalTokens = new List<string>(new String[] {
+			"stylesheet"
+		});
+
 		internal DapLayerUri(String strUri) : base(strUri) { }
 
 		protected override string LayerScheme
@@ -639,6 +670,11 @@ namespace Dapple.LayerGeneration
 		protected override List<string> AdditionalUriTokens
 		{
 			get { return s_lAdditionalTokens; }
+		}
+
+		protected override List<string> OptionalUriTokens
+		{
+			get { return s_lOptionalTokens; }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -668,6 +704,9 @@ namespace Dapple.LayerGeneration
 			hDataSet.Title = getAttribute("title");
 			hDataSet.Edition = getAttribute("edition");
 			hDataSet.Hierarchy = getAttribute("hierarchy");
+
+			if (hasAttribute("stylesheet"))
+				hDataSet.Stylesheet = getAttribute("stylesheet");
 
 			double minX, minY, maxX, maxY;
 			if (!Double.TryParse(getAttribute("west"), NumberStyles.Any, CultureInfo.InvariantCulture, out minX)) return null;
@@ -712,6 +751,11 @@ namespace Dapple.LayerGeneration
 		protected override List<string> AdditionalUriTokens
 		{
 			get { return s_lAdditionalTokens; }
+		}
+
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -762,6 +806,11 @@ namespace Dapple.LayerGeneration
 		protected override List<string> AdditionalUriTokens
 		{
 			get { return s_lAdditionalTokens; }
+		}
+
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
 		}
 
 		protected override List<String> ObsoleteUriTokens
@@ -815,6 +864,11 @@ namespace Dapple.LayerGeneration
 		protected override List<string> AdditionalUriTokens
 		{
 			get { return s_lAdditionalTokens; }
+		}
+
+		protected override List<string> OptionalUriTokens
+		{
+			get { return new List<string>(); }
 		}
 
 		protected override List<string> ObsoleteUriTokens
