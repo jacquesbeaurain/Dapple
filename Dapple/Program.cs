@@ -369,18 +369,21 @@ namespace Dapple
 					else
 					{
 						HandleRunningInstance(instance);
-						if (strView.Length > 0 || strGeoTiff.Length > 0)
+						if (strView.Length > 0 || strGeoTiff.Length > 0 || (strKMLName.Length > 0 && strKMLFile.Length > 0))
 						{
 							try
 							{
 								using (Segment s = new Segment("Dapple.OpenView", SharedMemoryCreationFlag.Create, 10000))
 								{
-									string[] strData = new string[6];
+									string[] strData = new string[8];
 									strData[0] = strView;
 									strData[1] = strGeoTiff;
 									strData[2] = strGeoTiffName;
 									strData[3] = bGeotiffTmp ? "YES" : "NO";
 									strData[4] = strLastView;
+									strData[5] = blKMLTmp ? "YES" : "NO";
+									strData[6] = strKMLName;
+									strData[7] = strKMLFile;
 
 									s.SetData(strData);
 									SendMessage(instance.MainWindowHandle, MainForm.OpenViewMessage, IntPtr.Zero, IntPtr.Zero);

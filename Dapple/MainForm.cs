@@ -2009,11 +2009,16 @@ namespace Dapple
 					string strGeoTiffName = strData[2];
 					bool bGeotiffTmp = strData[3] == "YES";
 					this.lastView = strData[4];
+					bool bKmlTmp = strData[5] == "YES";
+					string strKmlName = strData[6];
+					string strKmlFile = strData[7];
 
 					if (strView.Length > 0)
 						OpenView(strView, strGeoTiff.Length == 0, true);
 					if (strGeoTiff.Length > 0)
 						AddGeoTiff(strGeoTiff, strGeoTiffName, bGeotiffTmp, true);
+					if (strKmlName.Length > 0 && strKmlFile.Length > 0)
+						AddKML(strKmlFile, strKmlName, bKmlTmp, false, null);
 				}
 				catch
 				{
