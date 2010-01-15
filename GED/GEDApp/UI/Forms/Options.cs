@@ -7,6 +7,12 @@ using GED.Core;
 
 namespace GED.App.UI.Forms
 {
+	public enum SearchProtocol
+	{
+		DappleSearch,
+		DapServer
+	}
+
 	public partial class Options : Form
 	{
 		public Options()
@@ -15,6 +21,9 @@ namespace GED.App.UI.Forms
 
 			c_cbKmlFormat.Items.Add(RootKmlFormat.Tiled);
 			c_cbKmlFormat.Items.Add(RootKmlFormat.SingleImage);
+
+			c_cbSearchProviderType.Items.Add(SearchProtocol.DappleSearch);
+			c_cbSearchProviderType.Items.Add(SearchProtocol.DapServer);
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -23,6 +32,9 @@ namespace GED.App.UI.Forms
 
 			c_tbCacheDirectory.Text = CacheUtils.CacheRoot;
 			c_cbKmlFormat.SelectedItem = Settings.Default.KmlFormat;
+
+			c_tbSearchProviderURL.Text = Settings.Default.SearchProviderURL;
+			c_cbSearchProviderType.SelectedItem= Settings.Default.SearchProviderType;
 		}
 
 		private void c_bOk_Click(object sender, EventArgs e)
@@ -37,6 +49,8 @@ namespace GED.App.UI.Forms
 				Settings.Default.CustomCachePath = c_tbCacheDirectory.Text;
 			}
 			Settings.Default.KmlFormat = (RootKmlFormat)c_cbKmlFormat.SelectedItem;
+			Settings.Default.SearchProviderType = (SearchProtocol)c_cbSearchProviderType.SelectedItem;
+			Settings.Default.SearchProviderURL = c_tbSearchProviderURL.Text;
 			Settings.Default.Save();
 		}
 	}

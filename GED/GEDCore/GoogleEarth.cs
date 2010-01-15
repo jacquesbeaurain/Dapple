@@ -1,5 +1,6 @@
 ﻿using System;
 using EARTHLib;
+using Geosoft.Dap.Common;
 
 namespace GED.Core
 {
@@ -11,19 +12,36 @@ namespace GED.Core
 		private static ApplicationGEClass s_oGEClass;
 
 		/// <summary>
-		/// Gets the currently running instance of Google Earth.
-		/// </summary>
-		public static ApplicationGEClass Instance
-		{
-			get { return s_oGEClass; }
-		}
-
-		/// <summary>
 		/// Initializes the Google Earth interface.
 		/// </summary>
 		public static void Init()
 		{
 			s_oGEClass = new ApplicationGEClass();
+		}
+
+		/// <summary>
+		/// The current view extents inside of Google Earth.
+		/// </summary>
+		public static BoundingBox ViewedExtents
+		{
+			get
+			{
+				if (s_oGEClass == null)
+					return new BoundingBox(179, 89, -179, -89);
+
+				ViewExtentsGE extents = s_oGEClass.ViewExtents;
+				return new BoundingBox(extents.East, extents.North, extents.West, extents.South);
+			}
+		}
+
+		/// <summary>
+		/// Instruct Google Earth to open a KML file.
+		/// </summary>
+		/// <param name="filename">The filename to open.</param>
+		/// <param name="suppressMessages">Whether to suppress messages. Check GE API docs for possible meaning.</param>
+		public static void OpenKmlFile(String filename, bool suppressMessages)
+		{
+			s_oGEClass.OpenKmlFile(filename, suppressMessages ? 1 : 0);
 		}
 
 		/// <summary>

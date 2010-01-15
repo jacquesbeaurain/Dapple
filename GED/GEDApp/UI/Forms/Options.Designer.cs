@@ -37,8 +37,14 @@
 			this.c_cbKmlFormat = new System.Windows.Forms.ComboBox();
 			this.c_bOk = new System.Windows.Forms.Button();
 			this.c_bCancel = new System.Windows.Forms.Button();
+			this.c_gbSearchProvider = new System.Windows.Forms.GroupBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
+			this.c_cbSearchProviderType = new System.Windows.Forms.ComboBox();
+			this.c_tbSearchProviderURL = new System.Windows.Forms.TextBox();
 			this.c_gbCache.SuspendLayout();
 			this.c_gbKML.SuspendLayout();
+			this.c_gbSearchProvider.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// c_gbCache
@@ -118,7 +124,7 @@
 			// 
 			this.c_bOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.c_bOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.c_bOk.Location = new System.Drawing.Point(444, 118);
+			this.c_bOk.Location = new System.Drawing.Point(444, 173);
 			this.c_bOk.Name = "c_bOk";
 			this.c_bOk.Size = new System.Drawing.Size(75, 23);
 			this.c_bOk.TabIndex = 2;
@@ -130,12 +136,59 @@
 			// 
 			this.c_bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.c_bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.c_bCancel.Location = new System.Drawing.Point(525, 118);
+			this.c_bCancel.Location = new System.Drawing.Point(525, 173);
 			this.c_bCancel.Name = "c_bCancel";
 			this.c_bCancel.Size = new System.Drawing.Size(75, 23);
 			this.c_bCancel.TabIndex = 3;
 			this.c_bCancel.Text = "Cancel";
 			this.c_bCancel.UseVisualStyleBackColor = true;
+			// 
+			// c_gbSearchProvider
+			// 
+			this.c_gbSearchProvider.Controls.Add(this.label4);
+			this.c_gbSearchProvider.Controls.Add(this.label3);
+			this.c_gbSearchProvider.Controls.Add(this.c_cbSearchProviderType);
+			this.c_gbSearchProvider.Controls.Add(this.c_tbSearchProviderURL);
+			this.c_gbSearchProvider.Location = new System.Drawing.Point(12, 118);
+			this.c_gbSearchProvider.Name = "c_gbSearchProvider";
+			this.c_gbSearchProvider.Size = new System.Drawing.Size(588, 45);
+			this.c_gbSearchProvider.TabIndex = 4;
+			this.c_gbSearchProvider.TabStop = false;
+			this.c_gbSearchProvider.Text = "Search Provider";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(421, 22);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(34, 13);
+			this.label4.TabIndex = 3;
+			this.label4.Text = "Type:";
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(6, 22);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(32, 13);
+			this.label3.TabIndex = 2;
+			this.label3.Text = "URL:";
+			// 
+			// c_cbSearchProviderType
+			// 
+			this.c_cbSearchProviderType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.c_cbSearchProviderType.FormattingEnabled = true;
+			this.c_cbSearchProviderType.Location = new System.Drawing.Point(461, 19);
+			this.c_cbSearchProviderType.Name = "c_cbSearchProviderType";
+			this.c_cbSearchProviderType.Size = new System.Drawing.Size(121, 21);
+			this.c_cbSearchProviderType.TabIndex = 1;
+			// 
+			// c_tbSearchProviderURL
+			// 
+			this.c_tbSearchProviderURL.Location = new System.Drawing.Point(96, 19);
+			this.c_tbSearchProviderURL.Name = "c_tbSearchProviderURL";
+			this.c_tbSearchProviderURL.Size = new System.Drawing.Size(319, 20);
+			this.c_tbSearchProviderURL.TabIndex = 0;
 			// 
 			// Options
 			// 
@@ -143,8 +196,9 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.c_bCancel;
-			this.ClientSize = new System.Drawing.Size(612, 153);
+			this.ClientSize = new System.Drawing.Size(612, 208);
 			this.ControlBox = false;
+			this.Controls.Add(this.c_gbSearchProvider);
 			this.Controls.Add(this.c_bCancel);
 			this.Controls.Add(this.c_bOk);
 			this.Controls.Add(this.c_gbKML);
@@ -156,6 +210,8 @@
 			this.c_gbCache.PerformLayout();
 			this.c_gbKML.ResumeLayout(false);
 			this.c_gbKML.PerformLayout();
+			this.c_gbSearchProvider.ResumeLayout(false);
+			this.c_gbSearchProvider.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -171,5 +227,10 @@
 		private System.Windows.Forms.TextBox c_tbCacheDirectory;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ComboBox c_cbKmlFormat;
+		private System.Windows.Forms.GroupBox c_gbSearchProvider;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.ComboBox c_cbSearchProviderType;
+		private System.Windows.Forms.TextBox c_tbSearchProviderURL;
 	}
 }

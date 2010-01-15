@@ -24,6 +24,14 @@ namespace GED.WebService
 		[OperationContract]
 		[WebGet(UriTemplate = ContractHelper.SingleImageUriTemplate)]
 		Stream GenerateSingleImage(String serverType, String server, String layer, String bbox, double minx, double miny, double maxx, double maxy);
+
+		[OperationContract]
+		[WebGet(UriTemplate = "/dapple_search_over_dap/search/?url={dapUrl}")]
+		Stream DappleSearchOverDAP(String dapUrl);
+
+		[OperationContract]
+		[WebGet(UriTemplate = "/dapple_search_over_dap/thumbnail/?url={dapUrl}&layerid={layerID}")]
+		Stream ThumbnailOverDAP(String dapUrl, int layerID);
 	}
 
 

@@ -127,7 +127,22 @@ namespace GED.App.UI.Controls
 				}
 				else
 				{
-					e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1, 1, THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+					double dWidthRatio = (double)oResult.Thumbnail.Width / THUMBNAIL_SIZE;
+					double dHeightRatio = (double)oResult.Thumbnail.Height / THUMBNAIL_SIZE;
+					double dMajorRatio = Math.Max(dWidthRatio, dHeightRatio);
+
+					dWidthRatio /= dMajorRatio;
+					dHeightRatio /= dMajorRatio;
+
+					int iDrawWidth = (int)(THUMBNAIL_SIZE * dWidthRatio);
+					if (iDrawWidth < 1) iDrawWidth = 1;
+					int iDrawHeight = (int)(THUMBNAIL_SIZE * dHeightRatio);
+					if (iDrawHeight < 1) iDrawHeight = 1;
+
+					int iOffsetX = (THUMBNAIL_SIZE - iDrawWidth) / 2;
+					int iOffsetY = (THUMBNAIL_SIZE - iDrawHeight) / 2;
+
+					e.Graphics.DrawImage(oResult.Thumbnail, new Rectangle(1 + iOffsetX, 1 + iOffsetY, iDrawWidth, iDrawHeight));
 				}
 
 				// --- Title and URL ---
@@ -272,7 +287,7 @@ namespace GED.App.UI.Controls
 				RefreshResultList();
 			}
 		}
-		
+
 		private void ForwardPageComplete(Object sender, DownloadCompleteEventArgs args)
 		{
 			DappleSearchWebDownload oDSWebDownload = sender as DappleSearchWebDownload;
@@ -303,7 +318,7 @@ namespace GED.App.UI.Controls
 				oDownload.StartDownload(new DownloadCompleteHandler(SetSearchParametersComplete));
 			}
 		}
-		
+
 		private void SetSearchParametersComplete(Object sender, DownloadCompleteEventArgs args)
 		{
 
@@ -557,7 +572,7 @@ namespace GED.App.UI.Controls
 		public void downloadThumbnail()
 		{
 			// --- This non-WebDownload download is permitted because this method is only called by threadpool threads ---
-			WebRequest oRequest = WebRequest.Create(Settings.Default.SearchServer + "Thumbnail.aspx?layerid=" + m_aCommonAttributes["obaselayerid"]);
+			WebRequest oRequest = WebRequest.Create(DappleSearchInterface.GetThumbnailURL(Int32.Parse(m_aCommonAttributes["obaselayerid"])));
 			WebResponse oResponse = null;
 			try
 			{
@@ -624,7 +639,7 @@ namespace GED.App.UI.Controls
 		}
 	}
 	public delegate void DownloadCompleteHandler(Object sender, DownloadCompleteEventArgs args);
-	
+
 
 	public class DappleSearchWebDownload
 	{
@@ -656,7 +671,7 @@ namespace GED.App.UI.Controls
 			HttpWebRequest oRequest = null;
 			try
 			{
-				oRequest = (HttpWebRequest)WebRequest.Create(Settings.Default.SearchServer + "SearchInterfaceXML.aspx");
+				oRequest = (HttpWebRequest)WebRequest.Create(DappleSearchInterface.GetSearchInterfaceURL());
 			}
 			catch (Exception ex)
 			{
@@ -721,6 +736,35 @@ namespace GED.App.UI.Controls
 			finally
 			{
 				if (oResponse != null) oResponse.Close();
+			}
+		}
+	}
+
+	class DappleSearchInterface
+	{
+		public static string GetSearchInterfaceURL()
+		{
+			switch (Settings.Default.SearchProviderType)
+			{
+				case GED.App.UI.Forms.SearchProtocol.DappleSearch:
+					return Settings.Default.SearchProviderURL + "SearchInterfaceXML.aspx";
+				case GED.App.UI.Forms.SearchProtocol.DapServer:
+					return "http://localhost:" + GED.WebService.ControlPanel.DefaultPort + "/dapple_search_over_dap/search/?url=" + System.Web.HttpUtility.UrlEncode(Settings.Default.SearchProviderURL);
+				default:
+					throw new ApplicationException("Missing switch case statment");
+			}
+		}
+
+		public static string GetThumbnailURL(int layerID)
+		{
+			switch (Settings.Default.SearchProviderType)
+			{
+				case GED.App.UI.Forms.SearchProtocol.DappleSearch:
+					return Settings.Default.SearchProviderURL + "Thumbnail.aspx?layerid=" + layerID.ToString(CultureInfo.InvariantCulture);
+				case GED.App.UI.Forms.SearchProtocol.DapServer:
+					return "http://localhost:" + GED.WebService.ControlPanel.DefaultPort + "/dapple_search_over_dap/thumbnail/?url=" + System.Web.HttpUtility.UrlEncode(Settings.Default.SearchProviderURL) + "&layerid=" + layerID.ToString();
+				default:
+					throw new ApplicationException("Missing switch case statment");
 			}
 		}
 	}

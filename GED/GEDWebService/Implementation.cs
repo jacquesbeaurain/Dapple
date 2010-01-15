@@ -5,6 +5,7 @@ using System.ServiceModel.Web;
 using System.Web;
 using GED.Core;
 using Geosoft.Dap.Common;
+using System.Drawing;
 
 namespace GED.WebService
 {
@@ -87,6 +88,16 @@ namespace GED.WebService
 				ReportStatusCode(HttpStatusCode.NotFound);
 				return null;
 			}
+		}
+
+		public Stream DappleSearchOverDAP(String dapUrl)
+		{
+			return DappleSearch.DappleSearch.OverDAP(dapUrl, System.ServiceModel.Web.WebOperationContext.Current.IncomingRequest.Headers["GeosoftMapSearchRequest"]);
+		}
+
+		public Stream ThumbnailOverDAP(string dapUrl, int layerID)
+		{
+			return DappleSearch.DappleSearch.Thumbnail(dapUrl, layerID);
 		}
 
 		private void ReportStatusCode(HttpStatusCode oCode)

@@ -24,8 +24,7 @@ namespace GED.App.UI.Forms
 
 		private void c_bSearch_Click(object sender, EventArgs e)
 		{
-			ViewExtentsGE oExtents = GoogleEarth.Instance.ViewExtents;
-			dappleSearchList1.SetSearchParameters(textBox1.Text, new BoundingBox(oExtents.East, oExtents.North, oExtents.West, oExtents.South));
+			dappleSearchList1.SetSearchParameters(textBox1.Text, GoogleEarth.ViewedExtents);
 		}
 
 		private void textBox1_KeyDown(object sender, KeyEventArgs e)
@@ -43,7 +42,7 @@ namespace GED.App.UI.Forms
 				if (oResult.ServerType.Equals("DAP", StringComparison.InvariantCultureIgnoreCase))
 				{
 					String strFilename = RootKmlFiles.CreateKmlFile(oResult);
-					GoogleEarth.Instance.OpenKmlFile(strFilename, 1);
+					GoogleEarth.OpenKmlFile(strFilename, true);
 				}
 			}
 		}

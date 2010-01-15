@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GED.App.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="SearchServer" Type="System.String" Scope="Application">
+    <Setting Name="SearchProviderURL" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://dapplesearch.geosoft.com/</Value>
     </Setting>
     <Setting Name="UpgradeSettingsRequired" Type="System.Boolean" Scope="User">
@@ -13,6 +13,9 @@
     </Setting>
     <Setting Name="KmlFormat" Type="GED.App.Core.RootKmlFormat" Scope="User">
       <Value Profile="(Default)">SingleImage</Value>
+    </Setting>
+    <Setting Name="SearchProviderType" Type="GED.App.UI.Forms.SearchProtocol" Scope="User">
+      <Value Profile="(Default)">DappleSearch</Value>
     </Setting>
   </Settings>
 </SettingsFile>
