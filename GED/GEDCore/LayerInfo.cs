@@ -161,13 +161,13 @@ namespace GED.Core
 			oFormat.Transparent = true;
 
 			Resolution oRes = new Resolution();
-			oRes.Height = 256;
-			oRes.Width = 256;
+			oRes.Height = TileInfo.TileSizePixels;
+			oRes.Width = TileInfo.TileSizePixels;
 
 			ArrayList oArr = new ArrayList();
 			oArr.Add(m_strLayer);
 
-			Command oCommand = new Command(m_strServer, false, Command.Version.GEOSOFT_XML_1_1);
+			Command oCommand = new Command(m_strServer, false, Command.Version.GEOSOFT_XML_1_1, false, DapSecureToken.Instance);
 			XmlDocument result = oCommand.GetImage(oFormat, oTile.Bounds, oRes, oArr);
 
 			// --- Save the resulting image ---
@@ -210,12 +210,13 @@ namespace GED.Core
 		/// <returns>The raw data of the composed image.</returns>
 		public byte[] GetCompositeImage(BoundingBox oLayerBoundingBox, BoundingBox oViewBoundingBox)
 		{
-			const int iImageSize = 768;
-			double dLongitude = oViewBoundingBox.MaxX - oViewBoundingBox.MinX;
-			double dLatitude = oViewBoundingBox.MaxY - oViewBoundingBox.MinY;
-			double dMajorAxis = Math.Max(dLongitude, dLatitude);
-			double dDegreesPerPixel = dMajorAxis / iImageSize;
-			TileSet oRequiredTiles = new TileSet(oViewBoundingBox);
+			if (!oLayerBoundingBox.Intersects(oViewBoundingBox))
+				return BlankImageBytes();
+
+			BoundingBox visibleDataBounds = oLayerBoundingBox.IntersectWith(oViewBoundingBox);
+
+			//bool moreDataComing = false;
+			TileSet oRequiredTiles = new TileSet(visibleDataBounds, TileSet.GetLevel(oViewBoundingBox));
 			TileSet oServiceTiles = oRequiredTiles;
 
 
@@ -224,11 +225,13 @@ namespace GED.Core
 			System.Diagnostics.Debug.WriteLine("Requesting composite image at level " + oServiceTiles.Level);
 			while (oServiceTiles.Level > 0 && !oServiceTiles.IsCached(this, oLayerBoundingBox))
 			{
-				oServiceTiles = new TileSet(oViewBoundingBox, oServiceTiles.Level - 1);
+				oRequiredTiles = oServiceTiles;
+				oServiceTiles = new TileSet(visibleDataBounds, oServiceTiles.Level - 1);
+				//moreDataComing = true;
 				System.Diagnostics.Debug.WriteLine("Decrementing level to " + oServiceTiles.Level);
 			}
 
-			
+
 			// --- Queue up the other images for the request ---
 
 			if (!oRequiredTiles.IsCached(this, oLayerBoundingBox))
@@ -237,47 +240,56 @@ namespace GED.Core
 				oRequiredDownloads.DownloadAsync(new EventHandler(oRequiredDownloads_DownloadComplete));
 			}
 
+			// --- Compose image tiles to master tile ---
+
+			Bitmap composite = ComposeImageFromTileCache(oServiceTiles);
+			BoundingBox compositeBounds = oServiceTiles.Bounds;
+			double degreesPerPixel = TileInfo.GetTileSize(oServiceTiles.Level) / TileInfo.TileSizePixels;
 
 			// --- Render the image for the tile level requested ---
 
-			MemoryStream result = new MemoryStream();
-			int iResultWidth = (int)(iImageSize * dLongitude / dMajorAxis);
-			int iResultHeight = (int)(iImageSize * dLatitude / dMajorAxis);
-			using (Bitmap oResult = new Bitmap(iResultWidth, iResultHeight))
+			Bitmap result = new Bitmap((int)((oViewBoundingBox.MaxX - oViewBoundingBox.MinX) / degreesPerPixel), (int)((oViewBoundingBox.MaxY - oViewBoundingBox.MinY) / degreesPerPixel));
+			BoundingBox resultBounds = new BoundingBox(oViewBoundingBox);
+
+			using (Graphics g = Graphics.FromImage(result))
 			{
-				using (Graphics oResultGraphics = Graphics.FromImage(oResult))
-				{
-					oResultGraphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-					float fTileSizePixels = (float)(TileInfo.GetTileSize(oServiceTiles.Level) / dDegreesPerPixel);
+				g.DrawImage(composite, new PointF((float)((compositeBounds.MinX - resultBounds.MinX) / degreesPerPixel), (float)((resultBounds.MaxY - compositeBounds.MaxY) / degreesPerPixel)));
 
-					foreach (TileInfo oTile in oServiceTiles)
-					{
-						BoundingBox oTileBoundingBox = oTile.Bounds;
-						if (!oTileBoundingBox.Intersects(oLayerBoundingBox)) continue;
-
-						RectangleF oTileDrawRectangle = new RectangleF(
-							(float)((oTileBoundingBox.MinX - oViewBoundingBox.MinX) / dDegreesPerPixel),
-							(float)((oViewBoundingBox.MaxY - oTileBoundingBox.MaxY) / dDegreesPerPixel),
-							fTileSizePixels,
-							fTileSizePixels
-							);
-
-						System.Diagnostics.Debug.WriteLine("Drawing " + oTile.ToString() + " at " + oTileDrawRectangle.ToString());
-
-						byte[] oTileData = GetTileImage(oTile);
-						if (oTileData != null)
-						{
-							using (Bitmap oTileImage = new Bitmap(new MemoryStream(oTileData)))
-							{
-								oResultGraphics.DrawImage(oTileImage, oTileDrawRectangle);
-							}
-						}
-					}	
-				}
-				oResult.Save(result, System.Drawing.Imaging.ImageFormat.Png);
+				//if (moreDataComing)
+				//   g.FillRectangle(new System.Drawing.Drawing2D.HatchBrush(System.Drawing.Drawing2D.HatchStyle.Percent05, Color.Green, Color.Transparent), 0, 0, result.Width, result.Height);
 			}
-			return result.ToArray();
+
+			result.Save("C:/documents and settings/chrismac/desktop/sent.png", System.Drawing.Imaging.ImageFormat.Png);
+
+			MemoryStream buffer = new MemoryStream();
+			result.Save(buffer, System.Drawing.Imaging.ImageFormat.Png);
+			return buffer.ToArray();
+		}
+
+		private Bitmap ComposeImageFromTileCache(TileSet oServiceTiles)
+		{
+			Bitmap result = new Bitmap(oServiceTiles.CompositeWidth, oServiceTiles.CompositeHeight);
+			using (Graphics g = Graphics.FromImage(result))
+				foreach (TileInfo tile in oServiceTiles)
+				{
+					Console.WriteLine(tile);
+					byte[] tileBytes = GetTileImage(tile);
+					if (tileBytes != null)
+						using (Bitmap tileImage = new Bitmap(new MemoryStream(tileBytes)))
+							g.DrawImage(tileImage, oServiceTiles.GetCompositePoint(tile));
+				}
+			result.Save("C:/documents and settings/chrismac/desktop/out.png", System.Drawing.Imaging.ImageFormat.Png);
+			return result;
+		}
+
+		private byte[] BlankImageBytes()
+		{
+			MemoryStream buffer = new MemoryStream();
+			using (Bitmap b = new Bitmap(1, 1))
+				b.Save(buffer, System.Drawing.Imaging.ImageFormat.Png);
+			return buffer.ToArray();
 		}
 
 		void oRequiredDownloads_DownloadComplete(object sender, EventArgs e)

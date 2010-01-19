@@ -19,6 +19,7 @@ namespace GED.App
 
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
+			DapSecureToken.Create();
 			GoogleEarth.Init();
 			GED.WebService.ControlPanel.Start();
 

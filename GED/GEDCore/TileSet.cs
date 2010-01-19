@@ -98,6 +98,40 @@ namespace GED.Core
 			get { return m_iLevel; }
 		}
 
+		/// <summary>
+		/// The width, in pixels, of an image composed of all the tiles in this TileSet.
+		/// </summary>
+		public int CompositeWidth
+		{
+			get { return (m_iMaxCol - m_iMinCol + 1) * TileInfo.TileSizePixels; }
+		}
+
+		/// <summary>
+		/// The height, in pixels, of an image composed of all the tiles in this TileSet.
+		/// </summary>
+		public int CompositeHeight
+		{
+			get { return (m_iMaxRow - m_iMinRow + 1) * TileInfo.TileSizePixels; }
+		}
+
+		/// <summary>
+		/// Get the bounding box of all the tiles in this TileSet.
+		/// </summary>
+		public BoundingBox Bounds
+		{
+			get
+			{
+				TileInfo bottomLeft = new TileInfo(m_iLevel, m_iMinCol, m_iMinRow);
+				TileInfo topRight = new TileInfo(m_iLevel, m_iMaxCol, m_iMaxRow);
+
+				return new BoundingBox(
+					topRight.Bounds.MaxX,
+					topRight.Bounds.MaxY,
+					bottomLeft.Bounds.MinX,
+					bottomLeft.Bounds.MinY);
+			}
+		}
+
 		#endregion
 
 
@@ -246,6 +280,36 @@ namespace GED.Core
 				if (oLayerBounds.Intersects(oTile.Bounds) && !File.Exists(Path.Combine(CacheUtils.CacheRoot, oInfo.GetCacheFilename(oTile)))) return false;
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Gets the point in a composite image of this TileSet to draw a particular tile.
+		/// </summary>
+		/// <param name="tile">The tile to locate a point for.</param>
+		/// <returns>The point at which to draw the specified tile on a composite image.</returns>
+		public System.Drawing.Point GetCompositePoint(TileInfo tile)
+		{
+			return new System.Drawing.Point((tile.Column - m_iMinCol) * TileInfo.TileSizePixels, (m_iMaxRow - tile.Row) * TileInfo.TileSizePixels);
+		}
+
+		/// <summary>
+		/// Determine the tile level based on viewed extents.
+		/// </summary>
+		/// <param name="viewBounds">The viewed extents.</param>
+		/// <returns>The tile level to use.</returns>
+		public static int GetLevel(BoundingBox viewBounds)
+		{
+			int result = 0;
+
+			double dLatitude = viewBounds.MaxY - viewBounds.MinY;
+			double dLongitude = viewBounds.MaxX - viewBounds.MinX;
+
+			// --- Tiles are 256 pixels square, and most monitors are 1600x1200. Therefore, we want
+			// --- a composite tile to be four tiles high
+			while (Math.Min(dLongitude, dLatitude) < TileInfo.GetTileSize(result) * 2)
+				result++;
+
+			return result;
 		}
 
 		#endregion

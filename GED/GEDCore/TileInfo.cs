@@ -16,6 +16,16 @@ namespace GED.Core
 	/// </remarks>
 	public class TileInfo
 	{
+		#region Constants
+
+		/// <summary>
+		/// The dimension of individual tile images.
+		/// </summary>
+		public const int TileSizePixels = 256;
+
+		#endregion
+
+
 		#region Member Variables
 
 		private int m_iLevel;

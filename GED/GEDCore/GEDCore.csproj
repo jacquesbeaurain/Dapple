@@ -60,6 +60,7 @@
     <Compile Include="GoogleEarth.cs" />
     <Compile Include="LayerInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DapSecureToken.cs" />
     <Compile Include="TileInfo.cs" />
     <Compile Include="TileSet.cs" />
   </ItemGroup>
@@ -86,6 +87,12 @@
       <WrapperTool>primary</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\CreateSecureDAPToken.dll">
+      <Link>CreateSecureDAPToken.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

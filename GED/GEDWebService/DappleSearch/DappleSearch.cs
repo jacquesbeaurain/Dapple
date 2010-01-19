@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Drawing;
+using GED.Core;
 
 namespace GED.WebService.DappleSearch
 {
@@ -16,7 +17,7 @@ namespace GED.WebService.DappleSearch
 		{
 			SearchRequest request = Decoder.SearchRequest(requestXML);
 
-			Geosoft.Dap.Command c = new Geosoft.Dap.Command(dapUrl, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, false, null, 30000);
+			Geosoft.Dap.Command c = new Geosoft.Dap.Command(dapUrl, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, false, DapSecureToken.Instance, 30000);
 			ArrayList datasets; c.GetCatalog(null, 0, request.Offset, request.MaxCount, request.TextFilter, request.AoIFilter, out datasets);
 			int totalResults; c.GetDataSetCount(null, 0, request.Offset, request.MaxCount, request.TextFilter, request.AoIFilter, out totalResults);
 
@@ -33,7 +34,7 @@ namespace GED.WebService.DappleSearch
 
 		internal static Stream Thumbnail(string dapUrl, int layerID)
 		{
-			Geosoft.Dap.Command c = new Geosoft.Dap.Command(dapUrl, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, false, null, 30000);
+			Geosoft.Dap.Command c = new Geosoft.Dap.Command(dapUrl, false, Geosoft.Dap.Command.Version.GEOSOFT_XML_1_1, false, DapSecureToken.Instance, 30000);
 
 			DataSet data = cachedData[layerID];
 

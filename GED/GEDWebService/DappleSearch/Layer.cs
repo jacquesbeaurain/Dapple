@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Geosoft.Dap.Common;
+using GED.Core;
 
 namespace GED.WebService.DappleSearch
 {
@@ -47,7 +48,7 @@ namespace GED.WebService.DappleSearch
 		{
 			DAPDatasetName = data.Name;
 			DAPHeight = 0;
-			DAPSize = 256;
+			DAPSize = TileInfo.TileSizePixels;
 			DAPType = data.Type;
 			DAPEdition = data.Edition;
 			DAPHierarchy = data.Hierarchy;
