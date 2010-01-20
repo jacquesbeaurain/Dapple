@@ -298,4 +298,25 @@ namespace GED.Core
 			GoogleEarth.TriggerRefresh();
 		}
 	}
+
+	static class BoundingBoxExtension
+	{
+		/// <summary>
+		/// Find the intersection of two bounding boxes.
+		/// </summary>
+		/// <param name="bbox1"></param>
+		/// <param name="bbox2"></param>
+		/// <returns>A bounding box covering the region of intersection.</returns>
+		public static BoundingBox IntersectWith(this BoundingBox bbox1, BoundingBox bbox2)
+		{
+			if (!bbox1.Intersects(bbox2))
+				throw new InvalidOperationException();
+
+			return new BoundingBox(
+				Math.Min(bbox1.MaxX, bbox2.MaxX),
+				Math.Min(bbox1.MaxY, bbox2.MaxY),
+				Math.Max(bbox1.MinX, bbox2.MinX),
+				Math.Max(bbox1.MinY, bbox2.MinY));
+		}
+	}
 }
