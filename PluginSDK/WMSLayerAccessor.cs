@@ -51,9 +51,15 @@ namespace WorldWind.Net.Wms
 		{
 
 			string projectionRequest = "";
+			bool reverseXY = false;
 
 			if (m_version == "1.3.0")
 			{
+				if (m_crs.Equals("EPSG:4326"))
+				{
+					reverseXY = true;
+					projectionRequest = "crs=EPSG:4326";
+				}
 				if (GCSMappings.WMSWGS84Equivalents.Contains(m_crs))
 					projectionRequest = "crs=" + m_crs;
 				else
@@ -68,18 +74,21 @@ namespace WorldWind.Net.Wms
 			}
 
 			string wmsQuery = string.Format(
-			   CultureInfo.InvariantCulture,
-			   "{0}" + (m_serverGetMapUrl.IndexOf("?") == -1 ? "?" : "") +
-			   "service=WMS&version={1}&request=GetMap&layers={2}&format={3}&width={4}&height={5}&{6}&bbox={7},{8},{9},{10}&styles={11}&transparent=TRUE",
-			   m_serverGetMapUrl,
-			   m_version,
-			   m_wmsLayerName,
-			   m_imageFormat,
-			   m_textureSizePixels,
-			   m_textureSizePixels,
-			   projectionRequest,
-			   tile.West, tile.South, tile.East, tile.North,
-			   m_wmsLayerStyle);
+				 CultureInfo.InvariantCulture,
+				 "{0}" + (m_serverGetMapUrl.IndexOf("?") == -1 ? "?" : "") +
+				 "service=WMS&version={1}&request=GetMap&layers={2}&format={3}&width={4}&height={5}&{6}&bbox={7},{8},{9},{10}&styles={11}&transparent=TRUE",
+				 m_serverGetMapUrl,
+				 m_version,
+				 m_wmsLayerName,
+				 m_imageFormat,
+				 m_textureSizePixels,
+				 m_textureSizePixels,
+				 projectionRequest,
+				 reverseXY ? tile.South : tile.West,
+				 reverseXY ? tile.West : tile.South,
+				 reverseXY ? tile.North : tile.East,
+				 reverseXY ? tile.East : tile.North,
+				 m_wmsLayerStyle);
 
 			// Cleanup
 			while (wmsQuery.IndexOf("??") != -1)
