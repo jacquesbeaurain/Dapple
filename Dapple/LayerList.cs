@@ -645,11 +645,11 @@ namespace Dapple
             else
             {
                int iBuilderIndex = 0;
-               do
+               while (iBuilderIndex < m_oLayers.Count)
                {
                   if (m_oLayers[iBuilderIndex] == oBuilder) break;
                   iBuilderIndex++;
-               } while (iBuilderIndex < m_oLayers.Count);
+               }
                if (iBuilderIndex == m_oLayers.Count) return;
 
                if (eChangeType == BuilderChangeType.LoadedASync)

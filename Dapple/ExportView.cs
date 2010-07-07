@@ -24,6 +24,9 @@ namespace Dapple
          InitializeComponent();
          m_strConfigDir = strConfigDir;
 
+			if (String.IsNullOrEmpty(strInitialFolder))
+				strInitialFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
          FEditControl m_fEditControl = null;
          try
          {

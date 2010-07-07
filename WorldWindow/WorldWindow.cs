@@ -708,133 +708,151 @@ namespace WorldWind
 			Render();
 		}
 
+		bool rendering = false;
+		object renderLock = new object();
+
 		/// <summary>
 		/// Render the scene.
 		/// </summary>
 		/// <returns>The number of seconds taken to render everything.</returns>
 		public float Render()
 		{
-			float result;
-
-			// --- Ensure the Device isn't lost, and cancel if it is ---
-			if (m_blDeviceLost)
+			lock (renderLock)
 			{
-				AttemptRecovery();
-			}
-			if (m_blDeviceLost)
-			{
-				return 0;
+				if (rendering)
+					return 0;
+				else
+					rendering = true;
 			}
 
-			using (new DirectXProfilerEvent("WorldWindow::Render"))
+			try
 			{
-				long startTicks = 0;
-				PerformanceTimer.QueryPerformanceCounter(ref startTicks);
+				float result;
 
-				try
+				// --- Ensure the Device isn't lost, and cancel if it is ---
+				if (m_blDeviceLost)
 				{
-					this.drawArgs.BeginRender();
+					AttemptRecovery();
+				}
+				if (m_blDeviceLost)
+				{
+					return 0;
+				}
 
-					// Render the sky according to view - example, close to earth, render sky blue, render space as black
-					System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
+				using (new DirectXProfilerEvent("WorldWindow::Render"))
+				{
+					long startTicks = 0;
+					PerformanceTimer.QueryPerformanceCounter(ref startTicks);
 
-					m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
-
-					if (m_World != null)
+					try
 					{
-						if (m_WorkerThread == null)
+						this.drawArgs.BeginRender();
+
+						// Render the sky according to view - example, close to earth, render sky blue, render space as black
+						System.Drawing.Color backgroundColor = System.Drawing.Color.Black;
+
+						m_Device3d.Clear(ClearFlags.Target | ClearFlags.ZBuffer, backgroundColor, 1.0f, 0);
+
+						if (m_World != null)
 						{
-							m_WorkerThreadRunning = true;
-							m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
-							m_WorkerThread.Name = ThreadNames.WorldWindowBackground;
-							m_WorkerThread.IsBackground = true;
-							m_WorkerThread.Priority = ThreadPriority.Normal;
-							m_WorkerThread.Start();
-						}
-
-						// Update camera view
-						this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
-						this.drawArgs.WorldCamera.Update(m_Device3d);
-
-						try
-						{
-							m_Device3d.BeginScene();
-
-							// Set fill mode
-							if (renderWireFrame)
-								m_Device3d.RenderState.FillMode = FillMode.WireFrame;
-							else
-								m_Device3d.RenderState.FillMode = FillMode.Solid;
-
-							drawArgs.RenderWireFrame = renderWireFrame;
-
-							// Render the current planet
-							m_World.Render(this.drawArgs);
-
-							if (World.Settings.ShowCrosshairs)
-								this.DrawCrosshairs();
-
-							frameCounter++;
-							if (frameCounter == 30)
+							if (m_WorkerThread == null)
 							{
-								fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
-								frameCounter = 0;
-								lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
+								m_WorkerThreadRunning = true;
+								m_WorkerThread = new Thread(new ThreadStart(WorkerThreadFunc));
+								m_WorkerThread.Name = ThreadNames.WorldWindowBackground;
+								m_WorkerThread.IsBackground = true;
+								m_WorkerThread.Priority = ThreadPriority.Normal;
+								m_WorkerThread.Start();
 							}
 
-							m_NewRootWidget.Render(drawArgs);
+							// Update camera view
+							this.drawArgs.WorldCamera.UpdateTerrainElevation(m_World.TerrainAccessor);
+							this.drawArgs.WorldCamera.Update(m_Device3d);
 
-							drawArgs.device.RenderState.ZBufferEnable = false;
+							try
+							{
+								m_Device3d.BeginScene();
 
-							// 3D rendering complete, switch to 2D for UI rendering
+								// Set fill mode
+								if (renderWireFrame)
+									m_Device3d.RenderState.FillMode = FillMode.WireFrame;
+								else
+									m_Device3d.RenderState.FillMode = FillMode.Solid;
 
-							// Restore normal fill mode
-							if (renderWireFrame)
-								m_Device3d.RenderState.FillMode = FillMode.Solid;
+								drawArgs.RenderWireFrame = renderWireFrame;
 
-							// Disable fog for UI
-							m_Device3d.RenderState.FogEnable = false;
+								// Render the current planet
+								m_World.Render(this.drawArgs);
 
-							RenderPositionInfo();
+								if (World.Settings.ShowCrosshairs)
+									this.DrawCrosshairs();
 
-							m_FpsGraph.Render(drawArgs);
-						}
-						finally
-						{
-							m_Device3d.EndScene();
-						}
+								frameCounter++;
+								if (frameCounter == 30)
+								{
+									fps = frameCounter / (float)(DrawArgs.CurrentFrameStartTicks - lastFpsUpdateTime) * PerformanceTimer.TicksPerSecond;
+									frameCounter = 0;
+									lastFpsUpdateTime = DrawArgs.CurrentFrameStartTicks;
+								}
 
-						try
-						{
-							drawArgs.Present();
-						}
-						catch (DeviceLostException)
-						{
-							m_blDeviceLost = true;
-						}
-						catch (InvalidCallException)
-						{
-							// --- We've never managed to isolate what causes this in all cases
-							// --- (a common one was Present called after BeginScene but before EndScene,
-							// --- but it still occurred when all code paths were believed to be checked).
-							// --- Consider the device lost, and see if we can't simply recover using
-							// --- a normal test/reset operation.
-							m_blDeviceLost = true;
+								m_NewRootWidget.Render(drawArgs);
+
+								drawArgs.device.RenderState.ZBufferEnable = false;
+
+								// 3D rendering complete, switch to 2D for UI rendering
+
+								// Restore normal fill mode
+								if (renderWireFrame)
+									m_Device3d.RenderState.FillMode = FillMode.Solid;
+
+								// Disable fog for UI
+								m_Device3d.RenderState.FogEnable = false;
+
+								RenderPositionInfo();
+
+								m_FpsGraph.Render(drawArgs);
+							}
+							finally
+							{
+								m_Device3d.EndScene();
+							}
+
+							try
+							{
+								drawArgs.Present();
+							}
+							catch (DeviceLostException)
+							{
+								m_blDeviceLost = true;
+							}
+							catch (InvalidCallException)
+							{
+								// --- We've never managed to isolate what causes this in all cases
+								// --- (a common one was Present called after BeginScene but before EndScene,
+								// --- but it still occurred when all code paths were believed to be checked).
+								// --- Consider the device lost, and see if we can't simply recover using
+								// --- a normal test/reset operation.
+								m_blDeviceLost = true;
+							}
 						}
 					}
-				}
-				finally
-				{
-					long endTicks = 0;
-					PerformanceTimer.QueryPerformanceCounter(ref endTicks);
-					result = (float)(endTicks - startTicks) / PerformanceTimer.TicksPerSecond;
+					finally
+					{
+						long endTicks = 0;
+						PerformanceTimer.QueryPerformanceCounter(ref endTicks);
+						result = (float)(endTicks - startTicks) / PerformanceTimer.TicksPerSecond;
 
-					this.drawArgs.EndRender();
+						this.drawArgs.EndRender();
+					}
+					drawArgs.UpdateMouseCursor(this);
 				}
-				drawArgs.UpdateMouseCursor(this);
+
+				return result;
 			}
-
-			return result;
+			finally
+			{
+				rendering = false;
+			}
 		}
 
 		private LineGraph m_FpsGraph = new LineGraph();

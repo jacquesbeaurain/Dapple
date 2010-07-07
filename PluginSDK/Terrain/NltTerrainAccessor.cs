@@ -281,7 +281,7 @@ namespace WorldWind.Terrain
                   }
                }
 
-               m_tileCache.Remove(oldestTile);
+               m_tileCache.Remove(oldestTile.TerrainTile.TerrainTileFilePath);
             }
 
             m_tileCache.Add(ttce.TerrainTile.TerrainTileFilePath, ttce);

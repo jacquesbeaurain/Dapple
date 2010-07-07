@@ -379,6 +379,8 @@ namespace Dapple.LayerGeneration
 
 		internal override LayerBuilder getBuilder(DappleModel oModel)
 		{
+			oModel.AddArcIMSServer(m_oServer as ArcIMSServerUri, true, false, false);
+
 			GeographicBoundingBox oLayerBounds = new GeographicBoundingBox();
 			double dMinScale, dMaxScale;
 			if (!Double.TryParse(getAttribute("minx"), NumberStyles.Any, CultureInfo.InvariantCulture, out oLayerBounds.West)) return null;

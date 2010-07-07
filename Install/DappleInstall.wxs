@@ -3,6 +3,12 @@
   <Product Id="$(var.DappleProductCode)" Name="Dapple" Language="1033" Version="$(var.ReleaseVersion)" Manufacturer="Geosoft Inc." UpgradeCode="DFEA744A-F951-4BED-B156-44478FAB86D6">
     <Package InstallerVersion="200" Compressed="yes" Description="Explore the earth" />
     <Media Id="1" Cabinet="Dapple.cab" EmbedCab="yes" />
+    <Property Id="DIRECTX_FOUND" Value="0">
+      <DirectorySearch Id="DirectX_Directory" Path="[WindowsFolder]\assembly\GAC\Microsoft.DirectX.Direct3DX\1.0.2911.0__31bf3856ad364e35">
+        <FileSearch Name="Microsoft.DirectX.Direct3DX.dll" />
+      </DirectorySearch>
+    </Property>
+    <Condition Message="An installation prerequisite, DirectX End-User Runtimes, was not found. Download and install the runtimes from 'http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=0cef8180-e94a-4f56-b157-5ab8109cb4f5' and try again.">NOT (DIRECTX_FOUND = 0)</Condition>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="Dapple">

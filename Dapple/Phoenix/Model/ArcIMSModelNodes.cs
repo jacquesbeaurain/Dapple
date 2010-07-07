@@ -298,7 +298,14 @@ namespace NewServerTree
 			oCatalogDownload.DownloadFile(strCapFilename);
 
 			XmlDocument oCatalogXML = new XmlDocument();
-			oCatalogXML.Load(strCapFilename);
+			try
+			{
+				oCatalogXML.Load(strCapFilename);
+			}
+			catch (XmlException)
+			{
+				throw new InvalidDataException("Server's response is not valid XML");
+			}
 
 			XmlNodeList oServiceList = oCatalogXML.SelectNodes("/ARCXML/RESPONSE/SERVICES/SERVICE[@type=\"ImageServer\" and @access=\"PUBLIC\" and @status=\"ENABLED\"]");
 
@@ -481,8 +488,14 @@ namespace NewServerTree
 			// --- Parse the XML document downloaded ---
 
 			XmlDocument oServiceXML = new XmlDocument();
-			oServiceXML.Load(strServiceFilename);
-
+			try
+			{
+				oServiceXML.Load(strServiceFilename);
+			}
+			catch (XmlException)
+			{
+				throw new InvalidDataException("Server's response is not valid XML");
+			}
 
 			XmlElement oFeatureCoordSys = oServiceXML.SelectSingleNode("/ARCXML/RESPONSE/SERVICEINFO/PROPERTIES/FEATURECOORDSYS") as XmlElement;
 			if (oFeatureCoordSys != null)
